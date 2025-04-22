@@ -6,18 +6,17 @@ import { LayoutChangeEvent, PixelRatio, RefreshControl, ScrollViewProps, StyleSh
 import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { RecyclerListViewProps, RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import { ThemeContextProps, withThemeContext } from '../../../theme/ThemeContext';
+import { withThemeContext } from '../../../theme/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
-import { firstCoinRowMarginTop, ViewTypes } from './ViewTypes';
+import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@/entities';
 import { useCoinListEdited, useOpenFamilies, useOpenSmallBalances, usePrevious, useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { deviceUtils } from '@/utils';
 import * as i18n from '@/languages';
-import { logger } from '@/logger';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -32,10 +31,8 @@ const extractCollectiblesIdFromRow = (row: {
       });
     });
     return tokenAddresses;
-  } catch (e) {
-    logger.warn(`[RecyclerAssetList]: Failed to extract collectibles id from row`, { e, row });
-    return '';
-  }
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
 };
 
 const extractRelevantAssetInfo = (asset: {
@@ -59,10 +56,8 @@ const extractRelevantAssetInfo = (asset: {
       nativeBalanceDisplay,
       relativeChange24h,
     };
-  } catch (e) {
-    logger.warn(`[RecyclerAssetList]: Failed to extract relevant asset info`, { e, asset });
-    return null;
-  }
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
 };
 
 const defaultIndices = [0];
@@ -96,14 +91,16 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
 });
 
 const StyledRecyclerListView = styled(RecyclerListView)({
-  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.white,
+  // @ts-expect-error
+  backgroundColor: ({ theme: { colors } }) => colors.white,
   display: 'flex',
   flex: 1,
   minHeight: 1,
 });
 
 const StyledContainer = styled(View)({
-  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.white,
+  // @ts-expect-error
+  backgroundColor: ({ theme: { colors } }) => colors.white,
   display: 'flex',
   flex: 1,
   overflow: 'hidden',
@@ -130,14 +127,17 @@ export function useRecyclerListViewRef(): {
 
 export type RecyclerAssetListSection = {
   readonly name: string;
-  readonly balances?: boolean;
+  readonly balances: boolean;
   readonly data: any[];
-  readonly header: {
-    readonly title?: string;
-    readonly totalItems?: number;
-    readonly totalValue?: string;
+  readonly collectibles: {
+    readonly data: readonly any[];
   };
-  readonly perData?: any;
+  readonly header: {
+    readonly title: string;
+    readonly totalItems: number;
+    readonly totalValue: string;
+  };
+  readonly perData: any;
   readonly renderItem: (item: any) => JSX.Element | null;
   readonly type: string;
 };
@@ -145,7 +145,11 @@ export type RecyclerAssetListSection = {
 const NoStickyContainer = ({ children }: { children: JSX.Element }): JSX.Element => children;
 
 export type RecyclerAssetListProps = {
-  readonly colors: ThemeContextProps['colors'];
+  // TODO: This needs to be migrated into a global type.
+  readonly colors: {
+    readonly alpha: (color: string, alpha: number) => string;
+    readonly blueGreyDark: string;
+  };
   readonly sections: readonly RecyclerAssetListSection[];
   readonly paddingBottom?: number;
   readonly hideHeader: boolean;
@@ -187,7 +191,7 @@ function RecyclerAssetList({
           ...section.header,
         },
       ]);
-      if (section.name === 'collectibles') {
+      if (section.collectibles) {
         section.data.forEach((item, index) => {
           if (item.isHeader || openFamilyTabs[item.familyName + (showcase ? '-showcase' : '')]) {
             ctx.push({
@@ -208,7 +212,7 @@ function RecyclerAssetList({
       return ctx;
     }, []);
     items.push({ item: { isLastPlaceholder: true }, renderItem: () => null });
-    const areSmallCollectibles = (c => c && c?.type === 'small')(sections.find(e => e.name === 'collectibles'));
+    const areSmallCollectibles = (c => c && c?.type === 'small')(sections.find(e => e.collectibles));
     return {
       areSmallCollectibles,
       items,
@@ -486,10 +490,10 @@ function RecyclerAssetList({
 
     if (sections) {
       sections.forEach(section => {
-        if (section?.name === 'collectibles') {
+        if (section?.collectibles) {
           collectibles = section;
         }
-        if (section?.name === 'balances') {
+        if (section?.balances) {
           balances = section;
         }
       });
@@ -520,7 +524,7 @@ function RecyclerAssetList({
       const colleciblesStartHeight = balancesHeight + smallBalancesHeight;
 
       lastSections.forEach(section => {
-        if (section.name === 'collectibles') {
+        if (section.collectibles) {
           prevCollectibles = section;
         }
       });
@@ -567,6 +571,7 @@ function RecyclerAssetList({
 
   return (
     <StyledContainer onLayout={onLayout}>
+      {/* @ts-ignore */}
       <MaybeStickyContainer
         overrideRowRenderer={stickyRowRenderer}
         stickyHeaderIndices={disableStickyHeaders ? [] : isCoinListEdited ? defaultIndices : stickyComponentsIndices}

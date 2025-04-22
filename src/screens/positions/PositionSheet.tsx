@@ -24,7 +24,7 @@ const ITEM_PADDING = 20;
 const SECTION_TITLE_HEIGHT = 20 + ITEM_PADDING;
 
 export function getPositionSheetHeight({ position }: { position: RainbowPosition }) {
-  let height = 120;
+  let height = IS_IOS ? 100 : 120;
   const numberOfDeposits = position.deposits.filter(deposit => !deposit.isLp).length || 0;
   const numberOfLpDeposits = position.deposits.filter(deposit => deposit.isLp).length || 0;
   const numberOfBorrows = position.borrows.length || 0;

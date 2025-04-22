@@ -11,7 +11,7 @@ import {
 } from '@/notifications/types';
 import { handleShowingForegroundNotification } from '@/notifications/foregroundHandler';
 import { registerTokenRefreshListener, saveFCMToken } from '@/notifications/tokens';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ThunkDispatch } from 'redux-thunk';
 import store, { AppState } from '@/redux/store';
 import { AnyAction } from 'redux';
@@ -36,11 +36,14 @@ import { transactionFetchQuery } from '@/resources/transactions/transaction';
 
 type Callback = () => void;
 
-export const NotificationsHandler = () => {
+type Props = PropsWithChildren<{ walletReady: boolean }>;
+
+export const NotificationsHandler = ({ walletReady }: Props) => {
   const { wallets } = useWallets();
   const walletSwitcher = useSwitchWallet();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const walletSwitcherRef = useRef(walletSwitcher);
+  const prevWalletReady = usePrevious(walletReady);
   const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
@@ -49,9 +52,6 @@ export const NotificationsHandler = () => {
   const appState = useRef<AppStateStatus>(null);
   const notifeeForegroundEventListener = useRef<Callback>();
   const alreadyRanInitialization = useRef(false);
-
-  const walletReady = useSelector((state: AppState) => state.appState.walletReady);
-  const prevWalletReady = usePrevious(walletReady);
 
   /*
   We need to save wallets property to a ref in order to have an up-to-date value

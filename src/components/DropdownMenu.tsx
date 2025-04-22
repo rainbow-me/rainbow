@@ -12,7 +12,6 @@ import ConditionalWrap from 'conditional-wrap';
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 export const DropdownMenuContent = DropdownMenuPrimitive.Content;
-export const DropdownMenuTitle = DropdownMenuPrimitive.ItemTitle;
 export const DropdownMenuItem = DropdownMenuPrimitive.create(
   styled(DropdownMenuPrimitive.Item)({
     height: 34,
@@ -151,9 +150,9 @@ export function DropdownMenu<T extends string>({
 
         {!!menuConfig.menuTitle?.trim() && (
           <DropdownMenuPrimitive.Group>
-            <DropdownMenuTitle>
+            <MenuItemComponent disabled>
               <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
-            </DropdownMenuTitle>
+            </MenuItemComponent>
           </DropdownMenuPrimitive.Group>
         )}
       </DropdownMenuContent>

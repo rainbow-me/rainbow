@@ -1,24 +1,21 @@
-import { CoinDividerContainerHeight } from '@/components/coin-divider';
-import { CoinRowHeight } from '@/components/coin-row';
-import { TokenFamilyHeaderHeight } from '@/components/token-family';
-import { AssetListHeaderHeight } from '@/components/asset-list/AssetListHeader';
-import { AssetListItemSkeletonHeight } from '@/components/asset-list/AssetListItemSkeleton';
-import { CellType } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { ProfileActionButtonsRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow';
-import {
-  ProfileAvatarRowHeight,
-  ProfileAvatarRowTopInset,
-} from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
-import { ProfileNameRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileNameRow';
-import { ProfileBalanceRowHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileBalanceRow';
-import { ProfileStickyHeaderHeight } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileStickyHeader';
+import { CoinDividerContainerHeight } from '../../../coin-divider';
+import { CoinRowHeight } from '../../../coin-row';
+import { TokenFamilyHeaderHeight } from '../../../token-family';
+import { UniqueTokenRow } from '../../../unique-token';
+import { AssetListHeaderHeight } from '../../AssetListHeader';
+import { AssetListItemSkeletonHeight } from '../../AssetListItemSkeleton';
+import { CellType } from './ViewTypes';
+import { deviceUtils } from '@/utils';
+import { ProfileActionButtonsRowHeight } from '../profile-header/ProfileActionButtonsRow';
+import { ProfileAvatarRowHeight, ProfileAvatarRowTopInset } from '../profile-header/ProfileAvatarRow';
+import { ProfileNameRowHeight } from '../profile-header/ProfileNameRow';
+import { ProfileBalanceRowHeight } from '../profile-header/ProfileBalanceRow';
+import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader';
 import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
-import { DISCOVER_MORE_BUTTON_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
-import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
+import { DISCOVER_MORE_BUTTON_HEIGHT } from './DiscoverMoreButton';
 import { IS_IOS } from '@/env';
-import { deviceUtils } from '@/utils';
 
 type Dim = {
   width?: number;
@@ -54,7 +51,8 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.NFTS_HEADER_SPACE_AFTER]: { height: 6 },
   [CellType.FAMILY_HEADER]: { height: TokenFamilyHeaderHeight },
   [CellType.NFT]: {
-    height: CardSize + UniqueTokenCardMargin,
+    // @ts-expect-error
+    height: UniqueTokenRow.height,
     width: deviceUtils.dimensions.width / 2 - 0.1,
   },
   [CellType.NFTS_LOADING]: {
@@ -80,7 +78,6 @@ const ViewDimensions: Record<CellType, Dim> = {
     width: deviceUtils.dimensions.width,
   },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
-  [CellType.EMPTY_REMOTE_CARD_CAROUSEL]: { height: 0 },
 };
 
 export default ViewDimensions;

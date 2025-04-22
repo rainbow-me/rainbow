@@ -5,11 +5,9 @@ import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { supportedNativeCurrencies } from '@/references';
 import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
 import * as i18n from '@/languages';
-import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
-import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 
 const COINS_TO_SHOW = 5;
 
@@ -125,11 +123,12 @@ export const buildCoinsList = (
   };
 };
 
+// TODO make it better
 export const buildBriefCoinsList = (
-  sortedAssets: ParsedAddressAsset[],
-  nativeCurrency: NativeCurrencyKey,
-  isCoinListEdited: boolean,
-  pinnedCoins: BooleanMap,
+  sortedAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
   hiddenAssets: Set<UniqueId>
 ) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
@@ -139,27 +138,27 @@ export const buildBriefCoinsList = (
     pinnedCoins,
     hiddenAssets
   );
-  const briefAssets: CellTypes[] = [];
+  const briefAssets = [];
   if (assets) {
     for (const asset of assets) {
       if (asset.coinDivider) {
         briefAssets.push({
           defaultToEditButton: asset.defaultToEditButton,
-          type: CellType.COIN_DIVIDER,
+          type: 'COIN_DIVIDER',
           uid: 'coin-divider',
           value: smallBalancesValue,
         });
       } else if (asset.smallBalancesContainer) {
         for (const smallAsset of asset.assets) {
           briefAssets.push({
-            type: CellType.COIN,
+            type: 'COIN',
             uid: 'coin-' + smallAsset.uniqueId,
             uniqueId: smallAsset.uniqueId,
           });
         }
       } else {
         briefAssets.push({
-          type: CellType.COIN,
+          type: 'COIN',
           uid: 'coin-' + asset.uniqueId,
           uniqueId: asset.uniqueId,
         });
@@ -246,132 +245,135 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
 
 export const buildBriefUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
-  selectedShowcaseTokens: string[] | undefined = [],
-  sellingTokens: UniqueAsset[] | undefined = [],
-  hiddenTokens: string[] | undefined = [],
+  selectedShowcaseTokens: any,
+  sellingTokens: any[] = [],
+  hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
   nftSort = NftCollectionSortCriterion.MostRecent,
   isFetchingNfts = false
 ) => {
-  const hiddenUniqueTokensIds: string[] = [];
-  const uniqueTokensInShowcaseIds: string[] = [];
-  const filteredUniqueTokens: UniqueAsset[] = [];
+  const hiddenUniqueTokensIds = uniqueTokens
+    .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
+    .map(({ uniqueId }: any) => uniqueId);
+  const nonHiddenUniqueTokens = uniqueTokens.filter(({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId));
+  const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
+    .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
+    .map(({ uniqueId }: any) => uniqueId);
 
-  for (const token of uniqueTokens) {
-    if (hiddenTokens.includes(token.fullUniqueId)) {
-      hiddenUniqueTokensIds.push(token.uniqueId);
-      continue;
-    }
-
-    if (selectedShowcaseTokens.includes(token.uniqueId)) {
-      uniqueTokensInShowcaseIds.push(token.uniqueId);
-    }
-
+  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: UniqueAsset) => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
       const type = getUniqueTokenType(token);
-      if (format === 'image' && type === 'NFT') {
-        filteredUniqueTokens.push(token);
-      }
-    } else {
-      filteredUniqueTokens.push(token);
+      return format === 'image' && type === 'NFT';
     }
-  }
+    return true;
+  });
 
+  // group the assets by collection name
   const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.familyName);
 
-  const result: CellTypes[] = [
+  const result = [
     {
-      type: CellType.NFTS_HEADER,
+      type: 'NFTS_HEADER',
       nftSort,
       uid: `nft-headers-${nftSort}`,
     },
-    { type: CellType.NFTS_HEADER_SPACE_AFTER, uid: 'nfts-header-space-after' },
+    { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
   if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
     result.push({
+      // @ts-expect-error "name" does not exist in type.
       name: i18n.t(i18n.l.account.tab_showcase),
       total: uniqueTokensInShowcaseIds.length,
-      type: CellType.FAMILY_HEADER,
+      type: 'FAMILY_HEADER',
       uid: 'showcase',
     });
     for (let index = 0; index < uniqueTokensInShowcaseIds.length; index++) {
       const uniqueId = uniqueTokensInShowcaseIds[index];
       result.push({
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         index,
-        type: CellType.NFT,
+        type: 'NFT',
         uid: `showcase-${uniqueId}`,
         uniqueId,
       });
     }
 
-    result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
-
   // i18n all names
   if (sellingTokens.length > 0) {
     result.push({
+      // @ts-expect-error "name" does not exist in type.
       name: i18n.t(i18n.l.nfts.selling),
       total: sellingTokens.length,
-      type: CellType.FAMILY_HEADER,
+      type: 'FAMILY_HEADER',
       uid: 'selling',
     });
     for (let index = 0; index < sellingTokens.length; index++) {
       const uniqueId = sellingTokens[index].uniqueId;
       result.push({
+        // @ts-expect-error "index" does not exist in type.
         index,
-        type: CellType.NFT,
+        type: 'NFT',
         uid: `selling-${uniqueId}`,
         uniqueId,
       });
     }
-    result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
 
   if (!Object.keys(assetsByName).length) {
     if (!isFetchingNfts) {
-      result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
+      // empty NFT section
+      result.push({ type: 'NFTS_EMPTY', uid: `nft-empty` });
     } else {
-      result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading-${nftSort}` });
+      // loading NFTs section (most likely from a sortBy change) but initial load too
+      result.push({ type: 'NFTS_LOADING', uid: `nft-loading-${nftSort}` });
     }
   } else {
     for (const family of Object.keys(assetsByName)) {
       result.push({
-        image: assetsByName[family][0].familyImage ?? undefined,
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+        image: assetsByName[family][0].familyImage,
         name: family,
         total: assetsByName[family].length,
-        type: CellType.FAMILY_HEADER,
+        type: 'FAMILY_HEADER',
         uid: family,
       });
       const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
       for (let index = 0; index < tokens.length; index++) {
         const uniqueId = tokens[index];
-        result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId });
+
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+        result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
       }
 
-      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${family}-space-after` });
+      result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
     }
   }
 
-  if (hiddenUniqueTokensIds?.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
+  if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
+      // @ts-expect-error "name" does not exist in type.
       name: lang.t('button.hidden'),
       total: hiddenUniqueTokensIds.length,
-      type: CellType.FAMILY_HEADER,
+      type: 'FAMILY_HEADER',
       uid: 'hidden',
     });
     for (let index = 0; index < hiddenUniqueTokensIds.length; index++) {
       const uniqueId = hiddenUniqueTokensIds[index];
       result.push({
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         index,
-        type: CellType.NFT,
+        type: 'NFT',
         uid: `hidden-${uniqueId}`,
         uniqueId,
       });
     }
 
-    result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
 
   return result;

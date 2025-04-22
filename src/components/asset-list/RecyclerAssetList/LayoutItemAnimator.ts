@@ -1,7 +1,7 @@
 import { LayoutAnimation, LayoutAnimationConfig } from 'react-native';
 import { BaseItemAnimator, RecyclerListView } from 'recyclerlistview';
 import { RecyclerListViewProps, RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
-import { ViewTypes } from './ViewTypes';
+import { ViewTypes } from '../RecyclerViewTypes';
 
 // TODO: make reusable
 type RecyclerListViewRef = RecyclerListView<RecyclerListViewProps, RecyclerListViewState>;

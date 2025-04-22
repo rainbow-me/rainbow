@@ -1,9 +1,11 @@
 import ConditionalWrap from 'conditional-wrap';
-import React from 'react';
-import { RefreshControl, ScrollView, ViewProps } from 'react-native';
+import React, { useMemo } from 'react';
+import { RefreshControl, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AddFundsInterstitial from '../AddFundsInterstitial';
+import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
-import AssetListHeader from './AssetListHeader';
+import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 import { times } from '@/helpers/utilities';
 import { useRefreshAccountData } from '@/hooks';
@@ -16,28 +18,20 @@ const Container = styled(Column)({
   paddingTop: navbarHeight,
 });
 
-export interface EmptyAssetListProps extends ViewProps {
-  descendingOpacity?: boolean;
-  isLoading?: boolean;
-  isWalletEthZero?: boolean;
-  network?: string;
-  skeletonCount?: number;
-  title?: string;
-  children?: React.ReactNode;
-}
+const EmptyAssetList = ({ descendingOpacity, isLoading, isWalletEthZero, network, skeletonCount = 5, title, ...props }) => {
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
-const EmptyAssetList = ({
-  descendingOpacity,
-  isLoading,
-  isWalletEthZero,
-  network,
-  skeletonCount = 5,
-  title,
-  ...props
-}: EmptyAssetListProps) => {
+  const interstitialOffset = useMemo(() => {
+    let offset = bottomInset + FabWrapperBottomPosition;
+    if (title) {
+      offset += AssetListHeaderHeight;
+    }
+    return offset * -1;
+  }, [bottomInset, title]);
+
   const { refresh, isRefreshing } = useRefreshAccountData();
 
-  const showAddFunds = (!isLoading && isWalletEthZero) ?? false;
+  const showAddFunds = !isLoading && isWalletEthZero;
 
   return (
     <ConditionalWrap
@@ -54,7 +48,7 @@ const EmptyAssetList = ({
       <Container {...props}>
         <Centered flex={1}>
           {showAddFunds ? (
-            <AddFundsInterstitial network={network} />
+            <AddFundsInterstitial network={network} offsetY={interstitialOffset} />
           ) : (
             <React.Fragment>
               {title && <AssetListHeader title={title} />}

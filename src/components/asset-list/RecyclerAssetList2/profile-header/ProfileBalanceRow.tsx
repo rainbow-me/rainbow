@@ -1,17 +1,13 @@
 import * as React from 'react';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
-import { Box, Text } from '@/design-system';
+import { Box, Heading } from '@/design-system';
 
 export const ProfileBalanceRowHeight = 24;
-const placeholderHeight = ProfileBalanceRowHeight;
-const placeholderWidth = 200;
 
-type ProfileBalanceRowProps = {
-  totalValue: string;
-  isLoadingBalance: boolean;
-};
+export function ProfileBalanceRow({ totalValue, isLoadingBalance }: { totalValue: string; isLoadingBalance: boolean }) {
+  const placeholderHeight = ProfileBalanceRowHeight;
+  const placeholderWidth = 200;
 
-export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalanceRowProps) {
   return (
     <>
       {isLoadingBalance ? (
@@ -21,9 +17,15 @@ export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalan
           </Skeleton>
         </Box>
       ) : (
-        <Text testID="balance-text" numberOfLines={1} color="label" size={totalValue?.length > 14 ? '26pt' : '34pt'} weight="heavy">
+        <Heading
+          color="label"
+          numberOfLines={1}
+          size={totalValue?.length > 14 ? '26px / 30px (Deprecated)' : '34px / 41px (Deprecated)'}
+          weight="heavy"
+          testID="balance-text"
+        >
           {totalValue}
-        </Text>
+        </Heading>
       )}
     </>
   );

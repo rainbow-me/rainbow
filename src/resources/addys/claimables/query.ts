@@ -1,25 +1,18 @@
 import { NativeCurrencyKey } from '@/entities';
+import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
+import { useQuery, type QueryFunctionContext } from '@tanstack/react-query';
 import { Claimable, ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { CLAIMABLES, useExperimentalFlag } from '@/config';
+import { IS_TEST } from '@/env';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from '../client';
 import { Address } from 'viem';
-import {
-  convertRawAmountToBalance,
-  greaterThan,
-  convertAmountAndPriceToNativeDisplay,
-  isZero,
-  convertAmountToNativeDisplay,
-  add,
-} from '@/helpers/utilities';
-import { metadataPOSTClient } from '@/graphql';
-import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { ChainId } from '@/state/backendNetworks/types';
-import { time } from '@/utils';
-import { throttle } from 'lodash';
-import { analytics } from '@/analytics';
-import { ClaimablesStore } from '@/state/claimables/claimables';
+
+// ///////////////////////////////////////////////
+// Query Types
 
 export type ClaimablesArgs = {
   address: Address | string | null;
@@ -27,10 +20,15 @@ export type ClaimablesArgs = {
   abortController?: AbortController | null;
 };
 
-const STABLE_CLAIMABLES: ClaimablesStore = {
-  claimables: [],
-  totalValue: '0',
-};
+// ///////////////////////////////////////////////
+// Query Key
+
+export const claimablesQueryKey = ({ address, currency, abortController }: ClaimablesArgs) =>
+  createQueryKey('claimables', { address, currency, abortController }, { persisterVersion: 4 });
+
+type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
+
+const STABLE_CLAIMABLES: ReturnType<typeof parseClaimables<Claimable>> = [];
 
 export async function getClaimables({ address, currency, abortController }: ClaimablesArgs) {
   try {
@@ -40,94 +38,55 @@ export async function getClaimables({ address, currency, abortController }: Clai
       return STABLE_CLAIMABLES;
     }
 
-    const claimablesUrl = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
+    const url = `/${useBackendNetworksStore.getState().getSupportedChainIds().join(',')}/${address}/claimables`;
+    const { data } = await getAddysHttpClient().get<ConsolidatedClaimablesResponse>(url, {
+      params: {
+        currency: currency.toLowerCase(),
+      },
+      signal: abortController?.signal,
+      timeout: 20000,
+    });
 
-    const [points, claimables] = await Promise.all([
-      metadataPOSTClient.getPointsDataForWallet({ address }),
-      getAddysHttpClient().get<ConsolidatedClaimablesResponse>(claimablesUrl, {
-        params: {
-          currency: currency.toLowerCase(),
-        },
-        signal: abortController?.signal,
-        timeout: 20000,
-      }),
-    ]);
-
-    if (claimables.data.metadata.status !== 'ok') {
-      logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (API error)'), {
-        message: claimables.data.metadata.errors,
+    if (data.metadata.status !== 'ok') {
+      logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (API error)'), {
+        message: data.metadata.errors,
       });
-      if (!claimables.data.payload.claimables.length) {
-        return STABLE_CLAIMABLES;
-      }
     }
 
-    const sortedClaimables = parseClaimables(claimables.data.payload.claimables, currency).sort((a, b) =>
-      greaterThan(a.value.nativeAsset.amount || '0', b.value.nativeAsset.amount || '0') ? -1 : 1
-    );
-
-    if (points?.points?.user?.rewards?.claimable) {
-      const ethNativeAsset = await getNativeAssetForNetwork({ chainId: ChainId.mainnet });
-      if (ethNativeAsset) {
-        const claimableETH = convertRawAmountToBalance(points?.points?.user?.rewards?.claimable || '0', {
-          decimals: 18,
-          symbol: 'ETH',
-        });
-        const { amount, display } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, ethNativeAsset.price?.value || 0, currency);
-        if (!isZero(amount)) {
-          const ethRewardsClaimable = {
-            value: {
-              claimAsset: claimableETH,
-              nativeAsset: {
-                amount,
-                display,
-              },
-            },
-            uniqueId: 'rainbow-eth-rewards',
-          } as Claimable;
-          sortedClaimables.unshift(ethRewardsClaimable);
-        }
-      }
-    }
-
-    throttledClaimablesAnalytics(sortedClaimables);
-
-    return {
-      claimables: sortedClaimables,
-      totalValue: convertAmountToNativeDisplay(
-        sortedClaimables.reduce((acc, claimable) => add(acc, claimable.value.nativeAsset.amount || '0'), '0'),
-        currency
-      ),
-    };
+    return parseClaimables(data.payload.claimables, currency);
   } catch (e) {
-    logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (client error)'), {
+    logger.error(new RainbowError('[claimablesQueryFunction]: Failed to fetch claimables (client error)'), {
       message: (e as Error)?.message,
     });
     return STABLE_CLAIMABLES;
   }
 }
 
-// user properties analytics for claimables that executes at max once every hour
-const throttledClaimablesAnalytics = throttle(
-  (claimables: Claimable[]) => {
-    let totalUSDValue = 0;
-    const claimablesUSDValues: {
-      [key: string]: number;
-    } = {};
+// ///////////////////////////////////////////////
+// Query Function
 
-    claimables.forEach(claimable => {
-      const attribute = `claimable-${claimable.analyticsId}-USDValue`;
-      totalUSDValue += claimable.value.usd;
+export async function claimablesQueryFunction({ queryKey }: QueryFunctionContext<ClaimablesQueryKey>) {
+  const [{ address, currency, abortController }] = queryKey;
+  return getClaimables({ address, currency, abortController });
+}
 
-      if (claimablesUSDValues[attribute] !== undefined) {
-        claimablesUSDValues[attribute] += claimable.value.usd;
-      } else {
-        claimablesUSDValues[attribute] = claimable.value.usd;
-      }
-    });
+export type ClaimablesResult = Awaited<ReturnType<typeof claimablesQueryFunction>>;
 
-    analytics.identify({ claimablesAmount: claimables.length, claimablesUSDValue: totalUSDValue, ...claimablesUSDValues });
-  },
-  time.hours(1),
-  { trailing: false }
-);
+// ///////////////////////////////////////////////
+// Query Hook
+
+export function useClaimables<T extends ClaimablesResult>(
+  { address, currency, abortController }: ClaimablesArgs,
+  config: QueryConfigWithSelect<ClaimablesResult, Error, T, ClaimablesQueryKey> = {}
+) {
+  const { claimables: remoteFlag } = useRemoteConfig();
+  const localFlag = useExperimentalFlag(CLAIMABLES);
+
+  return useQuery(claimablesQueryKey({ address, currency, abortController }), claimablesQueryFunction, {
+    ...config,
+    enabled: !!address && (remoteFlag || localFlag) && !IS_TEST,
+    staleTime: 1000 * 60 * 2,
+    refetchInterval: 1000 * 60 * 2,
+    cacheTime: 1000 * 60 * 60 * 24,
+  });
+}

@@ -350,11 +350,9 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
   );
 
   // parse positions before grouping by non-versioned dapp so version can be attached to position items
-  const parsedPositions = Object.values(networkAgnosticPositions)
-    .map(position => parsePosition(position, currency))
-    .sort((a, b) => (lessThan(b.totals.totals.amount, a.totals.totals.amount) ? -1 : 1));
+  const parsedPositions = Object.values(networkAgnosticPositions).map(position => parsePosition(position, currency));
 
-  const positions = parsedPositions.reduce((acc: Record<string, RainbowPosition>, position: RainbowPosition) => {
+  const versionAgnosticPositions = parsedPositions.reduce((acc: Record<string, RainbowPosition>, position: RainbowPosition) => {
     const isDappVersioned = PROTOCOL_VERSION_REGEX.test(position.type);
 
     const nonVersionedType = isDappVersioned ? position.type.replace(PROTOCOL_VERSION_REGEX, '') : position.type;
@@ -392,11 +390,13 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
     } as Record<string, RainbowPosition>;
   }, {});
 
+  const positions = Object.values(versionAgnosticPositions);
+
   // these are tokens that would be represented twice if shown in the token list, such as a Sushiswap LP token
   const tokensToExcludeFromTokenList: string[] = [];
   const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
-  parsedPositions.forEach(({ deposits }) => {
+  positions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
       if (asset.defi_position) {
         const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), chainsIdByName[asset.network]);
@@ -405,7 +405,7 @@ export function parsePositions(data: AddysPositionsResponse, currency: NativeCur
     });
   });
 
-  const positionsTotals = parsedPositions.reduce((acc, position) => addPositionTotals(acc, position.totals, currency), {
+  const positionsTotals = positions.reduce((acc, position) => addPositionTotals(acc, position.totals, currency), {
     totals: { amount: '0', display: '0' },
     totalLocked: '0',
     borrows: { amount: '0', display: '0' },

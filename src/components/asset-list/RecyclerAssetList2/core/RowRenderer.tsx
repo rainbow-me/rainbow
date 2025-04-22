@@ -57,7 +57,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.POSITIONS_SPACE_BEFORE:
     case CellType.CLAIMABLES_SPACE_AFTER:
     case CellType.CLAIMABLES_SPACE_BEFORE:
-    case CellType.EMPTY_REMOTE_CARD_CAROUSEL:
       return null;
     case CellType.COIN_DIVIDER:
       return (
@@ -165,18 +164,18 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <WrappedPositionsListHeader total={total} />;
     }
     case CellType.POSITION: {
-      const { position, index } = data as PositionExtraData;
+      const { uniqueId, index } = data as PositionExtraData;
 
-      return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} position={position} />;
+      return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
     }
     case CellType.CLAIMABLES_HEADER: {
       const { total } = data as ClaimablesHeaderExtraData;
       return <ClaimablesListHeader total={total} />;
     }
     case CellType.CLAIMABLE: {
-      const { claimable } = data as ClaimableExtraData;
+      const { uniqueId } = data as ClaimableExtraData;
 
-      return <Claimable claimable={claimable} extendedState={extendedState} />;
+      return <Claimable uniqueId={uniqueId} extendedState={extendedState} />;
     }
 
     case CellType.LOADING_ASSETS:

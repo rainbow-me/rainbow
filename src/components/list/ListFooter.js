@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@/styled-thing';
 
-export const ListFooterHeight = 27;
+const ListFooterHeight = 27;
 
 const Spacer = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,

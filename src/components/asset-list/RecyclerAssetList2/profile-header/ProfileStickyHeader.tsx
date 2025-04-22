@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { Box } from '@/design-system';
-import { navbarHeight } from '@/components/navbar/Navbar';
+import { Box, Inline } from '@/design-system';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { StickyHeader } from '../core/StickyHeaders';
 import { useTheme } from '@/theme';
-import { IS_IOS } from '@/env';
 
 export const ProfileStickyHeaderHeight = 52;
-const visiblePosition = IS_IOS ? navbarHeight : navbarHeight + 80;
+const visiblePosition = ios ? navbarHeight : navbarHeight + 80;
 
 export function ProfileStickyHeader() {
   const { colors } = useTheme();
@@ -25,7 +24,7 @@ export function ProfileStickyHeader() {
           top: -20,
           zIndex: 99,
         }}
-      />
+      ></Box>
     </StickyHeader>
   );
 }

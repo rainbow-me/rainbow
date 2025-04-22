@@ -3,14 +3,15 @@ import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/
 import { logger, RainbowError } from '@/logger';
 import { useAccountSettings } from '@/hooks';
 import { getProvider } from '@/handlers/web3';
-import { haptics, time } from '@/utils';
+import { haptics } from '@/utils';
+import { queryClient } from '@/react-query';
 import { getAddysHttpClient } from '@/resources/addys/client';
+import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { ClaimStatus } from '../../shared/types';
 import { analytics } from '@/analytics';
 import { ADDYS_BASE_URL } from 'react-native-dotenv';
-import { useClaimablesStore } from '@/state/claimables/claimables';
 
 enum ErrorMessages {
   CLAIM_API_CALL_FAILED = 'Failed to execute sponsored claim api call',
@@ -42,6 +43,8 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('ready');
+
+  const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
@@ -147,7 +150,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         });
 
         // Immediately remove the claimable from cached data
-        useClaimablesStore.getState().markClaimed(claimable.uniqueId);
+        queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
       }
     },
     onError: e => {
@@ -192,7 +195,7 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
     },
     onSettled: () => {
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
-      setTimeout(() => useClaimablesStore.getState().fetch(undefined, { staleTime: 0 }), 20_000);
+      setTimeout(() => queryClient.invalidateQueries(queryKey), 20_000);
     },
   });
 
@@ -201,7 +204,9 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       value={{
         claimStatus,
         claimable,
+
         setClaimStatus,
+
         claim,
       }}
     >

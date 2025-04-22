@@ -1,22 +1,15 @@
 import React from 'react';
-import Animated, { AnimatedProps, Easing, FadeInDown, FadeOut } from 'react-native-reanimated';
+import Animated, { Easing, FadeInDown, FadeOut } from 'react-native-reanimated';
 import styled from '@/styled-thing';
-import { ViewProps } from 'react-native';
 
 const AnimatedContainer = styled(Animated.View)({
   flex: 1,
   width: '100%',
 });
 
-const easing = Easing.bezier(0.4, 0, 0.22, 1).factory();
+const easing = Easing.bezier(0.4, 0, 0.22, 1);
 
-type FlyInAnimationProps = {
-  distance?: number;
-  duration?: number;
-  props: Omit<AnimatedProps<ViewProps>, 'entering' | 'exiting'>;
-};
-
-export default function FlyInAnimation({ distance = 16, duration = 100, ...props }: FlyInAnimationProps) {
+export default function FlyInAnimation({ distance = 16, duration = 100, ...props }) {
   const exitDuration = duration / 3;
   return (
     <AnimatedContainer

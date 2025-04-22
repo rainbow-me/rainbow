@@ -1,4 +1,4 @@
-import React, { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -17,7 +17,6 @@ import { useTheme } from '@/theme';
 import * as lang from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { IS_TEST } from '@/env';
-import { View } from 'react-native';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -35,7 +34,7 @@ const AccountName = styled(TruncatedText).attrs({
   height: android ? 35 : 30,
   marginBottom: android ? 8 : 0,
   marginTop: 2,
-  maxWidth: ({ maxWidth }: { maxWidth: number }) => maxWidth,
+  maxWidth: ({ maxWidth }) => maxWidth,
   paddingRight: 6,
 });
 
@@ -46,7 +45,7 @@ const DropdownArrow = styled(Centered)({
   width: dropdownArrowWidth,
 });
 
-const WalletSelectButtonWrapper = styled(View)({
+const WalletSelectButtonWrapper = styled.View({
   flex: 1,
 });
 
@@ -55,15 +54,7 @@ const TotalAmountSkeleton = styled(Skeleton)({
   justifyContent: 'center',
 });
 
-type WalletSelectButtonProps = {
-  accountName: string;
-  onChangeWallet: () => void;
-  deviceWidth: number;
-  textWidth: number;
-  maxWidth: number;
-};
-
-const WalletSelectButton = ({ accountName, onChangeWallet, deviceWidth, textWidth, maxWidth }: WalletSelectButtonProps) => {
+const WalletSelectButton = ({ accountName, onChangeWallet, deviceWidth, textWidth, maxWidth }) => {
   const { colors } = useTheme();
 
   const truncated = textWidth > maxWidth - 6;
@@ -93,6 +84,7 @@ const WalletSelectButton = ({ accountName, onChangeWallet, deviceWidth, textWidt
           <DropdownArrow>
             {!IS_TEST && (
               <LinearGradient
+                borderRadius={15}
                 colors={colors.gradients.lightestGrey}
                 end={{ x: 0.5, y: 1 }}
                 pointerEvents="none"
@@ -108,15 +100,7 @@ const WalletSelectButton = ({ accountName, onChangeWallet, deviceWidth, textWidt
   );
 };
 
-type AssetListHeaderProps = {
-  contextMenuOptions?: any;
-  isCoinListEdited?: boolean;
-  title: string;
-  totalValue?: string;
-  isSticky?: boolean;
-} & Partial<ComponentProps<typeof ListHeader>>;
-
-const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalValue, isSticky = true, ...props }: AssetListHeaderProps) => {
+const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalValue, isSticky = true, ...props }) => {
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
   const { navigate } = useNavigation();
@@ -134,11 +118,11 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
   useEffect(() => {
     async function measure() {
       const { width } = await measureText(accountName, {
-        fontSize: fonts.size.big,
+        fontSize: parseFloat(fonts.size.big),
         fontWeight: fonts.weight.heavy,
         letterSpacing: fonts.letterSpacing.roundedMedium,
       });
-      setTextWidth(width ?? 0);
+      setTextWidth(width);
     }
     measure();
   }, [accountName]);
@@ -150,6 +134,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
         isCoinListEdited={isCoinListEdited}
         title={title}
         totalValue={totalValue}
+        // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
       >
         {!title && (

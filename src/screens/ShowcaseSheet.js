@@ -1,32 +1,40 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { ComponentProps, useContext, useEffect, useMemo, useState } from 'react';
+import { useRoute } from '@react-navigation/native';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { CollectibleTokenFamily } from '../components/token-family';
-import { AddressPreferencesData, getPreference } from '../model/preferences';
+import { PREFS_ENDPOINT } from '../model/preferences';
+import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings, useWallets } from '@/hooks';
 import styled from '@/styled-thing';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { useTheme } from '@/theme';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { View } from 'react-native';
-import { RootStackParamList } from '@/navigation/types';
-import { RecyclerAssetListSection } from '@/components/asset-list/RecyclerAssetList';
 
-const tokenFamilyItem = (item: ComponentProps<typeof CollectibleTokenFamily>) => <CollectibleTokenFamily {...item} />;
+const tokenFamilyItem = item => <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />;
 
-const Wrapper = styled(View)({
-  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.white,
+async function fetchShowcaseForAddress(address) {
+  const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {
+    method: 'get',
+    params: {
+      address,
+    },
+  });
+  return response.data;
+}
+
+const Wrapper = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
   borderTopLeftRadius: 15,
   borderTopRightRadius: 15,
   height: '100%',
   overflow: 'hidden',
 });
 
-const LoadingWrapper = styled(View)({
+const LoadingWrapper = styled.View({
   alignItems: 'center',
   height: '100%',
   justifyContent: 'center',
@@ -36,28 +44,25 @@ const LoadingWrapper = styled(View)({
 export default function ShowcaseScreen() {
   const {
     params: { address: addressOrDomain },
-  } = useRoute<RouteProp<RootStackParamList, 'ShowcaseSheet'>>();
+  } = useRoute();
 
   const theme = useTheme();
 
-  const [userData, setUserData] = useState<AddressPreferencesData | null | undefined>();
-  const [accountAddress, setAcccountAddress] = useState<string>();
+  const [userData, setUserData] = useState(null);
+  const [accountAddress, setAcccountAddress] = useState(null);
   const { isReadOnlyWallet } = useWallets();
 
   useEffect(() => {
     const init = async () => {
       const address = await resolveNameOrAddress(addressOrDomain);
-      if (address) {
-        setAcccountAddress(address.toLowerCase());
-      }
+      setAcccountAddress(address?.toLowerCase());
     };
     init();
   }, [addressOrDomain]);
 
   useEffect(() => {
     async function fetchShowcase() {
-      if (!accountAddress) return;
-      const userData = await getPreference('address', accountAddress);
+      const userData = await fetchShowcaseForAddress(accountAddress);
       setUserData(userData);
     }
     accountAddress && fetchShowcase();
@@ -69,28 +74,27 @@ export default function ShowcaseScreen() {
     data: { nfts: uniqueTokens },
     isInitialLoading,
   } = useLegacyNFTs({
-    config: {
-      enabled: !!accountAddress,
-    },
     address: accountAddress ?? '',
   });
 
   const { layout } = useContext(ModalContext) || {};
 
-  const sections: RecyclerAssetListSection[] = useMemo(
+  const sections = useMemo(
     () => [
       {
-        name: 'collectibles',
-        data: buildUniqueTokenList(uniqueTokens, userData?.showcase?.ids ?? []),
+        collectibles: true,
+        data: buildUniqueTokenList(uniqueTokens, userData?.data?.showcase?.ids ?? []),
         header: {
+          title: '',
           totalItems: uniqueTokens?.length,
+          totalValue: '',
         },
-        renderItem: (item: ComponentProps<typeof CollectibleTokenFamily>) =>
-          tokenFamilyItem({ ...item, external: true, showcase: true, theme }),
+        name: 'collectibles',
+        renderItem: item => tokenFamilyItem({ ...item, external: true, showcase: true, theme }),
         type: 'big',
       },
     ],
-    [uniqueTokens, userData?.showcase?.ids, theme]
+    [uniqueTokens, userData?.data?.showcase?.ids, theme]
   );
 
   const contextValue = useMemo(
