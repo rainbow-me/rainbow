@@ -200,25 +200,25 @@ const withBriefBalanceSection = (
 
   const hasTokens = briefAssets?.length;
   const hasNFTs = collectibles?.length;
-
-  const isEmpty = !hasTokens && !hasNFTs;
   const hasNFTsOnly = !hasTokens && hasNFTs;
 
-  let balanceSection: CellTypes[] = [];
-  if (hasTokens && !isLoadingBalance) {
-    balanceSection = [
-      {
-        type: CellType.PROFILE_BALANCE_ROW,
-        uid: 'profile-balance',
-        value: accountBalanceDisplay,
-        isLoadingBalance,
-      },
-      {
-        type: CellType.PROFILE_BALANCE_ROW_SPACE_AFTER,
-        uid: 'profile-balance-space-after',
-      },
-    ];
-  }
+  const isEmpty = !hasTokens && !hasNFTs;
+  const shouldHideBalanceRow = !isLoadingUserAssets && !isLoadingBalance && !hasTokens;
+
+  const balanceSection: CellTypes[] = shouldHideBalanceRow
+    ? []
+    : [
+        {
+          type: CellType.PROFILE_BALANCE_ROW,
+          uid: 'profile-balance',
+          value: accountBalanceDisplay,
+          isLoadingBalance,
+        },
+        {
+          type: CellType.PROFILE_BALANCE_ROW_SPACE_AFTER,
+          uid: 'profile-balance-space-after',
+        },
+      ];
 
   let spacer: CellTypes[] = [];
   if (!hasTokens) {
