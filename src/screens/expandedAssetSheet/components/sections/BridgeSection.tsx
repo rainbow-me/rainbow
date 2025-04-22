@@ -1,6 +1,5 @@
 import React from 'react';
 import { AccentColorProvider, Bleed, Box, Cover, IconContainer, Separator, Text, TextShadow } from '@/design-system';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -10,10 +9,11 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import useAsset from '@/hooks/useAsset';
 import { Address } from 'viem';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 // Constants for layout
 const GRID_GAP = 9;
@@ -93,7 +93,6 @@ function Placeholder() {
 }
 
 function BridgeButton({ chainId }: { chainId: ChainId }) {
-  const { navigate } = useNavigation();
   const { basicAsset: asset } = useExpandedAssetSheetContext();
   const { accentColors } = useExpandedAssetSheetContext();
   const chainsLabels = useBackendNetworksStore.getState().getChainsLabel();
@@ -104,9 +103,16 @@ function BridgeButton({ chainId }: { chainId: ChainId }) {
     // TODO: Add nav params after user assets pr is merged in
     <ButtonPressAnimation
       onPress={() =>
-        navigate(Routes.SWAP, {
-          inputAsset: asset,
-          outputAsset: assetToBridge,
+        navigateToSwaps({
+          inputAsset: transformRainbowTokenToParsedSearchAsset(asset),
+          outputAsset: assetToBridge
+            ? transformRainbowTokenToParsedSearchAsset({
+                ...assetToBridge,
+                chainId,
+                network: chainsLabels[chainId],
+                uniqueId: getUniqueId(asset.address, chainId),
+              })
+            : null,
         })
       }
     >

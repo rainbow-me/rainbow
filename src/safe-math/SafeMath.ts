@@ -52,7 +52,9 @@ const isZeroWorklet = (value: string): boolean => {
 
 export const scaleUpWorklet = (bigIntNum: bigint, decimalPlaces: number): bigint => {
   'worklet';
-  return (bigIntNum * SCALE_FACTOR) / BigInt(10) ** BigInt(decimalPlaces);
+  return decimalPlaces >= 0
+    ? (bigIntNum * SCALE_FACTOR) / BigInt(10) ** BigInt(decimalPlaces)
+    : bigIntNum * SCALE_FACTOR * BigInt(10) ** BigInt(-decimalPlaces);
 };
 
 const formatResultWorklet = (result: bigint): string => {

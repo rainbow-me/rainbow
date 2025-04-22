@@ -254,7 +254,7 @@ const InfoButton = ({
             ]
           : []),
       ],
-      menuTitle: '',
+      menuTitle: `${isVerified ? i18n.t(i18n.l.token_search.section_header.verified) : i18n.t(i18n.l.token_search.section_header.unverified)} ${i18n.t(i18n.l.exchange.coin_row.token)}`,
     };
 
     return { options, menuConfig };

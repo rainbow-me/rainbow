@@ -7,10 +7,9 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Row } from '../shared/Row';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { InteractionManager } from 'react-native';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
-import { convertAmountToNativeDisplay, convertNumberToString, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
+import { convertAmountToNativeDisplay, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
 import { useAccountAsset, useAccountSettings } from '@/hooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { IS_DEV } from '@/env';
@@ -18,7 +17,6 @@ import isTestFlight from '@/helpers/isTestFlight';
 import { isL2Chain } from '@/handlers/web3';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 import Animated from 'react-native-reanimated';
@@ -114,7 +112,7 @@ export const BuyContent = memo(function BuySection() {
       <Stack space="4px">
         <Box style={{ opacity: hasBuyOptions ? 1 : 0.5 }}>
           <Row highlighted>
-            <Box alignItems="center" flexDirection="row" gap={12} width={'full'}>
+            <Box alignItems="center" flexDirection="row" gap={12}>
               <IconContainer height={10} width={20}>
                 <TextShadow blur={12} shadowOpacity={0.24}>
                   <Text weight="medium" align="center" size="15pt" color="accent">
@@ -122,25 +120,25 @@ export const BuyContent = memo(function BuySection() {
                   </Text>
                 </TextShadow>
               </IconContainer>
-              <TextShadow containerStyle={{ flex: 1 }} blur={12} shadowOpacity={0.24}>
+              <TextShadow blur={12} shadowOpacity={0.24}>
                 <Text weight="semibold" size="17pt" color="accent">
                   {i18n.t(i18n.l.expanded_state.sections.buy.pay_with)}
                 </Text>
               </TextShadow>
-              <Box alignItems="center" flexDirection="row" gap={8}>
-                <RainbowCoinIcon
-                  size={16}
-                  chainId={buyWithAsset.chainId}
-                  color={buyWithAsset.color}
-                  icon={buyWithAsset.icon_url}
-                  symbol={buyWithAsset.symbol}
-                />
-                <TextShadow blur={12} shadowOpacity={0.24}>
-                  <Text align="right" weight="semibold" size="17pt" color="accent">
-                    {buyWithAsset.symbol}
-                  </Text>
-                </TextShadow>
-              </Box>
+            </Box>
+            <Box alignItems="center" flexDirection="row" gap={8}>
+              <RainbowCoinIcon
+                size={16}
+                chainId={buyWithAsset.chainId}
+                color={buyWithAsset.color}
+                icon={buyWithAsset.icon_url}
+                symbol={buyWithAsset.symbol}
+              />
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <Text align="right" weight="semibold" size="17pt" color="accent">
+                  {buyWithAsset.symbol}
+                </Text>
+              </TextShadow>
             </Box>
           </Row>
         </Box>
@@ -175,30 +173,14 @@ export const BuyContent = memo(function BuySection() {
                 key={currencyAmount}
                 currencyAmount={currencyAmount}
                 numberOfButtons={instantBuyNativeCurrencyAmounts.length}
-                onPress={() => {
-                  InteractionManager.runAfterInteractions(async () => {
-                    const priceOfBuyWithAsset = buyWithAsset.price?.value;
-
-                    if (!priceOfBuyWithAsset) return;
-
-                    const inputAssetAmount = currencyAmount / priceOfBuyWithAsset;
-
-                    swapsStore.setState({
-                      quickBuyAnalyticalData: {
-                        assetAmount: inputAssetAmount,
-                        currencyAmount,
-                        assetUniqueId: asset.uniqueId,
-                        buyWithAssetUniqueId: buyWithAsset.uniqueId,
-                      },
-                    });
-
-                    navigateToSwaps({
-                      inputAsset: transformRainbowTokenToParsedSearchAsset(buyWithAsset),
-                      outputAsset: transformRainbowTokenToParsedSearchAsset(asset),
-                      inputAmount: convertNumberToString(inputAssetAmount),
-                    });
-                  });
-                }}
+                onPress={() =>
+                  navigateToSwaps({
+                    inputAsset: transformRainbowTokenToParsedSearchAsset(buyWithAsset),
+                    inputNativeValue: currencyAmount,
+                    outputAsset: transformRainbowTokenToParsedSearchAsset(asset),
+                    trackQuickBuyMetadata: true,
+                  })
+                }
               />
             ))}
           </ScrollView>
