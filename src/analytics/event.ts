@@ -196,6 +196,7 @@ export const event = {
   swapsSucceeded: 'swaps.succeeded',
   swapsQuoteFailed: 'swaps.quote_failed',
   swapsGasUpdatedPrice: 'Updated Gas Price',
+  insufficientNativeAssetForAction: 'insufficient_native_asset_for_action',
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
@@ -731,6 +732,12 @@ export type EventProperties = {
   [event.swapsSubmitted]: SwapEventParameters<'swap' | 'crosschainSwap'>;
   [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
   [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
+  [event.insufficientNativeAssetForAction]: {
+    type: string;
+    inputAsset: string;
+    inputAmount: string | number;
+    nativeAssetSymbol: string | undefined;
+  };
 
   [event.swapsQuoteFailed]: {
     error_code: number | undefined;
