@@ -1,15 +1,23 @@
 import { Box, useColorMode } from '@/design-system';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { Easing, SharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  SharedValue,
+  useAnimatedStyle,
+  useDerivedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 import { SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, caretConfig } from '@/__swaps__/screens/Swap/constants';
 import { equalWorklet } from '@/safe-math/SafeMath';
 import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { inputKeys } from '@/__swaps__/types/swap';
+import { InputKeys } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
-export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretType: inputKeys; disabled?: SharedValue<boolean> }) {
+export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretType: InputKeys; disabled?: SharedValue<boolean> }) {
   const { isDarkMode } = useColorMode();
   const {
     configProgress,
@@ -26,8 +34,8 @@ export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretT
   const inputMethod = SwapInputController.inputMethod;
   const inputValues = SwapInputController.inputValues;
 
-  const caretStyle = useAnimatedStyle(() => {
-    const shouldShow =
+  const shouldShow = useDerivedValue(() => {
+    return (
       !disabled?.value &&
       configProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED &&
       focusedInput.value === inputCaretType &&
@@ -35,9 +43,13 @@ export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretT
       outputProgress.value === 0 &&
       (inputMethod.value !== 'slider' ||
         (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) ||
-        (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
+        (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0))
+    );
+  });
 
-    const opacity = shouldShow
+  const blinkAnimation = useDerivedValue(() => {
+    inputValues; // Force animation restart when input values change
+    return shouldShow.value
       ? withRepeat(
           withSequence(
             withTiming(1, { duration: 0 }),
@@ -49,14 +61,16 @@ export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretT
           true
         )
       : withTiming(0, caretConfig);
+  });
 
+  const caretStyle = useAnimatedStyle(() => {
     const isZero =
       (inputMethod.value !== 'slider' && inputValues.value[inputCaretType] === 0) ||
       (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
 
     return {
-      display: shouldShow ? 'flex' : 'none',
-      opacity,
+      display: shouldShow.value ? 'flex' : 'none',
+      opacity: blinkAnimation.value,
       position: isZero ? 'absolute' : 'relative',
     };
   });
