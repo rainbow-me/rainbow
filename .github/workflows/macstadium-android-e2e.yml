@@ -1,6 +1,6 @@
 name: Android e2e tests
 
-on: [pull_request]
+on: [pull_request_target]
 jobs:
   android-e2e:
     runs-on: blacksmith-8vcpu-ubuntu-2204
@@ -22,8 +22,10 @@ jobs:
       ARCH: x86_64
 
     steps:
-      - name: Checkout repo
+      - name: Checkout PR
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Java environment
         uses: useblacksmith/setup-java@v5
