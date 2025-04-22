@@ -47,7 +47,6 @@ import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
-  useCollectible,
   useDimensions,
   useENSProfile,
   useENSRegistration,
