@@ -4,11 +4,10 @@ env:
   NAME: 'Test Wallet'
 ---
 # This is usually ran as the first command so make sure it has enough time to load the app.
-- retry:
-    maxRetries: 3
-    commands:
-      - assertVisible:
-          id: welcome-screen
+- extendedWaitUntil:
+    visible:
+      id: welcome-screen
+    timeout: 30000
 - openLink: rainbow://e2e/import?privateKey=${PKEY}&name=${NAME}
 # The first time a simulator opens a link it shows a dialog.
 - runFlow:
