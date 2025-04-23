@@ -69,7 +69,7 @@ export default function useENSRegistrationCosts({
     gasLimit: useGasGasLimit,
     selectedGasFeeOption,
     isGasReady,
-  } = useGas({ useTracking: true });
+  } = useGas({ enableTracking: true });
 
   const [gasFeeParams, setGasFeeParams] = useState({
     currentBaseFee: useGasCurrentBlockParams?.baseFeePerGas,
