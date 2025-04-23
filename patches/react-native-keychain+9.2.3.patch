@@ -1,0 +1,534 @@
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
+index 7227ba1..7ca9767 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
+@@ -54,6 +54,32 @@ class DataStorePrefsStorage(
+     return ResultSet(cipherStorageName, bytesForUsername, bytesForPassword)
+   }
+ 
++  override fun getAllEncryptedEntries(): MutableList<Map<String, Any?>> {
++    val processedServices = mutableListOf<String>()
++    val data = mutableListOf<Map<String, Any?>>()
++    runBlocking {
++      val allKeys = prefsData.asMap().keys
++      for (key in allKeys) {
++        val keyName = key.name
++        if (keyName.length >= 2) {
++          val serviceName = keyName.substring(0, keyName.length - 2)
++          if (!processedServices.contains(serviceName)) {
++            val item = getEncryptedEntry(serviceName)
++            if (item != null) {
++              val map = mapOf(
++                "resultSet" to item,
++                "service" to serviceName
++              )
++              data.add(map)
++              processedServices.add(serviceName)
++            }
++          }
++        }
++      }
++    }
++    return data
++  }
++
+   override fun removeEntry(service: String) {
+     val keyForUsername = stringPreferencesKey(getKeyForUsername(service))
+     val keyForPassword = stringPreferencesKey(getKeyForPassword(service))
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
+index 7a2c679..06b3015 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
+@@ -245,6 +245,45 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+     }
+   }
+ 
++  override fun canOverrideExistingModule(): Boolean {
++    return true;
++  }
++
++  @ReactMethod
++  suspend fun getAllInternetCredentialsForServer(options: ReadableMap, promise: Promise) {
++    try {
++      val allCredentials = Arguments.createArray()
++      val currentCipherStorage = getCipherStorageForCurrentAPILevel(true)
++      val allResults = prefsStorage.getAllEncryptedEntries()
++
++      for (data in allResults) {
++        val resultSet = data["resultSet"] as PrefsStorageBase.ResultSet
++        val service = data["service"] as String
++        val rules = getSecurityRulesOrDefault(options)
++        val promptInfo = getPromptInfo(options)
++        val decryptionResult = decryptCredentials(service, currentCipherStorage, resultSet, rules, promptInfo)
++
++        val credentials = Arguments.createMap().apply {
++          putString("service", service)
++          putString("username", decryptionResult.username)
++          putString("password", decryptionResult.password)
++        }
++        allCredentials.pushMap(credentials)
++      }
++
++      val result = Arguments.createMap().apply {
++        putArray("results", allCredentials)
++      }
++      promise.resolve(result)
++    } catch (e: KeyStoreAccessException) {
++      e.message?.let { Log.e(KEYCHAIN_MODULE, it) }
++      promise.reject(Errors.E_KEYSTORE_ACCESS_ERROR, e)
++    } catch (e: CryptoFailedException) {
++      e.message?.let { Log.e(KEYCHAIN_MODULE, it) }
++      promise.reject(Errors.E_CRYPTO_FAILED, e)
++    }
++  }
++
+   @ReactMethod
+   fun setGenericPasswordForOptions(
+     options: ReadableMap?,
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
+index d165f3e..91fd8b1 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
+@@ -13,6 +13,8 @@ interface PrefsStorageBase {
+ 
+   fun getEncryptedEntry(service: String): ResultSet?
+ 
++  fun getAllEncryptedEntries(): MutableList<Map<String, Any?>>
++
+   fun removeEntry(service: String)
+ 
+   fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
+diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
+index 18e42ab..7bc2d7a 100644
+--- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
++++ b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
+@@ -586,6 +586,86 @@ RCT_EXPORT_METHOD(getInternetCredentialsForServer:(NSString *)server
+ 
+ }
+ 
++RCT_EXPORT_METHOD(getAllInternetCredentialsForServer:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
++{
++  NSDictionary *query = @{
++    (__bridge NSString *)kSecClass: (__bridge id)(kSecClassInternetPassword),
++    (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
++    (__bridge NSString *)kSecReturnData: (__bridge id)kCFBooleanTrue,
++    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
++  };
++
++  // Look up server in the keychain
++  NSArray *found = nil;
++  CFTypeRef foundTypeRef = NULL;
++  OSStatus osStatus = SecItemCopyMatching((__bridge CFDictionaryRef) query, (CFTypeRef*)&foundTypeRef);
++
++  if (osStatus != noErr && osStatus != errSecItemNotFound) {
++    NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
++    return rejectWithError(reject, error);
++  }
++
++  found = (__bridge NSArray*)(foundTypeRef);
++  if (!found) {
++    return resolve(@(NO));
++  }
++
++  NSMutableArray *results = [@[] mutableCopy];
++
++  for(int i=0; i< found.count; i++){
++      NSDictionary *item  = found[i];
++      NSString *server = (NSString *) [item objectForKey:(__bridge id)(kSecAttrServer)];
++      NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
++        NSString *password = [[NSString alloc] initWithData:[item objectForKey:(__bridge id)(kSecValueData)] encoding:NSUTF8StringEncoding];
++
++        [results addObject:@{@"username": username, @"password":password, @"server": server}];
++  }
++
++  CFRelease(foundTypeRef);
++
++  return resolve(@{
++    @"results": results
++  });
++}
++
++RCT_EXPORT_METHOD(getAllInternetCredentialsKeys:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
++{
++  NSDictionary *query = @{
++    (__bridge NSString *)kSecClass: (__bridge id)(kSecClassInternetPassword),
++    (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
++    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
++  };
++
++  // Look up all the keys in the keychain
++  NSArray *found = nil;
++  CFTypeRef foundTypeRef = NULL;
++  OSStatus osStatus = SecItemCopyMatching((__bridge CFDictionaryRef) query, (CFTypeRef*)&foundTypeRef);
++
++  if (osStatus != noErr && osStatus != errSecItemNotFound) {
++    NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:osStatus userInfo:nil];
++    return rejectWithError(reject, error);
++  }
++
++  found = (__bridge NSArray*)(foundTypeRef);
++  if (!found) {
++    return resolve(@(NO));
++  }
++
++  NSMutableArray *results = [@[] mutableCopy];
++
++  for(int i=0; i< found.count; i++){
++      NSDictionary *item  = found[i];
++      NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
++      [results addObject:username];
++  }
++
++  CFRelease(foundTypeRef);
++
++  return resolve(@{
++    @"results": results
++  });
++}
++
+ RCT_EXPORT_METHOD(resetInternetCredentialsForOptions:(NSDictionary *)options
+                   resolver:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+diff --git a/node_modules/react-native-keychain/lib/commonjs/index.js b/node_modules/react-native-keychain/lib/commonjs/index.js
+index 38a73d5..dfa9875 100644
+--- a/node_modules/react-native-keychain/lib/commonjs/index.js
++++ b/node_modules/react-native-keychain/lib/commonjs/index.js
+@@ -12,6 +12,8 @@ var _exportNames = {
+   hasInternetCredentials: true,
+   setInternetCredentials: true,
+   getInternetCredentials: true,
++  getAllInternetCredentials: true,
++  getAllInternetCredentialsKeys: true,
+   resetInternetCredentials: true,
+   getSupportedBiometryType: true,
+   requestSharedWebCredentials: true,
+@@ -24,6 +26,8 @@ exports.default = void 0;
+ exports.getAllGenericPasswordServices = getAllGenericPasswordServices;
+ exports.getGenericPassword = getGenericPassword;
+ exports.getInternetCredentials = getInternetCredentials;
++exports.getAllInternetCredentials = getAllInternetCredentials;
++exports.getAllInternetCredentialsKeys = getAllInternetCredentialsKeys;
+ exports.getSecurityLevel = getSecurityLevel;
+ exports.getSupportedBiometryType = getSupportedBiometryType;
+ exports.hasGenericPassword = hasGenericPassword;
+@@ -215,6 +219,24 @@ function getInternetCredentials(server, options) {
+   return RNKeychainManager.getInternetCredentialsForServer(server, (0, _normalizeOptions.normalizeOptions)(options));
+ }
+ 
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
++ */
++function getAllInternetCredentials(options) {
++  return RNKeychainManager.getAllInternetCredentialsForServer(normalizeOptions(options));
++}
++
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[username]` when successful
++ */
++function getAllInternetCredentialsKeys(options) {
++  return RNKeychainManager.getAllInternetCredentialsKeys(normalizeOptions(options));
++}
++
+ /**
+  * Deletes all internet password keychain entries for the given server.
+  *
+@@ -356,6 +378,8 @@ var _default = exports.default = {
+   getSupportedBiometryType,
+   setInternetCredentials,
+   getInternetCredentials,
++  getAllInternetCredentials,
++  getAllInternetCredentialsKeys,
+   resetInternetCredentials,
+   setGenericPassword,
+   getGenericPassword,
+diff --git a/node_modules/react-native-keychain/lib/commonjs/package.json b/node_modules/react-native-keychain/lib/commonjs/package.json
+index 729ac4d..c93d265 100644
+--- a/node_modules/react-native-keychain/lib/commonjs/package.json
++++ b/node_modules/react-native-keychain/lib/commonjs/package.json
+@@ -1 +1,55 @@
+-{"type":"commonjs"}
++{
++  "type": "commonjs",
++  "react-native": {
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
++  "browser": {
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  }
++}
+diff --git a/node_modules/react-native-keychain/lib/module/index.js b/node_modules/react-native-keychain/lib/module/index.js
+index 9374201..71ba7f2 100644
+--- a/node_modules/react-native-keychain/lib/module/index.js
++++ b/node_modules/react-native-keychain/lib/module/index.js
+@@ -158,6 +158,24 @@ export function getInternetCredentials(server, options) {
+   return RNKeychainManager.getInternetCredentialsForServer(server, normalizeOptions(options));
+ }
+ 
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
++ */
++export function getAllInternetCredentials(options) {
++  return RNKeychainManager.getAllInternetCredentialsForServer(normalizeOptions(options));
++}
++
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[username]` when successful
++ */
++export function getAllInternetCredentialsKeys(options) {
++  return RNKeychainManager.getAllInternetCredentialsKeys(normalizeOptions(options));
++}
++
+ /**
+  * Deletes all internet password keychain entries for the given server.
+  *
+diff --git a/node_modules/react-native-keychain/lib/module/package.json b/node_modules/react-native-keychain/lib/module/package.json
+index 089153b..67a3377 100644
+--- a/node_modules/react-native-keychain/lib/module/package.json
++++ b/node_modules/react-native-keychain/lib/module/package.json
+@@ -1 +1,55 @@
+-{"type":"module"}
++{
++  "type": "module",
++  "react-native": {
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
++  "browser": {
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  }
++}
+diff --git a/node_modules/react-native-keychain/lib/typescript/index.d.ts b/node_modules/react-native-keychain/lib/typescript/index.d.ts
+index 43f2e2f..772ee23 100644
+--- a/node_modules/react-native-keychain/lib/typescript/index.d.ts
++++ b/node_modules/react-native-keychain/lib/typescript/index.d.ts
+@@ -1,5 +1,5 @@
+ import { ACCESSIBLE, ACCESS_CONTROL, AUTHENTICATION_TYPE, SECURITY_LEVEL, SECURITY_RULES, STORAGE_TYPE, BIOMETRY_TYPE } from './enums';
+-import type { Result, UserCredentials, SharedWebCredentials, GetOptions, BaseOptions, SetOptions, AuthenticationTypeOption, AccessControlOption } from './types';
++import type { Result, UserCredentials, SharedWebCredentials, GetOptions, BaseOptions, SetOptions, AuthenticationTypeOption, AccessControlOption, AllCredentials, AllCredentialsKeys } from './types';
+ /**
+  * Saves the `username` and `password` combination for the given service.
+  *
+@@ -122,6 +122,18 @@ export declare function setInternetCredentials(server: string, username: string,
+  * ```
+  */
+ export declare function getInternetCredentials(server: string, options?: GetOptions): Promise<false | UserCredentials>;
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
++ */
++export declare function getAllInternetCredentials(options?: GetOptions): Promise<false | AllCredentials>;
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[username]` when successful
++ */
++export declare function getAllInternetCredentialsKeys(options?: GetOptions): Promise<false | AllCredentialsKeys>;
+ /**
+  * Deletes all internet password keychain entries for the given server.
+  *
+diff --git a/node_modules/react-native-keychain/lib/typescript/types.d.ts b/node_modules/react-native-keychain/lib/typescript/types.d.ts
+index 565554a..c292223 100644
+--- a/node_modules/react-native-keychain/lib/typescript/types.d.ts
++++ b/node_modules/react-native-keychain/lib/typescript/types.d.ts
+@@ -112,6 +112,21 @@ export type UserCredentials = {
+     /** The password associated with the keychain item. */
+     password: string;
+ } & Result;
++
++/**
++ * All credentials returned by keychain functions.
++ */
++export type AllCredentials = {
++    results: UserCredentials[];
++};
++
++/**
++ * All credentials keys returned by keychain functions.
++ */
++export type AllCredentialsKeys = {
++    results: string[];
++};
++
+ /**
+  * Shared web credentials returned by keychain functions.
+  * @platform iOS
+diff --git a/node_modules/react-native-keychain/src/index.ts b/node_modules/react-native-keychain/src/index.ts
+index 7bfe371..782a0b2 100644
+--- a/node_modules/react-native-keychain/src/index.ts
++++ b/node_modules/react-native-keychain/src/index.ts
+@@ -17,6 +17,8 @@ import type {
+   SetOptions,
+   AuthenticationTypeOption,
+   AccessControlOption,
++  AllCredentials,
++  AllCredentialsKeys,
+ } from './types';
+ import {
+   normalizeOptions,
+@@ -209,6 +211,32 @@ export function getInternetCredentials(
+   );
+ }
+ 
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
++ */
++export function getAllInternetCredentials(
++  options?: GetOptions
++): Promise<false | AllCredentials> {
++  return RNKeychainManager.getAllInternetCredentialsForServer(
++    normalizeOptions(options)
++  );
++}
++
++/**
++ * Fetches all the keychain entries for the app
++ * @param {object} options Keychain options, iOS only
++ * @return {Promise} Resolves to `[username]` when successful
++ */
++export function getAllInternetCredentialsKeys(
++  options?: GetOptions
++): Promise<false | AllCredentialsKeys> {
++  return RNKeychainManager.getAllInternetCredentialsKeys(
++    normalizeOptions(options)
++  );
++}
++
+ /**
+  * Deletes all internet password keychain entries for the given server.
+  *
+@@ -378,6 +406,8 @@ export default {
+   getSupportedBiometryType,
+   setInternetCredentials,
+   getInternetCredentials,
++  getAllInternetCredentials,
++  getAllInternetCredentialsKeys,
+   resetInternetCredentials,
+   setGenericPassword,
+   getGenericPassword,
+diff --git a/node_modules/react-native-keychain/src/types.ts b/node_modules/react-native-keychain/src/types.ts
+index 2c27bb4..f1719e3 100644
+--- a/node_modules/react-native-keychain/src/types.ts
++++ b/node_modules/react-native-keychain/src/types.ts
+@@ -120,6 +120,20 @@ export type Result = {
+   storage: STORAGE_TYPE;
+ };
+ 
++/**
++ * All credentials returned by keychain functions.
++ */
++export type AllCredentials = {
++  results: UserCredentials[];
++};
++
++/**
++ * All credentials keys returned by keychain functions.
++ */
++export type AllCredentialsKeys = {
++  results: string[];
++};
++
+ /**
+  * User credentials returned by keychain functions.
+  */
