@@ -16,7 +16,6 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { usePrevious } from '@/hooks';
 
 const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHillToken }) {
-  console.log('LAST WINNER SECTION');
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const fillTertiaryColor = useBackgroundColor('fillTertiary');
