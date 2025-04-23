@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import {
   Canvas,
   Group,
@@ -12,6 +12,7 @@ import {
   useImage,
 } from '@shopify/react-native-skia';
 import { SharedValue } from 'react-native-reanimated';
+import { opacity } from '@/__swaps__/utils/swaps';
 
 type ShinyCoinIconProps = {
   imageUrl: string;
@@ -19,8 +20,11 @@ type ShinyCoinIconProps = {
   color?: string;
 };
 
-export function ShinyCoinIcon({ imageUrl, size = 40, color }: ShinyCoinIconProps) {
-  const shadowOverflowBuffer = 0;
+const DROP_SHADOW_BLUR = 9 / 2;
+const DROP_SHADOW_OFFSET_Y = 3;
+const DROP_SHADOW_OVERFLOW_BUFFER = DROP_SHADOW_BLUR * 4 + DROP_SHADOW_OFFSET_Y;
+
+export const ShinyCoinIcon = memo(function ShinyCoinIcon({ imageUrl, size = 40, color }: ShinyCoinIconProps) {
   const roundedRect = useMemo(() => {
     return rrect(rect(0, 0, size, size), size / 2, size / 2);
   }, [size]);
@@ -38,18 +42,16 @@ export function ShinyCoinIcon({ imageUrl, size = 40, color }: ShinyCoinIconProps
 
   const accentColors = useMemo(() => {
     return {
-      opacity30: color ?? '#000000',
-      opacity12: color ?? '#000000',
+      opacity30: opacity(color ?? '#000000', 0.3),
     };
   }, [color]);
 
   return (
-    <Canvas style={{ width: size + shadowOverflowBuffer, height: size + shadowOverflowBuffer }}>
-      <Group transform={[{ translateX: shadowOverflowBuffer / 2 }, { translateY: shadowOverflowBuffer / 2 }]}>
-        {/* <SkBox box={roundedRect}>
-          <Shadow dx={0} dy={4} blur={12 / 2} color={accentColors.opacity30} />
-          <Shadow dx={0} dy={0} blur={20 / 2} color={accentColors.opacity12} />
-        </SkBox> */}
+    <Canvas style={{ width: size + DROP_SHADOW_OVERFLOW_BUFFER, height: size + DROP_SHADOW_OVERFLOW_BUFFER }}>
+      <Group transform={[{ translateX: DROP_SHADOW_OVERFLOW_BUFFER / 2 }, { translateY: DROP_SHADOW_OVERFLOW_BUFFER / 2 }]}>
+        <SkBox box={roundedRect}>
+          <Shadow dx={0} dy={DROP_SHADOW_OFFSET_Y} blur={DROP_SHADOW_BLUR} color={accentColors.opacity30} shadowOnly />
+        </SkBox>
         <Image clip={roundedRect} x={0} y={0} width={size} height={size} image={tokenImage} fit="cover" />
         <SkBox box={roundedRect}>
           <Shadow dx={0} dy={0.7} blur={3.52 / 2} color={'rgba(255, 255, 255, 1)'} inner shadowOnly />
@@ -60,4 +62,4 @@ export function ShinyCoinIcon({ imageUrl, size = 40, color }: ShinyCoinIconProps
       </Group>
     </Canvas>
   );
-}
+});
