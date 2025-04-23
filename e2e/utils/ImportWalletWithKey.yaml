@@ -19,3 +19,6 @@ env:
       - tapOn: 'Open'
 - assertVisible:
     id: wallet-screen
+# Wait for the wallet screen to load.
+- assertVisible:
+    id: receive-card
