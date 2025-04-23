@@ -9,11 +9,10 @@ import { Box, Text, Separator, TextShadow, AnimatedText } from '@/design-system'
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { ButtonPressAnimation } from '@/components/animations';
-import Animated, { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { Extrapolation, interpolate, SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { useNavigation } from '@/navigation';
 import { stepTwoSvg } from './svgs/stepTwoSvg';
 import chroma from 'chroma-js';
@@ -34,12 +33,11 @@ import { GradientText } from '@/components/text';
 import { useCleanup } from '@/hooks';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { stepOneSvg } from './svgs/stepOneSvg';
-import { BlurView } from 'react-native-blur-view';
+import { StepIndicators } from './components/StepInidicators';
 
-const gradientColors = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
-const textGradientColors = gradientColors.map(color => chroma(color).mix('#F5F8FF', 0.56).hex());
-
-const PANEL_HEIGHT = 593;
+const GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
+const TEXT_GRADIENT_COLORS = GRADIENT_COLORS.map(color => chroma(color).mix('#F5F8FF', 0.56).hex());
+const PANEL_HEIGHT = 563;
 
 const STEPS = [
   {
@@ -93,15 +91,6 @@ const STEPS = [
     ),
   },
 ];
-
-function PanelSheet({ children }: { children: React.ReactNode }) {
-  return (
-    <View style={styles.panelContainer}>
-      <TapToDismiss />
-      {children}
-    </View>
-  );
-}
 
 function createConePath({ headWidth, baseWidth, height }: { headWidth: number; baseWidth: number; height: number }) {
   const path = Skia.Path.Make();
@@ -216,6 +205,15 @@ const PanelBackground = memo(function PanelBackground() {
   );
 });
 
+function PanelSheet({ children }: { children: React.ReactNode }) {
+  return (
+    <View style={styles.panelContainer}>
+      <TapToDismiss />
+      {children}
+    </View>
+  );
+}
+
 const PanelHeader = memo(function PanelHeader() {
   return (
     <Box alignItems="center" justifyContent="center" paddingHorizontal="44px" paddingTop={{ custom: 9 }} width="full">
@@ -223,7 +221,7 @@ const PanelHeader = memo(function PanelHeader() {
       <Box paddingVertical={'20px'}>
         <Box>
           <Box style={StyleSheet.absoluteFill}>
-            <GradientText colors={gradientColors} locations={[0, 0.5, 0.75, 1]} bleed={12}>
+            <GradientText colors={GRADIENT_COLORS} locations={[0, 0.5, 0.75, 1]} bleed={12}>
               <TextShadow shadowOpacity={1} blur={12}>
                 <Text size="20pt" weight="black" color="label" style={{ letterSpacing: 0.6 }}>
                   {'KING OF THE HILL'}
@@ -231,7 +229,7 @@ const PanelHeader = memo(function PanelHeader() {
               </TextShadow>
             </GradientText>
           </Box>
-          <GradientText colors={textGradientColors} locations={[0, 0.5, 0.75, 1]} bleed={12}>
+          <GradientText colors={TEXT_GRADIENT_COLORS} locations={[0, 0.5, 0.75, 1]} bleed={12}>
             <Text size="20pt" weight="black" color="label" style={{ letterSpacing: 0.6 }}>
               {'KING OF THE HILL'}
             </Text>
@@ -281,54 +279,10 @@ const Step = memo(function Step({
       <AnimatedBlurView
         saturationIntensity={1}
         blurStyle={'plain'}
-        // @ts-expect-error fix this type
+        // @ts-expect-error TODO: fix this type
         blurIntensity={blurIntensity}
         style={[StyleSheet.absoluteFill, { top: -8, bottom: -8 }]}
       />
-    </Box>
-  );
-});
-
-const StepIndicatorDot = memo(function StepIndicatorDot({
-  index,
-  currentIndex,
-  size = 6,
-}: {
-  index: number;
-  currentIndex: SharedValue<number>;
-  size: number;
-}) {
-  const animatedStyle = useAnimatedStyle(() => {
-    const width = interpolate(
-      currentIndex.value,
-      [index - 2, index - 1, index, index + 1, index + 2],
-      [0.8 * size, size, (7 / 3) * size, size, 0.8 * size],
-      Extrapolation.CLAMP
-    );
-    const height = interpolate(
-      currentIndex.value,
-      [index - 2, index - 1, index, index + 1, index + 2],
-      [0.8 * size, size, size, size, 0.8 * size],
-      Extrapolation.CLAMP
-    );
-    const opacity = interpolate(currentIndex.value, [index - 1, index, index + 1], [0.2, 1, 0.2], Extrapolation.CLAMP);
-
-    return {
-      width,
-      height,
-      opacity,
-    };
-  });
-
-  return <Animated.View style={[{ borderRadius: size / 2, backgroundColor: 'white' }, animatedStyle]} />;
-});
-
-const StepIndicators = memo(function StepIndicators({ stepCount, currentIndex }: { stepCount: number; currentIndex: SharedValue<number> }) {
-  return (
-    <Box flexDirection="row" gap={4} justifyContent="center" alignItems="center">
-      {Array.from({ length: stepCount }).map((_, index) => (
-        <StepIndicatorDot key={index} index={index} currentIndex={currentIndex} size={6} />
-      ))}
     </Box>
   );
 });
