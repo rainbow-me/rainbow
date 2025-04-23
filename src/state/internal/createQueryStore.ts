@@ -739,10 +739,9 @@ export function createQueryStore<
             try {
               transformedData = transform ? transform(rawResult, effectiveParams) : (rawResult as TData);
             } catch (transformError) {
-              throw new RainbowError(
-                `[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: transform failed`,
-                transformError
-              );
+              throw new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: transform failed`, {
+                cause: transformError,
+              });
             }
 
             if (skipStoreUpdates) {
@@ -826,10 +825,9 @@ export function createQueryStore<
                 onFetched({ data: transformedData, fetch: baseMethods.fetch, params: effectiveParams, set });
               } catch (onFetchedError) {
                 logger.error(
-                  new RainbowError(
-                    `[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: onFetched callback failed`,
-                    onFetchedError
-                  )
+                  new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: onFetched callback failed`, {
+                    cause: onFetchedError,
+                  })
                 );
               }
             }

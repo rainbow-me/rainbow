@@ -175,21 +175,8 @@ export const sentryTransport: Transport = (level: LogLevel, message, { type, tag
     });
   }
 };
-export class RainbowError extends Error {
-  constructor(message: string, cause?: Error | unknown, options: ErrorOptions = {}) {
-    if (cause !== undefined) {
-      // eslint-disable-next-line no-param-reassign
-      options = { ...options, cause };
-    }
-    super(message, options);
-    this.name = this.constructor.name;
-  }
-}
 
-export function ensureError(error: unknown): Error {
-  if (error instanceof Error) return error;
-  return new Error(String(error));
-}
+export class RainbowError extends Error {}
 
 /**
  * Main class. Defaults are provided in the constructor so that subclasses are

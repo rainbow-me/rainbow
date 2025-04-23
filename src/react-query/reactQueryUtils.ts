@@ -126,14 +126,22 @@ export async function clearReactQueryCache({
     }
   } catch (error) {
     if (preserveFavorites) {
-      logger.error(new RainbowError('First attempt to clear React Query cache failed (preserveFavorites = true):', error));
+      logger.error(
+        new RainbowError('First attempt to clear React Query cache failed (preserveFavorites = true):', {
+          cause: error,
+        })
+      );
       try {
         clearReactQueryCache({ preserveFavorites: false });
       } catch (retryError) {
-        logger.error(new RainbowError('Second attempt to clear React Query cache failed (preserveFavorites = false):', retryError));
+        logger.error(
+          new RainbowError('Second attempt to clear React Query cache failed (preserveFavorites = false):', {
+            cause: retryError,
+          })
+        );
       }
     } else {
-      logger.error(new RainbowError('Failed to clear React Query cache:', error));
+      logger.error(new RainbowError('Failed to clear React Query cache:', { cause: error }));
     }
   }
 }
@@ -154,7 +162,11 @@ export async function forceRehydrateQueryClient(): Promise<void> {
       devLog('❌ [forceRehydrateQueryClient] No persisted state found for rehydration');
     }
   } catch (error) {
-    logger.error(new RainbowError('[forceRehydrateQueryClient] Error during forced React Query rehydration:', error));
+    logger.error(
+      new RainbowError('[forceRehydrateQueryClient] Error during forced React Query rehydration:', {
+        cause: error,
+      })
+    );
   }
 }
 
