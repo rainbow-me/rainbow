@@ -398,7 +398,7 @@ export const swap = async ({
 
   const transaction = {
     chainId: parameters.chainId,
-    data: swap.data,
+    data: parameters.quote.data,
     from: parameters.quote.from,
     to: getTargetAddress(parameters.quote) as Address,
     value: parameters.quote.value?.toString(),
@@ -431,9 +431,11 @@ export const swap = async ({
       type: SwapType.normal,
       fromChainId: parameters.assetToSell.chainId,
       toChainId: parameters.assetToBuy.chainId,
+
+      // TODO: Is this right?
       isBridge:
         parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
-        parameters.assetToSell.mainnetAddress === parameters.assetToBuy.mainnetAddress,
+        parameters.assetToSell.address === parameters.assetToBuy.address,
     },
     ...gasParamsToUse,
   } satisfies NewTransaction;
