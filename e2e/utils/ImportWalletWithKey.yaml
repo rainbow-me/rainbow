@@ -17,5 +17,3 @@ env:
       - tapOn: 'Open'
 - assertVisible:
     id: wallet-screen
-- waitForAnimationToEnd:
-    timeout: 5000

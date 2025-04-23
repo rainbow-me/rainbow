@@ -130,7 +130,7 @@ jobs:
           arch: ${{ env.ARCH }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
-          disable-animations: false
+          disable-animations: true
           profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
           cores: ${{ env.ANDROID_EMULATOR_CORES }}
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
