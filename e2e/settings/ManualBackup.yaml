@@ -8,6 +8,7 @@ tags:
     clearKeychain: true
     arguments:
       isE2ETest: true
+- runFlow: ../utils/Prepare.yaml
 - runFlow: ../utils/ImportWalletWithKey.yaml
 
 # Navigate to settings and backup section

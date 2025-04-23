@@ -7,6 +7,7 @@ tags:
 - launchApp:
     arguments:
       isE2ETest: true
+- runFlow: ../utils/Prepare.yaml
 - assertVisible:
     id: welcome-screen
 - tapOn: 'Get a new wallet'
