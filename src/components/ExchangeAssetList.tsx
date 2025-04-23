@@ -13,7 +13,6 @@ import React, {
 import { InteractionManager, Keyboard, SectionList, SectionListData } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { ButtonPressAnimation } from '@/components/animations';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import FastCurrencySelectionRow from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { ContactRow } from '@/components/contacts';
@@ -21,7 +20,6 @@ import { GradientText } from '@/components/text';
 import { CopyToast, ToastPositionContainer } from '@/components/toasts';
 import contextMenuProps from '@/components/exchangeAssetRowContextMenuProps';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { TokenSectionTypes } from '@/helpers';
 import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -33,6 +31,7 @@ import { colors, Colors } from '@/styles';
 import ExchangeTokenRow from '@/components/ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
+import ConditionalWrap from 'conditional-wrap';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -60,14 +59,6 @@ const HeaderBackground = styled(LinearGradient).attrs(
   position: 'absolute',
   width: deviceWidth,
 });
-
-const HeaderTitleGradient = styled(GradientText).attrs({
-  colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
-  letterSpacing: 'roundedMedium',
-  size: 'smedium',
-  steps: [0, 0.2867132868, 1],
-  weight: 'heavy',
-})({});
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const scrollIndicatorInsets = { bottom: 24 };
@@ -125,32 +116,35 @@ interface ExchangeAssetListProps {
 }
 
 const ExchangeAssetSectionListHeader = memo(function ExchangeAssetSectionListHeader({
-  openVerifiedExplainer,
   section,
 }: {
-  openVerifiedExplainer: () => void;
   section: SectionListData<EnrichedExchangeAsset>;
 }) {
-  const TitleComponent = section.useGradientText
-    ? HeaderTitleGradient
-    : ({ children, color, testID }: { children: ReactElement; color: string; testID: string }) => (
-        <Text size="14px / 19px (Deprecated)" weight="heavy" color={{ custom: color || colors.blueGreyDark50 }} testID={testID}>
-          {children}
-        </Text>
-      );
-  const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
-  return section?.title ? (
-    <ButtonPressAnimation disabled={!isVerified} onPress={openVerifiedExplainer} scaleTo={0.96}>
-      <Box paddingTop={section.useGradientText ? '10px' : { custom: 14 }} paddingBottom="4px" paddingLeft="20px">
-        <HeaderBackground />
-        <Box>
-          <TitleComponent color={section.color} testID={section.key}>
-            {`${section.title}${isVerified ? '  􀅵' : ' '}`}
-          </TitleComponent>
-        </Box>
+  if (!section.title) return null;
+  return (
+    <Box paddingTop="10px" paddingBottom="4px" paddingLeft="20px">
+      <HeaderBackground />
+      <Box>
+        <ConditionalWrap
+          condition={section.useGradientText}
+          wrap={children => (
+            <GradientText colors={['#6AA2E3', '#FF54BB', '#FFA230']} locations={[0, 0.2867132868, 1]} bleed={4}>
+              {children}
+            </GradientText>
+          )}
+        >
+          <Text
+            size="14px / 19px (Deprecated)"
+            weight="heavy"
+            color={{ custom: section.color || colors.blueGreyDark50 }}
+            testID={section.key}
+          >
+            {section.title}
+          </Text>
+        </ConditionalWrap>
       </Box>
-    </ButtonPressAnimation>
-  ) : null;
+    </Box>
+  );
 });
 
 const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetListProps> = (
@@ -197,11 +191,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
   const { onScroll } = useAndroidScrollViewGestureHandler({
     navigation: dangerouslyGetParent?.(),
   });
-
-  const openVerifiedExplainer = useCallback(() => {
-    Keyboard.dismiss();
-    navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
-  }, [navigate]);
 
   const FooterSpacer = useCallback(() => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null), [footerSpacer]);
 
@@ -279,10 +268,8 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
   );
 
   const renderSectionHeader = useCallback(
-    ({ section }: { section: SectionListData<EnrichedExchangeAsset> }) => (
-      <ExchangeAssetSectionListHeader openVerifiedExplainer={openVerifiedExplainer} section={section} />
-    ),
-    [openVerifiedExplainer]
+    ({ section }: { section: SectionListData<EnrichedExchangeAsset> }) => <ExchangeAssetSectionListHeader section={section} />,
+    []
   );
 
   return (

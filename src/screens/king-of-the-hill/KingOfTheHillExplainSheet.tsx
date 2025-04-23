@@ -16,6 +16,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import Animated, { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useNavigation } from '@/navigation';
 import { stepTwoSvg } from './svgs/stepTwoSvg';
+import chroma from 'chroma-js';
 import {
   Canvas,
   ImageSVG,
@@ -29,9 +30,14 @@ import {
   Blur,
   Path,
 } from '@shopify/react-native-skia';
+import { GradientText } from '@/components/text';
 import { useCleanup } from '@/hooks';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
 import { stepOneSvg } from './svgs/stepOneSvg';
+import { BlurView } from 'react-native-blur-view';
+
+const gradientColors = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
+const textGradientColors = gradientColors.map(color => chroma(color).mix('#F5F8FF', 0.56).hex());
 
 const PANEL_HEIGHT = 593;
 
@@ -94,41 +100,6 @@ function PanelSheet({ children }: { children: React.ReactNode }) {
       <TapToDismiss />
       {children}
     </View>
-  );
-}
-
-function GradientText({ text }: { text: string }) {
-  return (
-    <MaskedView
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 1,
-        height: '100%',
-        width: '100%',
-      }}
-      maskElement={
-        <View style={{ flex: 1, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center' }}>
-          {/* <TextShadow blur={10}> */}
-          <Text align="center" weight="heavy" color="label" size="20pt">
-            {text}
-          </Text>
-          {/* </TextShadow> */}
-        </View>
-      }
-    >
-      {/* <LinearGradient
-        style={{
-          flex: 1,
-          width: 'auto',
-          height: 'auto',
-        }}
-        colors={['red', 'yellow']}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 1, y: 0.5 }}
-      /> */}
-      <View style={{ flex: 1, height: '100%', backgroundColor: '#324376' }} />
-    </MaskedView>
   );
 }
 
@@ -246,15 +217,26 @@ const PanelBackground = memo(function PanelBackground() {
 });
 
 const PanelHeader = memo(function PanelHeader() {
-  const sheetHandleColor = foregroundColors.labelQuaternary.dark;
   return (
     <Box alignItems="center" justifyContent="center" paddingHorizontal="44px" paddingTop={{ custom: 9 }} width="full">
-      <SheetHandle color={sheetHandleColor} showBlur={true} />
-      {/* <GradientText text="Hello" /> */}
+      <SheetHandle color={foregroundColors.labelQuaternary.dark} showBlur={true} />
       <Box paddingVertical={'20px'}>
-        <Text size="20pt" weight="heavy" color="label">
-          {'KING OF THE HILL'}
-        </Text>
+        <Box>
+          <Box style={StyleSheet.absoluteFill}>
+            <GradientText colors={gradientColors} locations={[0, 0.5, 0.75, 1]} bleed={12}>
+              <TextShadow shadowOpacity={1} blur={12}>
+                <Text size="20pt" weight="black" color="label" style={{ letterSpacing: 0.6 }}>
+                  {'KING OF THE HILL'}
+                </Text>
+              </TextShadow>
+            </GradientText>
+          </Box>
+          <GradientText colors={textGradientColors} locations={[0, 0.5, 0.75, 1]} bleed={12}>
+            <Text size="20pt" weight="black" color="label" style={{ letterSpacing: 0.6 }}>
+              {'KING OF THE HILL'}
+            </Text>
+          </GradientText>
+        </Box>
       </Box>
       <Box width={DEVICE_WIDTH - 30 * 2}>
         <Separator color="separatorTertiary" thickness={THICK_BORDER_WIDTH} />
