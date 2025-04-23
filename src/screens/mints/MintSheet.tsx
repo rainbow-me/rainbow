@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Linking, StatusBar, View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useSharedValue } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
@@ -56,6 +56,7 @@ import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { useTrackInsufficientGas } from '@/hooks/useGas';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -179,7 +180,7 @@ const MintSheet = () => {
 
   const nativeMintPriceDisplay = convertAmountToNativeDisplay(parseFloat(multiply(price.amount, quantity)) * priceOfEth, nativeCurrency);
 
-  const { updateTxFee, startPollingGasFees, stopPollingGasFees, getTotalGasPrice } = useGas();
+  const { updateTxFee, startPollingGasFees, stopPollingGasFees, getTotalGasPrice, isValidGas } = useGas();
 
   const imageUrl = maybeSignUri(mintCollection.image || '');
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
@@ -199,6 +200,12 @@ const MintSheet = () => {
         chainId: mintCollection.chainId,
       });
     }
+  });
+
+  useTrackInsufficientGas({
+    chainId,
+    isSufficientGas: !insufficientEth,
+    isValidGas,
   });
 
   // check address balance

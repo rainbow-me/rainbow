@@ -141,7 +141,7 @@ export default function SendSheet() {
     updateDefaultGasLimit,
     updateTxFee,
     l1GasFeeOptimism,
-  } = useGas();
+  } = useGas({ useTracking: true });
   const recipientFieldRef = useRef<TextInput | null>(null);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 

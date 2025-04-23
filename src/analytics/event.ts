@@ -734,8 +734,6 @@ export type EventProperties = {
   [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
   [event.insufficientNativeAssetForAction]: {
     type: string;
-    inputAsset: string;
-    inputAmount: string | number;
     nativeAssetSymbol: string | undefined;
   };
 

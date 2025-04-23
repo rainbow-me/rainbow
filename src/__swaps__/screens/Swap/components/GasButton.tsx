@@ -26,6 +26,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { lessThanOrEqualToWorklet, equalWorklet } from '@/safe-math/SafeMath';
 import { analytics } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import Routes from '@/navigation/routesNames';
 
 const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
@@ -62,17 +63,12 @@ function EstimatedGasFee() {
 function useTrackSufficientFunds() {
   const { hasEnoughFundsForGas, internalSelectedInputAsset, SwapInputController } = useSwapContext();
 
-  const reportInsufficientFunds = useCallback(
-    ({ inputAsset, chainId, inputAmount }: { inputAsset: string; chainId: ChainId; inputAmount: string | number }) => {
-      analytics.track(analytics.event.insufficientNativeAssetForAction, {
-        type: 'swap',
-        inputAsset,
-        inputAmount,
-        nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]?.symbol,
-      });
-    },
-    []
-  );
+  const reportInsufficientFunds = useCallback(({ chainId }: { chainId: ChainId }) => {
+    analytics.track(analytics.event.insufficientNativeAssetForAction, {
+      type: Routes.SWAP,
+      nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]?.symbol,
+    });
+  }, []);
 
   useAnimatedReaction(
     () => ({
@@ -99,9 +95,7 @@ function useTrackSufficientFunds() {
 
       if ((!enoughFundsForSwap && curr?.hasEnoughFundsForGas !== undefined) || curr?.hasEnoughFundsForGas === false) {
         runOnJS(reportInsufficientFunds)({
-          inputAsset: curr.inputAsset.uniqueId,
           chainId: curr.inputAsset.chainId,
-          inputAmount: curr.inputAmount,
         });
       }
     }
