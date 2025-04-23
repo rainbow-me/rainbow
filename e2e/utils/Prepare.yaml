@@ -1,3 +1,5 @@
+appId: ${APP_ID}
+---
 - runFlow:
     when:
       visible: ".* isn't responding"
