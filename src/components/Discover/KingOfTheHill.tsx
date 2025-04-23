@@ -11,6 +11,9 @@ import { GradientBorderView } from '@/components/gradient-border/GradientBorderV
 import { KingOfTheHillToken, useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 import { KingOfTheHillCard } from '@/components/cards/skia-cards/KingOfTheHillCard';
 import { Skeleton } from '@/screens/points/components/Skeleton';
+import isEqual from 'react-fast-compare';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { usePrevious } from '@/hooks';
 
 const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHillToken }) {
   console.log('LAST WINNER SECTION');
@@ -54,7 +57,7 @@ const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToke
       </ButtonPressAnimation>
       <ButtonPressAnimation
         onPress={() => {
-          // TODO: need a how it works sheet
+          navigate(Routes.KING_OF_THE_HILL_EXPLAIN_SHEET);
         }}
       >
         <GradientBorderView
@@ -76,17 +79,32 @@ const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToke
   );
 });
 
+function SyncStoreEnabled() {
+  const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
+  const previousActiveSwipeRoute = usePrevious(activeSwipeRoute);
+
+  if (activeSwipeRoute === Routes.DISCOVER_SCREEN && previousActiveSwipeRoute !== Routes.DISCOVER_SCREEN) {
+    useKingOfTheHillStore.setState({
+      enabled: true,
+    });
+  }
+  return null;
+}
+
 export function KingOfTheHill() {
-  const kingOfTheHill = useKingOfTheHillStore(store => store.getData());
+  const kingOfTheHill = useKingOfTheHillStore(store => store.getData(), isEqual);
 
   if (!kingOfTheHill) {
     return <Skeleton width={'100%'} height={84 + 26 + 6} />;
   }
 
   return (
-    <Box gap={6}>
-      <LastWinnerSection lastWinnerToken={kingOfTheHill.lastWinner.token} />
-      <KingOfTheHillCard king={kingOfTheHill.currentKing} />
-    </Box>
+    <>
+      <Box gap={6}>
+        <LastWinnerSection lastWinnerToken={kingOfTheHill.lastWinner.token} />
+        <KingOfTheHillCard king={kingOfTheHill.currentKing} />
+      </Box>
+      <SyncStoreEnabled />
+    </>
   );
 }

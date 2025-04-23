@@ -823,7 +823,7 @@ export function createQueryStore<
 
             if (onFetched) {
               try {
-                onFetched({ data: transformedData, fetch: baseMethods.fetch, params: effectiveParams, set });
+                onFetched({ data: transformedData, fetch: baseMethods.fetch, params: effectiveParams, set: api.setState });
               } catch (onFetchedError) {
                 logger.error(
                   new RainbowError(
