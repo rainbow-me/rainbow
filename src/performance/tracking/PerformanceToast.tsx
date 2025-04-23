@@ -12,12 +12,22 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { isDarkTheme } from '@/theme/ThemeContext';
 import { time } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { PerformanceMetricsType } from './types/PerformanceMetrics';
 
 let shouldCollectStats = !IS_TEST && getExperimetalFlag(PERFORMANCE_TOAST);
+let resultsMap: Map<PerformanceMetricsType, { duration: number }> | undefined = undefined;
 
-export async function showPerformanceToast(results: Record<string, number>) {
+export function collectResultForPerformanceToast(metric: PerformanceMetricsType, duration: number) {
   if (!shouldCollectStats) return;
-  const resultsMap = new Map(Object.entries(results).map(([key, duration]) => [key, { duration }]));
+  if (!resultsMap) resultsMap = new Map();
+
+  const shouldStore = metric !== 'Performance Time To Load JS Bundle' && metric !== 'Performance Complete Startup Time';
+  if (shouldStore) resultsMap.set(metric, { duration });
+  if (resultsMap.size === 4) logResults();
+}
+
+async function logResults() {
+  if (!shouldCollectStats || !resultsMap) return;
   shouldCollectStats = false;
 
   const isDarkMode = await isDarkTheme();
@@ -135,4 +145,6 @@ export async function showPerformanceToast(results: Record<string, number>) {
     },
     unstyled: true,
   });
+
+  resultsMap = undefined;
 }

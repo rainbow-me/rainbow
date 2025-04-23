@@ -8,6 +8,8 @@ import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 import { WalletContext } from './utils';
 import { IS_ANDROID, IS_TEST } from '@/env';
+import { PerformanceMetricsType } from '../performance/tracking/types/PerformanceMetrics';
+
 export class Analytics {
   client: typeof rudderClient;
   deviceId?: string;
@@ -61,6 +63,15 @@ export class Analytics {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
     this.client.screen(routeName, { ...metadata, ...walletContext, ...params });
+  }
+
+  /**
+   * Carve out for performance events to support the existing usage.
+   */
+  trackPerformance(event: PerformanceMetricsType, params: Record<string, string | number>) {
+    if (this.disabled) return;
+    const metadata = this.getDefaultMetadata();
+    this.client.track(event, { ...metadata, ...params });
   }
 
   /**

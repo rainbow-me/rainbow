@@ -38,9 +38,6 @@ import { IS_DEV, IS_TEST } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
-import { PerformanceProfiler } from '@shopify/react-native-performance';
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
-import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -66,20 +63,12 @@ function App({ walletReady }: AppProps) {
     Navigation.setTopLevelNavigator(ref);
   }, []);
 
-  const onNavigationReady = useCallback(() => {
-    PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.mountNavigation);
-    PerformanceTracking.startReportSegment(
-      PerformanceReports.appStartup,
-      PerformanceReportSegments.appStartup.initialScreenInteractiveRender
-    );
-  }, []);
-
   return (
     <>
       <View style={sx.container}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
-            <Routes onReady={onNavigationReady} ref={handleNavigatorRef} />
+            <Routes ref={handleNavigatorRef} />
           </InitialRouteContext.Provider>
         )}
         <OfflineToast />
@@ -113,8 +102,8 @@ function Root() {
 
   useEffect(() => {
     async function initializeApplication() {
-      PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
-      await Promise.all([initializeRemoteConfig(), migrate(), analytics.initializeRudderstack()]);
+      await initializeRemoteConfig();
+      await migrate();
 
       const isReturningUser = ls.device.get(['isReturningUser']);
       const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
@@ -168,13 +157,14 @@ function Root() {
        * `true`.
        */
       ls.device.set(['isReturningUser'], true);
-
-      PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
     }
 
     initializeApplication()
       .then(() => {
         logger.debug(`[App]: Application initialized with Sentry and analytics`);
+
+        // init complete, load the rest of the app
+        setInitializing(false);
       })
       .catch(error => {
         logger.error(new RainbowError(`[App]: initializeApplication failed`), {
@@ -182,49 +172,36 @@ function Root() {
             error,
           },
         });
-      })
-      .finally(() => {
+
+        // for failure, continue to rest of the app for now
         setInitializing(false);
       });
-
     initializeReservoirClient();
   }, [setInitializing]);
 
-  // The report param is not currently used as we have our own time tracking, but it is available at the time we want to finish the app startup report
-  const onReportPrepared = useCallback(() => {
-    PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.tti);
-    PerformanceTracking.finishReportSegment(
-      PerformanceReports.appStartup,
-      PerformanceReportSegments.appStartup.initialScreenInteractiveRender
-    );
-    PerformanceTracking.finishReport(PerformanceReports.appStartup);
-  }, []);
-
   return initializing ? null : (
-    <PerformanceProfiler useRenderTimeouts={false} onReportPrepared={onReportPrepared}>
-      {/* @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>' */}
-      <ReduxProvider store={store}>
-        <RecoilRoot>
-          <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-            <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-              <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-                <MainThemeProvider>
-                  <GestureHandlerRootView style={sx.container}>
-                    <RainbowContextWrapper>
-                      <SharedValuesProvider>
-                        <ErrorBoundary>
-                          <AppWithRedux walletReady={false} />
-                        </ErrorBoundary>
-                      </SharedValuesProvider>
-                    </RainbowContextWrapper>
-                  </GestureHandlerRootView>
-                </MainThemeProvider>
-              </SafeAreaProvider>
-            </MobileWalletProtocolProvider>
-          </PersistQueryClientProvider>
-        </RecoilRoot>
-      </ReduxProvider>
-    </PerformanceProfiler>
+    // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
+    <ReduxProvider store={store}>
+      <RecoilRoot>
+        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
+            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+              <MainThemeProvider>
+                <GestureHandlerRootView style={sx.container}>
+                  <RainbowContextWrapper>
+                    <SharedValuesProvider>
+                      <ErrorBoundary>
+                        <AppWithRedux walletReady={false} />
+                      </ErrorBoundary>
+                    </SharedValuesProvider>
+                  </RainbowContextWrapper>
+                </GestureHandlerRootView>
+              </MainThemeProvider>
+            </SafeAreaProvider>
+          </MobileWalletProtocolProvider>
+        </PersistQueryClientProvider>
+      </RecoilRoot>
+    </ReduxProvider>
   );
 }
 

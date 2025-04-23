@@ -45,7 +45,8 @@ import { uniq } from 'lodash';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
-import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '@/performance/tracking';
+import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
+import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
@@ -356,9 +357,10 @@ export async function pair({ uri, connector }: { uri: string; connector?: string
 }
 
 export async function initListeners() {
-  PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initWalletConnect);
+  PerformanceTracking.startMeasuring(PerformanceMetrics.initializeWalletconnect);
+
   const client = await getWalletKitClient();
-  PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initWalletConnect);
+  PerformanceTracking.finishMeasuring(PerformanceMetrics.initializeWalletconnect);
 
   syncWalletKitClient = client;
 

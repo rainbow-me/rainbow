@@ -1,27 +1,22 @@
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import Routes from '@/navigation/routesNames';
-import { usePrevious } from '@/hooks';
-import { analytics } from '@/analytics';
-import { event } from '@/analytics/event';
+import { PerformanceTracking, currentlyTrackedMetrics } from '@/performance/tracking';
+import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 
 export const useTrackDiscoverScreenTime = () => {
   const isOnDiscoverScreen = useNavigationStore(state => state.isRouteActive(Routes.DISCOVER_SCREEN));
-  const previousIsOnDiscoverScreen = usePrevious(isOnDiscoverScreen);
-  const startTime = useRef<number | null>(null);
 
   useEffect(() => {
-    const activeRoute = useNavigationStore.getState().activeRoute;
-    const isOnNetworkSelector = activeRoute === Routes.NETWORK_SELECTOR;
+    const data = currentlyTrackedMetrics.get(PerformanceMetrics.timeSpentOnDiscoverScreen);
 
-    if (isOnDiscoverScreen && !previousIsOnDiscoverScreen && startTime.current === null) {
-      startTime.current = performance.now();
-    } else if (!isOnDiscoverScreen && previousIsOnDiscoverScreen && startTime.current && !isOnNetworkSelector) {
-      const duration = performance.now() - startTime.current;
-      analytics.track(event.timeSpentOnDiscoverScreen, {
-        durationInMs: duration,
-      });
-      startTime.current = null;
+    if (!isOnDiscoverScreen && data?.startTimestamp && useNavigationStore.getState().activeRoute !== Routes.NETWORK_SELECTOR) {
+      PerformanceTracking.finishMeasuring(PerformanceMetrics.timeSpentOnDiscoverScreen);
+      return;
     }
-  }, [isOnDiscoverScreen, previousIsOnDiscoverScreen]);
+
+    if (isOnDiscoverScreen && !data?.startTimestamp) {
+      PerformanceTracking.startMeasuring(PerformanceMetrics.timeSpentOnDiscoverScreen);
+    }
+  }, [isOnDiscoverScreen]);
 };
