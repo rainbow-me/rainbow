@@ -414,10 +414,26 @@ export default async function runMigrations() {
 
   /*
    *************** Migration v11 ******************
-   * Deleted review storage migration
+   * This step resets review timers if we havnt asked in the last 2 weeks prior to running this
    */
   const v11 = async () => {
-    return;
+    const hasReviewed = review.get(['hasReviewed']);
+    if (hasReviewed) {
+      logger.debug('[runMigrations]: Migration v11: exiting early - already reviewed');
+      return;
+    }
+
+    const reviewAsked = review.get(['timeOfLastPrompt']);
+    const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
+    const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
+
+    if (Number(reviewAsked) > Date.now() - TWO_WEEKS) {
+      logger.debug('[runMigrations]: Migration v11: exiting early - not reviewed in the last 2 weeks');
+      return;
+    }
+
+    review.set(['timeOfLastPrompt'], Date.now() - TWO_MONTHS);
+    logger.debug('[runMigrations]: Migration v11: updated review timeOfLastPrompt');
   };
 
   migrations.push(v11);

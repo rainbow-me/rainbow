@@ -94,7 +94,6 @@ export class Analytics {
     try {
       await rudderClient.setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
         dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
-        trackAppLifecycleEvents: !IS_TEST,
       });
     } catch (error) {
       logger.error(new RainbowError('[Analytics]: Unable to initialize Rudderstack'), { error });
