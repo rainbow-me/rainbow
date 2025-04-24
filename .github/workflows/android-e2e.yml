@@ -29,8 +29,8 @@ jobs:
       - name: Setup Java environment
         uses: useblacksmith/setup-java@v5
         with:
-          distribution: 'corretto'
-          java-version: '22'
+          distribution: 'zulu'
+          java-version: '17'
 
       - name: Install secret tools
         run: sudo apt install libsecret-tools
@@ -83,9 +83,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Clear cache
-        run: |
-          rm -rf /home/runner/.gradle/caches
       # - name: Cache Gradle build
       #   uses: useblacksmith/setup-gradle/setup-gradle@v5
       #   with:
