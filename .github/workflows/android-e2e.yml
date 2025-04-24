@@ -3,7 +3,7 @@ name: Android e2e tests
 on: [pull_request]
 jobs:
   android-e2e:
-    runs-on: blacksmith-16vcpu-ubuntu-2204-arm
+    runs-on: blacksmith-16vcpu-ubuntu-2204
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -20,7 +20,7 @@ jobs:
       ANDROID_EMULATOR_CORES: 8
       ANDROID_EMULATOR_RAM_SIZE: 8192
       ARTIFACTS_FOLDER: e2e-artifacts
-      ARCH: arm64-v8a
+      ARCH: x86_64
 
     steps:
       - name: Checkout repo
@@ -83,11 +83,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      # - name: Cache Gradle build
-      #   uses: useblacksmith/setup-gradle/setup-gradle@v5
-      #   with:
-      #     # cache-read-only: false
-      #     cache-write-only: true
+      - name: Cache Gradle build
+        uses: useblacksmith/setup-gradle/setup-gradle@v5
+        with:
+          cache-read-only: false
 
       - name: Install dependencies
         env:
