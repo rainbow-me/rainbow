@@ -1,7 +1,7 @@
 import { memoFn } from '../utils/memoFn';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey } from '@/entities';
-import { convertAmountToNativeDisplayWorklet } from './utilities';
+import { convertAmountToNativeDisplayWorklet, handleSignificantDecimals, handleSignificantDecimalsWorklet } from './utilities';
 import {
   equalWorklet as safeEqualWorklet,
   divWorklet as safeDivWorklet,
@@ -197,7 +197,7 @@ export function formatCurrency(value: string | number, { valueIfNaN = '', curren
   return `${currencySymbol}${formattedWhole}.${formattedFraction}`;
 }
 
-const SUBSCRIPT_THRESHOLD_MAGNITUDE = -4;
+const DEFAULT_SUBSCRIPT_MAGNITUDE_THRESHOLD = -8;
 
 const zeroFormattedRegex = /^[-+]?0+(\.0+)?$/;
 
@@ -205,11 +205,13 @@ export function toCompactNotation({
   value,
   prefix,
   decimalPlaces,
+  thresholdMagnitude,
   currency,
 }: {
   value: string | number;
   prefix?: string;
   decimalPlaces?: number;
+  thresholdMagnitude?: number;
   currency?: NativeCurrencyKey;
 }): string {
   'worklet';
@@ -257,9 +259,10 @@ export function toCompactNotation({
     return prefix ? `${prefix}${sign}${formattedValue}` : `${sign}${formattedValue}`;
   }
 
-  if (magnitude >= SUBSCRIPT_THRESHOLD_MAGNITUDE) {
+  const threshold = thresholdMagnitude ?? DEFAULT_SUBSCRIPT_MAGNITUDE_THRESHOLD;
+  if (magnitude >= threshold) {
     const targetDecimalPlaces = decimalPlaces ?? 2;
-    let formattedValue = safeToFixedWorklet(absNumericString, targetDecimalPlaces);
+    let formattedValue = handleSignificantDecimalsWorklet(absNumericString, decimalPlaces ?? 2);
 
     const isZeroFormatted = zeroFormattedRegex.test(formattedValue);
     const isActuallyZero = safeEqualWorklet(absNumericString, '0');
