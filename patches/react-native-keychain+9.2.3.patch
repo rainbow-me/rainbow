@@ -1,5 +1,3 @@
-diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
-index 7227ba1..7ca9767 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
 @@ -54,6 +54,32 @@ class DataStorePrefsStorage(
@@ -36,10 +34,10 @@ index 7227ba1..7ca9767 100644
      val keyForUsername = stringPreferencesKey(getKeyForUsername(service))
      val keyForPassword = stringPreferencesKey(getKeyForPassword(service))
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-index 7a2c679..06b3015 100644
+index 7a2c679..e56c34e 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-@@ -245,6 +245,45 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+@@ -245,6 +245,50 @@ class KeychainModule(reactContext: ReactApplicationContext) :
      }
    }
  
@@ -48,37 +46,42 @@ index 7a2c679..06b3015 100644
 +  }
 +
 +  @ReactMethod
-+  suspend fun getAllInternetCredentialsForServer(options: ReadableMap, promise: Promise) {
-+    try {
-+      val allCredentials = Arguments.createArray()
-+      val currentCipherStorage = getCipherStorageForCurrentAPILevel(true)
-+      val allResults = prefsStorage.getAllEncryptedEntries()
++  fun getAllInternetCredentialsForServer(options: ReadableMap, promise: Promise) {
++    coroutineScope.launch {
++      mutex.withLock {
++        try {
++          val allCredentials = Arguments.createArray()
++          val currentCipherStorage = getCipherStorageForCurrentAPILevel(true)
++          val allResults = prefsStorage.getAllEncryptedEntries()
 +
-+      for (data in allResults) {
-+        val resultSet = data["resultSet"] as PrefsStorageBase.ResultSet
-+        val service = data["service"] as String
-+        val rules = getSecurityRulesOrDefault(options)
-+        val promptInfo = getPromptInfo(options)
-+        val decryptionResult = decryptCredentials(service, currentCipherStorage, resultSet, rules, promptInfo)
++          for (data in allResults) {
++            val resultSet = data["resultSet"] as PrefsStorageBase.ResultSet
++            val service = data["service"] as String
++            val rules = getSecurityRulesOrDefault(options)
++            val promptInfo = getPromptInfo(options)
++            val decryptionResult =
++              decryptCredentials(service, currentCipherStorage, resultSet, rules, promptInfo)
 +
-+        val credentials = Arguments.createMap().apply {
-+          putString("service", service)
-+          putString("username", decryptionResult.username)
-+          putString("password", decryptionResult.password)
++            val credentials = Arguments.createMap().apply {
++              putString("service", service)
++              putString("username", decryptionResult.username)
++              putString("password", decryptionResult.password)
++            }
++            allCredentials.pushMap(credentials)
++          }
++
++          val result = Arguments.createMap().apply {
++            putArray("results", allCredentials)
++          }
++          promise.resolve(result)
++        } catch (e: KeyStoreAccessException) {
++          e.message?.let { Log.e(KEYCHAIN_MODULE, it) }
++          promise.reject(Errors.E_KEYSTORE_ACCESS_ERROR, e)
++        } catch (e: CryptoFailedException) {
++          e.message?.let { Log.e(KEYCHAIN_MODULE, it) }
++          promise.reject(Errors.E_CRYPTO_FAILED, e)
 +        }
-+        allCredentials.pushMap(credentials)
 +      }
-+
-+      val result = Arguments.createMap().apply {
-+        putArray("results", allCredentials)
-+      }
-+      promise.resolve(result)
-+    } catch (e: KeyStoreAccessException) {
-+      e.message?.let { Log.e(KEYCHAIN_MODULE, it) }
-+      promise.reject(Errors.E_KEYSTORE_ACCESS_ERROR, e)
-+    } catch (e: CryptoFailedException) {
-+      e.message?.let { Log.e(KEYCHAIN_MODULE, it) }
-+      promise.reject(Errors.E_CRYPTO_FAILED, e)
 +    }
 +  }
 +
@@ -245,67 +248,6 @@ index 38a73d5..dfa9875 100644
    resetInternetCredentials,
    setGenericPassword,
    getGenericPassword,
-diff --git a/node_modules/react-native-keychain/lib/commonjs/package.json b/node_modules/react-native-keychain/lib/commonjs/package.json
-index 729ac4d..c93d265 100644
---- a/node_modules/react-native-keychain/lib/commonjs/package.json
-+++ b/node_modules/react-native-keychain/lib/commonjs/package.json
-@@ -1 +1,55 @@
--{"type":"commonjs"}
-+{
-+  "type": "commonjs",
-+  "react-native": {
-+    "zlib": "browserify-zlib",
-+    "console": "console-browserify",
-+    "constants": "constants-browserify",
-+    "crypto": "react-native-crypto",
-+    "dns": "dns.js",
-+    "net": "react-native-tcp",
-+    "domain": "domain-browser",
-+    "http": "@tradle/react-native-http",
-+    "https": "https-browserify",
-+    "os": "react-native-os",
-+    "path": "path-browserify",
-+    "querystring": "querystring-es3",
-+    "fs": "react-native-level-fs",
-+    "_stream_transform": "readable-stream/transform",
-+    "_stream_readable": "readable-stream/readable",
-+    "_stream_writable": "readable-stream/writable",
-+    "_stream_duplex": "readable-stream/duplex",
-+    "_stream_passthrough": "readable-stream/passthrough",
-+    "dgram": "react-native-udp",
-+    "stream": "stream-browserify",
-+    "timers": "timers-browserify",
-+    "tty": "tty-browserify",
-+    "vm": "vm-browserify",
-+    "tls": false
-+  },
-+  "browser": {
-+    "zlib": "browserify-zlib",
-+    "console": "console-browserify",
-+    "constants": "constants-browserify",
-+    "crypto": "react-native-crypto",
-+    "dns": "dns.js",
-+    "net": "react-native-tcp",
-+    "domain": "domain-browser",
-+    "http": "@tradle/react-native-http",
-+    "https": "https-browserify",
-+    "os": "react-native-os",
-+    "path": "path-browserify",
-+    "querystring": "querystring-es3",
-+    "fs": "react-native-level-fs",
-+    "_stream_transform": "readable-stream/transform",
-+    "_stream_readable": "readable-stream/readable",
-+    "_stream_writable": "readable-stream/writable",
-+    "_stream_duplex": "readable-stream/duplex",
-+    "_stream_passthrough": "readable-stream/passthrough",
-+    "dgram": "react-native-udp",
-+    "stream": "stream-browserify",
-+    "timers": "timers-browserify",
-+    "tty": "tty-browserify",
-+    "vm": "vm-browserify",
-+    "tls": false
-+  }
-+}
 diff --git a/node_modules/react-native-keychain/lib/module/index.js b/node_modules/react-native-keychain/lib/module/index.js
 index 9374201..71ba7f2 100644
 --- a/node_modules/react-native-keychain/lib/module/index.js
@@ -335,67 +277,6 @@ index 9374201..71ba7f2 100644
  /**
   * Deletes all internet password keychain entries for the given server.
   *
-diff --git a/node_modules/react-native-keychain/lib/module/package.json b/node_modules/react-native-keychain/lib/module/package.json
-index 089153b..67a3377 100644
---- a/node_modules/react-native-keychain/lib/module/package.json
-+++ b/node_modules/react-native-keychain/lib/module/package.json
-@@ -1 +1,55 @@
--{"type":"module"}
-+{
-+  "type": "module",
-+  "react-native": {
-+    "zlib": "browserify-zlib",
-+    "console": "console-browserify",
-+    "constants": "constants-browserify",
-+    "crypto": "react-native-crypto",
-+    "dns": "dns.js",
-+    "net": "react-native-tcp",
-+    "domain": "domain-browser",
-+    "http": "@tradle/react-native-http",
-+    "https": "https-browserify",
-+    "os": "react-native-os",
-+    "path": "path-browserify",
-+    "querystring": "querystring-es3",
-+    "fs": "react-native-level-fs",
-+    "_stream_transform": "readable-stream/transform",
-+    "_stream_readable": "readable-stream/readable",
-+    "_stream_writable": "readable-stream/writable",
-+    "_stream_duplex": "readable-stream/duplex",
-+    "_stream_passthrough": "readable-stream/passthrough",
-+    "dgram": "react-native-udp",
-+    "stream": "stream-browserify",
-+    "timers": "timers-browserify",
-+    "tty": "tty-browserify",
-+    "vm": "vm-browserify",
-+    "tls": false
-+  },
-+  "browser": {
-+    "zlib": "browserify-zlib",
-+    "console": "console-browserify",
-+    "constants": "constants-browserify",
-+    "crypto": "react-native-crypto",
-+    "dns": "dns.js",
-+    "net": "react-native-tcp",
-+    "domain": "domain-browser",
-+    "http": "@tradle/react-native-http",
-+    "https": "https-browserify",
-+    "os": "react-native-os",
-+    "path": "path-browserify",
-+    "querystring": "querystring-es3",
-+    "fs": "react-native-level-fs",
-+    "_stream_transform": "readable-stream/transform",
-+    "_stream_readable": "readable-stream/readable",
-+    "_stream_writable": "readable-stream/writable",
-+    "_stream_duplex": "readable-stream/duplex",
-+    "_stream_passthrough": "readable-stream/passthrough",
-+    "dgram": "react-native-udp",
-+    "stream": "stream-browserify",
-+    "timers": "timers-browserify",
-+    "tty": "tty-browserify",
-+    "vm": "vm-browserify",
-+    "tls": false
-+  }
-+}
 diff --git a/node_modules/react-native-keychain/lib/typescript/index.d.ts b/node_modules/react-native-keychain/lib/typescript/index.d.ts
 index 43f2e2f..772ee23 100644
 --- a/node_modules/react-native-keychain/lib/typescript/index.d.ts
