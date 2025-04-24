@@ -107,7 +107,6 @@ const WALLETS_ADDED_ACCOUNT = 'wallets/WALLETS_ADDED_ACCOUNT';
 const WALLETS_LOAD = 'wallets/ALL_WALLETS_LOAD';
 const WALLETS_UPDATE = 'wallets/ALL_WALLETS_UPDATE';
 const WALLETS_UPDATE_NAMES = 'wallets/WALLETS_UPDATE_NAMES';
-const WALLETS_SET_IS_LOADING = 'wallets/WALLETS_SET_IS_LOADING';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //

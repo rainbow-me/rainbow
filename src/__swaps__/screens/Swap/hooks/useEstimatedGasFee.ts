@@ -4,13 +4,12 @@ import { convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/h
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { useMemo } from 'react';
 import { formatUnits } from 'viem';
-
-import { useAccountSettings } from '@/hooks';
 import { calculateGasFeeWorklet, useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
 import { GasSettings } from './useCustomGas';
 import { useSelectedGas } from './useSelectedGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export function safeBigInt(value: string) {
   try {
@@ -30,7 +29,7 @@ export function useEstimatedGasFee({
   gasSettings: GasSettings | undefined;
 }) {
   const nativeNetworkAsset = useNativeAsset({ chainId });
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   return useMemo(() => {
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;

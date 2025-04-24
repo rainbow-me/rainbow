@@ -1,12 +1,13 @@
-import { RainbowError, logger } from '@/logger';
-import { createQueryKey, queryClient } from '@/react-query';
-import { delay } from '@/utils/delay';
 import remoteConfig from '@react-native-firebase/remote-config';
 import { useQuery } from '@tanstack/react-query';
+import { RainbowError, logger } from '@/logger';
+import { createQueryKey, queryClient } from '@/react-query';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+import { delay } from '@/utils/delay';
 
-export interface RainbowConfig extends Record<string, string | boolean | number> {
-  default_slippage_bips: string;
-  default_slippage_bips_chainId: string;
+export interface RainbowConfig extends Record<string, string | boolean | number | Record<string, number>> {
+  default_slippage_bips: Record<string, number>;
+  default_slippage_bips_chainId: Record<string, number>;
   f2c_enabled: boolean;
   op_nft_network: string;
   op_rewards_enabled: boolean;
@@ -64,40 +65,57 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
   rainbow_trending_tokens_list_enabled: boolean;
 }
 
+const Bips = {
+  [100]: 100,
+  [200]: 200,
+  default: 500,
+};
+
+export const DEFAULT_SLIPPAGE_BIPS_CHAINID = {
+  [ChainId.apechain]: Bips.default,
+  [ChainId.arbitrum]: Bips.default,
+  [ChainId.avalanche]: Bips.default,
+  [ChainId.base]: Bips.default,
+  [ChainId.blast]: Bips.default,
+  [ChainId.bsc]: Bips['200'],
+  [ChainId.degen]: Bips.default,
+  [ChainId.gnosis]: Bips.default,
+  [ChainId.gravity]: Bips.default,
+  [ChainId.ink]: Bips.default,
+  [ChainId.linea]: Bips.default,
+  [ChainId.mainnet]: Bips['100'],
+  [ChainId.optimism]: Bips.default,
+  [ChainId.polygon]: Bips['200'],
+  [ChainId.sanko]: Bips.default,
+  [ChainId.scroll]: Bips.default,
+  [ChainId.zksync]: Bips.default,
+  [ChainId.zora]: Bips.default,
+};
+
+export const DEFAULT_SLIPPAGE_BIPS = {
+  [Network.apechain]: Bips.default,
+  [Network.arbitrum]: Bips.default,
+  [Network.avalanche]: Bips.default,
+  [Network.base]: Bips.default,
+  [Network.blast]: Bips.default,
+  [Network.bsc]: Bips['200'],
+  [Network.degen]: Bips.default,
+  [Network.gnosis]: Bips.default,
+  [Network.gravity]: Bips.default,
+  [Network.ink]: Bips.default,
+  [Network.linea]: Bips.default,
+  [Network.mainnet]: Bips['100'],
+  [Network.optimism]: Bips.default,
+  [Network.polygon]: Bips['200'],
+  [Network.sanko]: Bips.default,
+  [Network.scroll]: Bips.default,
+  [Network.zksync]: Bips.default,
+  [Network.zora]: Bips.default,
+};
+
 export const DEFAULT_CONFIG: RainbowConfig = {
-  default_slippage_bips: JSON.stringify({
-    apechain: 500,
-    arbitrum: 500,
-    avalanche: 500,
-    base: 500,
-    bsc: 200,
-    blast: 500,
-    degen: 500,
-    gnosis: 500,
-    gravity: 500,
-    ink: 500,
-    linea: 500,
-    mainnet: 100,
-    optimism: 500,
-    polygon: 200,
-    sanko: 500,
-    scroll: 500,
-    zksync: 500,
-    zora: 500,
-  }),
-  default_slippage_bips_chainId: JSON.stringify({
-    '33139': 500,
-    '42161': 500,
-    '43114': 500,
-    '8453': 500,
-    '81457': 500,
-    '56': 200,
-    '666666666': 500,
-    '1': 100,
-    '10': 500,
-    '137': 200,
-    '7777777': 500,
-  }),
+  default_slippage_bips: DEFAULT_SLIPPAGE_BIPS,
+  default_slippage_bips_chainId: DEFAULT_SLIPPAGE_BIPS_CHAINID,
   f2c_enabled: true,
   op_nft_network: 'op-mainnet',
   op_rewards_enabled: false,
@@ -117,7 +135,6 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   degen_enabled: true,
 
   mainnet_enabled: true,
-
   goerli_enabled: true,
 
   arbitrum_tx_enabled: true,
@@ -130,9 +147,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   avalanche_tx_enabled: true,
   degen_tx_enabled: true,
   blast_tx_enabled: true,
-
   mainnet_tx_enabled: true,
-
   goerli_tx_enabled: true,
 
   base_swaps_enabled: true,
@@ -161,71 +176,87 @@ export const DEFAULT_CONFIG: RainbowConfig = {
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
+  const rc = remoteConfig();
   const config: RainbowConfig = { ...DEFAULT_CONFIG };
+
   try {
-    await remoteConfig().fetchAndActivate();
+    await rc.fetchAndActivate();
     logger.debug(`[remoteConfig]: Remote config fetched successfully`);
-    const parameters = remoteConfig().getAll();
-    Object.entries(parameters).forEach($ => {
-      const [key, entry] = $;
-      if (key === 'default_slippage_bips' || key === 'default_slippage_bips_chainId') {
-        config[key] = JSON.parse(entry.asString());
-      } else if (
-        key === 'f2c_enabled' ||
-        key === 'swagg_enabled' ||
-        key === 'op_rewards_enabled' ||
-        key === 'profiles_enabled' ||
-        key === 'mainnet_tx_enabled' ||
-        key === 'arbitrum_tx_enabled' ||
-        key === 'bsc_tx_enabled' ||
-        key === 'polygon_tx_enabled' ||
-        key === 'optimism_tx_enabled' ||
-        key === 'zora_tx_enabled' ||
-        key === 'base_tx_enabled' ||
-        key === 'degen_tx_enabled' ||
-        key === 'blast_tx_enabled' ||
-        key === 'avalanche_tx_enabled' ||
-        key === 'op_chains_tx_enabled' ||
-        key === 'goerli_tx_enabled' ||
-        key === 'mainnet_enabled' ||
-        key === 'arbitrum_enabled' ||
-        key === 'bsc_enabled' ||
-        key === 'polygon_enabled' ||
-        key === 'optimism_enabled' ||
-        key === 'zora_enabled' ||
-        key === 'base_enabled' ||
-        key === 'degen_enabled' ||
-        key === 'blast_enabled' ||
-        key === 'avalanche_enabled' ||
-        key === 'op_chains_enabled' ||
-        key === 'goerli_enabled' ||
-        key === 'base_swaps_enabled' ||
-        key === 'mints_enabled' ||
-        key === 'points_enabled' ||
-        key === 'points_fully_enabled' ||
-        key === 'rpc_proxy_enabled' ||
-        key === 'remote_promo_enabled' ||
-        key === 'remote_cards_enabled' ||
-        key === 'points_notifications_toggle' ||
-        key === 'dapp_browser' ||
-        key === 'idfa_check_enabled' ||
-        key === 'rewards_enabled' ||
-        key === 'degen_mode' ||
-        key === 'featured_results' ||
-        key === 'claimables' ||
-        key === 'nfts_enabled' ||
-        key === 'trending_tokens_enabled' ||
-        key === 'new_discover_cards_enabled' ||
-        key === 'rainbow_trending_tokens_list_enabled' ||
-        key === 'king_of_the_hill_enabled'
-      ) {
-        config[key] = entry.asBoolean();
-      } else if (key === 'trending_tokens_limit') {
-        config[key] = entry.asNumber();
-      } else {
-        config[key] = entry.asString();
+
+    const parameters = rc.getAll();
+
+    for (const [key, entry] of Object.entries(parameters)) {
+      switch (key) {
+        // JSON parsed keys
+        case 'default_slippage_bips':
+        case 'default_slippage_bips_chainId':
+          config[key] = JSON.parse(entry.asString());
+          break;
+
+        // Number keys
+        case 'trace_call_block_number_offset':
+        case 'trending_tokens_limit':
+          config[key] = entry.asNumber();
+          break;
+
+        // Boolean keys
+        case 'f2c_enabled':
+        case 'swagg_enabled':
+        case 'op_rewards_enabled':
+        case 'profiles_enabled':
+        case 'mainnet_tx_enabled':
+        case 'arbitrum_tx_enabled':
+        case 'bsc_tx_enabled':
+        case 'polygon_tx_enabled':
+        case 'optimism_tx_enabled':
+        case 'zora_tx_enabled':
+        case 'base_tx_enabled':
+        case 'degen_tx_enabled':
+        case 'blast_tx_enabled':
+        case 'avalanche_tx_enabled':
+        case 'op_chains_tx_enabled':
+        case 'goerli_tx_enabled':
+        case 'mainnet_enabled':
+        case 'arbitrum_enabled':
+        case 'bsc_enabled':
+        case 'polygon_enabled':
+        case 'optimism_enabled':
+        case 'zora_enabled':
+        case 'base_enabled':
+        case 'degen_enabled':
+        case 'blast_enabled':
+        case 'avalanche_enabled':
+        case 'op_chains_enabled':
+        case 'goerli_enabled':
+        case 'base_swaps_enabled':
+        case 'blast_swaps_enabled':
+        case 'mints_enabled':
+        case 'points_enabled':
+        case 'points_fully_enabled':
+        case 'rpc_proxy_enabled':
+        case 'remote_promo_enabled':
+        case 'remote_cards_enabled':
+        case 'points_notifications_toggle':
+        case 'dapp_browser':
+        case 'idfa_check_enabled':
+        case 'rewards_enabled':
+        case 'degen_mode':
+        case 'featured_results':
+        case 'claimables':
+        case 'nfts_enabled':
+        case 'trending_tokens_enabled':
+        case 'new_discover_cards_enabled':
+        case 'rainbow_trending_tokens_list_enabled':
+        case 'king_of_the_hill_enabled':
+          config[key] = entry.asBoolean();
+          break;
+
+        // String keys (default)
+        default:
+          config[key] = entry.asString();
+          break;
       }
-    });
+    }
     return config;
   } catch (e) {
     logger.error(new RainbowError(`[remoteConfig]: Failed to fetch remote config`), {
@@ -242,17 +273,23 @@ const remoteConfigQueryKey = createQueryKey('remoteConfig', {});
 const QUERY_PARAMS = {
   queryKey: remoteConfigQueryKey,
   queryFn: fetchRemoteConfig,
-  staleTime: 600_000, // 10 minutes,
+  staleTime: 600_000, // 10 minutes
   placeholderData: DEFAULT_CONFIG,
   retry: 3,
   retryDelay: (attempt: number) => Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
 };
 
 export async function initializeRemoteConfig(): Promise<void> {
-  await remoteConfig().setConfigSettings({
+  const rc = remoteConfig();
+  await rc.setConfigSettings({
     minimumFetchIntervalMillis: 120_000,
   });
-  await remoteConfig().setDefaults(DEFAULT_CONFIG);
+  const defaults: Record<string, string | number | boolean> = {
+    ...DEFAULT_CONFIG,
+    default_slippage_bips: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips),
+    default_slippage_bips_chainId: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips_chainId),
+  };
+  await rc.setDefaults(defaults);
   await Promise.race([queryClient.prefetchQuery(QUERY_PARAMS), delay(3000)]);
 }
 

@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import * as React from 'react';
-import { InteractionManager, PressableProps } from 'react-native';
+import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
@@ -17,8 +17,7 @@ import { useRecoilState } from 'recoil';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -165,21 +164,15 @@ function BuyButton() {
 
 function SwapButton() {
   const { isReadOnlyWallet } = useWallets();
-  const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
-      swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
-      });
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.SWAP);
-      });
+      navigateToSwaps();
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate]);
+  }, [isReadOnlyWallet]);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">

@@ -20,17 +20,15 @@ export const estimateClaimUnlockSwapGasLimit = async ({
   quote,
 }: {
   chainId: ChainId;
-  claim: { data: string; to: string; from: string };
+  claim: { data: string; to: string; from: string }[];
   quote: Quote | CrosschainQuote | undefined;
 }): Promise<string | undefined> => {
-  const transactions: { to: string; data: string; from: string; value: string }[] = [
-    {
-      to: claim.to,
-      data: claim.data,
-      from: claim.from,
-      value: '0x0',
-    },
-  ];
+  const transactions: { to: string; data: string; from: string; value: string }[] = claim.map(action => ({
+    to: action.to,
+    data: action.data,
+    from: action.from,
+    value: '0x0',
+  }));
 
   let swapAssetNeedsUnlocking = false;
 

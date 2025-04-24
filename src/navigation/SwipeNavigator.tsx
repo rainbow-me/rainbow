@@ -17,7 +17,7 @@ import RecyclerListViewScrollToTopProvider, {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
 import { PointsScreen } from '@/screens/points/PointsScreen';
-import WalletScreen from '@/screens/WalletScreen';
+import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
