@@ -3,7 +3,7 @@ name: Android e2e tests
 on: [pull_request]
 jobs:
   android-e2e:
-    runs-on: blacksmith-16vcpu-ubuntu-2204
+    runs-on: blacksmith-16vcpu-ubuntu-2204-arm
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -20,7 +20,7 @@ jobs:
       ANDROID_EMULATOR_CORES: 8
       ANDROID_EMULATOR_RAM_SIZE: 8192
       ARTIFACTS_FOLDER: e2e-artifacts
-      ARCH: x86_64
+      ARCH: arm64-v8a
 
     steps:
       - name: Checkout repo
