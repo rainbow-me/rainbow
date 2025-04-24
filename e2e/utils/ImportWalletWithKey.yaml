@@ -19,5 +19,7 @@ env:
 - assertVisible:
     id: wallet-screen
 # Wait for the wallet screen to load.
-- assertVisible:
-    id: receive-card
+- extendedWaitUntil:
+    visible:
+      id: receive-card
+    timeout: 30000
