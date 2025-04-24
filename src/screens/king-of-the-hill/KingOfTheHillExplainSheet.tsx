@@ -281,10 +281,12 @@ const PanelContent = memo(function PanelContent() {
       </Box>
       <Box width={'full'} paddingHorizontal="20px">
         <ButtonPressAnimation onPress={goToNextStepOrDismiss}>
-          <Box backgroundColor={globalColors.white100} height={48} borderRadius={24} justifyContent="center" alignItems="center">
-            <AnimatedText size="20pt" weight="heavy" color={{ custom: globalColors.grey100 }}>
-              {buttonLabel}
-            </AnimatedText>
+          <Box background="surfaceSecondary" shadow="30px" height={48} borderRadius={24}>
+            <Box backgroundColor={globalColors.white100} height={'full'} width={'full'} justifyContent="center" alignItems="center">
+              <AnimatedText size="20pt" weight="heavy" color={{ custom: globalColors.grey100 }}>
+                {buttonLabel}
+              </AnimatedText>
+            </Box>
           </Box>
         </ButtonPressAnimation>
       </Box>

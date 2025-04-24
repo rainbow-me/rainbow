@@ -49,7 +49,7 @@ export const RemoteCardCarousel = () => {
 
   return (
     <>
-      <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
+      <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
       <CarouselCard
         key={name as string}
         data={cardIds}
