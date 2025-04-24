@@ -28,6 +28,9 @@ tags:
           id: swap-screen
 
 # Select DAI as output token
+- scrollUntilVisible:
+    element:
+      id: token-to-buy-dai-1
 - tapOn:
     id: token-to-buy-dai-1
 - assertVisible: 'DAI'
