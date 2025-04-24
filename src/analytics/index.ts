@@ -9,6 +9,15 @@ import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
 import { WalletContext } from './utils';
 
+type DefaultMetadata = {
+  walletAddressHash: WalletContext['walletAddressHash'];
+  walletType: WalletContext['walletType'];
+  /* Android only (all device_ properties) */
+  device_brand?: string;
+  device_manufacturer?: string;
+  device_model?: string;
+};
+
 export class Analytics {
   client = rudderClient;
   event = event;
@@ -35,8 +44,8 @@ export class Analytics {
 
     if (IS_ANDROID) {
       this.deviceBrand = DeviceInfo.getBrand();
-      this.deviceModel = DeviceInfo.getModel();
       this.deviceManufacturer = DeviceInfo.getManufacturerSync();
+      this.deviceModel = DeviceInfo.getModel();
     }
 
     this.ensureInit();
@@ -82,7 +91,7 @@ export class Analytics {
    * Set `deviceId` for use as the identifier. This DOES NOT call
    * `identify()`, you must do that on your own.
    */
-  setDeviceId(deviceId: string) {
+  setDeviceId(deviceId: string): void {
     this.deviceId = deviceId;
     logger.debug(`[Analytics]: Set deviceId on analytics instance`);
   }
@@ -91,7 +100,7 @@ export class Analytics {
    * Set `walletAddressHash` and `walletType` for use in events. This DOES NOT call
    * `identify()`, you must do that on your own.
    */
-  setWalletContext(walletContext: WalletContext) {
+  setWalletContext(walletContext: WalletContext): void {
     this.walletAddressHash = walletContext.walletAddressHash;
     this.walletType = walletContext.walletType;
     logger.debug(`[Analytics]: Set walletAddressHash on analytics instance`);
@@ -113,17 +122,16 @@ export class Analytics {
     this.disabled = true;
   }
 
-  private getDefaultMetadata(): Record<string, string | undefined> {
-    const metadata: Record<string, string | undefined> = {
+  private getDefaultMetadata(): DefaultMetadata {
+    const metadata: DefaultMetadata = {
       walletAddressHash: this.walletAddressHash,
       walletType: this.walletType,
     };
 
-    // See: https://linear.app/rainbow/issue/APP-2243/majority-of-android-devices-show-as-none-in-analytics-events
     if (IS_ANDROID) {
       metadata.device_brand = this.deviceBrand;
-      metadata.device_model = this.deviceModel;
       metadata.device_manufacturer = this.deviceManufacturer;
+      metadata.device_model = this.deviceModel;
     }
 
     return metadata;
