@@ -83,11 +83,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Cache Gradle build
-        uses: useblacksmith/setup-gradle/setup-gradle@v5
-        with:
-          # cache-read-only: false
-          cache-write-only: true
+      # - name: Cache Gradle build
+      #   uses: useblacksmith/setup-gradle/setup-gradle@v5
+      #   with:
+      #     # cache-read-only: false
+      #     cache-write-only: true
 
       - name: Install dependencies
         env:
