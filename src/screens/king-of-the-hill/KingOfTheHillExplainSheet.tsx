@@ -5,7 +5,7 @@ import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListP
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { safeAreaInsetValues } from '@/utils';
 import { SheetHandle } from '@/components/sheet';
-import { Box, Text, Separator, TextShadow, AnimatedText } from '@/design-system';
+import { Box, Text, Separator, TextShadow, AnimatedText, ColorModeProvider } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import LinearGradient from 'react-native-linear-gradient';
@@ -23,6 +23,7 @@ import pointsMultiplierImage from '@/assets/kingOfTheHillExplainer/pointsMultipl
 import FastImage from 'react-native-fast-image';
 import { fonts } from '@/styles';
 import { Sunrays } from './components/Sunrays';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 
 const GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
 const REVERSE_GRADIENT_COLORS = GRADIENT_COLORS.reverse();
@@ -222,9 +223,8 @@ const Step = memo(function Step({
           {step.subtitleComponent()}
         </Box>
         <AnimatedBlurView
-          saturationIntensity={1}
           blurStyle={'plain'}
-          // @ts-expect-error TODO: fix this type
+          // @ts-expect-error the type created when using createAnimatedComponent is not correct
           blurIntensity={blurIntensity}
           style={[StyleSheet.absoluteFill, { top: -8, bottom: -8 }]}
         />
@@ -293,14 +293,18 @@ const PanelContent = memo(function PanelContent() {
 });
 
 export function KingOfTheHillExplainSheet() {
+  const separatorSecondaryColor = getColorForTheme('separatorSecondary', 'dark');
+
   return (
-    <PanelSheet>
-      <Panel height={PANEL_HEIGHT} innerBorderWidth={1} innerBorderColor={'rgba(255, 255, 255, 0.1)'}>
-        <PanelBackground />
-        <PanelHeader />
-        <PanelContent />
-      </Panel>
-    </PanelSheet>
+    <ColorModeProvider value={'dark'}>
+      <PanelSheet>
+        <Panel height={PANEL_HEIGHT} innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
+          <PanelBackground />
+          <PanelHeader />
+          <PanelContent />
+        </Panel>
+      </PanelSheet>
+    </ColorModeProvider>
   );
 }
 

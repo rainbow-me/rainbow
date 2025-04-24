@@ -29,6 +29,10 @@ const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToke
     });
   }, [lastWinnerToken, navigate]);
 
+  const navigateToExplainSheet = useCallback(() => {
+    navigate(Routes.KING_OF_THE_HILL_EXPLAIN_SHEET);
+  }, [navigate]);
+
   return (
     <Box flexDirection="row" justifyContent="space-between" paddingHorizontal={'10px'}>
       <ButtonPressAnimation onPress={navigateToLastWinner}>
@@ -54,11 +58,7 @@ const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToke
           </Box>
         </GradientBorderView>
       </ButtonPressAnimation>
-      <ButtonPressAnimation
-        onPress={() => {
-          navigate(Routes.KING_OF_THE_HILL_EXPLAIN_SHEET);
-        }}
-      >
+      <ButtonPressAnimation onPress={navigateToExplainSheet}>
         <GradientBorderView
           borderGradientColors={[fillTertiaryColor, 'transparent']}
           start={{ x: 0.5, y: 0 }}

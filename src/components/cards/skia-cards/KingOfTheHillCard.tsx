@@ -42,6 +42,7 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillKing }) {
   const { width } = useDimensions();
   const cardWidth = width - 20 * 2;
   const hasTokenPriceIncreased = token.price.relativeChange24h > 0;
+  const priceColor = hasTokenPriceIncreased ? 'green' : 'red';
   const sizedIconUrl = getSizedImageUrl(token.iconUrl, 40);
 
   const { marketCap, price, priceChange24h, volume } = useMemo(
@@ -73,7 +74,6 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillKing }) {
       innerShadowOpacity={{ dark: 0.2, light: 0.2 }}
       skiaForeground={
         <Group>
-          {/* TODO: I don't think the offset looks better than without it */}
           <Image fit="cover" height={CARD_HEIGHT} image={coinIconImage} opacity={0.5} width={cardWidth} x={-40} y={0} />
           <Blur blur={128 / 2} />
         </Group>
@@ -85,8 +85,6 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillKing }) {
               <Box justifyContent="center" alignItems="center" width={48} height={48}>
                 {sizedIconUrl && <ShinyCoinIcon imageUrl={sizedIconUrl} size={40} color={token.colors.primary} />}
                 <Box
-                  // TODO:
-                  // shadow={'24px red'}
                   position="absolute"
                   borderRadius={24}
                   width={48}
@@ -118,10 +116,10 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillKing }) {
                       {token.symbol}
                     </Text>
                     <Box flexDirection="row" alignItems="center" gap={3}>
-                      <Text color={hasTokenPriceIncreased ? 'green' : 'red'} size="11pt" weight="bold">
+                      <Text color={priceColor} size="11pt" weight="bold">
                         {hasTokenPriceIncreased ? '􀄨' : '􀄩'}
                       </Text>
-                      <Text color={hasTokenPriceIncreased ? 'green' : 'red'} size="15pt" weight="bold">
+                      <Text color={priceColor} size="15pt" weight="bold">
                         {priceChange24h}
                       </Text>
                     </Box>
