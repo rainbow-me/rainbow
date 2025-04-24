@@ -544,7 +544,7 @@ export function createQueryStore<
     }
   };
 
-  const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
+  const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (_set, get, api) => {
     const originalSet = api.setState;
     const handleEnabledChange = (prevEnabled: boolean, newEnabled: boolean) => {
       if (prevEnabled !== newEnabled && lastHandledEnabled !== newEnabled) {
@@ -562,7 +562,7 @@ export function createQueryStore<
       }
     };
 
-    const setStateWithEnabledHandling: typeof originalSet = (partial, replace) => {
+    const setWithEnabledHandling: typeof originalSet = (partial, replace) => {
       const isPartialFunction = typeof partial === 'function';
       if (isPartialFunction || partial.enabled !== undefined) {
         let handleNewEnabled: (() => void) | undefined;
@@ -578,8 +578,9 @@ export function createQueryStore<
       }
     };
 
-    // Override the store's setState method
-    api.setState = setStateWithEnabledHandling;
+    // Replace the store's set method
+    api.setState = setWithEnabledHandling;
+    const set = setWithEnabledHandling;
 
     subscriptionManager.init({
       onSubscribe: (enabled, isFirstSubscription, shouldThrottle) => {
