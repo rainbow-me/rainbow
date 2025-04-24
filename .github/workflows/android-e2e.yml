@@ -3,7 +3,7 @@ name: Android e2e tests
 on: [pull_request]
 jobs:
   android-e2e:
-    runs-on: blacksmith-16vcpu-ubuntu-2204
+    runs-on: android-8core-32ram-ubuntu
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -17,7 +17,7 @@ jobs:
       SHARDS: 1
       ANDROID_EMULATOR_API_LEVEL: 30
       ANDROID_EMULATOR_PROFILE: pixel_5
-      ANDROID_EMULATOR_CORES: 8
+      ANDROID_EMULATOR_CORES: 4
       ANDROID_EMULATOR_RAM_SIZE: 8192
       ARTIFACTS_FOLDER: e2e-artifacts
       ARCH: x86_64
