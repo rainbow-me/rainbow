@@ -113,8 +113,7 @@ const getPageIdToIndexMap = (children: React.ReactElement<PageProps | GroupProps
 interface SmoothPagerProps {
   children: React.ReactElement<PageProps | GroupProps>[];
   enableSwipeToGoBack?: boolean;
-  enableSwipeToGoForward?: boolean;
-  enableSwipeToGoForwardAlways?: boolean;
+  enableSwipeToGoForward?: boolean | 'always';
   initialPage: PageId;
   pageGap?: number;
   verticalPageAlignment?: AlignVertical;
@@ -125,7 +124,6 @@ const SmoothPagerComponent = (
     children,
     enableSwipeToGoBack = true,
     enableSwipeToGoForward = true,
-    enableSwipeToGoForwardAlways = false,
     initialPage,
     pageGap = 0,
     verticalPageAlignment = 'bottom',
@@ -232,7 +230,7 @@ const SmoothPagerComponent = (
   });
 
   const forwardSwipeEnabled = useDerivedValue(() => {
-    return enableSwipeToGoForwardAlways || (enableSwipeToGoForward && deepestReachedPageIndex.value > currentPageIndex.value);
+    return enableSwipeToGoForward === 'always' || (enableSwipeToGoForward && deepestReachedPageIndex.value > currentPageIndex.value);
   });
 
   const swipeGestureHandler = useAnimatedGestureHandler({
@@ -285,7 +283,7 @@ const SmoothPagerComponent = (
     <PanGestureHandler
       activeOffsetX={[-5, 5]}
       failOffsetY={[-10, 10]}
-      enabled={enableSwipeToGoBack || enableSwipeToGoForward}
+      enabled={enableSwipeToGoBack || enableSwipeToGoForward !== false}
       onGestureEvent={swipeGestureHandler}
     >
       <Animated.View style={styles.pagerContainer}>
@@ -344,8 +342,8 @@ const SmoothPagerComponent = (
  * Enables horizontal navigation between multiple pages with smooth, animated transitions and built-in swipe gestures.
  * It supports individual pages and grouped pages, and allows programmatic navigation via the `usePagerNavigation` hook.
  *
- * - `enableSwipeToGoBack: boolean` and `enableSwipeToGoForward: boolean` allow control over swipe behaviors.
- * - `enableSwipeToGoForwardAlways: boolean` allows forward swipe gestures to be enabled even when the current page is the
+ * - `enableSwipeToGoBack: boolean` and `enableSwipeToGoForward: boolean | 'always'` allow control over swipe behaviors.
+ * - `enableSwipeToGoForward: 'always'` allows forward swipe gestures to be enabled even when the current page is the
  * deepest reached page.
  * - `initialPage: string` allows setting the initially active page by specifying its `id`.
  * - `pageGap: number` defines the spacing between consecutive pages.

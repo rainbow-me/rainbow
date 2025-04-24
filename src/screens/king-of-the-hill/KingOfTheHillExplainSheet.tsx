@@ -35,6 +35,7 @@ import FastImage from 'react-native-fast-image';
 import { fonts } from '@/styles';
 
 const GRADIENT_COLORS = ['#8754C8', '#EE431D', '#FFF000', '#02ADDE'];
+const REVERSE_GRADIENT_COLORS = GRADIENT_COLORS.reverse();
 const TEXT_GRADIENT_COLORS = GRADIENT_COLORS.map(color => chroma(color).mix('#F5F8FF', 0.56).hex());
 const PANEL_HEIGHT = 563;
 const PANEL_HEADER_HEIGHT = 70;
@@ -205,8 +206,7 @@ function SunraysBackground() {
               positions={[0, 0.25, 0.5, 1]}
               start={vec(glowCircleRadius, 0)}
               end={vec(glowCircleRadius, glowCircleRadius * 2)}
-              // TODO: replace with existing gradient
-              colors={['#02ADDE', '#FFF000', '#EE431D', '#8754C8']}
+              colors={REVERSE_GRADIENT_COLORS}
             />
           </Circle>
           <Circle blendMode={'overlay'} cx={glowCircleRadius} cy={glowCircleRadius} r={glowCircleRadius}>
@@ -228,8 +228,7 @@ const PanelBackground = memo(function PanelBackground() {
     <View style={StyleSheet.absoluteFill}>
       <LinearGradient
         locations={[0, 0.25, 0.5, 1]}
-        // TODO: replace with existing gradient
-        colors={['#02ADDE', '#FFF000', '#EE431D', '#8754C8']}
+        colors={REVERSE_GRADIENT_COLORS}
         style={{ ...StyleSheet.absoluteFillObject, opacity: 0.1 }}
       />
     </View>
@@ -355,13 +354,7 @@ const PanelContent = memo(function PanelContent() {
       gap={32}
     >
       <Box gap={20} style={{ flex: 1 }}>
-        <SmoothPager
-          enableSwipeToGoBack={true}
-          enableSwipeToGoForward={true}
-          enableSwipeToGoForwardAlways={true}
-          initialPage={STEPS[0].id}
-          ref={ref}
-        >
+        <SmoothPager enableSwipeToGoBack={true} enableSwipeToGoForward={'always'} initialPage={STEPS[0].id} ref={ref}>
           {STEPS.map((step, index) => (
             <SmoothPager.Page
               key={step.id}
