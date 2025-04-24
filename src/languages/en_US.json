@@ -3379,7 +3379,27 @@
       "last_winner": "LAST WINNER",
       "how_it_works": "How It Works",
       "starting_next_round": "Starting next round",
-      "left": "LEFT"
+      "left": "LEFT",
+      "king_of_the_hill": "King of the Hill",
+      "explain_sheet": {
+        "next": "Next",
+        "got_it": "Got it",
+        "steps": {
+          "step_1": {
+            "title": "The race is live",
+            "subtitle_parts": ["The token with the most", " buy volume ", "right now is the current king."]
+          },
+          "step_2": {
+            "title": "One crown a day",
+            "subtitle_parts": ["At", " midnight (12:00 AM UTC), ", "the leading token is crowned the daily winner."]
+          },
+          "step_3": {
+            "title": "Win Rewards",
+            "subtitle_parts": ["Buyers of the current King get", " 2x points."],
+            "subtitle_two_parts": ["Creators", " earn points ", "when crowned."]
+          }
+        }
+      }
     }
   }
 }
