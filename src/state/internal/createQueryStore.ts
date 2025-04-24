@@ -544,7 +544,7 @@ export function createQueryStore<
     }
   };
 
-  const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (_set, get, api) => {
+  const createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]> = (set, get, api) => {
     const originalSet = api.setState;
     const handleEnabledChange = (prevEnabled: boolean, newEnabled: boolean) => {
       if (prevEnabled !== newEnabled && lastHandledEnabled !== newEnabled) {
@@ -578,9 +578,8 @@ export function createQueryStore<
       }
     };
 
-    // Replace the store's set method
+    // Override the store's setState method
     api.setState = setWithEnabledHandling;
-    const set = setWithEnabledHandling;
 
     subscriptionManager.init({
       onSubscribe: (enabled, isFirstSubscription, shouldThrottle) => {
@@ -639,7 +638,7 @@ export function createQueryStore<
     };
 
     const baseMethods = {
-      ...customStateCreator(set, get, api),
+      ...customStateCreator(setWithEnabledHandling, get, api),
       ...initialData,
 
       async fetch(params: TParams | Partial<TParams> | undefined, options: FetchOptions | undefined, isInternalFetch = false) {
@@ -765,7 +764,7 @@ export function createQueryStore<
               return transformedData;
             }
 
-            set(state => {
+            (setData ? setWithEnabledHandling : set)(state => {
               let newState: S = {
                 ...state,
                 error: null,
@@ -824,7 +823,7 @@ export function createQueryStore<
 
             if (onFetched) {
               try {
-                onFetched({ data: transformedData, fetch: baseMethods.fetch, params: effectiveParams, set });
+                onFetched({ data: transformedData, fetch: baseMethods.fetch, params: effectiveParams, set: setWithEnabledHandling });
               } catch (onFetchedError) {
                 logger.error(
                   new RainbowError(
