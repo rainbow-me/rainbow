@@ -68,7 +68,6 @@ import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { buildTransaction } from '@/helpers/buildTransaction';
-import { useTrackInsufficientGas } from '@/hooks/useGas';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -149,7 +148,9 @@ export const SignTransactionSheet = () => {
     };
   }, [nativeAsset]);
 
-  const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas();
+  const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas({
+    enableTracking: true,
+  });
 
   const { methodName } = useTransactionSetup({
     chainId,
@@ -166,12 +167,6 @@ export const SignTransactionSheet = () => {
     chainId,
     selectedGasFee,
     req,
-  });
-
-  useTrackInsufficientGas({
-    chainId,
-    isSufficientGas: isBalanceEnough,
-    isValidGas,
   });
 
   useCalculateGasLimit({

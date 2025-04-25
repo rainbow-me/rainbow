@@ -113,7 +113,7 @@ export function useFetchNativePrices() {
   // keep native assets up to date for gas price calculations
   // NOTE: We only fetch the native asset for mainnet and chains that don't use ETH as their native token
   const chainsToFetch = Object.entries(nativeAssets).filter(
-    ([chainId, { symbol }]) => +chainId === ChainId.mainnet || isLowerCaseMatch(symbol, ETH_ADDRESS)
+    ([chainId, { symbol }]) => +chainId === ChainId.mainnet || !isLowerCaseMatch(symbol, ETH_ADDRESS)
   );
 
   useQueries({
