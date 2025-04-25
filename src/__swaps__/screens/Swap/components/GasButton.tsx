@@ -14,7 +14,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
@@ -23,10 +23,6 @@ import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGas
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { ChainId } from '@/state/backendNetworks/types';
-import { lessThanOrEqualToWorklet, equalWorklet } from '@/safe-math/SafeMath';
-import { analytics } from '@/analytics';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import Routes from '@/navigation/routesNames';
 
 const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
@@ -60,54 +56,10 @@ function EstimatedGasFee() {
   );
 }
 
-function useTrackSufficientFunds() {
-  const { hasEnoughFundsForGas, internalSelectedInputAsset, SwapInputController } = useSwapContext();
-
-  const reportInsufficientFunds = useCallback(({ chainId }: { chainId: ChainId }) => {
-    analytics.track(analytics.event.insufficientNativeAssetForAction, {
-      type: Routes.SWAP,
-      nativeAssetSymbol: useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]?.symbol,
-    });
-  }, []);
-
-  useAnimatedReaction(
-    () => ({
-      hasEnoughFundsForGas: hasEnoughFundsForGas.value,
-      inputAsset: internalSelectedInputAsset.value,
-      inputAmount: SwapInputController.inputValues.value.inputAmount,
-    }),
-    (prev, curr) => {
-      if (!curr?.inputAsset) return;
-
-      const enoughFundsForSwap =
-        curr?.inputAsset &&
-        !equalWorklet(curr.inputAsset.maxSwappableAmount, '0') &&
-        lessThanOrEqualToWorklet(curr.inputAmount, curr.inputAsset.maxSwappableAmount);
-
-      // Don't report if we're hitting the same insufficient funds case for the same asset
-      if (
-        prev.hasEnoughFundsForGas === false &&
-        curr?.hasEnoughFundsForGas === false &&
-        prev.inputAsset?.uniqueId === curr.inputAsset?.uniqueId
-      ) {
-        return;
-      }
-
-      if ((!enoughFundsForSwap && curr?.hasEnoughFundsForGas !== undefined) || curr?.hasEnoughFundsForGas === false) {
-        runOnJS(reportInsufficientFunds)({
-          chainId: curr.inputAsset.chainId,
-        });
-      }
-    }
-  );
-}
-
 function SelectedGas({ isPill }: { isPill?: boolean }) {
   const preferredNetwork = swapsStore(s => s.preferredNetwork);
   const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
   const selectedGasSpeed = useSelectedGasSpeed(chainId);
-
-  useTrackSufficientFunds();
 
   return (
     <Inline alignVertical="center" space={{ custom: 5 }}>
