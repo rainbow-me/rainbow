@@ -23,22 +23,25 @@ tags:
 - tapOn:
     id: backup-now-button
 # This part of the test is different for iOS and Android.
-- retry:
-    maxRetries: 3
+- runFlow:
+    when:
+      platform: Android
     commands:
-      - runFlow:
-          when:
-            platform: Android
+      - assertVisible: '(Sign in|Choose an account)'
+      # On certain android versions this requires backing twice.
+      - retry:
+          maxRetries: 2
           commands:
-            - assertVisible: '(Sign in|Choose an account)'
             - back
+            - assertVisible: 'Wallets & Backup'
 - runFlow:
     when:
       platform: iOS
     commands:
       - assertVisible: 'iCloud Not Enabled'
       - tapOn: 'No thanks'
-- assertVisible: 'Wallets & Backup'
+      - assertVisible: 'Wallets & Backup'
+
 - assertVisible: 'Enable Cloud Backups'
 
 # Navigate to manual backup screen
