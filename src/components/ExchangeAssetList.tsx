@@ -10,8 +10,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, SectionList, SectionListData } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { InteractionManager, Keyboard, SectionList, SectionListData, StyleSheet } from 'react-native';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import FastCurrencySelectionRow from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
@@ -23,15 +22,15 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { abbreviations, deviceUtils, magicMemo } from '@/utils';
-import { Box, globalColors, Text } from '@/design-system';
-import { colors, Colors } from '@/styles';
+import { abbreviations, magicMemo } from '@/utils';
+import { Box, globalColors, Text, useColorMode } from '@/design-system';
+import { colors } from '@/styles';
 import ExchangeTokenRow from '@/components/ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import ConditionalWrap from 'conditional-wrap';
+import { EasingGradient } from './easing-gradient/EasingGradient';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -44,21 +43,6 @@ export interface EnrichedExchangeAsset extends SwappableAsset {
   key: string;
   disabled?: boolean;
 }
-
-const deviceWidth = deviceUtils.dimensions.width;
-
-const HeaderBackground = styled(LinearGradient).attrs(
-  ({ theme: { colors, isDarkMode } }: { theme: { colors: Colors; isDarkMode: boolean } }) => ({
-    colors: [isDarkMode ? globalColors.grey100 : '#FBFCFD', colors.alpha(isDarkMode ? globalColors.grey100 : '#FBFCFD', 0)],
-    end: { x: 0.5, y: 1 },
-    locations: [0.65, 1],
-    start: { x: 0.5, y: 0 },
-  })
-)({
-  height: 40,
-  position: 'absolute',
-  width: deviceWidth,
-});
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const scrollIndicatorInsets = { bottom: 24 };
@@ -120,11 +104,22 @@ const ExchangeAssetSectionListHeader = memo(function ExchangeAssetSectionListHea
 }: {
   section: SectionListData<EnrichedExchangeAsset>;
 }) {
+  const { isDarkMode } = useColorMode();
+
   if (!section.title) return null;
+
+  const backgroundColor = isDarkMode ? globalColors.grey100 : '#FBFCFD';
+
   return (
-    <Box paddingTop="10px" paddingBottom="4px" paddingLeft="20px">
-      <HeaderBackground />
-      <Box>
+    <Box backgroundColor={backgroundColor} height={25}>
+      <EasingGradient
+        startColor={backgroundColor}
+        endColor={backgroundColor}
+        startOpacity={1}
+        endOpacity={0}
+        style={styles.headerEasingGradient}
+      />
+      <Box paddingLeft="20px" height={25} width="full" justifyContent="center">
         <ConditionalWrap
           condition={section.useGradientText}
           wrap={children => (
@@ -300,5 +295,15 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  headerEasingGradient: {
+    position: 'absolute',
+    height: 15,
+    bottom: -15,
+    left: 0,
+    right: 0,
+  },
+});
 
 export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query', 'itemProps']);

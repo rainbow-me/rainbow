@@ -36,13 +36,12 @@ export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
             ? [colors.alpha('#FFB200', isDarkMode ? 0.15 : 0), colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2)]
             : colors.gradients.lightestGrey
         }
-        style={[sx.gradient, sx.starGradient]}
+        style={[sx.actionIconContainer, sx.starIcon]}
       >
         <TextIcon
           color={{ custom: favorite ? colors.yellowFavorite : colors.alpha(colors.blueGreyDark, 0.2) }}
           size="icon 13px"
           weight="bold"
-          containerSize={30}
         >
           {'􀋃'}
         </TextIcon>
@@ -62,8 +61,8 @@ export function Info({ contextMenuProps, showFavoriteButton, theme }: InfoProps)
   return (
     <ContextMenuButton onPressMenuItem={contextMenuProps.handlePressMenuItem} {...contextMenuProps} style={showFavoriteButton && sx.info}>
       <ButtonPressAnimation>
-        <SafeRadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.gradient, sx.igradient]}>
-          <TextIcon color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }} size="icon 16px" weight="bold" containerSize={30}>
+        <SafeRadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.actionIconContainer, sx.infoIcon]}>
+          <TextIcon color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }} size="icon 16px" weight="bold">
             {'􀅳'}
           </TextIcon>
         </SafeRadialGradient>
@@ -226,18 +225,17 @@ const sx = StyleSheet.create({
   flex: {
     flex: 1,
   },
-  gradient: {
-    alignItems: 'center',
-    borderRadius: 15,
+  actionIconContainer: {
     height: 30,
-    justifyContent: 'center',
-    marginHorizontal: 2,
-    overflow: 'hidden',
     width: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
-  igradient: {
-    paddingLeft: 1,
+  infoIcon: {
     paddingTop: 1,
+    paddingLeft: StyleSheet.hairlineWidth * 2,
   },
   info: {
     paddingRight: 4,
@@ -276,9 +274,9 @@ const sx = StyleSheet.create({
   starFavorite: {
     color: colors.yellowFavorite,
   },
-  starGradient: {
+  starIcon: {
     paddingTop: IS_IOS ? 1 : 3,
-    paddingLeft: 1,
+    paddingLeft: StyleSheet.hairlineWidth * 2,
   },
   symbol: {
     fontSize: getFontSize(fonts.size.smedium),
