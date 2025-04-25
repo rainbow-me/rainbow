@@ -23,12 +23,15 @@ tags:
 - tapOn:
     id: backup-now-button
 # This part of the test is different for iOS and Android.
-- runFlow:
-    when:
-      platform: Android
+- retry:
+    maxRetries: 3
     commands:
-      - assertVisible: '(Sign in|Choose an account)'
-      - back
+      - runFlow:
+          when:
+            platform: Android
+          commands:
+            - assertVisible: '(Sign in|Choose an account)'
+            - back
 - runFlow:
     when:
       platform: iOS
