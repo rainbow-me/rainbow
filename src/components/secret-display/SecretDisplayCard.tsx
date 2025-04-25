@@ -15,7 +15,7 @@ interface SecretDisplayCardProps {
 
 const getHeightForType = (type: EthereumWalletType) => {
   if (type === WalletTypes.privateKey) {
-    return 90;
+    return 120;
   }
   return 240;
 };
