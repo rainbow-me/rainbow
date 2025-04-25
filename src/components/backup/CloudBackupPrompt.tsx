@@ -18,9 +18,7 @@ const imageSize = 72;
 
 export default function CloudBackupPrompt() {
   const { navigate, goBack } = useNavigation();
-  const { mostRecentBackup } = backupsStore(state => ({
-    mostRecentBackup: state.mostRecentBackup,
-  }));
+  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
   const { selectedWallet } = useWallets();
   const createBackup = useCreateBackup();
 
