@@ -59,7 +59,7 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
-  const kingOfTheHillEnabled = useExperimentalFlag(KING_OF_THE_HILL) || king_of_the_hill_enabled;
+  const kingOfTheHillEnabled = (useExperimentalFlag(KING_OF_THE_HILL) || king_of_the_hill_enabled) && !IS_TEST;
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
