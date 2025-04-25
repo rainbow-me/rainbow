@@ -34,31 +34,31 @@ describe('toCompactNotation', () => {
   });
 
   it('should format decimals >= 0.0001 without subscript notation', () => {
-    expect(toCompactNotation({ value: '0.12345' })).toBe('0.12');
+    expect(toCompactNotation({ value: '0.12345' })).toBe('0.123');
     expect(toCompactNotation({ value: 0.01 })).toBe('0.01');
-    expect(toCompactNotation({ value: '0.001' })).toBe('0.0010');
+    expect(toCompactNotation({ value: '0.001' })).toBe('0.001');
     expect(toCompactNotation({ value: '0.001', decimalPlaces: 3 })).toBe('0.001');
-    expect(toCompactNotation({ value: '0.0001' })).toBe('0.00010');
+    expect(toCompactNotation({ value: '0.0001' })).toBe('0.0001');
     expect(toCompactNotation({ value: '0.0001', decimalPlaces: 4 })).toBe('0.0001');
   });
 
   it('should handle negative decimals without subscript', () => {
-    expect(toCompactNotation({ value: '-0.12345' })).toBe('-0.12');
+    expect(toCompactNotation({ value: '-0.12345' })).toBe('-0.123');
     expect(toCompactNotation({ value: -0.01 })).toBe('-0.01');
     expect(toCompactNotation({ value: '-0.001', decimalPlaces: 3 })).toBe('-0.001');
     expect(toCompactNotation({ value: '-0.0001', decimalPlaces: 4 })).toBe('-0.0001');
   });
 
   it('should format small decimals < 0.0001 with subscript notation', () => {
-    expect(toCompactNotation({ value: '0.0000123' })).toBe('0.0₄12');
-    expect(toCompactNotation({ value: 0.000005 })).toBe('0.0₅50');
-    expect(toCompactNotation({ value: '0.0000006789' })).toBe('0.0₆67');
+    expect(toCompactNotation({ value: '0.0000123' })).toBe('0.0000123');
+    expect(toCompactNotation({ value: 0.000005 })).toBe('0.000005');
+    expect(toCompactNotation({ value: '0.0000006789' })).toBe('0.00000068');
   });
 
   it('should handle small negative decimals with subscript', () => {
-    expect(toCompactNotation({ value: '-0.0000123' })).toBe('-0.0₄12');
-    expect(toCompactNotation({ value: -0.000005 })).toBe('-0.0₅50');
-    expect(toCompactNotation({ value: '-0.0000006789' })).toBe('-0.0₆67');
+    expect(toCompactNotation({ value: '-0.0000123' })).toBe('-0.0000123');
+    expect(toCompactNotation({ value: -0.000005 })).toBe('-0.000005');
+    expect(toCompactNotation({ value: '-0.0000006789' })).toBe('-0.00000068');
   });
 
   it('should handle exponent notation input correctly', () => {
@@ -67,14 +67,14 @@ describe('toCompactNotation', () => {
     expect(toCompactNotation({ value: '-1.23e6' })).toBe('-1.23×10⁶');
 
     expect(toCompactNotation({ value: '1.23e5' })).toBe('123000.00');
-    expect(toCompactNotation({ value: '1.23e-1' })).toBe('0.12');
-    expect(toCompactNotation({ value: '1.23e-3', decimalPlaces: 3 })).toBe('0.001');
+    expect(toCompactNotation({ value: '1.23e-1' })).toBe('0.123');
+    expect(toCompactNotation({ value: '1.23e-3', decimalPlaces: 3 })).toBe('0.00123');
     expect(toCompactNotation({ value: '1e-4', decimalPlaces: 4 })).toBe('0.0001');
 
-    expect(toCompactNotation({ value: '1.23e-5' })).toBe('0.0₄12');
-    expect(toCompactNotation({ value: '5e-6' })).toBe('0.0₅50');
-    expect(toCompactNotation({ value: '6.78e-7' })).toBe('0.0₆67');
-    expect(toCompactNotation({ value: '-1.23e-5' })).toBe('-0.0₄12');
+    expect(toCompactNotation({ value: '1.23e-5' })).toBe('0.0000123');
+    expect(toCompactNotation({ value: '5e-6' })).toBe('0.000005');
+    expect(toCompactNotation({ value: '6.78e-7' })).toBe('0.00000068');
+    expect(toCompactNotation({ value: '-1.23e-5' })).toBe('-0.0000123');
   });
 
   it('should format zero correctly', () => {
@@ -86,10 +86,10 @@ describe('toCompactNotation', () => {
   it('should apply prefix correctly', () => {
     expect(toCompactNotation({ value: '1234', prefix: '$' })).toBe('$1234.00');
     expect(toCompactNotation({ value: '1000000', prefix: '€' })).toBe('€1.00×10⁶');
-    expect(toCompactNotation({ value: '0.123', prefix: '£' })).toBe('£0.12');
-    expect(toCompactNotation({ value: '0.0000123', prefix: '¥' })).toBe('¥0.0₄12');
+    expect(toCompactNotation({ value: '0.123', prefix: '£' })).toBe('£0.123');
+    expect(toCompactNotation({ value: '0.0000123', prefix: '¥' })).toBe('¥0.0000123');
     expect(toCompactNotation({ value: '-50', prefix: '$' })).toBe('$-50.00');
-    expect(toCompactNotation({ value: '-1.23e-5', prefix: '$' })).toBe('$-0.0₄12');
+    expect(toCompactNotation({ value: '-1.23e-5', prefix: '$' })).toBe('$-0.0000123');
     expect(toCompactNotation({ value: 0, prefix: '$' })).toBe('$0.00');
   });
 
@@ -98,5 +98,30 @@ describe('toCompactNotation', () => {
     expect(toCompactNotation({ value: '1.2.3' })).toBe('1.2.3');
     expect(toCompactNotation({ value: '--5' })).toBe('--5');
     expect(toCompactNotation({ value: '' })).toBe('');
+  });
+
+  it('should format decimals >= -4 magnitude without subscript notation', () => {
+    const thresholdMagnitude = -4;
+
+    expect(toCompactNotation({ value: '0.1', thresholdMagnitude })).toBe('0.10');
+    expect(toCompactNotation({ value: '0.001', thresholdMagnitude })).toBe('0.001');
+    expect(toCompactNotation({ value: '0.0001', thresholdMagnitude })).toBe('0.0001');
+    expect(toCompactNotation({ value: '1.23e-4', decimalPlaces: 4, thresholdMagnitude })).toBe('0.000123');
+  });
+
+  it('should handle negative decimals >= -4 magnitude without subscript', () => {
+    const thresholdMagnitude = -4;
+
+    expect(toCompactNotation({ value: '-0.1', thresholdMagnitude })).toBe('-0.10');
+    expect(toCompactNotation({ value: '-0.001', thresholdMagnitude })).toBe('-0.001');
+    expect(toCompactNotation({ value: '-1.23e-4', decimalPlaces: 4, thresholdMagnitude })).toBe('-0.000123');
+  });
+
+  it('should apply prefix correctly with thresholdMagnitude: -4', () => {
+    const thresholdMagnitude = -4;
+
+    expect(toCompactNotation({ value: '0.0001', prefix: '$', thresholdMagnitude })).toBe('$0.0001');
+    expect(toCompactNotation({ value: '0.0000123', prefix: '¥', thresholdMagnitude })).toBe('¥0.0₄12');
+    expect(toCompactNotation({ value: '-1.23e-5', prefix: '$', thresholdMagnitude })).toBe('$-0.0₄12');
   });
 });
