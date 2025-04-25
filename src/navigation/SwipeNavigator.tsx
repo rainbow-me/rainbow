@@ -247,18 +247,12 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
         const showBrowserButtons = showBrowserNavButtons && route.name === Routes.DAPP_BROWSER_SCREEN && isFocused;
 
         return (
-          <Box
-            height="full"
-            key={route.key}
-            justifyContent="flex-start"
-            paddingTop="6px"
-            testID={`tab-bar-icon-${route.name}`}
-            width="full"
-          >
+          <Box height="full" key={route.key} justifyContent="flex-start" paddingTop="6px" width="full">
             <ConditionalWrap
               condition={IS_IOS || !showBrowserButtons}
               wrap={children => (
                 <ButtonPressAnimation
+                  testID={`tab-bar-icon-${route.name}`}
                   disallowInterruption
                   enableHapticFeedback={!showBrowserButtons}
                   minLongPressDuration={300}

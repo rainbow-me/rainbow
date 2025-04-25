@@ -21,16 +21,11 @@ tags:
 # Open swap screen
 - tapOn:
     id: swap-button
-- retry:
-    maxRetries: 3
-    commands:
-      - assertVisible:
-          id: swap-screen
-
+- assertVisible:
+    id: swap-screen
 # Select DAI as output token
-- scrollUntilVisible:
-    element:
-      id: token-to-buy-dai-1
+- tapOn: 'Find a token to buy'
+- inputText: 'DAI'
 - tapOn:
     id: token-to-buy-dai-1
 - assertVisible: 'DAI'
