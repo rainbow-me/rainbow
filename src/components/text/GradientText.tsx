@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, Text as NativeText } from 'react-native';
 import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradient';
 
 interface GradientTextProps extends LinearGradientProps {
@@ -17,7 +17,7 @@ const GradientText = memo(function GradientText({
 }: GradientTextProps) {
   return (
     <MaskedView maskElement={children}>
-      <View style={styles.text}>{children}</View>
+      <NativeText style={styles.ghostText}>{children}</NativeText>
       <LinearGradient
         start={start}
         end={end}
@@ -33,13 +33,12 @@ const styles = StyleSheet.create({
   gradient: {
     pointerEvents: 'none',
     position: 'absolute',
-    // Fixes text clipping
-    left: -1,
-    right: -1,
-    top: -1,
-    bottom: -1,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
-  text: {
+  ghostText: {
     opacity: 0,
   },
 });
