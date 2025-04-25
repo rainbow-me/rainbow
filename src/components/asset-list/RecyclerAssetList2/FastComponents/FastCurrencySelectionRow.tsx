@@ -97,6 +97,8 @@ export default React.memo(function FastCurrencySelectionRow({
   const rowTestID = `${testID}-exchange-coin-row-${symbol ?? ''}-${chainId || ChainId.mainnet}`;
   const isInfoButtonVisible = !isNativeAsset(address, chainId) && !showBalance;
 
+  const canShowFavoriteButton = showFavoriteButton && chainId === ChainId.mainnet;
+
   return (
     <View style={sx.row} testID={rowTestID}>
       <ButtonPressAnimation onPress={onPress} style={[sx.flex, disabled && { opacity: 0.5 }]} wrapperStyle={sx.flex} disabled={disabled}>
@@ -156,9 +158,8 @@ export default React.memo(function FastCurrencySelectionRow({
       </ButtonPressAnimation>
       {!showBalance && (
         <View style={sx.fav}>
-          {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
-          {showFavoriteButton &&
-            chainId === ChainId.mainnet &&
+          {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={canShowFavoriteButton} theme={theme} />}
+          {canShowFavoriteButton &&
             (IS_IOS ? (
               <FloatingEmojis
                 centerVertically
