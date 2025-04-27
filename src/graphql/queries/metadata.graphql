@@ -670,6 +670,7 @@ query marketStats($chainID: Int!, $address: String!) {
         uniques
         buyers
         sellers
+        priceChangePct
       }
     }
   }

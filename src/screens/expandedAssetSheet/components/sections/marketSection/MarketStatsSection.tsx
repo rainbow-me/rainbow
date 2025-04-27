@@ -6,19 +6,14 @@ import { CollapsibleSection, LAYOUT_ANIMATION } from '../../shared/CollapsibleSe
 import { SheetSeparator } from '../../shared/Separator';
 import { SectionId, useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import Animated from 'react-native-reanimated';
-import { TokenMarketStatsQueryKey, useTokenMarketStats } from '@/resources/metadata/tokenStats';
-import { queryClient } from '@/react-query';
+import { useTokenMarketStats } from '@/resources/metadata/tokenStats';
 
 export const MarketStatsSection = memo(function MarketStatsSection() {
   const { basicAsset: asset } = useExpandedAssetSheetContext();
 
-  queryClient.invalidateQueries(TokenMarketStatsQueryKey({ chainID: asset.chainId, address: asset.address }));
-
   const { data: marketData } = useTokenMarketStats({ chainID: asset.chainId, address: asset.address });
 
   if (!marketData || Object.keys(marketData).length === 0) return null;
-
-  console.log('marketData', marketData);
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>

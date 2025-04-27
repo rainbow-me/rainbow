@@ -293,7 +293,7 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData }: { m
               {index > 0 && <Box style={{ alignSelf: 'center' }} height={20} width={1} backgroundColor={accentColors.opacity6} />}
               <TimeframeItem
                 timeframe={timeframe}
-                relativeChange={marketData[timeframe as TimeFrames]?.relativeChange ?? 0}
+                relativeChange={marketData[timeframe as TimeFrames].priceChangePct ?? 0}
                 selectedTimeframe={selectedTimeframe}
               />
             </>
