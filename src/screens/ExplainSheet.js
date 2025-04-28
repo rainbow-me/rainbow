@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
-import { Emoji, GradientText, Text } from '../components/text';
+import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box, DebugLayout, Text as DSText, Separator, Stack } from '@/design-system';
@@ -61,13 +61,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
   ...position.coverAsObject,
   ...(height ? { height: height + deviceHeight } : {}),
 }));
-
-const Gradient = styled(GradientText).attrs({
-  colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
-  letterSpacing: 'roundedMedium',
-  steps: [0, 0.5, 1],
-  weight: 'heavy',
-})({});
 
 const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
@@ -763,8 +756,8 @@ const ExplainSheet = () => {
     explainSheetConfig?.readMoreLink && openInBrowser(explainSheetConfig.readMoreLink);
   }, [explainSheetConfig?.readMoreLink]);
 
-  const EmojiText = type === 'verified' ? Gradient : Emoji;
-  const Title = type === 'verified' ? Gradient : SheetTitle;
+  const EmojiText = Emoji;
+  const Title = SheetTitle;
 
   const sheetHeight = ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
 
