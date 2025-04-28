@@ -4,7 +4,9 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { Box } from '@/design-system';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { StyleSheet } from 'react-native';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 
 export type PortalSheetProps = {
   sheetHeight?: number;
@@ -28,13 +30,28 @@ export function Portal() {
   }
 
   return (
-    <SimpleSheet backgroundColor="white" scrollEnabled={false}>
-      <Box paddingVertical="44px" paddingHorizontal="32px" height="full" background="surfaceSecondary">
+    <Box style={styles.container}>
+      <TapToDismiss />
+      <Panel height={params.sheetHeight} innerBorderWidth={0} outerBorderWidth={0} style={styles.panel}>
         {params.children({})}
-      </Box>
-    </SimpleSheet>
+      </Panel>
+    </Box>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    height: DEVICE_HEIGHT,
+    justifyContent: 'flex-end',
+    pointerEvents: 'box-none',
+  },
+  panel: {
+    justifyContent: 'space-between',
+    width: DEVICE_WIDTH,
+  },
+});
 
 /**
  * Returns a util used to navigate to and render components within the Portal

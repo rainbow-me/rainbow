@@ -1,6 +1,6 @@
 import { addNewWalletConnectRequest, removeWalletConnectRequest } from '@/state/walletConnectRequests';
 import React from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, ScrollView } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
 import { getSdkError, parseUri, buildApprovedNamespaces } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
@@ -265,12 +265,17 @@ export function isSupportedMethod(method: RPCMethod) {
   return isSupportedSigningMethod(method) || isSupportedTransactionMethod(method);
 }
 
+const BUTTON_HEIGHT = 52;
+const TITLE_HEIGHT = 55;
+const SPACING_HEIGHT = 18;
+const SHEET_PADDING = 88;
+
 /**
  * Navigates to `ExplainSheet` by way of `WalletConnectApprovalSheet`, and
  * shows the text configured by the `reason` string, which is a key of the
  * `explainers` object in `ExplainSheet`
  */
-function showErrorSheet({
+export function showErrorSheet({
   title,
   body,
   cta,
@@ -281,14 +286,14 @@ function showErrorSheet({
   body: string;
   cta?: string;
   onClose?: () => void;
-  sheetHeight?: number;
+  sheetHeight: number;
 }) {
   explain.open(
     () => (
-      <>
+      <Box paddingVertical="44px" paddingHorizontal="32px">
         <explain.Title>{title}</explain.Title>
-        <explain.Body>{body}</explain.Body>
-        <Box paddingTop="8px">
+        <explain.Body maxHeight={sheetHeight - BUTTON_HEIGHT - TITLE_HEIGHT - SPACING_HEIGHT - SHEET_PADDING}>{body}</explain.Body>
+        <Box paddingTop="20px">
           <explain.Button
             label={cta || lang.t(T.errors.go_back)}
             onPress={() => {
@@ -297,7 +302,7 @@ function showErrorSheet({
             }}
           />
         </Box>
-      </>
+      </Box>
     ),
     { sheetHeight }
   );

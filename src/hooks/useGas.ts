@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import usePrevious from './usePrevious';
@@ -22,7 +22,7 @@ import {
   gasUpdateToCustomGasFee,
   gasUpdateTxFee,
 } from '@/redux/gas';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import {
   EXTERNAL_TOKEN_CACHE_TIME,
   EXTERNAL_TOKEN_STALE_TIME,
@@ -33,6 +33,9 @@ import useAccountSettings from './useAccountSettings';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useQueries } from '@tanstack/react-query';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ETH_ADDRESS } from '@/references';
+import { analytics } from '@/analytics';
+import { useRoute } from '@react-navigation/native';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;
@@ -62,16 +65,57 @@ const checkGasReady = (txFee: LegacyGasFee | GasFee, selectedGasParams: LegacyGa
   return Boolean(gasValue?.amount) && Boolean(txFeeValue?.value?.amount);
 };
 
-export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAsset } = {}) {
-  const dispatch = useDispatch();
+export function useTrackInsufficientGas({
+  chainId,
+  isSufficientGas,
+  isValidGas,
+  enableTracking = true,
+}: {
+  chainId: ChainId;
+  isSufficientGas: boolean;
+  isValidGas: boolean;
+  enableTracking?: boolean;
+}) {
+  const { name } = useRoute();
+  const prevReportedChainId = useRef<ChainId | null>(null);
+
+  useEffect(() => {
+    if (!enableTracking) return;
+
+    if ((!prevReportedChainId.current || prevReportedChainId.current !== chainId) && !isSufficientGas && isValidGas) {
+      const nativeAssets = useBackendNetworksStore.getState().getChainsNativeAsset();
+      const nativeAsset = nativeAssets[chainId];
+      analytics.track(analytics.event.insufficientNativeAssetForAction, {
+        type: name,
+        nativeAssetSymbol: nativeAsset?.symbol,
+      });
+      prevReportedChainId.current = chainId;
+    }
+  }, [chainId, name, isSufficientGas, isValidGas, enableTracking]);
+}
+
+type GasData = {
+  currentBlockParams: CurrentBlockParams;
+  customGasFeeModifiedByUser: boolean;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed;
+  gasFeesBySpeed: GasFeesBySpeed;
+  gasLimit: string;
+  selectedGasFee: SelectedGasFee;
+  selectedGasFeeOption: string;
+  chainId: ChainId;
+  l1GasFeeOptimism: string;
+};
+
+export function useFetchNativePrices() {
   const { nativeCurrency } = useAccountSettings();
 
-  const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
+  const nativeAssets = useBackendNetworksStore(state => state.getChainsNativeAsset());
   // keep native assets up to date for gas price calculations
   // NOTE: We only fetch the native asset for mainnet and chains that don't use ETH as their native token
-  const chainsToFetch = Object.entries(chainsNativeAsset).filter(
-    ([chainId, { symbol }]) => +chainId === ChainId.mainnet || symbol.toLowerCase() !== 'eth'
+  const chainsToFetch = Object.entries(nativeAssets).filter(
+    ([chainId, { symbol }]) => +chainId === ChainId.mainnet || !isLowerCaseMatch(symbol, ETH_ADDRESS)
   );
+
   useQueries({
     queries: chainsToFetch.map(([chainId, { address }]) => ({
       queryKey: externalTokenQueryKey({ address, chainId: parseInt(chainId, 10), currency: nativeCurrency }),
@@ -81,18 +125,15 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
       enabled: !!address,
     })),
   });
+}
 
-  const gasData: {
-    currentBlockParams: CurrentBlockParams;
-    customGasFeeModifiedByUser: boolean;
-    gasFeeParamsBySpeed: GasFeeParamsBySpeed;
-    gasFeesBySpeed: GasFeesBySpeed;
-    gasLimit: string;
-    selectedGasFee: SelectedGasFee;
-    selectedGasFeeOption: string;
-    chainId: ChainId;
-    l1GasFeeOptimism: string;
-  } = useSelector(
+export default function useGas({
+  nativeAsset,
+  enableTracking = false,
+}: { nativeAsset?: ParsedAddressAsset; enableTracking?: boolean } = {}) {
+  const dispatch = useDispatch();
+
+  const gasData: GasData = useSelector(
     ({
       gas: {
         currentBlockParams,
@@ -117,6 +158,8 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
     })
   );
 
+  useFetchNativePrices();
+
   const prevSelectedGasFee = usePrevious(gasData?.selectedGasFee);
 
   const isSufficientGas = useMemo(
@@ -125,6 +168,13 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
   );
 
   const isValidGas = useMemo(() => checkValidGas(gasData?.selectedGasFee?.gasFeeParams), [gasData?.selectedGasFee]);
+
+  useTrackInsufficientGas({
+    chainId: gasData.chainId,
+    isSufficientGas,
+    isValidGas,
+    enableTracking,
+  });
 
   const isGasReady = useMemo(
     () => checkGasReady(gasData?.selectedGasFee?.gasFee, gasData?.selectedGasFee?.gasFeeParams),

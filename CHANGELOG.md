@@ -15,6 +15,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.66] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.66)
+
+### Added
+
+- Added History section to expanded state (#6535)
+- Added vscode formatting settings (#6552)
+- Added tracking of "Verified Assets" swaps to Amplitude (#6544)
+- Added tracking of "Quick Buy" swaps to Amplitude (#6545)
+- Implement infinite NFT cache time (#6586)
+- Added Rainbow LP Fee Creator Claimables v1.1 (#6580)
+
+### Changed
+
+- Bumped swaps to 0.36.0 (#6539)
+- Degen mode on by default + review button in degen mode (#6530)
+- Cleaned up some unused deps (#6546)
+- Moved rest of deprecated analytics to v2 (#6548)
+- Bumped iOS and Android to v1.9.66 (#6559)
+- Refactored performance tracker & add app startup report (#6551)
+
+### Fixed
+
+- Fixed chart Y overflow caused by isFlatDetection (#6549)
+- Set ENS airdrop address as invalid if ENS address resolution fails (#6554)
+- Fixed ClassCastException: java.lang.Double cannot be cast to java.lang.String (#6543)
+- Fixed broken unpinning for some tokens auto-pinned from token launcher (#6560)
+- Fixed logic for "First time send" that we show in Send flow (#6555)
+- Fixed analytics missing conversions (#6565)
+- Properly append referrer fingerprint during speed up (#6561)
+- Fixed expanded State History spacing off on Android (#6579)
+- Fixed long symbol overflow (#6582)
+- Swaps fixes (#6573)
+
 ## [1.9.65] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.65)
 
 ### Added
