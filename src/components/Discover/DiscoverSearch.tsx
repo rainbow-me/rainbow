@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, View } from 'react-native';
+import { Dimensions, InteractionManager, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
 
 import * as lang from '@/languages';
@@ -8,11 +8,11 @@ import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
+import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchSuggestions } from '@/handlers/ens';
-import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { ethereumUtils } from '@/utils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
@@ -24,6 +24,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type EnsResult = {
   address: string;
@@ -46,6 +47,7 @@ export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const [isFetchingEns, setIsFetchingEns] = useState(false);
   const { cancelSearch, searchInputRef, sectionListRef } = useDiscoverScreenContext();
@@ -65,9 +67,8 @@ export default function DiscoverSearch() {
   const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList();
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const marginBottom = TAB_BAR_HEIGHT;
-  // safeAreaInsetValues.bottom + 16;
-  const TOP_OFFSET = safeAreaInsetValues.top + navbarHeight;
+  const MARGIN_BOTTOM = TAB_BAR_HEIGHT;
+  const TOP_OFFSET = safeAreaInsets.top + navbarHeight;
 
   const currencyList = useMemo(() => {
     // order:
@@ -258,7 +259,7 @@ export default function DiscoverSearch() {
   return (
     <View
       key={currencyListDataKey}
-      style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}
+      style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - MARGIN_BOTTOM }}
       testID="discover-search-list"
     >
       <CurrencySelectionList

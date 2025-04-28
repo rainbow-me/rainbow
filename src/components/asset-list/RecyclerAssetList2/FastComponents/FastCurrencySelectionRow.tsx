@@ -11,7 +11,7 @@ import { isNativeAsset } from '@/handlers/assets';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 
 const SafeRadialGradient = (IS_TEST ? View : RadialGradient) as typeof RadialGradient;
 
@@ -235,7 +235,7 @@ const sx = StyleSheet.create({
     overflow: 'hidden',
   },
   infoIcon: {
-    paddingTop: 1,
+    paddingTop: IS_ANDROID ? 2 : 1,
     paddingLeft: StyleSheet.hairlineWidth * 2,
   },
   info: {
