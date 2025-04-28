@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -17,14 +16,6 @@ import { ViewWeeklyEarnings } from './content/console/view-weekly-earnings';
 import { RequireWalletBalance } from './content/console/require-wallet-balance';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
-
-type ConsoleSheetParams = {
-  ConsoleSheet: {
-    referralCode: string | undefined;
-    deeplinked: boolean;
-    viewWeeklyEarnings: boolean;
-  };
-};
 
 export const ConsoleSheet = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONSOLE_SHEET>>();

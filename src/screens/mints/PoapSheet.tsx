@@ -20,7 +20,6 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import { PoapEvent } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
 import { arcClient } from '@/graphql';
 import Spinner from '@/components/Spinner';
@@ -62,10 +61,6 @@ const BlurWrapper = styled(View).attrs({
   width: ({ width }: BlurWrapperProps) => width,
   ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
-
-interface PoapSheetProps {
-  event: PoapEvent;
-}
 
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 

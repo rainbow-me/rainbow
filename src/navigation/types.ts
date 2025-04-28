@@ -134,6 +134,14 @@ export interface CurrentBaseFeeTypes {
   currentBaseFeeNotrend: CurrentBaseFeeParams;
 }
 
+export const gasTrendToTrendType: Record<GasTrend, keyof CurrentBaseFeeTypes> = {
+  notrend: 'currentBaseFeeNotrend',
+  rising: 'currentBaseFeeRising',
+  falling: 'currentBaseFeeFalling',
+  stable: 'currentBaseFeeStable',
+  surging: 'currentBaseFeeSurging',
+} as const;
+
 export type CurrentBaseFeeTypeKey = keyof CurrentBaseFeeTypes;
 
 export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {

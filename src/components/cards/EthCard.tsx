@@ -21,7 +21,7 @@ import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
 import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';

@@ -23,13 +23,7 @@ import { getSheetHeight as getSendConfirmationSheetHeight } from '@/screens/Send
 import { onWillPop } from '@/navigation/Navigation';
 import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/HardwareWalletTxNavigator';
 import { StackNavigationOptions } from '@react-navigation/stack';
-import {
-  ExplainSheetRouteParams,
-  ExplainSheetType,
-  PartialNavigatorConfigOptions,
-  RootStackParamList,
-  SignTransactionSheetParams,
-} from '@/navigation/types';
+import { ExplainSheetRouteParams, ExplainSheetType, PartialNavigatorConfigOptions, RootStackParamList } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';

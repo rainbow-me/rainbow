@@ -1,4 +1,4 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, NavigationProp } from '@react-navigation/native';
 import * as lang from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,7 +24,6 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { openInBrowser } from '@/utils/openInBrowser';
 import { ChainId } from '@/state/backendNetworks/types';
 import { ExplainSheetRouteParams, RootStackParamList } from '@/navigation/types';
-import { NavigationProp } from '@react-navigation/core';
 import { logger } from '@/logger';
 
 const { GAS_TRENDS } = gasUtils;

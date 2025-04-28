@@ -30,14 +30,6 @@ const Swipe = createMaterialTopTabNavigator();
 
 export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 534;
 
-export type HardwareWalletTxParams = {
-  submit: () => void;
-};
-
-type RouteParams = {
-  HardwareWalletTxParams: HardwareWalletTxParams;
-};
-
 // atoms used for navigator state
 export const LedgerIsReadyAtom = atom({
   default: false,

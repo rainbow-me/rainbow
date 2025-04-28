@@ -15,15 +15,6 @@ import { RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();
 
-type PairHardwareWalletNavigatorParams = {
-  entryPoint: string;
-  isFirstWallet: boolean;
-};
-
-type RouteParams = {
-  PairHardwareWalletNavigatorParams: PairHardwareWalletNavigatorParams;
-};
-
 // atoms used for navigator state
 export const LedgerImportDeviceIdAtom = atom({
   default: '',
