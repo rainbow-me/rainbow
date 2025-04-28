@@ -45,7 +45,7 @@ const STEPS = [
       <FastImage source={currentKingImage} style={{ width: PANEL_INNER_WIDTH, height: '100%' }} resizeMode={FastImage.resizeMode.contain} />
     ),
     subtitleComponent: () => (
-      <Text align="center" size="17pt" weight="medium" color="labelTertiary" style={{ lineHeight: 22.95 }}>
+      <Text align="center" size="17pt / 135%" weight="medium" color="labelTertiary">
         {i18n.t(translations.steps.step_1.subtitle_parts[0])}
         <Text size="17pt" weight="bold" color="label">
           {i18n.t(translations.steps.step_1.subtitle_parts[1])}
@@ -59,9 +59,9 @@ const STEPS = [
     title: i18n.t(translations.steps.step_2.title),
     graphicComponent: () => <NativeText style={{ fontSize: 90, fontFamily: fonts.family.SFProRounded, marginTop: -10 }}>{'👑'}</NativeText>,
     subtitleComponent: () => (
-      <Text align="center" size="17pt" weight="medium" color="labelTertiary" style={{ lineHeight: 22.95 }}>
+      <Text align="center" size="17pt / 135%" weight="medium" color="labelTertiary">
         {i18n.t(translations.steps.step_2.subtitle_parts[0])}
-        <Text size="17pt" weight="bold" color="label">
+        <Text size="17pt / 135%" weight="bold" color="label">
           {i18n.t(translations.steps.step_2.subtitle_parts[1])}
         </Text>
         {i18n.t(translations.steps.step_2.subtitle_parts[2])}
