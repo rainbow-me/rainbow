@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Linking, StatusBar, View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useSharedValue } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
@@ -179,7 +179,7 @@ const MintSheet = () => {
 
   const nativeMintPriceDisplay = convertAmountToNativeDisplay(parseFloat(multiply(price.amount, quantity)) * priceOfEth, nativeCurrency);
 
-  const { updateTxFee, startPollingGasFees, stopPollingGasFees, getTotalGasPrice } = useGas();
+  const { updateTxFee, startPollingGasFees, stopPollingGasFees, getTotalGasPrice } = useGas({ enableTracking: true });
 
   const imageUrl = maybeSignUri(mintCollection.image || '');
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
