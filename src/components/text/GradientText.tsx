@@ -1,6 +1,6 @@
+import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { memo } from 'react';
-import { StyleSheet, Text as NativeText } from 'react-native';
+import React, { memo, useMemo } from 'react';
 import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradient';
 
 interface GradientTextProps extends LinearGradientProps {
@@ -15,32 +15,47 @@ const GradientText = memo(function GradientText({
   end = { x: 1, y: 0.5 },
   ...linearGradientProps
 }: GradientTextProps) {
+  let textStyle = useTextStyle({
+    align: children.props.align,
+    color: children.props.color,
+    size: children.props.size,
+    tabularNumbers: children.props.tabularNumbers,
+    uppercase: children.props.uppercase,
+    weight: children.props.weight,
+  });
+
+  textStyle = {
+    ...textStyle,
+    marginTop: 0,
+    marginBottom: 0,
+  };
+
+  const invisibleChild = useMemo(() => {
+    return React.cloneElement(children, {
+      style: [textStyle, children.props.style, { opacity: 0 }],
+    });
+  }, [children, textStyle]);
+
+  const visibleChild = useMemo(() => {
+    return React.cloneElement(children, {
+      style: [textStyle, children.props.style],
+    });
+  }, [children, textStyle]);
+
   return (
-    <MaskedView maskElement={children}>
-      <NativeText style={styles.ghostText}>{children}</NativeText>
+    <MaskedView style={{ marginTop: textStyle.marginTop, marginBottom: textStyle.marginBottom }} maskElement={visibleChild}>
       <LinearGradient
         start={start}
         end={end}
+        pointerEvents="none"
+        style={{ margin: -bleed }}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...linearGradientProps}
-        style={[styles.gradient, { margin: -bleed }]}
-      />
+      >
+        {invisibleChild}
+      </LinearGradient>
     </MaskedView>
   );
-});
-
-const styles = StyleSheet.create({
-  gradient: {
-    pointerEvents: 'none',
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
-  ghostText: {
-    opacity: 0,
-  },
 });
 
 export default GradientText;

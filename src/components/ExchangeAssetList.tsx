@@ -119,21 +119,16 @@ const ExchangeAssetSectionListHeader = memo(function ExchangeAssetSectionListHea
         endOpacity={0}
         style={styles.headerEasingGradient}
       />
-      <Box paddingLeft="20px" height={25} width="full" justifyContent="center">
+      <Box paddingLeft="20px" height="full" width="full" justifyContent="center">
         <ConditionalWrap
           condition={section.useGradientText}
           wrap={children => (
-            <GradientText colors={['#6AA2E3', '#FF54BB', '#FFA230']} locations={[0, 0.2867132868, 1]} bleed={4}>
+            <GradientText colors={['#6AA2E3', '#FF54BB', '#FFA230']} locations={[0, 0.2867132868, 1]}>
               {children}
             </GradientText>
           )}
         >
-          <Text
-            size="14px / 19px (Deprecated)"
-            weight="heavy"
-            color={{ custom: section.color || colors.blueGreyDark50 }}
-            testID={section.key}
-          >
+          <Text size="15pt" weight="heavy" color={{ custom: section.color || colors.blueGreyDark50 }} testID={section.key}>
             {section.title}
           </Text>
         </ConditionalWrap>

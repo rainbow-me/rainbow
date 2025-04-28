@@ -173,16 +173,17 @@ const PanelHeader = memo(function PanelHeader() {
       <SheetHandle color={foregroundColors.labelQuaternary.dark} showBlur={true} />
       <Box paddingVertical={'20px'}>
         <Box>
-          <Box style={StyleSheet.absoluteFill}>
+          {/* TODO: Correct implementation of GradientText is not currently compatible with how TextShadow works */}
+          {/* <Box style={StyleSheet.absoluteFill}>
             <GradientText colors={GRADIENT_COLORS} locations={[0, 0.5, 0.75, 1]} bleed={12}>
               <TextShadow shadowOpacity={1} blur={12}>
-                <Text size="20pt" weight="black" color="label" uppercase style={{ letterSpacing: 0.6 }}>
-                  {i18n.t(i18n.l.king_of_hill.king_of_the_hill)}
-                </Text>
+              <Text size="20pt" weight="black" color="label" uppercase style={{ letterSpacing: 0.6 }}>
+                {i18n.t(i18n.l.king_of_hill.king_of_the_hill)}
+              </Text>
               </TextShadow>
             </GradientText>
-          </Box>
-          <GradientText colors={TEXT_GRADIENT_COLORS} locations={[0, 0.5, 0.75, 1]} bleed={12}>
+          </Box> */}
+          <GradientText colors={TEXT_GRADIENT_COLORS} locations={[0, 0.5, 0.75, 1]}>
             <Text size="20pt" weight="black" color="label" uppercase style={{ letterSpacing: 0.6 }}>
               {i18n.t(i18n.l.king_of_hill.king_of_the_hill)}
             </Text>
