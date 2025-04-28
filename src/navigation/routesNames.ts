@@ -112,6 +112,7 @@ const Routes = {
   NETWORK_SELECTOR: 'NetworkSelector',
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
+  KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',
 } as const;
 
 export const NATIVE_ROUTES = [

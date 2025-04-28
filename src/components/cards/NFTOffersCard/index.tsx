@@ -53,7 +53,7 @@ export const NFTOffersCard = () => {
     walletAddress: accountAddress,
   });
   const { navigate } = useNavigation();
-  const { colorMode } = useColorMode();
+  const { colorMode, isDarkMode } = useColorMode();
 
   const offers = nftOffers ?? [];
   const [hasOffers, setHasOffers] = useState(false);
@@ -102,7 +102,7 @@ export const NFTOffersCard = () => {
         <Inset horizontal="20px">
           <Box as={Animated.View} width="full" style={[animatedStyle]}>
             <Stack space="20px">
-              <Separator color="separatorTertiary" thickness={1} />
+              <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
               <Inline alignVertical="center" alignHorizontal="justify">
                 <Inline alignVertical="center" space={{ custom: 7 }}>
                   {!offers.length ? (
@@ -224,7 +224,7 @@ export const NFTOffersCard = () => {
                   </Box>
                 </Column>
               </Columns>
-              <Separator color="separatorTertiary" thickness={1} />
+              <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
             </Stack>
           </Box>
         </Inset>

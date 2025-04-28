@@ -90,7 +90,7 @@ export function NFTSingleOfferSheet() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isReadOnlyWallet } = useWallets();
   const theme = useTheme();
-  const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
+  const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas({ enableTracking: true });
   const {
     data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });

@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
-import { Emoji, GradientText, Text } from '../components/text';
+import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box, Text as DSText, Separator } from '@/design-system';
@@ -43,7 +43,7 @@ type ExplainSheetStillCuriousKeyPrefix =
   | 'slippage.still_curious';
 
 interface ExplainSheetConfig {
-  emoji?: string | typeof GradientText;
+  emoji?: string;
   title: string;
   text?: string | React.ReactNode;
   logo?: React.ReactNode;
@@ -106,13 +106,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
   ...(height ? { height: height + deviceHeight } : {}),
 }));
 
-const Gradient = styled(GradientText).attrs({
-  colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
-  letterSpacing: 'roundedMedium',
-  steps: [0, 0.5, 1],
-  weight: 'heavy',
-})({});
-
 const SENDING_FUNDS_TO_CONTRACT = lang.t(l.sending_to_contract.text);
 const FLOOR_PRICE_EXPLAINER = lang.t(l.floor_price.text);
 const CURRENT_BASE_FEE_TITLE = lang.t(l.base_fee.title);
@@ -123,7 +116,6 @@ const CURRENT_BASE_FEE_EXPLAINER_RISING = lang.t(l.base_fee.text_rising);
 const CURRENT_BASE_FEE_EXPLAINER_SURGING = lang.t(l.base_fee.text_surging);
 const MAX_BASE_FEE_EXPLAINER = lang.t(l.max_base_fee.text);
 const MINER_TIP_EXPLAINER = lang.t(l.miner_tip.text);
-const VERIFIED_EXPLAINER = lang.t(l.verified.text);
 const BACKUP_EXPLAINER = lang.t(lang.l.back_up.explainers.backup, {
   cloudPlatformName: cloudPlatformAccountName,
 });
@@ -343,8 +335,6 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       return { emoji: '⛏', extraHeight: -31, text: MINER_TIP_EXPLAINER, title: lang.t('explain.miner_tip.title') };
     case 'sending_funds_to_contract':
       return { emoji: '✋', extraHeight: 80, text: SENDING_FUNDS_TO_CONTRACT, title: lang.t('explain.sending_to_contract.title') };
-    case 'verified':
-      return { emoji: Gradient, text: VERIFIED_EXPLAINER, title: lang.t('explain.verified.title') };
     case 'unverified': {
       const { asset } = params;
       const handlePress = () => {
@@ -629,7 +619,6 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       };
     }
     default:
-      // @ts-expect-error - This is a fallback case for unknown types
       logger.warn(`[ExplainSheet]: Unhandled type "${params.type}"`);
       return null;
   }
@@ -679,9 +668,6 @@ const ExplainSheet = () => {
       openInBrowser(explainSheetConfig.readMoreLink);
     }
   }, [explainSheetConfig?.readMoreLink]);
-
-  const EmojiComponent = params.type === 'verified' ? Gradient : Emoji;
-  const TitleComponent = params.type === 'verified' ? Gradient : SheetTitle;
 
   const sheetHeight = ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
 
@@ -763,7 +749,7 @@ const ExplainSheet = () => {
               <Centered>{explainSheetConfig.logo}</Centered>
             ) : explainSheetConfig.emoji ? (
               typeof explainSheetConfig.emoji === 'string' ? (
-                <EmojiComponent
+                <Emoji
                   align="center"
                   size="h1"
                   style={{
@@ -772,9 +758,9 @@ const ExplainSheet = () => {
                   }}
                 >
                   {explainSheetConfig.emoji}
-                </EmojiComponent>
+                </Emoji>
               ) : (
-                <EmojiComponent
+                <Emoji
                   align="center"
                   size="h1"
                   style={{
@@ -783,13 +769,13 @@ const ExplainSheet = () => {
                   }}
                 >
                   {lang.t('explain.verified.title')}
-                </EmojiComponent>
+                </Emoji>
               )
             ) : null}
 
-            <TitleComponent align="center" lineHeight="big" size="big" weight="heavy">
+            <SheetTitle align="center" lineHeight="big" size={fonts.size.big} weight="heavy">
               {explainSheetConfig.title}
-            </TitleComponent>
+            </SheetTitle>
 
             {renderBaseFeeIndicator}
 

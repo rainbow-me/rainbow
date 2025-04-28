@@ -222,7 +222,7 @@ export const SendConfirmationSheet = () => {
     }
   );
 
-  const { isSufficientGas, isValidGas, updateTxFee } = useGas();
+  const { isSufficientGas, isValidGas, updateTxFee } = useGas({ enableTracking: true });
 
   const contact = useMemo(() => {
     return contacts?.[toAddress?.toLowerCase()];

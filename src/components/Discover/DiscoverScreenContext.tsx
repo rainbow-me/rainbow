@@ -1,9 +1,12 @@
 import { analytics } from '@/analytics';
-import React, { createContext, RefObject, useRef, useCallback } from 'react';
+import React, { createContext, RefObject, useRef, useCallback, useEffect } from 'react';
 import { SectionList, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { useTrackDiscoverScreenTime } from './useTrackDiscoverScreenTime';
+
+export let discoverScrollToTopFnRef: () => number | null = () => null;
+export let discoverOpenSearchFnRef: () => void = () => null;
 
 type DiscoverScreenContextType = {
   scrollViewRef: RefObject<Animated.ScrollView>;
@@ -52,6 +55,14 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
       });
     }
   }, [isSearching, scrollToTop]);
+
+  useEffect(() => {
+    discoverScrollToTopFnRef = scrollToTop;
+  }, [scrollToTop]);
+
+  useEffect(() => {
+    discoverOpenSearchFnRef = onTapSearch;
+  }, [onTapSearch]);
 
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();

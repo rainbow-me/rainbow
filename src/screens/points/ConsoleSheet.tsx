@@ -23,7 +23,7 @@ export const ConsoleSheet = () => {
   const deeplinked = params?.deeplinked ?? false;
   const viewWeeklyEarnings = params?.viewWeeklyEarnings ?? false;
 
-  const { animationKey, setReferralCode, setProfile, setAnimationKey, setStep, setIntent, setDeeplinked } = usePointsProfileContext();
+  const { animationKey, setReferralCode, setProfile, setAnimationKey, setStep, setDeeplinked } = usePointsProfileContext();
 
   useEffect(() => {
     if (viewWeeklyEarnings) return;
@@ -41,8 +41,7 @@ export const ConsoleSheet = () => {
     setProfile(undefined);
     setAnimationKey(0);
     setStep(RainbowPointsFlowSteps.Initialize);
-    setIntent(undefined);
-  }, [viewWeeklyEarnings, setProfile, setAnimationKey, setStep, setIntent]);
+  }, [viewWeeklyEarnings, setProfile, setAnimationKey, setStep]);
 
   useFocusEffect(
     useCallback(() => {

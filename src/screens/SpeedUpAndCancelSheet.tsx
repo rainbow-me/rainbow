@@ -115,7 +115,9 @@ export default function SpeedUpAndCancelSheet() {
   const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
-  const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
+  const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas({
+    enableTracking: true,
+  });
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {

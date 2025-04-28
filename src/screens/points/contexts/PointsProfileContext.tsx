@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { noop } from 'lodash';
 import Routes from '@/navigation/routesNames';
 import { pointsQueryKey } from '@/resources/points';
@@ -28,7 +28,6 @@ type PointsProfileContext = {
   deeplinked: boolean;
   setDeeplinked: Dispatch<SetStateAction<boolean>>;
   intent: string | undefined;
-  setIntent: Dispatch<SetStateAction<string | undefined>>;
   animationKey: number;
   setAnimationKey: Dispatch<SetStateAction<number>>;
 
@@ -63,7 +62,6 @@ const PointsProfileContext = createContext<PointsProfileContext>({
   deeplinked: false,
   setDeeplinked: noop,
   intent: undefined,
-  setIntent: noop,
   animationKey: 0,
   setAnimationKey: noop,
 
@@ -90,7 +88,6 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
   const [profile, setProfile] = useState<OnboardPointsMutation | undefined>();
   const [referralCode, setReferralCode] = useState<string>();
   const [deeplinked, setDeeplinked] = useState<boolean>(false);
-  const [intent, setIntent] = useState<string>();
   const [animationKey, setAnimationKey] = useState(0);
 
   const rainbowSwaps = profile?.onboardPoints?.user?.onboarding?.categories?.find(
@@ -213,9 +210,8 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
     }
   }, [isHardwareWallet, navigate, signIn]);
 
-  useEffect(() => {
-    const msg = buildTwitterIntentMessage(profile, metamaskSwaps);
-    setIntent(msg);
+  const intent = useMemo(() => {
+    return buildTwitterIntentMessage(profile, metamaskSwaps);
   }, [profile, metamaskSwaps]);
 
   return (
@@ -231,7 +227,6 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
         deeplinked,
         setDeeplinked,
         intent,
-        setIntent,
         animationKey,
         setAnimationKey,
 

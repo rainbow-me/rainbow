@@ -655,6 +655,20 @@ export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
+export const kingOfTheHillExplainSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.8,
+      cornerRadius: 0,
+      headerHeight: safeAreaInsetValues.top + 70,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const stackNavigationConfig = {
   headerMode: 'none',
   keyboardHandlingEnabled: ios,
