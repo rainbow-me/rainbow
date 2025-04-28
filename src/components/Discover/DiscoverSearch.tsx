@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, InteractionManager, View } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
 
 import * as lang from '@/languages';
@@ -8,7 +8,7 @@ import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus, useDimensions } from '@/hooks';
+import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchSuggestions } from '@/handlers/ens';
@@ -67,7 +67,6 @@ export default function DiscoverSearch() {
   const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList();
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const MARGIN_BOTTOM = TAB_BAR_HEIGHT;
   const TOP_OFFSET = safeAreaInsets.top + navbarHeight;
 
   const currencyList = useMemo(() => {
@@ -259,7 +258,7 @@ export default function DiscoverSearch() {
   return (
     <View
       key={currencyListDataKey}
-      style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - MARGIN_BOTTOM }}
+      style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - TAB_BAR_HEIGHT }}
       testID="discover-search-list"
     >
       <CurrencySelectionList
