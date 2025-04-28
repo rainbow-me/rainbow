@@ -5,7 +5,7 @@ import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListP
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { safeAreaInsetValues } from '@/utils';
 import { SheetHandle } from '@/components/sheet';
-import { Box, Text, Separator, TextShadow, AnimatedText, ColorModeProvider } from '@/design-system';
+import { Box, Text, Separator, AnimatedText, ColorModeProvider } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,7 +17,7 @@ import chroma from 'chroma-js';
 import { Canvas, LinearGradient as SkiaLinearGradient, RadialGradient, vec, Circle, Group, Blur } from '@shopify/react-native-skia';
 import { GradientText } from '@/components/text';
 import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
-import { StepIndicators } from './components/StepInidicators';
+import { StepIndicators } from './components/StepIndicators';
 import currentKingImage from '@/assets/kingOfTheHillExplainer/currentKing.png';
 import pointsMultiplierImage from '@/assets/kingOfTheHillExplainer/pointsMultiplier.png';
 import FastImage from 'react-native-fast-image';
