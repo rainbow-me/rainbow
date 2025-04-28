@@ -68,10 +68,8 @@ const SettingsSection = ({
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { backupProvider, backups } = backupsStore(state => ({
-    backupProvider: state.backupProvider,
-    backups: state.backups,
-  }));
+  const backupProvider = backupsStore(state => state.backupProvider);
+  const backups = backupsStore(state => state.backups);
 
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 

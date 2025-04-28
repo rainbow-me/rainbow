@@ -118,11 +118,10 @@ const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, typeof Routes.VIEW_WALLET_BACKUP>>();
 
   const createBackup = useCreateBackup();
-  const { status, backupProvider, mostRecentBackup } = backupsStore(state => ({
-    status: state.status,
-    backupProvider: state.backupProvider,
-    mostRecentBackup: state.mostRecentBackup,
-  }));
+  const status = backupsStore(state => state.status);
+  const backupProvider = backupsStore(state => state.backupProvider);
+  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
+
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
   const { isDamaged, wallets } = useWallets();

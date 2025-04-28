@@ -64,9 +64,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SHOW_SECRET>>();
   const { selectedWallet, wallets } = useWallets();
-  const { backupProvider } = backupsStore(state => ({
-    backupProvider: state.backupProvider,
-  }));
+  const backupProvider = backupsStore(state => state.backupProvider);
   const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { navigate } = useNavigation();
 

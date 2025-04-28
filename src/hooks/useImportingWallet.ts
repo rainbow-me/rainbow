@@ -52,9 +52,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
-  const { backupProvider } = backupsStore(state => ({
-    backupProvider: state.backupProvider,
-  }));
+  const backupProvider = backupsStore(state => state.backupProvider);
 
   const inputRef = useRef<TextInput>(null);
 

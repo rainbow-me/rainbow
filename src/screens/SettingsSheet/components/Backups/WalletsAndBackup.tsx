@@ -106,12 +106,10 @@ export const WalletsAndBackup = () => {
   const scrollviewRef = useRef<ScrollView>(null);
 
   const createBackup = useCreateBackup();
-  const { status, backupProvider, backups, mostRecentBackup } = backupsStore(state => ({
-    status: state.status,
-    backupProvider: state.backupProvider,
-    backups: state.backups,
-    mostRecentBackup: state.mostRecentBackup,
-  }));
+  const status = backupsStore(state => state.status);
+  const backupProvider = backupsStore(state => state.backupProvider);
+  const backups = backupsStore(state => state.backups);
+  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
 
   const initializeWallet = useInitializeWallet();
 

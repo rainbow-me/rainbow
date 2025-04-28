@@ -5,13 +5,7 @@ import { useDispatch } from 'react-redux';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { KeyboardArea } from 'react-native-keyboard-area';
 
-import {
-  BackupFile,
-  getLocalBackupPassword,
-  restoreCloudBackup,
-  RestoreCloudBackupResultStates,
-  saveLocalBackupPassword,
-} from '@/model/backup';
+import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
 import { cloudPlatform } from '@/utils/platform';
 import { PasswordField } from '../fields';
 import { Text } from '../text';
@@ -83,10 +77,7 @@ const KeyboardSizeView = styled(KeyboardArea)({
 
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
-  const { password } = backupsStore(state => ({
-    password: state.password,
-  }));
-
+  const password = backupsStore(state => state.password);
   const loadingState = walletLoadingStore(state => state.loadingState);
 
   const { selectedBackup } = params;
