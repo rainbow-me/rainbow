@@ -28,9 +28,7 @@ export default function BackupSheetSectionNoProvider() {
   const { navigate, goBack } = useNavigation();
   const { selectedWallet } = useWallets();
   const createBackup = useCreateBackup();
-  const { status } = backupsStore(state => ({
-    status: state.status,
-  }));
+  const status = backupsStore(state => state.status);
 
   const onCloudBackup = useCallback(() => {
     // pop the bottom sheet, and navigate to the backup section inside settings sheet

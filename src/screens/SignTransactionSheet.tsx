@@ -148,7 +148,9 @@ export const SignTransactionSheet = () => {
     };
   }, [nativeAsset]);
 
-  const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas();
+  const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas({
+    enableTracking: true,
+  });
 
   const { methodName } = useTransactionSetup({
     chainId,

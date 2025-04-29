@@ -89,9 +89,7 @@ type RestoreCloudStepParams = {
 
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
-  const { password } = backupsStore(state => ({
-    password: state.password,
-  }));
+  const password = backupsStore(state => state.password);
 
   const loadingState = walletLoadingStore(state => state.loadingState);
 

@@ -1,0 +1,24 @@
+appId: ${APP_ID}
+tags:
+  - auth
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/Prepare.yaml
+- assertVisible:
+    id: welcome-screen
+- tapOn: 'Get a new wallet'
+- runFlow: ../utils/MaybeSetupPin.yaml
+
+# Check wallet screen exists and has expected elements
+- assertVisible:
+    id: wallet-screen
+- assertVisible:
+    id: receive-card
+- assertVisible:
+    id: copy-address-button
+- assertVisible:
+    id: eth-card

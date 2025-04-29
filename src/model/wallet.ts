@@ -205,13 +205,14 @@ export const getHdPath = ({ type, index }: { type: WalletLibraryType; index: num
 export const walletInit = async (
   seedPhrase = undefined,
   color = null,
-  name = null,
+  name: string | null = null,
   overwrite = false,
   checkedWallet = null,
   network: string,
   image = null,
   // Import the wallet "silently" in the background (i.e. no "loading" prompts).
-  silent = false
+  silent = false,
+  userPin?: string
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
 
@@ -229,6 +230,7 @@ export const walletInit = async (
       checkedWallet,
       image,
       silent,
+      userPin,
     });
     walletAddress = wallet?.address;
     return { isNew, walletAddress };

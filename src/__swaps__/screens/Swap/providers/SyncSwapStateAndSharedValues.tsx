@@ -30,6 +30,8 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
+import { analytics } from '@/analytics';
+import Routes from '@/navigation/routesNames';
 
 const BUFFER_RATIO = 0.5;
 
@@ -118,16 +120,27 @@ export function formatUnitsWorklet(value: string, decimals: number) {
   return `${negative ? '-' : ''}${integer || '0'}${fraction ? `.${fraction}` : ''}`;
 }
 
+const reportInsufficientFunds = ({ nativeAssetSymbol }: { nativeAssetSymbol: string }) => {
+  analytics.track(analytics.event.insufficientNativeAssetForAction, {
+    type: Routes.SWAP,
+    nativeAssetSymbol,
+  });
+};
+
 const getHasEnoughFundsForGasWorklet = ({
   gasFee,
   quoteValue,
   userNativeAssetBalance,
   userNativeAssetDecimals,
+  userNativeAssetSymbol,
+  previousHadEnoughFunds,
 }: {
   gasFee: string;
   quoteValue: string;
   userNativeAssetBalance: string | undefined;
   userNativeAssetDecimals: number;
+  userNativeAssetSymbol: string;
+  previousHadEnoughFunds: boolean | undefined;
 }) => {
   'worklet';
   if (!userNativeAssetBalance || equalWorklet(userNativeAssetBalance, '0')) return false;
@@ -137,6 +150,13 @@ const getHasEnoughFundsForGasWorklet = ({
   const totalNativeSpentInTx = formatUnitsWorklet(sumWorklet(quoteValue, safeGasFee), userNativeAssetDecimals);
 
   const hasEnoughFundsForGas = lessThanOrEqualToWorklet(totalNativeSpentInTx, userBalance);
+
+  if (!hasEnoughFundsForGas && hasEnoughFundsForGas !== previousHadEnoughFunds) {
+    runOnJS(reportInsufficientFunds)({
+      nativeAssetSymbol: userNativeAssetSymbol,
+    });
+  }
+
   return hasEnoughFundsForGas;
 };
 
@@ -245,6 +265,7 @@ export function SyncGasStateToSharedValues() {
 
     const userNativeAssetBalance = userNativeNetworkAsset.balance?.amount;
     const userNativeAssetDecimals = userNativeNetworkAsset.decimals;
+    const userNativeAssetSymbol = userNativeNetworkAsset.symbol;
 
     runOnUI(() => {
       const nativeGasFee = divWorklet(gasFee, powWorklet(10, userNativeAssetDecimals));
@@ -265,6 +286,8 @@ export function SyncGasStateToSharedValues() {
         quoteValue: safeQuoteValue,
         userNativeAssetBalance,
         userNativeAssetDecimals,
+        userNativeAssetSymbol,
+        previousHadEnoughFunds: hasEnoughFundsForGas.value,
       });
     })();
   }, [gasFee, gasFeeRange, hasEnoughFundsForGas, isLoadingNativeNetworkAsset, safeQuoteValue, userNativeNetworkAsset]);
