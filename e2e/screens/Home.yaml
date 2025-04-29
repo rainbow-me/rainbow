@@ -3,8 +3,9 @@ tags:
   - home
   - parallel
 ---
-- clearState
 - launchApp:
+    clearState: true
+    clearKeychain: true
     arguments:
       isE2ETest: true
 - runFlow: ../utils/Prepare.yaml
@@ -36,4 +37,4 @@ tags:
 - tapOn:
     id: paste-address-button
 - assertVisible:
-    text: 'Test Wallet'
+    text: "Test Wallet"
