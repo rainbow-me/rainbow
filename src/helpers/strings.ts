@@ -1,7 +1,7 @@
 import { memoFn } from '../utils/memoFn';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey } from '@/entities';
-import { convertAmountToNativeDisplayWorklet, handleSignificantDecimals, handleSignificantDecimalsWorklet } from './utilities';
+import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWorklet } from './utilities';
 import {
   equalWorklet as safeEqualWorklet,
   divWorklet as safeDivWorklet,
