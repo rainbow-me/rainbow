@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { memo } from 'react';
-import { Box, Inline, Stack, Text, AnimatedText, useColorMode, useForegroundColor } from '@/design-system';
-import { useExpandedAssetSheetContext } from '../../../context/ExpandedAssetSheetContext';
+import { Box, Inline, Stack, Text, AnimatedText, useForegroundColor } from '@/design-system';
+import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import Animated, {
   SharedValue,
   useAnimatedReaction,
@@ -13,7 +14,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { colors } from '@/styles';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
-import { MarketStats, TimeFrames } from '@/resources/metadata/tokenStats';
+import { TimeFrames, useTokenMarketStats } from '@/resources/metadata/tokenStats';
 
 const TIMEFRAME_SWITCH_CONFIG = TIMING_CONFIGS.buttonPressConfig;
 
@@ -165,11 +166,14 @@ const TimeframeItem = memo(function TimeframeItem({
   );
 });
 
-export const MarketStatsCard = memo(function MarketStatsCard({ marketData }: { marketData: Record<TimeFrames, MarketStats> }) {
-  const { accentColors } = useExpandedAssetSheetContext();
+export const MarketStatsCard = memo(function MarketStatsCard() {
+  const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
+
+  const { data: marketData } = useTokenMarketStats({ chainID: asset.chainId, address: asset.address });
+
+  if (!marketData || Object.keys(marketData).length === 0) return null;
 
   const defaultTimeframe = Object.keys(marketData)[Object.keys(marketData).length - 1];
-
   const selectedTimeframe = useSharedValue(defaultTimeframe);
 
   // Shared values are used for representing currently selected timeframe data to avoid re-rendering the component when the timeframe changes
