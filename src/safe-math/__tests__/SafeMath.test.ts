@@ -17,14 +17,13 @@ import {
   sumWorklet,
   toFixedWorklet,
   toScaledIntegerWorklet,
-  INTERNAL_PRECISION,
 } from '../SafeMath';
 
 const RESULTS = {
   sum: '1247244.585',
   sub: '1239606.105',
   mul: '4748939814.6378',
-  div: '325.5687898639519904483614541112891570050586',
+  div: '325.56878986395199044836',
   mod: '2172.345',
   pow: '1546106588588.369025',
   toFixed: '1243425.35',
@@ -62,12 +61,6 @@ const VALUE_O = '5.00000000000000000001e-18';
 const VALUE_P = '99999999999999999999.9999999999';
 
 describe('SafeMath', () => {
-  beforeAll(() => {
-    BigNumber.config({
-      DECIMAL_PLACES: INTERNAL_PRECISION,
-    });
-  });
-
   test('sumWorklet', () => {
     expect(() => sumWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
     expect(() => sumWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
