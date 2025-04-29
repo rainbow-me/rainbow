@@ -9,7 +9,7 @@ import { logger, RainbowError } from '@/logger';
 // Query Key
 
 export const TokenMarketStatsQueryKey = ({ chainID, address }: MarketStatsQueryVariables) =>
-  createQueryKey('marketStats', { chainID, address }, { persisterVersion: 1 });
+  createQueryKey('marketStats', { chainID, address });
 
 type TokenMarketStatsQueryKey = ReturnType<typeof TokenMarketStatsQueryKey>;
 
