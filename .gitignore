@@ -137,3 +137,7 @@ web-build/
 
 # Sentry
 .sentry/
+
+# E2E CI
+e2e-artifacts/
+anvil.log
