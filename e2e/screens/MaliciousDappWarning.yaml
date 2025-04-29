@@ -32,8 +32,8 @@ tags:
       # tap on browser search input
       - tapOn:
           point: 80, 80
-      - assertVisible: "Find apps and more"
-      - inputText: "https://test-dap-welps.vercel.app/"
+      - assertVisible: 'Find apps and more'
+      - inputText: 'https://test-dap-welps.vercel.app/'
 
       # tap on connect button
       - tapOn:
@@ -47,5 +47,5 @@ tags:
       - assertVisible:
           id: malicious-dapp-warning
 
-      - assertVisible: "Find apps and more"
-      - inputText: "https://test-dap-welps.vercel.app/"
+      - assertVisible: 'Find apps and more'
+      - inputText: 'https://test-dap-welps.vercel.app/'
