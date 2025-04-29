@@ -4,7 +4,7 @@ import { useTheme } from '@/theme';
 import { Box, Text, TextProps, AccentColorProvider, Stack } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import SheetActionButton from '@/components/sheet/sheet-action-buttons/SheetActionButton';
-import { ImageSourcePropType } from 'react-native';
+import { ImageSourcePropType, ScrollView, StyleSheet } from 'react-native';
 
 export { open, close, useOpen } from '@/screens/Portal';
 
@@ -79,15 +79,27 @@ export function Title({ children, color, size, weight, ...props }: Omit<Partial<
 /**
  * Body text for use within the Portal sheet.
  */
-export function Body({ children, size, color, ...props }: Omit<Partial<TextProps>, 'children'> & { children: string }) {
+export function Body({
+  children,
+  size,
+  color,
+  maxHeight,
+  ...props
+}: Omit<Partial<TextProps>, 'children'> & { children: string; maxHeight: number }) {
   return (
-    <Box paddingBottom="20px">
+    <ScrollView showsVerticalScrollIndicator={false} style={[scrollviewStyles.scrollview, { maxHeight }]}>
       <Text color={color || 'labelSecondary'} size={size || '17pt / 135%'} align="center" {...props}>
         {children}
       </Text>
-    </Box>
+    </ScrollView>
   );
 }
+
+const scrollviewStyles = StyleSheet.create({
+  scrollview: {
+    paddingBottom: 20,
+  },
+});
 
 /**
  * A wrapper for any buttons you might want to add to the Portal sheet.

@@ -6,12 +6,12 @@ import { ButtonPressAnimation } from '../../../animations';
 import { CoinRowHeight } from '../../../coin-row';
 import { FloatingEmojis } from '../../../floating-emojis';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Text } from '@/design-system';
+import { Text, TextIcon } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/state/backendNetworks/types';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 
 const SafeRadialGradient = (IS_TEST ? View : RadialGradient) as typeof RadialGradient;
 
@@ -36,21 +36,15 @@ export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
             ? [colors.alpha('#FFB200', isDarkMode ? 0.15 : 0), colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2)]
             : colors.gradients.lightestGrey
         }
-        style={[sx.gradient, sx.starGradient]}
+        style={[sx.actionIconContainer, sx.starIcon]}
       >
-        <RNText
-          ellipsizeMode="tail"
-          numberOfLines={1}
-          style={[
-            sx.star,
-            {
-              color: colors.alpha(colors.blueGreyDark, 0.2),
-            },
-            favorite && sx.starFavorite,
-          ]}
+        <TextIcon
+          color={{ custom: favorite ? colors.yellowFavorite : colors.alpha(colors.blueGreyDark, 0.2) }}
+          size="icon 13px"
+          weight="bold"
         >
-          􀋃
-        </RNText>
+          {'􀋃'}
+        </TextIcon>
       </SafeRadialGradient>
     </ButtonPressAnimation>
   );
@@ -67,10 +61,10 @@ export function Info({ contextMenuProps, showFavoriteButton, theme }: InfoProps)
   return (
     <ContextMenuButton onPressMenuItem={contextMenuProps.handlePressMenuItem} {...contextMenuProps} style={showFavoriteButton && sx.info}>
       <ButtonPressAnimation>
-        <SafeRadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.gradient, sx.igradient]}>
-          <Text color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }} size="16px / 22px (Deprecated)" weight="bold">
-            􀅳
-          </Text>
+        <SafeRadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.actionIconContainer, sx.infoIcon]}>
+          <TextIcon color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }} size="icon 16px" weight="bold">
+            {'􀅳'}
+          </TextIcon>
         </SafeRadialGradient>
       </ButtonPressAnimation>
     </ContextMenuButton>
@@ -102,6 +96,8 @@ export default React.memo(function FastCurrencySelectionRow({
   const { colors: themeColors } = theme;
   const rowTestID = `${testID}-exchange-coin-row-${symbol ?? ''}-${chainId || ChainId.mainnet}`;
   const isInfoButtonVisible = !isNativeAsset(address, chainId) && !showBalance;
+
+  const canShowFavoriteButton = showFavoriteButton && chainId === ChainId.mainnet;
 
   return (
     <View style={sx.row} testID={rowTestID}>
@@ -162,9 +158,8 @@ export default React.memo(function FastCurrencySelectionRow({
       </ButtonPressAnimation>
       {!showBalance && (
         <View style={sx.fav}>
-          {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
-          {showFavoriteButton &&
-            chainId === ChainId.mainnet &&
+          {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={canShowFavoriteButton} theme={theme} />}
+          {canShowFavoriteButton &&
             (IS_IOS ? (
               <FloatingEmojis
                 centerVertically
@@ -231,19 +226,17 @@ const sx = StyleSheet.create({
   flex: {
     flex: 1,
   },
-  gradient: {
-    alignItems: 'center',
-    borderRadius: 15,
+  actionIconContainer: {
     height: 30,
-    justifyContent: 'center',
-    marginHorizontal: 2,
-    overflow: 'hidden',
     width: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
-  igradient: {
-    paddingBottom: IS_IOS ? 0 : 2.5,
-    paddingLeft: 2.5,
-    paddingTop: IS_IOS ? 1 : 0,
+  infoIcon: {
+    paddingTop: IS_ANDROID ? 2 : 1,
+    paddingLeft: StyleSheet.hairlineWidth * 2,
   },
   info: {
     paddingRight: 4,
@@ -282,11 +275,9 @@ const sx = StyleSheet.create({
   starFavorite: {
     color: colors.yellowFavorite,
   },
-  starGradient: {
-    paddingBottom: IS_IOS ? 3 : 5,
-    paddingLeft: IS_IOS ? 1 : 0,
-    paddingTop: 3,
-    width: 30,
+  starIcon: {
+    paddingTop: IS_IOS ? 1 : 3,
+    paddingLeft: StyleSheet.hairlineWidth * 2,
   },
   symbol: {
     fontSize: getFontSize(fonts.size.smedium),

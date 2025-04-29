@@ -6,13 +6,13 @@ import Animated, { Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, w
 import Spinner from '@/assets/chartSpinner.png';
 import { ClearInputDecorator, Input } from '@/components/inputs';
 import { Row } from '@/components/layout';
-import { Text } from '@/components/text';
+import { TextIcon } from '@/design-system';
 import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import { margin, padding } from '@/styles';
+import { padding } from '@/styles';
 import { deviceUtils } from '@/utils';
-import { ThemeContextProps } from '@/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -28,7 +28,6 @@ type ContainerProps = {
 };
 
 const Container = styled(Row)(({ isSearching, theme: { colors } }: ContainerProps) => ({
-  ...margin.object(0, 15, isSearching ? 8 : 0),
   ...(isSearching ? padding.object(0, 37, 0, 12) : padding.object(0)),
   backgroundColor: colors.transparent,
   borderRadius: SearchHeight / 2,
@@ -47,16 +46,6 @@ const BackgroundGradient = styled(RadialGradient).attrs(({ isDiscover, theme: { 
   width: SearchWidth,
 });
 
-const SearchIcon = styled(Text).attrs(({ theme: { colors } }: ContainerProps) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.6),
-  size: 'large',
-  weight: 'semibold',
-}))({});
-
-const SearchIconWrapper = styled(Animated.View)({
-  marginTop: android ? 4 : 9,
-});
-
 const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearching, clearTextOnFocus }: ContainerProps) => ({
   blurOnSubmit: false,
   clearTextOnFocus,
@@ -72,9 +61,9 @@ const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearching, clear
   spellCheck: false,
   weight: 'semibold',
 }))({
-  ...(android ? { marginBottom: -10, marginTop: -6 } : {}),
   flex: 1,
-  height: ios ? 39 : 56,
+  height: 39,
+  paddingVertical: 0,
   marginBottom: 1,
   marginLeft: ({ isSearching }: ContainerProps) => (isSearching ? 4 : 0),
   textAlign: ({ isSearching }: ContainerProps) => (isSearching ? 'left' : 'center'),
@@ -126,6 +115,7 @@ const DiscoverSearchInput = ({
   clearTextOnFocus = true,
   currentChainId,
 }: DiscoverSearchInputProps) => {
+  const { colors } = useTheme();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
   const searchQuery = useDiscoverSearchQueryStore(state => state.searchQuery);
   const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
@@ -199,9 +189,11 @@ const DiscoverSearchInput = ({
       <BackgroundGradient isDiscover={isDiscover} />
       {isSearching && (
         <>
-          <SearchIconWrapper style={searchIconStyle}>
-            <SearchIcon>􀊫</SearchIcon>
-          </SearchIconWrapper>
+          <Animated.View style={[searchIconStyle, { justifyContent: 'center', marginRight: 4 }]}>
+            <TextIcon color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }} size="icon 18px" weight="semibold">
+              {'􀊫'}
+            </TextIcon>
+          </Animated.View>
           <SearchSpinnerWrapper style={spinnerStyle}>
             <SearchSpinner />
           </SearchSpinnerWrapper>
@@ -217,6 +209,7 @@ const DiscoverSearchInput = ({
         placeholder={placeholder}
         ref={searchInputRef}
         value={searchQuery}
+        autoFocus
         testID={testID + '-input'}
       />
       <ClearInputDecorator
