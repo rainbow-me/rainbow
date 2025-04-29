@@ -64,7 +64,7 @@ https://reactnative.dev/docs/getting-started
 
 ### Preflight
 
-1. Run `nvm use` to force Node.js 18.
+1. Run `nvm use` to force Node.js v18.
 
 2. Set up your .env file, use our env.example as a guide.
 
