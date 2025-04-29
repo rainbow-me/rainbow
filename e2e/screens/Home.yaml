@@ -37,4 +37,4 @@ tags:
 - tapOn:
     id: paste-address-button
 - assertVisible:
-    text: "Test Wallet"
+    text: 'Test Wallet'
