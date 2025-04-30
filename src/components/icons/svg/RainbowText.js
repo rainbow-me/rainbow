@@ -3,7 +3,7 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const RainbowText = ({ color, colors, ...props }) => (
+const RainbowText = ({ colors, color = colors.black, ...props }) => (
   <Svg height="25" viewBox="0 0 125 25" width="125" {...props}>
     <Path
       clipRule="evenodd"

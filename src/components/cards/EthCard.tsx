@@ -39,16 +39,16 @@ export const EthCard = () => {
     currency: nativeCurrency,
   });
 
-  const ethAsset = useMemo(
-    () => ({
-      ...externalEthAsset,
+  const ethAsset = useMemo(() => {
+    if (!externalEthAsset) return undefined;
+    return {
+      ...(externalEthAsset || {}),
       address: ETH_ADDRESS,
       network: Network.mainnet,
       chainId: ChainId.mainnet,
       uniqueId: getUniqueId(ETH_ADDRESS, ChainId.mainnet),
-    }),
-    [externalEthAsset]
-  );
+    };
+  }, [externalEthAsset]);
 
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
@@ -76,6 +76,7 @@ export const EthCard = () => {
   );
 
   const handleAssetPress = useCallback(() => {
+    if (!ethAsset) return;
     navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: ethAsset,
       address: ETH_ADDRESS,
@@ -226,17 +227,10 @@ export const EthCard = () => {
                 longPressGestureHandlerProps={undefined}
                 selectedStrokeWidth={3}
                 stroke={colorForAsset}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
                 strokeLinecap="round"
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
                 strokeLinejoin="round"
                 strokeWidth={4}
                 width={CHART_WIDTH}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
-                chartXOffset={0}
                 isCard
               />
               <ChartDot
