@@ -263,7 +263,9 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
 export async function initializeRemoteConfig(): Promise<void> {
   const { fetch, lastFetchedVersion } = useRemoteConfigStore.getState();
   if (lastFetchedVersion !== REMOTE_CONFIG_VERSION) {
-    await Promise.race([fetch(), delay(time.seconds(3))]);
+    await Promise.race([fetch(undefined, { force: true }), delay(time.seconds(3))]);
+  } else {
+    requestIdleCallback(() => fetch(undefined, { force: true }), { timeout: time.seconds(5) });
   }
 }
 
@@ -274,7 +276,7 @@ export function getRemoteConfig(): RainbowConfig {
 export function useRemoteConfig(): RainbowConfig;
 export function useRemoteConfig<K extends keyof RainbowConfig>(keys: K[]): Pick<RainbowConfig, K>;
 export function useRemoteConfig<K extends keyof RainbowConfig>(keys?: K[]): RainbowConfig | Pick<RainbowConfig, K> {
-  return useRemoteConfigStore(s => selectRemoteConfigKeys(s, keys), keys ? shallowEqual : undefined);
+  return useRemoteConfigStore(state => selectRemoteConfigKeys(state, keys), keys ? shallowEqual : undefined);
 }
 
 // ============ Fetcher ======================================================== //
