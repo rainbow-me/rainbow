@@ -452,7 +452,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
     onCancel,
     onSuccess,
     onCloseScreen,
-    network,
     address,
     chainId,
     source: RequestSource.WALLETCONNECT,

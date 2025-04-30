@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
 import Routes from '@/navigation/routesNames';
@@ -12,19 +12,16 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useDimensions } from '@/hooks';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RootStackParamList } from '@/navigation/types';
 
 const NativeStack = createStackNavigator();
-
-export type RestoreSheetParams = {
-  RestoreSheet: {
-    fromSettings?: boolean;
-  };
-};
 
 export function RestoreSheet() {
   const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
-  const { params: { fromSettings = false } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
+  const {
+    params: { fromSettings = false },
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.RESTORE_SHEET>>();
 
   const { colors } = useTheme();
   const memoSettingsOptions = useMemo(() => settingsOptions(colors, fromSettings), [colors, fromSettings]);

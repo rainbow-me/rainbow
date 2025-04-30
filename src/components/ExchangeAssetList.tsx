@@ -10,10 +10,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { InteractionManager, Keyboard, SectionList, SectionListData } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { InteractionManager, Keyboard, SectionList, SectionListData, StyleSheet } from 'react-native';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { ButtonPressAnimation } from '@/components/animations';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import FastCurrencySelectionRow from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { ContactRow } from '@/components/contacts';
@@ -21,18 +19,18 @@ import { GradientText } from '@/components/text';
 import { CopyToast, ToastPositionContainer } from '@/components/toasts';
 import contextMenuProps from '@/components/exchangeAssetRowContextMenuProps';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { TokenSectionTypes } from '@/helpers';
 import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { abbreviations, deviceUtils, magicMemo } from '@/utils';
-import { Box, Text } from '@/design-system';
-import { colors, Colors } from '@/styles';
+import { abbreviations, magicMemo } from '@/utils';
+import { Box, globalColors, Text, useColorMode } from '@/design-system';
+import { colors } from '@/styles';
 import ExchangeTokenRow from '@/components/ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
+import ConditionalWrap from 'conditional-wrap';
+import { EasingGradient } from './easing-gradient/EasingGradient';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -45,27 +43,6 @@ export interface EnrichedExchangeAsset extends SwappableAsset {
   key: string;
   disabled?: boolean;
 }
-
-const deviceWidth = deviceUtils.dimensions.width;
-
-const HeaderBackground = styled(LinearGradient).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
-  colors: [colors.white, colors.alpha(colors.white, 0)],
-  end: { x: 0.5, y: 1 },
-  locations: [0.65, 1],
-  start: { x: 0.5, y: 0 },
-}))({
-  height: 40,
-  position: 'absolute',
-  width: deviceWidth,
-});
-
-const HeaderTitleGradient = styled(GradientText).attrs({
-  colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
-  letterSpacing: 'roundedMedium',
-  size: 'smedium',
-  steps: [0, 0.2867132868, 1],
-  weight: 'heavy',
-})({});
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const scrollIndicatorInsets = { bottom: 24 };
@@ -123,32 +100,41 @@ interface ExchangeAssetListProps {
 }
 
 const ExchangeAssetSectionListHeader = memo(function ExchangeAssetSectionListHeader({
-  openVerifiedExplainer,
   section,
 }: {
-  openVerifiedExplainer: () => void;
   section: SectionListData<EnrichedExchangeAsset>;
 }) {
-  const TitleComponent = section.useGradientText
-    ? HeaderTitleGradient
-    : ({ children, color, testID }: { children: ReactElement; color: string; testID: string }) => (
-        <Text size="14px / 19px (Deprecated)" weight="heavy" color={{ custom: color || colors.blueGreyDark50 }} testID={testID}>
-          {children}
-        </Text>
-      );
-  const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
-  return section?.title ? (
-    <ButtonPressAnimation disabled={!isVerified} onPress={openVerifiedExplainer} scaleTo={0.96}>
-      <Box paddingTop={section.useGradientText ? '10px' : { custom: 14 }} paddingBottom="4px" paddingLeft="20px">
-        <HeaderBackground />
-        <Box>
-          <TitleComponent color={section.color} testID={section.key}>
-            {`${section.title}${isVerified ? '  􀅵' : ' '}`}
-          </TitleComponent>
-        </Box>
+  const { isDarkMode } = useColorMode();
+
+  if (!section.title) return null;
+
+  const backgroundColor = isDarkMode ? globalColors.grey100 : '#FBFCFD';
+
+  return (
+    <Box backgroundColor={backgroundColor} height={25}>
+      <EasingGradient
+        startColor={backgroundColor}
+        endColor={backgroundColor}
+        startOpacity={1}
+        endOpacity={0}
+        style={styles.headerEasingGradient}
+      />
+      <Box paddingLeft="20px" height="full" width="full" justifyContent="center">
+        <ConditionalWrap
+          condition={section.useGradientText}
+          wrap={children => (
+            <GradientText colors={['#6AA2E3', '#FF54BB', '#FFA230']} locations={[0, 0.2867132868, 1]}>
+              {children}
+            </GradientText>
+          )}
+        >
+          <Text size="15pt" weight="heavy" color={{ custom: section.color || colors.blueGreyDark50 }} testID={section.key}>
+            {section.title}
+          </Text>
+        </ConditionalWrap>
       </Box>
-    </ButtonPressAnimation>
-  ) : null;
+    </Box>
+  );
 });
 
 const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetListProps> = (
@@ -195,11 +181,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
   const { onScroll } = useAndroidScrollViewGestureHandler({
     navigation: dangerouslyGetParent?.(),
   });
-
-  const openVerifiedExplainer = useCallback(() => {
-    Keyboard.dismiss();
-    navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
-  }, [navigate]);
 
   const FooterSpacer = useCallback(() => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null), [footerSpacer]);
 
@@ -277,10 +258,8 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
   );
 
   const renderSectionHeader = useCallback(
-    ({ section }: { section: SectionListData<EnrichedExchangeAsset> }) => (
-      <ExchangeAssetSectionListHeader openVerifiedExplainer={openVerifiedExplainer} section={section} />
-    ),
-    [openVerifiedExplainer]
+    ({ section }: { section: SectionListData<EnrichedExchangeAsset> }) => <ExchangeAssetSectionListHeader section={section} />,
+    []
   );
 
   return (
@@ -311,5 +290,15 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  headerEasingGradient: {
+    position: 'absolute',
+    height: 15,
+    bottom: -15,
+    left: 0,
+    right: 0,
+  },
+});
 
 export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query', 'itemProps']);

@@ -31,29 +31,34 @@ def getPassword(String currentUser, String keyChain) {
 
 import com.android.build.OutputFile
 
-apply plugin: "com.facebook.react"
-apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
+def isE2E = project.getProperties().get("isE2E") == "true"
 
-apply plugin: "io.sentry.android.gradle"
-sentry {
-    // Enables or disables the automatic configuration of Native Symbols
-    // for Sentry. This executes sentry-cli automatically so
-    // you don't need to do it manually.
-    // Default is disabled.
-    uploadNativeSymbols = true
-    // Enables or disables the automatic upload of the app's native source code to Sentry.
-    // This executes sentry-cli with the --include-sources param automatically so
-    // you don't need to do it manually.
-    // This option has an effect only when [uploadNativeSymbols] is enabled.
-    // Default is disabled.
-    includeNativeSources = true
-    // `@sentry/react-native` ships with compatible `sentry-android`
-    // This option would install the latest version that ships with the SDK or SAGP (Sentry Android Gradle Plugin)
-    // which might be incompatible with the React Native SDK
-    // Enable auto-installation of Sentry components (sentry-android SDK and okhttp, timber and fragment integrations).
-    // Default is enabled.
-    autoInstallation {
-      enabled = false
+apply plugin: "com.facebook.react"
+
+if (!isE2E) {
+    apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
+    apply plugin: "io.sentry.android.gradle"
+
+    sentry {
+        // Enables or disables the automatic configuration of Native Symbols
+        // for Sentry. This executes sentry-cli automatically so
+        // you don't need to do it manually.
+        // Default is disabled.
+        uploadNativeSymbols = true
+        // Enables or disables the automatic upload of the app's native source code to Sentry.
+        // This executes sentry-cli with the --include-sources param automatically so
+        // you don't need to do it manually.
+        // This option has an effect only when [uploadNativeSymbols] is enabled.
+        // Default is disabled.
+        includeNativeSources = true
+        // `@sentry/react-native` ships with compatible `sentry-android`
+        // This option would install the latest version that ships with the SDK or SAGP (Sentry Android Gradle Plugin)
+        // which might be incompatible with the React Native SDK
+        // Enable auto-installation of Sentry components (sentry-android SDK and okhttp, timber and fragment integrations).
+        // Default is enabled.
+        autoInstallation {
+            enabled = false
+        }
     }
 }
 
@@ -67,13 +72,13 @@ react {
 	    // codegenDir = file("../node_modules/@react-native/codegen")
 	    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
 	    // cliFile = file("../node_modules/react-native/cli.js")
-	
+
 	    /* Variants */
 	    //   The list of variants to that are debuggable. For those we're going to
 	    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
 	    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
 	    // debuggableVariants = ["liteDebug", "prodDebug"]
-	
+
 	    /* Bundling */
 	    //   A list containing the node command and its flags. Default is just 'node'.
 	    // nodeExecutableAndArgs = ["node"]
@@ -93,7 +98,7 @@ react {
 	    //   A list of extra flags to pass to the 'bundle' commands.
 	    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
 	    // extraPackagerArgs = []
-	
+
 	    /* Hermes Commands */
 	    //   The hermes compiler command to run. By default it is 'hermesc'
 	    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
@@ -165,7 +170,6 @@ android {
         renderscriptSupportModeEnabled true
         multiDexEnabled true
         testBuildType System.getProperty('testBuildType', 'debug')
-        missingDimensionStrategy 'detox', 'full'        
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         manifestPlaceholders = [
@@ -202,11 +206,14 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
-            signingConfig signingConfigs.release
-            minifyEnabled enableProguardInReleaseBuilds
+            if (isE2E) {
+                signingConfig signingConfigs.debug
+                minifyEnabled false
+            } else {
+                signingConfig signingConfigs.release
+                minifyEnabled enableProguardInReleaseBuilds
+            }
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            // Detox-specific additions to pro-guard
-            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
 
@@ -235,7 +242,7 @@ dependencies {
 
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    
+
     implementation("com.github.NovaCrypto:BIP39:0e7fa95f80") {
         exclude group: "io.github.novacrypto", module: "ToRuntime"
         exclude group: "io.github.novacrypto", module: "SHA256"
@@ -255,10 +262,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    // DETOX
-    androidTestImplementation('com.wix:detox:+') { transitive = true }
-    androidTestImplementation(project(path: ":detox"))
 }
 
 // Run this once to be able to run the application with BUCK
@@ -269,3 +272,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
