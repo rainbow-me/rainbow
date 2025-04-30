@@ -34,7 +34,7 @@ const NativeCurrencyDisplay = memo(function NativeCurrencyDisplay({ assets }: { 
     let charCount = 0;
     const displayedSymbols: string[] = [];
     for (const sym of symbols) {
-      const sepLen = displayedSymbols.length > 0 ? 1 : 0; // for '|' separator
+      const sepLen = displayedSymbols.length > 0 ? 9 : 0; // for '|' separator + 4 gap on both side
       if (charCount + sepLen + sym.length <= maxChars) {
         charCount += sepLen + sym.length;
         displayedSymbols.push(sym);
