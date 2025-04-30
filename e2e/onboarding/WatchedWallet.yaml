@@ -1,0 +1,31 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- clearState
+- launchApp:
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/Prepare.yaml
+- tapOn: 'I already have one'
+
+# (Element not found: Text matching regex: Watch an Ethereum Address)
+- tapOn: 'Watch a wallet'
+- tapOn: 'Enter an Ethereum address or ENS name'
+- inputText: 'rainbowtestwallet.eth'
+- tapOn: 'Continue'
+- tapOn: 'Import Wallet'
+- runFlow: ../utils/MaybeSetupPin.yaml
+- assertVisible:
+    id: wallet-screen
+- swipe:
+    direction: UP
+- tapOn:
+    id: token-family-header-ENS
+- swipe:
+    direction: UP
+- tapOn:
+    id: wrapped-nft-rainbowtestwallet.eth
+- assertNotVisible:
+    id: Showcase

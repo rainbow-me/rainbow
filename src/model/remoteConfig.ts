@@ -77,6 +77,7 @@ export interface RainbowConfig extends Record<string, string | boolean | number 
   trending_tokens_enabled: boolean;
   new_discover_cards_enabled: boolean;
   rainbow_trending_tokens_list_enabled: boolean;
+  king_of_the_hill_enabled: boolean;
 }
 
 const Bips = {
@@ -193,6 +194,7 @@ export const DEFAULT_CONFIG: Readonly<RainbowConfig> = {
   trending_tokens_enabled: false,
   new_discover_cards_enabled: false,
   rainbow_trending_tokens_list_enabled: false,
+  king_of_the_hill_enabled: false,
 };
 
 // ============ Firebase Defaults ============================================== //

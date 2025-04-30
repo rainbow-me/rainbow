@@ -1,0 +1,25 @@
+appId: ${APP_ID}
+env:
+  PKEY: ${DEV_PKEY}
+  NAME: 'Test Wallet'
+---
+# This is usually ran as the first command so make sure it has enough time to load the app.
+- extendedWaitUntil:
+    visible:
+      id: welcome-screen
+    timeout: 30000
+- openLink: rainbow://e2e/import?privateKey=${PKEY}&name=${NAME}
+# The first time a simulator opens a link it shows a dialog.
+- runFlow:
+    when:
+      visible: 'Open in .*'
+      platform: iOS
+    commands:
+      - tapOn: 'Open'
+- assertVisible:
+    id: wallet-screen
+# Wait for the wallet screen to load.
+- extendedWaitUntil:
+    visible:
+      id: receive-card
+    timeout: 30000

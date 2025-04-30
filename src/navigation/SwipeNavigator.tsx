@@ -16,7 +16,6 @@ import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
-import { discoverOpenSearchFnRef } from '@/components/Discover/DiscoverSearchContainer';
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useTheme } from '@/theme';
@@ -44,7 +43,8 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import ProfileScreen from '../screens/ProfileScreen';
-import DiscoverScreen, { discoverScrollToTopFnRef } from '@/screens/DiscoverScreen';
+import DiscoverScreen from '@/screens/DiscoverScreen';
+import { discoverScrollToTopFnRef, discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { ScrollPositionContext } from './ScrollPositionContext';
 import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
 import Routes from './routesNames';
@@ -254,18 +254,12 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
         const showBrowserButtons = showBrowserNavButtons && route.name === Routes.DAPP_BROWSER_SCREEN && isFocused;
 
         return (
-          <Box
-            height="full"
-            key={route.key}
-            justifyContent="flex-start"
-            paddingTop="6px"
-            testID={`tab-bar-icon-${route.name}`}
-            width="full"
-          >
+          <Box height="full" key={route.key} justifyContent="flex-start" paddingTop="6px" width="full">
             <ConditionalWrap
               condition={IS_IOS || !showBrowserButtons}
               wrap={children => (
                 <ButtonPressAnimation
+                  testID={`tab-bar-icon-${route.name}`}
                   disallowInterruption
                   enableHapticFeedback={!showBrowserButtons}
                   minLongPressDuration={300}
