@@ -124,8 +124,7 @@ export const AirdropsCard = memo(function AirdropsCard() {
   useAnimatedReaction(
     () => animatedActiveSwipeRoute.value === Routes.DISCOVER_SCREEN,
     (shouldTrigger, prevShouldTrigger) => {
-      if (prevShouldTrigger === null || prevShouldTrigger === shouldTrigger) return;
-      if (shouldTrigger) shouldPlayEnterAnimation.value = true;
+      if (shouldTrigger && !prevShouldTrigger) shouldPlayEnterAnimation.value = true;
       else shouldPlayEnterAnimation.value = false;
     },
     []
