@@ -1684,7 +1684,7 @@ PODS:
     - React-Core
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNBootSplash (5.5.3):
+  - RNBootSplash (6.3.7):
     - React-Core
   - RNCAsyncStorage (1.23.1):
     - React-Core
@@ -2598,7 +2598,7 @@ SPEC CHECKSUMS:
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativePerformance: ab7dee4c4862623d72c1530a9fc71b55458edf71
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNBootSplash: e025d4ee98d942ee6c8b495a6fe66339a6b5f6dd
+  RNBootSplash: 1f5130ba636261cca54bef4f60f4afeab8b626b8
   RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
