@@ -49,7 +49,6 @@ jobs:
           # key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}  
           restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}  
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
@@ -69,9 +68,8 @@ jobs:
         with:
           # key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ hashFiles('**/*.xcodeproj') }}
-          restore-keys: |
-            xcode-cache-deriveddata-${{ github.workflow }}-${{ hashFiles('**/*.xcodeproj') }}
-            xcode-cache-deriveddata-${{ github.workflow }}-
+          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+          deriveddata-directory: ios/build
          
         # TOPHAT iOS SIM   
       - name: Build the app in release mode for simulator
