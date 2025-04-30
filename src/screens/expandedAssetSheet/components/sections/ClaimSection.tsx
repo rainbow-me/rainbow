@@ -29,6 +29,8 @@ export const ClaimContent = memo(function ClaimContent({ claimable }: { claimabl
     });
   };
 
+  const [asset] = claimable.assets;
+
   return (
     <Box gap={12}>
       <ButtonPressAnimation onPress={onPressClaim} scaleTo={0.95}>
@@ -39,14 +41,14 @@ export const ClaimContent = memo(function ClaimContent({ claimable }: { claimabl
           gap={12}
         >
           <AirdropCoinRow
-            address={claimable.asset.address}
-            airdropValue={claimable.value.nativeAsset.display}
+            address={asset.asset.address}
+            airdropValue={claimable.totalCurrencyValue.display}
             chainId={claimable.chainId}
-            hasZeroValue={Number(claimable.value.nativeAsset.amount) === 0}
-            icon={claimable.asset.icon_url ?? claimable.iconUrl}
-            name={claimable.asset.name}
-            symbol={claimable.asset.symbol}
-            uniqueId={claimable.asset.uniqueId}
+            hasZeroValue={Number(asset.amount.amount) === 0}
+            icon={asset.asset.icon_url ?? claimable.iconUrl}
+            name={asset.asset.name}
+            symbol={asset.asset.symbol}
+            uniqueId={asset.asset.uniqueId}
           />
         </Box>
       </ButtonPressAnimation>

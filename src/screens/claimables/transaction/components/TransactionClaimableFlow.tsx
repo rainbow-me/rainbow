@@ -10,6 +10,8 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { useWallets } from '@/hooks';
 import { watchingAlert } from '@/utils';
+import { ClaimableType } from '@/resources/addys/claimables/types';
+import { ClaimValueMultipleDisplay } from '../../shared/components/ClaimValueMultipleDisplay';
 
 export function TransactionClaimableFlow() {
   const {
@@ -25,6 +27,8 @@ export function TransactionClaimableFlow() {
   } = useTransactionClaimableContext();
   const { goBack } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
+
+  const type = claimable.type.replaceAll('_', '-');
 
   // BUTTON PROPS
   const shouldShowClaimText = !!(claimStatus === 'ready' && outputChainId && outputToken);
@@ -65,10 +69,15 @@ export function TransactionClaimableFlow() {
               return i18n.t(i18n.l.claimables.panel.fetching_quote);
           }
         }
-      case 'ready':
+      case 'ready': {
+        if (claimable.assets.length > 1) {
+          return i18n.t(i18n.l.claimables.panel.hold_to_claim);
+        }
+        const [asset] = claimable.assets;
         return i18n.t(i18n.l.claimables.panel.claim_amount, {
-          amount: requiresSwap && quoteState.tokenAmountDisplay ? quoteState.tokenAmountDisplay : claimable.value.claimAsset.display,
+          amount: requiresSwap && quoteState.tokenAmountDisplay ? quoteState.tokenAmountDisplay : asset.amount.display,
         });
+      }
       case 'claiming':
         return i18n.t(i18n.l.claimables.panel.claim_in_progress);
       case 'pending':
@@ -79,7 +88,7 @@ export function TransactionClaimableFlow() {
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimStatus, claimable.value.claimAsset.display, requiresSwap, quoteState, gasState, outputChainId, outputToken]);
+  }, [claimStatus, claimable.assets, requiresSwap, quoteState, gasState, outputChainId, outputToken]);
 
   const onPress = useCallback(() => {
     if (isReadOnlyWallet) {
@@ -94,19 +103,63 @@ export function TransactionClaimableFlow() {
     }
   }, [claim, claimStatus, goBack, isReadOnlyWallet, setClaimStatus]);
 
-  return (
-    <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
-      <Box gap={20} alignItems="center">
+  const title = useMemo(() => {
+    switch (type) {
+      case ClaimableType.RainbowSuperTokenCreatorFees:
+        return i18n.t(i18n.l.claimables.panel.creator_lp_fees);
+      default:
+        return i18n.t(i18n.l.claimables.panel.claim);
+    }
+  }, [type]);
+
+  const subtitle = useMemo(() => {
+    switch (type) {
+      case ClaimableType.RainbowSuperTokenCreatorFees:
+        return i18n.t(i18n.l.claimables.panel.rainbow_token_launcher);
+      default:
+        return undefined;
+    }
+  }, [type]);
+
+  const ClaimContent = useMemo(() => {
+    if (claimable.assets.length === 1) {
+      return (
         <ClaimValueDisplay
-          label={requiresSwap ? quoteState.nativeValueDisplay : claimable.value.nativeAsset.display}
+          label={requiresSwap ? quoteState.nativeValueDisplay : claimable.totalCurrencyValue.display}
           tokenIconUrl={outputToken?.iconUrl}
           tokenSymbol={outputToken?.symbol}
           chainId={outputChainId}
         />
+      );
+    }
+    return <ClaimValueMultipleDisplay assets={claimable.assets} totalCurrencyValue={claimable.totalCurrencyValue.display} />;
+  }, [
+    claimable.assets,
+    claimable.totalCurrencyValue,
+    requiresSwap,
+    quoteState.nativeValueDisplay,
+    outputChainId,
+    outputToken?.iconUrl,
+    outputToken?.symbol,
+  ]);
+
+  return (
+    <ClaimPanel title={title} subtitle={subtitle} claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
+      <Box gap={20} alignItems="center">
+        {ClaimContent}
         {swapEnabled && <ClaimCustomization />}
       </Box>
+
       <Box alignItems="center" width="full">
-        <ClaimButton onPress={onPress} disabled={disabled} shimmer={shimmer} biometricIcon={shouldShowClaimText} label={buttonLabel} />
+        <ClaimButton
+          enableHoldToPress={claimStatus !== 'success' && claimStatus !== 'pending' && claimStatus !== 'unrecoverableError'}
+          isLoading={claimStatus === 'claiming'}
+          onPress={onPress}
+          disabled={disabled}
+          shimmer={shimmer}
+          biometricIcon={shouldShowClaimText}
+          label={buttonLabel}
+        />
         <GasDetails />
       </Box>
     </ClaimPanel>

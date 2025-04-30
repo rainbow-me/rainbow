@@ -53,15 +53,37 @@ export enum ClaimableType {
   TestingSponsored = 'frontend-testing-sponsored',
 }
 
+export interface ClaimableAsset<T, A> {
+  asset: T;
+  amount: A;
+  usd_value: number;
+  value: number;
+}
+
+export type FormattedAmount = {
+  amount: string;
+  display: string;
+};
+
 interface AddysBaseClaimable {
   name: string;
   unique_id: string;
   type: ClaimableType;
   network: ChainId;
-  asset: AddysAsset;
-  amount: string;
   dapp: DApp;
+  assets: ClaimableAsset<AddysAsset, string>[];
   total_usd_value: number;
+  total_value: string;
+
+  /**
+   * @deprecated - use assets instead
+   */
+  asset: AddysAsset;
+
+  /**
+   * @deprecated - use assets[number].amount instead
+   */
+  amount: string;
 }
 
 interface AddysTransactionClaimable extends AddysBaseClaimable {
@@ -115,17 +137,19 @@ export interface ConsolidatedClaimablesResponse {
 }
 
 export interface BaseClaimable {
+  assets: ClaimableAsset<ParsedAddressAsset, FormattedAmount>[];
+  /**
+   * @deprecated - use assets[number].asset instead
+   */
   asset: ParsedAddressAsset;
   chainId: ChainId;
   name: string;
   uniqueId: string;
-  analyticsId: string;
   iconUrl: string;
   type: ClaimableType;
-  value: {
-    claimAsset: { amount: string; display: string };
-    nativeAsset: { amount: string; display: string };
-    usd: number;
+  totalCurrencyValue: {
+    amount: string;
+    display: string;
   };
 }
 

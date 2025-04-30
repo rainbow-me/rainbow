@@ -5,7 +5,6 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -20,17 +19,22 @@ export const Claimable = React.memo(function Claimable({
   claimable: ClaimableType;
   extendedState: ExtendedState;
 }) {
-  const { navigate, nativeCurrency } = extendedState;
+  const { navigate } = extendedState;
 
   const isETHRewards = claimable.uniqueId === 'rainbow-eth-rewards';
 
   const nativeCurrencyDisplay = useMemo(() => {
     if (!claimable) return null;
-    return convertAmountToNativeDisplayWorklet(claimable.value?.nativeAsset?.amount, nativeCurrency, true);
-  }, [claimable, nativeCurrency]);
+    return claimable.totalCurrencyValue.display;
+  }, [claimable]);
 
+  // @ts-expect-error TODO : +N if > 3
   const nativeDisplay = useMemo(() => {
-    return claimable?.value?.claimAsset?.display;
+    if (claimable.assets.length > 1) {
+      return claimable.assets.map(asset => asset.asset.symbol).join(' | ');
+    }
+    const [asset] = claimable.assets;
+    return asset.amount.display;
   }, [claimable]);
 
   if (!claimable || !nativeDisplay || !nativeCurrencyDisplay) return null;
@@ -42,11 +46,14 @@ export const Claimable = React.memo(function Claimable({
         if (!isETHRewards) {
           analytics.track(analytics.event.claimablePanelOpened, {
             claimableType: claimable?.actionType,
-            claimableId: claimable?.analyticsId,
+            claimableId: claimable?.type,
             chainId: claimable?.chainId,
-            asset: { symbol: claimable?.asset.symbol, address: claimable?.asset.address },
-            amount: claimable?.value.claimAsset.amount,
-            usdValue: claimable?.value.usd,
+            assets: claimable?.assets.map(asset => ({
+              symbol: asset.asset.symbol,
+              address: asset.asset.address,
+              amount: asset.amount.amount,
+            })),
+            usdValue: claimable?.totalCurrencyValue.amount,
           });
           navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
         } else {

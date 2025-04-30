@@ -43,7 +43,7 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
           const { currency } = userAssetsStoreManager.getState();
           newClaimables = claimables.filter(c => c.uniqueId !== uniqueId);
           newTotalValue = convertAmountToNativeDisplayWorklet(
-            newClaimables.reduce((acc, claimable) => sumWorklet(acc, claimable.value.nativeAsset.amount || '0'), '0'),
+            newClaimables.reduce((acc, claimable) => sumWorklet(acc, claimable.totalCurrencyValue.amount || '0'), '0'),
             currency
           );
         }
