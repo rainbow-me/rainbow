@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -9,8 +9,77 @@ import { analytics } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { getClaimableName } from '@/resources/addys/claimables/utils';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
+const avgCharWidth = 7;
+const estimatedHorizontalPadding = 250;
+const maxChars = Math.floor((DEVICE_WIDTH - estimatedHorizontalPadding) / avgCharWidth);
+
+const NativeCurrencyDisplay = memo(function NativeCurrencyDisplay({ assets }: { assets: ClaimableType['assets'] }) {
+  if (assets.length === 1) {
+    const [{ amount }] = assets;
+    return (
+      <Text weight="semibold" color="labelTertiary" size="13pt" ellipsizeMode="tail" numberOfLines={1}>
+        {amount.display}
+      </Text>
+    );
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { displayedSymbols, remaining } = useMemo(() => {
+    const symbols = assets.map(a => a.asset.symbol);
+
+    let charCount = 0;
+    const displayedSymbols: string[] = [];
+    for (const sym of symbols) {
+      const sepLen = displayedSymbols.length > 0 ? 1 : 0; // for '|' separator
+      if (charCount + sepLen + sym.length <= maxChars) {
+        charCount += sepLen + sym.length;
+        displayedSymbols.push(sym);
+      } else {
+        break;
+      }
+    }
+    return { displayedSymbols, remaining: symbols.length - displayedSymbols.length };
+  }, [assets]);
+
+  if (displayedSymbols.length === 0) {
+    return (
+      <Text weight="semibold" color="labelTertiary" size="13pt" ellipsizeMode="tail" numberOfLines={1}>
+        {`${assets.length} Tokens`}
+      </Text>
+    );
+  }
+
+  return (
+    <Box flexDirection="row" alignItems="center" gap={4}>
+      {displayedSymbols.map((sym, idx) => (
+        <React.Fragment key={`${sym}-${idx}`}>
+          <Text weight="semibold" color="labelTertiary" size="13pt">
+            {sym}
+          </Text>
+          {idx < displayedSymbols.length - 1 && (
+            <Text weight="semibold" color={{ custom: 'rgba(26, 28, 31, 0.1)' }} size="13pt">
+              |
+            </Text>
+          )}
+        </React.Fragment>
+      ))}
+      {remaining > 0 && (
+        <React.Fragment>
+          <Text weight="semibold" color={{ custom: 'rgba(26, 28, 31, 0.1)' }} size="13pt">
+            |
+          </Text>
+          <Text weight="semibold" color="labelTertiary" size="13pt">
+            +{remaining}
+          </Text>
+        </React.Fragment>
+      )}
+    </Box>
+  );
+});
 
 export const Claimable = React.memo(function Claimable({
   claimable,
@@ -28,7 +97,6 @@ export const Claimable = React.memo(function Claimable({
     return claimable.totalCurrencyValue.display;
   }, [claimable]);
 
-  // @ts-expect-error TODO : +N if > 3
   const nativeDisplay = useMemo(() => {
     if (claimable.assets.length > 1) {
       return claimable.assets.map(asset => asset.asset.symbol).join(' | ');
@@ -80,11 +148,9 @@ export const Claimable = React.memo(function Claimable({
             numberOfLines={1}
             style={{ maxWidth: deviceUtils.dimensions.width - 220 }}
           >
-            {isETHRewards ? 'Rainbow ETH Rewards' : claimable?.name}
+            {getClaimableName(claimable)}
           </Text>
-          <Text weight="semibold" color="labelTertiary" size="13pt">
-            {nativeDisplay}
-          </Text>
+          <NativeCurrencyDisplay assets={claimable.assets} />
         </Stack>
       </Inline>
       <Box

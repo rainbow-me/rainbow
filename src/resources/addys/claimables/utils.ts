@@ -1,9 +1,18 @@
+import * as i18n from '@/languages';
 import { NativeCurrencyKey } from '@/entities';
 import { add, convertAmountToNativeDisplayWorklet, convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
 import { parseAsset } from '@/resources/assets/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { Network } from '@/state/backendNetworks/types';
-import { acceptedClaimableTypes, AddysClaimable, BaseClaimable, Claimable, RainbowClaimable, AcceptedClaimableType } from './types';
+import {
+  acceptedClaimableTypes,
+  AddysClaimable,
+  BaseClaimable,
+  Claimable,
+  RainbowClaimable,
+  AcceptedClaimableType,
+  ClaimableType,
+} from './types';
 
 function isAcceptedClaimableType(type: AddysClaimable['claim_action_type']): type is AcceptedClaimableType {
   if (!type || type === 'unknown') return false;
@@ -83,4 +92,21 @@ export const parseClaimables = <C extends Claimable>(
       return undefined;
     })
     .filter((c): c is C => !!c);
+};
+
+export const claimableTypeTransformation = (type: ClaimableType) => type?.replaceAll('_', '-');
+
+export const getClaimableName = (claimable: Claimable) => {
+  const transformedType = claimableTypeTransformation(claimable.type);
+  if (transformedType === ClaimableType.RainbowSuperTokenCreatorFees) {
+    return i18n.t(i18n.l.claimables.panel.creator_lp_fees);
+  }
+
+  // FIXME: Handle merklClaimable <NAME> Vault
+
+  if (claimable.uniqueId === 'rainbow-eth-rewards') {
+    return i18n.t(i18n.l.claimables.panel.rainbow_eth_rewards);
+  }
+
+  return claimable.name;
 };

@@ -315,7 +315,6 @@ export function TransactionClaimableContextProvider({
         !outputTokenAddress ||
         (requiresSwap && (!quoteState.quote || 'error' in quoteState.quote))
       ) {
-        console.log('here');
         haptics.notificationError();
         setClaimStatus('recoverableError');
         logger.warn('[TransactionClaimableContext]: Somehow entered unreachable state in claim');

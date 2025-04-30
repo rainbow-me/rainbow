@@ -31,8 +31,8 @@ export function ClaimButton({
   if (enableHoldToPress) {
     return (
       <HoldToActivateButton
-        backgroundColor={`rgba(41, 90, 247, 1)`}
-        disabledBackgroundColor={`rgba(41, 90, 247, 0.2)`}
+        backgroundColor={`rgba(41,90,247,1)`}
+        disabledBackgroundColor={`rgba(41,90,247,0.2)`}
         disabled={disabled}
         isProcessing={isLoading}
         label={label}
