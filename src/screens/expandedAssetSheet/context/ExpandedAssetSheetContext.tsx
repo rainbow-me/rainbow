@@ -153,7 +153,7 @@ export function ExpandedAssetSheetContextProvider({
       name: asset.name,
       symbol: asset.symbol,
       decimals: asset.decimals,
-      iconUrl: 'icon_url' in asset ? asset.icon_url : undefined,
+      iconUrl: 'iconUrl' in asset ? asset.iconUrl : asset.icon_url,
       isNativeAsset: isNativeAsset(address, chainId),
       colors: assetColors ?? { primary: colors.blueGreyDark },
       transferable: 'transferable' in asset ? asset.transferable : true,
