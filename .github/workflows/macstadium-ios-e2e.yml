@@ -42,7 +42,7 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
             !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}  # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
 
@@ -155,12 +155,12 @@ jobs:
 
       - name: Install pods
         run: |
-          rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
+          # rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
           yarn install-bundle && yarn install-pods
 
       - uses: irgaly/xcode-cache@v1
         with:
-          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ hashFiles('**/*.xcodeproj') }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
 
       - name: Install Maestro
