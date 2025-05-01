@@ -15,6 +15,7 @@ import {
   toFixedWorklet as safeToFixedWorklet,
   toStringWorklet as safeToStringWorklet,
 } from '../safe-math/SafeMath';
+import store from '@/redux/store';
 
 /**
  * @desc subtracts two numbers
@@ -87,7 +88,7 @@ export function formatNumber(
 type CurrencyFormatterOptions = {
   decimals?: number;
   valueIfNaN?: string;
-  currency: NativeCurrencyKey;
+  currency?: NativeCurrencyKey;
 };
 
 const subscriptDigits: { [key: string]: string } = {
@@ -169,7 +170,10 @@ export function formatFractionWorklet(fraction: string): string {
   return `${'0'.repeat(leadingZeros)}${significantDigits}`;
 }
 
-export function formatCurrency(value: string | number, { valueIfNaN = '', currency }: CurrencyFormatterOptions): string {
+export function formatCurrency(
+  value: string | number,
+  { valueIfNaN = '', currency = store.getState().settings.nativeCurrency }: CurrencyFormatterOptions = {}
+): string {
   const numericString = typeof value === 'number' ? toDecimalString(value) : String(value);
   if (isNaN(+numericString)) return valueIfNaN;
 
