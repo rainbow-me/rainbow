@@ -11,6 +11,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import com.oblador.keychain.KeychainModuleBuilder
 import com.oblador.keychain.KeychainPackage
@@ -62,7 +63,7 @@ class MainApplication : Application(), ReactApplication {
         ReactNativePerformance.onAppStarted();
         super.onCreate()
         appContext = this
-        SoLoader.init(this,  /* native exopackage */false)
+        SoLoader.init(this, OpenSourceMergedSoMapping)
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
             // If you opted-in for the New Architecture, we load the native entry point for this app.
             load()
