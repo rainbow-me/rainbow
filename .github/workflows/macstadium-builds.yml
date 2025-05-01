@@ -53,7 +53,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install && yarn setup
+          yarn install --frozen-lockfile && yarn setup
 
       - name: Version debug
         run: |
@@ -63,6 +63,13 @@ jobs:
         run: |
           # rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
           yarn install-bundle && yarn install-pods
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: ~/.cocoapods
+          key: cocoapods-${{ runner.os }}-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: cocoapods-${{ runner.os }}-
 
       - uses: irgaly/xcode-cache@v1
         with:
