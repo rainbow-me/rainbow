@@ -53,7 +53,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install --frozen-lockfile && yarn setup
+          yarn install --immutable && yarn setup
 
       - name: Version debug
         run: |
