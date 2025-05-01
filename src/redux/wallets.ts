@@ -322,7 +322,7 @@ export const addressSetSelected = (address: string) => () => saveAddress(address
  * @returns Within a dispatch, a new mapping from wallet IDs to wallet objects.
  */
 export const createAccountForWallet =
-  (id: RainbowWallet['id'], color: RainbowWallet['color'], name: RainbowWallet['name']) =>
+  (id: RainbowWallet['id'], color: RainbowWallet['color'] | null, name: RainbowWallet['name']) =>
   async (dispatch: ThunkDispatch<AppState, unknown, WalletsAddedAccountAction>, getState: AppGetState) => {
     const { wallets } = getState().wallets;
     const newWallets = { ...wallets };

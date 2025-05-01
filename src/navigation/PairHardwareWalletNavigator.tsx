@@ -11,17 +11,9 @@ import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
+import { RootStackParamList } from './types';
 
 const Swipe = createMaterialTopTabNavigator();
-
-type PairHardwareWalletNavigatorParams = {
-  entryPoint: string;
-  isFirstWallet: boolean;
-};
-
-type RouteParams = {
-  PairHardwareWalletNavigatorParams: PairHardwareWalletNavigatorParams;
-};
 
 // atoms used for navigator state
 export const LedgerImportDeviceIdAtom = atom({
@@ -30,7 +22,7 @@ export const LedgerImportDeviceIdAtom = atom({
 });
 
 export function PairHardwareWalletNavigator() {
-  const { params } = useRoute<RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET>>();
   const { height, width } = useDimensions();
 
   const [currentRouteName, setCurrentRouteName] = useState<string>(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);

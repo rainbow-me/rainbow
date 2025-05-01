@@ -122,7 +122,7 @@ export default function SpeedUpAndCancelSheet() {
   const speedUrgentSelected = useRef(false);
   const {
     params: { type, tx, accentColor },
-  } = useRoute<RouteProp<RootStackParamList, 'SpeedUpAndCancelSheet' | 'SpeedUpAndCancelBootomSheet'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.SPEED_UP_AND_CANCEL_SHEET | typeof Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET>>();
 
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState<GasFeeType>();
