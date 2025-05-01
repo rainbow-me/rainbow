@@ -11,7 +11,6 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backups/routes';
 import { useWallets } from '@/hooks';
 import WalletTypes from '@/helpers/walletTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -55,7 +54,7 @@ export default function BackupSheetSectionNoProvider() {
 
     goBack();
     navigate(Routes.SETTINGS_SHEET, {
-      screen: SETTINGS_BACKUP_ROUTES.SECRET_WARNING,
+      screen: Routes.SECRET_WARNING,
       params: {
         isBackingUp: true,
         title,

@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -15,20 +14,14 @@ import { Share } from './content/console/share';
 import { Review } from './content/console/review';
 import { ViewWeeklyEarnings } from './content/console/view-weekly-earnings';
 import { RequireWalletBalance } from './content/console/require-wallet-balance';
-
-type ConsoleSheetParams = {
-  ConsoleSheet: {
-    referralCode: string | undefined;
-    deeplinked: boolean;
-    viewWeeklyEarnings: boolean;
-  };
-};
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 
 export const ConsoleSheet = () => {
-  const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONSOLE_SHEET>>();
   const referralCode = params?.referralCode;
-  const deeplinked = params?.deeplinked;
-  const viewWeeklyEarnings = params?.viewWeeklyEarnings;
+  const deeplinked = params?.deeplinked ?? false;
+  const viewWeeklyEarnings = params?.viewWeeklyEarnings ?? false;
 
   const { animationKey, setReferralCode, setProfile, setAnimationKey, setStep, setDeeplinked } = usePointsProfileContext();
 

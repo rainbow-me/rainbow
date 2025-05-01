@@ -2,14 +2,15 @@ import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
 import { useAccountSettings, useChartDataLabels, useColorForAsset } from '@/hooks';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
 import { useNavigation } from '@/navigation';
 
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 import { DEFAULT_CHART_TYPE } from '@/redux/charts';
 import { ChartData, usePriceChart } from './useChartInfo';
-
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 export const UniBalanceHeightDifference = 100;
 
 const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, data: ChartData[]) => {
@@ -91,11 +92,7 @@ export default function useChartThrottledPoints({
 
   const color = useColorForAsset(assetForColor);
 
-  const { params } = useRoute<{
-    key: string;
-    name: string;
-    params: any;
-  }>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET_V2>>();
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
   const {
     data: chart = [],

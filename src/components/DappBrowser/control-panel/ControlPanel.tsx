@@ -43,7 +43,6 @@ import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
 import store from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
-import WebView from 'react-native-webview';
 import { useNavigation } from '@/navigation';
 import { address } from '@/utils/abbreviations';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
@@ -57,19 +56,14 @@ import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 import { greaterThan } from '@/helpers/utilities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { RootStackParamList } from '@/navigation/types';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import Routes from '@/navigation/routesNames';
 
 const PAGES = {
   HOME: 'home',
   SWITCH_WALLET: 'switch-wallet',
   SWITCH_NETWORK: 'switch-network',
-};
-
-type ControlPanelParams = {
-  ControlPanel: {
-    activeTabRef: React.MutableRefObject<WebView | null>;
-    selectedAddress: string;
-  };
 };
 
 const HOME_PANEL_FULL_HEIGHT = 334;
@@ -81,7 +75,7 @@ export const ControlPanel = () => {
   const { accountAddress } = useAccountSettings();
   const {
     params: { activeTabRef },
-  } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_CONTROL_PANEL>>();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const activeTabHost = getDappHost(activeTabUrl || '') || RAINBOW_HOME;

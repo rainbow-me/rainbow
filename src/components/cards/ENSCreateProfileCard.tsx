@@ -47,9 +47,7 @@ export const ENSCreateProfileCard = () => {
         routeName,
         cardType,
       });
-      navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-        fromDiscover: true,
-      });
+      navigate(Routes.REGISTER_ENS_NAVIGATOR);
     } else {
       watchingAlert();
     }

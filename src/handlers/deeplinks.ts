@@ -122,7 +122,6 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
           // First go back to home to dismiss any open shit
           // and prevent a weird crash
           if (initialRoute !== Routes.WELCOME_SCREEN) {
-            // @ts-expect-error FIXME: Expected 2-3 arguments, but got 1.
             Navigation.handleAction(Routes.WALLET_SCREEN);
           }
 
