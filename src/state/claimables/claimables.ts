@@ -68,6 +68,6 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
   }),
   {
     storageKey: 'claimables',
-    version: 1,
+    version: 2,
   }
 );
