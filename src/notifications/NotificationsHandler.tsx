@@ -137,7 +137,7 @@ export const NotificationsHandler = () => {
       if (!walletAddress) {
         return;
       }
-      Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+      Navigation.handleAction(Routes.PROFILE_SCREEN);
 
       const chainId = parseInt(data.chain, 10);
 

@@ -1,28 +1,21 @@
 import React from 'react';
-import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp } from '@react-navigation/native';
 
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { Box } from '@/design-system';
+import { RootStackParamList } from '@/navigation/types';
 import { StyleSheet } from 'react-native';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-
-export type PortalSheetProps = {
-  sheetHeight?: number;
-  children: React.FC;
-};
-
-type NavigationRouteParams = {
-  Portal: PortalSheetProps;
-};
+import { useNavigation } from '@/navigation';
 
 /**
  * The core Portal sheet
  */
 export function Portal() {
   const { goBack } = useNavigation();
-  const { params } = useRoute<RouteProp<NavigationRouteParams, 'Portal'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PORTAL>>();
 
   if (!params) {
     goBack();
@@ -66,7 +59,7 @@ const styles = StyleSheet.create({
 export function useOpen() {
   const { navigate } = useNavigation();
 
-  const open = React.useCallback((children: React.FC, options: Omit<PortalSheetProps, 'children'> = {}) => {
+  const open = React.useCallback((children: React.FC, options: Omit<RootStackParamList[typeof Routes.PORTAL], 'children'> = {}) => {
     navigate(Routes.PORTAL, {
       children,
       ...options,
@@ -82,7 +75,7 @@ export function useOpen() {
  * Use `useOpen` where possible. This util exists for limited use
  * outside a React component.
  */
-export function open(children: React.FC, options: Omit<PortalSheetProps, 'children'> = {}) {
+export function open(children: React.FC, options: Omit<RootStackParamList[typeof Routes.PORTAL], 'children'> = {}) {
   Navigation.handleAction(Routes.PORTAL, {
     children,
     ...options,

@@ -1,6 +1,6 @@
 import * as lang from '@/languages';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, Share } from 'react-native';
+import { Share } from 'react-native';
 import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
 import { AppVersionStamp } from '@/components/AppVersionStamp';
 import Menu from './Menu';

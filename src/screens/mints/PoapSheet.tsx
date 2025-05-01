@@ -19,8 +19,7 @@ import { watchingAlert } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { PoapEvent } from '@/graphql/__generated__/arcDev';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { arcClient } from '@/graphql';
 import Spinner from '@/components/Spinner';
@@ -32,6 +31,7 @@ import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analytics } from '@/analytics';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { RootStackParamList } from '@/navigation/types';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -62,10 +62,6 @@ const BlurWrapper = styled(View).attrs({
   ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
-interface PoapSheetProps {
-  event: PoapEvent;
-}
-
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 
 const PoapSheet = () => {
@@ -74,7 +70,7 @@ const PoapSheet = () => {
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-  const params = useRoute();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POAP_SHEET>>();
   const {
     data: { nfts },
   } = useLegacyNFTs({
@@ -85,7 +81,7 @@ const PoapSheet = () => {
   const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(undefined);
   const [nft, setNft] = useState<UniqueAsset | null>(null);
 
-  const poapEvent: PoapEvent = (params.params as PoapSheetProps)?.event;
+  const poapEvent = params.event;
 
   const poapMintType = poapEvent.secretWord ? 'secretWord' : 'qrHash';
 

@@ -57,7 +57,7 @@ const Content = () => {
               </ButtonPressAnimation>
             }
             rightComponent={
-              <ButtonPressAnimation onPress={onTapSearch} scaleTo={0.8} overflowMargin={50}>
+              <ButtonPressAnimation onPress={onTapSearch} scaleTo={0.8} overflowMargin={50} testID="discover-search-icon">
                 <Box
                   background="fillSecondary"
                   width={36}

@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { metadataClient } from '@/graphql';
@@ -7,9 +7,12 @@ import { createQueryKey } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils';
+import Routes from '@/navigation/routesNames';
+import { useNavigation } from '@/navigation';
+import { RootStackParamList } from '@/navigation/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
-type ChartTime = (typeof chartTimes)[number];
+export type ChartTime = (typeof chartTimes)[number];
 type PriceChartTimeData = { points?: [x: number, y: number][] };
 
 const getChartTimeArg = (selected: ChartTime) =>
@@ -48,18 +51,14 @@ export const usePriceChart = ({
   currency: SupportedCurrencyKey;
   chainId: ChainId;
 }) => {
-  const { setParams } = useNavigation();
+  const { setParams } = useNavigation<typeof Routes.EXPANDED_ASSET_SHEET_V2>();
   const updateChartType = useCallback(
     (type: ChartTime) => {
       setParams({ chartType: type });
     },
     [setParams]
   );
-  const { params } = useRoute<{
-    key: string;
-    name: string;
-    params: any;
-  }>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET_V2>>();
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
   const query = useQuery({
     queryFn: async () => {
