@@ -27,7 +27,7 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { useAirdropSuggestionsStore } from '../state/airdropSuggestionsStore';
 import { ImgixImage } from '@/components/images';
 import { fetchENSAddress } from '@/hooks/useENSAddress';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { PersonalizedCohort, PredefinedCohort, SuggestedUser } from '@rainbow-me/token-launcher';
 import { addressHashedEmoji, addressHashedColorIndex } from '@/utils/profileUtils';
 import { ContactAvatar } from '@/components/contacts';
@@ -248,45 +248,56 @@ const AddressInput = memo(function AddressInput({ id }: { id: string }) {
   const [address, setAddress] = useState('');
   const [isFetchingEnsData, setIsFetchingEnsData] = useState(false);
 
+  const resolveEnsAddress = useCallback(async (text: string) => {
+    setIsFetchingEnsData(true);
+    try {
+      const [avatar, resolvedAddress] = await Promise.all([fetchENSAvatar(text), fetchENSAddress(text)]);
+      const imageUrl = avatar?.imageUrl ?? null;
+
+      return {
+        resolvedAddress,
+        imageUrl,
+      };
+    } catch (e) {
+      const error = ensureError(e);
+      logger.error(new RainbowError('[TokenLauncher]: Error fetching ENS data', error), {
+        input: text,
+      });
+      return {
+        resolvedAddress: null,
+        imageUrl: null,
+      };
+    } finally {
+      setIsFetchingEnsData(false);
+    }
+  }, []);
+
   const handleInputChange = useCallback(
     async (text: string) => {
       const isValid = checkIsValidAddressOrDomainFormat(text);
+      const previousIsValid = isValidAddress;
+      const isEnsAddress = isENSAddressFormat(text);
 
       addOrEditAirdropAddress({ id, address: text, isValid });
       setAddress(text);
 
-      if (isValid !== isValidAddress) {
-        setIsValidAddress(isValid);
+      // empty text is valid, but we can't assume the first input change can't also be valid (pasting)
+      if (previousIsValid === isValid && !isEnsAddress && text !== '') return;
 
-        // If the address is a valid ENS address, fetch the avatar and address
-        if (isValid && isENSAddressFormat(text)) {
-          setIsFetchingEnsData(true);
-          try {
-            const [avatar, ensAddress] = await Promise.all([fetchENSAvatar(text), fetchENSAddress(text)]);
-            const imageUrl = avatar?.imageUrl ?? null;
+      setIsValidAddress(isValid);
 
-            if (!ensAddress) {
-              throw new Error('No address found for ENS name');
-            }
-
-            setAddressImage(imageUrl);
-            addOrEditAirdropAddress({ id, address: ensAddress, label: text, isValid, imageUrl });
-          } catch (e) {
-            const error = e as Error;
-            logger.error(new RainbowError('[TokenLauncher]: Error fetching ENS data'), {
-              message: error.message,
-            });
-            setIsValidAddress(false);
-            addOrEditAirdropAddress({ id, address: text, isValid: false });
-          } finally {
-            setIsFetchingEnsData(false);
-          }
-        } else if (isValid) {
-          addOrEditAirdropAddress({ id, address: text, isValid });
+      if (isEnsAddress) {
+        const { resolvedAddress, imageUrl } = await resolveEnsAddress(text);
+        setAddressImage(imageUrl);
+        if (resolvedAddress) {
+          addOrEditAirdropAddress({ id, address: resolvedAddress, label: text, isValid: true, imageUrl });
+        } else {
+          addOrEditAirdropAddress({ id, address: text, isValid: false });
+          setIsValidAddress(false);
         }
       }
     },
-    [addOrEditAirdropAddress, isValidAddress, id]
+    [addOrEditAirdropAddress, isValidAddress, id, resolveEnsAddress]
   );
 
   const labelIcon = useMemo(() => {

@@ -15,6 +15,7 @@ import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
+import { SettingsPages } from '../SettingsSheet/SettingsPages';
 
 const HEADER_HEIGHT = 255;
 const HEADER_WIDTH = 390;
@@ -47,7 +48,7 @@ export function NotificationsPromoSheetInner({
       navigate(Routes.SETTINGS_SHEET);
       delay(300).then(() =>
         navigate(Routes.SETTINGS_SHEET, {
-          screen: 'NotificationsSection',
+          screen: SettingsPages.notifications.key,
         })
       );
     });
