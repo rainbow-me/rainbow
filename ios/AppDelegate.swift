@@ -16,10 +16,15 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
     ReactNativePerformance.onAppStarted()
 
-    // NSLog("⚙️ Rainbow internals are \(RAINBOW_INTERNALS_ENABLED ? "enabled" : "disabled").")
-
+#if RAINBOW_INTERNALS_ENABLED
+    let internalsStatus = "enabled"
+#else
+    let internalsStatus = "disabled"
+#endif
+    NSLog("Rainbow internals are \(internalsStatus).")
+    
     FirebaseApp.configure()
-    // RNBranch.initSession(withLaunchOptions: launchOptions, isReferrable: true)
+    RNBranch.initSession(launchOptions: launchOptions, isReferrable: true)
 
     UNUserNotificationCenter.current().delegate = self
 
@@ -38,7 +43,7 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     if isE2E { return success }
 
     if success, let rootView = window?.rootViewController?.view {
-      // RNSplashScreen.showSplash("LaunchScreen", in: rootView)
+      RNSplashScreen.showSplash("LaunchScreen", inRootView: rootView)
     }
 
     return success
@@ -64,7 +69,7 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
       subview.alpha = 0.0
     }) { _ in
       rainbowIcon.isHidden = true
-      // RNSplashScreen.hide()
+      RNSplashScreen.hide()
     }
   }
 

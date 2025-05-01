@@ -2073,7 +2073,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.25.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.25.0, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
   version: 7.27.0
   resolution: "@babel/runtime@npm:7.27.0"
   dependencies:
@@ -2088,6 +2088,13 @@ __metadata:
   dependencies:
     regenerator-runtime: "npm:^0.14.0"
   checksum: 10c0/d6143adf5aa1ce79ed374e33fdfd74fa975055a80bc6e479672ab1eadc4e4bfd7484444e17dd063a1d180e051f3ec62b357c7a2b817e7657687b47313158c3d2
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.5.5":
+  version: 7.27.1
+  resolution: "@babel/runtime@npm:7.27.1"
+  checksum: 10c0/530a7332f86ac5a7442250456823a930906911d895c0b743bf1852efc88a20a016ed4cd26d442d0ca40ae6d5448111e02a08dd638a4f1064b47d080e2875dc05
   languageName: node
   linkType: hard
 
@@ -7101,16 +7108,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:1.12.4":
-  version: 1.12.4
-  resolution: "@shopify/react-native-skia@npm:1.12.4"
+"@shopify/react-native-skia@npm:2.0.0-next.3":
+  version: 2.0.0-next.3
+  resolution: "@shopify/react-native-skia@npm:2.0.0-next.3"
   dependencies:
     canvaskit-wasm: "npm:0.40.0"
-    react-reconciler: "npm:0.27.0"
+    react-reconciler: "npm:0.31.0"
   peerDependencies:
-    react: ">=18.0 <19.0.0"
-    react-native: ">=0.64 <0.78.0"
-    react-native-reanimated: ">=2.0.0"
+    react: ">=19.0"
+    react-native: ">=0.78"
+    react-native-reanimated: ^3.0
   peerDependenciesMeta:
     react-native:
       optional: true
@@ -7118,7 +7125,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: scripts/setup-canvaskit.js
-  checksum: 10c0/479c8b2b5f83c497cc54a103f7365b505306e7a35f6eada93250a3ef2ae62533db13d1f96acacde3094980d34bf97cca3d34166a2308bba7e0565e8d40b43cf3
+  checksum: 10c0/96a2538a6ef29d8c5d0ab07dbff6fdec1da1e509c11968fd37d559454ee8f4d70c11d5b937984b952d013db76297b85c7bef9087835be5104b2ef32ee312c301
   languageName: node
   linkType: hard
 
@@ -9465,7 +9472,7 @@ __metadata:
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.8.0"
     "@shopify/react-native-performance": "npm:4.1.2"
-    "@shopify/react-native-skia": "npm:1.12.4"
+    "@shopify/react-native-skia": "npm:2.0.0-next.3"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
@@ -9589,7 +9596,7 @@ __metadata:
     react-native-action-sheet: "npm:2.2.0"
     react-native-actionsheet: "npm:2.4.2"
     react-native-aes-crypto: "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
-    react-native-animateable-text: "npm:0.15.0"
+    react-native-animateable-text: "npm:0.16.0-beta.0"
     react-native-ble-plx: "npm:3.2.1"
     react-native-blur-view: "christianbaroni/react-native-blur-view#2548117e37750f2c08ef0ec8c7e1c38e1294c9a8"
     react-native-bootsplash: "npm:5.5.3"
@@ -23751,9 +23758,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-animateable-text@npm:0.15.0":
-  version: 0.15.0
-  resolution: "react-native-animateable-text@npm:0.15.0"
+"react-native-animateable-text@npm:0.16.0-beta.0":
+  version: 0.16.0-beta.0
+  resolution: "react-native-animateable-text@npm:0.16.0-beta.0"
   dependencies:
     deprecated-react-native-prop-types: "npm:^2.3.0"
     nullthrows: "npm:^1.1.1"
@@ -23761,7 +23768,7 @@ __metadata:
     react: "*"
     react-native: ">=0.74.0"
     react-native-reanimated: ">=3"
-  checksum: 10c0/c3d79d3b3dbedfad3de938051b95d4aeac3a1188f4b3d26e6bdf6b1c5c976618ca959338f04076fe42b2b4f1dfb74b29b2c1750970f6f555fd0214abfed4b8d7
+  checksum: 10c0/29399df6e3bd095358e0e57ae9a701274c9e6814ac9f2fa4999caa21b6933458b24c94cf4816bbbebacb25e0b150aadf75e85e90b4414f936f4fd631cb52c53d
   languageName: node
   linkType: hard
 
@@ -24642,15 +24649,14 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"react-reconciler@npm:0.27.0":
-  version: 0.27.0
-  resolution: "react-reconciler@npm:0.27.0"
+"react-reconciler@npm:0.31.0":
+  version: 0.31.0
+  resolution: "react-reconciler@npm:0.31.0"
   dependencies:
-    loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.21.0"
+    scheduler: "npm:^0.25.0"
   peerDependencies:
-    react: ^18.0.0
-  checksum: 10c0/55daff215ff9544dc5b2ba6ecda20520df0f1b2ca145c00fd0905ced1b025f3779664715c36b511a8906aa24b8b433270b0032cd499c55c4e4c878cddc8fc986
+    react: ^19.0.0
+  checksum: 10c0/97920e1866c7206e200c3920c133c2e85f62a3c54fd9bc4b83c10c558d83d98eb378caab4fe37498e0cc1b1b2665d898627f2ae2537b29c8ab295ec8abc0c580
   languageName: node
   linkType: hard
 
@@ -25718,7 +25724,7 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"scheduler@npm:0.25.0":
+"scheduler@npm:0.25.0, scheduler@npm:^0.25.0":
   version: 0.25.0
   resolution: "scheduler@npm:0.25.0"
   checksum: 10c0/a4bb1da406b613ce72c1299db43759526058fdcc413999c3c3e0db8956df7633acf395cb20eb2303b6a65d658d66b6585d344460abaee8080b4aa931f10eaafe
@@ -25732,15 +25738,6 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
     loose-envify: "npm:^1.1.0"
     object-assign: "npm:^4.1.1"
   checksum: 10c0/9658932a73148a93d791c064b331d9690ddfecc4de25bcd6c9b89f5f1166e3d23d9c31c1595d66565e5ffbb34d47035cb14841aba6444bc266bfcd215cefe9c0
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.21.0":
-  version: 0.21.0
-  resolution: "scheduler@npm:0.21.0"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/083a9a0c83f4923f7f5bb28d8bcf13cff42c90f4303bc187166520fcfc576c97e946d426c707d5a9c0aa0a655819605dd0c741467c626824bbf191251c126f1b
   languageName: node
   linkType: hard
 

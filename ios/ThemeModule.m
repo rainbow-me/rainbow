@@ -19,7 +19,7 @@
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(setMode:(NSString *)mode) {
-  // ((AppDelegate*) UIApplication.sharedApplication.delegate).window.overrideUserInterfaceStyle =
+  UIApplication.sharedApplication.delegate.window.overrideUserInterfaceStyle =
   [mode isEqualToString:@"dark"] ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
 }
 
