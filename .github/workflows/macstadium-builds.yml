@@ -76,7 +76,6 @@ jobs:
           # key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ hashFiles('**/*.xcodeproj') }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
-          deriveddata-directory: ios/build
          
         # TOPHAT iOS SIM   
       - name: Build the app in release mode for simulator

@@ -169,7 +169,6 @@ jobs:
         with:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ hashFiles('**/*.xcodeproj') }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
-          deriveddata-directory: ios/build
 
       - name: Install Maestro
         run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
