@@ -56,7 +56,7 @@ export default function useENSPendingRegistrations() {
     (name: string) => {
       startRegistration(name, REGISTRATION_MODES.CREATE);
       setTimeout(() => {
-        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
+        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { name });
       }, 100);
     },
     [navigate, startRegistration]

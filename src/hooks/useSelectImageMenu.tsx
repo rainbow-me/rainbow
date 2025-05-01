@@ -135,7 +135,7 @@ export default function useSelectImageMenu({
 
   const handleSelectNFT = useCallback(() => {
     navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
-      onSelect: (asset: UniqueAsset) => onChangeImage?.({ asset }),
+      onSelect: asset => onChangeImage?.({ asset }),
       springDamping: 1,
       topOffset: 0,
     });
