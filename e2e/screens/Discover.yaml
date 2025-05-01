@@ -30,7 +30,7 @@ tags:
 
 # Discover screen search for SOCKS and open expanded state
 - tapOn:
-    id: discover-search-input
+    id: discover-search-icon
 - assertVisible:
     id: done-button
 - inputText: 'SOCKS'
@@ -44,7 +44,6 @@ tags:
     direction: DOWN
 - tapOn:
     id: discover-search-clear-input
-- hideKeyboard
 - tapOn:
     id: discover-search-input
 
@@ -56,7 +55,6 @@ tags:
     id: verified-1
 - tapOn:
     id: discover-search-clear-input
-- hideKeyboard
 
 # Check ENS resolution and profile sheet
 - tapOn:
