@@ -3,7 +3,7 @@ import { useNavigation } from '@/navigation';
 import React, { useCallback, useEffect } from 'react';
 import { StatusBar, View } from 'react-native';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
-import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { unlockableAppIcons } from '@/appIcons/appIcons';
 import { ImgixImage } from '@/components/images';
 import { Source } from 'react-native-fast-image';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -15,18 +15,14 @@ import { SheetActionButton } from '@/components/sheet';
 import { analytics } from '@/analytics';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { IS_ANDROID } from '@/env';
+import { SettingsPages } from './SettingsSheet/SettingsPages';
+import { RootStackParamList } from '@/navigation/types';
 
 const APP_ICON_SIZE = 64;
 
-type AppIconUnlockSheetParams = {
-  [Routes.APP_ICON_UNLOCK_SHEET]: {
-    appIconKey: UnlockableAppIconKey;
-  };
-};
-
 export default function AppIconUnlockSheet() {
-  const { params } = useRoute<RouteProp<AppIconUnlockSheetParams, 'AppIconUnlockSheet'>>();
-  const { goBack, navigate, setParams } = useNavigation();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.APP_ICON_UNLOCK_SHEET>>();
+  const { goBack, navigate, setParams } = useNavigation<typeof Routes.APP_ICON_UNLOCK_SHEET>();
   const { colors } = useTheme();
 
   const { appIconKey } = params;
@@ -37,7 +33,7 @@ export default function AppIconUnlockSheet() {
     goBack();
     navigate(Routes.SETTINGS_SHEET);
     await delay(500);
-    navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
+    navigate(Routes.SETTINGS_SHEET, { screen: SettingsPages.appIcon.key });
     analytics.track(analytics.event.appIconUnlockSheetCTAPressed, { appIcon: appIconKey });
   }, [appIconKey, goBack, navigate]);
 

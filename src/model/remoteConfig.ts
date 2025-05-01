@@ -172,6 +172,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   trending_tokens_enabled: false,
   new_discover_cards_enabled: false,
   rainbow_trending_tokens_list_enabled: false,
+  king_of_the_hill_enabled: false,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -246,6 +247,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         case 'trending_tokens_enabled':
         case 'new_discover_cards_enabled':
         case 'rainbow_trending_tokens_list_enabled':
+        case 'king_of_the_hill_enabled':
           config[key] = entry.asBoolean();
           break;
 

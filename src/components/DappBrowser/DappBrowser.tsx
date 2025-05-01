@@ -30,16 +30,8 @@ import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
 import { AnimatedTabUrls, TabViewGestureStates } from './types';
 import { generateUniqueIdWorklet } from './utils';
-
-export type DappBrowserParams =
-  | {
-      url?: string;
-    }
-  | undefined;
-
-type RouteParams = {
-  DappBrowserParams: DappBrowserParams;
-};
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
@@ -77,8 +69,8 @@ const DappBrowserComponent = memo(function DappBrowserComponent() {
 const NewTabTrigger = () => {
   const { animatedTabUrls } = useBrowserContext();
   const { newTabWorklet } = useBrowserWorkletsContext();
-  const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
-  const { setParams } = useNavigation();
+  const route = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_SCREEN>>();
+  const { setParams } = useNavigation<typeof Routes.DAPP_BROWSER_SCREEN>();
 
   const setNewTabUrl = (updatedTabUrls: AnimatedTabUrls) => {
     // Set the new tab URL ahead of creating the tab so the URL is available when the tab is rendered

@@ -23,15 +23,8 @@ import { usePasswordValidation } from './usePasswordValidation';
 import { TextInput } from 'react-native';
 import { useTheme } from '@/theme';
 import { useNavigation } from '@/navigation';
-
-type BackupCloudStepParams = {
-  BackupCloudStep: {
-    isFromWalletReadyPrompt?: boolean;
-    walletId?: string;
-    onSuccess: (password: string) => Promise<void>;
-    onCancel: () => Promise<void>;
-  };
-};
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 
 type NativeEvent = {
   nativeEvent: {
@@ -43,7 +36,7 @@ export function BackupCloudStep() {
   const { isDarkMode } = useTheme();
   const { goBack } = useNavigation();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { params } = useRoute<RouteProp<BackupCloudStepParams, 'BackupCloudStep'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -92,7 +85,7 @@ export function BackupCloudStep() {
         goBack();
       }
 
-      onSuccess(password);
+      onSuccess?.(password);
     },
     [goBack, isFromWalletReadyPrompt, onSuccess]
   );
@@ -100,7 +93,7 @@ export function BackupCloudStep() {
   useEffect(() => {
     return () => {
       if (!password) {
-        onCancel();
+        onCancel?.();
       }
     };
   }, []);

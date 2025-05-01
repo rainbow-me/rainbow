@@ -16,6 +16,7 @@ import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { RootStackParamList } from '@/navigation/types';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -76,16 +77,8 @@ const Item = ({ item, rank }: ItemProps) => {
   );
 };
 
-export type PairHardwareWalletSigningSheetParams = {
-  shouldGoBack: boolean;
-};
-
-type RouteParams = {
-  PairHardwareWalletSigningSheetParams: PairHardwareWalletSigningSheetParams;
-};
-
 export function PairHardwareWalletSigningSheet() {
-  const route = useRoute<RouteProp<RouteParams, 'PairHardwareWalletSigningSheetParams'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET>>();
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
@@ -194,8 +187,8 @@ export function PairHardwareWalletSigningSheet() {
         </Stack>
       </Inset>
       <ActionButton
-        label={route?.params?.shouldGoBack ? i18n.t(TRANSLATIONS.blind_signing_enabled) : i18n.t(TRANSLATIONS.finish_importing)}
-        onPress={() => (route?.params?.shouldGoBack ? goBack() : handleButtonPress())}
+        label={params?.shouldGoBack ? i18n.t(TRANSLATIONS.blind_signing_enabled) : i18n.t(TRANSLATIONS.finish_importing)}
+        onPress={() => (params?.shouldGoBack ? goBack() : handleButtonPress())}
       />
     </Layout>
   );

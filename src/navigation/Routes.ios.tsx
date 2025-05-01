@@ -76,6 +76,7 @@ import {
   expandedAssetSheetV2Config,
   networkSelectorConfig,
   tokenLauncherConfig,
+  kingOfTheHillExplainSheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -115,6 +116,7 @@ import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/NetworkSelector';
+import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -286,6 +288,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />
       <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
       <NativeStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} {...tokenLauncherConfig} />
+      <NativeStack.Screen
+        component={KingOfTheHillExplainSheet}
+        name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}
+        {...kingOfTheHillExplainSheetConfig}
+      />
     </NativeStack.Navigator>
   );
 }
