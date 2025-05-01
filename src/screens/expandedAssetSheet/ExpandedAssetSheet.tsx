@@ -9,6 +9,7 @@ import { SheetFooter } from './components/SheetFooter';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { RootStackParamList } from '@/navigation/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Routes from '@/navigation/routesNames';
 
 const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
@@ -62,7 +63,7 @@ function ExpandedAssetSheetContent() {
 export function ExpandedAssetSheet() {
   const {
     params: { asset, address, chainId, hideClaimSection = false },
-  } = useRoute<RouteProp<RootStackParamList, 'ExpandedAssetSheetV2'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET_V2>>();
 
   return (
     <ExpandedAssetSheetContextProvider asset={asset} address={address} chainId={chainId} hideClaimSection={hideClaimSection}>

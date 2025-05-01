@@ -101,7 +101,7 @@ export type SwapsParams = InputAmountsToSet & {
 };
 
 export function getSwapsNavigationParams(): SwapsParams {
-  let params: SwapsParams | undefined = Navigation.getActiveRoute()?.params;
+  let params = Navigation.getActiveRoute<typeof Routes.SWAP>()?.params;
   if (!params) params = getFallbackParams();
   return params;
 }

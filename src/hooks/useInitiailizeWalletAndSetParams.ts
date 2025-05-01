@@ -6,6 +6,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useEffect, useRef } from 'react';
 import { InteractionManager } from 'react-native';
+import Routes from '@/navigation/routesNames';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -14,9 +15,9 @@ enum WalletLoadingStates {
 }
 
 export const useInitializeWalletAndSetParams = () => {
-  const { params } = useRoute<RouteProp<RootStackParamList, 'WalletScreen'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_SCREEN>>();
+  const { setParams } = useNavigation<typeof Routes.WALLET_SCREEN>();
 
-  const { setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
 
   const walletState = useRef(WalletLoadingStates.IDLE);

@@ -92,7 +92,7 @@ function getButtonLabel(claimStatus: ClaimStatus, gasInfo: GasInfo) {
 export const ClaimAirdropSheet = () => {
   const {
     params: { claimable, hideViewTokenButton = false },
-  } = useRoute<RouteProp<RootStackParamList, 'ClaimAirdropSheet'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.CLAIM_AIRDROP_SHEET>>();
 
   const [{ iconUrl, symbolHasEmoji }] = useState(() => ({
     iconUrl: { uri: getSizedImageUrl(claimable.asset.icon_url, COIN_ICON_SIZE) },
