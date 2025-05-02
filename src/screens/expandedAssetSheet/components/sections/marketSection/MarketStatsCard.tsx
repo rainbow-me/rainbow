@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import React, { memo } from 'react';
 import { Box, Inline, Stack, Text, AnimatedText, useForegroundColor } from '@/design-system';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
