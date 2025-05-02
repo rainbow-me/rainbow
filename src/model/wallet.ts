@@ -51,6 +51,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
 import { Network } from '@/state/backendNetworks/types';
+import { GetOptions, SetOptions } from 'react-native-keychain';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -898,7 +899,7 @@ export const saveKeyForWallet = async (
   address: EthereumAddress,
   walletKey: null | EthereumPrivateKey | HardwareKey,
   hardware: boolean,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ) => {
   if (hardware) {
     return await saveHardwareKey(address, walletKey as HardwareKey, {
@@ -935,7 +936,7 @@ export const getKeyForWallet = async (
 export const savePrivateKey = async (
   address: EthereumAddress,
   privateKey: null | EthereumPrivateKey,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ) => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
@@ -961,7 +962,7 @@ export const savePrivateKey = async (
 export const saveHardwareKey = async (
   address: EthereumAddress,
   privateKey: null | HardwareKey,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ) => {
   const key = `${address}_${privateKeyKey}`;
   const val = {
@@ -1047,7 +1048,7 @@ export const getHardwareKey = async (address: EthereumAddress): Promise<null | P
 export const saveSeedPhrase = async (
   seedphrase: EthereumWalletSeed,
   keychain_id: RainbowWallet['id'],
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ): Promise<void> => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${keychain_id}_${seedPhraseKey}`;
@@ -1065,7 +1066,7 @@ export const saveSeedPhrase = async (
 
 export const getSeedPhrase = async (
   id: RainbowWallet['id'],
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<GetOptions>, 'androidEncryptionPin'> = {}
 ): Promise<null | SeedPhraseData> => {
   try {
     const key = `${id}_${seedPhraseKey}`;

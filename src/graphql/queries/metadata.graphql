@@ -647,6 +647,35 @@ query interactionsWithToken($chainID: Int!, $address: String!, $tokenAddress: St
   }
 }
 
+query marketStats($chainID: Int!, $address: String!) {
+  stats(chainID: $chainID, address: $address) {
+    bucketCount
+    lastTransaction
+    liquidityPool {
+      address
+      token0Address
+      token1Address
+    }
+    summary {
+      duration
+      start
+      end
+      stats {
+        transactions
+        buys
+        sells
+        volume
+        buyVolume
+        sellVolume
+        uniques
+        buyers
+        sellers
+        priceChangePct
+      }
+    }
+  }
+}
+
 query kingOfTheHill($currency: String) {
   kingOfTheHill(currency: $currency) {
     currentKing {

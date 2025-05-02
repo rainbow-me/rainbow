@@ -12,8 +12,6 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
-import com.oblador.keychain.KeychainModuleBuilder
-import com.oblador.keychain.KeychainPackage
 import io.branch.rnbranch.RNBranchModule
 import me.rainbow.NativeModules.Haptics.RNHapticsPackage
 import me.rainbow.NativeModules.Internals.InternalPackage
@@ -41,7 +39,6 @@ class MainApplication : Application(), ReactApplication {
             packages.add(RNTextAnimatorPackage())
             packages.add(RNZoomableButtonPackage())
             packages.add(InternalPackage())
-            packages.add(KeychainPackage(KeychainModuleBuilder().withoutWarmUp()))
             packages.add(RNStartTimePackage(START_MARK))
             packages.add(RNHapticsPackage())
             packages.add(NavbarHeightPackage())
