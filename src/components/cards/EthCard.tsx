@@ -40,7 +40,6 @@ export const EthCard = () => {
   });
 
   const ethAsset = useMemo(() => {
-    if (!externalEthAsset) return undefined;
     return {
       ...(externalEthAsset || {}),
       address: ETH_ADDRESS,
@@ -76,7 +75,6 @@ export const EthCard = () => {
   );
 
   const handleAssetPress = useCallback(() => {
-    if (!ethAsset) return;
     navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: ethAsset,
       address: ETH_ADDRESS,
@@ -110,14 +108,14 @@ export const EthCard = () => {
   const CHART_HEIGHT = 80;
 
   let isNegativePriceChange = false;
-  if (ethAsset?.native?.change[0] === '-') {
+  if (ethAsset.native?.change[0] === '-') {
     isNegativePriceChange = true;
   }
-  const priceChangeDisplay = isNegativePriceChange ? ethAsset?.native?.change.substring(1) : ethAsset?.native?.change;
+  const priceChangeDisplay = isNegativePriceChange ? ethAsset.native?.change.substring(1) : ethAsset.native?.change;
 
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
-  const loadedPrice = accentColorLoaded && ethAsset?.native?.change;
+  const loadedPrice = accentColorLoaded && ethAsset.native?.change;
   const loadedChart = throttledData?.points.length && loadedPrice;
 
   const [noChartData, setNoChartData] = useState(false);
@@ -159,7 +157,7 @@ export const EthCard = () => {
                   <>
                     <ChainImage chainId={ChainId.mainnet} position="relative" size={20} />
                     <Text size="17pt" color={{ custom: colorForAsset }} weight="heavy">
-                      {ethAsset?.name}
+                      {ethAsset.name}
                     </Text>
                   </>
                 )}
@@ -195,7 +193,7 @@ export const EthCard = () => {
             </Box>
           ) : (
             <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
-              {ethAsset?.native?.price.display}
+              {ethAsset.native?.price.display}
             </Text>
           )}
         </Stack>
