@@ -14,7 +14,7 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { colors } from '@/styles';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
-import { TimeFrames, useTokenMarketStats } from '@/resources/metadata/tokenStats';
+import { MarketStats, TimeFrames, useTokenMarketStats } from '@/resources/metadata/tokenStats';
 
 const TIMEFRAME_SWITCH_CONFIG = TIMING_CONFIGS.buttonPressConfig;
 
@@ -166,12 +166,8 @@ const TimeframeItem = memo(function TimeframeItem({
   );
 });
 
-export const MarketStatsCard = memo(function MarketStatsCard() {
-  const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
-
-  const { data: marketData } = useTokenMarketStats({ chainID: asset.chainId, address: asset.address });
-
-  if (!marketData || Object.keys(marketData).length === 0) return null;
+const MarketStatsCardContent = memo(function MarketStatsCardContent({ marketData }: { marketData: Record<string, MarketStats> }) {
+  const { accentColors } = useExpandedAssetSheetContext();
 
   const defaultTimeframe = Object.keys(marketData)[Object.keys(marketData).length - 1];
   const selectedTimeframe = useSharedValue(defaultTimeframe);
@@ -337,4 +333,13 @@ export const MarketStatsCard = memo(function MarketStatsCard() {
       </Box>
     </Box>
   );
+});
+
+export const MarketStatsCard = memo(function MarketStatsCard() {
+  const { basicAsset: asset } = useExpandedAssetSheetContext();
+  const { data: marketData } = useTokenMarketStats({ chainID: asset.chainId, address: asset.address });
+
+  if (!marketData || Object.keys(marketData).length === 0) return null;
+
+  return <MarketStatsCardContent marketData={marketData} />;
 });
