@@ -3,12 +3,19 @@ import Firebase
 import Expo
 import RNBranch
 import React
+import ReactAppDependencyProvider
+import React_RCTAppDelegate
 import Sentry
 import ReactNativePerformance
 import UserNotifications
 
 @main
 class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
+  var window: UIWindow?
+
+  var reactNativeDelegate: ReactNativeDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+
   var isRapRunning = false
 
   override func application(_ application: UIApplication,
@@ -22,7 +29,7 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     let internalsStatus = "disabled"
 #endif
     NSLog("Rainbow internals are \(internalsStatus).")
-    
+
     FirebaseApp.configure()
     RNBranch.initSession(launchOptions: launchOptions, isReferrable: true)
 
@@ -34,8 +41,22 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
     RCTSetDefaultColorSpace(RCTColorSpace.displayP3)
 
-    self.moduleName = "Rainbow"
-    self.initialProps = [:]
+    let delegate = ReactNativeDelegate()
+    let factory = RCTReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+    bindReactNativeFactory(factory)
+
+    window = UIWindow(frame: UIScreen.main.bounds)
+
+    factory.startReactNative(
+      withModuleName: "Rainbow",
+      in: window,
+      launchOptions: launchOptions
+    )
+
 
     let success = super.application(application, didFinishLaunchingWithOptions: launchOptions)
     let isE2E = ProcessInfo.processInfo.arguments.contains("isE2ETest")
@@ -47,14 +68,6 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     }
 
     return success
-  }
-
-  override func bundleURL() -> URL? {
-    #if DEBUG
-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
-    #else
-    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")!
-    #endif
   }
 
   func hideSplashScreenAnimated() {
@@ -128,5 +141,19 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
       }
       UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: identifiers)
     }
+  }
+}
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    self.bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")!
+#endif
   }
 }

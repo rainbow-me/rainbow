@@ -90,6 +90,7 @@ const rainbowConfig = {
 };
 const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
 
+// Need support for import.meta to enable this.
 config.resolver.unstable_enablePackageExports = false;
 
 const sentryConfig = withSentryConfig(config, {

@@ -40,7 +40,6 @@ export const EthCard = () => {
   });
 
   const ethAsset = useMemo(() => {
-    if (!externalEthAsset) return undefined;
     return {
       ...(externalEthAsset || {}),
       address: ETH_ADDRESS,
