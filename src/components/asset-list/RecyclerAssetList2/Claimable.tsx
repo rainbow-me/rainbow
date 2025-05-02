@@ -97,15 +97,7 @@ export const Claimable = React.memo(function Claimable({
     return claimable.totalCurrencyValue.display;
   }, [claimable]);
 
-  const nativeDisplay = useMemo(() => {
-    if (claimable.assets.length > 1) {
-      return claimable.assets.map(asset => asset.asset.symbol).join(' | ');
-    }
-    const [asset] = claimable.assets;
-    return asset.amount.display;
-  }, [claimable]);
-
-  if (!claimable || !nativeDisplay || !nativeCurrencyDisplay) return null;
+  if (!claimable || !nativeCurrencyDisplay) return null;
 
   return (
     <Box
