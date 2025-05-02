@@ -92,13 +92,6 @@ export const Claimable = React.memo(function Claimable({
 
   const isETHRewards = claimable.uniqueId === 'rainbow-eth-rewards';
 
-  const nativeCurrencyDisplay = useMemo(() => {
-    if (!claimable) return null;
-    return claimable.totalCurrencyValue.display;
-  }, [claimable]);
-
-  if (!claimable || !nativeCurrencyDisplay) return null;
-
   return (
     <Box
       as={ButtonPressAnimation}
@@ -156,7 +149,7 @@ export const Claimable = React.memo(function Claimable({
         style={{ backgroundColor: 'rgba(7, 17, 32, 0.02)' }}
       >
         <Text weight="semibold" color="label" align="center" size="17pt">
-          {nativeCurrencyDisplay}
+          {claimable.totalCurrencyValue.display}
         </Text>
       </Box>
     </Box>
