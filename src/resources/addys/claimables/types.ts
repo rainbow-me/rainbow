@@ -46,6 +46,7 @@ export enum ClaimableType {
   HypersubV2 = 'hypersub-v2',
   Clanker = 'clanker',
   Rainbow = 'rainbow',
+  RainbowEthRewards = 'rainbow-eth-rewards',
   RainbowSuperTokenCreatorFees = 'rainbow-super-token-creator-fees',
 
   // test claims
@@ -57,7 +58,7 @@ export interface ClaimableAsset<T, A> {
   asset: T;
   amount: A;
   usd_value: number;
-  value: number;
+  value: string;
 }
 
 export type FormattedAmount = {

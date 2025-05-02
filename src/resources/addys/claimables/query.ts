@@ -1,5 +1,6 @@
+import * as i18n from '@/languages';
 import { NativeCurrencyKey } from '@/entities';
-import { Claimable, ConsolidatedClaimablesResponse } from './types';
+import { Claimable, ClaimableType, ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -75,8 +76,7 @@ export async function getClaimables({ address, currency, abortController }: Clai
         });
         const { amount, display } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, ethNativeAsset.price?.value || 0, currency);
         if (!isZero(amount)) {
-          // @ts-expect-error - TODO: fix this type weird shit with ETH rewards
-          const ethRewardsClaimable = {
+          const ethRewardsClaimable: Claimable = {
             assets: [
               {
                 amount: {
@@ -93,7 +93,19 @@ export async function getClaimables({ address, currency, abortController }: Clai
               display,
             },
             uniqueId: 'rainbow-eth-rewards',
-          } as Claimable;
+
+            // NOTE: None of this below is used, but is required to satisfy the Claimable type
+            actionType: 'sponsored',
+            asset: ethNativeAsset,
+            action: {
+              url: 'https://rainbow.me',
+              method: 'GET',
+            },
+            chainId: ChainId.mainnet,
+            name: i18n.t(i18n.l.claimables.panel.rainbow_eth_rewards),
+            iconUrl: 'https://rainbow.me/favicon.ico',
+            type: ClaimableType.RainbowEthRewards,
+          };
           sortedClaimables.unshift(ethRewardsClaimable);
         }
       }
