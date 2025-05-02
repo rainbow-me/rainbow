@@ -5,5 +5,4 @@ export type ClaimStatus =
   | 'pending' // claim has been submitted but we don't have a tx hash
   | 'success' // claim has been submitted and we have a tx hash
   | 'recoverableError' // claim or auth has failed, can try again
-  | 'failedGasEstimate' // claim has failed to estimate gas
   | 'unrecoverableError'; // swap has failed, unrecoverable error

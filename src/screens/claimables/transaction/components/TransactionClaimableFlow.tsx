@@ -116,10 +116,17 @@ export function TransactionClaimableFlow() {
     switch (type) {
       case ClaimableType.RainbowSuperTokenCreatorFees:
         return i18n.t(i18n.l.claimables.panel.rainbow_token_launcher);
+      case ClaimableType.merklClaimable: {
+        const assetSymbols = claimable.assets
+          .slice(0, 2)
+          .map(asset => asset.asset.symbol)
+          .join(' / ');
+        return i18n.t(i18n.l.claimables.panel.merkl_claimable_description, { assetSymbols });
+      }
       default:
         return undefined;
     }
-  }, [type]);
+  }, [type, claimable.assets]);
 
   const ClaimContent = useMemo(() => {
     if (claimable.assets.length === 1) {

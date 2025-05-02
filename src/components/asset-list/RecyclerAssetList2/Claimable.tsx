@@ -10,7 +10,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { getClaimableName } from '@/resources/addys/claimables/utils';
+import { getClaimableName, isRainbowEthRewards } from '@/resources/addys/claimables/utils';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 const avgCharWidth = 7;
@@ -90,7 +90,7 @@ export const Claimable = React.memo(function Claimable({
 }) {
   const { navigate } = extendedState;
 
-  const isETHRewards = claimable.uniqueId === 'rainbow-eth-rewards';
+  const isETHRewards = isRainbowEthRewards(claimable.uniqueId);
 
   return (
     <Box

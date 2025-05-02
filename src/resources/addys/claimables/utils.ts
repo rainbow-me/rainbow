@@ -53,6 +53,7 @@ export const parseClaimables = <C extends Claimable>(
             transferable: claimable.asset.transferable ?? false,
           },
         }),
+        dapp: claimable.dapp,
         chainId: claimable.network,
         name: claimable.name,
         uniqueId: claimable.unique_id,
@@ -94,6 +95,8 @@ export const parseClaimables = <C extends Claimable>(
     .filter((c): c is C => !!c);
 };
 
+export const isRainbowEthRewards = (uniqueId: string) => uniqueId === 'rainbow-eth-rewards';
+
 export const claimableTypeTransformation = (type: ClaimableType) => type?.replaceAll('_', '-');
 
 export const getClaimableName = (claimable: Claimable) => {
@@ -102,9 +105,11 @@ export const getClaimableName = (claimable: Claimable) => {
     return i18n.t(i18n.l.claimables.panel.creator_lp_fees);
   }
 
-  // FIXME: Handle merklClaimable <NAME> Vault
+  if (transformedType === ClaimableType.merklClaimable) {
+    return i18n.t(i18n.l.claimables.panel.merkl_claimable, { dappName: claimable.dapp.name });
+  }
 
-  if (claimable.uniqueId === 'rainbow-eth-rewards') {
+  if (isRainbowEthRewards(claimable.uniqueId)) {
     return i18n.t(i18n.l.claimables.panel.rainbow_eth_rewards);
   }
 
