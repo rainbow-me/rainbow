@@ -86,7 +86,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         // And then navigate to Profile sheet
         InteractionManager.runAfterInteractions(() => {
           Navigation.handleAction(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
-            address: ensName,
+            address: ensName ?? '',
             fromRoute: 'QR Code',
           });
 

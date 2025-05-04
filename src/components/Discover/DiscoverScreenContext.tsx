@@ -28,17 +28,21 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
   const sectionListRef = useRef<SectionList>(null);
 
   const scrollToTop = useCallback(() => {
-    if (isSearching) {
-      sectionListRef.current?.scrollToLocation({
-        itemIndex: 0,
-        sectionIndex: 0,
-        animated: true,
-      });
-    } else {
-      scrollViewRef.current?.scrollTo({
-        y: 0,
-        animated: true,
-      });
+    try {
+      if (isSearching) {
+        sectionListRef.current?.scrollToLocation({
+          itemIndex: 0,
+          sectionIndex: 0,
+          animated: true,
+        });
+      } else {
+        scrollViewRef.current?.scrollTo({
+          y: 0,
+          animated: true,
+        });
+      }
+    } catch (ex) {
+      // Scrolling to top may fail if the list is empty.
     }
 
     return null;

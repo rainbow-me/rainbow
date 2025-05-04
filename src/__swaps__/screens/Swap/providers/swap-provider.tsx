@@ -353,14 +353,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
             return;
           }
 
-          const { routes, index } = Navigation.getState();
+          const navState = Navigation.getState();
           const activeRoute = Navigation.getActiveRoute();
           if (
-            index === 0 ||
-            routes[index - 1].name === Routes.EXPANDED_ASSET_SHEET_V2 ||
-            activeRoute.name === Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET
+            navState?.index === 0 ||
+            navState?.routes[navState.index - 1].name === Routes.EXPANDED_ASSET_SHEET_V2 ||
+            activeRoute?.name === Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET
           ) {
-            Navigation.handleAction(Routes.WALLET_SCREEN, {});
+            Navigation.handleAction(Routes.WALLET_SCREEN);
           } else {
             Navigation.goBack();
           }

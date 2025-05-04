@@ -21,7 +21,7 @@ import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
 import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -39,16 +39,15 @@ export const EthCard = () => {
     currency: nativeCurrency,
   });
 
-  const ethAsset = useMemo(
-    () => ({
-      ...externalEthAsset,
+  const ethAsset = useMemo(() => {
+    return {
+      ...(externalEthAsset || {}),
       address: ETH_ADDRESS,
       network: Network.mainnet,
       chainId: ChainId.mainnet,
       uniqueId: getUniqueId(ETH_ADDRESS, ChainId.mainnet),
-    }),
-    [externalEthAsset]
-  );
+    };
+  }, [externalEthAsset]);
 
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
@@ -76,8 +75,9 @@ export const EthCard = () => {
   );
 
   const handleAssetPress = useCallback(() => {
+    if (ethAsset.native == null) return;
     navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset: ethAsset,
+      asset: ethAsset as FormattedExternalAsset,
       address: ETH_ADDRESS,
       chainId: ChainId.mainnet,
     });
@@ -109,14 +109,14 @@ export const EthCard = () => {
   const CHART_HEIGHT = 80;
 
   let isNegativePriceChange = false;
-  if (ethAsset?.native?.change[0] === '-') {
+  if (ethAsset.native?.change[0] === '-') {
     isNegativePriceChange = true;
   }
-  const priceChangeDisplay = isNegativePriceChange ? ethAsset?.native?.change.substring(1) : ethAsset?.native?.change;
+  const priceChangeDisplay = isNegativePriceChange ? ethAsset.native?.change.substring(1) : ethAsset.native?.change;
 
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
-  const loadedPrice = accentColorLoaded && ethAsset?.native?.change;
+  const loadedPrice = accentColorLoaded && ethAsset.native?.change;
   const loadedChart = throttledData?.points.length && loadedPrice;
 
   const [noChartData, setNoChartData] = useState(false);
@@ -158,7 +158,7 @@ export const EthCard = () => {
                   <>
                     <ChainImage chainId={ChainId.mainnet} position="relative" size={20} />
                     <Text size="17pt" color={{ custom: colorForAsset }} weight="heavy">
-                      {ethAsset?.name}
+                      {ethAsset.name}
                     </Text>
                   </>
                 )}
@@ -194,7 +194,7 @@ export const EthCard = () => {
             </Box>
           ) : (
             <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
-              {ethAsset?.native?.price.display}
+              {ethAsset.native?.price.display}
             </Text>
           )}
         </Stack>
@@ -226,17 +226,10 @@ export const EthCard = () => {
                 longPressGestureHandlerProps={undefined}
                 selectedStrokeWidth={3}
                 stroke={colorForAsset}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
                 strokeLinecap="round"
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
                 strokeLinejoin="round"
                 strokeWidth={4}
                 width={CHART_WIDTH}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - prop is accepted via prop spreading
-                chartXOffset={0}
                 isCard
               />
               <ChartDot

@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useContext, useMemo } from 'react';
 import { ModalContext } from '../../react-native-cool-modals/NativeStackView';
 import { ProfileSheetConfigContext } from '../../screens/ProfileSheet';
@@ -17,6 +17,8 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
@@ -27,7 +29,7 @@ export default function ProfileSheetHeader({
   isLoading?: boolean;
   isPreview?: boolean;
 }) {
-  const { params } = useRoute<any>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET>>();
   const { enableZoomableImages } = useContext(ProfileSheetConfigContext);
   const { layout } = useContext(ModalContext) || {};
   const profilesEnabled = useExperimentalFlag(PROFILES);

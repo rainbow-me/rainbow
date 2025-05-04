@@ -1,4 +1,3 @@
-/* eslint-disable no-promise-executor-return */
 import { useCallback } from 'react';
 import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
@@ -7,7 +6,7 @@ import { analytics } from '@/analytics';
 import { useWalletCloudBackup, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '@/components/alerts';
 import { useDispatch } from 'react-redux';
@@ -16,10 +15,6 @@ import showWalletErrorAlert from '@/helpers/support';
 
 type UseCreateBackupProps = {
   walletId?: string;
-  navigateToRoute?: {
-    route: string;
-    params?: Record<string, unknown>;
-  };
 };
 
 type ConfirmBackupProps = {
@@ -28,7 +23,6 @@ type ConfirmBackupProps = {
 
 export const useCreateBackup = () => {
   const dispatch = useDispatch();
-  const { navigate } = useNavigation();
 
   const walletCloudBackup = useWalletCloudBackup();
   const { wallets } = useWallets();
@@ -83,7 +77,7 @@ export const useCreateBackup = () => {
   );
 
   const onConfirmBackup = useCallback(
-    async ({ password, walletId, navigateToRoute }: ConfirmBackupProps) => {
+    async ({ password, walletId }: ConfirmBackupProps) => {
       analytics.track(analytics.event.backupConfirmed);
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
@@ -117,12 +111,8 @@ export const useCreateBackup = () => {
         password,
         walletId,
       });
-
-      if (navigateToRoute) {
-        navigate(navigateToRoute.route, navigateToRoute.params || {});
-      }
     },
-    [walletCloudBackup, onError, wallets, onSuccess, dispatch, navigate]
+    [walletCloudBackup, onError, wallets, onSuccess, dispatch]
   );
 
   const getPassword = useCallback(async (props: UseCreateBackupProps): Promise<string | null> => {

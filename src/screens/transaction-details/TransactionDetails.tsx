@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SlackSheet } from '@/components/sheet';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { RainbowTransaction } from '@/entities';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { IS_ANDROID } from '@/env';
 import { BackgroundProvider, Box } from '@/design-system';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
@@ -14,19 +13,15 @@ import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 import { useDimensions } from '@/hooks';
-
-type RouteParams = {
-  TransactionDetails: {
-    transaction: RainbowTransaction;
-    longFormHeight: number;
-  };
-};
+import { RootStackParamList } from '@/navigation/types';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 export const TransactionDetails = () => {
-  const navigation = useNavigation();
-  const route = useRoute<RouteProp<RouteParams, 'TransactionDetails'>>();
-  const { setParams } = navigation;
-  const { transaction } = route.params;
+  const {
+    params: { transaction },
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.TRANSACTION_DETAILS>>();
+  const { setParams } = useNavigation<typeof Routes.TRANSACTION_DETAILS>();
 
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
