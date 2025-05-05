@@ -302,6 +302,9 @@ export const event = {
 
   // app store review
   appStoreReviewPrompted: 'app_store_review.prompted',
+
+  // refresh account data
+  refreshAccountData: 'refresh_account_data',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1084,5 +1087,8 @@ export type EventProperties = {
   [event.appStoreReviewPrompted]: {
     action: string;
     promptCount: number;
+  };
+  [event.refreshAccountData]: {
+    duration: number;
   };
 };
