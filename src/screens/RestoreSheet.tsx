@@ -19,9 +19,7 @@ const NativeStack = createStackNavigator();
 export function RestoreSheet() {
   const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
-  const {
-    params: { fromSettings = false },
-  } = useRoute<RouteProp<RootStackParamList, typeof Routes.RESTORE_SHEET>>();
+  const { params: { fromSettings = false } = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.RESTORE_SHEET>>();
 
   const { colors } = useTheme();
   const memoSettingsOptions = useMemo(() => settingsOptions(colors, fromSettings), [colors, fromSettings]);
