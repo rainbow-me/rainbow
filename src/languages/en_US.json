@@ -726,6 +726,7 @@
           "circulating_supply": "Circulating Supply",
           "max_supply": "Max Supply",
           "fully_diluted_valuation": "Fully Diluted Valuation",
+          "created_by": "Created by",
           "market_cap": "Market Cap",
           "created": "Created",
           "volume_24_hours": "24h Volume",
