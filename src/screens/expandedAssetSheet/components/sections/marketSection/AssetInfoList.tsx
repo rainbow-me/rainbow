@@ -300,12 +300,12 @@ export function AssetInfoList() {
     return items;
   }, [metadata, asset, nativeCurrency]);
 
+  const ITEMS_COUNT = hasCreatedBySection ? DEFAULT_VISIBLE_ITEM_COUNT - 1 : DEFAULT_VISIBLE_ITEM_COUNT;
+
   const isExpansionRowHighlighted = useDerivedValue(() => {
-    const lastVisibleIndex = isExpanded.value ? assetInfoItems.length : DEFAULT_VISIBLE_ITEM_COUNT - 1;
+    const lastVisibleIndex = isExpanded.value ? assetInfoItems.length : ITEMS_COUNT;
     return lastVisibleIndex % 2 !== 0;
   });
-
-  const ITEMS_COUNT = hasCreatedBySection ? DEFAULT_VISIBLE_ITEM_COUNT - 1 : DEFAULT_VISIBLE_ITEM_COUNT;
 
   return (
     <>
