@@ -102,6 +102,8 @@ export const ClaimAirdropSheet = () => {
   const color = usePersistentDominantColorFromImage(claimable.asset.icon_url || iconUrl.uri);
   const highContrastColor = useMemo(() => getBrightenedColor(color), [color]);
 
+  const [asset] = claimable.assets;
+
   return (
     <ColorModeProvider value="dark">
       <View style={styles.container}>
@@ -124,8 +126,8 @@ export const ClaimAirdropSheet = () => {
 
           <Stack alignHorizontal="center" space="20px">
             <PanelContent
-              airdropAmount={claimable.value.claimAsset.amount}
-              airdropValue={claimable.value.nativeAsset.display}
+              airdropAmount={asset.amount.amount}
+              airdropValue={claimable.totalCurrencyValue.display}
               creatorAddress={claimable.creatorAddress}
               highContrastColor={highContrastColor}
               symbol={claimable.asset.symbol}

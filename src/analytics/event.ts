@@ -778,28 +778,29 @@ export type EventProperties = {
     claimableId: string;
     claimableType: 'transaction' | 'multi_transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
-    asset: {
+    assets: {
       symbol: string;
       address: string;
-    };
+      amount: string;
+    }[];
     outputAsset: {
       symbol: string;
       address: string;
     };
     outputChainId: ChainId;
     isSwapping: boolean;
-    amount: string;
-    usdValue: number;
+    usdValue: string;
   };
 
   [event.claimClaimableFailed]: {
     claimableId: string;
     claimableType: 'transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
-    asset: {
+    assets: {
       symbol: string;
       address: string;
-    };
+      amount: string;
+    }[];
     isSwapping: boolean;
     outputAsset: {
       symbol: string;
@@ -807,8 +808,7 @@ export type EventProperties = {
     };
     outputChainId: ChainId;
     failureStep: 'claim' | 'swap' | 'unknown';
-    amount: string;
-    usdValue: number;
+    usdValue: string;
     errorMessage: string;
   };
 
@@ -816,12 +816,12 @@ export type EventProperties = {
     claimableId: string;
     claimableType: 'transaction' | 'multi_transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
-    asset: {
+    assets: {
       symbol: string;
       address: string;
-    };
-    amount: string;
-    usdValue: number;
+      amount: string;
+    }[];
+    usdValue: string;
   };
 
   [event.errorBoundary]: { error: Error | null };
