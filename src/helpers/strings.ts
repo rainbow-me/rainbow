@@ -15,7 +15,7 @@ import {
   toFixedWorklet as safeToFixedWorklet,
   toStringWorklet as safeToStringWorklet,
 } from '../safe-math/SafeMath';
-import store from '@/redux/store';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 /**
  * @desc subtracts two numbers
@@ -172,7 +172,7 @@ export function formatFractionWorklet(fraction: string): string {
 
 export function formatCurrency(
   value: string | number,
-  { valueIfNaN = '', currency = store.getState().settings.nativeCurrency }: CurrencyFormatterOptions = {}
+  { valueIfNaN = '', currency = userAssetsStoreManager.getState().currency }: CurrencyFormatterOptions = {}
 ): string {
   const numericString = typeof value === 'number' ? toDecimalString(value) : String(value);
   if (isNaN(+numericString)) return valueIfNaN;
