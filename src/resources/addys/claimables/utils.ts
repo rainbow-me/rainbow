@@ -105,7 +105,7 @@ export const getClaimableName = (claimable: Claimable) => {
     return i18n.t(i18n.l.claimables.panel.creator_lp_fees);
   }
 
-  if (transformedType === ClaimableType.merklClaimable) {
+  if (transformedType === ClaimableType.merklClaimable && claimable.dapp) {
     return i18n.t(i18n.l.claimables.panel.merkl_claimable, { dappName: claimable.dapp.name });
   }
 

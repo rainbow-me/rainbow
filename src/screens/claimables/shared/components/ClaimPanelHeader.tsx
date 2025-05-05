@@ -54,7 +54,7 @@ export function ClaimPanelHeader({
   return (
     <ListHeader
       BackButtonComponent={
-        <Box borderRadius={6} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
+        <Box marginLeft={{ custom: 10 }} borderRadius={10} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
           <FasterImageView source={{ url: iconUrl }} style={{ height: 32, width: 32 }} />
         </Box>
       }

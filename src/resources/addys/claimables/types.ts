@@ -144,7 +144,7 @@ export interface BaseClaimable {
    */
   asset: ParsedAddressAsset;
   chainId: ChainId;
-  dapp: DApp;
+  dapp?: DApp;
   name: string;
   uniqueId: string;
   iconUrl: string;
