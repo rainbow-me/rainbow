@@ -23,9 +23,9 @@ export const findTabScreenshot = (id: string, url?: string): ScreenshotType | nu
         logger.error(new RainbowError('[DappBrowser]: Screenshot data is malformed — expected array'), {
           screenshots: JSON.stringify(screenshots, null, 2),
         });
-      } catch (e: any) {
+      } catch (error) {
         logger.error(new RainbowError('[DappBrowser]: Screenshot data is malformed — error stringifying'), {
-          message: e.message,
+          message: error instanceof Error ? error.message : String(error),
         });
       }
       return null;
@@ -87,9 +87,9 @@ const deletePrunedScreenshotFiles = async (screenshotsToDelete: ScreenshotType[]
       });
     });
     await Promise.all(deletePromises);
-  } catch (e: any) {
+  } catch (error) {
     logger.error(new RainbowError('[DappBrowser]: Screenshot file pruning operation failed to complete'), {
-      message: e.message,
+      message: error instanceof Error ? error.message : String(error),
     });
   }
 };
@@ -117,9 +117,9 @@ export const saveScreenshot = async (tempUri: string, tabId: string, timestamp: 
     };
     // Set screenshot for display
     return screenshotWithRNFSPath;
-  } catch (e: any) {
+  } catch (error) {
     logger.error(new RainbowError('[DappBrowser]: Error saving tab screenshot to file system'), {
-      message: e.message,
+      message: error instanceof Error ? error.message : String(error),
       screenshotData: {
         tempUri,
         tabId,

@@ -13,7 +13,7 @@ import { IS_IOS } from '@/env';
 import { useAccountProfile } from '@/hooks';
 import * as i18n from '@/languages';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
 import { PullToRefresh } from './Airdrops/AirdropsSheet';
@@ -22,7 +22,6 @@ import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Content = () => {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const { top: topInset } = useSafeAreaInsets();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
@@ -32,8 +31,8 @@ const Content = () => {
   const scrollY = useSharedValue(0);
 
   const onChangeWallet = React.useCallback(() => {
-    navigate(Routes.CHANGE_WALLET_SHEET);
-  }, [navigate]);
+    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
+  }, []);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {

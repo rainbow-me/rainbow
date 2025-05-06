@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccountSettings, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
 import { Bleed, useColorMode } from '@/design-system';
-
 import { useAppSessionsStore } from '@/state/appSessions';
 import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -16,7 +15,6 @@ import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 
 export const AccountIcon = React.memo(function AccountIcon() {
-  const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { isDarkMode } = useColorMode();
   const { wallets, walletNames } = useWallets();
@@ -60,10 +58,10 @@ export const AccountIcon = React.memo(function AccountIcon() {
   }, [wallets, currentAddress, walletNames]);
 
   const handleOnPress = useCallback(() => {
-    navigate(Routes.DAPP_BROWSER_CONTROL_PANEL, {
+    Navigation.handleAction(Routes.DAPP_BROWSER_CONTROL_PANEL, {
       activeTabRef,
     });
-  }, [activeTabRef, navigate]);
+  }, [activeTabRef]);
 
   return (
     <Bleed space="8px">

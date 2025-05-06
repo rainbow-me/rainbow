@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Freeze } from 'react-freeze';
 import { StyleSheet } from 'react-native';

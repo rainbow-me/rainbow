@@ -9,7 +9,7 @@ import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
@@ -93,14 +93,20 @@ export default React.memo(RecyclerAssetList);
 
 // //////////////////////////////////////////////////////////
 
+function handlePressQRScanner(): void {
+  Navigation.handleAction(Routes.QR_SCANNER_SCREEN);
+}
+
+function handlePressMenuItem(route: (typeof Routes)[keyof typeof Routes]): void {
+  if (route === Routes.RECEIVE_MODAL) {
+    analytics.track(analytics.event.navigationMyQrCode, { category: 'home screen' });
+  }
+  Navigation.handleAction(route);
+}
+
 function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
-  const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
-
-  const handlePressQRScanner = React.useCallback(() => {
-    navigate(Routes.QR_SCANNER_SCREEN);
-  }, [navigate]);
 
   const yOffset = IS_ANDROID ? 80 : 0;
   const shadowOpacityStyle = useMemo(
@@ -146,16 +152,6 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
       }),
     }),
     [position, yOffset]
-  );
-
-  const handlePressMenuItem = React.useCallback(
-    (e: (typeof Routes)[keyof typeof Routes]) => {
-      if (e === Routes.RECEIVE_MODAL) {
-        analytics.track(analytics.event.navigationMyQrCode, { category: 'home screen' });
-      }
-      navigate(e);
-    },
-    [navigate]
   );
 
   return (

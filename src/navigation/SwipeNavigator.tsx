@@ -15,7 +15,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
-import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
+import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useTheme } from '@/theme';
@@ -428,7 +428,7 @@ function SwipeNavigatorScreens() {
       <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} options={{ title: 'tabHome' }} />
       <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ title: 'tabDiscover' }} />
       {showDappBrowserTab && (
-        <Swipe.Screen component={DappBrowserScreen} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
+        <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}
       <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: 'tabActivity' }} />
       {showPointsTab && <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ title: 'tabPoints' }} />}

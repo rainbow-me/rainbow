@@ -8,7 +8,7 @@ import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
 import { useAccountProfile, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
@@ -139,7 +139,6 @@ function ActionButton({
 }
 
 function BuyButton() {
-  const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
 
   const handlePress = React.useCallback(() => {
@@ -150,8 +149,8 @@ function BuyButton() {
 
     analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
-    navigate(Routes.ADD_CASH_SHEET);
-  }, [isDamaged, navigate]);
+    Navigation.handleAction(Routes.ADD_CASH_SHEET);
+  }, [isDamaged]);
 
   return (
     <Box>
@@ -183,17 +182,16 @@ function SwapButton() {
 
 function SendButton() {
   const { isReadOnlyWallet } = useWallets();
-  const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSend, { category: 'home screen' });
 
-      navigate(Routes.SEND_FLOW);
+      Navigation.handleAction(Routes.SEND_FLOW);
     } else {
       watchingAlert();
     }
-  }, [navigate, isReadOnlyWallet]);
+  }, [isReadOnlyWallet]);
 
   return (
     <ActionButton icon="􀈟" onPress={handlePress} testID="send-button">
