@@ -22,7 +22,6 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
-import { useAccountSettings } from '@/hooks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
@@ -32,6 +31,7 @@ import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 import { useSwapsSearchStore } from './resources/search/searchV2';
 import { ReviewButton } from './components/ReviewButton';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 /** README
  * This screen is largely driven by Reanimated and Gesture Handler, which
@@ -142,7 +142,7 @@ const useCleanupOnUnmount = () => {
 };
 
 const WalletAddressObserver = () => {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {

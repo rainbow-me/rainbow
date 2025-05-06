@@ -613,6 +613,8 @@ export const getAccountAddress = () => useWalletsStore.getState().accountAddress
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 
+export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
+
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
   if (!wallets) {

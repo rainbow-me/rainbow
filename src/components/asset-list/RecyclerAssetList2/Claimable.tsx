@@ -13,11 +13,13 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import { ChainId } from '@/state/backendNetworks/types';
 import { usePoints } from '@/resources/points';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const { nativeCurrency } = useAccountSettings();
   const { navigate } = extendedState;
 
   const isETHRewards = uniqueId === 'rainbow-eth-rewards';
