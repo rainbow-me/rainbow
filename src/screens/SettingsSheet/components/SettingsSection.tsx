@@ -211,6 +211,7 @@ const SettingsSection = ({
           menuAlignmentOverride="right"
           onPressMenuItem={handleSelectTheme}
           useActionSheetFallback={false}
+          testID="choose-theme-section"
         >
           <MenuItem
             hasChevron
