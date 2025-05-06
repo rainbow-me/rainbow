@@ -303,9 +303,8 @@ export function AssetInfoList() {
   const ITEMS_COUNT = hasCreatedBySection ? DEFAULT_VISIBLE_ITEM_COUNT - 1 : DEFAULT_VISIBLE_ITEM_COUNT;
 
   const isExpansionRowHighlighted = useDerivedValue(() => {
-    const expandedAmount = hasCreatedBySection ? assetInfoItems.length - 1 : assetInfoItems.length;
-    const lastVisibleIndex = isExpanded.value ? expandedAmount : ITEMS_COUNT;
-    return lastVisibleIndex % 2 === 0;
+    const lastVisibleIndex = isExpanded.value ? assetInfoItems.length : ITEMS_COUNT;
+    return hasCreatedBySection ? lastVisibleIndex % 2 !== 0 : lastVisibleIndex % 2 === 0;
   });
 
   return (
