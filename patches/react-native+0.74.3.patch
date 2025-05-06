@@ -21,10 +21,23 @@ index b868ee7..50e3b1c 100644
      NSDictionary *dictionary = json;
      id value = nil;
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
-index 3a86581..1bd1458 100644
+index 3a86581..d03c066 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
-@@ -820,6 +820,10 @@ - (void)displayLayer:(CALayer *)layer
+@@ -236,7 +236,11 @@ - (NSString *)accessibilityLabel
+   if (label) {
+     return label;
+   }
+-  return RCTRecursiveAccessibilityLabel(self);
++
++  if (self.isAccessibilityElement) {
++    return RCTRecursiveAccessibilityLabel(self);
++  }
++  return nil;
+ }
+ 
+ - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
+@@ -820,6 +824,10 @@ - (void)displayLayer:(CALayer *)layer
  
    backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
  

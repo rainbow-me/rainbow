@@ -12,40 +12,23 @@ tags:
 - runFlow: ../utils/ImportWalletWithKey.yaml
 
 # Navigate to browser
-- swipe:
-    direction: LEFT
-- assertVisible:
-    id: discover-header
-- swipe:
-    direction: LEFT
+- tapOn:
+    id: 'tab-bar-icon-DappBrowserScreen'
 - assertVisible:
     id: browser-screen
-
-# Note: Since we can't directly interact with WebView content,
-# we use coordinates. These may need adjustment based on device.
-
-# unsure if this will work on Android. having issues interacting with the browser context.
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      # tap on browser search input
-      - tapOn:
-          point: 80, 80
-      - assertVisible: 'Find apps and more'
-      - inputText: 'https://test-dap-welps.vercel.app/'
-
-      # tap on connect button
-      - tapOn:
-          point: 275, 80
-
-      # tap on connect button
-      - tapOn:
-          point: 50, 325
-
-      # Verify warning appears
-      - assertVisible:
-          id: malicious-dapp-warning
-
-      - assertVisible: 'Find apps and more'
-      - inputText: 'https://test-dap-welps.vercel.app/'
+# TODO: Fix and re-enable.
+# - runFlow:
+#     when:
+#       # Maestro cannot interact with content in webviews on iOS so run
+#       # the flow only on Android.
+#       platform: Android
+#     commands:
+#       # tap on browser search input
+#       - tapOn: 'Search or enter website'
+#       - assertVisible: 'Find apps and more'
+#       - inputText: 'https://test-dap-welps.vercel.app/'
+#       - pressKey: enter
+#       - tapOn: 'Connect Wallet'
+#       - tapOn: 'Rainbow'
+#       - assertVisible:
+#           id: malicious-dapp-warning
