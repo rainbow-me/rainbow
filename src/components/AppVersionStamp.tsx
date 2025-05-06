@@ -36,7 +36,7 @@ export function AppVersionStamp() {
   }, [navigate, numberOfTaps, startTimeout, stopTimeout]);
 
   return (
-    <StyledButton hitSlop={10} onPress={handleVersionPress}>
+    <StyledButton testID="app-version-stamp" hitSlop={10} onPress={handleVersionPress}>
       <Text color="secondary30 (Deprecated)" size="14px / 19px (Deprecated)" weight="bold">
         {appVersion}
       </Text>
