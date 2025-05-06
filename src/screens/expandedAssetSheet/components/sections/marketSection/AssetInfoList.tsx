@@ -303,12 +303,13 @@ export function AssetInfoList() {
   const ITEMS_COUNT = hasCreatedBySection ? DEFAULT_VISIBLE_ITEM_COUNT - 1 : DEFAULT_VISIBLE_ITEM_COUNT;
 
   const isExpansionRowHighlighted = useDerivedValue(() => {
-    const lastVisibleIndex = isExpanded.value ? assetInfoItems.length : ITEMS_COUNT;
-    return lastVisibleIndex % 2 !== 0;
+    const expandedAmount = hasCreatedBySection ? assetInfoItems.length - 1 : assetInfoItems.length;
+    const lastVisibleIndex = isExpanded.value ? expandedAmount : ITEMS_COUNT;
+    return lastVisibleIndex % 2 === 0;
   });
 
   return (
-    <>
+    <Box>
       {assetInfoItems.length === 0 && !isLoadingMetadata && (
         <Box justifyContent="center" alignItems="center" paddingVertical="24px" style={{ opacity: 0.8 }}>
           <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
@@ -360,38 +361,37 @@ export function AssetInfoList() {
         <GestureHandlerButton
           scaleTo={0.96}
           hapticTrigger="tap-end"
+          style={{ marginTop: 4 }}
           onPressWorklet={() => {
             'worklet';
             isExpanded.value = !isExpanded.value;
           }}
         >
           <Row highlighted={isExpansionRowHighlighted}>
-            <Bleed vertical="4px" horizontal="2px">
-              <Box width="full" flexDirection="row" alignItems="center" gap={12}>
-                <Box
-                  width={{ custom: 20 }}
-                  height={{ custom: 20 }}
-                  borderRadius={40}
-                  style={{ backgroundColor: accentColors.border }}
-                  borderWidth={1.33}
-                  borderColor={{ custom: accentColors.opacity4 }}
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <AnimatedText weight="black" align="center" size="icon 10px" color={{ custom: accentColors.color }}>
-                    {expandedTextIcon}
-                  </AnimatedText>
-                </Box>
-                <TextShadow blur={12} shadowOpacity={0.24}>
-                  <AnimatedText weight="semibold" size="17pt" align="center" color={{ custom: accentColors.color }}>
-                    {expandedText}
-                  </AnimatedText>
-                </TextShadow>
+            <Box width="full" flexDirection="row" alignItems="center" gap={12}>
+              <Box
+                width={{ custom: 20 }}
+                height={{ custom: 20 }}
+                borderRadius={40}
+                style={{ backgroundColor: accentColors.border }}
+                borderWidth={1.33}
+                borderColor={{ custom: accentColors.opacity4 }}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <AnimatedText weight="black" align="center" size="icon 10px" color={{ custom: accentColors.color }}>
+                  {expandedTextIcon}
+                </AnimatedText>
               </Box>
-            </Bleed>
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <AnimatedText weight="semibold" size="17pt" align="center" color={{ custom: accentColors.color }}>
+                  {expandedText}
+                </AnimatedText>
+              </TextShadow>
+            </Box>
           </Row>
         </GestureHandlerButton>
       )}
-    </>
+    </Box>
   );
 }
