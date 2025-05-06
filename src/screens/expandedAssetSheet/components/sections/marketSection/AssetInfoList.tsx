@@ -328,7 +328,7 @@ export function AssetInfoList() {
         </Box>
       )}
       {assetInfoItems.length > 0 && (
-        <Box gap={4} marginBottom={assetInfoItems.length % 2 === 0 ? '-12px' : undefined}>
+        <Box gap={4}>
           {hasCreatedBySection && <CreatedBySection />}
           {assetInfoItems.slice(0, ITEMS_COUNT).map((item, index) => (
             <AssetInfoItem
