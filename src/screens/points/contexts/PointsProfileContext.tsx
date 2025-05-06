@@ -15,7 +15,7 @@ import { loadWallet, signPersonalMessage } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import { queryClient } from '@/react-query';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
 
 type PointsProfileContext = {
@@ -80,7 +80,7 @@ const PointsProfileContext = createContext<PointsProfileContext>({
 export const usePointsProfileContext = () => useContext(PointsProfileContext);
 
 export const PointsProfileProvider = ({ children }: { children: React.ReactNode }) => {
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const { navigate, goBack } = useNavigation();
 

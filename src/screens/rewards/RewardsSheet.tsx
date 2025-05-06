@@ -5,16 +5,16 @@ import { IS_ANDROID } from '@/env';
 import { useDimensions } from '@/hooks';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
-  const accountAddress = useWalletsStore(state => state.accountAddress);
+  const accountAddress = useAccountAddress();
   const [isLoading, setIsLoading] = useState(true);
   const {
     data,

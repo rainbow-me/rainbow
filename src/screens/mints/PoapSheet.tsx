@@ -13,7 +13,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -63,7 +63,7 @@ const BlurWrapper = styled(View).attrs({
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 
 const PoapSheet = () => {
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();

@@ -10,7 +10,7 @@ import * as lang from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -204,7 +204,7 @@ function SendButton() {
 
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const isDamaged = useWalletsStore(state => state.getIsDamaged());
 
   const handlePressCopy = React.useCallback(() => {

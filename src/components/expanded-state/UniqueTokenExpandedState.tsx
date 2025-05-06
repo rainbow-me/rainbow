@@ -39,7 +39,7 @@ import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -225,7 +225,7 @@ const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
 };
 
 const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenExpandedStateProps) => {
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();

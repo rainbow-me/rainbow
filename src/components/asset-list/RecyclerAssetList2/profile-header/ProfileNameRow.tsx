@@ -7,7 +7,7 @@ import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { haptics } from '@/utils';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
@@ -40,7 +40,7 @@ export function ProfileNameRow({
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
 
   const onPressName = () => {
     if (disableOnPress) return;

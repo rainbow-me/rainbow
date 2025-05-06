@@ -7,7 +7,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { haptics } from '@/utils';
 import React, { useCallback } from 'react';
 import { useRecoilState } from 'recoil';
@@ -21,7 +21,7 @@ export const RECEIVE_CARD_HEIGHT = 174;
 const TRANSLATIONS = i18n.l.cards.receive;
 
 export const ReceiveAssetsCard = () => {
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);

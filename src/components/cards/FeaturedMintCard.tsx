@@ -24,7 +24,7 @@ import styled from '@/styled-thing';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import { useAccountProfileInfo } from '../../state/wallets/walletsStore';
+import { useAccountAddress } from '../../state/wallets/walletsStore';
 import { ButtonPressAnimation } from '../animations';
 import { ImgixImage } from '../images';
 import { Media } from '../Media';
@@ -44,7 +44,7 @@ const BlurWrapper = styled(View).attrs({
 });
 
 export function FeaturedMintCard() {
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const { width: deviceWidth } = useDimensions();
 
   const {
