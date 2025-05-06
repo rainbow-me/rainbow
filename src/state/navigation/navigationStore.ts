@@ -3,22 +3,6 @@ import Routes from '@/navigation/routesNames';
 import { POINTS_ROUTES } from '@/screens/points/PointsScreen';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
-const SWIPE_ROUTES = [
-  Routes.WALLET_SCREEN,
-  Routes.DISCOVER_SCREEN,
-  Routes.DAPP_BROWSER_SCREEN,
-  Routes.PROFILE_SCREEN,
-  Routes.POINTS_SCREEN,
-  POINTS_ROUTES['CLAIM_CONTENT'],
-  POINTS_ROUTES['REFERRAL_CONTENT'],
-];
-
-type SwipeRoute = (typeof SWIPE_ROUTES)[number];
-
-const isSwipeRoute = (route: string): route is SwipeRoute => {
-  return Object.values(SWIPE_ROUTES).includes(route as SwipeRoute);
-};
-
 interface NavigationStore {
   activeRoute: string;
   activeSwipeRoute: SwipeRoute;
@@ -27,6 +11,24 @@ interface NavigationStore {
   isWalletScreenMounted: boolean;
   isRouteActive: (route: string) => boolean;
   setActiveRoute: (route: string) => void;
+}
+
+const SWIPE_ROUTES = [
+  Routes.WALLET_SCREEN,
+  Routes.DISCOVER_SCREEN,
+  Routes.DAPP_BROWSER_SCREEN,
+  Routes.PROFILE_SCREEN,
+  Routes.POINTS_SCREEN,
+  POINTS_ROUTES['CLAIM_CONTENT'],
+  POINTS_ROUTES['REFERRAL_CONTENT'],
+] as const;
+
+type SwipeRoute = (typeof SWIPE_ROUTES)[number];
+
+const SWIPE_ROUTES_SET = new Set<SwipeRoute>(SWIPE_ROUTES);
+
+export function isSwipeRoute(route: string | SwipeRoute): route is SwipeRoute {
+  return SWIPE_ROUTES_SET.has(route as SwipeRoute);
 }
 
 export const useNavigationStore = createRainbowStore<NavigationStore>((set, get) => ({
@@ -38,7 +40,7 @@ export const useNavigationStore = createRainbowStore<NavigationStore>((set, get)
 
   isRouteActive: (route: string) => route === get().activeRoute,
 
-  setActiveRoute: (route: string) => {
+  setActiveRoute: (route: string) =>
     set(state => {
       const onSwipeRoute = isSwipeRoute(route);
 
@@ -50,6 +52,5 @@ export const useNavigationStore = createRainbowStore<NavigationStore>((set, get)
         activeRoute: route,
         activeSwipeRoute: onSwipeRoute ? route : state.activeSwipeRoute,
       };
-    });
-  },
+    }),
 }));
