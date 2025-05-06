@@ -34,7 +34,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { Address } from 'viem';
-import { getSelectedWalletFromStorage } from '../model/wallet';
+import { getSelectedWalletFromKeychain } from '../model/wallet';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { SEND_TRANSACTION } from './signingMethods';
 import watchingAlert from './watchingAlert';

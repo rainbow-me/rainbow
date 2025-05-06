@@ -7,8 +7,7 @@ import { isLowerCaseMatch } from '@/utils';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { Address } from 'viem';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
-import useAccountSettings from './useAccountSettings';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 
 type SummaryData = ReturnType<typeof useAddysSummary>['data'];
 
@@ -18,7 +17,7 @@ const getWalletForAddress = (wallets: AllRainbowWallets | null, address: string)
 
 export const useFarcasterAccountForWallets = () => {
   const [farcasterWalletAddress, setFarcasterWalletAddress] = useState<Address | undefined>();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const wallets = useWalletsStore(state => state.wallets);
 
   const allAddresses = useMemo(

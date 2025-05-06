@@ -8,6 +8,7 @@ import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const getImageUrl = (
   key: 'avatar' | 'header',
@@ -56,7 +57,7 @@ export default function useENSModifiedRegistration({
 } = {}) {
   const dispatch = useDispatch();
   const { records, initialRecords, name, mode } = useENSRegistration();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const {
     data: { nfts: uniqueTokens },

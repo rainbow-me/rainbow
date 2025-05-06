@@ -10,7 +10,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { usePositionsStore } from '@/state/positions/positions';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWalletsStore, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
@@ -20,6 +20,7 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import { useNftSort } from './useNFTsSortBy';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
+import { isLowerCaseMatch } from '../utils';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -36,7 +37,8 @@ export default function useWalletSectionsData({
   type?: AssetListType;
 } = {}): WalletSectionsResult {
   const { nftSort, nftSortDirection } = useNftSort();
-  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const { language, network, nativeCurrency } = useAccountSettings();
   const selectedWallet = useWalletsStore(state => state.selected);
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { showcaseTokens } = useShowcaseTokens();
@@ -95,7 +97,7 @@ export default function useWalletSectionsData({
 
   const accountWithBalance = useMemo(() => {
     const walletAddresses = selectedWallet ? walletsWithBalancesAndNames[selectedWallet.id]?.addresses : null;
-    return walletAddresses?.find(address => address.address.toLowerCase() === accountAddress.toLowerCase());
+    return walletAddresses?.find(address => isLowerCaseMatch(address.address, accountAddress));
   }, [walletsWithBalancesAndNames, selectedWallet, accountAddress]);
 
   const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();

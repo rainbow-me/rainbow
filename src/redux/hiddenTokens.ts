@@ -85,7 +85,7 @@ export const hiddenTokensLoadState =
   () => async (dispatch: Dispatch<HiddenTokensLoadSuccessAction | HiddenTokensLoadFailureAction>, getState: AppGetState) => {
     try {
       const { network } = getState().settings;
-      const { accountAddress } = useWalletsStore.getState();
+      const accountAddress = getAccountAddress();
 
       const hiddenTokens = await getHiddenTokens(accountAddress, network);
 

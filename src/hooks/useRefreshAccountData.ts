@@ -7,7 +7,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { usePositionsStore } from '@/state/positions/positions';
-import { refreshWalletENSAvatars, refreshWalletNames, useWalletsStore } from '@/state/wallets/walletsStore';
+import { refreshWalletENSAvatars, refreshWalletNames, useWalletsStore, useAccountAddress } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
@@ -18,7 +18,8 @@ import useAccountSettings from './useAccountSettings';
 const MIN_REFRESH_DURATION = 1_250;
 
 export default function useRefreshAccountData() {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const { nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const wallets = useWalletsStore(state => state.wallets);

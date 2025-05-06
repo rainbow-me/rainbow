@@ -108,8 +108,8 @@ export default async function runMigrations() {
         const wallets = { [id]: currentWallet };
 
         logger.debug('[runMigrations]: v1 migration - update wallets and selected wallet');
-        updateWallets(wallets);
-        setSelectedWallet(currentWallet);
+        await updateWallets(wallets);
+        await setSelectedWallet(currentWallet);
       }
     }
   };
@@ -168,12 +168,12 @@ export default async function runMigrations() {
           primary: true,
         };
         logger.debug('[runMigrations]: v2 migration - update wallets');
-        updateWallets(updatedWallets);
+        await updateWallets(updatedWallets);
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
         if (selected?.id === primaryWalletKey) {
           const updatedSelectedWallet = updatedWallets[primaryWalletKey];
-          setSelectedWallet(updatedSelectedWallet);
+          await setSelectedWallet(updatedSelectedWallet);
         }
       }
     }

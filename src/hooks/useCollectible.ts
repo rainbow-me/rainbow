@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountSettings } from '.';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export default function useCollectible(uniqueId: string, externalAddress?: string) {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const isExternal = Boolean(externalAddress);
   const address = isExternal ? externalAddress ?? '' : accountAddress;

@@ -8,7 +8,7 @@ import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
+import { useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchSuggestions } from '@/handlers/ens';
@@ -25,6 +25,7 @@ import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 type EnsResult = {
   address: string;
@@ -45,7 +46,7 @@ type EnsSearchResult = {
 
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
 

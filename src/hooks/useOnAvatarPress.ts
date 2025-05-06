@@ -6,8 +6,8 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { isZero } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS } from '@/references';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
-import { showActionSheetWithOptions } from '@/utils';
+import { setSelectedWallet, updateWallets, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { isLowerCaseMatch, showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
 import lang from 'i18n-js';
@@ -61,12 +61,10 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       [selectedWallet.id]: {
         ...wallets[selectedWallet.id],
         addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
-          account.address.toLowerCase() === accountAddress?.toLowerCase() ? { ...account, image: null } : account
+          isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: null } : account
         ),
       },
     };
-
-    const { setSelectedWallet, updateWallets } = useWalletsStore.getState();
 
     setSelectedWallet(newWallets[selectedWallet.id]);
     updateWallets(newWallets);
@@ -83,7 +81,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         [selectedWallet.id]: {
           ...wallets[selectedWallet.id],
           addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
-            account.address.toLowerCase() === accountAddress?.toLowerCase() ? { ...account, image: imagePath } : account
+            isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: imagePath } : account
           ),
         },
       };

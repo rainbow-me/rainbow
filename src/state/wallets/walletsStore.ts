@@ -19,17 +19,16 @@ import {
   AllRainbowWallets,
   generateAccount,
   getAllWallets,
-  getSelectedWalletFromStorage as getKeychainSelectedWallet,
+  getSelectedWalletFromKeychain,
   loadAddress,
   RainbowAccount,
   RainbowWallet,
   saveAddress,
   saveAllWallets,
-  setSelectedWalletToStorage as setWalletSelectedWallet,
+  setSelectedWalletInKeychain,
 } from '../../model/wallet';
 import { updateWebDataEnabled } from '../../redux/showcaseTokens';
 import { useTheme } from '../../theme';
-import { time } from '../../utils';
 import { address } from '../../utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../../utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '../../utils/profileUtils';
@@ -89,7 +88,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
 
   selected: null,
   async setSelectedWallet(wallet, address) {
-    await setWalletSelectedWallet(wallet);
+    await setSelectedWalletInKeychain(wallet);
     set({
       selected: wallet,
     });
@@ -127,7 +126,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
       const allWalletsResult = await getAllWallets();
       const wallets = allWalletsResult?.wallets || {};
       if (isEmpty(wallets)) return;
-      const selected = await getKeychainSelectedWallet();
+      const selected = await getSelectedWalletFromKeychain();
 
       // Prevent irrecoverable state (no selected wallet)
       let selectedWallet = selected?.wallet;

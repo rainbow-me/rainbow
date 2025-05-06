@@ -868,7 +868,7 @@ export const createWallet = async ({
 
     if (!silent) {
       logger.debug('[wallet]: setting selected wallet', {}, DebugContext.wallet);
-      await setSelectedWalletToStorage(allWallets[id]);
+      await setSelectedWalletInKeychain(allWallets[id]);
     }
 
     logger.debug('[wallet]: saving all wallets', {}, DebugContext.wallet);
@@ -1086,7 +1086,7 @@ export const getSeedPhrase = async (
   }
 };
 
-export const setSelectedWalletToStorage = async (wallet: RainbowWallet): Promise<void> => {
+export const setSelectedWalletInKeychain = async (wallet: RainbowWallet): Promise<void> => {
   const val = {
     version: selectedWalletVersion,
     wallet,
@@ -1095,7 +1095,7 @@ export const setSelectedWalletToStorage = async (wallet: RainbowWallet): Promise
   return keychain.saveObject(selectedWalletKey, val, keychain.publicAccessControlOptions);
 };
 
-export const getSelectedWalletFromStorage = async (): Promise<null | RainbowSelectedWalletData> => {
+export const getSelectedWalletFromKeychain = async (): Promise<null | RainbowSelectedWalletData> => {
   try {
     const selectedWalletData = await keychain.loadObject(selectedWalletKey);
     if (selectedWalletData) {
@@ -1103,7 +1103,7 @@ export const getSelectedWalletFromStorage = async (): Promise<null | RainbowSele
     }
     return null;
   } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getSelectedWalletFromStorage'), { error });
+    logger.error(new RainbowError('[wallet]: Error in getSelectedWalletFromKeychain'), { error });
     return null;
   }
 };
@@ -1245,7 +1245,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       logger.debug('[wallet]: new pkey saved', {}, DebugContext.wallet);
     }
 
-    const selectedWalletData = await getSelectedWalletFromStorage();
+    const selectedWalletData = await getSelectedWalletFromKeychain();
     const wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
     if (!wallet) {
       return null;

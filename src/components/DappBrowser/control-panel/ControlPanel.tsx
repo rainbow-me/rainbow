@@ -40,7 +40,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { getWalletWithAccount, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, setSelectedWallet, useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
@@ -70,7 +70,7 @@ const HOME_PANEL_DAPP_SECTION = 44 + 24;
 
 export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const {
     params: { activeTabRef },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_CONTROL_PANEL>>();
@@ -365,7 +365,7 @@ const HomePanel = memo(function HomePanel({
   onConnect: () => void;
   onDisconnect: () => void;
 }) {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const wallets = useWalletsStore(state => state.wallets);
   const initializeWallet = useInitializeWallet();
 

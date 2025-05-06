@@ -17,7 +17,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { loadWallets, setAllWalletsWithIdsAsBackedUp, useWalletsStore } from '@/state/wallets/walletsStore';
+import { loadWallets, setAllWalletsWithIdsAsBackedUp, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -189,7 +189,6 @@ export default function RestoreCloudStep() {
           const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
 
           if (firstWallet && firstAddress) {
-            const { setSelectedWallet } = useWalletsStore.getState();
             setSelectedWallet(firstWallet, firstAddress);
             await initializeWallet(null, null, null, false, false, null, true, null);
           }

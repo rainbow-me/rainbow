@@ -10,7 +10,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -34,7 +34,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
     if (!selectedWallet?.addresses) return false;
 
     const visibleWallet = selectedWallet.addresses.find(wallet => wallet.visible);
-    return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
+    return isLowerCaseMatch(visibleWallet?.address || '', address);
   }, [selectedWallet, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;

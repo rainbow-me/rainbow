@@ -23,6 +23,7 @@ import rowRenderer from './RowRenderer';
 import { CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
+import { useAccountAddress } from '../../../../state/wallets/walletsStore';
 
 const dimensions = {
   height: deviceUtils.dimensions.height,
@@ -79,7 +80,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     [briefSectionsData, isCoinListEdited, remoteConfig, experimentalConfig]
   );
 
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const topMarginRef = useRef<number>(0);

@@ -3,7 +3,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
-import { getWalletWithAccount, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, useAccountAddress } from '@/state/wallets/walletsStore';
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,7 +27,7 @@ const wipeNotEmoji = (text: string) => {
 };
 
 export default function useWebData() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const dispatch = useDispatch();
 
   const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
@@ -38,7 +38,7 @@ export default function useWebData() {
     })
   );
 
-  const { accountSymbol, accountColorString } = useAccountProfileInfo();
+  const { accountSymbol, accountColorString } = useAccountSettings();
 
   const initWebData = useCallback(
     async (showcaseTokens: any) => {

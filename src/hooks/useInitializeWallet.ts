@@ -14,7 +14,7 @@ import runMigrations from '../model/migrations';
 import { walletInit } from '../model/wallet';
 import { appStateUpdate } from '../redux/appState';
 import { settingsLoadNetwork } from '../redux/settings';
-import { loadWallets, setAccountAddress } from '@/state/wallets/walletsStore';
+import { loadWallets, setAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
@@ -43,6 +43,7 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
+  const accountAddress = useAccountAddress();
 
   const initializeWallet = useCallback(
     async (

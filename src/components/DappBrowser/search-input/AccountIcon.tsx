@@ -2,20 +2,19 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Bleed, useColorMode } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 import { getDappHost } from '../handleProviderRequest';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { navigate } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { isDarkMode } = useColorMode();
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
 
