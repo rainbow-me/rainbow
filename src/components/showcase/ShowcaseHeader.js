@@ -148,7 +148,7 @@ export function Header() {
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
       <Spacer />
-      <AvatarCircle image={null} onPress={() => { }} showcaseAccountColor={color} showcaseAccountSymbol={emoji} />
+      <AvatarCircle image={null} onPress={() => {}} showcaseAccountColor={color} showcaseAccountSymbol={emoji} />
       <ENSAddress address={mainText} as={isHexString(mainText) && TruncatedAddress}>
         {mainText}
       </ENSAddress>

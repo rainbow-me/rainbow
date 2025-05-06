@@ -11,10 +11,9 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { Address } from 'viem';
 import runMigrations from '../model/migrations';
-import { walletInit } from '../model/wallet';
-import { appStateUpdate } from '../redux/appState';
+import { InitializeWalletParams, walletInit } from '../model/wallet';
 import { settingsLoadNetwork } from '../redux/settings';
-import { loadWallets, setAccountAddress } from '@/state/wallets/walletsStore';
+import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useLoadAccountData from './useLoadAccountData';
@@ -45,20 +44,17 @@ export default function useInitializeWallet() {
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
 
   const initializeWallet = useCallback(
-    async (
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
+    async ({
       seedPhrase,
       color = null,
       name = null,
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       switching,
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       image,
-      silent = false
-    ) => {
+      silent = false,
+    }: InitializeWalletParams) => {
       let walletStatus: WalletStatus = 'unknown';
       try {
         PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
@@ -80,7 +76,17 @@ export default function useInitializeWallet() {
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
-        const { isNew, walletAddress } = await walletInit(seedPhrase, color, name, overwrite, checkedWallet, network, image, silent);
+        const { isNew, walletAddress } = await walletInit({
+          seedPhrase,
+          color,
+          name,
+          overwrite,
+          checkedWallet,
+          network,
+          image,
+          silent,
+        });
+
         walletStatus = getWalletStatus(isNew, isImporting);
 
         logger.debug('[useInitializeWallet]: walletInit returned', {
@@ -119,7 +125,7 @@ export default function useInitializeWallet() {
           logger.debug('[useInitializeWallet]: walletAddress is nil');
           Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
           if (!isImporting) {
-            dispatch(appStateUpdate({ walletReady: true }));
+            setWalletReady();
           }
           return null;
         }
@@ -142,7 +148,7 @@ export default function useInitializeWallet() {
           });
         }
 
-        dispatch(appStateUpdate({ walletReady: true }));
+        setWalletReady();
         logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
 
         PerformanceTracking.finishMeasuring(event.performanceInitializeWallet, {
@@ -174,7 +180,7 @@ export default function useInitializeWallet() {
         }
 
         Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
-        dispatch(appStateUpdate({ walletReady: true }));
+        setWalletReady();
         return null;
       }
     },

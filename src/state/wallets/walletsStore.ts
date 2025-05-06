@@ -17,6 +17,7 @@ import { hasKey } from '../../model/keychain';
 import { PreferenceActionType, setPreference } from '../../model/preferences';
 import {
   AllRainbowWallets,
+  ensureEthereumWallet,
   generateAccount,
   getAllWallets,
   getSelectedWalletFromStorage as getKeychainSelectedWallet,
@@ -36,6 +37,9 @@ import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetr
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface WalletsState {
+  walletReady: boolean;
+  setWalletReady: () => void;
+
   selected: RainbowWallet | null;
   setSelectedWallet: (wallet: RainbowWallet, address?: string) => Promise<void>;
 
@@ -85,6 +89,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     getIsDamaged: () => !!get().selected?.damaged,
     getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
     getIsHardwareWallet: () => !!get().selected?.deviceId,
+
+    walletReady: false,
+    setWalletReady: () => {
+      set({ walletReady: true });
+    },
 
     selected: null,
     async setSelectedWallet(wallet, address) {
@@ -218,6 +227,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       if (!account) {
         throw new Error(`No account generated`);
       }
+      ensureEthereumWallet(account);
 
       const walletColorIndex = color !== null ? color : addressHashedColorIndex(account.address);
       if (walletColorIndex == null) {
@@ -612,6 +622,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
+export const getWalletReady = () => useWalletsStore.getState().walletReady;
 
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
 
@@ -661,6 +672,7 @@ export const {
   setAllWalletsWithIdsAsBackedUp,
   setSelectedWallet,
   setWalletBackedUp,
+  setWalletReady,
   setAccountAddress,
   updateWallets,
 } = useWalletsStore.getState();
