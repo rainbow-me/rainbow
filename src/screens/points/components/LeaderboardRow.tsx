@@ -11,7 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
-import { ethereumUtils, isENSNFTRecord } from '@/utils';
+import { ethereumUtils, isENSNFTRecord, isLowerCaseMatch } from '@/utils';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -51,8 +51,8 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = selectedWallet?.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
-    return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
+    const visibleWallet = selectedWallet?.addresses?.find(wallet => wallet.visible);
+    return isLowerCaseMatch(visibleWallet?.address || '', address);
   }, [selectedWallet?.addresses, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
