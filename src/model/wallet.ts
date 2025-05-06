@@ -1103,7 +1103,7 @@ export const getSelectedWalletFromStorage = async (): Promise<null | RainbowSele
     }
     return null;
   } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getSelectedWallet'), { error });
+    logger.error(new RainbowError('[wallet]: Error in getSelectedWalletFromStorage'), { error });
     return null;
   }
 };

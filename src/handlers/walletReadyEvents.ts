@@ -18,7 +18,7 @@ import { getKeychainIntegrityState } from './localstorage/globalSettings';
 export const runKeychainIntegrityChecks = async () => {
   const keychainIntegrityState = await getKeychainIntegrityState();
   if (!keychainIntegrityState) {
-    checkKeychainIntegrity();
+    await checkKeychainIntegrity();
   }
 };
 

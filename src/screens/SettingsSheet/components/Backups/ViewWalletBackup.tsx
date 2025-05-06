@@ -193,7 +193,7 @@ const ViewWalletBackup = () => {
               try {
                 // If we found it and it's not damaged use it to create the new account
                 if (wallet && !wallet.damaged) {
-                  createAccount({
+                  await createAccount({
                     id: wallet.id,
                     // @natew TODO
                     color,

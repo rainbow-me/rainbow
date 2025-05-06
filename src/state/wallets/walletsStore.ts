@@ -47,7 +47,9 @@ interface WalletsState {
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
-  createAccount: (data: Pick<RainbowWallet, 'id' | 'name' | 'color'>) => void;
+  createAccount: (data: Pick<RainbowWallet, 'id' | 'name' | 'color'>) => Promise<{
+    [id: string]: RainbowWallet;
+  }>;
 
   setAllWalletsWithIdsAsBackedUp: (
     ids: RainbowWallet['id'][],

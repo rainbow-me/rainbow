@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { setWalletBackedUp } from '@/state/wallets/walletsStore';
 
 export default function useWalletManualBackup() {
-  const onManuallyBackupWalletId = useCallback(async (walletId: string) => {
+  const onManuallyBackupWalletId = useCallback((walletId: string) => {
     try {
       setWalletBackedUp(walletId, WalletBackupTypes.manual);
     } catch (e) {

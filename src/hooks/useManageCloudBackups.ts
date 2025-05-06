@@ -53,7 +53,7 @@ export default function useManageCloudBackups() {
       });
     };
 
-    const removeBackupStateFromAllWallets = async () => {
+    const removeBackupStateFromAllWallets = () => {
       clearAllWalletsBackupStatus();
     };
 
