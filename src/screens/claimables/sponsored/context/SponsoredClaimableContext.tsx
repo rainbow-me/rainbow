@@ -3,7 +3,7 @@ import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/
 import { logger, RainbowError } from '@/logger';
 import { useAccountSettings } from '@/hooks';
 import { getProvider } from '@/handlers/web3';
-import { haptics, time } from '@/utils';
+import { haptics } from '@/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
@@ -39,7 +39,7 @@ export function useSponsoredClaimableContext() {
 }
 
 export function SponsoredClaimableContextProvider({ claimable, children }: { claimable: SponsoredClaimable; children: React.ReactNode }) {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('ready');
 
@@ -71,14 +71,13 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
           analytics.track(analytics.event.claimClaimableFailed, {
             claimableType: 'sponsored',
-            claimableId: claimable.analyticsId,
+            claimableId: claimable.type,
             chainId: claimable.chainId,
-            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-            amount: claimable.value.claimAsset.amount,
+            assets: claimable.assets.map(({ asset, amount }) => ({ symbol: asset.symbol, address: asset.address, amount: amount.amount })),
             isSwapping: false,
             outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
             outputChainId: claimable.chainId,
-            usdValue: claimable.value.usd,
+            usdValue: claimable.totalCurrencyValue.amount,
             failureStep: 'claim',
             errorMessage: ErrorMessages.CLAIM_API_CALL_FAILED,
           });
@@ -93,15 +92,14 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
           logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_CALL_FAILED}`));
           analytics.track(analytics.event.claimClaimableFailed, {
             claimableType: 'sponsored',
-            claimableId: claimable.analyticsId,
+            claimableId: claimable.type,
             chainId: claimable.chainId,
-            asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-            amount: claimable.value.claimAsset.amount,
+            assets: claimable.assets.map(({ asset, amount }) => ({ symbol: asset.symbol, address: asset.address, amount: amount.amount })),
             isSwapping: false,
             outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
             outputChainId: claimable.chainId,
             failureStep: 'claim',
-            usdValue: claimable.value.usd,
+            usdValue: claimable.totalCurrencyValue.amount,
             errorMessage: ErrorMessages.CLAIM_API_CALL_FAILED,
           });
           return;
@@ -114,15 +112,14 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE}`));
         analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'sponsored',
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
+          assets: claimable.assets.map(({ asset, amount }) => ({ symbol: asset.symbol, address: asset.address, amount: amount.amount })),
           isSwapping: false,
           outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           outputChainId: claimable.chainId,
           failureStep: 'claim',
-          usdValue: claimable.value.usd,
+          usdValue: claimable.totalCurrencyValue.amount,
           errorMessage: ErrorMessages.CLAIM_API_UNSUCCESSFUL_RESPONSE,
         });
       } else {
@@ -136,11 +133,10 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
 
         analytics.track(analytics.event.claimClaimableSucceeded, {
           claimableType: 'sponsored',
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
+          assets: claimable.assets.map(({ asset, amount }) => ({ symbol: asset.symbol, address: asset.address, amount: amount.amount })),
+          usdValue: claimable.totalCurrencyValue.amount,
           isSwapping: false,
           outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           outputChainId: claimable.chainId,
@@ -158,11 +154,10 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
       });
       analytics.track(analytics.event.claimClaimableFailed, {
         claimableType: 'sponsored',
-        claimableId: claimable.analyticsId,
+        claimableId: claimable.type,
         chainId: claimable.chainId,
-        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-        amount: claimable.value.claimAsset.amount,
-        usdValue: claimable.value.usd,
+        assets: claimable.assets.map(({ asset, amount }) => ({ symbol: asset.symbol, address: asset.address, amount: amount.amount })),
+        usdValue: claimable.totalCurrencyValue.amount,
         isSwapping: false,
         outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
         outputChainId: claimable.chainId,
@@ -177,11 +172,10 @@ export function SponsoredClaimableContextProvider({ claimable, children }: { cla
         logger.error(new RainbowError(`[SponsoredClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
         analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'sponsored',
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
+          assets: claimable.assets.map(({ asset, amount }) => ({ symbol: asset.symbol, address: asset.address, amount: amount.amount })),
+          usdValue: claimable.totalCurrencyValue.amount,
           isSwapping: false,
           outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           outputChainId: claimable.chainId,

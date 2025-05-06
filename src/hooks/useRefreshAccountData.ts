@@ -14,6 +14,10 @@ import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 import { time } from '@/utils';
+import { analytics } from '@/analytics';
+
+// minimum duration we want the "Pull to Refresh" animation to last
+const MIN_REFRESH_DURATION = 1_250;
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -29,28 +33,24 @@ export default function useRefreshAccountData() {
   );
 
   const fetchAccountData = useCallback(async () => {
-    userAssetsStore.getState().fetch(undefined, { staleTime: 0 });
-    useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) });
-    usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
-    useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) });
+    const getWalletNames = dispatch(fetchWalletNames());
+    const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
 
+    // These queries can take too long to fetch, so we do not wait for them
     queryClient.invalidateQueries([
       addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }),
       createQueryKey('nfts', { address: accountAddress }),
     ]);
 
-    try {
-      const getWalletNames = dispatch(fetchWalletNames());
-      const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
-      return Promise.all([
-        delay(1250), // minimum duration we want the "Pull to Refresh" animation to last
-        getWalletNames,
-        getWalletENSAvatars,
-      ]);
-    } catch (error) {
-      logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));
-      throw error;
-    }
+    await Promise.all([
+      delay(MIN_REFRESH_DURATION),
+      getWalletNames,
+      getWalletENSAvatars,
+      userAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
+      useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
+      usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
+      useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
+    ]);
   }, [accountAddress, allAddresses, dispatch, nativeCurrency, profilesEnabled]);
 
   const refresh = useCallback(async () => {
@@ -59,9 +59,13 @@ export default function useRefreshAccountData() {
     setIsRefreshing(true);
 
     try {
+      const start = performance.now();
       await fetchAccountData();
+      analytics.track(analytics.event.refreshAccountData, {
+        duration: performance.now() - start,
+      });
     } catch (error) {
-      logger.error(new RainbowError(`[useRefreshAccountData]: Error calling fetchAccountData: ${error}`));
+      logger.error(new RainbowError(`[useRefreshAccountData]: Error calling fetchAccountData`, error));
     } finally {
       setIsRefreshing(false);
     }

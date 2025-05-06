@@ -6,12 +6,22 @@ import * as i18n from '@/languages';
 import { TextColor } from '@/design-system/color/palettes';
 import { ClaimStatus } from '../../shared/types';
 
-export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimStatus; iconUrl: string }) {
+export function ClaimPanelHeader({
+  title,
+  subtitle,
+  claimStatus,
+  iconUrl,
+}: {
+  title?: string;
+  subtitle?: string;
+  claimStatus: ClaimStatus;
+  iconUrl: string;
+}) {
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
       case 'notReady':
       case 'ready':
-        return i18n.t(i18n.l.claimables.panel.claim);
+        return title ?? i18n.t(i18n.l.claimables.panel.claim);
       case 'claiming':
         return i18n.t(i18n.l.claimables.panel.claiming);
       case 'pending':
@@ -23,7 +33,7 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
       default:
         return i18n.t(i18n.l.claimables.panel.claiming_failed);
     }
-  }, [claimStatus]);
+  }, [claimStatus, title]);
 
   const panelTitleColor: TextColor = useMemo(() => {
     switch (claimStatus) {
@@ -43,19 +53,27 @@ export function ClaimPanelHeader({ claimStatus, iconUrl }: { claimStatus: ClaimS
 
   return (
     <ListHeader
+      BackButtonComponent={
+        <Box marginLeft={{ custom: 10 }} borderRadius={10} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
+          <FasterImageView source={{ url: iconUrl }} style={{ height: 32, width: 32 }} />
+        </Box>
+      }
       TitleComponent={
-        <Box alignItems="center" flexDirection="row" gap={10} justifyContent="center">
-          <Box borderRadius={6} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
-            <FasterImageView source={{ url: iconUrl }} style={{ height: 20, width: 20 }} />
-          </Box>
+        <Box alignItems="center" gap={10} justifyContent="center">
           <TextShadow shadowOpacity={0.3}>
             <Text align="center" color={panelTitleColor} size="20pt" weight="heavy">
               {panelTitle}
             </Text>
           </TextShadow>
+          {subtitle && (
+            <TextShadow shadowOpacity={0.3}>
+              <Text align="center" color="labelTertiary" size="13pt" weight="semibold">
+                {subtitle}
+              </Text>
+            </TextShadow>
+          )}
         </Box>
       }
-      showBackButton={false}
     />
   );
 }

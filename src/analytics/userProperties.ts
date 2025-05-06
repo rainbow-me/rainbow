@@ -46,7 +46,7 @@ export interface UserProperties {
 
   // claimables
   claimablesAmount?: number;
-  claimablesUSDValue?: number;
+  claimablesUSDValue?: string;
 
   // nft offers
   nftOffersAmount?: number;

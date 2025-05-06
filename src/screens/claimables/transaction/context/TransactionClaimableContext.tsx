@@ -151,12 +151,13 @@ export function TransactionClaimableContextProvider({
       return;
     }
     try {
+      const [asset] = claimable.assets;
       const quoteParams: QuoteParams = {
         chainId: claimable.chainId,
         fromAddress: accountAddress,
-        sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
+        sellTokenAddress: asset.asset.isNativeAsset ? ETH_ADDRESS : asset.asset.address,
         buyTokenAddress: outputConfig.token.isNativeAsset ? ETH_ADDRESS : outputTokenAddress,
-        sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+        sellAmount: convertAmountToRawAmount(asset.amount.amount, asset.asset.decimals),
         slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig().default_slippage_bips_chainId),
         refuel: false,
         toChainId: outputConfig.chainId,
@@ -196,18 +197,7 @@ export function TransactionClaimableContextProvider({
       logger.error(new RainbowError('[TransactionClaimableContext]: failed to get quote'), { error: e });
       setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'noQuoteError' });
     }
-  }, [
-    accountAddress,
-    claimable.asset.address,
-    claimable.asset.decimals,
-    claimable.asset.isNativeAsset,
-    claimable.chainId,
-    claimable.value.claimAsset.amount,
-    nativeCurrency,
-    outputConfig.chainId,
-    outputConfig.token,
-    outputTokenAddress,
-  ]);
+  }, [accountAddress, claimable.assets, claimable.chainId, nativeCurrency, outputConfig.chainId, outputConfig.token, outputTokenAddress]);
 
   // if we don't have a quote yet, fetch one
   useEffect(() => {
@@ -395,23 +385,15 @@ export function TransactionClaimableContextProvider({
             return;
           }
 
-          // const swapData = {
-          //   amount: claimable.value.claimAsset.amount,
-          //   sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
-          //   chainId: claimable.chainId,
-          //   toChainId: outputConfig.chainId,
-          //   assetToSell: claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset,
-          //   assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
-          //   address: accountAddress,
-          // };
+          const [asset] = claimable.assets;
 
           const swapData = {
-            amount: claimable.value.claimAsset.amount,
-            sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+            amount: asset.amount.amount,
+            sellAmount: convertAmountToRawAmount(asset.amount.amount, asset.asset.decimals),
             chainId: claimable.chainId,
             toChainId: outputConfig.chainId,
             assetToSell: transformRainbowTokenToParsedSearchAsset(
-              claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset
+              asset.asset.isNativeAsset ? { ...asset.asset, address: ETH_ADDRESS } : asset.asset
             ),
             assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
             address: accountAddress,
@@ -437,11 +419,14 @@ export function TransactionClaimableContextProvider({
               });
               analytics.track(analytics.event.claimClaimableFailed, {
                 claimableType: 'transaction',
-                claimableId: claimable.analyticsId,
+                claimableId: claimable.type,
                 chainId: claimable.chainId,
-                asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-                amount: claimable.value.claimAsset.amount,
-                usdValue: claimable.value.usd,
+                assets: claimable.assets.map(asset => ({
+                  symbol: asset.asset.symbol,
+                  address: asset.asset.address,
+                  amount: asset.amount.amount,
+                })),
+                usdValue: claimable.totalCurrencyValue.amount,
                 isSwapping: requiresSwap,
                 outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
                 outputChainId: outputConfig.chainId,
@@ -457,11 +442,14 @@ export function TransactionClaimableContextProvider({
               });
               analytics.track(analytics.event.claimClaimableFailed, {
                 claimableType: 'transaction',
-                claimableId: claimable.analyticsId,
+                claimableId: claimable.type,
                 chainId: claimable.chainId,
-                asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-                amount: claimable.value.claimAsset.amount,
-                usdValue: claimable.value.usd,
+                assets: claimable.assets.map(asset => ({
+                  symbol: asset.asset.symbol,
+                  address: asset.asset.address,
+                  amount: asset.amount.amount,
+                })),
+                usdValue: claimable.totalCurrencyValue.amount,
                 isSwapping: requiresSwap,
                 outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
                 outputChainId: outputConfig.chainId,
@@ -483,12 +471,15 @@ export function TransactionClaimableContextProvider({
 
         analytics.track(analytics.event.claimClaimableSucceeded, {
           claimableType: claimable.actionType,
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
+          assets: claimable.assets.map(asset => ({
+            symbol: asset.asset.symbol,
+            address: asset.asset.address,
+            amount: asset.amount.amount,
+          })),
           isSwapping: requiresSwap,
+          usdValue: claimable.totalCurrencyValue.amount,
           outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
           outputChainId: outputConfig.chainId,
         });
@@ -502,12 +493,15 @@ export function TransactionClaimableContextProvider({
         });
         analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'transaction',
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
+          assets: claimable.assets.map(asset => ({
+            symbol: asset.asset.symbol,
+            address: asset.asset.address,
+            amount: asset.amount.amount,
+          })),
           isSwapping: requiresSwap,
+          usdValue: claimable.totalCurrencyValue.amount,
           outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           outputChainId: claimable.chainId,
           failureStep: 'claim',
@@ -523,12 +517,11 @@ export function TransactionClaimableContextProvider({
       });
       analytics.track(analytics.event.claimClaimableFailed, {
         claimableType: 'transaction',
-        claimableId: claimable.analyticsId,
+        claimableId: claimable.type,
         chainId: claimable.chainId,
-        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-        amount: claimable.value.claimAsset.amount,
-        usdValue: claimable.value.usd,
+        assets: claimable.assets.map(asset => ({ symbol: asset.asset.symbol, address: asset.asset.address, amount: asset.amount.amount })),
         isSwapping: requiresSwap,
+        usdValue: claimable.totalCurrencyValue.amount,
         outputAsset: { symbol: outputConfig.token?.symbol ?? '', address: outputTokenAddress ?? '' },
         outputChainId: outputConfig.chainId ?? -1,
         failureStep: 'unknown',
@@ -543,12 +536,15 @@ export function TransactionClaimableContextProvider({
         logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
         analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'transaction',
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
+          assets: claimable.assets.map(asset => ({
+            symbol: asset.asset.symbol,
+            address: asset.asset.address,
+            amount: asset.amount.amount,
+          })),
           isSwapping: requiresSwap,
+          usdValue: claimable.totalCurrencyValue.amount,
           outputAsset: { symbol: outputConfig.token?.symbol ?? '', address: outputTokenAddress ?? '' },
           outputChainId: outputConfig.chainId ?? -1,
           failureStep: 'unknown',
