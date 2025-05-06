@@ -29,7 +29,6 @@ export default function useRefreshAccountData() {
   );
 
   const fetchAccountData = useCallback(async () => {
-    const getWalletNames = refreshWalletNames();
     const getWalletENSAvatars = profilesEnabled ? refreshWalletENSAvatars() : null;
 
     // These queries can take too long to fetch, so we do not wait for them
@@ -40,7 +39,7 @@ export default function useRefreshAccountData() {
 
     await Promise.all([
       delay(MIN_REFRESH_DURATION),
-      getWalletNames,
+      refreshWalletNames(),
       getWalletENSAvatars,
       userAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
       useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),

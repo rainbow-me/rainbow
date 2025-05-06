@@ -1,6 +1,6 @@
 import { ensureChecksumAddress } from '@/handlers/web3';
 import { RainbowAccount } from '@/model/wallet';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import useInitializeWallet from './useInitializeWallet';
 
 export default function useSwitchWallet() {
@@ -17,7 +17,6 @@ export default function useSwitchWallet() {
 
     if (!walletKey) return null;
 
-    const { setSelectedWallet } = useWalletsStore.getState();
     setSelectedWallet(wallets[walletKey], ensureChecksumAddress(address));
 
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
