@@ -84,7 +84,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const { dapp_browser, points_enabled } = useRemoteConfig(['dapp_browser', 'points_enabled']);
+  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
@@ -392,7 +392,7 @@ function SwipeNavigatorScreens() {
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, points_enabled } = useRemoteConfig(['dapp_browser', 'points_enabled']);
+  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 

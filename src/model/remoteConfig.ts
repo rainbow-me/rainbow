@@ -128,7 +128,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.zora]: Bips.default,
 };
 
-export const DEFAULT_CONFIG: Readonly<RainbowConfig> = {
+export const DEFAULT_CONFIG = {
   /* Objects */
   default_slippage_bips: DEFAULT_SLIPPAGE_BIPS,
   default_slippage_bips_chainId: DEFAULT_SLIPPAGE_BIPS_CHAINID,
@@ -195,7 +195,9 @@ export const DEFAULT_CONFIG: Readonly<RainbowConfig> = {
   new_discover_cards_enabled: false,
   rainbow_trending_tokens_list_enabled: false,
   king_of_the_hill_enabled: false,
-};
+} as const satisfies Readonly<RainbowConfig>;
+
+type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
 
 // ============ Firebase Defaults ============================================== //
 
@@ -225,7 +227,7 @@ function getFirebaseDefaults(): FirebaseConfigDefaults {
 interface RemoteConfigState {
   config: RainbowConfig;
   lastFetchedVersion: number;
-  getRemoteConfigKey: <K extends keyof RainbowConfig>(key: K) => RainbowConfig[K];
+  getRemoteConfigKey: <K extends RemoteConfigKey>(key: K) => RainbowConfig[K];
 }
 
 export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, RemoteConfigState>(
@@ -244,6 +246,7 @@ export const useRemoteConfigStore = createQueryStore<RainbowConfig, never, Remot
             }
           : state;
       }),
+
     cacheTime: time.weeks(1),
     maxRetries: 3,
     staleTime: time.minutes(10),
@@ -274,9 +277,12 @@ export function getRemoteConfig(): RainbowConfig {
 }
 
 export function useRemoteConfig(): RainbowConfig;
-export function useRemoteConfig<K extends keyof RainbowConfig>(keys: K[]): Pick<RainbowConfig, K>;
-export function useRemoteConfig<K extends keyof RainbowConfig>(keys?: K[]): RainbowConfig | Pick<RainbowConfig, K> {
-  return useRemoteConfigStore(state => selectRemoteConfigKeys(state, keys), keys ? shallowEqual : undefined);
+export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...keys: K): Pick<RainbowConfig, K[number]>;
+export function useRemoteConfig<const K extends readonly RemoteConfigKey[]>(...keys: K): RainbowConfig | Pick<RainbowConfig, K[number]> {
+  return useRemoteConfigStore(
+    state => (keys.length ? selectRemoteConfigKeys(state, keys) : state.config),
+    keys.length ? shallowEqual : undefined
+  );
 }
 
 // ============ Fetcher ======================================================== //
@@ -319,7 +325,7 @@ function digitsOnly(string: string): number {
   return numeric.length ? Number(numeric) : 0;
 }
 
-type Parser<K extends keyof RainbowConfig> = (value: FirebaseRemoteConfigTypes.ConfigValue) => RainbowConfig[K];
+type Parser<K extends keyof RainbowConfig = keyof RainbowConfig> = (value: FirebaseRemoteConfigTypes.ConfigValue) => RainbowConfig[K];
 type Parsers = { [K in keyof RainbowConfig]: Parser<K> };
 
 function buildParsers(defaults: RainbowConfig): Parsers {
@@ -327,7 +333,7 @@ function buildParsers(defaults: RainbowConfig): Parsers {
     boolean: v => v.asBoolean(),
     number: v => v.asNumber(),
     string: v => v.asString(),
-  } satisfies Record<string, Parser<keyof RainbowConfig>>;
+  } satisfies Record<string, Parser>;
 
   const parsers: Partial<Parsers> = {};
 
@@ -363,9 +369,9 @@ function buildParsers(defaults: RainbowConfig): Parsers {
   return parsers as Parsers;
 }
 
-function selectRemoteConfigKeys<K extends keyof RainbowConfig>(
+function selectRemoteConfigKeys<const K extends RemoteConfigKey>(
   state: RemoteConfigState,
-  keys: K[] | undefined
+  keys: readonly K[] | undefined
 ): RainbowConfig | Pick<RainbowConfig, K> {
   if (!keys) return state.config;
   const result: Partial<RainbowConfig> = {};
