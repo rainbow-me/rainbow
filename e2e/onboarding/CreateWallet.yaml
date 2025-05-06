@@ -3,8 +3,9 @@ tags:
   - auth
   - parallel
 ---
-- clearState
 - launchApp:
+    clearState: true
+    clearKeychain: true
     arguments:
       isE2ETest: true
 - runFlow: ../utils/Prepare.yaml

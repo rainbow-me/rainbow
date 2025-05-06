@@ -1,5 +1,6 @@
+import * as i18n from '@/languages';
 import { NativeCurrencyKey } from '@/entities';
-import { Claimable, ConsolidatedClaimablesResponse } from './types';
+import { Claimable, ClaimableType, ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -63,7 +64,7 @@ export async function getClaimables({ address, currency, abortController }: Clai
     }
 
     const sortedClaimables = parseClaimables(claimables.data.payload.claimables, currency).sort((a, b) =>
-      greaterThan(a.value.nativeAsset.amount || '0', b.value.nativeAsset.amount || '0') ? -1 : 1
+      greaterThan(a.totalCurrencyValue.amount || '0', b.totalCurrencyValue.amount || '0') ? -1 : 1
     );
 
     if (points?.points?.user?.rewards?.claimable) {
@@ -75,16 +76,36 @@ export async function getClaimables({ address, currency, abortController }: Clai
         });
         const { amount, display } = convertAmountAndPriceToNativeDisplay(claimableETH.amount, ethNativeAsset.price?.value || 0, currency);
         if (!isZero(amount)) {
-          const ethRewardsClaimable = {
-            value: {
-              claimAsset: claimableETH,
-              nativeAsset: {
-                amount,
-                display,
+          const ethRewardsClaimable: Claimable = {
+            assets: [
+              {
+                amount: {
+                  amount: claimableETH.amount,
+                  display: claimableETH.display,
+                },
+                asset: ethNativeAsset,
+                usd_value: Number(amount),
+                value: points?.points?.user?.rewards?.claimable || '0',
               },
+            ],
+            totalCurrencyValue: {
+              amount,
+              display,
             },
             uniqueId: 'rainbow-eth-rewards',
-          } as Claimable;
+
+            // NOTE: None of this below is used, but is required to satisfy the Claimable type
+            actionType: 'sponsored',
+            asset: ethNativeAsset,
+            action: {
+              url: 'https://rainbow.me',
+              method: 'GET',
+            },
+            chainId: ChainId.mainnet,
+            name: i18n.t(i18n.l.claimables.panel.rainbow_eth_rewards),
+            iconUrl: 'https://rainbow.me/favicon.ico',
+            type: ClaimableType.RainbowEthRewards,
+          };
           sortedClaimables.unshift(ethRewardsClaimable);
         }
       }
@@ -95,7 +116,7 @@ export async function getClaimables({ address, currency, abortController }: Clai
     return {
       claimables: sortedClaimables,
       totalValue: convertAmountToNativeDisplay(
-        sortedClaimables.reduce((acc, claimable) => add(acc, claimable.value.nativeAsset.amount || '0'), '0'),
+        sortedClaimables.reduce((acc, claimable) => add(acc, claimable.totalCurrencyValue.amount || '0'), '0'),
         currency
       ),
     };
@@ -110,19 +131,19 @@ export async function getClaimables({ address, currency, abortController }: Clai
 // user properties analytics for claimables that executes at max once every hour
 const throttledClaimablesAnalytics = throttle(
   (claimables: Claimable[]) => {
-    let totalUSDValue = 0;
+    let totalUSDValue = '0';
     const claimablesUSDValues: {
-      [key: string]: number;
+      [key: string]: string;
     } = {};
 
     claimables.forEach(claimable => {
-      const attribute = `claimable-${claimable.analyticsId}-USDValue`;
-      totalUSDValue += claimable.value.usd;
+      const attribute = `claimable-${claimable.type}-USDValue`;
+      totalUSDValue = add(totalUSDValue, claimable.totalCurrencyValue.amount);
 
       if (claimablesUSDValues[attribute] !== undefined) {
-        claimablesUSDValues[attribute] += claimable.value.usd;
+        claimablesUSDValues[attribute] = add(claimablesUSDValues[attribute], claimable.totalCurrencyValue.amount);
       } else {
-        claimablesUSDValues[attribute] = claimable.value.usd;
+        claimablesUSDValues[attribute] = claimable.totalCurrencyValue.amount;
       }
     });
 

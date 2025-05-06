@@ -2,7 +2,6 @@ import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { DEFI_POSITIONS, CLAIMABLES } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { UniqueId } from '@/__swaps__/types/assets';
@@ -130,7 +129,7 @@ const buildBriefWalletSections = (
 };
 
 const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserAssets: boolean): CellTypes[] => {
-  if (isLoadingUserAssets || !DEFI_POSITIONS || !positions?.positions || Object.keys(positions.positions).length === 0) return [];
+  if (isLoadingUserAssets || !positions?.positions || Object.keys(positions.positions).length === 0) return [];
 
   const positionSectionItems: CellTypes[] = Object.values(positions.positions).map((position, index) => {
     return {
@@ -156,7 +155,7 @@ const withPositionsSection = (positions: RainbowPositions | null, isLoadingUserA
 };
 
 const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUserAssets: boolean): CellTypes[] => {
-  if (isLoadingUserAssets || !CLAIMABLES || !claimables?.claimables?.length) return [];
+  if (isLoadingUserAssets || !claimables?.claimables?.length) return [];
 
   const claimableSectionItems: CellTypes[] = claimables.claimables.map(claimable => {
     return {
