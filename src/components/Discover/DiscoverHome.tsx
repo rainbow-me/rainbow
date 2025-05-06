@@ -1,4 +1,3 @@
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { TrendingTokens } from '@/components/Discover/TrendingTokens';
 import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
@@ -22,9 +21,11 @@ import { useAccountSettings } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import useExperimentalFlag, {
   FEATURED_RESULTS,
   HARDWARE_WALLETS,
+  KING_OF_THE_HILL,
   MINTS,
   NEW_DISCOVER_CARDS,
   NFT_OFFERS,
@@ -33,14 +34,21 @@ import useExperimentalFlag, {
   TRENDING_TOKENS,
 } from '@rainbow-me/config/experimentalHooks';
 import React, { useCallback } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
+import { KingOfTheHill } from './KingOfTheHill';
 
 export const HORIZONTAL_PADDING = 20;
 
 export default function DiscoverHome() {
-  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, new_discover_cards_enabled } =
-    useRemoteConfig();
+  const {
+    profiles_enabled,
+    mints_enabled,
+    op_rewards_enabled,
+    featured_results,
+    trending_tokens_enabled,
+    new_discover_cards_enabled,
+    king_of_the_hill_enabled,
+  } = useRemoteConfig();
   const { isDarkMode } = useColorMode();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
@@ -52,6 +60,8 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
+  const kingOfTheHillEnabled = (useExperimentalFlag(KING_OF_THE_HILL) || king_of_the_hill_enabled) && !IS_TEST;
+
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
   const { navigate } = useNavigation();
@@ -85,13 +95,9 @@ export default function DiscoverHome() {
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
           )}
-          <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
-          {trendingTokensEnabled && (
-            <>
-              <TrendingTokens />
-              <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
-            </>
-          )}
+          {kingOfTheHillEnabled && <KingOfTheHill />}
+          <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
+          {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />
           {mintsEnabled && (
             <Stack space="20px">

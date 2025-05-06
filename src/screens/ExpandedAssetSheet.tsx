@@ -9,6 +9,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,
@@ -33,7 +34,7 @@ export default function ExpandedAssetSheet(props: any) {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
   const { goBack } = useNavigation();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'ExpandedAssetSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET>>();
 
   return (
     <Container deviceHeight={deviceHeight} height={params.longFormHeight} insets={insets}>

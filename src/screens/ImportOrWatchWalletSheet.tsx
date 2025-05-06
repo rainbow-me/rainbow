@@ -10,19 +10,13 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { LoadingOverlay } from '@/components/modal';
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
-export type ImportOrWatchWalletSheetParams = {
-  type: 'watch' | 'import';
-};
-
-type RouteParams = {
-  ImportOrWatchWalletSheetParams: ImportOrWatchWalletSheetParams;
-};
-
 export const ImportOrWatchWalletSheet = () => {
-  const { params: { type = 'watch' } = {} } = useRoute<RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>>();
+  const { params: { type = 'watch' } = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET>>();
 
   const { busy, handleFocus, handlePressImportButton, handleSetSeedPhrase, inputRef, isSecretValid, seedPhrase } = useImportingWallet();
   const keyboardHeight = useKeyboardHeight();

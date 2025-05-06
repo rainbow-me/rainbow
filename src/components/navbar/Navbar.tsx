@@ -5,7 +5,6 @@ import { NavbarSvgIcon } from './NavbarSvgIcon';
 import { NavbarItem } from './NavbarItem';
 import { NavbarTextIcon } from './NavbarTextIcon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRecyclerListViewRef } from '../asset-list/RecyclerAssetList';
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;
@@ -29,7 +28,6 @@ export function Navbar({
   title,
 }: NavbarProps) {
   const { top: topInset } = useSafeAreaInsets();
-  const { ref } = useRecyclerListViewRef();
 
   return (
     <Box testID={testID} style={{ backgroundColor: 'transparent' }}>

@@ -20,16 +20,16 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useAccountSettings, useSendFeedback } from '@/hooks';
 import * as lang from '@/languages';
 import { backupsStore } from '@/state/backups/backups';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { capitalize } from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import { default as React, default as React, useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { SettingsExternalURLs } from '../constants';
 import { checkLocalWalletsForBackupStatus } from '../utils';
 import Menu from './Menu';
@@ -69,10 +69,8 @@ const SettingsSection = ({
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { backupProvider, backups } = backupsStore(state => ({
-    backupProvider: state.backupProvider,
-    backups: state.backups,
-  }));
+  const backupProvider = backupsStore(state => state.backupProvider);
+  const backups = backupsStore(state => state.backups);
 
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 

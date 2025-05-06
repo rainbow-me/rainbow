@@ -141,7 +141,7 @@ export default function SendSheet() {
     updateDefaultGasLimit,
     updateTxFee,
     l1GasFeeOptimism,
-  } = useGas();
+  } = useGas({ enableTracking: true });
   const recipientFieldRef = useRef<TextInput | null>(null);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -167,7 +167,7 @@ export default function SendSheet() {
   const prevChainId = usePrevious(currentChainId);
   const [currentInput, setCurrentInput] = useState('');
 
-  const { params } = useRoute<RouteProp<RootStackParamList, 'SendSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_SHEET>>();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 
@@ -720,7 +720,7 @@ export default function SendSheet() {
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
-    if (buttonDisabled) return;
+    if (buttonDisabled || !selected) return;
     let toAddress = recipient;
     const isValid = await checkIsValidAddressOrDomain(recipient);
     if (isValid) {

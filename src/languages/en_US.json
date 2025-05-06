@@ -467,6 +467,9 @@
         "quote_error": "Quote Error",
         "no_route_found": "No Route Found",
         "fetching_quote": "Fetching Quote...",
+        "rainbow_eth_rewards": "Rainbow ETH Rewards",
+        "merkl_claimable": "%{dappName} Vault",
+        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "Select a Network",
         "select_a_token": "Select a Token",
         "amount_to_claim_on_network": "%{amount} to claim on %{network}",
@@ -476,6 +479,9 @@
         "claimed": "Claimed!",
         "claiming_failed": "Claim Failed",
         "insufficient_funds": "Insufficient Funds",
+        "hold_to_claim": "Hold to Claim",
+        "creator_lp_fees": "Creator LP Fees",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Claim %{amount}",
         "done": "Done",
         "try_again": "Try Again",
@@ -519,7 +525,6 @@
       "alert": "Alert",
       "analyze_env_variables": "Analyze ENV Variables",
       "analyze_react_query": "Analyze React Query",
-      "analyze_env_variables": "Analyze ENV Variables",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups Deleted Successfully",
       "clear_async_storage": "Clear AsyncStorage",
@@ -605,6 +610,7 @@
         "expires_in": "Expires in %{minutes}m",
         "from_divider": "from",
         "to_divider": "to",
+        "token": "Token",
         "view_on": "View on %{blockExplorerName}",
         "view_on_etherscan": "View on Etherscan",
         "copy_contract_address": "Copy Contract Address"
@@ -648,16 +654,14 @@
         },
         "unknown_price": {
           "title": "Market Value Unknown",
-          "description": "If you decide to continue, be sure that you are satisfied receiving the quoted amount."
+          "description": "If you decide to continue, be sure you are satisfied with the quoted amounts"
         },
         "losing_prefix": "Losing",
         "small_market": "Small Market",
         "small_market_try_smaller_amount": "Small market — try a smaller amount",
         "you_are_losing": "You're losing %{priceImpact}",
         "you_are_losing_prefix": "You're losing",
-        "no_data": "Market Value Unknown",
-        "label": "Possible loss",
-        "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
+        "label": "Possible loss"
       },
       "source": {
         "rainbow": "Auto",
@@ -3368,6 +3372,38 @@
     },
     "done": "Done",
     "copy": "Copy",
-    "paste": "Paste"
+    "paste": "Paste",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "MCAP"
+    },
+    "king_of_hill": {
+      "current_king": "CURRENT KING",
+      "last_winner": "LAST WINNER",
+      "how_it_works": "How It Works",
+      "starting_next_round": "Starting next round",
+      "left": "LEFT",
+      "king_of_the_hill": "King of the Hill",
+      "explain_sheet": {
+        "next": "Next",
+        "got_it": "Got it",
+        "steps": {
+          "step_1": {
+            "title": "The race is live",
+            "subtitle_parts": ["The token with the most", " buy volume ", "right now is the current king."]
+          },
+          "step_2": {
+            "title": "One crown a day",
+            "subtitle_parts": ["At", " midnight (12:00 AM UTC), ", "the leading token is crowned the daily winner."]
+          },
+          "step_3": {
+            "title": "Win Rewards",
+            "subtitle_parts": ["Buyers of the current King get", " 2x points."],
+            "subtitle_two_parts": ["Creators", " earn points ", "when crowned."]
+          }
+        }
+      }
+    }
   }
 }

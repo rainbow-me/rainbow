@@ -6,7 +6,6 @@ import * as lang from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backups/routes';
 import React, { useCallback } from 'react';
 import { Source } from 'react-native-fast-image';
 import { ButtonPressAnimation } from '../animations';
@@ -29,7 +28,7 @@ export default function ManualBackupPrompt() {
 
     goBack();
     navigate(Routes.SETTINGS_SHEET, {
-      screen: SETTINGS_BACKUP_ROUTES.SECRET_WARNING,
+      screen: Routes.SECRET_WARNING,
       params: {
         isBackingUp: true,
         title,

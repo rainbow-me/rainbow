@@ -10,7 +10,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { isNativeAsset } from '@/handlers/assets';
-import { Token } from '@/graphql/__generated__/metadata';
+import { Token, TokenKing } from '@/graphql/__generated__/metadata';
 import { useColorMode } from '@/design-system';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -62,7 +62,7 @@ interface AccentColors {
   surfaceSecondary: string;
 }
 // We can receive a variety of assets as param depending on where we navigated from
-export type ExpandedSheetParamAsset = ParsedAddressAsset | TrendingToken | FormattedExternalAsset | EnrichedExchangeAsset;
+export type ExpandedSheetParamAsset = ParsedAddressAsset | TrendingToken | FormattedExternalAsset | EnrichedExchangeAsset | TokenKing;
 
 export type BasicAsset = Pick<
   Token,
@@ -153,7 +153,7 @@ export function ExpandedAssetSheetContextProvider({
       name: asset.name,
       symbol: asset.symbol,
       decimals: asset.decimals,
-      iconUrl: asset.icon_url,
+      iconUrl: 'iconUrl' in asset ? asset.iconUrl : asset.icon_url,
       isNativeAsset: isNativeAsset(address, chainId),
       colors: assetColors ?? { primary: colors.blueGreyDark },
       transferable: 'transferable' in asset ? asset.transferable : true,

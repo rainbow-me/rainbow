@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Share, StatusBar, View } from 'react-native';
 import { WebView } from 'react-native-webview';
@@ -15,14 +15,15 @@ import { IS_ANDROID } from '@/env';
 import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
+import { RootStackParamList } from '@/navigation/types';
+import Routes from '@/navigation/routesNames';
 
 const HEADER_HEIGHT = 60;
 
 export default function LearnWebViewScreen() {
   const {
     params: { key, displayType, category, url, routeName },
-  }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any = useRoute();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.LEARN_WEB_VIEW_SCREEN>>();
   const { isDarkMode } = useTheme();
   const { height: deviceHeight, isSmallPhone } = useDimensions();
   const [webViewHeight, setWebViewHeight] = useState(0);

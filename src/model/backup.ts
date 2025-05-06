@@ -748,7 +748,7 @@ export async function checkIdentifierOnLaunch() {
           clearAllStorages();
 
           // send user back to welcome screen
-          Navigation.handleAction(Routes.WELCOME_SCREEN, {});
+          Navigation.handleAction(Routes.WELCOME_SCREEN);
           resolve(false);
         },
       });

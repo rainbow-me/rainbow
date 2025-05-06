@@ -36,7 +36,7 @@ interface ClaimableTransactionData {
   data: string;
   symbol: string;
   to: Address;
-  usdValue: number;
+  usdValue: string;
 }
 
 type ExecuteAirdropClaimResult =
@@ -120,8 +120,7 @@ export async function executeAirdropClaim({
     logger.log('[claimAirdrop]: Transaction successfully submitted', { chainId, hash: receipt.hash });
 
     analytics.track(analytics.event.claimClaimableSucceeded, {
-      amount,
-      asset: { address: to, symbol },
+      assets: [{ address: to, symbol, amount }],
       chainId,
       claimableId: airdropId,
       claimableType: 'rainbowCoin',
@@ -150,8 +149,7 @@ export async function executeAirdropClaim({
     });
 
     analytics.track(analytics.event.claimClaimableFailed, {
-      amount,
-      asset: { address: to, symbol },
+      assets: [{ address: to, symbol, amount }],
       chainId,
       claimableId: airdropId,
       claimableType: 'rainbowCoin',
@@ -172,14 +170,15 @@ export async function executeAirdropClaim({
  */
 function getClaimableTransactionData(claimable: RainbowClaimable): ClaimableTransactionData {
   const [action] = claimable.action;
+  const [asset] = claimable.assets;
   return {
     airdropId: claimable.uniqueId,
-    amount: claimable.value.claimAsset.amount,
+    amount: asset.amount.amount,
     chainId: claimable.chainId,
     data: action.data,
-    symbol: claimable.asset.symbol,
+    symbol: asset.asset.symbol,
     to: action.to,
-    usdValue: claimable.value.usd,
+    usdValue: claimable.totalCurrencyValue.amount,
   };
 }
 

@@ -1,3 +1,4 @@
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Stack } from '@/design-system';
@@ -10,13 +11,13 @@ import { SwapMetadata } from '@/raps/references';
 import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/components/SingleLineTransactionDetailsRow';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { ethereumUtils, haptics } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Clipboard from '@react-native-clipboard/clipboard';
 import startCase from 'lodash/startCase';
 import React, { useCallback, useMemo } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -44,7 +45,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
 
     // TODO: Add retry swap logic back for swaps
-    Navigation.handleAction(Routes.SWAP, {});
+    navigateToSwaps();
   }, []);
 
   if (!hash || !network) {

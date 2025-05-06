@@ -55,7 +55,6 @@ export const ENSSearchCard = () => {
         cardType,
       });
       navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-        fromDiscover: true,
         mode: REGISTRATION_MODES.SEARCH,
       });
     } else {

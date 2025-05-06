@@ -1,5 +1,9 @@
+export const INTERNAL_PRECISION = 20;
+const INTERNAL_PRECISION_BIGINT = BigInt(INTERNAL_PRECISION);
+const SCALE_FACTOR = BigInt(10) ** INTERNAL_PRECISION_BIGINT;
+
 // Utility function to remove the decimal point and keep track of the number of decimal places
-function removeDecimalWorklet(num: string): [bigint, number] {
+export function removeDecimalWorklet(num: string): [bigint, number] {
   'worklet';
   let decimalPlaces = 0;
   let bigIntNum: bigint;
@@ -48,8 +52,9 @@ const isZeroWorklet = (value: string): boolean => {
 // Utility function to scale the number up to 20 decimal places
 export const scaleUpWorklet = (bigIntNum: bigint, decimalPlaces: number): bigint => {
   'worklet';
-  const scaleFactor = BigInt(10) ** BigInt(20);
-  return (bigIntNum * scaleFactor) / BigInt(10) ** BigInt(decimalPlaces);
+  return decimalPlaces >= 0
+    ? (bigIntNum * SCALE_FACTOR) / BigInt(10) ** BigInt(decimalPlaces)
+    : bigIntNum * SCALE_FACTOR * BigInt(10) ** BigInt(-decimalPlaces);
 };
 
 // Utility function to format the result with 20 decimal places and remove trailing zeros
@@ -57,9 +62,9 @@ const formatResultWorklet = (result: bigint): string => {
   'worklet';
   const isNegative = result < 0;
   const absResult = isNegative ? -result : result;
-  const resultStr = absResult.toString().padStart(21, '0'); // 20 decimal places + at least 1 integer place
-  const integerPart = resultStr.slice(0, -20) || '0';
-  let fractionalPart = resultStr.slice(-20);
+  const resultStr = absResult.toString().padStart(INTERNAL_PRECISION + 1, '0');
+  const integerPart = resultStr.slice(0, -INTERNAL_PRECISION) || '0';
+  let fractionalPart = resultStr.slice(-INTERNAL_PRECISION);
   fractionalPart = fractionalPart.replace(/0+$/, ''); // Remove trailing zeros
   const formattedResult = fractionalPart.length > 0 ? `${integerPart}.${fractionalPart}` : integerPart;
   return isNegative ? `-${formattedResult}` : formattedResult;
@@ -151,7 +156,7 @@ export function mulWorklet(num1: string | number, num2: string | number): string
   const [bigInt2, decimalPlaces2] = removeDecimalWorklet(num2Str);
   const scaledBigInt1 = scaleUpWorklet(bigInt1, decimalPlaces1);
   const scaledBigInt2 = scaleUpWorklet(bigInt2, decimalPlaces2);
-  const result = (scaledBigInt1 * scaledBigInt2) / BigInt(10) ** BigInt(20);
+  const result = (scaledBigInt1 * scaledBigInt2) / SCALE_FACTOR;
   return formatResultWorklet(result);
 }
 
@@ -174,7 +179,7 @@ export function divWorklet(num1: string | number, num2: string | number): string
   const [bigInt2, decimalPlaces2] = removeDecimalWorklet(num2Str);
   const scaledBigInt1 = scaleUpWorklet(bigInt1, decimalPlaces1);
   const scaledBigInt2 = scaleUpWorklet(bigInt2, decimalPlaces2);
-  const result = (scaledBigInt1 * BigInt(10) ** BigInt(20)) / scaledBigInt2;
+  const result = (scaledBigInt1 * SCALE_FACTOR) / scaledBigInt2;
   return formatResultWorklet(result);
 }
 
@@ -366,7 +371,7 @@ export function powWorklet(base: string | number, exponent: string | number): st
     if (exp === 1) {
       result = raw;
     } else {
-      const divisor = BigInt(10) ** BigInt(20 * (exp - 1));
+      const divisor = BigInt(10) ** (INTERNAL_PRECISION_BIGINT * BigInt(exp - 1));
       result = raw / divisor;
     }
 
@@ -383,7 +388,7 @@ export function toFixedWorklet(num: string | number, decimalPlaces: number): str
   'worklet';
   // Clamp to internal precision
   let safeDecimalPlaces = decimalPlaces;
-  if (safeDecimalPlaces > 20) safeDecimalPlaces = 20;
+  if (safeDecimalPlaces > INTERNAL_PRECISION) safeDecimalPlaces = INTERNAL_PRECISION;
   if (safeDecimalPlaces < 0) safeDecimalPlaces = 0;
 
   const numStr = toStringWorklet(num);
@@ -395,25 +400,25 @@ export function toFixedWorklet(num: string | number, decimalPlaces: number): str
   const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(numStr);
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, numDecimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20 - safeDecimalPlaces);
-  const half = scaleFactor / BigInt(2);
+  const roundingScaleFactor = BigInt(10) ** BigInt(INTERNAL_PRECISION - safeDecimalPlaces);
+  const half = roundingScaleFactor / BigInt(2);
 
   // Handle sign separately so we correctly round negative numbers
   const sign = scaledBigIntNum < 0n ? -1n : 1n;
   let absScaled = scaledBigIntNum * sign;
   absScaled = absScaled + half;
-  absScaled = absScaled / scaleFactor;
-  absScaled = absScaled * scaleFactor;
+  absScaled = absScaled / roundingScaleFactor;
+  absScaled = absScaled * roundingScaleFactor;
   const finalBigInt = absScaled * sign;
 
   // Convert to string and pad without the sign
   const isNegative = finalBigInt < 0n;
-  const finalAbsStr = (isNegative ? -finalBigInt : finalBigInt).toString().padStart(20 + 1, '0');
+  const finalAbsStr = (isNegative ? -finalBigInt : finalBigInt).toString().padStart(INTERNAL_PRECISION + 1, '0');
 
-  const integerPart = finalAbsStr.slice(0, -20) || '0';
-  const fractionalPart = finalAbsStr.slice(-20, -20 + safeDecimalPlaces).padEnd(safeDecimalPlaces, '0');
+  const integerPart = finalAbsStr.slice(0, -INTERNAL_PRECISION) || '0';
+  const fractionalPart = finalAbsStr.slice(-INTERNAL_PRECISION, -INTERNAL_PRECISION + safeDecimalPlaces);
 
-  return (isNegative ? '-' : '') + integerPart + (safeDecimalPlaces ? '.' + fractionalPart : '');
+  return (isNegative ? '-' : '') + integerPart + (safeDecimalPlaces > 0 ? '.' + fractionalPart : '');
 }
 
 // Ceil function
@@ -428,8 +433,7 @@ export function ceilWorklet(num: string | number): string {
   const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20);
-  const ceilBigInt = ((scaledBigIntNum + scaleFactor - BigInt(1)) / scaleFactor) * scaleFactor;
+  const ceilBigInt = ((scaledBigIntNum + SCALE_FACTOR - BigInt(1)) / SCALE_FACTOR) * SCALE_FACTOR;
 
   return formatResultWorklet(ceilBigInt);
 }
@@ -446,8 +450,7 @@ export function floorWorklet(num: string | number): string {
   const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20);
-  const floorBigInt = (scaledBigIntNum / scaleFactor) * scaleFactor;
+  const floorBigInt = (scaledBigIntNum / SCALE_FACTOR) * SCALE_FACTOR;
 
   return formatResultWorklet(floorBigInt);
 }
@@ -463,15 +466,13 @@ export function roundWorklet(num: string | number): string {
   const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
   let scaled = scaleUpWorklet(bigIntNum, decimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20);
-
   if (scaled >= 0n) {
-    scaled += scaleFactor / 2n;
+    scaled += SCALE_FACTOR / 2n;
   } else {
-    scaled -= scaleFactor / 2n; // negative => subtract half
+    scaled -= SCALE_FACTOR / 2n; // negative => subtract half
   }
 
-  const roundBigInt = (scaled / scaleFactor) * scaleFactor;
+  const roundBigInt = (scaled / SCALE_FACTOR) * SCALE_FACTOR;
   return formatResultWorklet(roundBigInt);
 }
 

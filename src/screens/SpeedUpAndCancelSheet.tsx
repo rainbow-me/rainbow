@@ -116,12 +116,14 @@ export default function SpeedUpAndCancelSheet() {
   const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
-  const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
+  const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas({
+    enableTracking: true,
+  });
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
     params: { type, tx, accentColor },
-  } = useRoute<RouteProp<RootStackParamList, 'SpeedUpAndCancelSheet' | 'SpeedUpAndCancelBootomSheet'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.SPEED_UP_AND_CANCEL_SHEET | typeof Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET>>();
 
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState<GasFeeType>();

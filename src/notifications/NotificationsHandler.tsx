@@ -23,28 +23,25 @@ import {
   TransactionNotificationData,
 } from '@/notifications/types';
 import store, { AppState } from '@/redux/store';
-import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
+import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch } from '@/utils';
 import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';
 import Routes from '@rainbow-me/routes';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AppState as ApplicationState, AppStateStatus, NativeEventSubscription } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 
 type Callback = () => void;
 
-type Props = PropsWithChildren<{ walletReady: boolean }>;
-
-export const NotificationsHandler = ({ walletReady }: Props) => {
+export const NotificationsHandler = () => {
   const wallets = useWalletsStore(state => state.wallets);
   const walletSwitcher = useSwitchWallet();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const walletSwitcherRef = useRef(walletSwitcher);
-  const prevWalletReady = usePrevious(walletReady);
   const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
@@ -53,6 +50,9 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   const appState = useRef<AppStateStatus>(null);
   const notifeeForegroundEventListener = useRef<Callback>();
   const alreadyRanInitialization = useRef(false);
+
+  const walletReady = useSelector((state: AppState) => state.appState.walletReady);
+  const prevWalletReady = usePrevious(walletReady);
 
   /*
   We need to save wallets property to a ref in order to have an up-to-date value
@@ -139,7 +139,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
       if (!walletAddress) {
         return;
       }
-      Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+      Navigation.handleAction(Routes.PROFILE_SCREEN);
 
       const chainId = parseInt(data.chain, 10);
 

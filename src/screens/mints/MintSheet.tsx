@@ -29,6 +29,7 @@ import { RainbowError, logger } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -43,7 +44,7 @@ import { abbreviations, ethereumUtils, watchingAlert } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { format } from 'date-fns';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
@@ -124,8 +125,8 @@ const getFormattedDate = (date: string) => {
 };
 
 const MintSheet = () => {
-  const params = useRoute();
-  const { collection: mintCollection, pricePerMint } = params.params as MintSheetProps;
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.MINT_SHEET>>();
+  const { collection: mintCollection, pricePerMint } = params;
   const chainId = mintCollection.chainId;
   const { accountAddress } = useAccountProfileInfo();
   const { nativeCurrency } = useAccountSettings();
@@ -164,7 +165,13 @@ const MintSheet = () => {
       ? mintCollection.publicMintInfo?.price?.currency?.decimals
       : 18;
 
-  const price = convertRawAmountToBalance(mintCollection.publicMintInfo?.price?.amount?.raw || pricePerMint || '0', {
+  const rawAmountInput = mintCollection.publicMintInfo?.price?.amount?.raw ?? pricePerMint ?? '0';
+  const stringAmountInput =
+    typeof rawAmountInput === 'object' && rawAmountInput !== null && 'toString' in rawAmountInput
+      ? rawAmountInput.toString() // Handle BigNumber object from ethers
+      : String(rawAmountInput); // Convert other types (string, number) to string
+
+  const price = convertRawAmountToBalance(stringAmountInput, {
     decimals,
     symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
   });
@@ -180,7 +187,7 @@ const MintSheet = () => {
 
   const nativeMintPriceDisplay = convertAmountToNativeDisplay(parseFloat(multiply(price.amount, quantity)) * priceOfEth, nativeCurrency);
 
-  const { updateTxFee, startPollingGasFees, stopPollingGasFees, getTotalGasPrice } = useGas();
+  const { updateTxFee, startPollingGasFees, stopPollingGasFees, getTotalGasPrice } = useGas({ enableTracking: true });
 
   const imageUrl = maybeSignUri(mintCollection.image || '');
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');

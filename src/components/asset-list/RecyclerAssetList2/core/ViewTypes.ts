@@ -1,7 +1,9 @@
 import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import { UniqueAsset } from '@/entities';
-
+import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { Claimable } from '@/resources/addys/claimables/types';
+import { RainbowPosition } from '@/resources/defi/types';
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
@@ -45,6 +47,7 @@ export enum CellType {
   EMPTY_ROW = 'EMPTY_ROW',
 
   REMOTE_CARD_CAROUSEL = 'REMOTE_CARD_CAROUSEL',
+  EMPTY_REMOTE_CARD_CAROUSEL = 'EMPTY_REMOTE_CARD_CAROUSEL',
 }
 export type RecyclerListViewRef = RecyclerListView<RecyclerListViewProps, RecyclerListViewState>;
 
@@ -56,8 +59,13 @@ export type CoinDividerExtraData = {
   defaultToEditButton: boolean;
 };
 
-export type AssetListHeaderExtraData = {
+export type NFTsHeaderExtraData = {
   type: CellType.NFTS_HEADER;
+  nftSort: NftCollectionSortCriterion;
+};
+
+export type NFTsOtherData = {
+  type: CellType.NFTS_HEADER_SPACE_AFTER | CellType.NFT_SPACE_AFTER | CellType.NFTS_EMPTY | CellType.NFTS_LOADING;
 };
 
 export type AssetsHeaderExtraData = {
@@ -73,14 +81,16 @@ export type NFTExtraData = {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 export type PositionExtraData = {
-  uniqueId: string;
+  type: CellType.POSITION;
+  position: RainbowPosition;
   index: number;
 };
 export type PositionHeaderExtraData = {
   total: string;
 };
 export type ClaimableExtraData = {
-  uniqueId: string;
+  type: CellType.CLAIMABLE;
+  claimable: Claimable;
 };
 export type ClaimablesHeaderExtraData = {
   total: string;
@@ -92,17 +102,28 @@ export type NFTFamilyExtraData = {
   image?: string;
 };
 
+export type ProfileActionButtonsRowExtraData = {
+  type: CellType.PROFILE_ACTION_BUTTONS_ROW | CellType.PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER;
+  value: string | undefined;
+};
+
+export type LoadingAssetsSection = {
+  type: CellType.LOADING_ASSETS;
+};
+
 export type CellExtraData =
-  | { type: CellType.LOADING_ASSETS }
+  | LoadingAssetsSection
   | NFTFamilyExtraData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
-  | AssetListHeaderExtraData
+  | NFTsHeaderExtraData
+  | NFTsOtherData
   | AssetsHeaderExtraData
   | PositionExtraData
   | PositionHeaderExtraData
   | ClaimableExtraData
-  | ClaimablesHeaderExtraData;
+  | ClaimablesHeaderExtraData
+  | ProfileActionButtonsRowExtraData;
 
-export type CellTypes = BaseCellType & CellExtraData;
+export type CellTypes = BaseCellType | (CellExtraData & BaseCellType);

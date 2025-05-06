@@ -34,6 +34,7 @@ export const PERFORMANCE_TOAST = 'Performance Toast';
 export const RAINBOW_COIN_EFFECT = 'Rainbow Coin Effect';
 export const NEW_DISCOVER_CARDS = 'New Discover Cards';
 export const RAINBOW_TRENDING_TOKENS_LIST = 'Rainbow Trending Tokens List';
+export const KING_OF_THE_HILL = 'King of the Hill';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -77,6 +78,7 @@ const config = {
   [RAINBOW_COIN_EFFECT]: { settings: true, value: false },
   [NEW_DISCOVER_CARDS]: { settings: true, value: false },
   [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
+  [KING_OF_THE_HILL]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */

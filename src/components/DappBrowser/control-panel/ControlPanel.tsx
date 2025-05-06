@@ -1,5 +1,6 @@
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -32,14 +33,13 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 import store from '@/redux/store';
 import { useAppSessionsStore } from '@/state/appSessions';
-import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { getWalletWithAccount, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
@@ -51,9 +51,8 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import chroma from 'chroma-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import WebView from 'react-native-webview';
 import { toHex } from 'viem';
 import { TOP_INSET } from '../Dimensions';
 import { RAINBOW_HOME } from '../constants';
@@ -65,13 +64,6 @@ const PAGES = {
   SWITCH_NETWORK: 'switch-network',
 };
 
-type ControlPanelParams = {
-  ControlPanel: {
-    activeTabRef: React.MutableRefObject<WebView | null>;
-    selectedAddress: string;
-  };
-};
-
 const HOME_PANEL_FULL_HEIGHT = 334;
 // 44px for the component and 24px for the stack padding
 const HOME_PANEL_DAPP_SECTION = 44 + 24;
@@ -81,7 +73,7 @@ export const ControlPanel = () => {
   const { accountAddress } = useAccountSettings();
   const {
     params: { activeTabRef },
-  } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_CONTROL_PANEL>>();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const activeTabHost = getDappHost(activeTabUrl || '') || RAINBOW_HOME;
@@ -376,7 +368,6 @@ const HomePanel = memo(function HomePanel({
   const { accountAddress } = useAccountSettings();
   const wallets = useWalletsStore(state => state.wallets);
   const initializeWallet = useInitializeWallet();
-  const { navigate } = useNavigation();
 
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
@@ -436,17 +427,15 @@ const HomePanel = memo(function HomePanel({
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
 
-    swapsStore.setState({ inputAsset: userAssetsStore.getState().getHighestValueNativeAsset() });
-    InteractionManager.runAfterInteractions(() => navigate(Routes.SWAP));
-  }, [navigate, runWalletChecksBeforeSwapOrBridge]);
+    navigateToSwaps();
+  }, [runWalletChecksBeforeSwapOrBridge]);
 
   const handleOnPressBridge = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
 
-    swapsStore.setState({ inputAsset: userAssetsStore.getState().getHighestValueNativeAsset() });
-    InteractionManager.runAfterInteractions(() => navigate(Routes.SWAP));
-  }, [navigate, runWalletChecksBeforeSwapOrBridge]);
+    navigateToSwaps();
+  }, [runWalletChecksBeforeSwapOrBridge]);
 
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
 

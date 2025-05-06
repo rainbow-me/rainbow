@@ -23,6 +23,7 @@ import * as portal from '@/screens/Portal';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { addNewWalletConnectRequest, removeWalletConnectRequest } from '@/state/walletConnectRequests';
+import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import {
@@ -32,6 +33,7 @@ import {
   RPCPayload,
   WalletconnectApprovalSheetRouteParams,
   WalletconnectRequestData,
+  WalletconnectResultType,
 } from '@/walletConnect/types';
 import { getAddress, isAddress } from '@ethersproject/address';
 import { isHexString } from '@ethersproject/bytes';
@@ -48,7 +50,6 @@ import React from 'react';
 import { InteractionManager } from 'react-native';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
-import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -265,12 +266,17 @@ export function isSupportedMethod(method: RPCMethod) {
   return isSupportedSigningMethod(method) || isSupportedTransactionMethod(method);
 }
 
+const BUTTON_HEIGHT = 52;
+const TITLE_HEIGHT = 55;
+const SPACING_HEIGHT = 18;
+const SHEET_PADDING = 88;
+
 /**
  * Navigates to `ExplainSheet` by way of `WalletConnectApprovalSheet`, and
  * shows the text configured by the `reason` string, which is a key of the
  * `explainers` object in `ExplainSheet`
  */
-function showErrorSheet({
+export function showErrorSheet({
   title,
   body,
   cta,
@@ -281,14 +287,14 @@ function showErrorSheet({
   body: string;
   cta?: string;
   onClose?: () => void;
-  sheetHeight?: number;
+  sheetHeight: number;
 }) {
   explain.open(
     () => (
-      <>
+      <Box paddingVertical="44px" paddingHorizontal="32px">
         <explain.Title>{title}</explain.Title>
-        <explain.Body>{body}</explain.Body>
-        <Box paddingTop="8px">
+        <explain.Body maxHeight={sheetHeight - BUTTON_HEIGHT - TITLE_HEIGHT - SPACING_HEIGHT - SHEET_PADDING}>{body}</explain.Body>
+        <Box paddingTop="20px">
           <explain.Button
             label={cta || lang.t(T.errors.go_back)}
             onPress={() => {
@@ -297,7 +303,7 @@ function showErrorSheet({
             }}
           />
         </Box>
-      </>
+      </Box>
     ),
     { sheetHeight }
   );
@@ -753,7 +759,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         sessionRequestEvent: event,
         address,
         chainId,
-        onComplete(type: string) {
+        onComplete(type: WalletconnectResultType) {
           if (IS_IOS) {
             Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
               type,
@@ -1079,9 +1085,9 @@ export async function changeAccount(session: SessionTypes.Struct, { address }: {
 
     logger.debug(`[walletConnect]: changeAccount complete`);
     return true;
-  } catch (e: any) {
+  } catch (e) {
     logger.error(new RainbowError(`[walletConnect]: error changing account`), {
-      message: e.message,
+      message: (e as Error).message,
     });
   }
   return false;

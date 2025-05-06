@@ -21,7 +21,7 @@ export const formatDate = (dateString: string, precision: 'hours' | 'minutes' | 
           return `${diffHours} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.hours_ago)}`;
         }
       } else {
-        return `${diffHours} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.hours_ago)}`;
+        return `${diffHours} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates[diffHours === 1 ? 'hour_ago' : 'hours_ago'])}`;
       }
     } else {
       return i18n.t(i18n.l.walletconnect.simulation.formatted_dates.today);

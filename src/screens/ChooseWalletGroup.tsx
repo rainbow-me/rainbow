@@ -29,11 +29,9 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
     navigate(Routes.MODAL_SCREEN, {
       actionType: 'Create',
       numWalletGroups,
-      onCloseModal: async (args: { name: string; color: number }) => {
-        if (!args) return;
+      onCloseModal: async ({ name }) => {
         try {
-          const { name, color } = args;
-          await createWallet({ color, name });
+          await createWallet({ name });
           await loadWallets();
           // @ts-expect-error - needs refactor to object params
           await initializeWallet();
@@ -111,10 +109,8 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
       actionType: 'Create',
       asset: [],
       isNewProfile: true,
-      onCloseModal: async (args: { name: string; color: number }) => {
-        if (!args) return;
+      onCloseModal: async ({ name, color }) => {
         try {
-          const { name, color } = args;
           if (wallet.damaged) throw new Error('Wallet is damaged');
           createAccount({
             id: wallet.id,

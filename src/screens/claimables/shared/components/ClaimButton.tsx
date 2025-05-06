@@ -1,27 +1,50 @@
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
+import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { deviceUtils, watchingAlert } from '@/utils';
 import { debounce } from 'lodash';
 import React from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 
 export function ClaimButton({
   onPress,
+  enableHoldToPress,
   disabled,
+  isLoading,
   shimmer,
   biometricIcon,
   label,
 }: {
   onPress: () => void;
+  enableHoldToPress: boolean;
   disabled: boolean;
+  isLoading: boolean;
   shimmer: boolean;
   biometricIcon: boolean;
   label: string;
 }) {
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+
+  if (enableHoldToPress) {
+    return (
+      <HoldToActivateButton
+        backgroundColor={`rgba(41,90,247,1)`}
+        disabledBackgroundColor={`rgba(41,90,247,0.2)`}
+        disabled={disabled}
+        isProcessing={isLoading}
+        label={label}
+        onLongPress={onPress}
+        height={48}
+        style={{ width: '100%', paddingHorizontal: 18 }}
+        showBiometryIcon={biometricIcon}
+        testID="claim-button"
+        processingLabel={label}
+      />
+    );
+  }
 
   return (
     <ButtonPressAnimation

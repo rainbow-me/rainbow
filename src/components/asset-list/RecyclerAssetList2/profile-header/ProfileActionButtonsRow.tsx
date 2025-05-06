@@ -1,3 +1,4 @@
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
@@ -5,18 +6,16 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
 import showWalletErrorAlert from '@/helpers/support';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import * as lang from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import Clipboard from '@react-native-clipboard/clipboard';
-import lang from 'i18n-js';
 import * as React from 'react';
-import { InteractionManager, PressableProps } from 'react-native';
+import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
 
@@ -165,21 +164,15 @@ function BuyButton() {
 
 function SwapButton() {
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
-  const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
-      swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueNativeAsset(),
-      });
-      InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.SWAP);
-      });
+      navigateToSwaps();
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate]);
+  }, [isReadOnlyWallet]);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">

@@ -15,6 +15,7 @@ import { RainbowPosition } from '@/resources/defi/types';
 import { LpPositionListItem } from './LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
+import Routes from '@/navigation/routesNames';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -24,7 +25,7 @@ const ITEM_PADDING = 20;
 const SECTION_TITLE_HEIGHT = 20 + ITEM_PADDING;
 
 export function getPositionSheetHeight({ position }: { position: RainbowPosition }) {
-  let height = IS_IOS ? 100 : 120;
+  let height = 120;
   const numberOfDeposits = position.deposits.filter(deposit => !deposit.isLp).length || 0;
   const numberOfLpDeposits = position.deposits.filter(deposit => deposit.isLp).length || 0;
   const numberOfBorrows = position.borrows.length || 0;
@@ -43,7 +44,7 @@ export function getPositionSheetHeight({ position }: { position: RainbowPosition
 export const PositionSheet: React.FC = () => {
   const {
     params: { position },
-  } = useRoute<RouteProp<RootStackParamList, 'PositionSheet'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.POSITION_SHEET>>();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
 

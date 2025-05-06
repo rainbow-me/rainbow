@@ -16,7 +16,7 @@ export const notificationsCampaignAction = async () => {
   setTimeout(() => {
     logger.debug('[notificationsCampaignAction]: triggering notifications promo action');
 
-    Navigation.handleAction(Routes.NOTIFICATIONS_PROMO_SHEET, {});
+    Navigation.handleAction(Routes.NOTIFICATIONS_PROMO_SHEET);
   }, 1000);
 };
 

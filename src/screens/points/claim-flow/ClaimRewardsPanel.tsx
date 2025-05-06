@@ -258,7 +258,6 @@ const ClaimingRewards = ({
         assetToSell: opEth as ParsedAsset,
         assetToBuy: destinationEth as ParsedAsset,
         quote: undefined,
-        // @ts-expect-error - collision between old gas types and new
         gasFeeParamsBySpeed,
         gasParams,
       } satisfies RapSwapActionParameters<'claimBridge'>;
@@ -276,12 +275,7 @@ const ClaimingRewards = ({
       }
 
       try {
-        const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
-          wallet,
-          'claimBridge',
-          // @ts-expect-error - collision between old gas types and new
-          actionParams
-        );
+        const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(wallet, 'claimBridge', actionParams);
 
         if (errorMessage) {
           if (errorMessage.includes('[CLAIM]')) {

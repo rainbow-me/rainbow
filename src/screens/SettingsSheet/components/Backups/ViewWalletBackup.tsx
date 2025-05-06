@@ -29,9 +29,9 @@ import { RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { createAccount, useWalletsStore } from '@/state/wallets/walletsStore';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { createAccount, useWalletsStore } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -45,7 +45,6 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { SETTINGS_BACKUP_ROUTES } from './routes';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -116,14 +115,13 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
 };
 
 const ViewWalletBackup = () => {
-  const { params } = useRoute<RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>>();
+  const { params } = useRoute<RouteProp<ViewWalletBackupParams, typeof Routes.VIEW_WALLET_BACKUP>>();
 
   const createBackup = useCreateBackup();
-  const { status, backupProvider, mostRecentBackup } = backupsStore(state => ({
-    status: state.status,
-    backupProvider: state.backupProvider,
-    mostRecentBackup: state.mostRecentBackup,
-  }));
+  const status = backupsStore(state => state.status);
+  const backupProvider = backupsStore(state => state.backupProvider);
+  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
+
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
   const isDamaged = useWalletsStore(state => state.getIsDamaged());
@@ -153,14 +151,14 @@ const ViewWalletBackup = () => {
   }, [createBackup, walletId]);
 
   const onNavigateToSecretWarning = useCallback(() => {
-    navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
+    navigate(Routes.SECRET_WARNING, {
       walletId,
       title,
     });
   }, [walletId, title, navigate]);
 
   const onManualBackup = useCallback(() => {
-    navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
+    navigate(Routes.SECRET_WARNING, {
       walletId,
       isBackingUp: true,
       title,
@@ -187,40 +185,36 @@ const ViewWalletBackup = () => {
             onCancel: () => {
               creatingWallet.current = false;
             },
-            onCloseModal: async (args: any) => {
-              if (args) {
-                walletLoadingStore.setState({
-                  loadingState: WalletLoadingStates.CREATING_WALLET,
-                });
-
-                const name = args?.name ?? '';
-                const color = args?.color ?? null;
-                // Check if the selected wallet is the primary
-                try {
-                  // If we found it and it's not damaged use it to create the new account
-                  if (wallet && !wallet.damaged) {
-                    createAccount({
-                      id: wallet.id,
-                      color,
-                      name,
-                    });
-                    // @ts-expect-error - no params
-                    await initializeWallet();
-                  }
-                } catch (e) {
-                  logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
-                    error: e,
+            onCloseModal: async ({ name = '', color = null }) => {
+              walletLoadingStore.setState({
+                loadingState: WalletLoadingStates.CREATING_WALLET,
+              });
+              // Check if the selected wallet is the primary
+              try {
+                // If we found it and it's not damaged use it to create the new account
+                if (wallet && !wallet.damaged) {
+                  createAccount({
+                    id: wallet.id,
+                    // @natew TODO
+                    color,
+                    name,
                   });
-                  if (isDamaged) {
-                    setTimeout(() => {
-                      showWalletErrorAlert();
-                    }, 1000);
-                  }
-                } finally {
-                  walletLoadingStore.setState({
-                    loadingState: null,
-                  });
+                  // @ts-expect-error - no params
+                  await initializeWallet();
                 }
+              } catch (e) {
+                logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
+                  error: e,
+                });
+                if (isDamaged) {
+                  setTimeout(() => {
+                    showWalletErrorAlert();
+                  }, 1000);
+                }
+              } finally {
+                walletLoadingStore.setState({
+                  loadingState: null,
+                });
               }
               creatingWallet.current = false;
             },
@@ -280,11 +274,11 @@ const ViewWalletBackup = () => {
         const title = account.label.endsWith('.eth')
           ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8)
           : formatAddress(account.address, 4, 5);
-        navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
+        navigate(Routes.SECRET_WARNING, {
           walletId,
           isBackingUp: false,
           privateKeyAddress: account.address,
-          title,
+          title: title ?? '',
         });
         break;
       }

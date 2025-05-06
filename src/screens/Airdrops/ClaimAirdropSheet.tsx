@@ -93,7 +93,7 @@ function getButtonLabel(claimStatus: ClaimStatus, gasInfo: GasInfo) {
 export const ClaimAirdropSheet = () => {
   const {
     params: { claimable, hideViewTokenButton = false },
-  } = useRoute<RouteProp<RootStackParamList, 'ClaimAirdropSheet'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.CLAIM_AIRDROP_SHEET>>();
 
   const [{ iconUrl, symbolHasEmoji }] = useState(() => ({
     iconUrl: { uri: getSizedImageUrl(claimable.asset.icon_url, COIN_ICON_SIZE) },
@@ -102,6 +102,8 @@ export const ClaimAirdropSheet = () => {
 
   const color = usePersistentDominantColorFromImage(claimable.asset.icon_url || iconUrl.uri);
   const highContrastColor = useMemo(() => getBrightenedColor(color), [color]);
+
+  const [asset] = claimable.assets;
 
   return (
     <ColorModeProvider value="dark">
@@ -125,8 +127,8 @@ export const ClaimAirdropSheet = () => {
 
           <Stack alignHorizontal="center" space="20px">
             <PanelContent
-              airdropAmount={claimable.value.claimAsset.amount}
-              airdropValue={claimable.value.nativeAsset.display}
+              airdropAmount={asset.amount.amount}
+              airdropValue={claimable.totalCurrencyValue.display}
               creatorAddress={claimable.creatorAddress}
               highContrastColor={highContrastColor}
               symbol={claimable.asset.symbol}
