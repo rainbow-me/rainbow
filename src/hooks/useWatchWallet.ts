@@ -8,6 +8,7 @@ import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { doesWalletsContainAddress } from '@/utils';
 import { RainbowError, logger } from '@/logger';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -60,10 +61,17 @@ export default function useWatchWallet({
   const watchWallet = useCallback(async () => {
     if (!isWatching) {
       handleSetSeedPhrase(ensName ?? '');
-      handlePressImportButton({
+      await handlePressImportButton({
         forceAddress: ensName,
         avatarUrl: avatarUrl ?? undefined,
       });
+
+      // NOTE: Make sure this is cleaned up due to the ProfileSheet calling this function directly
+      if (walletLoadingStore.getState().loadingState) {
+        walletLoadingStore.setState({
+          loadingState: null,
+        });
+      }
     } else {
       // If there's more than 1 account,
       // it's deletable
