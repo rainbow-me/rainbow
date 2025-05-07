@@ -7,7 +7,7 @@ import { FlexItem } from '@/components/layout';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { TAB_BAR_PILL_HEIGHT, TAB_BAR_PILL_WIDTH } from '@/components/tab-bar/dimensions';
 import { TestnetToast } from '@/components/toasts';
-import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
+import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, Stack, useForegroundColor, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
@@ -15,16 +15,16 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
-import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
+import { DappBrowser } from '@/components/DappBrowser/DappBrowser';
 import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen/WalletScreen';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
-import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
+import { MaterialTopTabBarProps, MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import { InteractionManager, StyleSheet, View } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedReaction,
@@ -33,7 +33,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT } from '@/components/DappBrowser/constants';
+import {
+  BROWSER_BACKGROUND_COLOR_DARK,
+  BROWSER_BACKGROUND_COLOR_LIGHT,
+  HOMEPAGE_BACKGROUND_COLOR_DARK,
+  HOMEPAGE_BACKGROUND_COLOR_LIGHT,
+} from '@/components/DappBrowser/constants';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -46,6 +51,8 @@ import Routes from './routesNames';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
 export const BASE_TAB_BAR_HEIGHT = 48;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
@@ -77,7 +84,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const { dapp_browser, points_enabled } = useRemoteConfig();
+  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
@@ -267,7 +274,6 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
             >
               <Stack alignHorizontal="center">
                 <Box alignItems="center" height={{ custom: TAB_BAR_PILL_HEIGHT }} justifyContent="center">
-                  {/* eslint-disable-next-line no-nested-ternary */}
                   {tabBarIcon === 'tabActivity' ? (
                     <ActivityTabIcon
                       accentColor={accentColor}
@@ -359,27 +365,56 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   );
 };
 
+function LazyPlaceholder({ route }: { route: RouteProp<ParamListBase, string>['name'] }) {
+  const { isDarkMode } = useColorMode();
+  const { colors } = useTheme();
+
+  const backgroundColor =
+    route === Routes.DAPP_BROWSER_SCREEN || route === Routes.POINTS_SCREEN
+      ? isDarkMode
+        ? BROWSER_BACKGROUND_COLOR_DARK
+        : BROWSER_BACKGROUND_COLOR_LIGHT
+      : colors.white;
+
+  return (
+    <View
+      style={{ backgroundColor, bottom: 0, height: DEVICE_HEIGHT, left: 0, position: 'absolute', right: 0, top: 0, width: DEVICE_WIDTH }}
+    />
+  );
+}
+
+function getTabBar({ descriptors, jumpTo, navigation, state }: MaterialTopTabBarProps) {
+  return <TabBar descriptors={descriptors} jumpTo={jumpTo} navigation={navigation} state={state} />;
+}
+
 function SwipeNavigatorScreens() {
   const { isCoinListEdited } = useCoinListEdited();
+  const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
+  const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, points_enabled } = useRemoteConfig();
+  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
+
+  const getScreenOptions = useCallback(
+    (props: { route: RouteProp<ParamListBase, string> }) => {
+      const isOnBrowserTab = props.route.name === Routes.DAPP_BROWSER_SCREEN;
+      return {
+        animationEnabled: false,
+        lazy,
+        lazyPlaceholder: () => <LazyPlaceholder route={props.route.name} />,
+        swipeEnabled: (!isOnBrowserTab && !isCoinListEdited) || IS_TEST,
+      };
+    },
+    [isCoinListEdited, lazy]
+  );
 
   return (
     <Swipe.Navigator
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
-      screenOptions={props => {
-        const isOnBrowserTab = props.route.name === Routes.DAPP_BROWSER_SCREEN;
-        return {
-          animationEnabled: false,
-          swipeEnabled: (!isOnBrowserTab && !isCoinListEdited) || IS_TEST,
-        };
-      }}
-      tabBar={({ descriptors, jumpTo, navigation, state: { index, routes } }) => (
-        <TabBar descriptors={descriptors} jumpTo={jumpTo} navigation={navigation} state={{ index, routes }} />
-      )}
+      screenOptions={getScreenOptions}
+      tabBar={getTabBar}
       tabBarPosition="bottom"
     >
       {/* For when QRScannerScreen is re-added */}
@@ -393,7 +428,7 @@ function SwipeNavigatorScreens() {
       <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} options={{ title: 'tabHome' }} />
       <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ title: 'tabDiscover' }} />
       {showDappBrowserTab && (
-        <Swipe.Screen component={DappBrowserScreen} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
+        <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}
       <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: 'tabActivity' }} />
       {showPointsTab && <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ title: 'tabPoints' }} />}

@@ -1,5 +1,3 @@
-/* eslint-disable no-nested-ternary */
-import { useState } from 'react';
 import {
   convertToRGBA,
   interpolate,
@@ -14,6 +12,7 @@ import {
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
@@ -32,8 +31,8 @@ import {
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 import { TabViewGestureStates } from '../types';
 import { getTabInfo } from '../utils/getTabInfo';
-import { getTabStyles, getTabSwitchGestureStyles } from '../utils/styleUtils';
 import { calculateTabViewBorderRadius } from '../utils/layoutUtils';
+import { getTabStyles, getTabSwitchGestureStyles } from '../utils/styleUtils';
 
 export function useAnimatedTab({ tabId }: { tabId: string }) {
   const {
@@ -55,7 +54,11 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   } = useBrowserContext();
   const { closeTabWorklet } = useBrowserWorkletsContext();
 
-  const [initialTabIndex] = useState(useBrowserStore.getState().tabIds.indexOf(tabId));
+  const { initialIsActiveTab, initialTabIndex } = useStableValue(() => ({
+    initialIsActiveTab: useBrowserStore.getState().isTabActive(tabId),
+    initialTabIndex: useBrowserStore.getState().tabIds.indexOf(tabId),
+  }));
+
   const animatedTabIndex = useSharedValue(initialTabIndex);
 
   const animatedTabXPosition = useDerivedValue(() =>
@@ -123,10 +126,14 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
   });
 
   const animatedWebViewBackgroundColorStyle = useAnimatedStyle(() => {
-    if (!_WORKLET) return { backgroundColor: defaultBackgroundColor, paddingBottom: 0 };
+    if (!_WORKLET) return { backgroundColor: 'transparent', paddingBottom: 0 };
 
     const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
     const isOnHomepage = tabUrl === RAINBOW_HOME;
+
+    const backgroundColor = isOnHomepage ? homepageBackgroundColor : safeBackgroundColor.value;
+
+    if (IS_ANDROID) return { backgroundColor };
 
     const { isFullSizeTab } = getTabInfo({
       animatedActiveTabIndex: animatedActiveTabIndex.value,
@@ -136,10 +143,6 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
       tabViewGestureState: tabViewGestureState.value,
       tabViewProgress: tabViewProgress.value,
     });
-
-    const backgroundColor = isOnHomepage ? homepageBackgroundColor : safeBackgroundColor.value;
-
-    if (IS_ANDROID) return { backgroundColor };
 
     const paddingBottom = isFullSizeTab ? EXTRA_WEBVIEW_HEIGHT - extraWebViewHeight.value : EXTRA_WEBVIEW_HEIGHT;
 
@@ -151,16 +154,15 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
 
   const animatedWebViewStyle = useAnimatedStyle(() => {
     if (!_WORKLET) {
-      const isActiveTab = useBrowserStore.getState().isTabActive(tabId);
       return {
-        borderRadius: isActiveTab ? ZOOMED_TAB_BORDER_RADIUS : calculateTabViewBorderRadius(1),
-        height: isActiveTab ? WEBVIEW_HEIGHT : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-        opacity: isActiveTab ? 1 : 0,
-        pointerEvents: isActiveTab ? 'auto' : 'none',
+        borderRadius: initialIsActiveTab ? ZOOMED_TAB_BORDER_RADIUS : calculateTabViewBorderRadius(1),
+        height: initialIsActiveTab ? WEBVIEW_HEIGHT : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
+        opacity: initialIsActiveTab ? 1 : 0,
+        pointerEvents: initialIsActiveTab ? 'auto' : 'none',
         transform: [
-          { translateX: animatedTabXPosition.value },
-          { translateY: animatedTabYPosition.value },
-          { scale: isActiveTab ? 1 : MULTI_TAB_SCALE },
+          { translateX: initialIsActiveTab ? 0 : animatedTabXPosition.value },
+          { translateY: initialIsActiveTab ? 0 : animatedTabYPosition.value },
+          { scale: initialIsActiveTab ? 1 : MULTI_TAB_SCALE },
         ],
         transformOrigin: TAB_TRANSFORM_ORIGIN,
       };

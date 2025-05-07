@@ -20,6 +20,7 @@ import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
@@ -51,7 +52,8 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
   const isOnHomepage = useBrowserStore(state => state.isOnHomepage());
   const navState = useBrowserStore(state => state.getActiveTabNavState());
 
-  const { activeTabId, activeTabInfo, currentlyOpenTabIds, goBack, goForward, goToUrl, loadProgress } = useBrowserContext();
+  const { activeTabId, activeTabInfo, currentlyOpenTabIds, goBack, goForward, goToUrl, loadProgress, shouldCollapseBottomBar } =
+    useBrowserContext();
   const { closeTabWorklet } = useBrowserWorkletsContext();
 
   const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
@@ -145,7 +147,8 @@ const ThreeDotMenu = function ThreeDotMenu({ formattedUrlValue }: { formattedUrl
   const goHome = useCallback(() => {
     goToUrl(RAINBOW_HOME);
     loadProgress.value = 0;
-  }, [goToUrl, loadProgress]);
+    shouldCollapseBottomBar.value = false;
+  }, [goToUrl, loadProgress, shouldCollapseBottomBar]);
 
   const onPressMenuItem = useCallback(
     async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: MenuActionKey } }) => {
@@ -242,9 +245,10 @@ export const SearchInput = memo(function SearchInput({
   } = useBrowserContext();
   const { isDarkMode } = useColorMode();
   const { isFocused } = useSearchContext();
+  const initialActiveTabUrl = useStableValue(() => useBrowserStore.getState().getActiveTabUrl() || RAINBOW_HOME);
 
   const tabUrl = useDerivedValue(() => {
-    if (!_WORKLET) return useBrowserStore.getState().getActiveTabUrl() || RAINBOW_HOME;
+    if (!_WORKLET) return initialActiveTabUrl;
     const pendingTabIndex = currentlyOpenTabIds.value.indexOf(activeTabId.value) + pendingTabSwitchOffset.value;
     const currentTabId = pendingTabSwitchOffset.value ? currentlyOpenTabIds.value[pendingTabIndex] : activeTabId.value;
     const url = animatedTabUrls.value[currentTabId] || RAINBOW_HOME;
@@ -252,7 +256,7 @@ export const SearchInput = memo(function SearchInput({
   });
 
   const formattedUrlValue = useDerivedValue(() => {
-    const url = _WORKLET ? tabUrl.value : useBrowserStore.getState().getActiveTabUrl();
+    const url = _WORKLET ? tabUrl.value : initialActiveTabUrl;
     if (!url || url === RAINBOW_HOME) return SEARCH_PLACEHOLDER_TEXT;
 
     return formatUrlForSearchInput(url, true);
@@ -284,7 +288,7 @@ export const SearchInput = memo(function SearchInput({
   });
 
   const toolbarIconStyle = useAnimatedStyle(() => {
-    const isOnHomepage = _WORKLET ? tabUrl.value === RAINBOW_HOME : useBrowserStore.getState().isOnHomepage();
+    const isOnHomepage = (_WORKLET ? tabUrl.value : initialActiveTabUrl) === RAINBOW_HOME;
     const shouldHide = isOnHomepage || (_WORKLET && (isFocused.value || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT));
     return {
       opacity: shouldHide ? withTiming(0, TIMING_CONFIGS.fadeConfig) : withSpring(1, SPRING_CONFIGS.keyboardConfig),
@@ -301,6 +305,7 @@ export const SearchInput = memo(function SearchInput({
       <Animated.View style={pointerEventsStyle}>
         <AddressBar
           formattedUrlValue={formattedUrlValue}
+          initialActiveTabUrl={initialActiveTabUrl}
           inputRef={inputRef}
           onBlurWorklet={onBlurWorklet}
           onPressWorklet={onPressWorklet}
@@ -328,6 +333,7 @@ export const SearchInput = memo(function SearchInput({
 
 const AddressBar = memo(function AddressBar({
   formattedUrlValue,
+  initialActiveTabUrl,
   inputRef,
   onBlurWorklet,
   onPressWorklet,
@@ -336,6 +342,7 @@ const AddressBar = memo(function AddressBar({
   tabUrl,
 }: {
   formattedUrlValue: DerivedValue<string>;
+  initialActiveTabUrl: string;
   inputRef: AnimatedRef<TextInput>;
   onBlurWorklet: () => void;
   onPressWorklet: () => void;
@@ -384,7 +391,7 @@ const AddressBar = memo(function AddressBar({
   }));
 
   const searchInputValue = useAnimatedProps(() => {
-    const urlOrSearchQuery = formatUrlForSearchInput(_WORKLET ? tabUrl.value : useBrowserStore.getState().getActiveTabUrl());
+    const urlOrSearchQuery = formatUrlForSearchInput(_WORKLET ? tabUrl.value : initialActiveTabUrl);
 
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
     const url = _WORKLET && isFocused.value ? undefined : urlOrSearchQuery;

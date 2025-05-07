@@ -108,6 +108,7 @@ export interface BrowserContextType {
   tabViewGestureState: SharedValue<TabViewGestureStates>;
   tabViewProgress: SharedValue<number>;
   tabViewVisible: SharedValue<boolean>;
+  triggerScreenshot: SharedValue<boolean>;
   goBack: () => void;
   goForward: () => void;
   goToUrl: (url: string, tabId?: string) => void;
