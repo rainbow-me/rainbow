@@ -112,6 +112,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     marketplaceCollectionUrl: marketplace?.collection_url,
     marketplaceId: marketplace?.marketplace_id ?? null,
     marketplaceName: marketplace?.marketplace_name ?? null,
+    mime_type: nft.image_properties?.mime_type ?? undefined,
     name: nft.name,
     network: nft.chain as Network, // gets converted from simplehash chain to Network in arc
     permalink: marketplace?.nft_url ?? '',
