@@ -445,6 +445,7 @@ const HomePanel = memo(function HomePanel({
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
 
   return (
+    // home panel
     <Panel height={isOnHomepage ? HOME_PANEL_FULL_HEIGHT - HOME_PANEL_DAPP_SECTION : HOME_PANEL_FULL_HEIGHT}>
       <Box style={controlPanelStyles.homePanel}>
         <Stack space="24px">
@@ -992,6 +993,7 @@ const ConnectButton = memo(function ControlPanelButton({
         pointerEvents="auto"
         scaleTo={0.82}
         style={[controlPanelStyles.buttonContainer]}
+        testID="connect-button"
       >
         <Box paddingHorizontal={IS_IOS ? '16px' : undefined} paddingVertical={IS_IOS ? '10px' : undefined}>
           <Stack alignHorizontal="center" space="10px">
