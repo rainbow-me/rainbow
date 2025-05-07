@@ -59,22 +59,29 @@ jobs:
         run: |
           npx react-native info
 
-      - name: Install pods
-        run: |
-          # rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
-          yarn install-bundle && yarn install-pods
-
       - name: Cache CocoaPods
         uses: actions/cache@v4
         with:
-          path: ~/.cocoapods
+          path: |
+            ~/.cocoapods
+            ios/Pods
           key: cocoapods-${{ runner.os }}-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: cocoapods-${{ runner.os }}-
+
+      - name: Install pods
+        run: |
+          # rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
+           if [ -d "ios/Pods" ] && [ -f "ios/Pods/.installed" ]; then
+            echo "Using cached pods"
+          else
+            yarn install-bundle && yarn install-pods
+            touch ios/Pods/.installed
+          fi
 
       - uses: irgaly/xcode-cache@v1
         with:
           # key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
-          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ hashFiles('**/*.xcodeproj') }}
+          key: xcode-cache-deriveddata-${{ hashFiles('ios/**/*.pbxproj') }}-${{ hashFiles('ios/**/*.xcconfig') }}-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
          
         # TOPHAT iOS SIM   
@@ -83,7 +90,7 @@ jobs:
           sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
           sed -i '' 's/match AppStore/match AdHoc/g' "ios/Rainbow.xcodeproj/project.pbxproj"
 
-          xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+          xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -parallelizeTargets -quiet BUILD_LIBRARY_FOR_DISTRIBUTION=YES COMPILER_INDEX_STORE_ENABLE=NO
           APP_DIR=$(find . -name "*.app" | head -n 1)
           cd $APP_DIR && zip -r ../../../../../../App.zip .
       - name: Set up Appstore Key
