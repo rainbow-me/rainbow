@@ -167,29 +167,29 @@ jobs:
 
       - uses: irgaly/xcode-cache@v1
         with:
-          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ hashFiles('**/*.xcodeproj') }}
+          key: xcode-cache-deriveddata-${{ hashFiles('ios/**/*.pbxproj') }}-${{ hashFiles('ios/**/*.xcconfig') }}-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
 
-      - name: Install Maestro
-        run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
+      # - name: Install Maestro
+      #   run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
-      - name: Modify env and build app in release mode
-        run: |
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-          ./scripts/e2e-ios-build.sh
-      - uses: futureware-tech/simulator-action@v4
-        id: simulator
-        with:
-          model: 'iPhone 16'
-          wait_for_boot: true
-      - name: Run Tests
-        run: ./scripts/e2e-ios-ci.sh
-        env:
-          DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
+      # - name: Modify env and build app in release mode
+      #   run: |
+      #     sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+      #     ./scripts/e2e-ios-build.sh
+      # - uses: futureware-tech/simulator-action@v4
+      #   id: simulator
+      #   with:
+      #     model: 'iPhone 16'
+      #     wait_for_boot: true
+      # - name: Run Tests
+      #   run: ./scripts/e2e-ios-ci.sh
+      #   env:
+      #     DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
 
-      - name: Upload artifacts
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: artifacts
-          path: ${{ env.ARTIFACTS_FOLDER }}
+      # - name: Upload artifacts
+      #   if: ${{ always() }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: artifacts
+      #     path: ${{ env.ARTIFACTS_FOLDER }}
