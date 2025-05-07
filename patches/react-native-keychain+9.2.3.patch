@@ -139,6 +139,32 @@ index 99ae741..e80b72d 100644
              String(decryptedBytes, UTF8)
          } catch (fail: Throwable) {
              Log.w(LOG_TAG, fail.message, fail)
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
+index dc4e616..a94286d 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
+@@ -173,7 +173,7 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+ 
+         val purposes = KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT
+ 
+-        val validityDuration = 5
++        val validityDuration = 2
+         val keyGenParameterSpecBuilder =
+             KeyGenParameterSpec.Builder(alias, purposes)
+                 .setBlockModes(BLOCK_MODE_GCM)
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
+index f4f69d3..91f1a9d 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
+@@ -194,7 +194,7 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
+ 
+     val keySize = if (isForTesting) ENCRYPTION_KEY_SIZE_WHEN_TESTING else ENCRYPTION_KEY_SIZE
+ 
+-    val validityDuration = 5
++    val validityDuration = 2
+     val keyGenParameterSpecBuilder =
+       KeyGenParameterSpec.Builder(alias, purposes)
+         .setBlockModes(BLOCK_MODE_ECB)
 diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
 index 18e42ab..7bc2d7a 100644
 --- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
