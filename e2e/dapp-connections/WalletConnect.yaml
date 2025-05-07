@@ -27,43 +27,56 @@ tags:
     when:
       platform: Android
     commands:
+      # connect to bx-test-dapp
       # tap on browser search input
       - tapOn:
           point: 450, 1950
       - assertVisible: 'Find apps and more'
       - inputText: 'https://bx-test-dapp.vercel.app/'
-      - pressKey: "Enter"
+      - pressKey: 'Enter'
       # tap on wallet pfp to open the control panel
       - tapOn:
           point: 110, 1960
       # tap on connect button
       - tapOn:
           id: connect-button
+      # control panel assertions
+      - assertVisible:
+          text: '.*BX Test Dapp.*'
+      - assertVisible:
+          text: 'Disconnect'
       # tap on the screen in dapp to close the control panel
       - tapOn:
           point: 550, 1000
+
+      # eth_signMessage
       # tap on send button to initiate a eth_signTransaction
       - tapOn:
-          point: 80, 1490
+          point: 80, 1500
+      # sign transaction assertions
+      - assertVisible:
+          text: 'Message Request'
+      - assertVisible:
+          text: '.*Simulated Result.*'
+      - assertVisible:
+          text: '.*Confirm.*'
       # tap on the sign transaction button
       - longPressOn:
           id: sign-transaction-action-button
-          duration: 500
       - runFlow: ../utils/MaybeSetupPin.yaml
 
-
-
-      # # tap on connect button
-      # - tapOn:
-      #     point: 275, 80
-
-      # # tap on connect button
-      # - tapOn:
-      #     point: 50, 325
-
-      # # Verify warning appears
-      # - assertVisible:
-      #     id: malicious-dapp-warning
-
-      # - assertVisible: 'Find apps and more'
-      # - inputText: 'https://test-dap-welps.vercel.app/'
+      # eth_signTransaction
+      # tap on send button to initiate a eth_signTypedData
+      - tapOn:
+          point: 80, 1350
+      # sign transaction assertions
+      - assertVisible:
+          text: 'Message Request'
+      - assertVisible:
+          text: '.*rainbow rocks.*'
+      - assertVisible:
+          text: '.*Confirm.*'
+      # tap on the sign transaction button
+      - longPressOn:
+          id: sign-transaction-action-button
+      - runFlow: ../utils/MaybeSetupPin.yaml
