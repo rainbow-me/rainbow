@@ -101,6 +101,44 @@ index d165f3e..91fd8b1 100644
    fun removeEntry(service: String)
  
    fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
+index 99ae741..e80b72d 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
+@@ -198,6 +198,23 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
+         return generator.generateKey()
+     }
+ 
++    private fun maybeRemovePKCS7Padding(paddedBytes: ByteArray, maxPaddingLength: Int): ByteArray {
++        val paddingLength = paddedBytes.last().toInt()
++
++        // Validate the padding
++        if (paddingLength < 1 || paddingLength > paddedBytes.size || paddingLength > maxPaddingLength) {
++            return paddedBytes
++        }
++        for (i in paddedBytes.size - paddingLength until paddedBytes.size) {
++            if (paddedBytes[i].toInt() != paddingLength) {
++                return paddedBytes
++            }
++        }
++
++        // Remove the padding
++        return paddedBytes.copyOfRange(0, paddedBytes.size - paddingLength)
++    }
++
+     /** Decrypt provided bytes to a string. */
+ 
+     @Throws(GeneralSecurityException::class, IOException::class)
+@@ -221,7 +238,8 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
+             cipher.init(Cipher.DECRYPT_MODE, key, spec)
+ 
+             // Decrypt the bytes using cipher.doFinal()
+-            val decryptedBytes = cipher.doFinal(bytes, IV.IV_LENGTH, bytes.size - IV.IV_LENGTH)
++            val _decryptedBytes = cipher.doFinal(bytes, IV.IV_LENGTH, bytes.size - IV.IV_LENGTH)
++            val decryptedBytes = maybeRemovePKCX7Padding(_decryptedBytes, IV.IV_LENGTH)
+             String(decryptedBytes, UTF8)
+         } catch (fail: Throwable) {
+             Log.w(LOG_TAG, fail.message, fail)
 diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
 index 18e42ab..7bc2d7a 100644
 --- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
