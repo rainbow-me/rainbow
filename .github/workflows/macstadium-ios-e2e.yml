@@ -21,11 +21,20 @@ jobs:
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-      - name: Download Yarn cache
-        uses: actions/download-artifact@v4
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
         with:
-          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
-          path: .yarn
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache # Exclude eslint cache
+          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Set up ENV vars & scripts
         env:
           CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
@@ -74,11 +83,20 @@ jobs:
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-      - name: Download Yarn cache
-        uses: actions/download-artifact@v4
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
         with:
-          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
-          path: .yarn
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache # Exclude eslint cache
+          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Set up ENV vars & scripts
         env:
           CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
