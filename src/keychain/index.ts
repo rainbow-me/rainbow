@@ -25,6 +25,8 @@ import { IS_DEV, IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { authenticateWithPINAndCreateIfNeeded, authenticateWithPIN } from '@/handlers/authentication';
 
+const CONTROL_CODE = '\x02';
+
 export const encryptor = new AesEncryptor();
 
 const EXEMPT_ENCRYPTED_KEYS = [keychainConstants.pinKey, keychainConstants.signingWallet, keychainConstants.signingWalletAddress];
@@ -79,8 +81,9 @@ export async function get(key: string, options: KeychainOptions<GetOptions> = {}
     if (!data) {
       try {
         const result = await getInternetCredentials(key, options);
+        const sanitizedResult = result ? result.password.replace(CONTROL_CODE, '') : undefined;
 
-        if (result) {
+        if (sanitizedResult) {
           /*
            * If we're on Android and the password is a serialized object like
            * `{ cipher: ... }`, then we know we need to decrypt that value.
@@ -93,12 +96,12 @@ export async function get(key: string, options: KeychainOptions<GetOptions> = {}
            * `RAINBOW_MASTER_KEY`, and are saved as "public" values. We don't
            * want to decrypt those here.
            */
-          if (IS_ANDROID && result.password.includes('cipher') && !EXEMPT_ENCRYPTED_KEYS.includes(key)) {
+          if (IS_ANDROID && sanitizedResult.includes('cipher') && !EXEMPT_ENCRYPTED_KEYS.includes(key)) {
             logger.debug(`[keychain]: decrypting private data on Android`, {}, logger.DebugContext.keychain);
 
             const pin = options.androidEncryptionPin || (await authenticateWithPIN());
             !!pin && logger.log('[keychain]: using pin to decrypt cipher');
-            const decryptedValue = await encryptor.decrypt(pin, result.password);
+            const decryptedValue = await encryptor.decrypt(pin, sanitizedResult);
 
             if (decryptedValue) {
               logger.log('[keychain]: decrypted value');
@@ -107,7 +110,7 @@ export async function get(key: string, options: KeychainOptions<GetOptions> = {}
               logger.error(new RainbowError(`[keychain]: failed to decrypt private data on Android`));
             }
           } else {
-            data = result.password;
+            data = sanitizedResult;
           }
         }
       } catch (e: any) {
@@ -292,7 +295,7 @@ export async function getAllKeys(): Promise<UserCredentials[] | undefined> {
   try {
     logger.debug(`[keychain]: getAllKeys`, {}, logger.DebugContext.keychain);
     const res = await getAllInternetCredentials();
-    return res ? res.results : [];
+    return res ? res.results.map(r => ({ ...r, password: r.password.replace(CONTROL_CODE, '') })) : [];
   } catch (e: any) {
     logger.error(new RainbowError(`[keychain]: getAllKeys() failed`), {
       message: e.toString(),
