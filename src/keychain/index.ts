@@ -25,7 +25,7 @@ import { IS_DEV, IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { authenticateWithPINAndCreateIfNeeded, authenticateWithPIN } from '@/handlers/authentication';
 
-const CONTROL_CODE = '\x02';
+const CONTROL_CODE = /\/x02/g;
 
 export const encryptor = new AesEncryptor();
 
