@@ -148,7 +148,7 @@ index dc4e616..a94286d 100644
          val purposes = KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT
  
 -        val validityDuration = 5
-+        val validityDuration = 2
++        val validityDuration = 1
          val keyGenParameterSpecBuilder =
              KeyGenParameterSpec.Builder(alias, purposes)
                  .setBlockModes(BLOCK_MODE_GCM)
@@ -161,7 +161,7 @@ index f4f69d3..91f1a9d 100644
      val keySize = if (isForTesting) ENCRYPTION_KEY_SIZE_WHEN_TESTING else ENCRYPTION_KEY_SIZE
  
 -    val validityDuration = 5
-+    val validityDuration = 2
++    val validityDuration = 1
      val keyGenParameterSpecBuilder =
        KeyGenParameterSpec.Builder(alias, purposes)
          .setBlockModes(BLOCK_MODE_ECB)
