@@ -181,7 +181,6 @@ function WalletScreen() {
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
       <Box as={Page} flex={1} testID="wallet-screen" onLayout={hideSplashScreen}>
         <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-          {/* @ts-expect-error JavaScript component */}
           <AssetList
             accentColor={highContrastAccentColor}
             disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}

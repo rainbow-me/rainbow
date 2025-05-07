@@ -10,7 +10,7 @@ import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { formatURLForDisplay } from '@/utils';
 import { address as abbreviateAddress } from '@/utils/abbreviations';
@@ -31,7 +31,8 @@ const TOTAL_COST_PILL_HEIGHT = 52;
 
 function TokenAllocationCard() {
   const { accentColors } = useTokenLauncherContext();
-  const { accountColor, accountImage, accountAddress } = useAccountProfileInfo();
+  const { accountColor, accountImage } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
 
   const allocationBips = useTokenLauncherStore(state => state.allocationBips());
   const airdropRecipients = useTokenLauncherStore(state => state.validAirdropRecipients());

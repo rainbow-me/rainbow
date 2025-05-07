@@ -29,6 +29,7 @@ import { fetchReverseRecord } from '@/handlers/ens';
 import { lightModeThemeColors } from '@/styles';
 import { RainbowError, logger } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
+import { getWallets } from '../state/wallets/walletsStore';
 
 // -- Types ---------------------------------------- //
 
@@ -454,8 +455,8 @@ export const fetchWalletENSAvatars = () => async (dispatch: ThunkDispatch<AppSta
 /**
  * Fetches wallet names and updates storage and state.
  */
-export const fetchWalletNames = () => async (dispatch: Dispatch<WalletsUpdateNamesAction>, getState: AppGetState) => {
-  const { wallets } = getState().wallets;
+export const fetchWalletNames = () => async (dispatch: Dispatch<WalletsUpdateNamesAction>) => {
+  const wallets = getWallets();
   const updatedWalletNames: { [address: string]: string } = {};
 
   // Fetch ENS names

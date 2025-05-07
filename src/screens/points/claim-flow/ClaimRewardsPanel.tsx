@@ -26,7 +26,7 @@ import { invalidatePointsQuery, usePoints } from '@/resources/points';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { safeAreaInsetValues, watchingAlert } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
@@ -168,7 +168,8 @@ const ClaimingRewards = ({
   goBack: () => void;
   setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
 }) => {
-  const { accountAddress: address, accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
+  const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
+  const address = useAccountAddress();
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { nativeCurrency: currency } = useAccountSettings();
   const { highContrastAccentColor } = useAccountAccentColor();

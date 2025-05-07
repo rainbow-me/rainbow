@@ -633,7 +633,6 @@ export const useAccountProfileInfo = () => {
 
   return {
     ...info,
-    accountAddress: ensureValidHex(accountAddress),
     accountColorString: info?.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
   };
 };

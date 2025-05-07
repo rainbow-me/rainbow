@@ -27,7 +27,7 @@ import { showActionSheetWithOptions } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { capitalize } from 'lodash';
-import { default as React, default as React, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
 import { SettingsExternalURLs } from '../constants';
