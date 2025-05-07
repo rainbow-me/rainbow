@@ -61,7 +61,7 @@ import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletWithAccount, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
@@ -85,7 +85,7 @@ export const SignTransactionSheet = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST>>();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const { switchToWalletWithAddress } = useSwitchWallet();
   const {
     transactionDetails,

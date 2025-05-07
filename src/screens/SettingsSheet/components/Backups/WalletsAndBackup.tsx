@@ -22,7 +22,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { loadWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { abbreviations, deviceUtils } from '@/utils';
 import { cloudPlatform } from '@/utils/platform';
@@ -98,7 +98,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
 
 export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const { name: routeName } = useRoute();
 
   const scrollviewRef = useRef<ScrollView>(null);

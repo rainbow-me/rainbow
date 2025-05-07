@@ -11,11 +11,11 @@ import { serialize } from '@/logger/logDump';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
-import { useNavigation } from '@/navigation/Navigation';
+import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { updateWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -40,7 +40,7 @@ import FastImage from 'react-native-fast-image';
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
 
   const [loadingStates, setLoadingStates] = useState({

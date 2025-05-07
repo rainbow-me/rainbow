@@ -22,7 +22,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { InteractionManager } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import { ImgixImage } from '../images';
@@ -65,7 +65,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SHOW_SECRET>>();
   const selectedWallet = useWalletsStore(state => state.selected);
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const backupProvider = backupsStore(state => state.backupProvider);
   const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { navigate } = useNavigation();

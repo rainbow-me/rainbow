@@ -24,7 +24,7 @@ import {
 } from '@/notifications/types';
 import store, { AppState } from '@/redux/store';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
-import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch } from '@/utils';
 import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';
 import Routes from '@rainbow-me/routes';
@@ -38,7 +38,7 @@ import { ThunkDispatch } from 'redux-thunk';
 type Callback = () => void;
 
 export const NotificationsHandler = () => {
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const walletSwitcher = useSwitchWallet();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const walletSwitcherRef = useRef(walletSwitcher);

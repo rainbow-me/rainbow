@@ -6,7 +6,7 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { isZero } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS } from '@/references';
-import { setSelectedWallet, updateWallets, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, updateWallets, useAccountProfileInfo, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch, showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -30,7 +30,7 @@ type UseOnAvatarPressProps = {
 };
 
 export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const selectedWallet = useWalletsStore(state => state.selected);
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { navigate } = useNavigation();

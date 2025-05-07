@@ -27,7 +27,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
-import { useAccountSettings, useInitializeWallet, useWalletsWithBalancesAndNames } from '@/hooks';
+import { useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
@@ -40,7 +40,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { getWalletWithAccount, setSelectedWallet, useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
@@ -366,8 +366,7 @@ const HomePanel = memo(function HomePanel({
   onDisconnect: () => void;
 }) {
   const accountAddress = useAccountAddress();
-  const wallets = useWalletsStore(state => state.wallets);
-  const initializeWallet = useInitializeWallet();
+  const wallets = useWallets();
 
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
@@ -418,10 +417,9 @@ const HomePanel = memo(function HomePanel({
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
       setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
-      initializeWallet(null, null, null, false, false, null, true, null);
     }
     return true;
-  }, [accountAddress, initializeWallet, selectedWallet, wallets]);
+  }, [accountAddress, selectedWallet, wallets]);
 
   const handleOnPressSwap = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();

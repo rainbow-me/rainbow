@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { createAccount, loadWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { createAccount, loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { profileUtils } from '@/utils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
@@ -172,7 +172,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
 
 export function ChooseWalletGroup() {
   const { goBack } = useNavigation();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const groups = Object.values(wallets || {}).filter(wallet => wallet.type === WalletTypes.mnemonic);
 

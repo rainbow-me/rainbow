@@ -2,7 +2,7 @@ import { useDeleteWallet, useImportingWallet, useInitializeWallet } from '@/hook
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { setSelectedWallet, useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { doesWalletsContainAddress } from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
@@ -20,7 +20,7 @@ export default function useWatchWallet({
   showImportModal?: boolean;
 }) {
   const { goBack, navigate } = useNavigation();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const watchingWallet = useMemo(() => {
     return Object.values<RainbowWallet>(wallets || {}).find(wallet =>

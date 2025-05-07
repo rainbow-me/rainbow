@@ -9,7 +9,7 @@ import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPasswor
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
@@ -27,7 +27,7 @@ export const useCreateBackup = () => {
   const dispatch = useDispatch();
 
   const walletCloudBackup = useWalletCloudBackup();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const setLoadingStateWithTimeout = useCallback(
     ({ state, outOfSync = false, failInMs = 10_000 }: { state: CloudBackupState; outOfSync?: boolean; failInMs?: number }) => {

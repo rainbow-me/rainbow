@@ -21,7 +21,7 @@ import { useAccountSettings } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets } from '@/state/wallets/walletsStore';
 import useExperimentalFlag, {
   FEATURED_RESULTS,
   HARDWARE_WALLETS,
@@ -67,7 +67,7 @@ export default function DiscoverHome() {
   const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => (wallets || {})[key].type === walletTypes.bluetooth).length > 0;
 

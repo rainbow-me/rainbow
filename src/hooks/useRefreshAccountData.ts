@@ -7,7 +7,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { usePositionsStore } from '@/state/positions/positions';
-import { refreshWalletENSAvatars, refreshWalletNames, useWalletsStore, useAccountAddress } from '@/state/wallets/walletsStore';
+import { refreshWalletENSAvatars, refreshWalletNames, useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
@@ -22,7 +22,7 @@ export default function useRefreshAccountData() {
   const { nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const allAddresses = useMemo(
     () => Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address)),

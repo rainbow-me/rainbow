@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import walletTypes from '@/helpers/walletTypes';
-import { useWallets } from '@/hooks';
 import { analytics } from '@/analytics';
 import { isEmpty } from 'lodash';
+import { useWallets } from '@/state/wallets/walletsStore';
 
 export const useWalletCohort = () => {
-  const { wallets } = useWallets();
+  const wallets = useWallets();
 
   useEffect(() => {
     if (!wallets || isEmpty(wallets)) return;

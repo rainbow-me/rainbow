@@ -1,11 +1,11 @@
 import { ensureChecksumAddress } from '@/handlers/web3';
 import { RainbowAccount } from '@/model/wallet';
-import { setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import useInitializeWallet from './useInitializeWallet';
 
 export default function useSwitchWallet() {
   const initializeWallet = useInitializeWallet();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const switchToWalletWithAddress = async (address: string): Promise<string | null> => {
     if (!wallets) return null;

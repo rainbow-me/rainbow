@@ -12,14 +12,14 @@ import * as i18n from '@/languages';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { RouteProp, useRoute } from '@react-navigation/native';
 
 const MIN_HEIGHT = 740;
 
 const SecretWarningPage = () => {
   const { height: deviceHeight } = useDimensions();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const { navigate } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SECRET_WARNING>>();
 

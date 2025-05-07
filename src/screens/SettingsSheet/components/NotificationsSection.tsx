@@ -32,7 +32,7 @@ import { Alert, Linking, Switch } from 'react-native';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { ContactAvatar } from '../../../components/contacts';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
@@ -159,7 +159,7 @@ const NotificationsSection = () => {
   const { navigate } = useNavigation();
   const { chainId } = useAccountSettings();
   const isTestnet = isTestnetChain({ chainId });
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const walletNames = useWalletsStore(state => state.walletNames);
   const { isConnected } = useNetInfo();
   const { points_enabled, points_notifications_toggle } = useRemoteConfig();

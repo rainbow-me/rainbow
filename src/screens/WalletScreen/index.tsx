@@ -33,7 +33,7 @@ import { useSelector } from 'react-redux';
 import { useRecoilValue } from 'recoil';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets } from '@/state/wallets/walletsStore';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -51,7 +51,7 @@ function WalletScreen() {
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const insets = useSafeAreaInsets();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const hideSplashScreen = useHideSplashScreen();
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);

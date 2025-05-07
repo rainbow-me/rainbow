@@ -31,7 +31,7 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { createAccount, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -45,6 +45,7 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
+import { RootStackParamList } from '@/navigation/types';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -115,17 +116,11 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
 };
 
 const ViewWalletBackup = () => {
-  const { params } = useRoute<RouteProp<ViewWalletBackupParams, typeof Routes.VIEW_WALLET_BACKUP>>();
-
-  const createBackup = useCreateBackup();
-  const status = backupsStore(state => state.status);
-  const backupProvider = backupsStore(state => state.backupProvider);
-  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
-
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.VIEW_WALLET_BACKUP>>();
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
   const isDamaged = useWalletsStore(state => state.getIsDamaged());
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const wallet = wallets?.[walletId];
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();

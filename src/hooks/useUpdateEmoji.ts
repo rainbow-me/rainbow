@@ -1,14 +1,13 @@
-import { setSelectedWallet, updateWallets, useAccountProfileInfo, useWalletsStore, useAccountAddress } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, updateWallets, useAccountProfileInfo, useWalletsStore, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';
 import { useWebData } from './index';
-import useAccountSettings from './useAccountSettings';
 import { isLowerCaseMatch } from '../utils';
 
 export default function useUpdateEmoji() {
   const { accountColor, accountName } = useAccountProfileInfo();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const selectedWallet = useWalletsStore(state => state.selected);
   const { updateWebProfile, getWebProfile } = useWebData();
   const accountAddress = useAccountAddress();
