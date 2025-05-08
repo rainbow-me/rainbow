@@ -1,3 +1,5 @@
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
+index 7227ba1..f317a06 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
 @@ -54,6 +54,32 @@ class DataStorePrefsStorage(
@@ -102,7 +104,7 @@ index d165f3e..91fd8b1 100644
  
    fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
-index 6a941bf..82fb2f0 100644
+index 6a941bf..c5f3f17 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
 @@ -212,17 +212,10 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
@@ -126,16 +128,47 @@ index 6a941bf..82fb2f0 100644
    }
  
    /** Check requirements to the security level. */
-@@ -362,7 +355,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+@@ -362,20 +355,35 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
    /** Encrypt provided string value. */
    @Throws(IOException::class, GeneralSecurityException::class)
    protected fun encryptString(key: Key, value: String, handler: EncryptStringHandler?): ByteArray {
 -    val cipher = getCachedInstance()
++    Log.d(LOG_TAG, "Starting encryption of string value")
++    Log.d(LOG_TAG, "Input value length: ${value.length}")
++    
 +    val cipher = getCipher()
++    Log.d(LOG_TAG, "Cipher algorithm: ${cipher.algorithm}")
++    
      try {
        ByteArrayOutputStream().use { output ->
          if (handler != null) {
-@@ -388,7 +381,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
++          Log.d(LOG_TAG, "Using custom handler for initialization")
+           handler.initialize(cipher, key, output)
+           output.flush()
+         }
+ 
+-        CipherOutputStream(output, cipher).use { encrypt -> encrypt.write(value.toByteArray(UTF8)) }
++        val valueBytes = value.toByteArray(UTF8)
++        Log.d(LOG_TAG, "Value converted to bytes, length: ${valueBytes.size}")
++        
++        CipherOutputStream(output, cipher).use { encrypt -> 
++          encrypt.write(valueBytes)
++          Log.d(LOG_TAG, "Wrote bytes to CipherOutputStream")
++        }
+ 
+-        return output.toByteArray()
++        val result = output.toByteArray()
++        Log.d(LOG_TAG, "Final encrypted output size: ${result.size}")
++        return result
+       }
+     } catch (fail: Throwable) {
+-      Log.e(LOG_TAG, fail.message, fail)
++      Log.e(LOG_TAG, "Encryption failed: ${fail.message}", fail)
++      Log.e(LOG_TAG, "Stack trace: ${fail.stackTraceToString()}")
+       throw fail
+     }
+   }
+@@ -388,7 +396,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
      bytes: ByteArray,
      handler: DecryptBytesHandler?
    ): String {
@@ -145,10 +178,10 @@ index 6a941bf..82fb2f0 100644
        ByteArrayInputStream(bytes).use { input ->
          ByteArrayOutputStream().use { output ->
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
-index 99ae741..7943242 100644
+index 99ae741..ea3cfda 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
-@@ -206,7 +223,7 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
+@@ -206,7 +206,7 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
          bytes: ByteArray,
          handler: DecryptBytesHandler?
      ): String {
@@ -158,7 +191,7 @@ index 99ae741..7943242 100644
          return try {
              // read the initialization vector from bytes array
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
-index dc4e616..cc3365c 100644
+index dc4e616..a3358fe 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
 @@ -243,7 +243,10 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
