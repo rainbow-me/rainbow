@@ -67,7 +67,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
 
   return (
     <Bleed space="8px">
-      <ButtonPressAnimation onPress={handleOnPress} scaleTo={0.8} overflowMargin={30}>
+      <ButtonPressAnimation onPress={handleOnPress} scaleTo={0.8} overflowMargin={30} testID="account-icon">
         {accountInfo?.accountImage ? (
           <ImageAvatar
             backgroundColor={isDarkMode ? HOMEPAGE_BACKGROUND_COLOR_DARK : HOMEPAGE_BACKGROUND_COLOR_LIGHT}

@@ -23,60 +23,60 @@ tags:
 # Note: Since we can't directly interact with WebView content,
 # we use coordinates. These may need adjustment based on device.
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      # connect to bx-test-dapp
-      # tap on browser search input
-      - tapOn:
-          point: 450, 1950
-      - assertVisible: 'Find apps and more'
-      - inputText: 'https://bx-test-dapp.vercel.app/'
-      - pressKey: 'Enter'
-      # tap on wallet pfp to open the control panel
-      - tapOn:
-          point: 110, 1960
-      # tap on connect button
-      - tapOn:
-          id: connect-button
-      # control panel assertions
-      - assertVisible:
-          text: '.*BX Test Dapp.*'
-      - assertVisible:
-          text: 'Disconnect'
-      # tap on the screen in dapp to close the control panel
-      - tapOn:
-          point: 550, 1000
+# connect to bx-test-dapp
+- tapOn:
+    text: '.*Search or enter website.*'
+- assertVisible: 'Find apps and more'
+- inputText: 'https://bx-test-dapp.vercel.app/'
+- pressKey: 'Enter'
+# tap on wallet pfp to open the control panel
+- tapOn:
+    id: account-icon
+- tapOn:
+    id: connect-button
+# control panel assertions
+- assertVisible:
+    text: '.*BX Test Dapp.*'
+- assertVisible:
+    text: 'Disconnect'
+# tap somewhere arbitrary to close the control panel sheet
+- tapOn:
+    point: 550, 1000
 
-      # eth_signMessage
-      # tap on send button to initiate a eth_signTransaction
-      - tapOn:
-          point: 80, 1500
-      # sign transaction assertions
-      - assertVisible:
-          text: 'Message Request'
-      - assertVisible:
-          text: '.*Simulated Result.*'
-      - assertVisible:
-          text: '.*Confirm.*'
-      # tap on the sign transaction button
-      - longPressOn:
-          id: sign-transaction-action-button
-      - runFlow: ../utils/MaybeSetupPin.yaml
+# eth_signMessage
+# tap on send button to initiate a eth_signTransaction
+- tapOn:
+    id: signTypedData
+# sign transaction assertions
+- assertVisible:
+    text: 'Message Request'
+- assertVisible:
+    text: '.*Simulated Result.*'
+- assertVisible:
+    text: '.*Confirm.*'
+# sign transaction
+- longPressOn:
+    id: sign-transaction-action-button
+- runFlow: ../utils/MaybeSetupPin.yaml
+# assert that the typed message data signature is visible
+- assertVisible:
+    text: '.*typed message data sig.*'
 
-      # eth_signTransaction
-      # tap on send button to initiate a eth_signTypedData
-      - tapOn:
-          point: 80, 1350
-      # sign transaction assertions
-      - assertVisible:
-          text: 'Message Request'
-      - assertVisible:
-          text: '.*rainbow rocks.*'
-      - assertVisible:
-          text: '.*Confirm.*'
-      # tap on the sign transaction button
-      - longPressOn:
-          id: sign-transaction-action-button
-      - runFlow: ../utils/MaybeSetupPin.yaml
+# eth_signTransaction
+# tap on send button to initiate a eth_signTypedData
+- tapOn:
+    id: signTx
+# sign transaction assertions
+- assertVisible:
+    text: 'Message Request'
+- assertVisible:
+    text: '.*rainbow rocks.*'
+- assertVisible:
+    text: '.*Confirm.*'
+# sign transaction
+- longPressOn:
+    id: sign-transaction-action-button
+- runFlow: ../utils/MaybeSetupPin.yaml
+# assert that the signed message data signature is visible
+- assertVisible:
+    text: '.*sign message data sig.*'
