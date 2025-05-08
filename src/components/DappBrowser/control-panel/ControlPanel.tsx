@@ -445,7 +445,6 @@ const HomePanel = memo(function HomePanel({
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
 
   return (
-    // home panel
     <Panel height={isOnHomepage ? HOME_PANEL_FULL_HEIGHT - HOME_PANEL_DAPP_SECTION : HOME_PANEL_FULL_HEIGHT}>
       <Box style={controlPanelStyles.homePanel}>
         <Stack space="24px">
