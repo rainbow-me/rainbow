@@ -12,6 +12,8 @@ import {
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { useStableValue } from '@/hooks/useStableValue';
+import { useBrowserStore } from '@/state/browser/browserStore';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from '../BrowserContext';
@@ -27,7 +29,6 @@ import {
 } from '../utils/gestureUtils';
 import { calculateScrollPositionToCenterTab } from '../utils/layoutUtils';
 import { TabHitResult, tabHitTest } from '../utils/tabHitTest';
-import { useBrowserStore } from '@/state/browser/browserStore';
 
 const ENABLE_PAN_LOGS = false;
 const ENABLE_SCROLL_VIEW_LOGS = false;
@@ -50,9 +51,10 @@ export function useBrowserScrollView() {
   const touchInfo = useSharedValue<{ initialTappedTab: TabHitResult | null; timestamp: number; x: number; y: number } | undefined>(
     undefined
   );
+  const initialNumberOfTabs = useStableValue(() => useBrowserStore.getState().tabIds.length);
 
   const scrollViewHeight = useDerivedValue(() => {
-    const numberOfTabs = _WORKLET ? currentlyOpenTabIds.value.length : useBrowserStore.getState().tabIds.length;
+    const numberOfTabs = _WORKLET ? currentlyOpenTabIds.value.length : initialNumberOfTabs;
     const height = Math.max(
       Math.ceil(numberOfTabs / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_ANDROID ? 35 : 0),
       DEVICE_HEIGHT

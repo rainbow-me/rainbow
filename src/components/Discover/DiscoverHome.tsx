@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import useExperimentalFlag, {
   OP_REWARDS,
   PROFILES,
@@ -10,7 +10,7 @@ import useExperimentalFlag, {
   TRENDING_TOKENS,
   KING_OF_THE_HILL,
 } from '@rainbow-me/config/experimentalHooks';
-import { Inline, Inset, Stack, Box, Separator, useColorMode } from '@/design-system';
+import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
@@ -30,13 +30,20 @@ import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultS
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { AirdropsCard } from '@/components/cards/skia-cards/AirdropsCard';
 import { LaunchCard } from '@/components/cards/skia-cards/LaunchCard';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { isTestnetChain } from '@/handlers/web3';
+import { DiscoverSeparator } from './DiscoverSeparator';
 import { KingOfTheHill } from './KingOfTheHill';
 
 export const HORIZONTAL_PADDING = 20;
+
+function onNavigate(url: string): void {
+  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
+    url,
+  });
+}
 
 export default function DiscoverHome() {
   const {
@@ -48,7 +55,6 @@ export default function DiscoverHome() {
     new_discover_cards_enabled,
     king_of_the_hill_enabled,
   } = useRemoteConfig();
-  const { isDarkMode } = useColorMode();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -63,24 +69,14 @@ export default function DiscoverHome() {
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
-  const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { wallets } = useWallets();
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => (wallets || {})[key].type === walletTypes.bluetooth).length > 0;
 
-  const onNavigate = useCallback(
-    (url: string) => {
-      navigate(Routes.DAPP_BROWSER_SCREEN, {
-        url,
-      });
-    },
-    [navigate]
-  );
-
   return (
-    <Inset top="20px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
+    <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
       {!testNetwork ? (
         <Box gap={20}>
           {newDiscoverCardsEnabled ? (
@@ -95,7 +91,7 @@ export default function DiscoverHome() {
             </Inline>
           )}
           {kingOfTheHillEnabled && <KingOfTheHill />}
-          <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
+          <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />
           {mintsEnabled && (

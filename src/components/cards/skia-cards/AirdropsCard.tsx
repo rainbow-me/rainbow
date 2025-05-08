@@ -38,6 +38,7 @@ const BADGE_SIZE = 28;
 const CARD_HEIGHT = 175;
 const COIN_ICON_SIZE = 64;
 const COIN_ICON_TOP_INSET = 56;
+const DISCOVER_SCREEN_ROUTE = Routes.DISCOVER_SCREEN;
 
 const CARD_CONFIG = {
   backgroundBlur: {
@@ -128,11 +129,9 @@ export const AirdropsCard = memo(function AirdropsCard() {
   );
 
   useAnimatedReaction(
-    () => animatedActiveSwipeRoute.value === Routes.DISCOVER_SCREEN,
+    () => animatedActiveSwipeRoute.value === DISCOVER_SCREEN_ROUTE,
     (shouldTrigger, prevShouldTrigger) => {
-      if (prevShouldTrigger === null || prevShouldTrigger === shouldTrigger) return;
-      if (shouldTrigger) shouldPlayEnterAnimation.value = true;
-      else shouldPlayEnterAnimation.value = false;
+      if (shouldTrigger !== prevShouldTrigger) shouldPlayEnterAnimation.value = shouldTrigger;
     },
     []
   );

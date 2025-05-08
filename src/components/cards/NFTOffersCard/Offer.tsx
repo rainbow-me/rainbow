@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@/navigation';
 import ConditionalWrap from 'conditional-wrap';
 import { TextColor, globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
@@ -9,6 +8,7 @@ import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import { AccentColorProvider, Box, Inline, Inset, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { RainbowError, logger } from '@/logger';
 import { ButtonPressAnimation } from '@/components/animations';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { useTheme } from '@/theme';
@@ -64,7 +64,6 @@ export const FakeOffer = () => {
 };
 
 export const Offer = ({ offer }: { offer: NftOffer }) => {
-  const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
@@ -80,12 +79,14 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
 
   const sortCriterion = useRecoilValue(nftOffersSortAtom);
 
-  const [timeRemaining, setTimeRemaining] = useState(offer.validUntil ? Math.max(offer.validUntil * 1000 - Date.now(), 0) : undefined);
+  const [timeRemaining, setTimeRemaining] = useState(() =>
+    offer.validUntil ? Math.max(offer.validUntil * 1000 - Date.now(), 0) : undefined
+  );
 
   useEffect(() => {
     if (offer.validUntil) {
       const interval = setInterval(() => {
-        setTimeRemaining(Math.max(offer.validUntil! * 1000 - Date.now(), 0));
+        setTimeRemaining(Math.max(offer.validUntil * 1000 - Date.now(), 0));
       }, 60000);
       return () => clearInterval(interval);
     }
@@ -163,7 +164,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
             network: offer.network,
           },
         });
-        navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
+        Navigation.handleAction(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
       }}
       style={{ marginVertical: 10, marginHorizontal: CELL_HORIZONTAL_PADDING }}
     >

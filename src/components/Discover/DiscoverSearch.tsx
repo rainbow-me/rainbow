@@ -9,7 +9,7 @@ import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenCo
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchSuggestions } from '@/handlers/ens';
 import { ethereumUtils } from '@/utils';
@@ -44,7 +44,6 @@ type EnsSearchResult = {
 };
 
 export default function DiscoverSearch() {
-  const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
@@ -151,7 +150,7 @@ export default function DiscoverSearch() {
       }
     };
     checkAndHandleMint(searchQuery);
-  }, [accountAddress, navigate, searchQuery]);
+  }, [accountAddress, searchQuery]);
 
   const handlePress = useCallback(
     (item: EnrichedExchangeAsset) => {
@@ -159,7 +158,7 @@ export default function DiscoverSearch() {
         // navigate to Showcase sheet
         searchInputRef?.current?.blur();
         InteractionManager.runAfterInteractions(() => {
-          navigate(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
+          Navigation.handleAction(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
             address: item.nickname,
             fromRoute: 'DiscoverSearch',
           });
@@ -177,14 +176,14 @@ export default function DiscoverSearch() {
           item.network = Network.mainnet;
         }
         const asset = accountAsset || item;
-        navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+        Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
           asset,
           address: item.address,
           chainId: item.chainId,
         });
       }
     },
-    [navigate, profilesEnabled, searchInputRef]
+    [profilesEnabled, searchInputRef]
   );
 
   const itemProps = useMemo(

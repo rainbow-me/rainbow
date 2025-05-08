@@ -68,6 +68,8 @@ export const useBrowserContext = () => {
   return context;
 };
 
+const DAPP_BROWSER_ROUTE = Routes.DAPP_BROWSER_SCREEN;
+
 export const BrowserContextProvider = ({ children }: { children: React.ReactNode }) => {
   const { activeTabRef, extraWebViewHeight, goBack, goForward, shouldCollapseBottomBar, tabViewProgress } = useBrowserTabBarContext();
 
@@ -90,6 +92,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const scrollViewOffset = useSharedValue(0);
   const searchViewProgress = useSharedValue(0);
   const tabViewVisible = useSharedValue(false);
+  const triggerScreenshot = useSharedValue(false);
 
   const screenshotCaptureRef = useRef<ViewShot | null>(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
@@ -175,7 +178,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   // Enables or disables WebView JS handlers when navigating to or away from the browser
   // tab, and ensures the tab bar is always revealed when leaving the browser tab
   useAnimatedReaction(
-    () => animatedActiveSwipeRoute.value === Routes.DAPP_BROWSER_SCREEN,
+    () => animatedActiveSwipeRoute.value === DAPP_BROWSER_ROUTE,
     (isOnBrowserTab, prev) => {
       if (activeTabInfo.value.isOnHomepage) return;
 
@@ -187,6 +190,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       } else if (browserBecameInactive) {
         runOnJS(setWebViewHandlersEnabled)(false);
         if (shouldCollapseBottomBar.value) shouldCollapseBottomBar.value = false;
+        triggerScreenshot.value = true;
       }
     },
     []
@@ -215,6 +219,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         tabViewBorderRadius,
         tabViewProgress,
         tabViewVisible,
+        triggerScreenshot,
         goBack,
         goForward,
         goToUrl,
