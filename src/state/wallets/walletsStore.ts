@@ -47,7 +47,7 @@ interface WalletsState {
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
-  createAccount: (data: Pick<RainbowWallet, 'id' | 'name' | 'color'>) => Promise<{
+  createAccount: (data: { id: RainbowWallet['id']; name: RainbowWallet['name']; color: RainbowWallet['color'] | null }) => Promise<{
     [id: string]: RainbowWallet;
   }>;
 

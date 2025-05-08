@@ -31,7 +31,7 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { useWallets, useIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { useWallets, useIsDamagedWallet, createAccount } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -116,13 +116,18 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
 };
 
 const ViewWalletBackup = () => {
-  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.VIEW_WALLET_BACKUP>>();
+  const { params } = useRoute<RouteProp<ViewWalletBackupParams, typeof Routes.VIEW_WALLET_BACKUP>>();
+
+  const createBackup = useCreateBackup();
+  const backupProvider = backupsStore(state => state.backupProvider);
+  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
+  const status = backupsStore(state => state.status);
+
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
   const isDamaged = useIsDamagedWallet();
   const wallets = useWallets();
   const wallet = wallets?.[walletId];
-  const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
@@ -190,7 +195,6 @@ const ViewWalletBackup = () => {
                 if (wallet && !wallet.damaged) {
                   await createAccount({
                     id: wallet.id,
-                    // @natew TODO
                     color,
                     name,
                   });
