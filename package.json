@@ -29,7 +29,7 @@
     "anvil": "sh ./scripts/anvil.sh",
     "install-all": "yarn install && yarn setup && yarn install-pods",
     "install-all-no-flipper": "yarn install && yarn setup && yarn install-pods-no-flipper",
-    "install-bundle": "cd ios && bundle install && cd ..",
+    "install-bundle": "bundle install",
     "install-pods": "cd ios && bundle exec pod install --repo-update && cd ..",
     "install-pods-fast": "cd ios && bundle exec pod install && cd ..",
     "install-pods-fast-jsc": "cd ios && bundle exec env USE_HERMES=NO pod install && cd ..",
