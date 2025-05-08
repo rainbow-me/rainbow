@@ -139,13 +139,12 @@ const ImgixImageWithForwardRef = React.forwardRef((props: MergedImgixImageProps,
   <ImgixImage forwardedRef={ref} {...props} />
 ));
 
-const { cacheControl, clearDiskCache, clearMemoryCache, contextTypes, priority, resizeMode } = FastImage;
+const { cacheControl, clearDiskCache, clearMemoryCache, priority, resizeMode } = FastImage;
 
 export default Object.assign(ImgixImageWithForwardRef, {
   cacheControl,
   clearDiskCache,
   clearMemoryCache,
-  contextTypes,
   preload,
   priority,
   resizeMode,

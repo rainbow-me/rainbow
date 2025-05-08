@@ -77,7 +77,7 @@ export const EthCard = () => {
   const handleAssetPress = useCallback(() => {
     if (!ethAsset) return;
     navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset: ethAsset,
+      asset: ethAsset as any,
       address: ETH_ADDRESS,
       chainId: ChainId.mainnet,
     });

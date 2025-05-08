@@ -40,6 +40,7 @@ module.exports = {
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
     'no-nested-ternary': 'off',
+    'react/react-in-jsx-scope': 'off',
     'react-hooks/exhaustive-deps': [
       'warn',
       {
