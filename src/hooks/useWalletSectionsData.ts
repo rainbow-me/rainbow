@@ -166,7 +166,6 @@ export default function useWalletSectionsData({
     showcaseTokens,
     uniqueTokens,
     isFetchingNfts,
-    remoteConfig,
     experimentalConfig,
     positions,
     claimables,
