@@ -30,11 +30,11 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { loadWallets, useWallets, useWalletsStore, useAccountAddress } from '@/state/wallets/walletsStore';
+import { loadWallets, useWallets, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const accountAddress = useAccountAddress();
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const wallets = useWallets();
 
   const { getParent: dangerouslyGetParent, navigate, replace, setOptions } = useNavigation<typeof Routes.MODAL_SCREEN>();

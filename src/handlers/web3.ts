@@ -27,6 +27,7 @@ import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { Address } from 'viem';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -191,14 +192,12 @@ export const isHexStringIgnorePrefix = (value: string): boolean => {
  */
 export const addHexPrefix = (value: string): string => (startsWith(value, '0x') ? value : `0x${value}`);
 
-export type HexAddress = `0x${string}`;
-
 /**
  * @desc Asserts "0x" prefix on a string.
  * @param value The potential address string.
  * @return The same string.
  */
-export const assertValidHex: (value: string) => asserts value is HexAddress = value => {
+export const assertValidHex: (value: string) => asserts value is Address = value => {
   if (!value.startsWith(`0x`)) throw new Error(`Non address-like string`);
 };
 
@@ -207,7 +206,7 @@ export const assertValidHex: (value: string) => asserts value is HexAddress = va
  * @param value The potential address string.
  * @return The same string.
  */
-export const ensureValidHex = (value: string): HexAddress => {
+export const ensureValidHex = (value: string): Address => {
   assertValidHex(value);
   return value;
 };

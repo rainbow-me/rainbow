@@ -8,7 +8,7 @@ import { coverMetadataAtom } from '../components/ens-registration/RegistrationCo
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 import { useWalletENSAvatar, useENSRegistration } from '.';
-import { useWalletsStore, useAccountAddress } from '@/state/wallets/walletsStore';
+import { useWalletsStore, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
@@ -96,7 +96,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
-  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const isHardwareWallet = useIsHardwareWallet();
   const accountAddress = useAccountAddress();
   const { registrationParameters } = useENSRegistration();
 

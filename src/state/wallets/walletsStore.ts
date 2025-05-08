@@ -33,6 +33,7 @@ import { address } from '../../utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../../utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '../../utils/profileUtils';
 import { createRainbowStore } from '../internal/createRainbowStore';
+import { Address } from 'viem';
 
 interface WalletsState {
   selected: RainbowWallet | null;
@@ -60,8 +61,8 @@ interface WalletsState {
 
   clearAllWalletsBackupStatus: () => void;
 
-  accountAddress: `0x${string}`;
-  setAccountAddress: (address: `0x${string}`) => void;
+  accountAddress: Address;
+  setAccountAddress: (address: Address) => void;
 
   refreshWalletENSAvatars: () => Promise<void>;
   refreshWalletNames: () => Promise<void>;
@@ -113,7 +114,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
   },
 
   accountAddress: `0x`,
-  setAccountAddress: (accountAddress: `0x${string}`) => {
+  setAccountAddress: (accountAddress: Address) => {
     set({
       accountAddress,
     });
@@ -608,6 +609,10 @@ export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
+export const useSelectedWallet = () => useWalletsStore(state => state.selected);
+export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
+export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
+export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamaged());
 
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
@@ -624,7 +629,7 @@ export const isImportedWallet = (address: string): boolean => {
 
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
-  const accountAddress = useWalletsStore(state => state.accountAddress);
+  const accountAddress = useAccountAddress();
 
   const info = useMemo(() => {
     return getAccountProfileInfo({

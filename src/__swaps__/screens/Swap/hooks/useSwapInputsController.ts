@@ -381,10 +381,6 @@ export function useSwapInputsController({
 
     const currentAddress = getAccountAddress();
 
-    if (!currentAddress) {
-      throw new Error(`No currentAddress`);
-    }
-
     const params = buildQuoteParams({
       currentAddress,
       inputAmount: maxAdjustedInputAmount,
