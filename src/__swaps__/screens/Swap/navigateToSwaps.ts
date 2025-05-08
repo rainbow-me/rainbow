@@ -150,10 +150,6 @@ type InputAmountRequest =
 
 // ============ Helper Functions =============================================== //
 
-function isCurrentWalletReadOnly(): boolean {
-  return store.getState().wallets.selected?.type === walletTypes.readOnly;
-}
-
 function isExtendedAssetWithColors(
   asset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null
 ): asset is ExtendedAnimatedAssetWithColors {
