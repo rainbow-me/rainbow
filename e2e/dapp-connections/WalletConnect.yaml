@@ -20,9 +20,6 @@ tags:
 - assertVisible:
     id: browser-screen
 
-# Note: Since we can't directly interact with WebView content,
-# we use coordinates. These may need adjustment based on device.
-
 # connect to bx-test-dapp
 - tapOn:
     text: '.*Search or enter website.*'
