@@ -25,7 +25,7 @@ import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { setSelectedWallet, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, useWallets, useSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
@@ -79,7 +79,7 @@ export default function ChangeWalletSheet() {
   const { params = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHANGE_WALLET_SHEET>>();
 
   const { onChangeWallet, watchOnly = false, currentAccountAddress, hideReadOnlyWallets = false } = params;
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const wallets = useWallets();
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 

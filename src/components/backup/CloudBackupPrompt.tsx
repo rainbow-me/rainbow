@@ -5,7 +5,7 @@ import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 import { format } from 'date-fns';
 import React, { useCallback } from 'react';
@@ -19,7 +19,7 @@ const imageSize = 72;
 export default function CloudBackupPrompt() {
   const { navigate, goBack } = useNavigation();
   const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const createBackup = useCreateBackup();
 
   const onCloudBackup = useCallback(() => {

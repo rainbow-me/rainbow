@@ -11,7 +11,7 @@ import { SwapMetadata } from '@/raps/references';
 import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/components/SingleLineTransactionDetailsRow';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { ethereumUtils, haptics } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -28,7 +28,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;
-  const isReadOnly = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnly = useIsReadOnlyWallet();
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
     const data = swapMetadataStorage.getString(hash ?? '');

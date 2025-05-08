@@ -20,7 +20,7 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useAccountSettings, useSendFeedback } from '@/hooks';
 import * as lang from '@/languages';
 import { backupsStore } from '@/state/backups/backups';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
@@ -64,7 +64,7 @@ const SettingsSection = ({
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);

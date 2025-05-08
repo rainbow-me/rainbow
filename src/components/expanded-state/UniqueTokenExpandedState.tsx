@@ -39,7 +39,7 @@ import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -229,7 +229,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const collectible = useCollectible(passedAsset?.uniqueId);
   const asset = external ? passedAsset : collectible;
   const {

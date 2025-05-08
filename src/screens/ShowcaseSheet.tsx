@@ -4,7 +4,7 @@ import { buildUniqueTokenList } from '@/helpers/assets';
 import { useAccountSettings } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -43,7 +43,7 @@ export default function ShowcaseScreen() {
 
   const [userData, setUserData] = useState<AddressPreferencesData | null | undefined>();
   const [accountAddress, setAcccountAddress] = useState<string>();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   useEffect(() => {
     const init = async () => {

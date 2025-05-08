@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import React, { useCallback, useMemo } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ClaimButton } from '../../shared/components/ClaimButton';
 import { ClaimPanel } from '../../shared/components/ClaimPanel';
 import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
@@ -11,7 +11,7 @@ import { useSponsoredClaimableContext } from '../context/SponsoredClaimableConte
 export function SponsoredClaimableFlow() {
   const { goBack } = useNavigation();
   const { claim, claimable, claimStatus, setClaimStatus } = useSponsoredClaimableContext();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const [asset] = claimable.assets;
 

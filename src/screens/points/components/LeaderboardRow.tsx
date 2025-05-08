@@ -19,7 +19,7 @@ import { noop } from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useSelectedWallet } from '@/state/wallets/walletsStore';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -43,7 +43,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   points: number;
   rank: number;
 }) {
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { colors } = useTheme();

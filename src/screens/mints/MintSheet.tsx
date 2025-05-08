@@ -36,7 +36,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsReadOnlyWallet, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -133,8 +133,8 @@ const MintSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
-  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+  const isHardwareWallet = useIsHardwareWallet();
   const [insufficientEth, setInsufficientEth] = useState(false);
   const [showNativePrice, setShowNativePrice] = useState(false);
   const [gasError, setGasError] = useState(false);

@@ -13,7 +13,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -67,7 +67,7 @@ const PoapSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POAP_SHEET>>();
   const {
     data: { nfts },

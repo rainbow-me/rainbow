@@ -12,7 +12,7 @@ import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { cloudPlatform } from '@/utils/platform';
 import React, { useCallback, useMemo } from 'react';
@@ -25,7 +25,7 @@ const imageSize = 72;
 export default function BackupSheetSectionNoProvider() {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const createBackup = useCreateBackup();
   const status = backupsStore(state => state.status);
 

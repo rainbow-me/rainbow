@@ -2,7 +2,7 @@ import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations'
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { deviceUtils, watchingAlert } from '@/utils';
 import { debounce } from 'lodash';
 import React from 'react';
@@ -26,7 +26,7 @@ export function ClaimButton({
   biometricIcon: boolean;
   label: string;
 }) {
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   if (enableHoldToPress) {
     return (

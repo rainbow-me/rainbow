@@ -31,7 +31,7 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets, useIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -119,7 +119,7 @@ const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.VIEW_WALLET_BACKUP>>();
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
-  const isDamaged = useWalletsStore(state => state.getIsDamaged());
+  const isDamaged = useIsDamagedWallet();
   const wallets = useWallets();
   const wallet = wallets?.[walletId];
   const dispatch = useDispatch();

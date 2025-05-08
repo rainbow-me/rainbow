@@ -41,7 +41,7 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePoints } from '@/resources/points';
 import { ChainId } from '@/state/backendNetworks/types';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { useAccountAddress, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { measureText, safeAreaInsetValues } from '@/utils';
@@ -614,7 +614,7 @@ export function PointsContent() {
   const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
   const { setClipboard } = useClipboard();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { highContrastAccentColor: accountColor } = useAccountAccentColor();
   const { nativeCurrency: currency } = useAccountSettings();
   const { rewards_enabled } = useRemoteConfig();

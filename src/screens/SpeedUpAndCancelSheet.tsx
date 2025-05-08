@@ -16,6 +16,7 @@ import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { updateTransaction } from '@/state/pendingTransactions';
+import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -36,7 +37,6 @@ import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
 import { SheetActionButton, SheetActionButtonRow, SheetHandleFixedToTop, SheetKeyboardAnimation, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -113,7 +113,7 @@ const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {
 export default function SpeedUpAndCancelSheet() {
   const { navigate, goBack } = useNavigation();
   const { accountAddress, chainId } = useAccountSettings();
-  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const isHardwareWallet = useIsHardwareWallet();
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
   const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas({

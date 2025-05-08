@@ -7,7 +7,7 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import * as lang from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { useDappMetadata } from '@/resources/metadata/dapp';
-import { getAccountProfileInfo, useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { initials } from '@/utils/formatters';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
@@ -27,7 +27,7 @@ export function AuthRequest({
   verifiedData?: Verify.Context['verified'];
 }) {
   const accountAddress = useAccountAddress();
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
 
   const { navigate, goBack } = useNavigation();
   const { colors } = useTheme();

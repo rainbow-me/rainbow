@@ -11,7 +11,7 @@ import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useCallback, useEffect } from 'react';
 // eslint-disable-next-line no-restricted-imports
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { MMKV } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
@@ -49,7 +49,7 @@ export const triggerPollerCleanupAtom = atom({
 
 export const HardwareWalletTxNavigator = () => {
   const { width, height } = useDimensions();
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const {
     params: { submit },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET>>();

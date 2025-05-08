@@ -68,7 +68,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { getWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsHardwareWallet, getWallets } from '@/state/wallets/walletsStore';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
@@ -149,7 +149,7 @@ export default function SendSheet() {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
-  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const isHardwareWallet = useIsHardwareWallet();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
     step: REGISTRATION_STEPS.TRANSFER,

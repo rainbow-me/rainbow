@@ -51,7 +51,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Address } from 'viem';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
 import { GasInfo } from './utils';
 
@@ -104,6 +104,11 @@ export const ClaimAirdropSheet = () => {
   const highContrastColor = useMemo(() => getBrightenedColor(color), [color]);
 
   const [asset] = claimable.assets;
+
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+
+  const { goBack } = useNavigation();
+  const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
 
   return (
     <ColorModeProvider value="dark">
@@ -303,7 +308,7 @@ const PanelFooter = ({
   highContrastColor: string;
 }) => {
   const { goBack } = useNavigation();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
 
   const claimAirdrop = useCallback(() => {

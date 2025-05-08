@@ -2,7 +2,7 @@ import { Box } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { ClaimableType } from '@/resources/addys/claimables/types';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import React, { useCallback, useMemo } from 'react';
 import { ClaimButton } from '../../shared/components/ClaimButton';
@@ -26,7 +26,7 @@ export function TransactionClaimableFlow() {
     requiresSwap,
   } = useTransactionClaimableContext();
   const { goBack } = useNavigation();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const type = claimable.type.replaceAll('_', '-');
 

@@ -11,7 +11,7 @@ import { useNavigation } from '@/navigation';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
@@ -47,7 +47,7 @@ const AvailableNetworksv2 = ({
   };
 
   const { goBack } = useNavigation();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const convertAssetAndNavigate = useCallback(
     (chainId: ChainId) => {

@@ -24,7 +24,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletWithAccount, useSelectedWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletconnectMeta } from '@/walletConnect/types';
@@ -129,7 +129,7 @@ export function WalletConnectApprovalSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_APPROVAL_SHEET>>();
   const { chainId: settingsChainId, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const handled = useRef(false);
   const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet | null }>(() => {
     const accountAddressAsAddress = accountAddress as Address;
