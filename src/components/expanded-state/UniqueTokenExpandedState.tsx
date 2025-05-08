@@ -15,7 +15,6 @@ import ImgixImage from '../images/ImgixImage';
 import { SendActionButton, SheetActionButton, SheetHandle, SlackSheet } from '../sheet';
 import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
 import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
@@ -431,12 +430,24 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     },
     { timeout: 5 * 1000 }
   );
+
   return (
     <>
       {IS_IOS && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
-            <UniqueTokenImage backgroundColor={asset.background || imageColor} imageUrl={asset.lowResUrl} item={asset} size={CardSize} />
+            <UniqueTokenImage
+              collectionName={asset.collection.name}
+              name={asset.name}
+              backgroundColor={asset.background || imageColor}
+              imageUrl={asset.image_url}
+              lowResImageUrl={asset.lowResUrl}
+              mimeType={asset.mime_type}
+              fullUniqueId={asset.fullUniqueId}
+              uniqueId={asset.uniqueId}
+              id={asset.id}
+              address={asset.asset_contract.address}
+            />
             <BackgroundBlur />
           </BackgroundImage>
         </BlurWrapper>

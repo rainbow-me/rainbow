@@ -72,8 +72,6 @@ const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) =
 
   const nftIndexMap = nfts?.reduce<Record<string, number>>((acc, nft, index) => {
     acc[nft.uniqueId] = index;
-    // Not sure this is needed
-    // acc[nft.fullUniqueId] = index;
     return acc;
   }, {});
 
