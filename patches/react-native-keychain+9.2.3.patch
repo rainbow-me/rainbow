@@ -101,70 +101,78 @@ index d165f3e..91fd8b1 100644
    fun removeEntry(service: String)
  
    fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
+index 6a941bf..82fb2f0 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
+@@ -212,17 +212,10 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+ 
+   // region Implementation
+ 
+-  /** Get cipher instance and cache it for any next call. */
++  /** Get cipher instance */
+   @Throws(NoSuchAlgorithmException::class, NoSuchPaddingException::class)
+-  fun getCachedInstance(): Cipher {
+-    if (cachedCipher == null) {
+-      synchronized(this) {
+-        if (cachedCipher == null) {
+-          cachedCipher = Cipher.getInstance(getEncryptionTransformation())
+-        }
+-      }
+-    }
+-    return cachedCipher!!
++  fun getCipher(): Cipher {
++    return Cipher.getInstance(getEncryptionTransformation())
+   }
+ 
+   /** Check requirements to the security level. */
+@@ -362,7 +355,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+   /** Encrypt provided string value. */
+   @Throws(IOException::class, GeneralSecurityException::class)
+   protected fun encryptString(key: Key, value: String, handler: EncryptStringHandler?): ByteArray {
+-    val cipher = getCachedInstance()
++    val cipher = getCipher()
+     try {
+       ByteArrayOutputStream().use { output ->
+         if (handler != null) {
+@@ -388,7 +381,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+     bytes: ByteArray,
+     handler: DecryptBytesHandler?
+   ): String {
+-    val cipher = getCachedInstance()
++    val cipher = getCipher()
+     try {
+       ByteArrayInputStream(bytes).use { input ->
+         ByteArrayOutputStream().use { output ->
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
-index 99ae741..e80b72d 100644
+index 99ae741..7943242 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
-@@ -198,6 +198,23 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
-         return generator.generateKey()
-     }
+@@ -206,7 +223,7 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
+         bytes: ByteArray,
+         handler: DecryptBytesHandler?
+     ): String {
+-        val cipher = getCachedInstance()
++        val cipher = getCipher()
  
-+    private fun maybeRemovePKCS7Padding(paddedBytes: ByteArray, maxPaddingLength: Int): ByteArray {
-+        val paddingLength = paddedBytes.last().toInt()
-+
-+        // Validate the padding
-+        if (paddingLength < 1 || paddingLength > paddedBytes.size || paddingLength > maxPaddingLength) {
-+            return paddedBytes
-+        }
-+        for (i in paddedBytes.size - paddingLength until paddedBytes.size) {
-+            if (paddedBytes[i].toInt() != paddingLength) {
-+                return paddedBytes
-+            }
-+        }
-+
-+        // Remove the padding
-+        return paddedBytes.copyOfRange(0, paddedBytes.size - paddingLength)
-+    }
-+
-     /** Decrypt provided bytes to a string. */
- 
-     @Throws(GeneralSecurityException::class, IOException::class)
-@@ -221,7 +238,8 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
-             cipher.init(Cipher.DECRYPT_MODE, key, spec)
- 
-             // Decrypt the bytes using cipher.doFinal()
--            val decryptedBytes = cipher.doFinal(bytes, IV.IV_LENGTH, bytes.size - IV.IV_LENGTH)
-+            val _decryptedBytes = cipher.doFinal(bytes, IV.IV_LENGTH, bytes.size - IV.IV_LENGTH)
-+            val decryptedBytes = maybeRemovePKCX7Padding(_decryptedBytes, IV.IV_LENGTH)
-             String(decryptedBytes, UTF8)
-         } catch (fail: Throwable) {
-             Log.w(LOG_TAG, fail.message, fail)
+         return try {
+             // read the initialization vector from bytes array
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
-index dc4e616..a94286d 100644
+index dc4e616..cc3365c 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
-@@ -173,7 +173,7 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+@@ -243,7 +243,10 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+         val encrypt = EncryptStringHandler { cipher, key, output ->
+             cipher.init(Cipher.ENCRYPT_MODE, key)
+             val iv = cipher.iv
+-            output.write(iv, 0, iv.size)
++            if (iv.size != IV_LENGTH) {
++                throw CryptoFailedException("IV length mismatch: expected ${IV_LENGTH}, got ${iv.size}")
++            }
++          output.write(iv, 0, iv.size)
+         }
  
-         val purposes = KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT
- 
--        val validityDuration = 5
-+        val validityDuration = 1
-         val keyGenParameterSpecBuilder =
-             KeyGenParameterSpec.Builder(alias, purposes)
-                 .setBlockModes(BLOCK_MODE_GCM)
-diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
-index f4f69d3..91f1a9d 100644
---- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
-+++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
-@@ -194,7 +194,7 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
- 
-     val keySize = if (isForTesting) ENCRYPTION_KEY_SIZE_WHEN_TESTING else ENCRYPTION_KEY_SIZE
- 
--    val validityDuration = 5
-+    val validityDuration = 1
-     val keyGenParameterSpecBuilder =
-       KeyGenParameterSpec.Builder(alias, purposes)
-         .setBlockModes(BLOCK_MODE_ECB)
+         /** Read initialization vector from input stream and configure cipher by it. */
 diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
 index 18e42ab..7bc2d7a 100644
 --- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
