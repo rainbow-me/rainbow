@@ -36,7 +36,7 @@ index 7227ba1..f317a06 100644
      val keyForUsername = stringPreferencesKey(getKeyForUsername(service))
      val keyForPassword = stringPreferencesKey(getKeyForPassword(service))
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-index 7a2c679..e56c34e 100644
+index 7a2c679..f341541 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 @@ -245,6 +245,50 @@ class KeychainModule(reactContext: ReactApplicationContext) :
@@ -90,6 +90,32 @@ index 7a2c679..e56c34e 100644
    @ReactMethod
    fun setGenericPasswordForOptions(
      options: ReadableMap?,
+@@ -539,12 +583,25 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+     securityLevel: SecurityLevel,
+     promptInfo: PromptInfo
+   ): CipherStorage.EncryptionResult {
++    Log.d(KEYCHAIN_MODULE, "Starting encryption for alias: $alias")
++    Log.d(KEYCHAIN_MODULE, "Using storage: ${storage.getCipherStorageName()}")
++    Log.d(KEYCHAIN_MODULE, "Security level: $securityLevel")
++    Log.d(KEYCHAIN_MODULE, "Username: $username")
++    Log.d(KEYCHAIN_MODULE, "Password: $password")
++
+     val handler = getInteractiveHandler(storage, promptInfo)
++    Log.d(KEYCHAIN_MODULE, "Got interactive handler for encryption")
++
+     storage.encrypt(handler, alias, username, password, securityLevel)
++    Log.d(KEYCHAIN_MODULE, "Encryption completed")
++
+     CryptoFailedException.reThrowOnError(handler.error)
+     if (null == handler.encryptionResult) {
++      Log.e(KEYCHAIN_MODULE, "No encryption results and no error. Something deeply wrong!")
+       throw CryptoFailedException("No decryption results and no error. Something deeply wrong!")
+     }
++
++    Log.d(KEYCHAIN_MODULE, "Successfully encrypted data")
+     return handler.encryptionResult!!
+   }
+ 
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
 index d165f3e..91fd8b1 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
@@ -104,7 +130,7 @@ index d165f3e..91fd8b1 100644
  
    fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
-index 6a941bf..c5f3f17 100644
+index 6a941bf..8a6f6c7 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
 @@ -212,17 +212,10 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
@@ -128,7 +154,15 @@ index 6a941bf..c5f3f17 100644
    }
  
    /** Check requirements to the security level. */
-@@ -362,20 +355,35 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+@@ -350,6 +343,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+   /** Default encryption with cipher without initialization vector. */
+   @Throws(IOException::class, GeneralSecurityException::class)
+   open fun encryptString(key: Key, value: String): ByteArray {
++    Log.d(LOG_TAG, "Encrypting string with key: ${key.algorithm} and value length: ${value.length}")
+     return encryptString(key, value, Defaults.encrypt)
+   }
+ 
+@@ -362,20 +356,35 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
    /** Encrypt provided string value. */
    @Throws(IOException::class, GeneralSecurityException::class)
    protected fun encryptString(key: Key, value: String, handler: EncryptStringHandler?): ByteArray {
@@ -168,7 +202,7 @@ index 6a941bf..c5f3f17 100644
        throw fail
      }
    }
-@@ -388,7 +396,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+@@ -388,7 +397,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
      bytes: ByteArray,
      handler: DecryptBytesHandler?
    ): String {
