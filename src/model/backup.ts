@@ -443,6 +443,8 @@ export async function restoreCloudBackup({
       ...data.secrets,
     };
 
+    console.log('secrets: ', JSON.stringify(data.secrets, null, 2));
+
     // ANDROID ONLY - pin auth if biometrics are disabled
     let userPIN: string | undefined;
     const hasBiometricsEnabled = await kc.getSupportedBiometryType();
@@ -537,6 +539,8 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
       } else if (theKeyIsASeedPhrase) {
         secretPhraseOrOldAndroidBackupPrivateKey = parsedValue.seedphrase;
       }
+
+      console.log('secretPhraseOrOldAndroidBackupPrivateKey: ', secretPhraseOrOldAndroidBackupPrivateKey);
 
       if (!secretPhraseOrOldAndroidBackupPrivateKey) {
         continue;
