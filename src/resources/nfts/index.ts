@@ -2,18 +2,14 @@ import { QueryFunction, useQuery } from '@tanstack/react-query';
 import { QueryConfigWithSelect, createQueryKey, queryClient } from '@/react-query';
 import { SimpleHashListing } from '@/resources/nfts/simplehash/types';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
 import { UniqueAsset } from '@/entities';
 import { arcClient } from '@/graphql';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
-import { createSelector } from 'reselect';
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';
 
 const NFTS_STALE_TIME = time.minutes(10);
-const NFTS_CACHE_TIME_EXTERNAL = time.hours(1);
-const NFTS_CACHE_TIME_INTERNAL = time.hours(1);
+const NFTS_CACHE_TIME = time.hours(1);
 
 export const nftsQueryKey = ({
   address,
@@ -38,24 +34,6 @@ export const nftListingQueryKey = ({
   tokenId: string;
   chainId: Omit<ChainId, ChainId.goerli>;
 }) => createQueryKey('nftListing', { contractAddress, tokenId, chainId });
-
-const walletsSelector = (state: AppState) => state.wallets?.wallets;
-
-const isImportedWalletSelector = createSelector(
-  walletsSelector,
-  (_: AppState, address: string) => address,
-  (wallets, address) => {
-    if (!wallets) {
-      return false;
-    }
-    for (const wallet of Object.values(wallets)) {
-      if ((wallet.addresses || []).some(account => account.address === address)) {
-        return true;
-      }
-    }
-    return false;
-  }
-);
 
 interface NFTData {
   nfts: UniqueAsset[];
@@ -91,10 +69,8 @@ export const useLegacyNFTs = function useLegacyNFTs<TSelected = NFTData>({
   sortDirection?: SortDirection;
   config?: QueryConfigWithSelect<NFTData, unknown, TSelected, NFTQueryKey>;
 }) {
-  const isImportedWallet = useSelector((state: AppState) => isImportedWalletSelector(state, address));
-
   const { data, error, isLoading, isInitialLoading } = useQuery(nftsQueryKey({ address, sortBy, sortDirection }), fetchNFTData, {
-    cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
+    cacheTime: NFTS_CACHE_TIME,
     enabled: !!address,
     staleTime: NFTS_STALE_TIME,
     ...config,
