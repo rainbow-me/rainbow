@@ -31,7 +31,6 @@ import { useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import store from '@/redux/store';
@@ -55,6 +54,7 @@ import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-na
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { toHex } from 'viem';
 import { TOP_INSET } from '../Dimensions';
+import Navigation from '@/navigation/Navigation';
 import { RAINBOW_HOME } from '../constants';
 import { formatUrl } from '../utils';
 
@@ -302,9 +302,8 @@ export const ControlPanel = () => {
 };
 
 export const TapToDismiss = memo(function TapToDismiss() {
-  const { goBack } = useNavigation();
   return (
-    <TouchableWithoutFeedback onPress={goBack}>
+    <TouchableWithoutFeedback onPress={Navigation.goBack}>
       <View style={controlPanelStyles.cover} />
     </TouchableWithoutFeedback>
   );
@@ -660,6 +659,7 @@ const ListHeader = memo(function ListHeader({
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
         <ButtonPressAnimation
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...(IS_ANDROID && { wrapperStyle: controlPanelStyles.listHeaderButtonWrapper })}
           onPress={goBack}
           scaleTo={0.8}

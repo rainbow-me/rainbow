@@ -114,7 +114,7 @@ export type NavigateFunction = {
 };
 
 export type HandleActionFunction = {
-  <RouteName extends keyof RootStackParamList>(name: RouteName, params: RootStackParamList[RouteName], replace?: boolean): void;
+  <RouteName extends keyof RootStackParamList>(name: RouteName, params?: RootStackParamList[RouteName], replace?: boolean): void;
 
   <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
     name: RouteName,
@@ -289,6 +289,12 @@ export function getActiveRoute<T extends keyof RootStackParamList>() {
   };
 }
 
+export function setParams<T extends keyof RootStackParamList>(params: Partial<RootStackParamList[T]>): void {
+  if (TopLevelNavigationRef?.isReady()) {
+    TopLevelNavigationRef.setParams(params);
+  }
+}
+
 function getActiveOptions() {
   return TopLevelNavigationRef?.getCurrentOptions();
 }
@@ -306,11 +312,7 @@ function getActiveRouteName() {
  * @param  {Object} action      The navigation action to run.
  */
 // Apply the overloaded type to the standalone handleAction function
-const handleAction: HandleActionFunction = (
-  name: keyof RootStackParamList,
-  params?: any, // Implementation uses 'any'
-  replace = false
-) => {
+const handleAction: HandleActionFunction = (name: keyof RootStackParamList, params?: Record<string, unknown>, replace = false) => {
   if (!TopLevelNavigationRef) return;
 
   const action = (replace ? StackActions.replace : CommonActions.navigate)(
@@ -338,6 +340,7 @@ export default {
   getActiveRoute,
   getActiveRouteName,
   handleAction,
+  setParams,
   setTopLevelNavigator,
   goBack,
 };

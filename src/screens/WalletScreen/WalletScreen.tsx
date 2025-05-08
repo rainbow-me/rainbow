@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
@@ -18,22 +18,35 @@ import { useInitializeWalletAndSetParams } from '@/hooks/useInitiailizeWalletAnd
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
+import { InteractionManager } from 'react-native';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
-const UtilityComponents = React.memo(() => (
-  <>
-    <RemoteCardsSync />
-    <RemotePromoSheetSync />
-    <MobileWalletProtocolListener />
-  </>
-));
+const UtilityComponents = memo(function UtilityComponents() {
+  return (
+    <>
+      <RemoteCardsSync />
+      <RemotePromoSheetSync />
+      <MobileWalletProtocolListener />
+    </>
+  );
+});
 
-const ToastComponent = React.memo(() => {
+const ToastComponent = memo(function ToastComponent() {
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
   return (
     <ToastPositionContainer>
       <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
     </ToastPositionContainer>
   );
+});
+
+const WalletScreenEffects = memo(function WalletScreenEffects() {
+  useRemoveScreen(Routes.WELCOME_SCREEN);
+  useInitializeWalletAndSetParams();
+  useLoadDeferredWalletData();
+  useWalletCohort();
+  useAppIconIdentify();
+  return null;
 });
 
 function WalletScreen() {
@@ -48,12 +61,6 @@ function WalletScreen() {
     briefSectionsData: walletBriefSectionsData,
   } = useWalletSectionsData({ type: 'wallet' });
 
-  useWalletCohort();
-  useRemoveScreen(Routes.WELCOME_SCREEN);
-  useInitializeWalletAndSetParams();
-  useLoadDeferredWalletData();
-  useAppIconIdentify();
-
   const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
   const { highContrastAccentColor } = useAccountAccentColor();
 
@@ -62,20 +69,30 @@ function WalletScreen() {
     [isLoadingUserAssetsAndAddress, isLoadingBalance]
   );
 
+  const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
+
+  const handleWalletScreenMount = useCallback(() => {
+    hideSplashScreen();
+    requestIdleCallback(() => {
+      InteractionManager.runAfterInteractions(() => {
+        useNavigationStore.setState({ isWalletScreenMounted: true });
+      });
+    });
+  }, [hideSplashScreen]);
+
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
-      <Box as={Page} flex={1} testID="wallet-screen" onLayout={hideSplashScreen}>
-        <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
-          <AssetList
-            accentColor={highContrastAccentColor}
-            disableRefreshControl={disableRefreshControl}
-            isWalletEthZero={isWalletEthZero}
-            network={currentNetwork}
-            walletBriefSectionsData={walletBriefSectionsData}
-          />
-        </Box>
+      <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
+        <AssetList
+          accentColor={highContrastAccentColor}
+          disableRefreshControl={disableRefreshControl}
+          isWalletEthZero={isWalletEthZero}
+          network={currentNetwork}
+          walletBriefSectionsData={walletBriefSectionsData}
+        />
         <ToastComponent />
         <UtilityComponents />
+        <WalletScreenEffects />
       </Box>
     </PerformanceMeasureView>
   );

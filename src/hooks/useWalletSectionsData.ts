@@ -43,7 +43,7 @@ export default function useWalletSectionsData({
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig();
+  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 

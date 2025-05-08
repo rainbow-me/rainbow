@@ -10,7 +10,6 @@ import { Navbar } from '@/components/navbar/Navbar';
 import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { safeAreaInsetValues } from '@/utils';
@@ -22,7 +21,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PullToRefresh } from './Airdrops/AirdropsSheet';
 
 const Content = () => {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const { top: topInset } = useSafeAreaInsets();
   const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
@@ -32,8 +30,8 @@ const Content = () => {
   const scrollY = useSharedValue(0);
 
   const onChangeWallet = React.useCallback(() => {
-    navigate(Routes.CHANGE_WALLET_SHEET);
-  }, [navigate]);
+    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
+  }, []);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {

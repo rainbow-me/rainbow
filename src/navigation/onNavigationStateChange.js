@@ -79,6 +79,8 @@ export function onHandleStatusBar(currentState, prevState) {
   }
 }
 
+const setActiveRoute = useNavigationStore.getState().setActiveRoute;
+
 export function onNavigationStateChange(currentState) {
   const routeName = Navigation.getActiveRouteName();
 
@@ -90,7 +92,7 @@ export function onNavigationStateChange(currentState) {
     setTimeout(NativeModules.MenuViewModule.dismiss, 400);
   }
 
-  useNavigationStore.getState().setActiveRoute(routeName);
+  setActiveRoute(routeName);
 
   if (isOnSwipeScreen(routeName)) {
     action?.();

@@ -11,6 +11,8 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountProfile, useWallets } from '@/hooks';
+import Navigation from '@/navigation/Navigation';
 import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -139,7 +141,6 @@ function ActionButton({
 }
 
 function BuyButton() {
-  const { navigate } = useNavigation();
   const isDamaged = useWalletsStore(state => state.getIsDamaged());
 
   const handlePress = React.useCallback(() => {
@@ -150,8 +151,8 @@ function BuyButton() {
 
     analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
-    navigate(Routes.ADD_CASH_SHEET);
-  }, [isDamaged, navigate]);
+    Navigation.handleAction(Routes.ADD_CASH_SHEET);
+  }, [isDamaged]);
 
   return (
     <Box>
@@ -183,17 +184,16 @@ function SwapButton() {
 
 function SendButton() {
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
-  const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSend, { category: 'home screen' });
 
-      navigate(Routes.SEND_FLOW);
+      Navigation.handleAction(Routes.SEND_FLOW);
     } else {
       watchingAlert();
     }
-  }, [navigate, isReadOnlyWallet]);
+  }, [isReadOnlyWallet]);
 
   return (
     <ActionButton icon="􀈟" onPress={handlePress} testID="send-button">

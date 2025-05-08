@@ -6,7 +6,6 @@ import {
   Columns,
   Inline,
   Inset,
-  Separator,
   Stack,
   Text,
   useColorMode,
@@ -21,7 +20,7 @@ import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { CELL_HORIZONTAL_PADDING, FakeOffer, NFT_IMAGE_SIZE, Offer } from './Offer';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { SortMenu } from '@/components/nft-offers/SortMenu';
 import { NftOffer } from '@/graphql/__generated__/arc';
@@ -32,6 +31,7 @@ import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
 import { ScrollView } from 'react-native';
+import { DiscoverSeparator } from '@/components/Discover/DiscoverSeparator';
 
 const CARD_HEIGHT = 250;
 const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;
@@ -52,8 +52,7 @@ export const NFTOffersCard = () => {
   } = useNFTOffers({
     walletAddress: accountAddress,
   });
-  const { navigate } = useNavigation();
-  const { colorMode, isDarkMode } = useColorMode();
+  const { isDarkMode } = useColorMode();
 
   const offers = nftOffers ?? [];
   const [hasOffers, setHasOffers] = useState(false);
@@ -102,7 +101,7 @@ export const NFTOffersCard = () => {
         <Inset horizontal="20px">
           <Box as={Animated.View} width="full" style={[animatedStyle]}>
             <Stack space="20px">
-              <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
+              <DiscoverSeparator />
               <Inline alignVertical="center" alignHorizontal="justify">
                 <Inline alignVertical="center" space={{ custom: 7 }}>
                   {!offers.length ? (
@@ -170,7 +169,6 @@ export const NFTOffersCard = () => {
               </Bleed>
               <Columns space="10px">
                 <Column>
-                  {/* @ts-ignore js component */}
                   <Box
                     as={ButtonPressAnimation}
                     background="fillSecondary"
@@ -182,7 +180,7 @@ export const NFTOffersCard = () => {
                     style={{ overflow: 'hidden' }}
                     onPress={() => {
                       analytics.track(analytics.event.nftOffersOpenedOffersSheet, { entryPoint: 'NFTOffersCard' });
-                      navigate(Routes.NFT_OFFERS_SHEET);
+                      Navigation.handleAction(Routes.NFT_OFFERS_SHEET);
                     }}
                   >
                     <ShimmerAnimation color={buttonColor} />
@@ -194,7 +192,6 @@ export const NFTOffersCard = () => {
                 <Column width="content">
                   <Box
                     as={ButtonPressAnimation}
-                    // @ts-ignore
                     disabled={!canRefresh}
                     onPress={() => {
                       setCanRefresh(false);
@@ -215,7 +212,7 @@ export const NFTOffersCard = () => {
                     }}
                   >
                     {isFetching ? (
-                      <LoadingSpinner color={colorMode === 'light' ? 'black' : 'white'} size={20} />
+                      <LoadingSpinner color={isDarkMode ? 'white' : 'black'} size={20} />
                     ) : (
                       <Text align="center" color="label" size="17pt" weight="bold">
                         􀅈
@@ -224,7 +221,7 @@ export const NFTOffersCard = () => {
                   </Box>
                 </Column>
               </Columns>
-              <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
+              <DiscoverSeparator />
             </Stack>
           </Box>
         </Inset>

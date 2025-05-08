@@ -3,7 +3,7 @@ import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { useCollectible } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
@@ -31,12 +31,10 @@ export default React.memo(function WrappedNFT({
     [assetCollectible]
   );
 
-  const { navigate } = useNavigation();
-
   const handleItemPress = useCallback(
     // @ts-expect-error passed to an untyped JS component
     asset =>
-      navigate(Routes.EXPANDED_ASSET_SHEET, {
+      Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
@@ -46,7 +44,7 @@ export default React.memo(function WrappedNFT({
         transitionDuration: 0.25,
         type: 'unique_token',
       }),
-    [assetCollectible?.isExternal, navigate]
+    [assetCollectible?.isExternal]
   );
 
   const placementProps: BoxProps =

@@ -1,5 +1,5 @@
 import React, { memo, useEffect } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, { interpolateColor, runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -7,10 +7,13 @@ import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
-import { useNavigation } from '@/navigation';
+import { setParams } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { time } from '@/utils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
@@ -30,8 +33,6 @@ import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
 import { AnimatedTabUrls, TabViewGestureStates } from './types';
 import { generateUniqueIdWorklet } from './utils';
-import Routes from '@/navigation/routesNames';
-import { RootStackParamList } from '@/navigation/types';
 
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
@@ -67,40 +68,51 @@ const DappBrowserComponent = memo(function DappBrowserComponent() {
 });
 
 const NewTabTrigger = () => {
-  const { animatedTabUrls } = useBrowserContext();
+  const { animatedTabUrls, currentlyOpenTabIds } = useBrowserContext();
   const { newTabWorklet } = useBrowserWorkletsContext();
-  const route = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_SCREEN>>();
-  const { setParams } = useNavigation<typeof Routes.DAPP_BROWSER_SCREEN>();
 
-  const setNewTabUrl = (updatedTabUrls: AnimatedTabUrls) => {
-    // Set the new tab URL ahead of creating the tab so the URL is available when the tab is rendered
-    useBrowserStore.getState().silentlySetPersistedTabUrls(updatedTabUrls);
-    setParams({ url: undefined });
-  };
+  const route = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_SCREEN>>();
+  const newTabUrl = route.params?.url;
 
   useAnimatedReaction(
-    () => route.params?.url,
+    () => newTabUrl,
     (current, previous) => {
       if (current && current !== previous) {
         const newTabId = generateUniqueIdWorklet();
         const updatedTabUrls = { ...animatedTabUrls.value, [newTabId]: current };
+        const newActiveIndex = previous === null ? currentlyOpenTabIds.value.length : undefined;
 
-        runOnJS(setNewTabUrl)(updatedTabUrls);
+        runOnJS(setNewTabUrl)(updatedTabUrls, newActiveIndex);
         newTabWorklet({ newTabId, newTabUrl: current });
       }
-    }
+    },
+    [newTabUrl]
   );
 
   return null;
 };
 
+function setNewTabUrl(updatedTabUrls: AnimatedTabUrls, newActiveIndex: number | undefined): void {
+  const { setActiveTabIndex, silentlySetPersistedTabUrls } = useBrowserStore.getState();
+  // Set the new tab URL ahead of creating the tab so the URL is available when the tab is rendered
+  silentlySetPersistedTabUrls(updatedTabUrls);
+  if (newActiveIndex !== undefined) setActiveTabIndex(newActiveIndex);
+  setParams<typeof Routes.DAPP_BROWSER_SCREEN>({ url: undefined });
+}
+
 function useScreenshotPruner() {
   useEffect(() => {
-    // Delay pruning screenshots until after the tab states have been updated
-    InteractionManager.runAfterInteractions(() => {
-      pruneScreenshots(useBrowserStore.getState().tabsData);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let idleCallbackId: number;
+    const timeoutId = setTimeout(() => {
+      idleCallbackId = requestIdleCallback(() => {
+        pruneScreenshots(useBrowserStore.getState().tabsData);
+      });
+    }, time.seconds(10));
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (typeof idleCallbackId === 'number') cancelIdleCallback(idleCallbackId);
+    };
   }, []);
 }
 
