@@ -36,10 +36,18 @@ index 7227ba1..f317a06 100644
      val keyForUsername = stringPreferencesKey(getKeyForUsername(service))
      val keyForPassword = stringPreferencesKey(getKeyForPassword(service))
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-index 7a2c679..f341541 100644
+index 7a2c679..5cc6e53 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-@@ -245,6 +245,50 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+@@ -168,7 +168,6 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+       val startTime = System.nanoTime()
+       Log.v(KEYCHAIN_MODULE, "warming up started at $startTime")
+       val best = cipherStorageForCurrentAPILevel as CipherStorageBase
+-      val instance = best.getCachedInstance()
+       val isSecure = best.supportsSecureHardware()
+       val requiredLevel =
+         if (isSecure) SecurityLevel.SECURE_HARDWARE else SecurityLevel.SECURE_SOFTWARE
+@@ -245,6 +244,50 @@ class KeychainModule(reactContext: ReactApplicationContext) :
      }
    }
  
@@ -90,7 +98,7 @@ index 7a2c679..f341541 100644
    @ReactMethod
    fun setGenericPasswordForOptions(
      options: ReadableMap?,
-@@ -539,12 +583,25 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+@@ -539,12 +582,25 @@ class KeychainModule(reactContext: ReactApplicationContext) :
      securityLevel: SecurityLevel,
      promptInfo: PromptInfo
    ): CipherStorage.EncryptionResult {
