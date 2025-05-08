@@ -13,7 +13,7 @@ import { time } from '@/utils/time';
 
 const NFTS_STALE_TIME = time.minutes(10);
 const NFTS_CACHE_TIME_EXTERNAL = time.hours(1);
-const NFTS_CACHE_TIME_INTERNAL = Infinity;
+const NFTS_CACHE_TIME_INTERNAL = time.hours(1);
 
 export const nftsQueryKey = ({
   address,
