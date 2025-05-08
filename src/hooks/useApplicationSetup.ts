@@ -1,41 +1,34 @@
-import { useCallback, useEffect, useState } from 'react';
-import { logger } from '@/logger';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
+import { checkIdentifierOnLaunch } from '@/model/backup';
 import { loadAddress } from '@/model/wallet';
 import { InitialRoute } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
-import { checkIdentifierOnLaunch } from '@/model/backup';
 import { saveFCMToken } from '@/notifications/tokens';
-import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/walletConnect';
-import { IS_DEV } from '@/env';
-import isTestFlight from '@/helpers/isTestFlight';
 import { PerformanceReports, PerformanceTracking } from '@/performance/tracking';
+import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/walletConnect';
 
 export function useApplicationSetup() {
   const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
 
-  const setup = useCallback(async () => {
-    const [address] = await Promise.all([loadAddress(), initWalletConnectListeners(), saveFCMToken()]);
-    initWalletConnectPushNotifications();
-
-    if (address) {
-      InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
-    }
-
-    const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
-
-    setInitialRoute(initialRoute);
-    PerformanceTracking.addReportParams(PerformanceReports.appStartup, {
-      initialRoute,
-    });
-  }, []);
-
   useEffect(() => {
-    if (!IS_DEV && isTestFlight) {
-      logger.debug(`[App]: Test flight usage - ${isTestFlight}`);
-    }
-    setup();
-  }, [setup]);
+    runSetup(setInitialRoute);
+  }, [setInitialRoute]);
 
   return { initialRoute };
+}
+
+async function runSetup(setInitialRoute: Dispatch<SetStateAction<InitialRoute>>): Promise<void> {
+  const address = await loadAddress();
+
+  Promise.all([initWalletConnectListeners(), saveFCMToken()]).then(() => {
+    initWalletConnectPushNotifications();
+  });
+
+  if (address) InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
+
+  const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
+
+  setInitialRoute(initialRoute);
+  PerformanceTracking.addReportParams(PerformanceReports.appStartup, { initialRoute });
 }

@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useStableValue } from '@/hooks/useStableValue';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
 import { findTabScreenshot } from '../screenshots';
@@ -9,7 +9,7 @@ export function useTabScreenshotProvider({ tabId }: { tabId: string }) {
   const { activeTabId, animatedScreenshotData, animatedTabUrls, tabViewVisible } = useBrowserContext();
 
   const isActiveTab = useBrowserStore(state => state.isTabActive(tabId));
-  const [initialScreenshotData] = useState(findTabScreenshot(tabId, useBrowserStore.getState().getTabData(tabId)?.url));
+  const initialScreenshotData = useStableValue(() => findTabScreenshot(tabId, useBrowserStore.getState().getTabData(tabId)?.url));
 
   const screenshotData = useDerivedValue(() => {
     const screenshotData = _WORKLET ? animatedScreenshotData.value[tabId] : initialScreenshotData;

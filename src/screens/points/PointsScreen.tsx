@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
 import { ETH_REWARDS, POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
@@ -28,7 +28,7 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
   REFERRAL_CONTENT: 'ReferralContent',
-};
+} as const;
 
 const Swipe = createMaterialTopTabNavigator();
 const EmptyTabBar = () => <></>;
@@ -40,7 +40,6 @@ export function PointsScreen() {
   const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const pointsNotificationsToggleEnabled = useExperimentalFlag(POINTS_NOTIFICATIONS_TOGGLE) || points_notifications_toggle;
   const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
-  const { navigate } = useNavigation();
   const { data } = usePoints({
     walletAddress: accountAddress,
   });
@@ -50,18 +49,18 @@ export function PointsScreen() {
 
   useEffect(() => {
     if (referralCode && pointsEnabled) {
-      navigate(Routes.POINTS_SCREEN);
+      Navigation.handleAction(Routes.POINTS_SCREEN);
       delay(700)
         .then(() => {
           if (!isOnboarded) {
-            navigate(POINTS_ROUTES.REFERRAL_CONTENT);
+            Navigation.handleAction(POINTS_ROUTES.REFERRAL_CONTENT);
           } else {
             Alert.alert(i18n.t(i18n.l.points.points.already_claimed_points));
           }
         })
         .then(() => resetReferralCode());
     }
-  }, [data, isOnboarded, navigate, pointsEnabled, referralCode, resetReferralCode]);
+  }, [data, isOnboarded, pointsEnabled, referralCode, resetReferralCode]);
 
   return (
     <Box
@@ -76,7 +75,7 @@ export function PointsScreen() {
         hasStatusBarInset
         leftComponent={
           pointsEnabled ? (
-            <ButtonPressAnimation onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)} scaleTo={0.8} overflowMargin={50}>
+            <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.CHANGE_WALLET_SHEET)} scaleTo={0.8} overflowMargin={50}>
               {accountImage ? (
                 <ImageAvatar image={accountImage} marginRight={10} size="header" />
               ) : (

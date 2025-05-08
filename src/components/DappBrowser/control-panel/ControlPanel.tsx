@@ -43,7 +43,7 @@ import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
 import store from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { address } from '@/utils/abbreviations';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { useAppSessionsStore } from '@/state/appSessions';
@@ -304,9 +304,8 @@ export const ControlPanel = () => {
 };
 
 export const TapToDismiss = memo(function TapToDismiss() {
-  const { goBack } = useNavigation();
   return (
-    <TouchableWithoutFeedback onPress={goBack}>
+    <TouchableWithoutFeedback onPress={Navigation.goBack}>
       <View style={controlPanelStyles.cover} />
     </TouchableWithoutFeedback>
   );
@@ -667,6 +666,7 @@ const ListHeader = memo(function ListHeader({
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
         <ButtonPressAnimation
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...(IS_ANDROID && { wrapperStyle: controlPanelStyles.listHeaderButtonWrapper })}
           onPress={goBack}
           scaleTo={0.8}

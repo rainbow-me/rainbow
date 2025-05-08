@@ -1,22 +1,21 @@
 import React, { MutableRefObject, useCallback, useRef } from 'react';
-import { Linking } from 'react-native';
 import { runOnUI, SharedValue, withTiming } from 'react-native-reanimated';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { ShouldStartLoadRequest, WebViewEvent, WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
-import { appMessenger, Messenger } from '@/browserMessaging/AppMessenger';
+import { Messenger, appMessenger } from '@/browserMessaging/AppMessenger';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { IS_IOS } from '@/env';
-import { Navigation, useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { BrowserHistoryStore } from '@/state/browserHistory';
 import { BrowserState, useBrowserStore } from '@/state/browser/browserStore';
 import { getDappHostname } from '@/utils/connectedApps';
+import { openInBrowser } from '@/utils/openInBrowser';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { handleProviderRequestApp } from '../handleProviderRequest';
 import { TabId } from '../types';
 import { generateUniqueIdWorklet, isValidAppStoreUrl } from '../utils';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 interface UseWebViewHandlersParams {
   addRecent: BrowserHistoryStore['addRecent'];
@@ -43,7 +42,6 @@ export function useWebViewHandlers({
 }: UseWebViewHandlersParams) {
   const { activeTabRef, loadProgress, resetScrollHandlers } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
-  const { setParams } = useNavigation<typeof Routes.DAPP_BROWSER_SCREEN>();
 
   const currentMessengerRef = useRef<MessengerWithUrl | null>(null);
   const logoRef = useRef<string | null>(null);
@@ -185,9 +183,12 @@ export function useWebViewHandlers({
         return;
       }
 
-      setParams({ url: targetUrl });
+      const currentUrl = useBrowserStore.getState().getTabUrl(tabId);
+      if (currentUrl === targetUrl) return;
+
+      Navigation.setParams<typeof Routes.DAPP_BROWSER_SCREEN>({ url: targetUrl });
     },
-    [setParams]
+    [tabId]
   );
 
   const handleOnContentProcessDidTerminate = useCallback(() => {

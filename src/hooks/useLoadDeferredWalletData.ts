@@ -1,7 +1,8 @@
+import { useEffect } from 'react';
+import { InteractionManager } from 'react-native';
+import { useSelector } from 'react-redux';
 import { useLoadAccountLateData, useLoadGlobalLateData } from '@/hooks';
 import { AppState } from '@/redux/store';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 
 export const useLoadDeferredWalletData = () => {
   const loadAccountLateData = useLoadAccountLateData();
@@ -11,8 +12,12 @@ export const useLoadDeferredWalletData = () => {
 
   useEffect(() => {
     if (walletReady) {
-      loadAccountLateData();
-      loadGlobalLateData();
+      requestIdleCallback(() => {
+        InteractionManager.runAfterInteractions(() => {
+          loadAccountLateData();
+          loadGlobalLateData();
+        });
+      });
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 };

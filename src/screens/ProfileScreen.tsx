@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { memo } from 'react';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
-import { useNavigation } from '../navigation/Navigation';
+import Navigation from '@/navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useAccountProfile, useAccountSettings } from '@/hooks';
 import Routes from '@/navigation/routesNames';
@@ -18,15 +18,7 @@ const ProfileScreenPage = styled(Page)({
 });
 
 export default function ProfileScreen() {
-  const { navigate } = useNavigation();
-
-  const { accountAddress } = useAccountSettings();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
-  usePendingTransactionWatcher({ address: accountAddress });
-
-  const onChangeWallet = useCallback(() => {
-    navigate(Routes.CHANGE_WALLET_SHEET);
-  }, [navigate]);
 
   return (
     <ProfileScreenPage testID="profile-screen">
@@ -45,6 +37,17 @@ export default function ProfileScreen() {
       />
 
       <ActivityList />
+      <PendingTransactionWatcher />
     </ProfileScreenPage>
   );
 }
+
+function onChangeWallet(): void {
+  Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
+}
+
+const PendingTransactionWatcher = memo(function PendingTransactionWatcher() {
+  const { accountAddress } = useAccountSettings();
+  usePendingTransactionWatcher({ address: accountAddress });
+  return null;
+});
