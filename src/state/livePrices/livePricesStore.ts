@@ -2,9 +2,10 @@ import { time } from '@/utils';
 import { createQueryStore } from '../internal/createQueryStore';
 import { useNavigationStore } from '../navigation/navigationStore';
 
-type TokensByRoute = Map<string, Set<string>>;
+// route -> tokenId -> subscription count
+type SubscribedTokens = Record<string, Record<string, number>>;
 
-interface TokenData {
+export interface TokenData {
   price: string;
   priceChange24h: string;
   lastUpdated: number;
@@ -15,12 +16,12 @@ interface TokenDataResponse {
 }
 
 type LivePricingParams = {
-  subscribedTokensByRoute: TokensByRoute;
+  subscribedTokensByRoute: SubscribedTokens;
   activeRoute: string;
 };
 
 interface LivePricingStore {
-  subscribedTokensByRoute: TokensByRoute;
+  subscribedTokensByRoute: SubscribedTokens;
   tokens: {
     [tokenId: string]: TokenData;
   };
@@ -36,11 +37,8 @@ type UpdateSubscribedTokensParams = {
 
 const fetchTokensData = async (params: LivePricingParams, abortController: AbortController | null): Promise<TokenDataResponse> => {
   const { subscribedTokensByRoute, activeRoute } = params;
-  if (!subscribedTokensByRoute.has(activeRoute)) {
-    return {};
-  }
 
-  const tokenIdsArray = Array.from(subscribedTokensByRoute.get(activeRoute) || []);
+  const tokenIdsArray = Object.keys(subscribedTokensByRoute[activeRoute] || {});
 
   if (tokenIdsArray.length === 0) {
     return {};
@@ -69,10 +67,6 @@ export const useLivePricingStore = createQueryStore<TokenDataResponse, LivePrici
   {
     fetcher: fetchTokensData,
     disableCache: true,
-    onFetched: ({ data, params, set }) => {
-      // prune the tokens that are not part of the route
-      //
-    },
     staleTime: time.seconds(5),
     setData: ({ data, set }) => {
       if (data) {
@@ -91,7 +85,7 @@ export const useLivePricingStore = createQueryStore<TokenDataResponse, LivePrici
   },
 
   (set, get) => ({
-    subscribedTokensByRoute: new Map<string, Set<string>>(),
+    subscribedTokensByRoute: {},
     tokens: {},
 
     addSubscribedTokens({ route, tokenIds }: UpdateSubscribedTokensParams) {
@@ -100,9 +94,14 @@ export const useLivePricingStore = createQueryStore<TokenDataResponse, LivePrici
 
         // TODO: deduplicate tokenUniqueIds, remove tokens where we only need to fetch the mainnet price
         let hasChanges = false;
+
+        if (!subscribedTokensByRoute[route]) {
+          subscribedTokensByRoute[route] = {};
+        }
+
         for (const tokenId of tokenIds) {
-          if (!subscribedTokensByRoute.get(route)?.has(tokenId)) {
-            subscribedTokensByRoute.get(route)?.add(tokenId);
+          if (!subscribedTokensByRoute[route][tokenId]) {
+            subscribedTokensByRoute[route][tokenId] = (subscribedTokensByRoute[route][tokenId] ?? 0) + 1;
             hasChanges = true;
           }
         }
@@ -122,13 +121,21 @@ export const useLivePricingStore = createQueryStore<TokenDataResponse, LivePrici
 
         let hasChanges = false;
         for (const tokenId of tokenIds) {
-          if (subscribedTokensByRoute.get(route)?.has(tokenId)) {
-            subscribedTokensByRoute.get(route)?.delete(tokenId);
+          if (subscribedTokensByRoute[route][tokenId]) {
+            subscribedTokensByRoute[route][tokenId] -= 1;
+            if (subscribedTokensByRoute[route][tokenId] === 0) {
+              delete subscribedTokensByRoute[route][tokenId];
+            }
             hasChanges = true;
           }
         }
 
         if (!hasChanges) return state;
+
+        // remove routes with no subscriptions
+        if (Object.keys(subscribedTokensByRoute[route]).length === 0) {
+          delete subscribedTokensByRoute[route];
+        }
 
         return {
           ...state,
@@ -139,7 +146,7 @@ export const useLivePricingStore = createQueryStore<TokenDataResponse, LivePrici
 
     clear() {
       set({
-        subscribedTokensByRoute: new Map<string, Set<string>>(),
+        subscribedTokensByRoute: {},
         tokens: {},
       });
     },

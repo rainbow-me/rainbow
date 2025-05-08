@@ -3,7 +3,7 @@ import { FlatList, ListRenderItemInfo, ViewToken } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
 import { useLivePricingStore } from '@/state/livePrices/livePricesStore';
-import { LivePriceText } from '@/components/live-token-text/LivePriceText';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { useListen } from '@/state/internal/useListen';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 
@@ -33,9 +33,9 @@ export const ExampleTokenList: React.FC<TokenListProps> = ({ tokens }) => {
     state => state.activeRoute,
     activeRoute => {
       if (activeRoute === route.name) {
-        addSubscribedTokens(visibleTokenIdsRef.current);
+        addSubscribedTokens({ route: activeRoute, tokenIds: visibleTokenIdsRef.current });
       } else {
-        removeSubscribedTokens(visibleTokenIdsRef.current);
+        removeSubscribedTokens({ route: activeRoute, tokenIds: visibleTokenIdsRef.current });
       }
     }
   );
@@ -45,16 +45,18 @@ export const ExampleTokenList: React.FC<TokenListProps> = ({ tokens }) => {
   }, []);
 
   const handleMomentumScrollEnd = useCallback(() => {
-    addSubscribedTokens(visibleTokenIdsRef.current);
-  }, [addSubscribedTokens]);
+    addSubscribedTokens({ route: route.name, tokenIds: visibleTokenIdsRef.current });
+  }, [addSubscribedTokens, route.name]);
 
   const renderItem = useCallback(({ item }: ListRenderItemInfo<TokenData>) => {
     return (
-      <LivePriceText
+      <LiveTokenText
         size={'17pt'}
         color={'label'}
         tokenId={item.id}
-        initialPrice={{ price: item.price.price, lastUpdated: item.price.lastUpdated }}
+        initialValueLastUpdated={item.price.lastUpdated}
+        initialValue={item.price.price}
+        selector={item => item.price}
         autoSubscriptionEnabled={false}
       />
     );
