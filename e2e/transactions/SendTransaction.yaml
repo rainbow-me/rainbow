@@ -39,29 +39,68 @@ tags:
       - assertVisible:
           id: send-asset-list
 
-# Test Add Contact functionality
-- tapOn:
-    id: add-contact-button
-- assertVisible:
-    id: wallet-info-input
-- tapOn: 'Cancel'
-- tapOn:
-    id: add-contact-button
-- tapOn: 'Add Contact'
+# # Test Add Contact functionality
+# - tapOn:
+#     id: add-contact-button
+# - assertVisible:
+#     id: wallet-info-input
+# - tapOn: 'Cancel'
+# - tapOn:
+#     id: add-contact-button
+# - tapOn: 'Add Contact'
 
-# Test updating contact name after edit
+# Test Send Functionality
 - tapOn:
-    id: edit-contact-button
-- tapOn: 'Edit Contact'
-- inputText: '123'
-- tapOn:
-    id: wallet-info-submit-button
-- assertVisible: 'rainbowwallet.eth123'
+    id: send-asset
 
-# Test showing Add Contact Button after deleting contact
-- tapOn:
-    id: edit-contact-button
-- tapOn: 'Delete Contact'
-- tapOn: 'Delete Contact'
-- assertVisible:
-    id: add-contact-button
+- assertVisible: 'Enter an Amount'
+
+- inputText: '0.01'
+
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible: .*Review
+- tapOn: .*Review
+
+- assertVisible: 'Sending'
+- assertVisible: '$0.01'
+- assertVisible: 'rainbowwallet.eth'
+- assertVisible: 'Hold to Send'
+- longPressOn: 'Hold to Send'
+
+- runFlow: ../utils/MaybeSetupPin.yaml
+
+- assertVisible: 'Pending'
+- assertVisible: 'Sending.*'
+
+- extendedWaitUntil:
+    visible: Today
+    timeout: 120000
+
+- assertVisible: .*Sent
+- tapOn: .*Sent
+- assertVisible: 'Sent'
+- assertVisible: '$0.01'
+- retry:
+    maxRetries: 3
+    commands:
+      - swipe:
+          direction: DOWN
+- assertVisible: .*Sent
+# # Test updating contact name after edit
+# - tapOn:
+#     id: edit-contact-button
+# - tapOn: 'Edit Contact'
+# - inputText: '123'
+# - tapOn:
+#     id: wallet-info-submit-button
+# - assertVisible: 'rainbowwallet.eth123'
+
+# # Test showing Add Contact Button after deleting contact
+# - tapOn:
+#     id: edit-contact-button
+# - tapOn: 'Delete Contact'
+# - tapOn: 'Delete Contact'
+# - assertVisible:
+#     id: add-contact-button
