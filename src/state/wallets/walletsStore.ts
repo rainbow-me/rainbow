@@ -113,6 +113,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     });
   },
 
+  // TODO follow-on and fix this type better - this is matching existing bug from before refactor
+  // see PD-188
   accountAddress: `0x`,
   setAccountAddress: (accountAddress: Address) => {
     set({
