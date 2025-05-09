@@ -8,7 +8,7 @@ ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
 
 # Install the app.
 # xcrun simctl install $DEVICE_UDID ios/build/Build/Products/Release-iphonesimulator/Rainbow.app
-xcrun simctl install $DEVICE_UDID ~/Library/Developer/Xcode/DerivedData/Products/Release-iphonesimulator/Rainbow.app
+xcrun simctl install $DEVICE_UDID ~/Library/Developer/Xcode/DerivedData/Build/Products/Release-iphonesimulator/Rainbow.app
 
 # Start Anvil for CI runs
 echo "Starting anvil..."

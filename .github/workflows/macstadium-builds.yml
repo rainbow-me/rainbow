@@ -100,7 +100,7 @@ jobs:
             APP_FILE=$(find . -name "App.zip" | head -n 1)
             aws s3 cp "${APP_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
             # IPA_FILE=./ios/build/Rainbow.ipa
-            IPA_FILE=~/Library/Developer/Xcode/DerivedData/Rainbow.ipa
+            IPA_FILE=~/Library/Developer/Xcode/DerivedData/Build/Products/Release-iphoneos/Rainbow.ipa
             aws s3 cp "${IPA_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
             
       - name: Post comment to PR
