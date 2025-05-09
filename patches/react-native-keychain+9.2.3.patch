@@ -233,9 +233,18 @@ index 99ae741..ea3cfda 100644
          return try {
              // read the initialization vector from bytes array
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
-index dc4e616..a3358fe 100644
+index dc4e616..48d6ce8 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
+@@ -173,7 +173,7 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+ 
+         val purposes = KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT
+ 
+-        val validityDuration = 5
++        val validityDuration = 1
+         val keyGenParameterSpecBuilder =
+             KeyGenParameterSpec.Builder(alias, purposes)
+                 .setBlockModes(BLOCK_MODE_GCM)
 @@ -243,7 +243,10 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
          val encrypt = EncryptStringHandler { cipher, key, output ->
              cipher.init(Cipher.ENCRYPT_MODE, key)
@@ -248,6 +257,19 @@ index dc4e616..a3358fe 100644
          }
  
          /** Read initialization vector from input stream and configure cipher by it. */
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
+index f4f69d3..be96913 100644
+--- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
++++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
+@@ -194,7 +194,7 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
+ 
+     val keySize = if (isForTesting) ENCRYPTION_KEY_SIZE_WHEN_TESTING else ENCRYPTION_KEY_SIZE
+ 
+-    val validityDuration = 5
++    val validityDuration = 1
+     val keyGenParameterSpecBuilder =
+       KeyGenParameterSpec.Builder(alias, purposes)
+         .setBlockModes(BLOCK_MODE_ECB)
 diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
 index 18e42ab..7bc2d7a 100644
 --- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
