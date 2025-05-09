@@ -5,7 +5,6 @@ import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useShowcaseTokens from './useShowcaseTokens';
-import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -20,7 +19,7 @@ import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewT
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountAddress } from '../state/wallets/walletsStore';
+import { useAccountAddress, useWallets } from '../state/wallets/walletsStore';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
