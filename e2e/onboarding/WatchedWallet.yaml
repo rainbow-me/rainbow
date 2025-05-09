@@ -10,8 +10,6 @@ tags:
       isE2ETest: true
 - runFlow: ../utils/Prepare.yaml
 - tapOn: '.*I already have one'
-
-# (Element not found: Text matching regex: Watch an Ethereum Address)
 - tapOn:
     id: watch-address-button
 - tapOn: 'Enter an Ethereum address or ENS name'
