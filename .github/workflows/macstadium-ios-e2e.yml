@@ -6,12 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Job to install dependencies
-  install-deps:
+  # Job for linting and unit tests
+  linting-and-unit-tests:
     runs-on: ["self-hosted"]
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
     permissions:
       contents: read
     steps:
@@ -21,19 +18,12 @@ jobs:
       - name: Set up github keys
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
-      - name: Set up ENV vars & scripts
-        env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-        run: |
-          source ~/.zshrc
-          git clone git@github.com:rainbow-me/rainbow-env.git
-          mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          eval $CI_SCRIPTS
-
+      - name: Set sanitized branch name
+        id: sanitize
+        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
       - name: Cache Yarn dependencies
         uses: actions/cache@v4
         with:
@@ -45,44 +35,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
-
-      - name: Install dependencies
-        run: |
-          yarn install && yarn setup
-
-      - name: Set sanitized branch name
-        id: sanitize
-        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-
-      - name: Upload Yarn cache
-        uses: actions/upload-artifact@v4
-        with:
-          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
-          path: |
-            .yarn/cache
-            .yarn/install-state.gz
-
-  # Job for linting and unit tests
-  linting-and-unit-tests:
-    runs-on: ["self-hosted"]
-    permissions:
-      contents: read
-    needs: install-deps
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up github keys
-        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
-
-      - name: Set sanitized branch name
-        id: sanitize
-        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-      - name: Download Yarn cache
-        uses: actions/download-artifact@v4
-        with:
-          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
-          path: .yarn
       - name: Set up ENV vars & scripts
         env:
           CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
@@ -119,7 +71,6 @@ jobs:
     permissions:
       contents: read
     timeout-minutes: 90
-    needs: install-deps
     env:
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
@@ -132,11 +83,20 @@ jobs:
       - name: Set sanitized branch name
         id: sanitize
         run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-      - name: Download Yarn cache
-        uses: actions/download-artifact@v4
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
         with:
-          name: yarn-cache-${{ env.SANITIZED_REF_NAME }}
-          path: .yarn
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache # Exclude eslint cache
+          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Set up ENV vars & scripts
         env:
           CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
