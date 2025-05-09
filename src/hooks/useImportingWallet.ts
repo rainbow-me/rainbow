@@ -11,7 +11,6 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useWalletENSAvatar from './useWalletENSAvatar';
-import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
@@ -20,7 +19,6 @@ import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from 
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
-import { walletsLoadState } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
@@ -32,10 +30,12 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { loadWallets, useWallets, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
-  const { accountAddress } = useAccountSettings();
-  const { selectedWallet, wallets } = useWallets();
+  const accountAddress = useAccountAddress();
+  const selectedWallet = useSelectedWallet();
+  const wallets = useWallets();
 
   const { getParent: dangerouslyGetParent, navigate, replace, setOptions } = useNavigation<typeof Routes.MODAL_SCREEN>();
   const initializeWallet = useInitializeWallet();
@@ -296,7 +296,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
             true
           );
-          await dispatch(walletsLoadState());
+          await loadWallets();
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
@@ -390,8 +390,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     replace,
     resolvedAddress,
     seedPhrase,
-    selectedWallet.id,
-    selectedWallet.type,
+    selectedWallet?.id,
+    selectedWallet?.type,
     wallets,
     wasImporting,
     updateWalletENSAvatars,

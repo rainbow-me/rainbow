@@ -1,15 +1,16 @@
+import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import mapValues from 'lodash/mapValues';
 import { useMemo } from 'react';
 import { Address } from 'viem';
-import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import useAccountSettings from './useAccountSettings';
 import useWalletBalances from './useWalletBalances';
-import useWallets from './useWallets';
 
 export default function useWalletsWithBalancesAndNames() {
   const { nativeCurrency } = useAccountSettings();
-  const { walletNames, wallets } = useWallets();
+  const walletNames = useWalletsStore(state => state.walletNames);
+  const wallets = useWallets();
   const { balances } = useWalletBalances(wallets || {});
   const hiddenBalances = userAssetsStoreManager(state => state.hiddenAssetBalances);
 

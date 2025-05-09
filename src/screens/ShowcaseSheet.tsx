@@ -1,20 +1,21 @@
+import { RecyclerAssetListSection } from '@/components/asset-list/RecyclerAssetList';
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { buildUniqueTokenList } from '@/helpers/assets';
+import { useAccountSettings } from '@/hooks';
+import { RootStackParamList } from '@/navigation/types';
+import { useLegacyNFTs } from '@/resources/nfts';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { ComponentProps, useContext, useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { AddressPreferencesData, getPreference } from '../model/preferences';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { resolveNameOrAddress } from '@/handlers/web3';
-import { buildUniqueTokenList } from '@/helpers/assets';
-import { useAccountSettings, useWallets } from '@/hooks';
-import styled from '@/styled-thing';
-import { ThemeContextProps, useTheme } from '@/theme';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { View } from 'react-native';
-import { RootStackParamList } from '@/navigation/types';
-import { RecyclerAssetListSection } from '@/components/asset-list/RecyclerAssetList';
 
 const tokenFamilyItem = (item: ComponentProps<typeof CollectibleTokenFamily>) => <CollectibleTokenFamily {...item} />;
 
@@ -42,7 +43,7 @@ export default function ShowcaseScreen() {
 
   const [userData, setUserData] = useState<AddressPreferencesData | null | undefined>();
   const [accountAddress, setAcccountAddress] = useState<string>();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   useEffect(() => {
     const init = async () => {

@@ -26,7 +26,8 @@ import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountSettings, useGas, useWallets } from '@/hooks';
+import { useAccountSettings, useGas } from '@/hooks';
+import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
 import { analytics } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -88,7 +89,7 @@ export function NFTSingleOfferSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.NFT_SINGLE_OFFER_SHEET>>();
   const { navigate, setParams } = useNavigation<typeof Routes.NFT_SINGLE_OFFER_SHEET>();
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas({ enableTracking: true });
   const {

@@ -1,4 +1,4 @@
-import styled from '@/styled-thing';
+import { analytics } from '@/analytics';
 import {
   AccentColorProvider,
   Box,
@@ -13,20 +13,21 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import React, { useCallback, useEffect, useState } from 'react';
-import { BlurView } from 'react-native-blur-view';
-import { ButtonPressAnimation } from '../animations';
-import { useMints } from '@/resources/mints';
-import { useAccountProfile, useDimensions } from '@/hooks';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { ImgixImage } from '../images';
-import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { View } from 'react-native';
 import { IS_IOS } from '@/env';
-import { Media } from '../Media';
-import { analytics } from '@/analytics';
+import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import { useDimensions } from '@/hooks';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
+import { useMints } from '@/resources/mints';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import styled from '@/styled-thing';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
+import { useAccountAddress } from '../../state/wallets/walletsStore';
+import { ButtonPressAnimation } from '../animations';
+import { ImgixImage } from '../images';
+import { Media } from '../Media';
 
 const IMAGE_SIZE = 111;
 
@@ -43,7 +44,7 @@ const BlurWrapper = styled(View).attrs({
 });
 
 export function FeaturedMintCard() {
-  const { accountAddress } = useAccountProfile();
+  const accountAddress = useAccountAddress();
   const { width: deviceWidth } = useDimensions();
 
   const {
