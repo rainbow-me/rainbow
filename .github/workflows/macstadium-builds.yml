@@ -74,7 +74,7 @@ jobs:
           sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
           sed -i '' 's/match AppStore/match AdHoc/g' "ios/Rainbow.xcodeproj/project.pbxproj"
 
-          xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+          xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ~/Library/Developer/Xcode/DerivedData
           APP_DIR=$(find . -name "*.app" | head -n 1)
           cd $APP_DIR && zip -r ../../../../../../App.zip .
       - name: Set up Appstore Key
@@ -99,7 +99,8 @@ jobs:
         run: |
             APP_FILE=$(find . -name "App.zip" | head -n 1)
             aws s3 cp "${APP_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
-            IPA_FILE=./ios/build/Rainbow.ipa
+            # IPA_FILE=./ios/build/Rainbow.ipa
+            IPA_FILE=~/Library/Developer/Xcode/DerivedData/Rainbow.ipa
             aws s3 cp "${IPA_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
             
       - name: Post comment to PR
