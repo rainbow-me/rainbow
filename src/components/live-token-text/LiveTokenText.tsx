@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { AnimatedText, AnimatedTextProps } from '@/design-system';
-import { useLivePricingStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/livePrices/livePricesStore';
+import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useSharedValue } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/useListen';
 import { useRoute } from '@react-navigation/native';
@@ -10,7 +10,7 @@ interface LiveTokenTextProps extends AnimatedTextProps {
   initialValueLastUpdated: number;
   initialValue: string;
   autoSubscriptionEnabled?: boolean;
-  selector: (token: TokenData, prevToken: TokenData) => string;
+  selector: (token: TokenData) => string;
 }
 
 export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
@@ -26,15 +26,19 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
 
   const onTokenUpdated = useCallback(
     (token: TokenData, prevToken: TokenData) => {
-      if (token.lastUpdated > initialValueLastUpdated) {
+      'worklet';
+      const newValue = selector(token);
+      const prevValue = selector(prevToken);
+
+      if (token.lastUpdated > initialValueLastUpdated && newValue !== prevValue) {
         // TODO: Only want to set if the value we're interested in has changed
-        liveValue.value = selector(token, prevToken);
+        liveValue.value = newValue;
       }
     },
     [initialValueLastUpdated, liveValue, selector]
   );
 
-  useListen(useLivePricingStore, state => state.tokens[tokenId], onTokenUpdated);
+  useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated);
 
   useEffect(() => {
     if (!autoSubscriptionEnabled) return;

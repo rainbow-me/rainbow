@@ -2,7 +2,7 @@ import React, { useRef, useCallback } from 'react';
 import { FlatList, ListRenderItemInfo, ViewToken } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
-import { useLivePricingStore } from '@/state/livePrices/livePricesStore';
+import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { useListen } from '@/state/internal/useListen';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
@@ -23,8 +23,8 @@ interface TokenListProps {
 
 export const ExampleTokenList: React.FC<TokenListProps> = ({ tokens }) => {
   const route = useRoute();
-  const addSubscribedTokens = useLivePricingStore(state => state.addSubscribedTokens);
-  const removeSubscribedTokens = useLivePricingStore(state => state.removeSubscribedTokens);
+  const addSubscribedTokens = useLiveTokensStore(state => state.addSubscribedTokens);
+  const removeSubscribedTokens = useLiveTokensStore(state => state.removeSubscribedTokens);
 
   const visibleTokenIdsRef = useRef<string[]>([]);
 

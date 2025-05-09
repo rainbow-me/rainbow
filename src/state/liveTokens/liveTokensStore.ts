@@ -1,9 +1,9 @@
 import { time } from '@/utils';
-import { createQueryStore } from '../internal/createQueryStore';
-import { useNavigationStore } from '../navigation/navigationStore';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 
-// route -> tokenId -> subscription count
-type SubscribedTokens = Record<string, Record<string, number>>;
+// route -> token id -> subscription count
+type TokenSubscriptionCountByRoute = Record<string, Record<string, number>>;
 
 export interface TokenData {
   price: string;
@@ -11,37 +11,33 @@ export interface TokenData {
   lastUpdated: number;
 }
 
-interface TokenDataResponse {
+interface TokensDataResponse {
   [tokenId: string]: TokenData;
 }
 
-type LivePricingParams = {
-  subscribedTokensByRoute: SubscribedTokens;
+type LiveTokensParams = {
+  subscribedTokensByRoute: TokenSubscriptionCountByRoute;
   activeRoute: string;
 };
-
-interface LivePricingStore {
-  subscribedTokensByRoute: SubscribedTokens;
-  tokens: {
-    [tokenId: string]: TokenData;
-  };
-  addSubscribedTokens: ({ route, tokenIds }: { route: string; tokenIds: string[] }) => void;
-  removeSubscribedTokens: ({ route, tokenIds }: { route: string; tokenIds: string[] }) => void;
-  clear: () => void;
-}
 
 type UpdateSubscribedTokensParams = {
   route: string;
   tokenIds: string[];
 };
 
-const fetchTokensData = async (params: LivePricingParams, abortController: AbortController | null): Promise<TokenDataResponse> => {
-  const { subscribedTokensByRoute, activeRoute } = params;
+interface LiveTokensStore {
+  subscribedTokensByRoute: TokenSubscriptionCountByRoute;
+  tokens: TokensDataResponse;
+  addSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
+  removeSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
+  clear: () => void;
+}
 
+const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTokensParams): Promise<TokensDataResponse | null> => {
   const tokenIdsArray = Object.keys(subscribedTokensByRoute[activeRoute] || {});
 
   if (tokenIdsArray.length === 0) {
-    return {};
+    return null;
   }
 
   console.log(`[livePricesStore] MOCK API: Fetching prices for ${tokenIdsArray.length} tokens:`, tokenIdsArray);
@@ -49,7 +45,7 @@ const fetchTokensData = async (params: LivePricingParams, abortController: Abort
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
 
-  const assets: TokenDataResponse = {};
+  const assets: TokensDataResponse = {};
   tokenIdsArray.forEach(id => {
     const basePrice = parseInt(id.substring(2, 5), 16) / 10 || 10;
     const fluctuation = (Math.random() - 0.1) * 0.5;
@@ -63,7 +59,7 @@ const fetchTokensData = async (params: LivePricingParams, abortController: Abort
   return assets;
 };
 
-export const useLivePricingStore = createQueryStore<TokenDataResponse, LivePricingParams, LivePricingStore>(
+export const useLiveTokensStore = createQueryStore<TokensDataResponse | null, LiveTokensParams, LiveTokensStore>(
   {
     fetcher: fetchTokensData,
     disableCache: true,
@@ -78,13 +74,21 @@ export const useLivePricingStore = createQueryStore<TokenDataResponse, LivePrici
         });
       }
     },
+    paramChangeThrottle: 250,
     params: {
       subscribedTokensByRoute: ($, store) => $(store).subscribedTokensByRoute,
       activeRoute: $ => $(useNavigationStore).activeRoute,
+      // testParam: ($, store) =>
+      //   $(useNavigationStore, state => {
+      //     console.log('test state -', store.getState().test);
+      //     const newQuery = state.searchQuery.trim();
+      //     console.log('search query -', newQuery);
+      //     return newQuery;
+      //   }),
     },
   },
 
-  (set, get) => ({
+  set => ({
     subscribedTokensByRoute: {},
     tokens: {},
 
@@ -154,9 +158,9 @@ export const useLivePricingStore = createQueryStore<TokenDataResponse, LivePrici
 );
 
 export function addSubscribedToken({ route, tokenId }: { route: string; tokenId: string }) {
-  useLivePricingStore.getState().addSubscribedTokens({ route, tokenIds: [tokenId] });
+  useLiveTokensStore.getState().addSubscribedTokens({ route, tokenIds: [tokenId] });
 }
 
 export function removeSubscribedToken({ route, tokenId }: { route: string; tokenId: string }) {
-  useLivePricingStore.getState().removeSubscribedTokens({ route, tokenIds: [tokenId] });
+  useLiveTokensStore.getState().removeSubscribedTokens({ route, tokenIds: [tokenId] });
 }
