@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
@@ -20,6 +20,11 @@ import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { addSubscribedTokens, removeSubscribedTokens } from '@/state/liveTokens/liveTokensStore';
+import { useListen } from '@/state/internal/useListen';
+import { useRoute } from '@react-navigation/native';
+import { debounce } from 'lodash';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -49,10 +54,15 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   return null;
 });
 
+function extractTokenRowIds(items: CellTypes[]) {
+  return items.filter(item => item.type === 'COIN').map(item => item.uid.replace('coin-', ''));
+}
+
 function WalletScreen() {
   const { network: currentNetwork, accountAddress } = useAccountSettings();
   const insets = useSafeAreaInsets();
   const hideSplashScreen = useHideSplashScreen();
+  const route = useRoute();
 
   const {
     isWalletEthZero,
@@ -79,6 +89,41 @@ function WalletScreen() {
       });
     });
   }, [hideSplashScreen]);
+
+  // We cannot rely on `onMomentumScrollEnd` because it's not called when the user scrolls directly rather than swiping
+  const debouncedAddSubscribedTokensRef = useRef(
+    debounce((viewableItems, routeName) => {
+      const viewableTokenUniqueIds = extractTokenRowIds(viewableItems);
+      // console.log('[WalletScreen] viewableTokenUniqueIds', viewableTokenUniqueIds);
+      if (viewableTokenUniqueIds.length > 0) {
+        addSubscribedTokens({ route: routeName, tokenIds: viewableTokenUniqueIds });
+      }
+    }, 500)
+  );
+
+  const handleViewableItemsChanged = useCallback(
+    ({
+      viewableItems,
+      // TODO: this does not reliably work
+      // viewableItemsAdded,
+      viewableItemsRemoved,
+    }: {
+      viewableItems: CellTypes[];
+      // viewableItemsAdded: CellTypes[];
+      viewableItemsRemoved: CellTypes[];
+    }) => {
+      const viewableTokenUniqueIdsRemoved = extractTokenRowIds(viewableItemsRemoved);
+
+      // removal cannot be debounced
+      if (viewableTokenUniqueIdsRemoved.length > 0) {
+        // console.log('[WalletScreen] viewableTokenUniqueIdsRemoved', viewableTokenUniqueIdsRemoved);
+        removeSubscribedTokens({ route: route.name, tokenIds: viewableTokenUniqueIdsRemoved });
+      }
+
+      debouncedAddSubscribedTokensRef.current(viewableItems, route.name);
+    },
+    [route.name]
+  );
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
