@@ -19,7 +19,7 @@ export const nftsQueryKey = ({
   address: string;
   sortBy: NftCollectionSortCriterion;
   sortDirection: SortDirection;
-}) => createQueryKey('nfts', { address, sortBy, sortDirection }, { persisterVersion: 1 });
+}) => createQueryKey('nfts', { address, sortBy, sortDirection }, { persisterVersion: 2 });
 
 export const invalidateAddressNftsQueries = (address: string) => {
   queryClient.invalidateQueries(createQueryKey('nfts', { address }));
