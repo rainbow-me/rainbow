@@ -673,7 +673,7 @@ export function createQueryStore<
 
       getData(params?: TParams) {
         if (disableCache) return null;
-        const currentQueryKey = params ? getQueryKey(params) : get().queryKey;
+        const currentQueryKey = params ? getQueryKeyFn(params) : get().queryKey;
 
         const cacheEntry = get().queryCache[currentQueryKey];
         if (keepPreviousData) return cacheEntry?.data ?? null;
