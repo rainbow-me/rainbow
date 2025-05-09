@@ -11,6 +11,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { Claimable as ClaimableType } from '@/resources/addys/claimables/types';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getClaimableName, isRainbowEthRewards } from '@/resources/addys/claimables/utils';
+import { Navigation } from '@/navigation';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 const avgCharWidth = 7;
@@ -88,8 +89,6 @@ export const Claimable = React.memo(function Claimable({
   claimable: ClaimableType;
   extendedState: ExtendedState;
 }) {
-  const { navigate } = extendedState;
-
   const isETHRewards = isRainbowEthRewards(claimable.uniqueId);
 
   return (
@@ -108,9 +107,9 @@ export const Claimable = React.memo(function Claimable({
             })),
             usdValue: claimable?.totalCurrencyValue.amount,
           });
-          navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
+          Navigation.handleAction(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
         } else {
-          navigate(Routes.CLAIM_REWARDS_PANEL);
+          Navigation.handleAction(Routes.CLAIM_REWARDS_PANEL);
         }
       }}
       scaleTo={0.96}

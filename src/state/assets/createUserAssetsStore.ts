@@ -24,7 +24,7 @@ const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
 
 export const createUserAssetsStore = (address: Address | string) =>
-  createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, TransformedUserAssetsData>(
+  createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, TransformedUserAssetsData, UserAssetsStateToPersist>(
     {
       fetcher: fetchUserAssets,
       setData: ({ data, set }) =>
@@ -137,14 +137,12 @@ export const createUserAssetsStore = (address: Address | string) =>
 
       setSearchQuery: query =>
         set(state => {
-          const { currentAbortController } = state;
-
           // Abort any ongoing search work
-          currentAbortController?.abort?.();
+          state.currentAbortController?.abort?.();
           // Create a new AbortController for the new query
           const abortController = new AbortController();
 
-          return { inputSearchQuery: query.trim().toLowerCase(), currentAbortController: abortController };
+          return { currentAbortController: abortController, inputSearchQuery: query.trim().toLowerCase() };
         }),
 
       setSearchCache: (queryKey, filteredIds: UniqueId[]) => {

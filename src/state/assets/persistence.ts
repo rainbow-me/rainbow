@@ -15,7 +15,7 @@ type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legac
   userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
 };
 
-export function serializeUserAssetsState(state: UserAssetsStateToPersist, version?: number) {
+export function serializeUserAssetsState(state: UserAssetsStateToPersist, version?: number): string {
   try {
     const transformedStateToPersist: PersistedUserAssetsState = {
       ...state,
@@ -31,7 +31,7 @@ export function serializeUserAssetsState(state: UserAssetsStateToPersist, versio
   }
 }
 
-export function deserializeUserAssetsState(serializedState: string) {
+export function deserializeUserAssetsState(serializedState: string): { state: UserAssetsStateToPersist; version: number } {
   let parsedState: { state: PersistedUserAssetsState; version: number };
   try {
     parsedState = JSON.parse(serializedState);
@@ -85,7 +85,7 @@ export function deserializeUserAssetsState(serializedState: string) {
       hiddenAssets,
       idsByChain,
       userAssets: userAssetsData,
-    },
+    } satisfies UserAssetsStateToPersist,
     version,
   };
 }

@@ -2,8 +2,9 @@
  * @jest-environment node
  */
 
-import { createQueryStore, getQueryKey, QueryStatuses } from '../../createQueryStore';
 import { time } from '@/utils';
+import { createQueryStore, getQueryKey } from '../../createQueryStore';
+import { QueryStatuses } from '../../queryStore/types';
 
 // For these tests we use a simple type for the fetched data and query parameters.
 type TestData = string;
@@ -272,6 +273,30 @@ describe('createQueryStore', () => {
 
       // The queryKey should be reset based on the config ('[]' if no params).
       expect(store.getState().queryKey).toBe('[]');
+
+      // Test useParsableQueryKey
+      const store2 = createQueryStore<TestData, { id?: number }>({
+        fetcher,
+        params: {},
+        useParsableQueryKey: true,
+      });
+
+      // Manually fetch with no params.
+      await store2.getState().fetch();
+      expect(store2.getState().getData()).toBe('data-0');
+      expect(store2.getState().status).toBe(QueryStatuses.Success);
+      expect(store2.getState().queryKey).toBe('{}');
+
+      // Now fetch with a param.
+      await store2.getState().fetch({ id: 7 });
+      expect(store2.getState().getData({ id: 7 })).toBe('data-7');
+      expect(store2.getState().status).toBe(QueryStatuses.Success);
+      expect(store2.getState().queryKey).toBe(JSON.stringify({ id: 7 }));
+
+      // Call reset and verify that state is cleared.
+      store2.getState().reset();
+      expect(store2.getState().getData({ id: 7 })).toBeNull();
+      expect(store2.getState().status).toBe(QueryStatuses.Idle);
     });
   });
 
