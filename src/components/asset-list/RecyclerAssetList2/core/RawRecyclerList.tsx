@@ -15,8 +15,7 @@ import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { NativeCurrencyKey, UniqueAsset } from '@/entities';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
-import { useAccountSettings, useCoinListEdited, useCoinListEditOptions, useWallets } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { useAccountSettings, useCoinListEdited, useCoinListEditOptions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
@@ -37,7 +36,6 @@ export type ExtendedState = {
   theme: any;
   nativeCurrencySymbol: string;
   nativeCurrency: NativeCurrencyKey;
-  navigate: any;
   isCoinListEdited: boolean;
   hiddenAssets: Set<UniqueId>;
   pinnedCoins: BooleanMap;
@@ -48,18 +46,30 @@ export type ExtendedState = {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 
+export type ViewableItemsChangedCallback = ({
+  viewableItems,
+  viewableItemsAdded,
+  viewableItemsRemoved,
+}: {
+  viewableItems: CellTypes[];
+  viewableItemsAdded: CellTypes[];
+  viewableItemsRemoved: CellTypes[];
+}) => void;
+
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
   disablePullDownToRefresh,
   scrollIndicatorInsets,
   extendedState,
   type,
+  onViewableItemsChanged,
 }: {
   briefSectionsData: CellTypes[];
   disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   scrollIndicatorInsets?: object;
   type?: AssetListType;
+  onViewableItemsChanged?: ViewableItemsChangedCallback;
 }) {
   const remoteConfig = useRemoteConfig();
   const experimentalConfig = useExperimentalConfig();
@@ -129,7 +139,18 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const { pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
 
-  const { navigate } = useNavigation();
+  const handleViewableIndicesChanged = useCallback(
+    (viewableIndices: number[], viewableIndicesAdded: number[], viewableIndicesRemoved: number[]) => {
+      if (!onViewableItemsChanged) return;
+
+      const viewableItems = viewableIndices.map(index => briefSectionsData[index]);
+      const viewableItemsAdded = viewableIndicesAdded.map(index => briefSectionsData[index]);
+      const viewableItemsRemoved = viewableIndicesRemoved.map(index => briefSectionsData[index]);
+
+      onViewableItemsChanged({ viewableItems, viewableItemsAdded, viewableItemsRemoved });
+    },
+    [onViewableItemsChanged, briefSectionsData]
+  );
 
   const mergedExtendedState = useMemo<ExtendedState>(() => {
     return {
@@ -137,7 +158,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       isCoinListEdited,
       nativeCurrency,
       nativeCurrencySymbol,
-      navigate,
       hiddenAssets,
       pinnedCoins,
       setIsCoinListEdited,
@@ -149,7 +169,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     isCoinListEdited,
     nativeCurrency,
     nativeCurrencySymbol,
-    navigate,
     hiddenAssets,
     pinnedCoins,
     setIsCoinListEdited,
@@ -176,10 +195,12 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
+      // renderAheadOffset={100}
       rowRenderer={rowRenderer}
       canChangeSize={type === 'wallet'}
       layoutSize={type === 'wallet' ? dimensions : undefined}
       scrollIndicatorInsets={scrollIndicatorInsets}
+      onVisibleIndicesChanged={handleViewableIndicesChanged}
     />
   );
 });

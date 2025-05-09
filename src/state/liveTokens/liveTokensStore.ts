@@ -34,7 +34,7 @@ interface LiveTokensStore {
   clear: () => void;
 }
 
-let fetchCount = 0;
+// let fetchCount = 0;
 
 const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTokensParams): Promise<TokensDataResponse | null> => {
   const tokenIdsArray = Object.keys(subscribedTokensByRoute[activeRoute] || {});
@@ -43,8 +43,9 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTok
     return null;
   }
 
-  fetchCount += 1;
-  console.log(`[liveTokensStore] Fetching tokens data: ${fetchCount}`);
+  // fetchCount += 1;
+  // console.log(`[liveTokensStore] Fetching tokens data: ${fetchCount}`);
+  // console.log('[liveTokensStore] fetching tokens ', tokenIdsArray);
 
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
@@ -130,7 +131,7 @@ export const useLiveTokensStore = createQueryStore<TokensDataResponse | null, Li
 
         let hasChanges = false;
         for (const tokenId of tokenIds) {
-          if (subscribedTokensByRoute[route][tokenId]) {
+          if (subscribedTokensByRoute[route]?.[tokenId]) {
             subscribedTokensByRoute[route][tokenId] -= 1;
             if (subscribedTokensByRoute[route][tokenId] === 0) {
               delete subscribedTokensByRoute[route][tokenId];
@@ -165,7 +166,8 @@ export const useLiveTokensStore = createQueryStore<TokensDataResponse | null, Li
 export function addSubscribedToken({ route, tokenId }: { route: string; tokenId: string }) {
   useLiveTokensStore.getState().addSubscribedTokens({ route, tokenIds: [tokenId] });
 }
-
 export function removeSubscribedToken({ route, tokenId }: { route: string; tokenId: string }) {
   useLiveTokensStore.getState().removeSubscribedTokens({ route, tokenIds: [tokenId] });
 }
+
+export const { addSubscribedTokens, removeSubscribedTokens } = useLiveTokensStore.getState();

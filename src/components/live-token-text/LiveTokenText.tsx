@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { AnimatedText, AnimatedTextProps } from '@/design-system';
 import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/liveTokens/liveTokensStore';
-import { useSharedValue } from 'react-native-reanimated';
+import { useSharedValue, SharedValue } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/useListen';
 import { useRoute } from '@react-navigation/native';
 
-interface LiveTokenTextProps extends AnimatedTextProps {
+interface LiveTokenValueParams {
   tokenId: string;
   initialValueLastUpdated: number;
   initialValue: string;
@@ -13,14 +13,13 @@ interface LiveTokenTextProps extends AnimatedTextProps {
   selector: (token: TokenData) => string;
 }
 
-export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
+export function useLiveTokenValue({
   tokenId,
   initialValueLastUpdated,
   initialValue,
   autoSubscriptionEnabled = true,
   selector,
-  ...textProps
-}) {
+}: LiveTokenValueParams): SharedValue<string> {
   const route = useRoute();
   const liveValue = useSharedValue(initialValue);
   // prevValue and liveValue will always be equal, but there is a cost to reading shared values
@@ -42,7 +41,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
         prevValue.current = newValue;
       }
     },
-    [initialValueLastUpdated, liveValue, selector, prevValue]
+    [initialValueLastUpdated, liveValue, selector, tokenId]
   );
 
   useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated, { debugMode: false });
@@ -57,6 +56,27 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  return liveValue;
+}
+
+type LiveTokenTextProps = LiveTokenValueParams & AnimatedTextProps;
+
+export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
+  tokenId,
+  initialValueLastUpdated,
+  initialValue,
+  autoSubscriptionEnabled = true,
+  selector,
+  ...textProps
+}) {
+  const liveValue = useLiveTokenValue({
+    tokenId,
+    initialValueLastUpdated,
+    initialValue,
+    autoSubscriptionEnabled,
+    selector,
+  });
 
   return (
     <AnimatedText
