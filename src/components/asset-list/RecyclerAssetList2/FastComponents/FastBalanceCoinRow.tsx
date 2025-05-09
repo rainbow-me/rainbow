@@ -13,6 +13,7 @@ import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
+import { Navigation } from '@/navigation';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -58,14 +59,13 @@ interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
   nativeCurrency: NativeCurrencyKey;
   theme: any;
-  navigate: any;
   nativeCurrencySymbol: string;
   isHidden: boolean;
   maybeCallback: React.RefObject<null | (() => void)>;
 }
 
 const MemoizedBalanceCoinRow = React.memo(
-  ({ uniqueId, nativeCurrency, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
+  ({ uniqueId, nativeCurrency, theme, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
     const item = useAccountAsset(uniqueId, nativeCurrency);
 
     const handlePress = useCallback(() => {
@@ -73,9 +73,9 @@ const MemoizedBalanceCoinRow = React.memo(
         maybeCallback.current();
       } else {
         if (!item) return;
-        navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset: item, address: item.address, chainId: item.chainId });
+        Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, { asset: item, address: item.address, chainId: item.chainId });
       }
-    }, [navigate, item, maybeCallback]);
+    }, [item, maybeCallback]);
 
     const percentChange = item?.native?.change || undefined;
     const percentageChangeDisplay = formatPercentageString(percentChange);
@@ -138,8 +138,7 @@ const MemoizedBalanceCoinRow = React.memo(
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
 export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, hiddenAssets, pinnedCoins, toggleSelectedCoin, isCoinListEdited } =
-    extendedState;
+  const { theme, nativeCurrencySymbol, nativeCurrency, hiddenAssets, pinnedCoins, toggleSelectedCoin, isCoinListEdited } = extendedState;
 
   const onPress = useCallback(() => {
     toggleSelectedCoin(uniqueId);
@@ -162,7 +161,6 @@ export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: {
         maybeCallback={maybeCallback}
         nativeCurrency={nativeCurrency}
         nativeCurrencySymbol={nativeCurrencySymbol}
-        navigate={navigate}
         theme={theme}
         uniqueId={uniqueId}
       />
