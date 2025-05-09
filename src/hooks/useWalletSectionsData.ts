@@ -19,7 +19,7 @@ import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewT
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountAddress, useWallets } from '../state/wallets/walletsStore';
+import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '../state/wallets/walletsStore';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -38,7 +38,8 @@ export default function useWalletSectionsData({
   const { nftSort, nftSortDirection } = useNftSort();
   const { language, network, nativeCurrency } = useAccountSettings();
   const accountAddress = useAccountAddress();
-  const { selectedWallet, isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+  const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const remoteConfig = useRemoteConfig();
@@ -94,6 +95,7 @@ export default function useWalletSectionsData({
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const accountWithBalance = useMemo(() => {
+    if (!selectedWallet) return null;
     return walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
       address => address.address.toLowerCase() === accountAddress.toLowerCase()
     );
