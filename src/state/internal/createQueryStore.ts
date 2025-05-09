@@ -8,7 +8,6 @@ import { time } from '@/utils';
 import { RainbowPersistConfig, createRainbowStore, omitStoreMethods } from './createRainbowStore';
 import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';
 import { $, AttachValue, SignalFunction, Unsubscribe, attachValueSubscriptionMap } from './signal';
-import { debounce } from 'lodash';
 
 /**
  * A set of constants representing the various stages of a query's remote data fetching process.
@@ -41,20 +40,6 @@ export type QueryStatusInfo = {
   isInitialLoading: boolean;
   isSuccess: boolean;
 };
-
-/**
- * Expanded options for debouncing query store parameter changes.
- */
-export interface DebounceOptions {
-  /* The number of milliseconds to delay. */
-  delay: number;
-  /* Specify invoking on the leading edge of the timeout. */
-  leading?: boolean;
-  /* The maximum time func is allowed to be delayed before it's invoked. */
-  maxWait?: number;
-  /* Specify invoking on the trailing edge of the timeout. */
-  trailing?: boolean;
-}
 
 /**
  * Defines additional options for a data fetch operation.
@@ -351,14 +336,6 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * @default false
    */
   suppressStaleTimeWarning?: boolean;
-  /**
-   * Delay before triggering a fetch when parameters change.
-   * Accepts a number (ms) or debounce options:
-   *
-   * `{ delay: number, leading?: boolean, trailing?: boolean, maxWait?: number }`
-   * @default 0
-   */
-  paramChangeThrottle?: number | DebounceOptions;
 };
 
 /**
@@ -504,7 +481,6 @@ export function createQueryStore<
     setData,
     staleTime = time.minutes(2),
     suppressStaleTimeWarning = false,
-    paramChangeThrottle,
   } = config;
 
   if (IS_DEV && !suppressStaleTimeWarning && staleTime < MIN_STALE_TIME) {
@@ -1050,22 +1026,14 @@ export function createQueryStore<
     directValues = { enabled: resolvedEnabledDirectValue, params: resolvedDirectValues };
   }
 
-  function onParamChangeBase() {
+  const onParamChange = () => {
     const newParams = getCurrentResolvedParams(attachVals, directValues);
     if (!keepPreviousData) {
       const newQueryKey = getQueryKey(newParams);
       queryStore.setState(state => ({ ...state, queryKey: newQueryKey }));
     }
     queryStore.getState().fetch(newParams, { updateQueryKey: keepPreviousData });
-  }
-
-  const onParamChange = paramChangeThrottle
-    ? debounce(
-        onParamChangeBase,
-        typeof paramChangeThrottle === 'number' ? paramChangeThrottle : paramChangeThrottle.delay,
-        typeof paramChangeThrottle === 'number' ? { leading: false, maxWait: paramChangeThrottle, trailing: true } : paramChangeThrottle
-      )
-    : onParamChangeBase;
+  };
 
   if (attachVals?.enabled) {
     const attachVal = attachVals.enabled;
