@@ -7,6 +7,7 @@ type TokenSubscriptionCountByRoute = Record<string, Record<string, number>>;
 
 export interface TokenData {
   price: string;
+  volume24h: string;
   priceChange24h: string;
   lastUpdated: number;
 }
@@ -33,6 +34,8 @@ interface LiveTokensStore {
   clear: () => void;
 }
 
+let fetchCount = 0;
+
 const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTokensParams): Promise<TokensDataResponse | null> => {
   const tokenIdsArray = Object.keys(subscribedTokensByRoute[activeRoute] || {});
 
@@ -40,7 +43,8 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTok
     return null;
   }
 
-  console.log(`[livePricesStore] MOCK API: Fetching prices for ${tokenIdsArray.length} tokens:`, tokenIdsArray);
+  fetchCount += 1;
+  console.log(`[liveTokensStore] Fetching tokens data: ${fetchCount}`);
 
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
@@ -52,6 +56,7 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTok
     assets[id] = {
       price: (basePrice + fluctuation).toFixed(2),
       priceChange24h: (fluctuation * 100).toFixed(2),
+      volume24h: (basePrice * 1000 + fluctuation * 1000).toFixed(2),
       lastUpdated: Date.now(),
     };
   });

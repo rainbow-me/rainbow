@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { AnimatedText, AnimatedTextProps } from '@/design-system';
 import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useSharedValue } from 'react-native-reanimated';
@@ -23,22 +23,29 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
 }) {
   const route = useRoute();
   const liveValue = useSharedValue(initialValue);
+  // prevValue and liveValue will always be equal, but there is a cost to reading shared values
+  const prevValue = useRef(initialValue);
 
   const onTokenUpdated = useCallback(
-    (token: TokenData, prevToken: TokenData) => {
-      'worklet';
+    (token: TokenData) => {
+      // TODO: would need selector to be worklet too, does it matter in this case of setting singular value?
+      // 'worklet';
       const newValue = selector(token);
-      const prevValue = selector(prevToken);
 
-      if (token.lastUpdated > initialValueLastUpdated && newValue !== prevValue) {
-        // TODO: Only want to set if the value we're interested in has changed
+      console.log(`[LiveTokenText] onTokenUpdated: ${tokenId}`, {
+        newValue,
+        prevValue,
+      });
+
+      if (token.lastUpdated > initialValueLastUpdated && newValue !== prevValue.current) {
         liveValue.value = newValue;
+        prevValue.current = newValue;
       }
     },
-    [initialValueLastUpdated, liveValue, selector]
+    [initialValueLastUpdated, liveValue, selector, prevValue]
   );
 
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated);
+  useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated, { debugMode: false });
 
   useEffect(() => {
     if (!autoSubscriptionEnabled) return;

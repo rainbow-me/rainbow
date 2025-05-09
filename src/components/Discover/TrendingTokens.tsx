@@ -33,6 +33,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { RAINBOW_TRENDING_TOKENS_LIST, useExperimentalFlag } from '@/config';
 import { shallowEqual } from '@/worklets/comparisons';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { LiveTokenText } from '../live-token-text/LiveTokenText';
 
 const t = i18n.l.trending_tokens;
 
@@ -465,18 +466,21 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                 >
                   {token.symbol}
                 </Text>
-                <Text
-                  color="label"
-                  numberOfLines={1}
+                <LiveTokenText
                   size="15pt"
+                  numberOfLines={1}
+                  color="label"
+                  weight="bold"
                   style={{
                     minWidth: minPriceWidth,
                     flex: 1,
                   }}
-                  weight="bold"
-                >
-                  {price}
-                </Text>
+                  tokenId={token.uniqueId}
+                  // TODO: not yet added to the token data by backend
+                  initialValueLastUpdated={0}
+                  initialValue={price}
+                  selector={token => token.price}
+                />
               </View>
 
               <View style={{ flexDirection: 'row', gap: 8, height: 7, alignItems: 'center' }}>
