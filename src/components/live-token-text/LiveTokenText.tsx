@@ -31,17 +31,12 @@ export function useLiveTokenValue({
       // 'worklet';
       const newValue = selector(token);
 
-      console.log(`[LiveTokenText] onTokenUpdated: ${tokenId}`, {
-        newValue,
-        prevValue,
-      });
-
       if (token.lastUpdated > initialValueLastUpdated && newValue !== prevValue.current) {
         liveValue.value = newValue;
         prevValue.current = newValue;
       }
     },
-    [initialValueLastUpdated, liveValue, selector, tokenId]
+    [initialValueLastUpdated, liveValue, selector]
   );
 
   useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated, { debugMode: false });
