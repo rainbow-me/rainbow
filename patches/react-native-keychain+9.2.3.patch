@@ -138,10 +138,124 @@ index d165f3e..91fd8b1 100644
  
    fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
-index 6a941bf..8a6f6c7 100644
+index 6a941bf..80d1189 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageBase.kt
-@@ -212,17 +212,10 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+@@ -14,6 +14,7 @@ import com.oblador.keychain.cipherStorage.CipherStorageBase.DecryptBytesHandler
+ import com.oblador.keychain.cipherStorage.CipherStorageBase.EncryptStringHandler
+ import com.oblador.keychain.exceptions.CryptoFailedException
+ import com.oblador.keychain.exceptions.KeyStoreAccessException
++import com.oblador.keychain.resultHandler.ResultHandler
+ import java.io.ByteArrayInputStream
+ import java.io.ByteArrayOutputStream
+ import java.io.Closeable
+@@ -41,11 +42,21 @@ import javax.crypto.NoSuchPaddingException
+ abstract class CipherStorageBase(protected val applicationContext: Context) : CipherStorage {
+   // region Constants
+   /** Logging tag. */
+-  protected val LOG_TAG = CipherStorageBase::class.java.simpleName
++  protected val LOG_TAG get() = Companion.LOG_TAG
+ 
+   /** Default key storage type/name. */
+   companion object {
+     const val KEYSTORE_TYPE = "AndroidKeyStore"
++    const val PREFIX_DELIMITER = "_"
++
++    /** Logging tag. */
++    private val LOG_TAG = CipherStorageBase::class.java.simpleName
++
++    // Prefix constants
++    const val PREFIX_RSA = "RSA"
++    const val PREFIX_AES_GCM = "AES_GCM"
++    const val PREFIX_AES_GCM_NO_AUTH = "AES_GCM_NA"
++    const val PREFIX_AES_CBC = "AES_CBC"
+ 
+     /** Key used for testing storage capabilities. */
+     const val TEST_KEY_ALIAS = "$KEYSTORE_TYPE#supportsSecureHardware"
+@@ -79,6 +90,43 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+         output.write(buf, 0, len)
+       }
+     }
++
++    fun getPrefixedAlias(alias: String, prefix: String): String {
++      return if (alias.startsWith("$prefix$PREFIX_DELIMITER")) {
++        alias
++      } else {
++        "$prefix$PREFIX_DELIMITER$alias"
++      }
++    }
++
++    fun migrateLegacyKey(
++        legacyAlias: String,
++        newAlias: String,
++        keyStore: KeyStore,
++        handler: ResultHandler,
++        level: SecurityLevel
++    ) {
++        try {
++            val legacyKey = keyStore.getKey(legacyAlias, null) ?: return
++
++            // Save the key under new alias
++            keyStore.setKeyEntry(
++                newAlias,
++                legacyKey,
++                null,
++                keyStore.getCertificateChain(legacyAlias)
++            )
++
++            // Verify the new key works
++            if (keyStore.getKey(newAlias, null) != null) {
++                // If successful, delete the old key
++                keyStore.deleteEntry(legacyAlias)
++                Log.d(LOG_TAG, "Successfully migrated key from $legacyAlias to $newAlias")
++            }
++        } catch (e: Exception) {
++            Log.w(LOG_TAG, "Failed to migrate legacy key $legacyAlias: ${e.message}")
++        }
++    }
+   }
+ 
+   // endregion
+@@ -158,12 +206,18 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+ 
+   /** Remove key with provided name from security storage. */
+   override fun removeKey(alias: String) {
+-    val safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++    val defaultAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
+     val ks = getKeyStoreAndLoad()
+ 
+     try {
+-      if (ks.containsAlias(safeAlias)) {
+-        ks.deleteEntry(safeAlias)
++      if (ks.containsAlias(defaultAlias)) {
++        ks.deleteEntry(defaultAlias)
++      }
++      // Try each possible prefix
++      listOf(PREFIX_RSA, PREFIX_AES_GCM, PREFIX_AES_GCM_NO_AUTH, PREFIX_AES_CBC).forEach { prefix ->
++        val prefixedAlias = getPrefixedAlias(defaultAlias, prefix)
++        if (ks.containsAlias(prefixedAlias)) {
++          ks.deleteEntry(prefixedAlias)
+       }
+     } catch (ignored: GeneralSecurityException) {
+       /* only one exception can be raised by code: 'KeyStore is not loaded' */
+@@ -174,7 +228,15 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+     val ks = getKeyStoreAndLoad()
+     try {
+       val aliases = ks.aliases()
+-      return HashSet(Collections.list(aliases))
++      // Strip prefixes when returning keys
++      return HashSet(Collections.list(aliases).map { alias ->
++        listOf(PREFIX_RSA, PREFIX_AES_GCM, PREFIX_AES_GCM_NO_AUTH, PREFIX_AES_CBC).forEach { prefix ->
++          if (alias.startsWith("$prefix$PREFIX_DELIMITER")) {
++            return@map alias.substring(prefix.length + PREFIX_DELIMITER.length)
++          }
++        }
++        alias
++      })
+     } catch (e: KeyStoreException) {
+       throw KeyStoreAccessException("Error accessing aliases in keystore $ks", e)
+     }
+@@ -212,17 +274,10 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
  
    // region Implementation
  
@@ -162,7 +276,50 @@ index 6a941bf..8a6f6c7 100644
    }
  
    /** Check requirements to the security level. */
-@@ -350,6 +343,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+@@ -304,6 +359,42 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+     return key
+   }
+ 
++  /**
++   * Try to extract key, first with prefix then fallback to legacy format
++   */
++  @Throws(GeneralSecurityException::class) 
++  protected fun extractKeyWithMigration(
++      alias: String,
++      prefix: String,
++      handler: ResultHandler,
++      level: SecurityLevel,
++      retries: AtomicInteger
++  ): Key {
++      val prefixedAlias = getPrefixedAlias(alias, prefix)
++      val keyStore = getKeyStoreAndLoad()
++
++      // First try prefixed alias
++      if (keyStore.containsAlias(prefixedAlias)) {
++          return extractKey(keyStore, prefixedAlias, retries) ?: 
++              throw KeyStoreAccessException("Failed to extract key for $prefixedAlias")
++      }
++
++      // Try legacy alias
++      if (keyStore.containsAlias(alias)) {
++          val key = extractKey(keyStore, alias, retries)
++          if (key != null) {
++              // Migrate to new format
++              migrateLegacyKey(alias, prefixedAlias, keyStore, handler, level)
++              return key
++          }
++      }
++
++      // No existing key found, create new one with prefix
++      generateKeyAndStoreUnderAlias(prefixedAlias, level)
++      return extractKey(keyStore, prefixedAlias, retries) ?:
++          throw KeyStoreAccessException("Failed to generate key for $prefixedAlias")
++  }
++
+   /** Verify that provided key satisfy minimal needed level. */
+   @Throws(GeneralSecurityException::class)
+   protected fun validateKeySecurityLevel(level: SecurityLevel, key: Key): Boolean {
+@@ -350,6 +441,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
    /** Default encryption with cipher without initialization vector. */
    @Throws(IOException::class, GeneralSecurityException::class)
    open fun encryptString(key: Key, value: String): ByteArray {
@@ -170,7 +327,7 @@ index 6a941bf..8a6f6c7 100644
      return encryptString(key, value, Defaults.encrypt)
    }
  
-@@ -362,20 +356,35 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+@@ -362,20 +454,35 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
    /** Encrypt provided string value. */
    @Throws(IOException::class, GeneralSecurityException::class)
    protected fun encryptString(key: Key, value: String, handler: EncryptStringHandler?): ByteArray {
@@ -210,7 +367,7 @@ index 6a941bf..8a6f6c7 100644
        throw fail
      }
    }
-@@ -388,7 +397,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
+@@ -388,7 +495,7 @@ abstract class CipherStorageBase(protected val applicationContext: Context) : Ci
      bytes: ByteArray,
      handler: DecryptBytesHandler?
    ): String {
@@ -220,10 +377,62 @@ index 6a941bf..8a6f6c7 100644
        ByteArrayInputStream(bytes).use { input ->
          ByteArrayOutputStream().use { output ->
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
-index 99ae741..ea3cfda 100644
+index 99ae741..c23399c 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesCbc.kt
-@@ -206,7 +206,7 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
+@@ -88,14 +88,17 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
+ 
+         throwIfInsufficientLevel(level)
+ 
+-        val safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++        val defaultAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++        val safeAlias = getPrefixedAlias(defaultAlias, PREFIX_AES_CBC)
+         val retries = AtomicInteger(1)
+ 
+         try {
+             val key = extractGeneratedKey(safeAlias, level, retries)
+ 
+             val result = CipherStorage.EncryptionResult(
+-                encryptString(key, username), encryptString(key, password), this
++                encryptString(key, username),
++                encryptString(key, password),
++                this
+             )
+             handler.onEncrypt(result, null)
+         } catch (e: GeneralSecurityException) {
+@@ -121,14 +124,16 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
+ 
+         throwIfInsufficientLevel(level)
+ 
+-        val safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++        val defaultAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
+         val retries = AtomicInteger(1)
+ 
+         try {
+-            val key = extractGeneratedKey(safeAlias, level, retries)
++            val key = extractKeyWithMigration(defaultAlias, PREFIX_AES_CBC, handler, level, retries)
+ 
+             val results = CipherStorage.DecryptionResult(
+-                decryptBytes(key, username), decryptBytes(key, password), getSecurityLevel(key)
++                decryptBytes(key, username),
++                decryptBytes(key, password),
++                getSecurityLevel(key)
+             )
+             handler.onDecrypt(results, null)
+         } catch (e: GeneralSecurityException) {
+@@ -159,9 +164,10 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
+             throw KeyStoreAccessException("Unsupported API${Build.VERSION.SDK_INT} version detected.")
+         }
+ 
++        val safeAlias = getPrefixedAlias(alias, PREFIX_AES_CBC)
+         val purposes = KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT
+ 
+-        return KeyGenParameterSpec.Builder(alias, purposes)
++        return KeyGenParameterSpec.Builder(safeAlias, purposes)
+             .setBlockModes(BLOCK_MODE_CBC)
+             .setEncryptionPaddings(PADDING_PKCS7)
+             .setRandomizedEncryptionRequired(true)
+@@ -206,7 +212,7 @@ class CipherStorageKeystoreAesCbc(reactContext: ReactApplicationContext) :
          bytes: ByteArray,
          handler: DecryptBytesHandler?
      ): String {
@@ -233,19 +442,77 @@ index 99ae741..ea3cfda 100644
          return try {
              // read the initialization vector from bytes array
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
-index dc4e616..48d6ce8 100644
+index dc4e616..1a3f01d 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreAesGcm.kt
-@@ -173,7 +173,7 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+@@ -27,7 +27,10 @@ import javax.crypto.SecretKeyFactory
+ import javax.crypto.spec.GCMParameterSpec
+ 
+ @TargetApi(Build.VERSION_CODES.M)
+-class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private val requiresBiometricAuth: Boolean) :
++class CipherStorageKeystoreAesGcm(
++    reactContext: ReactApplicationContext,
++    private val requiresBiometricAuth: Boolean
++) :
+     CipherStorageBase(reactContext) {
+ 
+     // region Constants
+@@ -86,7 +89,8 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+ 
+         throwIfInsufficientLevel(level)
+ 
+-        val safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++        val defaultAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++        val safeAlias = getPrefixedAuthAlias(defaultAlias) 
+         val retries = AtomicInteger(1)
+         var key: Key? = null
+ 
+@@ -124,12 +128,13 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+     ) {
+         throwIfInsufficientLevel(level)
+ 
+-        val safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++        val defaultAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++        val prefix = if (requiresAuth) PREFIX_AES_GCM else PREFIX_AES_GCM_NO_AUTH
+         val retries = AtomicInteger(1)
+         var key: Key? = null
+ 
+         try {
+-            key = extractGeneratedKey(safeAlias, level, retries)
++            key = extractKeyWithMigration(defaultAlias, prefix, handler, level, retries)
+             val results =
+                 CipherStorage.DecryptionResult(
+                     decryptBytes(key, username),
+@@ -140,8 +145,13 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+         } catch (ex: UserNotAuthenticatedException) {
+             Log.d(LOG_TAG, "Unlock of keystore is needed. Error: ${ex.message}", ex)
+             // expected that KEY instance is extracted and we caught exception on decryptBytes operation
+-            val context =
+-                CryptoContext(safeAlias, key!!, password, username, CryptoOperation.DECRYPT)
++            val context = CryptoContext(
++                getPrefixedAlias(defaultAlias, prefix), 
++                key!!,
++                password,
++                username,
++                CryptoOperation.DECRYPT
++            )
+ 
+             handler.askAccessPermissions(context)
+         } catch (fail: Throwable) {
+@@ -173,9 +183,10 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
  
          val purposes = KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT
  
 -        val validityDuration = 5
 +        val validityDuration = 1
++        val safeAlias = getPrefixedAuthAlias(alias)
          val keyGenParameterSpecBuilder =
-             KeyGenParameterSpec.Builder(alias, purposes)
+-            KeyGenParameterSpec.Builder(alias, purposes)
++            KeyGenParameterSpec.Builder(safeAlias, purposes)
                  .setBlockModes(BLOCK_MODE_GCM)
-@@ -243,7 +243,10 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+                 .setEncryptionPaddings(PADDING_NONE)
+                 .setRandomizedEncryptionRequired(true)
+@@ -243,7 +254,10 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
          val encrypt = EncryptStringHandler { cipher, key, output ->
              cipher.init(Cipher.ENCRYPT_MODE, key)
              val iv = cipher.iv
@@ -257,19 +524,101 @@ index dc4e616..48d6ce8 100644
          }
  
          /** Read initialization vector from input stream and configure cipher by it. */
+@@ -267,4 +281,13 @@ class CipherStorageKeystoreAesGcm(reactContext: ReactApplicationContext, private
+         decryptBytes(key, bytes, IV.decrypt)
+ 
+     // endregion
++
++    // region Alias Helpers
++
++    private fun getPrefixedAuthAlias(alias: String): String {
++        val prefix = if (requiresAuth) PREFIX_AES_GCM else PREFIX_AES_GCM_NO_AUTH
++        return getPrefixedAlias(alias, prefix)
++    }
++
++    // endregion
+ }
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
-index f4f69d3..be96913 100644
+index f4f69d3..dbc23ac 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.kt
-@@ -194,7 +194,7 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
+@@ -63,7 +63,8 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
+   ) {
+     throwIfInsufficientLevel(level)
+ 
+-    val safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++    val defaultAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
++    val safeAlias = getPrefixedAlias(defaultAlias, PREFIX_RSA)
+     val retries = AtomicInteger(1)
+     try {
+       extractGeneratedKey(safeAlias, level, retries)
+@@ -106,13 +107,18 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
+   ) {
+     throwIfInsufficientLevel(level)
+ 
++
+     val safeAlias = getDefaultAliasIfEmpty(alias, getDefaultAliasServiceName())
+     val retries = AtomicInteger(1)
+     var key: Key? = null
+ 
+     try {
+-      // key is always NOT NULL otherwise GeneralSecurityException raised
+-      key = extractGeneratedKey(safeAlias, level, retries)
++      // key is always NOT NULL otherwise GeneralSecurityException is thrown
++      key = extractKeyWithMigration(safeAlias, PREFIX_RSA, handler, level, retries)
++      val results = CipherStorage.DecryptionResult(
++          decryptBytes(key, username),
++          decryptBytes(key, password)
++      )
+ 
+       val results =
+         CipherStorage.DecryptionResult(decryptBytes(key, username), decryptBytes(key, password))
+@@ -121,8 +127,14 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
+     } catch (ex: UserNotAuthenticatedException) {
+       Log.d(LOG_TAG, "Unlock of keystore is needed. Error: ${ex.message}", ex)
+ 
+-      // expected that KEY instance is extracted and we caught exception on decryptBytes operation
+-      val context = CryptoContext(safeAlias, key!!, password, username, CryptoOperation.DECRYPT)
++      // expected that KEY instance is extracted and we caught expection on decrtptBytes operation
++      val context = CryptoContext(
++        getPrefixedAlias(safeAlias, PREFIX_RSA), 
++        key!!,
++        password,
++        username,
++        CryptoOperation.DECRYPT
++      )
+ 
+       handler.askAccessPermissions(context)
+     } catch (fail: Throwable) {
+@@ -159,8 +171,9 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
+     val keyStore = getKeyStoreAndLoad()
+ 
+     // Retrieve the certificate after ensuring the key is compatible
+-    val certificate = keyStore.getCertificate(alias)
+-      ?: throw GeneralSecurityException("Certificate is null for alias $alias")
++    val prefixedAlias = getPrefixedAlias(alias, PREFIX_RSA)
++    val certificate = keyStore.getCertificate(prefixedAlias)
++        ?: throw GeneralSecurityException("Certificate is null for alias $prefixedAlias")
+ 
+     val publicKey = certificate.publicKey
+     val kf = KeyFactory.getInstance(ALGORITHM_RSA)
+@@ -190,13 +203,14 @@ class CipherStorageKeystoreRsaEcb(reactContext: ReactApplicationContext) :
+       throw KeyStoreAccessException("Unsupported API${Build.VERSION.SDK_INT} version detected.")
+     }
+ 
++    val safeAlias = getPrefixedAlias(alias, PREFIX_RSA)
+     val purposes = KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_ENCRYPT
  
      val keySize = if (isForTesting) ENCRYPTION_KEY_SIZE_WHEN_TESTING else ENCRYPTION_KEY_SIZE
  
 -    val validityDuration = 5
 +    val validityDuration = 1
      val keyGenParameterSpecBuilder =
-       KeyGenParameterSpec.Builder(alias, purposes)
+-      KeyGenParameterSpec.Builder(alias, purposes)
++      KeyGenParameterSpec.Builder(safeAlias, purposes)
          .setBlockModes(BLOCK_MODE_ECB)
+         .setEncryptionPaddings(PADDING_PKCS1)
+         .setRandomizedEncryptionRequired(true)
 diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
 index 18e42ab..7bc2d7a 100644
 --- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
