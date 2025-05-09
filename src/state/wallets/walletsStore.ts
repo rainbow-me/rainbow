@@ -641,7 +641,7 @@ export const useAccountProfileInfo = () => {
 
   return {
     ...info,
-    accountColorString: info?.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
+    accountColorHex: info?.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
   };
 };
 

@@ -7,6 +7,7 @@ import { doesWalletsContainAddress } from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 export default function useWatchWallet({
   address: primaryAddress,

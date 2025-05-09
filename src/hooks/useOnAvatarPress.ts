@@ -251,6 +251,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     .filter(Boolean) as string[];
 
   const onAvatarPressProfile = useCallback(() => {
+    if (!accountENS) return;
     navigate(Routes.PROFILE_SHEET, {
       address: accountENS,
       fromRoute: 'ProfileAvatar',
