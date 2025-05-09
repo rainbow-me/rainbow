@@ -2,11 +2,14 @@ import { Address } from 'viem';
 import { ParsedAddressAsset } from '@/entities';
 import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
-import { createQueryStore } from '@/state/internal/createQueryStore';
+import { QueryStoreState } from '@/state/internal/queryStore/types';
+import { OptionallyPersistedRainbowStore } from '@/state/internal/types';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { UserAssetsStateToPersist } from './persistence';
 
-export type UserAssetsStoreType = ReturnType<
-  typeof createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, TransformedUserAssetsData>
+export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
+  QueryStoreState<TransformedUserAssetsData, UserAssetsParams, UserAssetsState>,
+  UserAssetsStateToPersist
 >;
 
 export type FetchedUserAssetsData = {
