@@ -153,7 +153,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
         totalValue={totalValue}
         {...props}
       >
-        {!title && (
+        {!title && !!accountName && (
           <WalletSelectButtonWrapper>
             <WalletSelectButton
               accountName={accountName}

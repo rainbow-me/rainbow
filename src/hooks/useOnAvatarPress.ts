@@ -102,6 +102,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   );
 
   const onAvatarPickEmoji = useCallback(() => {
+    if (!accountName) return;
     navigate(screenType === 'wallet' ? Routes.AVATAR_BUILDER_WALLET : Routes.AVATAR_BUILDER, {
       initialAccountColor: accountColor,
       initialAccountName: accountName,

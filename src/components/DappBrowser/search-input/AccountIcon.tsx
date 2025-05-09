@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
@@ -9,7 +8,7 @@ import { useAppSessionsStore } from '@/state/appSessions';
 import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
 

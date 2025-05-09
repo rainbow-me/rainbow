@@ -1,26 +1,26 @@
-import { analytics } from '@/analytics';
-import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
-import { IS_TEST } from '@/env';
-import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useClaimablesStore } from '@/state/claimables/claimables';
-import { usePositionsStore } from '@/state/positions/positions';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { useAccountAddress, useSelectedWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
-import { useNftSort } from './useNFTsSortBy';
 import useShowcaseTokens from './useShowcaseTokens';
+import useWallets from './useWallets';
+import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
-import { isLowerCaseMatch } from '../utils';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { usePositionsStore } from '@/state/positions/positions';
+import { useClaimablesStore } from '@/state/claimables/claimables';
+import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+import { analytics } from '@/analytics';
+import { useNftSort } from './useNFTsSortBy';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
+import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { IS_TEST } from '@/env';
+import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountAddress } from '../state/wallets/walletsStore';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -37,13 +37,12 @@ export default function useWalletSectionsData({
   type?: AssetListType;
 } = {}): WalletSectionsResult {
   const { nftSort, nftSortDirection } = useNftSort();
-  const accountAddress = useAccountAddress();
   const { language, network, nativeCurrency } = useAccountSettings();
-  const selectedWallet = useSelectedWallet();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
+  const accountAddress = useAccountAddress();
+  const { selectedWallet, isReadOnlyWallet } = useWallets();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled');
+  const remoteConfig = useRemoteConfig();
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();
 
@@ -96,8 +95,9 @@ export default function useWalletSectionsData({
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const accountWithBalance = useMemo(() => {
-    const walletAddresses = selectedWallet ? walletsWithBalancesAndNames[selectedWallet.id]?.addresses : null;
-    return walletAddresses?.find(address => isLowerCaseMatch(address.address, accountAddress));
+    return walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
+      address => address.address.toLowerCase() === accountAddress.toLowerCase()
+    );
   }, [walletsWithBalancesAndNames, selectedWallet, accountAddress]);
 
   const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
