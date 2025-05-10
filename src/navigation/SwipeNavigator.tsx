@@ -401,7 +401,8 @@ function SwipeNavigatorScreens() {
       const isOnBrowserTab = props.route.name === Routes.DAPP_BROWSER_SCREEN;
       return {
         animationEnabled: false,
-        lazy,
+        // Make tabs always lazy for tests to reduce view hierarchy size.
+        lazy: lazy || IS_TEST,
         lazyPlaceholder: () => <LazyPlaceholder route={props.route.name} />,
         swipeEnabled: (!isOnBrowserTab && !isCoinListEdited) || IS_TEST,
       };

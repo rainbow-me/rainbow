@@ -29,7 +29,7 @@ tags:
 - inputText: 'DAI'
 - tapOn:
     id: token-to-buy-dai-1
-- assertVisible: 'DAI'
+- assertVisible: 'DAI.*'
 - assertVisible: 'No Balance'
 # Add swap execution and validation.
 # Currenlty on detox we don't do either.

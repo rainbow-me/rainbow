@@ -40,6 +40,26 @@ It is recommended that those commands are extracted to a flow for reuse. See `e2
 
 ### Troubleshooting
 
+#### Cannot find view with a testID on iOS
+
+On iOS `testID` is implemented using `accessibilityIdentifier`. If a parent view is marked as `accessible=true` then it is considered a leaf node and its children `accessibilityIdentifier` won't be visible. Try moving the `testID` up to the accessible view or making the view not accessible if it makes sense in that case. Note that `ButtonPressAnimation` defaults to `accessible=true`.
+
+For example:
+
+```tsx
+<ButtonPressAnimation>
+  <View testID="test" />
+</ButtonPressAnimation>
+```
+
+Will not work, instead use:
+
+```tsx
+<ButtonPressAnimation testID="test">
+  <View />
+</ButtonPressAnimation>
+```
+
 #### Long wait time between actions
 
 Maestro waits for the app to be settled before moving on to the next actions. If it seems to be waiting too much this is most likely caused by looping animations preventing it from settling. If you see any animation, you can use the `IS_TEST` from `@/env` to disable them for e2e tests only.

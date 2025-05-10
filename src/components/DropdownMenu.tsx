@@ -3,7 +3,7 @@ import * as DropdownMenuPrimitive from 'zeego/dropdown-menu';
 import styled from 'styled-components';
 import { IconConfig, MenuActionConfig, MenuConfig as _MenuConfig } from 'react-native-ios-context-menu';
 import { ImageSystemSymbolConfiguration } from 'react-native-ios-context-menu/lib/typescript/types/ImageItemConfig';
-import { ImageSourcePropType, ImageURISource } from 'react-native';
+import { ImageSourcePropType, ImageURISource, View } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
 import { ButtonPressAnimation } from './animations';
@@ -114,49 +114,54 @@ export function DropdownMenu<T extends string>({
   const MenuItemComponent = menuItemType === 'checkbox' ? DropdownMenuCheckboxItem : DropdownMenuItem;
 
   return (
-    <DropdownMenuRoot>
-      <DropdownMenuTrigger action={triggerAction}>
-        <ConditionalWrap
-          condition={triggerAction === 'press'}
-          wrap={children => <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>}
+    <ConditionalWrap
+      condition={testID != null}
+      wrap={children => (
+        // testID needs to be on an extra view that wraps the dropdown menu to work on iOS.
+        <View testID={testID}>{children}</View>
+      )}
+    >
+      <DropdownMenuRoot>
+        <DropdownMenuTrigger action={triggerAction}>
+          <ConditionalWrap condition={triggerAction === 'press'} wrap={children => <ButtonPressAnimation>{children}</ButtonPressAnimation>}>
+            {children}
+          </ConditionalWrap>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          loop={loop}
+          side={side}
+          align={align}
+          alignOffset={alignOffset}
+          avoidCollisions={avoidCollisions}
+          sideOffset={sideOffset}
+          collisionPadding={12}
         >
-          {children}
-        </ConditionalWrap>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        loop={loop}
-        side={side}
-        align={align}
-        alignOffset={alignOffset}
-        avoidCollisions={avoidCollisions}
-        sideOffset={sideOffset}
-        collisionPadding={12}
-      >
-        {menuConfig.menuItems?.map(item => {
-          const Icon = buildIconConfig(item.icon as MenuItemIcon);
+          {menuConfig.menuItems?.map(item => {
+            const Icon = buildIconConfig(item.icon as MenuItemIcon);
 
-          return (
-            <MenuItemComponent
-              value={item.menuState ?? 'off'}
-              destructive={item.destructive}
-              key={item.actionKey}
-              onSelect={() => handleSelectItem(item.actionKey)}
-            >
-              <DropdownMenuItemTitle>{item.actionTitle}</DropdownMenuItemTitle>
-              {item.actionSubtitle && <DropdownMenuItemSubtitle>{item.actionSubtitle}</DropdownMenuItemSubtitle>}
-              {Icon}
-            </MenuItemComponent>
-          );
-        })}
+            return (
+              <MenuItemComponent
+                value={item.menuState ?? 'off'}
+                destructive={item.destructive}
+                key={item.actionKey}
+                onSelect={() => handleSelectItem(item.actionKey)}
+              >
+                <DropdownMenuItemTitle>{item.actionTitle}</DropdownMenuItemTitle>
+                {item.actionSubtitle && <DropdownMenuItemSubtitle>{item.actionSubtitle}</DropdownMenuItemSubtitle>}
+                {Icon}
+              </MenuItemComponent>
+            );
+          })}
 
-        {!!menuConfig.menuTitle?.trim() && (
-          <DropdownMenuPrimitive.Group>
-            <DropdownMenuTitle>
-              <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
-            </DropdownMenuTitle>
-          </DropdownMenuPrimitive.Group>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenuRoot>
+          {!!menuConfig.menuTitle?.trim() && (
+            <DropdownMenuPrimitive.Group>
+              <DropdownMenuTitle>
+                <DropdownMenuItemTitle>{menuConfig.menuTitle}</DropdownMenuItemTitle>
+              </DropdownMenuTitle>
+            </DropdownMenuPrimitive.Group>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenuRoot>
+    </ConditionalWrap>
   );
 }

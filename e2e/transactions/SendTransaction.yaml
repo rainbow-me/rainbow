@@ -25,7 +25,8 @@ tags:
     commands:
       - swipe:
           direction: DOWN
-      - assertVisible: 'Ethereum'
+      - assertVisible:
+          id: 'balance-coin-row-Ethereum'
 - tapOn:
     id: send-button
 - assertVisible:

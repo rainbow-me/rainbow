@@ -14,7 +14,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --device)
-      DEVICE="$1 $2"      
+      DEVICE="$1 $2"
       shift
       ;;
     *)
@@ -24,10 +24,10 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-# Check if we're running a transaction test
-if [[ $FLOW == *"transaction"* ]]; then
+# Check if we're running all tests or a transaction test
+if [[ $FLOW == *"transaction"* || $FLOW == "e2e" ]]; then
   echo "Transaction test detected."
-  
+
   # Kill any existing Anvil process
   echo "Cleaning up any existing Anvil processes..."
   ANVIL_PID=$(lsof -t -i:8545 -c anvil 2>/dev/null)
@@ -35,11 +35,11 @@ if [[ $FLOW == *"transaction"* ]]; then
     kill $ANVIL_PID
   fi
   sleep 1
-  
+
   # Start Anvil in the background
   echo "Starting Anvil..."
   yarn anvil --host 0.0.0.0 &
-  
+
   echo "Waiting 5 seconds for Anvil to start..."
   sleep 5
 fi
