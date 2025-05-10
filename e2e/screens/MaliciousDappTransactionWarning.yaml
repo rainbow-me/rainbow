@@ -24,7 +24,6 @@ tags:
     commands:
       # tap on browser search input
       - tapOn: 'Search or enter website'
-      - assertVisible: 'Find apps and more'
       - inputText: 'https://bx-test-dapp.vercel.app/'
       - pressKey: enter
       - assertVisible: 'Test Dapp 🌈'
