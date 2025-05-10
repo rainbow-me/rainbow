@@ -40,7 +40,9 @@ tags:
           text: 'Disconnect'
       # tap somewhere arbitrary to close the control panel sheet
       - tapOn:
-          point: 550, 1000
+          point: 50%,15%
       - scroll
       - tapOn: 'sign malicious permit'
-      - assertVisible: '.*Suspicious Transaction'
+      - extendedWaitUntil:
+          visible: '.*Suspicious Transaction'
+          timeout: 30000
