@@ -27,6 +27,7 @@ tags:
       - assertVisible: 'Find apps and more'
       - inputText: 'https://bx-test-dapp.vercel.app/'
       - pressKey: enter
+      - assertVisible: 'Test Dapp 🌈'
       # tap on wallet pfp to open the control panel
       - tapOn:
           id: account-icon
@@ -40,5 +41,6 @@ tags:
       # tap somewhere arbitrary to close the control panel sheet
       - tapOn:
           point: 550, 1000
+      - scroll
       - tapOn: 'sign malicious permit'
       - assertVisible: '.*Suspicious Transaction'
