@@ -13,7 +13,7 @@ jobs:
       # built for all architectures so it can be downloaded from the artifacts
       # and installed locally. It will also record logcat logs and a video of
       # the test run. Note that the video is limited to 3 minutes.
-      DEBUG: false
+      DEBUG: true
       SHARDS: 1
       ANDROID_EMULATOR_API_LEVEL: 30
       ANDROID_EMULATOR_PROFILE: pixel_5
