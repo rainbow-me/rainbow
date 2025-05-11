@@ -15,7 +15,7 @@ jobs:
       # the test run. Note that the video is limited to 3 minutes.
       DEBUG: false
       SHARDS: 1
-      ANDROID_EMULATOR_API_LEVEL: 33
+      ANDROID_EMULATOR_API_LEVEL: 31
       ANDROID_EMULATOR_PROFILE: pixel_6
       ANDROID_EMULATOR_CORES: 4
       ANDROID_EMULATOR_RAM_SIZE: 8192
