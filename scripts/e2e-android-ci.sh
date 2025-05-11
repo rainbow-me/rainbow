@@ -32,7 +32,7 @@ for DEVICE in $DEVICES; do
 done
 
 # Run the tests
-./scripts/e2e-android.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG --flow ./e2e/screens/MaliciousDappTransactionWarning.yaml
+./scripts/e2e-android.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG
 TEST_STATUS=$?
 
 # Clean up
