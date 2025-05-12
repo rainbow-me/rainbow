@@ -42,10 +42,10 @@ tags:
       - tapOn: 'No thanks'
       - assertVisible: 'Wallets & Backup'
 
-- assertVisible: 'Enable Cloud Backups'
+- assertVisible: '.*Enable Cloud Backups'
 
 # Navigate to manual backup screen
-- tapOn: 'Private Key 1'
+- tapOn: '.*Private Key 1.*'
 - assertVisible: 'Not backed up'
 - tapOn:
     id: back-up-manually
