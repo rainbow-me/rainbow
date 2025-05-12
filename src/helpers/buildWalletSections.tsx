@@ -3,7 +3,6 @@ import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { RainbowPositions } from '@/resources/defi/types';
-import { RainbowConfig } from '@/model/remoteConfig';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { Language } from '@/languages';
 import { Network } from '@/state/backendNetworks/types';
@@ -58,7 +57,6 @@ export type WalletSectionsState = {
   nativeCurrency: NativeCurrencyKey;
   pinnedCoins: BooleanMap;
   sellingTokens?: UniqueAsset[];
-  remoteConfig: RainbowConfig;
   experimentalConfig: ReturnType<typeof useExperimentalConfig>;
   showcaseTokens: string[];
   uniqueTokens: UniqueAsset[];
