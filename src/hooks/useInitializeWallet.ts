@@ -43,7 +43,6 @@ export default function useInitializeWallet() {
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
-  const accountAddress = useAccountAddress();
 
   const initializeWallet = useCallback(
     async (

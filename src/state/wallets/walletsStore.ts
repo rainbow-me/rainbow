@@ -7,7 +7,6 @@ import { lightModeThemeColors } from '@/styles';
 import { captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
-import { useMemo } from 'react';
 import { saveKeychainIntegrityState } from '../../handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '../../handlers/localstorage/walletNames';
 import { ensureValidHex } from '../../handlers/web3';
@@ -34,6 +33,8 @@ import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } fr
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '../../utils/profileUtils';
 import { createRainbowStore } from '../internal/createRainbowStore';
 import { Address } from 'viem';
+import { isLowerCaseMatch } from '../../utils';
+import { memoFnLastCall } from '../../utils/memoFnLastCall';
 
 interface WalletsState {
   selected: RainbowWallet | null;
@@ -72,7 +73,7 @@ interface WalletsState {
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
-  getAccountProfileInfo: (props?: { address: string; wallet?: RainbowWallet }) => {
+  getAccountProfileInfo: (props: { address: string; wallet?: RainbowWallet }) => {
     accountAddress: string;
     accountColor: number;
     accountENS?: string;
@@ -563,10 +564,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     return walletWithAccount;
   },
 
-  getAccountProfileInfo(props) {
+  getAccountProfileInfo: props => {
     const { selected, walletNames, getWalletWithAccount } = get();
-    const wallet = props?.wallet || (props ? getWalletWithAccount(props.address) : null) || selected;
     const accountAddress = props?.address || get().accountAddress;
+    const wallet = props?.wallet || (accountAddress ? getWalletWithAccount(accountAddress) : null) || selected;
 
     if (!wallet || !accountAddress || !wallet?.addresses?.length) {
       return {
@@ -576,8 +577,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
     }
 
     const accountENS = walletNames?.[accountAddress];
-    const lowerCaseAccountAddress = accountAddress.toLowerCase();
-    const selectedAccount = wallet.addresses?.find((account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress);
+    const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, accountAddress));
 
     if (!selectedAccount) {
       return {
@@ -632,12 +632,9 @@ export const isImportedWallet = (address: string): boolean => {
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
   const accountAddress = useAccountAddress();
-
-  const info = useMemo(() => {
-    return getAccountProfileInfo({
-      address: accountAddress,
-    });
-  }, [accountAddress]);
+  const info = getAccountProfileInfo({
+    address: accountAddress,
+  });
 
   return {
     ...info,
