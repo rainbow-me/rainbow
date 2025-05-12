@@ -49,17 +49,6 @@ type Props = {
   onWalletTypeIdentified?: (walletType: EthereumWalletType) => void;
 };
 
-type SecretDisplaySectionParams = {
-  SecretDisplaySection: {
-    title: string;
-    privateKeyAddress?: string;
-    isBackingUp?: boolean;
-    backupType?: keyof typeof WalletBackupTypes;
-    walletId: string;
-    secretText: string;
-  };
-};
-
 export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }: Props) {
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();

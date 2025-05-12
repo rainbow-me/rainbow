@@ -1,4 +1,4 @@
-import { ensureChecksumAddress } from '@/handlers/web3';
+import { toChecksumAddress } from '@/handlers/web3';
 import { RainbowAccount } from '@/model/wallet';
 import { setSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import useInitializeWallet from './useInitializeWallet';
@@ -14,10 +14,12 @@ export default function useSwitchWallet() {
       // Addresses
       return wallets[key].addresses.find((account: RainbowAccount) => account.address.toLowerCase() === address.toLowerCase());
     });
-
     if (!walletKey) return null;
 
-    setSelectedWallet(wallets[walletKey], ensureChecksumAddress(address));
+    const validAddress = toChecksumAddress(address);
+    if (!validAddress) return null;
+
+    setSelectedWallet(wallets[walletKey], validAddress);
 
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
     return initializeWallet(null, null, null, false, false, null, true);
