@@ -2,11 +2,6 @@ name: Android e2e tests
 
 on: [pull_request]
 jobs:
-  workflow-telemetry-action:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
   android-e2e:
     runs-on: blacksmith-16vcpu-ubuntu-2204
     concurrency:
@@ -28,6 +23,8 @@ jobs:
       ARCH: x86_64
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
       - name: Checkout repo
         uses: actions/checkout@v4
 
