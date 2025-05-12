@@ -11,14 +11,8 @@ tags:
 - runFlow: ../utils/ImportWalletWithKey.yaml
 
 # Navigate to browser
-- swipe:
-    direction: LEFT
-- assertVisible:
-    id: discover-header
-- swipe:
-    direction: LEFT
-- assertVisible:
-    id: browser-screen
+- tapOn:
+    id: 'tab-bar-icon-DappBrowserScreen'
 
 # connect to bx-test-dapp
 - tapOn:
