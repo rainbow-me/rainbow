@@ -11,12 +11,14 @@ export default function ContextMenuAndroid({
   onPressMenuItem,
   shouldOpenOnLongPress,
   style,
+  testID,
 }: PropsWithChildren<{
   menuConfig: MenuConfig;
   isAnchoredToRight?: boolean;
   onPressMenuItem: (event: { nativeEvent: { actionKey: string } }) => void;
   shouldOpenOnLongPress?: boolean;
   style?: NativeMenuComponentProps['style'];
+  testID?: string;
 }>) {
   const actions = useMemo(() => {
     const items = [];
@@ -61,6 +63,8 @@ export default function ContextMenuAndroid({
       onPressAction={onPressAction}
       shouldOpenOnLongPress={shouldOpenOnLongPress}
       style={style}
+      // @ts-expect-error This is missing from the type defs, but works.
+      testID={testID}
     >
       {children}
     </MenuView>

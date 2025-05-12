@@ -118,8 +118,8 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
     <AccentColorProvider color={accentColor}>
       <RNAnimated.View style={[animatedStyle, { zIndex: 500 }]}>
         <Animated.View style={expandStyle}>
-          <ContextMenuButton menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
-            <ButtonPressAnimation onPress={onAvatarPressProfile} scale={0.8} testID="avatar-button" overflowMargin={20}>
+          <ContextMenuButton testID="avatar-button" menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
+            <ButtonPressAnimation onPress={onAvatarPressProfile} scale={0.8} overflowMargin={20}>
               <Box
                 alignItems="center"
                 background="accent"
