@@ -34,7 +34,6 @@ import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetr
 import { createRainbowStore } from '../internal/createRainbowStore';
 import { Address } from 'viem';
 import { isLowerCaseMatch } from '../../utils';
-import { memoFnLastCall } from '../../utils/memoFnLastCall';
 
 interface WalletsState {
   selected: RainbowWallet | null;
