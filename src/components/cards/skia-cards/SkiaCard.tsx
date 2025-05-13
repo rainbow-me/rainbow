@@ -84,14 +84,15 @@ export const SkiaCard = memo(function SkiaCard({
         <Canvas style={styles.canvas}>
           <Group
             clip={backgroundRect}
-            layer={
-              skiaBackground ? (
-                cloneElement(skiaBackground, { clip: backgroundRect })
-              ) : (
-                <Paint clip={backgroundRect} color={backgroundColor} />
-              )
-            }
+            // layer={
+            //   skiaBackground ? (
+            //     cloneElement(skiaBackground, { clip: backgroundRect })
+            //   ) : (
+            //     <Paint clip={backgroundRect} color={backgroundColor} />
+            //   )
+            // }
           >
+            {skiaBackground}
             <CardHighlights
               height={height}
               innerShadowColor={styles.innerShadowColor}
@@ -101,7 +102,7 @@ export const SkiaCard = memo(function SkiaCard({
               strokePath={strokePath}
               width={width}
             />
-            {skiaForeground && skiaForeground}
+            {skiaForeground}
           </Group>
         </Canvas>
       </View>

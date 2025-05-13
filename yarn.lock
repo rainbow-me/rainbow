@@ -6227,13 +6227,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-masked-view/masked-view@npm:0.3.1":
-  version: 0.3.1
-  resolution: "@react-native-masked-view/masked-view@npm:0.3.1"
+"@react-native-masked-view/masked-view@npm:0.3.2":
+  version: 0.3.2
+  resolution: "@react-native-masked-view/masked-view@npm:0.3.2"
   peerDependencies:
     react: ">=16"
     react-native: ">=0.57"
-  checksum: 10c0/e8823e69caa4f916546de528faa9beb69d25311adecaeb37a5a3e2871141754e895d1b5faa01bc0ca07b4d4b676d940191917803da53208b1be8fef857e5b502
+  checksum: 10c0/4ec84b7af2ded49dc21f17cc723a0ef341076cbe40cf758dd2daff8734bea63ba83e2fee7e63958984385314b8915b6804135997e07697abdd4141217c847fe9
   languageName: node
   linkType: hard
 
@@ -7260,9 +7260,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:2.0.0-next.3":
-  version: 2.0.0-next.3
-  resolution: "@shopify/react-native-skia@npm:2.0.0-next.3"
+"@shopify/react-native-skia@npm:2.0.0":
+  version: 2.0.0
+  resolution: "@shopify/react-native-skia@npm:2.0.0"
   dependencies:
     canvaskit-wasm: "npm:0.40.0"
     react-reconciler: "npm:0.31.0"
@@ -7277,7 +7277,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: scripts/setup-canvaskit.js
-  checksum: 10c0/96a2538a6ef29d8c5d0ab07dbff6fdec1da1e509c11968fd37d559454ee8f4d70c11d5b937984b952d013db76297b85c7bef9087835be5104b2ef32ee312c301
+  checksum: 10c0/0df67f7bece14f271bfd841c3b4e4be8f53b6e700ea70c9cefa940cbeb4ab37f60d2a11482fe58d93725d47ac3c2ce5557bd1516a494ab836df27535afaef5ff
   languageName: node
   linkType: hard
 
@@ -9599,7 +9599,7 @@ __metadata:
     "@react-native-firebase/app": "npm:20.1.0"
     "@react-native-firebase/messaging": "npm:20.1.0"
     "@react-native-firebase/remote-config": "npm:20.1.0"
-    "@react-native-masked-view/masked-view": "npm:0.3.1"
+    "@react-native-masked-view/masked-view": "npm:0.3.2"
     "@react-native-menu/menu": "npm:1.2.3"
     "@react-native/babel-preset": "npm:0.79.0"
     "@react-native/metro-config": "npm:0.79.0"
@@ -9614,7 +9614,7 @@ __metadata:
     "@sentry/react-native": "npm:5.35.0"
     "@shopify/flash-list": "npm:1.8.0"
     "@shopify/react-native-performance": "npm:4.1.2"
-    "@shopify/react-native-skia": "npm:2.0.0-next.3"
+    "@shopify/react-native-skia": "npm:2.0.0"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
