@@ -513,7 +513,6 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
        * we need to re-encrypt them with a new PIN
        */
       if (valueStr.includes('cipher')) {
-        // eslint-disable-next-line no-await-in-loop
         secretPhraseOrOldAndroidBackupPrivateKey = await decryptSecretFromBackupPin({
           secret: valueStr,
           backupPIN,
@@ -542,7 +541,6 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
         continue;
       }
 
-      // eslint-disable-next-line no-await-in-loop
       await createWallet({
         seed: secretPhraseOrOldAndroidBackupPrivateKey,
         isRestoring: true,

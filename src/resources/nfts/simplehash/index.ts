@@ -53,7 +53,6 @@ export async function fetchSimpleHashNFTListing(
 
   while (cursor) {
     const cursorSuffix = createCursorSuffix(cursor);
-    // eslint-disable-next-line no-await-in-loop
     const response = await nftApi.get(
       // OpenSea ETH offers only for now
       `/nfts/listings/${simplehashNetwork}/${contractAddress}/${tokenId}?marketplaces=${SimpleHashMarketplaceId.OpenSea}${cursorSuffix}`,

@@ -778,11 +778,11 @@ export const createWallet = async ({
       // for each account. If there's history we add it to the wallet.
       // We stop once we 2 accounts with no history
       while (lookup < 2) {
-        let nextWallet: any = null;
+        let nextWallet: EthereumWallet | null = null;
         if (isHardwareWallet) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(seed, index);
           if (!walletObj.wallet) {
-            throw new Error(`No wallet`);
+            throw new Error(`No wallet (unreachable)`);
           }
           ensureEthereumWallet(walletObj.wallet);
           nextWallet = {
@@ -796,6 +796,9 @@ export const createWallet = async ({
           if (pkey) {
             nextWallet = new Wallet(addHexPrefix(pkey));
           }
+        }
+        if (!nextWallet) {
+          throw new Error(`No wallet (unreachable)`);
         }
 
         let hasTxHistory = false;
