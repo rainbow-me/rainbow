@@ -4,9 +4,8 @@ import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
-import useAccountSettings from './useAccountSettings';
 import { fetchENSAvatar } from './useENSAvatar';
-import useInitializeWallet from './useInitializeWallet';
+import { initializeWallet } from '../state/wallets/initializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
@@ -38,7 +37,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const wallets = useWallets();
 
   const { getParent: dangerouslyGetParent, navigate, replace, setOptions } = useNavigation<typeof Routes.MODAL_SCREEN>();
-  const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');

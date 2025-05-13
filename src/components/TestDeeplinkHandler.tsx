@@ -1,4 +1,4 @@
-import { useInitializeWallet } from '@/hooks';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { logger } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -10,8 +10,6 @@ import URL from 'url-parse';
  * Handles E2E test commands. See e2e/README.md:31 for usage.
  */
 export function TestDeeplinkHandler() {
-  const initializeWallet = useInitializeWallet();
-
   useEffect(() => {
     const listener = Linking.addListener('url', async ({ url }) => {
       const { protocol, host, pathname, query } = new URL(url, true);

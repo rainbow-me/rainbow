@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { ScrollView, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
 import RainbowContextWrapper from '../../helpers/RainbowContext';
-import useHideSplashScreen from '../../hooks/useHideSplashScreen';
+import useHideSplashScreen from '../../helpers/hideSplashScreen';
 import { Box, DesignSystemProvider, Separator, Inline, Inset, Stack, Text } from '../';
 import { ColorMode } from '../color/palettes';
 import backgroundPlayground from '../components/BackgroundProvider/BackgroundProvider.playground';

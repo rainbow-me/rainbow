@@ -27,7 +27,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
-import { useInitializeWallet, useWalletsWithBalancesAndNames } from '@/hooks';
+import { useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
@@ -57,6 +57,7 @@ import { TOP_INSET } from '../Dimensions';
 import Navigation from '@/navigation/Navigation';
 import { RAINBOW_HOME } from '../constants';
 import { formatUrl } from '../utils';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 const PAGES = {
   HOME: 'home',
@@ -366,7 +367,6 @@ const HomePanel = memo(function HomePanel({
 }) {
   const accountAddress = useAccountAddress();
   const wallets = useWallets();
-  const initializeWallet = useInitializeWallet();
 
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
@@ -424,7 +424,7 @@ const HomePanel = memo(function HomePanel({
       });
     }
     return true;
-  }, [accountAddress, initializeWallet, selectedWallet, wallets]);
+  }, [accountAddress, selectedWallet, wallets]);
 
   const handleOnPressSwap = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();

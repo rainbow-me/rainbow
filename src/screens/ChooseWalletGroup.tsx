@@ -5,7 +5,6 @@ import { Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import showWalletErrorAlert from '@/helpers/support';
 import WalletTypes from '@/helpers/walletTypes';
-import { useInitializeWallet } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
@@ -19,11 +18,11 @@ import React from 'react';
 import { Text as NativeText, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '../navigation/Navigation';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const blue = useForegroundColor('blue');
   const { navigate } = useNavigation();
-  const initializeWallet = useInitializeWallet();
 
   const onNewWalletGroup = () => {
     navigate(Routes.MODAL_SCREEN, {
@@ -33,7 +32,6 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
         try {
           await createWallet({ name });
           await loadWallets();
-          // @ts-expect-error - needs refactor to object params
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (error) {
@@ -102,7 +100,6 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const accounts = wallet.addresses;
   const { navigate } = useNavigation();
-  const initializeWallet = useInitializeWallet();
 
   const onAddToGroup = () => {
     navigate(Routes.MODAL_SCREEN, {
@@ -117,7 +114,6 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
             color,
             name,
           });
-          // @ts-expect-error - needs refactor to object params
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (e) {

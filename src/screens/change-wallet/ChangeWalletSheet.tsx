@@ -12,7 +12,7 @@ import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { addDisplay } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
-import { useAccountSettings, useInitializeWallet, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useAccountSettings, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -24,6 +24,7 @@ import { getNotificationSettingsForWalletWithAddress } from '@/notifications/set
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
 import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { setSelectedWallet, useWallets, useSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
@@ -87,7 +88,6 @@ export default function ChangeWalletSheet() {
   const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
-  const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
@@ -266,7 +266,7 @@ export default function ChangeWalletSheet() {
         });
       }
     },
-    [currentAddress, editMode, goBack, initializeWallet, onChangeWallet, wallets, watchOnly]
+    [currentAddress, editMode, goBack, onChangeWallet, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(

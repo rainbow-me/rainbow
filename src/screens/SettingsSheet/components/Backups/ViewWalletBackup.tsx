@@ -21,7 +21,7 @@ import showWalletErrorAlert from '@/helpers/support';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
-import { useENSAvatar, useInitializeWallet } from '@/hooks';
+import { useENSAvatar } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
@@ -37,7 +37,6 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { InteractionManager } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { useRecoilState } from 'recoil';
 import { isWalletBackedUpForCurrentAccount } from '../../utils';
 import Menu from '../Menu';
@@ -45,7 +44,7 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { RootStackParamList } from '@/navigation/types';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -128,7 +127,6 @@ const ViewWalletBackup = () => {
   const isDamaged = useIsDamagedWallet();
   const wallets = useWallets();
   const wallet = wallets?.[walletId];
-  const initializeWallet = useInitializeWallet();
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
   const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;
@@ -198,7 +196,6 @@ const ViewWalletBackup = () => {
                     color,
                     name,
                   });
-                  // @ts-expect-error - no params
                   await initializeWallet();
                 }
               } catch (e) {
@@ -230,7 +227,7 @@ const ViewWalletBackup = () => {
         error: e,
       });
     }
-  }, [creatingWallet, isDamaged, navigate, initializeWallet, wallet]);
+  }, [creatingWallet, isDamaged, navigate, wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {

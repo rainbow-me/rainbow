@@ -1,4 +1,4 @@
-import { useDeleteWallet, useImportingWallet, useInitializeWallet } from '@/hooks';
+import { useDeleteWallet, useImportingWallet } from '@/hooks';
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { useInitializeWallet } from '../state/wallets/initializeWallet';
 
 export default function useWatchWallet({
   address: primaryAddress,

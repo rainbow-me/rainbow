@@ -13,7 +13,7 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { useENSAvatar, useInitializeWallet, useManageCloudBackups } from '@/hooks';
+import { useENSAvatar, useManageCloudBackups } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
@@ -38,6 +38,7 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader, { StatusType } from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -108,8 +109,6 @@ export const WalletsAndBackup = () => {
   const backupProvider = backupsStore(state => state.backupProvider);
   const backups = backupsStore(state => state.backups);
   const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
-
-  const initializeWallet = useInitializeWallet();
 
   const { manageCloudBackups } = useManageCloudBackups();
 
@@ -184,8 +183,6 @@ export const WalletsAndBackup = () => {
           });
 
           await loadWallets();
-
-          // @ts-expect-error - no params
           await initializeWallet();
         } catch (err) {
           logger.error(new RainbowError(`[WalletsAndBackup]: Failed to create new secret phrase`), {
@@ -204,7 +201,7 @@ export const WalletsAndBackup = () => {
         }
       },
     });
-  }, [initializeWallet, navigate, walletTypeCount.phrase, backupProvider]);
+  }, [navigate, walletTypeCount.phrase, backupProvider]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {

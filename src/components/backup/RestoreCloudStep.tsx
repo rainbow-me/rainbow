@@ -5,7 +5,7 @@ import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/ha
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { useDimensions, useInitializeWallet } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import * as lang from '@/languages';
 import { logger } from '@/logger';
 import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
@@ -33,6 +33,7 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { PasswordField } from '../fields';
 import { ImgixImage } from '../images';
 import { Text } from '../text';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 type ComponentProps = {
   theme: ThemeContextProps;
@@ -95,7 +96,6 @@ export default function RestoreCloudStep() {
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const passwordRef = useRef<TextInput | null>(null);
-  const initializeWallet = useInitializeWallet();
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
@@ -231,7 +231,7 @@ export default function RestoreCloudStep() {
         loadingState: null,
       });
     }
-  }, [password, selectedBackup?.name, dispatch, onRestoreSuccess, initializeWallet]);
+  }, [password, selectedBackup?.name, dispatch, onRestoreSuccess]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
