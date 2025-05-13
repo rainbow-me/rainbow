@@ -9,7 +9,7 @@ import { IS_IOS } from '@/env';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { getProvider } from '@/handlers/web3';
 import { delay } from '@/helpers/utilities';
-import { useAccountSettings, useGas, useSwitchWallet } from '@/hooks';
+import { useAccountSettings, useGas } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -66,6 +66,7 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
+import { switchWallet } from '@/state/wallets/switchWallet';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -86,7 +87,6 @@ export const SignTransactionSheet = () => {
 
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST>>();
   const wallets = useWallets();
-  const { switchToWalletWithAddress } = useSwitchWallet();
   const {
     transactionDetails,
     onSuccess: onSuccessCallback,
@@ -387,7 +387,7 @@ export const SignTransactionSheet = () => {
       InteractionManager.runAfterInteractions(async () => {
         if (!txSavedInCurrentWallet && !!txDetails) {
           if (txDetails?.from) {
-            await switchToWalletWithAddress(txDetails?.from as string);
+            await switchWallet(txDetails?.from);
           }
 
           addNewTransaction({
@@ -427,7 +427,6 @@ export const SignTransactionSheet = () => {
     nativeAsset,
     gasLimit,
     onSuccessCallback,
-    switchToWalletWithAddress,
     formattedDappUrl,
     onCancel,
   ]);

@@ -44,7 +44,6 @@ export { default as useExternalWalletSectionsData } from './useExternalWalletSec
 export { default as useFetchHiddenTokens } from './useFetchHiddenTokens';
 export { default as useGas } from './useGas';
 export { default as useHeight } from './useHeight';
-export { default as useHideSplashScreen } from '../helpers/hideSplashScreen';
 export { default as useImageMetadata } from './useImageMetadata';
 export { default as useInteraction } from './useInteraction';
 export { default as useIsOffline } from './useIsOffline';
@@ -74,7 +73,6 @@ export { default as useSendFeedback } from './useSendFeedback';
 export { default as useShakeAnimation } from './useShakeAnimation';
 export { default as useShowcaseTokens } from './useShowcaseTokens';
 export { default as useStepper } from './useStepper';
-export { default as useSwitchWallet } from './useSwitchWallet';
 export { default as useTimeout } from './useTimeout';
 export { default as usePendingTransactions } from './usePendingTransactions';
 export { default as useUserAccounts } from './useUserAccounts';

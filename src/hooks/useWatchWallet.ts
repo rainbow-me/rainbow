@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { useInitializeWallet } from '../state/wallets/initializeWallet';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -33,7 +33,6 @@ export default function useWatchWallet({
 
   const deleteWallet = useDeleteWallet({ address: primaryAddress });
 
-  const initializeWallet = useInitializeWallet();
   const changeAccount = useCallback(
     async (walletId: string, address: string) => {
       const wallet = (wallets || {})[walletId];
@@ -50,7 +49,7 @@ export default function useWatchWallet({
         });
       }
     },
-    [initializeWallet, wallets]
+    [wallets]
   );
 
   const accountAddress = useAccountAddress();

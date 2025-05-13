@@ -1,5 +1,5 @@
 import walletTypes from '@/helpers/walletTypes';
-import { usePrevious, useSwitchWallet } from '@/hooks';
+import { usePrevious } from '@/hooks';
 import { logger } from '@/logger';
 import { Navigation } from '@/navigation';
 import {
@@ -24,6 +24,7 @@ import {
 } from '@/notifications/types';
 import store, { AppState } from '@/redux/store';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
+import { switchWallet } from '@/state/wallets/switchWallet';
 import { getAccountAddress, getWalletReady, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch } from '@/utils';
 import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';
@@ -39,9 +40,7 @@ type Callback = () => void;
 
 export const NotificationsHandler = () => {
   const wallets = useWallets();
-  const walletSwitcher = useSwitchWallet();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
-  const walletSwitcherRef = useRef(walletSwitcher);
   const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
@@ -53,12 +52,6 @@ export const NotificationsHandler = () => {
 
   const walletReady = useWalletsStore(state => state.walletReady);
   const prevWalletReady = usePrevious(walletReady);
-
-  /*
-  We need to save wallets property to a ref in order to have an up-to-date value
-  inside the event listener callbacks closure
-   */
-  walletSwitcherRef.current = walletSwitcher;
 
   const onForegroundRemoteNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
     const type = remoteMessage?.data?.type;
@@ -116,13 +109,12 @@ export const NotificationsHandler = () => {
       // casting data payload to type that was agreed on with backend
       const data = notification.data as unknown as TransactionNotificationData;
 
-      const walletSwitcher = walletSwitcherRef.current;
       const { nativeCurrency } = store.getState().settings;
       const accountAddress = getAccountAddress();
 
       let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
-        walletAddress = await walletSwitcher.switchToWalletWithAddress(data.address);
+        walletAddress = await switchWallet(data.address);
       }
       if (!walletAddress) {
         return;
@@ -202,7 +194,8 @@ export const NotificationsHandler = () => {
       notificationOpenedListener.current?.();
       appStateListener.current?.remove();
     };
-  }, [handleOpenedNotification, handleDeferredNotificationIfNeeded, handleNotificationPressed]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (walletReady && prevWalletReady !== walletReady) {
@@ -234,7 +227,8 @@ export const NotificationsHandler = () => {
 
       alreadyRanInitialization.current = true;
     }
-  }, [dispatch, walletReady, wallets]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, walletReady]);
 
   return null;
 };

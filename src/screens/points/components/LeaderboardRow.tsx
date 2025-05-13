@@ -4,7 +4,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { useClipboard, useContacts, useSwitchWallet, useWatchWallet } from '@/hooks';
+import { useClipboard, useContacts, useWatchWallet } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -20,6 +20,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import { switchWallet } from '@/state/wallets/switchWallet';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -44,7 +45,6 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   rank: number;
 }) {
   const selectedWallet = useSelectedWallet();
-  const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { colors } = useTheme();
   const { navigate } = useNavigation();
@@ -123,7 +123,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ACTIONS.OPEN_WALLET) {
         if (!isSelectedWallet) {
-          switchToWalletWithAddress(address);
+          switchWallet(address);
         }
         navigate(Routes.WALLET_SCREEN);
       }
@@ -156,7 +156,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
         Share.share(IS_ANDROID ? { message: shareLink } : { url: shareLink });
       }
     },
-    [address, contact, ens, isSelectedWallet, navigate, onRemoveContact, setClipboard, switchToWalletWithAddress]
+    [address, contact, ens, isSelectedWallet, navigate, onRemoveContact, setClipboard]
   );
 
   const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }), [menuItems]);
