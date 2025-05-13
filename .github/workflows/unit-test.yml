@@ -2,8 +2,8 @@ name: Unit tests
 
 on: [pull_request]
 jobs:
-  android-e2e:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+  lint-and-unit-test:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
