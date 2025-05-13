@@ -3,6 +3,7 @@ name: Android e2e tests
 on: [pull_request]
 jobs:
   android-e2e:
+    if: github.event.pull_request.draft == false
     runs-on: blacksmith-8vcpu-ubuntu-2204
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}

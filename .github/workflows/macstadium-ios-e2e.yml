@@ -64,6 +64,7 @@ jobs:
 
   # iOS build and e2e tests
   e2e-ios:
+    if: github.event.pull_request.draft == false
     runs-on: ["self-hosted"]
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
