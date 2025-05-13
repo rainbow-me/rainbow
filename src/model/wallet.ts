@@ -204,6 +204,15 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   throw new Error(`Not expected: ReadOnly not LibWallet`);
 }
 
+export function isLibWallet(wallet: any): wallet is LibWallet {
+  try {
+    ensureLibWallet(wallet);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const isHardwareWalletKey = (key: string | null) => {
   const data = key?.split('/');
   if (data && data.length > 1) {
@@ -272,6 +281,11 @@ export const walletInit = async ({
       silent,
       userPin,
     });
+
+    if (isLibWallet(wallet)) {
+      throw new Error(`Shouldn't ever hit!`);
+    }
+
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
   }
@@ -642,7 +656,7 @@ export const createWallet = async ({
   silent = false,
   clearCallbackOnStartCreation = false,
   userPin,
-}: CreateWalletParams): Promise<null | Wallet | ReadOnlyWallet> => {
+}: CreateWalletParams): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;

@@ -202,7 +202,7 @@ export const NotificationsHandler = () => {
       notificationOpenedListener.current?.();
       appStateListener.current?.remove();
     };
-  }, [handleAppOpenedWithNotification, handleDeferredNotificationIfNeeded, handleNotificationPressed]);
+  }, [handleOpenedNotification, handleDeferredNotificationIfNeeded, handleNotificationPressed]);
 
   useEffect(() => {
     if (walletReady && prevWalletReady !== walletReady) {

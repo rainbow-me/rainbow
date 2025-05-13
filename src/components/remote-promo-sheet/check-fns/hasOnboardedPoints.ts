@@ -1,9 +1,11 @@
 import { metadataPOSTClient } from '@/graphql';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
-import { getAccountAddress } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/redux/wallets';
 
 export const hasOnboardedPoints = async (): Promise<boolean> => {
-  const accountAddress = getAccountAddress();
+  const { accountAddress } = useWalletsStore.getState();
+  
+  if (!accountAddress) return false;
 
   const data = await metadataPOSTClient.getPointsDataForWallet({
     address: accountAddress,
