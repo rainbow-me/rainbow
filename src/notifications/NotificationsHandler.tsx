@@ -76,18 +76,6 @@ export const NotificationsHandler = () => {
     }
   }, []);
 
-  const handleAppOpenedWithNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage | null) => {
-    if (!remoteMessage) {
-      return;
-    }
-    const notification: MinimalNotification = {
-      title: remoteMessage.notification?.title,
-      body: remoteMessage.notification?.body,
-      data: remoteMessage.data,
-    };
-    handleOpenedNotification(notification);
-  };
-
   const handleNotificationPressed = (event: NotifeeEvent) => {
     if (event.type === EventType.PRESS) {
       const notification = event.detail.notification;
@@ -178,6 +166,18 @@ export const NotificationsHandler = () => {
   };
 
   useEffect(() => {
+    const handleAppOpenedWithNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage | null) => {
+      if (!remoteMessage) {
+        return;
+      }
+      const notification: MinimalNotification = {
+        title: remoteMessage.notification?.title,
+        body: remoteMessage.notification?.body,
+        data: remoteMessage.data,
+      };
+      handleOpenedNotification(notification);
+    };
+
     setupAndroidChannels();
     saveFCMToken();
     trackWalletsSubscribedForNotifications();
@@ -202,7 +202,7 @@ export const NotificationsHandler = () => {
       notificationOpenedListener.current?.();
       appStateListener.current?.remove();
     };
-  }, []);
+  }, [handleAppOpenedWithNotification, handleDeferredNotificationIfNeeded, handleNotificationPressed]);
 
   useEffect(() => {
     if (walletReady && prevWalletReady !== walletReady) {
@@ -234,7 +234,7 @@ export const NotificationsHandler = () => {
 
       alreadyRanInitialization.current = true;
     }
-  }, [dispatch, walletReady]);
+  }, [dispatch, walletReady, wallets]);
 
   return null;
 };

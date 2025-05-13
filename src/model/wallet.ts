@@ -1169,7 +1169,7 @@ export function setCallbackAfterObtainingSeedsFromKeychainOrError(callback: () =
   callbackAfterSeeds = callback;
 }
 
-export const generateAccount = async (id: RainbowWallet['id'], index: number): Promise<null | EthereumWallet> => {
+export const generateAccount = async (id: RainbowWallet['id'], index: number): Promise<null | Wallet | ReadOnlyWallet> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(oldSeedPhraseMigratedKey);
     let seedphrase;
