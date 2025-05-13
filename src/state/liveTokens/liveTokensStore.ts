@@ -1,6 +1,7 @@
 import { time } from '@/utils';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { useUserAssetsStore } from '../assets/userAssets';
 
 // route -> token id -> subscription count
 type TokenSubscriptionCountByRoute = Record<string, Record<string, number>>;
@@ -12,7 +13,7 @@ export interface TokenData {
   lastUpdated: number;
 }
 
-interface TokensDataResponse {
+export interface LiveTokensData {
   [tokenId: string]: TokenData;
 }
 
@@ -26,17 +27,26 @@ type UpdateSubscribedTokensParams = {
   tokenIds: string[];
 };
 
-interface LiveTokensStore {
+type State = {
   subscribedTokensByRoute: TokenSubscriptionCountByRoute;
-  tokens: TokensDataResponse;
-  addSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
+  tokens: LiveTokensData;
+};
+
+type Actions = {
   removeSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
+  addSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
   clear: () => void;
-}
+};
+
+type LiveTokensStore = State & Actions;
+
+const initialState: State = {
+  subscribedTokensByRoute: {},
+  tokens: {},
+};
 
 // let fetchCount = 0;
-
-const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTokensParams): Promise<TokensDataResponse | null> => {
+const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTokensParams): Promise<LiveTokensData | null> => {
   const tokenIdsArray = Object.keys(subscribedTokensByRoute[activeRoute] || {});
 
   if (tokenIdsArray.length === 0) {
@@ -50,11 +60,12 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTok
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
 
-  const assets: TokensDataResponse = {};
+  // TODO: get real data shape from backend
+  const tokens: LiveTokensData = {};
   tokenIdsArray.forEach(id => {
     const basePrice = parseInt(id.substring(2, 5), 16) / 10 || 10;
     const fluctuation = (Math.random() - 0.1) * 0.5;
-    assets[id] = {
+    tokens[id] = {
       price: (basePrice + fluctuation).toFixed(2),
       priceChange24h: (fluctuation * 100).toFixed(2),
       volume24h: (basePrice * 1000 + fluctuation * 1000).toFixed(2),
@@ -62,10 +73,14 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTok
     };
   });
 
-  return assets;
+  return tokens;
 };
 
-export const useLiveTokensStore = createQueryStore<TokensDataResponse | null, LiveTokensParams, LiveTokensStore>(
+function updateUserAssetsStore(tokens: LiveTokensData) {
+  useUserAssetsStore.getState().updateTokens(tokens);
+}
+
+export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
   {
     fetcher: fetchTokensData,
     disableCache: true,
@@ -73,6 +88,7 @@ export const useLiveTokensStore = createQueryStore<TokensDataResponse | null, Li
     setData: ({ data, set }) => {
       if (data) {
         set(state => {
+          updateUserAssetsStore(data);
           return {
             ...state,
             tokens: { ...state.tokens, ...data },
@@ -84,20 +100,11 @@ export const useLiveTokensStore = createQueryStore<TokensDataResponse | null, Li
     params: {
       subscribedTokensByRoute: ($, store) => $(store).subscribedTokensByRoute,
       activeRoute: $ => $(useNavigationStore).activeRoute,
-      // testParam: ($, store) =>
-      //   $(useNavigationStore, state => {
-      //     console.log('test state -', store.getState().test);
-      //     const newQuery = state.searchQuery.trim();
-      //     console.log('search query -', newQuery);
-      //     return newQuery;
-      //   }),
     },
   },
 
   set => ({
-    subscribedTokensByRoute: {},
-    tokens: {},
-
+    ...initialState,
     addSubscribedTokens({ route, tokenIds }: UpdateSubscribedTokensParams) {
       set(state => {
         const { subscribedTokensByRoute } = state;
@@ -119,7 +126,6 @@ export const useLiveTokensStore = createQueryStore<TokensDataResponse | null, Li
         if (!hasChanges) return state;
 
         return {
-          ...state,
           subscribedTokensByRoute,
         };
       });
@@ -148,17 +154,13 @@ export const useLiveTokensStore = createQueryStore<TokensDataResponse | null, Li
         }
 
         return {
-          ...state,
           subscribedTokensByRoute,
         };
       });
     },
 
     clear() {
-      set({
-        subscribedTokensByRoute: {},
-        tokens: {},
-      });
+      set({ ...initialState });
     },
   })
 );

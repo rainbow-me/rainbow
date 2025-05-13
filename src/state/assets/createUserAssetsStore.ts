@@ -19,6 +19,8 @@ import {
   parsedSearchAssetToParsedAddressAsset,
   setUserAssets,
 } from './utils';
+import { convertAmountToNativeDisplayWorklet, multiply } from '@/helpers/utilities';
+import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
@@ -201,6 +203,40 @@ export const createUserAssetsStore = (address: Address | string) =>
           });
 
           return { hiddenAssets, hiddenAssetsBalance };
+        });
+      },
+
+      updateTokens: (tokens: LiveTokensData) => {
+        set(state => {
+          for (const [tokenId, token] of Object.entries(tokens)) {
+            const asset = state.userAssets.get(tokenId);
+            // TODO: could get currency from account settings but now sure how backend is going to handle given codex only USD
+            const currency = 'USD';
+            // TODO: once backend updates with last updated time, we need to check if our update is actually newer
+            if (asset?.price) {
+              asset.price = {
+                value: Number(token.price),
+                relative_change_24h: Number(token.priceChange24h),
+              };
+              asset.balance = {
+                amount: asset.balance.amount,
+                display: convertAmountToNativeDisplayWorklet(multiply(token.price, asset.balance.amount), currency),
+              };
+              asset.native = {
+                balance: {
+                  amount: asset.native.balance.amount,
+                  display: convertAmountToNativeDisplayWorklet(multiply(token.price, asset.native.balance.amount), currency),
+                },
+                price: {
+                  change: '0',
+                  amount: Number(token.price),
+                  display: convertAmountToNativeDisplayWorklet(token.price, currency),
+                },
+              };
+            }
+          }
+          // We return the same state object to skip triggering selectors
+          return state;
         });
       },
     }),
