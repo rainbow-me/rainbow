@@ -21,7 +21,6 @@ import { RainbowsBackground } from '../../components/rainbows-background/Rainbow
 import { Text } from '../../components/text';
 import { analytics } from '@/analytics';
 
-import { useHideSplashScreen } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@/styled-thing';
@@ -32,6 +31,7 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
+import { hideSplashScreen } from '@/helpers/hideSplashScreen';
 
 const Container = styled(View)({
   ...position.coverAsObject,
@@ -72,7 +72,6 @@ export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
-  const hideSplashScreen = useHideSplashScreen();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
