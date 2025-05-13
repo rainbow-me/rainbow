@@ -1,12 +1,15 @@
-import { hasNftOffers as hasNftOffersApi } from '@/resources/nfts';
-import { useWalletsStore } from '@/redux/wallets';
+import { fetchNftOffers } from '@/resources/reservoir/nftOffersQuery';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
 
-export const hasNftOffers = async () => {
-  const { accountAddress } = useWalletsStore.getState();
+export async function hasNftOffers(): Promise<boolean> {
+  const accountAddress = getAccountAddress();
 
   try {
-    return accountAddress ? hasNftOffersApi(accountAddress) : false;
+    const data = await fetchNftOffers({ walletAddress: accountAddress });
+    if (!data?.nftOffers) return false;
+
+    return data?.nftOffers?.length > 1;
   } catch (e) {
     return false;
   }
-};
+}
