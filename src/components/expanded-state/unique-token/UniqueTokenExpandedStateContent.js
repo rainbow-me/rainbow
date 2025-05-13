@@ -75,9 +75,10 @@ const UniqueTokenExpandedStateContent = ({
             backgroundColor={asset.background}
             imageUrl={asset.image_url}
             lowResImageUrl={asset.lowResUrl}
+            collectionName={asset.collection?.name ?? ''}
             fullUniqueId={asset.fullUniqueId}
             id={asset.id}
-            address={asset.asset_contract.address}
+            address={asset.asset_contract?.address}
             mimeType={asset.mime_type}
             transformSvgs={false}
           />

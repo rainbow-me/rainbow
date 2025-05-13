@@ -437,7 +437,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
-              collectionName={asset.collection.name}
+              collectionName={asset.collection?.name ?? ''}
               name={asset.name}
               backgroundColor={asset.background || imageColor}
               imageUrl={asset.image_url}
@@ -446,7 +446,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
               fullUniqueId={asset.fullUniqueId}
               uniqueId={asset.uniqueId}
               id={asset.id}
-              address={asset.asset_contract.address}
+              address={asset.asset_contract?.address}
             />
             <BackgroundBlur />
           </BackgroundImage>

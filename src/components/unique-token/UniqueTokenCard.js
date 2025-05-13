@@ -61,11 +61,11 @@ const UniqueTokenCard = ({
           isCard
           fullUniqueId={item.fullUniqueId}
           id={item.id}
-          collectionName={item.collection.name}
+          collectionName={item.collection?.name ?? ''}
           name={item.name}
           uniqueId={item.uniqueId}
           mimeType={item.mimeType}
-          address={item.asset_contract.address}
+          address={item.asset_contract?.address}
         />
         {borderEnabled && <InnerBorder opacity={0.04} radius={UniqueTokenCardBorderRadius} width={0.5} />}
       </Content>
