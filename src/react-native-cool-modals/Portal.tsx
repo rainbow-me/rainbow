@@ -10,11 +10,8 @@ const Wrapper = IS_IOS ? ({ children }: { children: React.ReactNode }) => childr
 
 export function Portal() {
   const activeRoute = useActiveRoute();
-
-  const { blockTouches, Component } = walletLoadingStore(state => ({
-    blockTouches: state.blockTouches,
-    Component: state.Component,
-  }));
+  const blockTouches = walletLoadingStore(state => state.blockTouches);
+  const Component = walletLoadingStore(state => state.Component);
 
   if (!Component || (activeRoute === Routes.PIN_AUTHENTICATION_SCREEN && !IS_IOS)) {
     return null;

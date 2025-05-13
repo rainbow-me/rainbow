@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
 import { ScrollView, StatusBar } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import wait from 'w2t';
@@ -11,7 +10,6 @@ import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
 import { IS_IOS } from '@/env';
 import { Box, Text, Separator, useForegroundColor, useBackgroundColor } from '@/design-system';
-import { AppState } from '@/redux/store';
 import { getProviders } from '@/resources/f2c';
 import Skeleton from '@/components/skeleton/Skeleton';
 import Navigation from '@/navigation/Navigation';
@@ -23,7 +21,7 @@ import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
 import { FiatProviderName } from '@/entities/f2c';
 import * as lang from '@/languages';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = StatusBar.currentHeight || 0;
@@ -37,7 +35,7 @@ const providerComponents = {
 export function AddCashSheet() {
   const { isNarrowPhone } = useDimensions();
   const insets = useSafeAreaInsets();
-  const accountAddress = useWalletsStore(state => state.accountAddress);
+  const accountAddress = useAccountAddress();
   const borderColor = useForegroundColor('separatorTertiary');
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
   const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;

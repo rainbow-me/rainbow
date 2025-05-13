@@ -26,7 +26,7 @@ import { invalidatePointsQuery, usePoints } from '@/resources/points';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { safeAreaInsetValues, watchingAlert } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
@@ -168,8 +168,9 @@ const ClaimingRewards = ({
   goBack: () => void;
   setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
 }) => {
-  const { accountAddress: address, accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
+  const address = useAccountAddress();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { nativeCurrency: currency } = useAccountSettings();
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
@@ -258,7 +259,6 @@ const ClaimingRewards = ({
         assetToSell: opEth as ParsedAsset,
         assetToBuy: destinationEth as ParsedAsset,
         quote: undefined,
-        // @ts-expect-error - collision between old gas types and new
         gasFeeParamsBySpeed,
         gasParams,
       } satisfies RapSwapActionParameters<'claimBridge'>;
@@ -276,12 +276,7 @@ const ClaimingRewards = ({
       }
 
       try {
-        const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
-          wallet,
-          'claimBridge',
-          // @ts-expect-error - collision between old gas types and new
-          actionParams
-        );
+        const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(wallet, 'claimBridge', actionParams);
 
         if (errorMessage) {
           if (errorMessage.includes('[CLAIM]')) {

@@ -45,13 +45,6 @@ const PrivacySection = () => {
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
-  const viewProfile = useCallback(() => {
-    navigate(Routes.PROFILE_SHEET, {
-      address: accountENS,
-      fromRoute: 'PrivacySettings',
-    });
-  }, [accountENS, navigate]);
-
   const toggleWebData = useCallback(() => {
     if (publicShowCase) {
       wipeWebData();
@@ -89,7 +82,12 @@ const PrivacySection = () => {
           <MenuItem
             hasSfSymbol
             leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
-            onPress={viewProfile}
+            onPress={() => {
+              navigate(Routes.PROFILE_SHEET, {
+                address: accountENS,
+                fromRoute: 'PrivacySettings',
+              });
+            }}
             size={52}
             titleComponent={<MenuItem.Title isLink text={i18n.t(TRANSLATIONS.view_profile)} />}
           />

@@ -90,6 +90,7 @@ export default function WelcomeScreen() {
         contentAnimation.value = 1;
         createWalletButtonAnimation.value = 1;
         colorAnimation.value = 0;
+        hideSplashScreen();
         return;
       }
 
@@ -208,10 +209,8 @@ export default function WelcomeScreen() {
         <RainbowsBackground shouldAnimate={shouldAnimateRainbows} />
         <ContentWrapper style={contentStyle}>
           {IS_ANDROID && IS_TEST ? (
-            // @ts-expect-error JS component
             <RainbowText colors={colors} />
           ) : (
-            // @ts-expect-error JS component
             <MaskedView maskElement={<RainbowText colors={colors} />}>
               <RainbowTextMask style={textStyle} />
             </MaskedView>

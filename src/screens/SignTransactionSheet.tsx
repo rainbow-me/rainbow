@@ -55,15 +55,17 @@ import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
 import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useTransactionSetup } from '@/hooks/useTransactionSetup';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { getAccountProfileInfo, getWalletWithAccount, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -82,8 +84,8 @@ export const SignTransactionSheet = () => {
   const { colors, isDarkMode } = useTheme();
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const { params: routeParams } = useRoute<SignTransactionSheetRouteProp>();
-  const wallets = useWalletsStore(state => state.wallets);
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST>>();
+  const wallets = useWallets();
   const { switchToWalletWithAddress } = useSwitchWallet();
   const {
     transactionDetails,
@@ -94,7 +96,7 @@ export const SignTransactionSheet = () => {
     address: specifiedAddress,
     // for request type specific handling
     source,
-  } = routeParams;
+  } = params;
 
   const addressToUse = specifiedAddress ?? accountAddress;
 
@@ -144,7 +146,9 @@ export const SignTransactionSheet = () => {
     };
   }, [nativeAsset]);
 
-  const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas();
+  const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas({
+    enableTracking: true,
+  });
 
   const { methodName } = useTransactionSetup({
     chainId,

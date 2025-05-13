@@ -34,7 +34,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { Address } from 'viem';
-import { getSelectedWalletFromStorage } from '../model/wallet';
+import { getSelectedWalletFromKeychain } from '../model/wallet';
 import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { SEND_TRANSACTION } from './signingMethods';
 import watchingAlert from './watchingAlert';
@@ -145,7 +145,7 @@ export const handleMobileWalletProtocolRequest = async ({
             } else {
               logger.debug(`Handshake rejected for ${action.appId}`);
               await rejectHandshake(MobileWalletProtocolUserErrors.USER_REJECTED_HANDSHAKE);
-              reject(MobileWalletProtocolUserErrors.USER_REJECTED_HANDSHAKE);
+              reject(new Error(MobileWalletProtocolUserErrors.USER_REJECTED_HANDSHAKE));
             }
           },
         };
@@ -238,14 +238,14 @@ export const handleMobileWalletProtocolRequest = async ({
               message: error.message,
               code: 4001,
             });
-            reject(error.message);
+            reject(error);
           } else {
             logger.debug(`Ethereum action rejected: [${action.method}]: User rejected request`);
             await rejectAction(action, {
               message: MobileWalletProtocolUserErrors.USER_REJECTED_REQUEST,
               code: 4001,
             });
-            reject(MobileWalletProtocolUserErrors.USER_REJECTED_REQUEST);
+            reject(new Error(MobileWalletProtocolUserErrors.USER_REJECTED_REQUEST));
           }
         };
 
@@ -451,7 +451,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
     onCancel,
     onSuccess,
     onCloseScreen,
-    network,
     address,
     chainId,
     source: RequestSource.WALLETCONNECT,

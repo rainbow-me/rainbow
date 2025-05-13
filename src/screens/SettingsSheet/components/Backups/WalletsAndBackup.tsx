@@ -20,13 +20,14 @@ import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { loadWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { abbreviations, deviceUtils } from '@/utils';
 import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
+import { useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { FlatList, ScrollView } from 'react-native';
@@ -37,7 +38,6 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader, { StatusType } from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { SETTINGS_BACKUP_ROUTES } from './routes';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -98,17 +98,16 @@ const WalletPill = ({ account }: WalletPillProps) => {
 
 export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
+  const { name: routeName } = useRoute();
 
   const scrollviewRef = useRef<ScrollView>(null);
 
   const createBackup = useCreateBackup();
-  const { status, backupProvider, backups, mostRecentBackup } = backupsStore(state => ({
-    status: state.status,
-    backupProvider: state.backupProvider,
-    backups: state.backups,
-    mostRecentBackup: state.mostRecentBackup,
-  }));
+  const status = backupsStore(state => state.status);
+  const backupProvider = backupsStore(state => state.backupProvider);
+  const backups = backupsStore(state => state.backups);
+  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
 
   const initializeWallet = useInitializeWallet();
 
@@ -158,10 +157,10 @@ export const WalletsAndBackup = () => {
       },
       logout: true,
     });
-  }, [createBackup, wallets]);
+  }, [createBackup]);
 
   const onViewCloudBackups = useCallback(async () => {
-    navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
+    navigate(Routes.VIEW_CLOUD_BACKUPS, {
       backups,
       title: 'My Cloud Backups',
     });
@@ -210,17 +209,18 @@ export const WalletsAndBackup = () => {
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
       ...backupsCard,
-      type: 'square',
+      displayType: 'square',
+      routeName,
     });
-  }, [navigate]);
+  }, [navigate, routeName]);
 
   const onNavigateToWalletView = useCallback(
     (walletId: string, name: string) => {
       const wallet = wallets?.[walletId];
 
       const title = wallet?.imported && wallet.type === WalletTypes.privateKey ? (wallet.addresses || [])[0].label : name;
-      navigate(SETTINGS_BACKUP_ROUTES.VIEW_WALLET_BACKUP, {
-        imported: wallet?.imported,
+      navigate(Routes.VIEW_WALLET_BACKUP, {
+        imported: wallet?.imported ?? false,
         title,
         walletId,
       });
@@ -308,12 +308,7 @@ export const WalletsAndBackup = () => {
                       cloudPlatform,
                     })}
                     linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
-                    onPress={() =>
-                      navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
-                        ...backupsCard,
-                        type: 'square',
-                      })
-                    }
+                    onPress={onPressLearnMoreAboutCloudBackups}
                   />
                 }
               />
@@ -426,12 +421,7 @@ export const WalletsAndBackup = () => {
                     allBackedUp ? (
                       <MenuHeader.Label
                         linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
-                        onPress={() =>
-                          navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
-                            ...backupsCard,
-                            type: 'square',
-                          })
-                        }
+                        onPress={onPressLearnMoreAboutCloudBackups}
                         text={
                           allBackedUp
                             ? i18n.t(i18n.l.wallet.back_ups.backed_up_to_cloud_message, {
@@ -705,7 +695,6 @@ export const WalletsAndBackup = () => {
     enableCloudBackups,
     sortedWallets,
     onCreateNewSecretPhrase,
-    navigate,
     onNavigateToWalletView,
     allBackedUp,
     mostRecentBackup,

@@ -15,7 +15,7 @@ import { changeAccount, disconnectSession } from '@/walletConnect';
 import { SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletWithAccount, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
@@ -41,7 +41,7 @@ const columnStyle = padding.object(0, 10, 0, 12);
 export function WalletConnectV2ListItem({ session, reload }: { session: SessionTypes.Struct; reload(): void }) {
   const { goBack } = useNavigation();
   const { colors } = useTheme();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const walletNames = useWalletsStore(state => state.walletNames);
 
   const [address, setAddress] = useState<string | undefined>(undefined);

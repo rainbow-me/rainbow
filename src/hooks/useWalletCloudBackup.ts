@@ -7,7 +7,7 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { getSupportedBiometryType } from '@/keychain';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { setWalletBackedUp, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { values } from 'lodash';
 import { useCallback } from 'react';
@@ -35,7 +35,7 @@ export function getUserError(e: Error) {
 }
 
 export default function useWalletCloudBackup() {
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const walletCloudBackup = useCallback(
     async ({

@@ -10,7 +10,7 @@ import React, { useCallback } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import ImgixImage from '../images/ImgixImage';
 import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
@@ -26,7 +26,7 @@ const GRADIENT: Gradient = {
 
 export const ENSCreateProfileCard = () => {
   const { navigate } = useNavigation();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { width: deviceWidth } = useDimensions();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
@@ -48,9 +48,7 @@ export const ENSCreateProfileCard = () => {
         routeName,
         cardType,
       });
-      navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-        fromDiscover: true,
-      });
+      navigate(Routes.REGISTER_ENS_NAVIGATOR);
     } else {
       watchingAlert();
     }

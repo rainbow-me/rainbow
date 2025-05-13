@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import { Box, Inline, Stack, Text, AnimatedText, useColorMode, useForegroundColor } from '@/design-system';
-import { useExpandedAssetSheetContext } from '../../../context/ExpandedAssetSheetContext';
+import { Box, Inline, Stack, Text, AnimatedText, useForegroundColor } from '@/design-system';
+import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import Animated, {
   SharedValue,
   useAnimatedReaction,
@@ -13,62 +13,9 @@ import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/Gestur
 import { colors } from '@/styles';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
+import { MarketStats, TimeFrames, useTokenMarketStats } from '@/resources/metadata/tokenStats';
 
-const DEFAULT_TIMEFRAME = '24h';
 const TIMEFRAME_SWITCH_CONFIG = TIMING_CONFIGS.buttonPressConfig;
-
-const MARKET_DATA = {
-  timeframes: {
-    '5m': {
-      relativeChange: -0.18,
-      transactions: 758,
-      volume: 1000000,
-      makers: 46,
-      buys: 220,
-      sells: 447,
-      buyVolume: 105000,
-      sellVolume: 866000,
-      buyers: 21,
-      sellers: 33,
-    },
-    '1h': {
-      relativeChange: 2.25,
-      transactions: 6473,
-      volume: 3800000,
-      makers: 175,
-      buys: 2711,
-      sells: 3825,
-      buyVolume: 1200000,
-      sellVolume: 2500000,
-      buyers: 122,
-      sellers: 96,
-    },
-    '6h': {
-      relativeChange: -0.24,
-      transactions: 41636,
-      volume: 24700000,
-      makers: 876,
-      buys: 21441,
-      sells: 20229,
-      buyVolume: 12300000,
-      sellVolume: 12300000,
-      buyers: 625,
-      sellers: 456,
-    },
-    '24h': {
-      relativeChange: 4.28,
-      transactions: 176320,
-      volume: 99400000,
-      makers: 2883,
-      buys: 103054,
-      sells: 73280,
-      buyVolume: 48900000,
-      sellVolume: 504000000,
-      buyers: 2076,
-      sellers: 1476,
-    },
-  },
-};
 
 const LeftSideItem = memo(function LeftSideItem({ title, value }: { title: string; value: SharedValue<string> }) {
   const { accentColors } = useExpandedAssetSheetContext();
@@ -218,11 +165,11 @@ const TimeframeItem = memo(function TimeframeItem({
   );
 });
 
-export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARKET_DATA }: { marketData?: typeof MARKET_DATA }) {
-  const { timeframes } = marketData;
+const MarketStatsCardContent = memo(function MarketStatsCardContent({ marketData }: { marketData: Record<string, MarketStats> }) {
   const { accentColors } = useExpandedAssetSheetContext();
 
-  const selectedTimeframe = useSharedValue(DEFAULT_TIMEFRAME);
+  const defaultTimeframe = Object.keys(marketData)[Object.keys(marketData).length - 1];
+  const selectedTimeframe = useSharedValue(defaultTimeframe);
 
   // Shared values are used for representing currently selected timeframe data to avoid re-rendering the component when the timeframe changes
   // A shared value object is not used because then the individual keys would be shared values themselves and thus not usable in AnimatedText
@@ -245,7 +192,7 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
     () => selectedTimeframe.value,
     timeframe => {
       'worklet';
-      const timeframeData = timeframes[timeframe as keyof typeof timeframes];
+      const timeframeData = marketData[timeframe as TimeFrames];
       transactions.value = timeframeData.transactions.toLocaleString('en-US', {
         maximumFractionDigits: 2,
       });
@@ -253,7 +200,7 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
       // TODO
       volume.value = '$' + abbreviateNumberWorklet(timeframeData.volume, 1);
 
-      makers.value = timeframeData.makers.toLocaleString('en-US', {
+      makers.value = timeframeData.uniques.toLocaleString('en-US', {
         maximumFractionDigits: 2,
       });
 
@@ -281,10 +228,10 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
   );
 
   const selectedTimeframeIndicatorStyle = useAnimatedStyle(() => {
-    const allTimeframes = Object.keys(timeframes);
+    const allTimeframes = Object.keys(marketData);
     const timeframesCount = allTimeframes.length;
     const selectedTimeframeIndex = allTimeframes.indexOf(selectedTimeframe.value);
-    const defaultIndex = allTimeframes.indexOf(DEFAULT_TIMEFRAME);
+    const defaultIndex = allTimeframes.indexOf(defaultTimeframe);
     // 7px is the gap 3px space on each side of the 1px separator between the timeframes
     const timeframeSeparatorWidth = 7;
     const borderTopLeftRadius = selectedTimeframeIndex === 0 ? 15 : 10;
@@ -340,12 +287,12 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
               },
             ]}
           />
-          {Object.keys(timeframes).map((timeframe, index) => (
+          {Object.keys(marketData).map((timeframe, index) => (
             <>
               {index > 0 && <Box style={{ alignSelf: 'center' }} height={20} width={1} backgroundColor={accentColors.opacity6} />}
               <TimeframeItem
                 timeframe={timeframe}
-                relativeChange={timeframes[timeframe as keyof typeof timeframes].relativeChange}
+                relativeChange={marketData[timeframe as TimeFrames].priceChangePct ?? 0}
                 selectedTimeframe={selectedTimeframe}
               />
             </>
@@ -385,4 +332,13 @@ export const MarketStatsCard = memo(function MarketStatsCard({ marketData = MARK
       </Box>
     </Box>
   );
+});
+
+export const MarketStatsCard = memo(function MarketStatsCard() {
+  const { basicAsset: asset } = useExpandedAssetSheetContext();
+  const { data: marketData } = useTokenMarketStats({ chainID: asset.chainId, address: asset.address });
+
+  if (!marketData || Object.keys(marketData).length === 0) return null;
+
+  return <MarketStatsCardContent marketData={marketData} />;
 });

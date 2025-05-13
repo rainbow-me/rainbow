@@ -25,7 +25,6 @@ import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { haptics } from '@/utils';
 import { queryClient } from '@/react-query';
-import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { loadWallet } from '@/model/wallet';
 import { externalTokenQueryFunction, externalTokenQueryKey } from '@/resources/assets/externalAssetsQuery';
@@ -41,6 +40,8 @@ import { estimateClaimUnlockSwapGasLimit } from '../estimateGas';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useClaimablesStore } from '@/state/claimables/claimables';
+import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -150,13 +151,14 @@ export function TransactionClaimableContextProvider({
       return;
     }
     try {
+      const [asset] = claimable.assets;
       const quoteParams: QuoteParams = {
         chainId: claimable.chainId,
         fromAddress: accountAddress,
-        sellTokenAddress: claimable.asset.isNativeAsset ? ETH_ADDRESS : claimable.asset.address,
+        sellTokenAddress: asset.asset.isNativeAsset ? ETH_ADDRESS : asset.asset.address,
         buyTokenAddress: outputConfig.token.isNativeAsset ? ETH_ADDRESS : outputTokenAddress,
-        sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
-        slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig()),
+        sellAmount: convertAmountToRawAmount(asset.amount.amount, asset.asset.decimals),
+        slippage: +getDefaultSlippageWorklet(claimable.chainId, getRemoteConfig().default_slippage_bips_chainId),
         refuel: false,
         toChainId: outputConfig.chainId,
         currency: nativeCurrency,
@@ -195,18 +197,7 @@ export function TransactionClaimableContextProvider({
       logger.error(new RainbowError('[TransactionClaimableContext]: failed to get quote'), { error: e });
       setQuoteState({ quote: undefined, nativeValueDisplay: undefined, tokenAmountDisplay: undefined, status: 'noQuoteError' });
     }
-  }, [
-    accountAddress,
-    claimable.asset.address,
-    claimable.asset.decimals,
-    claimable.asset.isNativeAsset,
-    claimable.chainId,
-    claimable.value.claimAsset.amount,
-    nativeCurrency,
-    outputConfig.chainId,
-    outputConfig.token,
-    outputTokenAddress,
-  ]);
+  }, [accountAddress, claimable.assets, claimable.chainId, nativeCurrency, outputConfig.chainId, outputConfig.token, outputTokenAddress]);
 
   // if we don't have a quote yet, fetch one
   useEffect(() => {
@@ -314,8 +305,6 @@ export function TransactionClaimableContextProvider({
     }
   }, [claimStatus, outputConfig.chainId, outputConfig.token, quoteState.status, requiresSwap, gasState.isSufficientGas, gasState.status]);
 
-  const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
-
   const { mutate: claim } = useMutation({
     mutationFn: async () => {
       if (
@@ -389,20 +378,31 @@ export function TransactionClaimableContextProvider({
             return;
           }
 
+          if (!quoteState.quote) {
+            haptics.notificationError();
+            setClaimStatus('recoverableError');
+            logger.error(new RainbowError('[TransactionClaimableContext]: Failed to claim claimable due to undefined quote'));
+            return;
+          }
+
+          const [asset] = claimable.assets;
+
           const swapData = {
-            amount: claimable.value.claimAsset.amount,
-            sellAmount: convertAmountToRawAmount(claimable.value.claimAsset.amount, claimable.asset.decimals),
+            amount: asset.amount.amount,
+            sellAmount: convertAmountToRawAmount(asset.amount.amount, asset.asset.decimals),
             chainId: claimable.chainId,
             toChainId: outputConfig.chainId,
-            assetToSell: claimable.asset.isNativeAsset ? { ...claimable.asset, address: ETH_ADDRESS } : claimable.asset,
+            assetToSell: transformRainbowTokenToParsedSearchAsset(
+              asset.asset.isNativeAsset ? { ...asset.asset, address: ETH_ADDRESS } : asset.asset
+            ),
             assetToBuy: outputAsset.isNativeAsset ? { ...outputAsset, address: ETH_ADDRESS } : outputAsset,
             address: accountAddress,
           };
 
+          // @ts-expect-error - TODO: assetToBuy is not typed correctly
           const { errorMessage } = await walletExecuteRap(wallet, 'claimClaimable', {
             ...swapData,
             gasParams,
-            // @ts-expect-error - collision between old gas types and new
             gasFeeParamsBySpeed,
             quote: quoteState.quote,
             additionalParams: { claimTxns },
@@ -419,11 +419,14 @@ export function TransactionClaimableContextProvider({
               });
               analytics.track(analytics.event.claimClaimableFailed, {
                 claimableType: 'transaction',
-                claimableId: claimable.analyticsId,
+                claimableId: claimable.type,
                 chainId: claimable.chainId,
-                asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-                amount: claimable.value.claimAsset.amount,
-                usdValue: claimable.value.usd,
+                assets: claimable.assets.map(asset => ({
+                  symbol: asset.asset.symbol,
+                  address: asset.asset.address,
+                  amount: asset.amount.amount,
+                })),
+                usdValue: claimable.totalCurrencyValue.amount,
                 isSwapping: requiresSwap,
                 outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
                 outputChainId: outputConfig.chainId,
@@ -439,11 +442,14 @@ export function TransactionClaimableContextProvider({
               });
               analytics.track(analytics.event.claimClaimableFailed, {
                 claimableType: 'transaction',
-                claimableId: claimable.analyticsId,
+                claimableId: claimable.type,
                 chainId: claimable.chainId,
-                asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-                amount: claimable.value.claimAsset.amount,
-                usdValue: claimable.value.usd,
+                assets: claimable.assets.map(asset => ({
+                  symbol: asset.asset.symbol,
+                  address: asset.asset.address,
+                  amount: asset.amount.amount,
+                })),
+                usdValue: claimable.totalCurrencyValue.amount,
                 isSwapping: requiresSwap,
                 outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
                 outputChainId: outputConfig.chainId,
@@ -465,17 +471,20 @@ export function TransactionClaimableContextProvider({
 
         analytics.track(analytics.event.claimClaimableSucceeded, {
           claimableType: claimable.actionType,
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
+          assets: claimable.assets.map(asset => ({
+            symbol: asset.asset.symbol,
+            address: asset.asset.address,
+            amount: asset.amount.amount,
+          })),
           isSwapping: requiresSwap,
+          usdValue: claimable.totalCurrencyValue.amount,
           outputAsset: { symbol: outputConfig.token.symbol, address: outputTokenAddress },
           outputChainId: outputConfig.chainId,
         });
 
-        queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
+        useClaimablesStore.getState().markClaimed(claimable.uniqueId);
       } catch (e) {
         haptics.notificationError();
         setClaimStatus('recoverableError');
@@ -484,12 +493,15 @@ export function TransactionClaimableContextProvider({
         });
         analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'transaction',
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
+          assets: claimable.assets.map(asset => ({
+            symbol: asset.asset.symbol,
+            address: asset.asset.address,
+            amount: asset.amount.amount,
+          })),
           isSwapping: requiresSwap,
+          usdValue: claimable.totalCurrencyValue.amount,
           outputAsset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
           outputChainId: claimable.chainId,
           failureStep: 'claim',
@@ -505,12 +517,11 @@ export function TransactionClaimableContextProvider({
       });
       analytics.track(analytics.event.claimClaimableFailed, {
         claimableType: 'transaction',
-        claimableId: claimable.analyticsId,
+        claimableId: claimable.type,
         chainId: claimable.chainId,
-        asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-        amount: claimable.value.claimAsset.amount,
-        usdValue: claimable.value.usd,
+        assets: claimable.assets.map(asset => ({ symbol: asset.asset.symbol, address: asset.asset.address, amount: asset.amount.amount })),
         isSwapping: requiresSwap,
+        usdValue: claimable.totalCurrencyValue.amount,
         outputAsset: { symbol: outputConfig.token?.symbol ?? '', address: outputTokenAddress ?? '' },
         outputChainId: outputConfig.chainId ?? -1,
         failureStep: 'unknown',
@@ -525,12 +536,15 @@ export function TransactionClaimableContextProvider({
         logger.error(new RainbowError(`[TransactionClaimableContext]: ${ErrorMessages.UNRESOLVED_CLAIM_STATUS}`));
         analytics.track(analytics.event.claimClaimableFailed, {
           claimableType: 'transaction',
-          claimableId: claimable.analyticsId,
+          claimableId: claimable.type,
           chainId: claimable.chainId,
-          asset: { symbol: claimable.asset.symbol, address: claimable.asset.address },
-          amount: claimable.value.claimAsset.amount,
-          usdValue: claimable.value.usd,
+          assets: claimable.assets.map(asset => ({
+            symbol: asset.asset.symbol,
+            address: asset.asset.address,
+            amount: asset.amount.amount,
+          })),
           isSwapping: requiresSwap,
+          usdValue: claimable.totalCurrencyValue.amount,
           outputAsset: { symbol: outputConfig.token?.symbol ?? '', address: outputTokenAddress ?? '' },
           outputChainId: outputConfig.chainId ?? -1,
           failureStep: 'unknown',
@@ -540,7 +554,7 @@ export function TransactionClaimableContextProvider({
     },
     onSettled: () => {
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
-      setTimeout(() => queryClient.invalidateQueries(queryKey), 20_000);
+      setTimeout(() => useClaimablesStore.getState().fetch(undefined, { staleTime: 0 }), 20_000);
     },
   });
 

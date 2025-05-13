@@ -6,8 +6,16 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { isZero } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS } from '@/references';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
-import { showActionSheetWithOptions } from '@/utils';
+import {
+  setSelectedWallet,
+  updateWallets,
+  useAccountProfileInfo,
+  useWallets,
+  useWalletsStore,
+  useSelectedWallet,
+  useIsReadOnlyWallet,
+} from '@/state/wallets/walletsStore';
+import { isLowerCaseMatch, showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
 import lang from 'i18n-js';
@@ -30,9 +38,9 @@ type UseOnAvatarPressProps = {
 };
 
 export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
-  const wallets = useWalletsStore(state => state.wallets);
-  const selectedWallet = useWalletsStore(state => state.selected);
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const wallets = useWallets();
+  const selectedWallet = useSelectedWallet();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -61,12 +69,10 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       [selectedWallet.id]: {
         ...wallets[selectedWallet.id],
         addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
-          account.address.toLowerCase() === accountAddress?.toLowerCase() ? { ...account, image: null } : account
+          isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: null } : account
         ),
       },
     };
-
-    const { setSelectedWallet, updateWallets } = useWalletsStore.getState();
 
     setSelectedWallet(newWallets[selectedWallet.id]);
     updateWallets(newWallets);
@@ -83,7 +89,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         [selectedWallet.id]: {
           ...wallets[selectedWallet.id],
           addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
-            account.address.toLowerCase() === accountAddress?.toLowerCase() ? { ...account, image: imagePath } : account
+            isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: imagePath } : account
           ),
         },
       };
@@ -96,6 +102,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   );
 
   const onAvatarPickEmoji = useCallback(() => {
+    if (!accountName) return;
     navigate(screenType === 'wallet' ? Routes.AVATAR_BUILDER_WALLET : Routes.AVATAR_BUILDER, {
       initialAccountColor: accountColor,
       initialAccountName: accountName,
@@ -244,6 +251,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     .filter(Boolean) as string[];
 
   const onAvatarPressProfile = useCallback(() => {
+    if (!accountENS) return;
     navigate(Routes.PROFILE_SHEET, {
       address: accountENS,
       fromRoute: 'ProfileAvatar',

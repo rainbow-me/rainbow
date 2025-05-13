@@ -1,14 +1,15 @@
-import { containsEmoji } from '@/helpers/strings';
-import WalletTypes from '@/helpers/walletTypes';
-import { logger, RainbowError } from '@/logger';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import { AppState } from '@/redux/store';
-import { getWalletWithAccount, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
 import useAccountSettings from './useAccountSettings';
+import { containsEmoji } from '@/helpers/strings';
+import WalletTypes from '@/helpers/walletTypes';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import { AppState } from '@/redux/store';
+import { logger, RainbowError } from '@/logger';
+import { useTheme } from '@/theme';
+import { getWalletWithAccount, useAccountProfileInfo, useWallets } from '@/state/wallets/walletsStore';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -29,6 +30,7 @@ const wipeNotEmoji = (text: string) => {
 export default function useWebData() {
   const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
+  const wallets = useWallets();
 
   const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
     ({ hiddenTokens: { hiddenTokens }, showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
@@ -38,7 +40,8 @@ export default function useWebData() {
     })
   );
 
-  const { accountSymbol, accountColorString } = useAccountProfileInfo();
+  const { colors } = useTheme();
+  const { accountSymbol, accountColorHex } = useAccountProfileInfo();
 
   const initWebData = useCallback(
     async (showcaseTokens: any) => {
@@ -47,13 +50,13 @@ export default function useWebData() {
       await setPreference(PreferenceActionType.init, 'hidden', accountAddress, hiddenTokens);
 
       await setPreference(PreferenceActionType.init, 'profile', accountAddress, {
-        accountColor: accountColorString,
+        accountColor: accountColorHex,
         accountSymbol: wipeNotEmoji(accountSymbol as string),
       });
 
       dispatch(updateWebDataEnabled(true, accountAddress));
     },
-    [accountAddress, accountColorString, accountSymbol, dispatch, hiddenTokens]
+    [accountAddress, accountColorHex, accountSymbol, colors.avatarBackgrounds, dispatch, hiddenTokens]
   );
 
   const wipeWebData = useCallback(async () => {
@@ -68,12 +71,13 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const wallet = getWalletWithAccount(address);
       if (!wallet || wallet.type === WalletTypes.readOnly) return;
-      await setPreference(PreferenceActionType.update, 'profile', address, {
-        accountColor: accountColorString,
-        accountSymbol: accountSymbol || null,
-      });
+      const data = {
+        accountColor: color || accountColorHex,
+        accountSymbol: wipeNotEmoji(name ? getAccountSymbol(name)! : (accountSymbol as string)),
+      };
+      await setPreference(PreferenceActionType.update, 'profile', address, data);
     },
-    [accountColorString, accountSymbol, webDataEnabled]
+    [accountColorHex, accountSymbol, wallets, webDataEnabled]
   );
 
   const getWebProfile = useCallback(async (address: string) => {

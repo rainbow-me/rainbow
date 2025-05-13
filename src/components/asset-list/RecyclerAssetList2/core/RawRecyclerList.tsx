@@ -5,11 +5,9 @@ import { useAccountSettings, useCoinListEdited, useCoinListEditOptions } from '@
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
-import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useTheme } from '@/theme';
-import { useRoute } from '@react-navigation/native';
+import { deviceUtils } from '@/utils';
 import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';
@@ -17,17 +15,22 @@ import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import { AssetListType } from '..';
 import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { ExternalENSProfileScrollViewWithRef, ExternalSelectNFTScrollViewWithRef } from './ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
-import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
+import { CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
+import { useAccountAddress } from '../../../../state/wallets/walletsStore';
 
-const dataProvider = new DataProvider((r1, r2) => {
+const dimensions = {
+  height: deviceUtils.dimensions.height,
+  width: deviceUtils.dimensions.width,
+};
+
+const dataProvider = new DataProvider((r1: CellTypes, r2: CellTypes) => {
   return r1.uid !== r2.uid;
 });
 
@@ -53,7 +56,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   extendedState,
   type,
 }: {
-  briefSectionsData: BaseCellType[];
+  briefSectionsData: CellTypes[];
   disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   scrollIndicatorInsets?: object;
@@ -66,26 +69,18 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const y = useRecyclerAssetListPosition()!;
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
 
-  const { name } = useRoute();
-  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
-
-  const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
-
   const layoutProvider = useMemo(
     () =>
       getLayoutProvider({
         briefSectionsData,
         isCoinListEdited,
-        cardIds,
-        isReadOnlyWallet,
         remoteConfig,
         experimentalConfig,
       }),
-    [briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet, remoteConfig, experimentalConfig]
+    [briefSectionsData, isCoinListEdited, remoteConfig, experimentalConfig]
   );
 
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const topMarginRef = useRef<number>(0);
@@ -183,6 +178,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
+      canChangeSize={type === 'wallet'}
+      layoutSize={type === 'wallet' ? dimensions : undefined}
       scrollIndicatorInsets={scrollIndicatorInsets}
     />
   );

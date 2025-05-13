@@ -1,21 +1,22 @@
-import { analytics } from '@/analytics';
-import { metadataPOSTClient } from '@/graphql';
 import { OnboardPointsMutation, PointsErrorType, PointsOnboardingCategory } from '@/graphql/__generated__/metadataPOST';
-import { getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
+import { pointsQueryKey } from '@/resources/points';
+import { noop } from 'lodash';
+import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
+
+import { analytics } from '@/analytics';
+import { metadataPOSTClient } from '@/graphql';
+import { getProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';
-import { pointsQueryKey } from '@/resources/points';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { delay } from '@/utils/delay';
-import { noop } from 'lodash';
-import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -27,7 +28,6 @@ type PointsProfileContext = {
   deeplinked: boolean;
   setDeeplinked: Dispatch<SetStateAction<boolean>>;
   intent: string | undefined;
-  setIntent: Dispatch<SetStateAction<string | undefined>>;
   animationKey: number;
   setAnimationKey: Dispatch<SetStateAction<number>>;
 
@@ -62,7 +62,6 @@ const PointsProfileContext = createContext<PointsProfileContext>({
   deeplinked: false,
   setDeeplinked: noop,
   intent: undefined,
-  setIntent: noop,
   animationKey: 0,
   setAnimationKey: noop,
 
@@ -81,15 +80,14 @@ const PointsProfileContext = createContext<PointsProfileContext>({
 export const usePointsProfileContext = () => useContext(PointsProfileContext);
 
 export const PointsProfileProvider = ({ children }: { children: React.ReactNode }) => {
-  const { accountAddress } = useAccountProfileInfo();
-  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const accountAddress = useAccountAddress();
+  const isHardwareWallet = useIsHardwareWallet();
   const { navigate, goBack } = useNavigation();
 
   const [step, setStep] = useState<RainbowPointsFlowSteps>(RainbowPointsFlowSteps.Initialize);
   const [profile, setProfile] = useState<OnboardPointsMutation | undefined>();
   const [referralCode, setReferralCode] = useState<string>();
   const [deeplinked, setDeeplinked] = useState<boolean>(false);
-  const [intent, setIntent] = useState<string>();
   const [animationKey, setAnimationKey] = useState(0);
 
   const rainbowSwaps = profile?.onboardPoints?.user?.onboarding?.categories?.find(
@@ -212,9 +210,8 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
     }
   }, [isHardwareWallet, navigate, signIn]);
 
-  useEffect(() => {
-    const msg = buildTwitterIntentMessage(profile, metamaskSwaps);
-    setIntent(msg);
+  const intent = useMemo(() => {
+    return buildTwitterIntentMessage(profile, metamaskSwaps);
   }, [profile, metamaskSwaps]);
 
   return (
@@ -230,7 +227,6 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
         deeplinked,
         setDeeplinked,
         intent,
-        setIntent,
         animationKey,
         setAnimationKey,
 

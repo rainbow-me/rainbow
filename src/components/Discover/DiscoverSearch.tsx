@@ -5,16 +5,14 @@ import { useDebounce } from 'use-debounce';
 import * as lang from '@/languages';
 import deviceUtils from '@/utils/deviceUtils';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
-import { Row } from '@/components/layout';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { useAccountSettings, useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchSuggestions } from '@/handlers/ens';
-import styled from '@/styled-thing';
-import { ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { ethereumUtils } from '@/utils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
@@ -26,10 +24,8 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
-
-export const SearchContainer = styled(Row)({
-  height: '100%',
-});
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 type EnsResult = {
   address: string;
@@ -49,9 +45,9 @@ type EnsSearchResult = {
 };
 
 export default function DiscoverSearch() {
-  const { navigate } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { colors } = useTheme();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const [isFetchingEns, setIsFetchingEns] = useState(false);
   const { cancelSearch, searchInputRef, sectionListRef } = useDiscoverScreenContext();
@@ -71,8 +67,7 @@ export default function DiscoverSearch() {
   const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList();
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
-  const TOP_OFFSET = safeAreaInsetValues.top + navbarHeight;
+  const TOP_OFFSET = safeAreaInsets.top + navbarHeight;
 
   const currencyList = useMemo(() => {
     // order:
@@ -156,7 +151,7 @@ export default function DiscoverSearch() {
       }
     };
     checkAndHandleMint(searchQuery);
-  }, [accountAddress, navigate, searchQuery]);
+  }, [accountAddress, searchQuery]);
 
   const handlePress = useCallback(
     (item: EnrichedExchangeAsset) => {
@@ -164,7 +159,7 @@ export default function DiscoverSearch() {
         // navigate to Showcase sheet
         searchInputRef?.current?.blur();
         InteractionManager.runAfterInteractions(() => {
-          navigate(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
+          Navigation.handleAction(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
             address: item.nickname,
             fromRoute: 'DiscoverSearch',
           });
@@ -182,14 +177,14 @@ export default function DiscoverSearch() {
           item.network = Network.mainnet;
         }
         const asset = accountAsset || item;
-        navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+        Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
           asset,
           address: item.address,
           chainId: item.chainId,
         });
       }
     },
-    [navigate, profilesEnabled, searchInputRef]
+    [profilesEnabled, searchInputRef]
   );
 
   const itemProps = useMemo(
@@ -263,24 +258,22 @@ export default function DiscoverSearch() {
   return (
     <View
       key={currencyListDataKey}
-      style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}
+      style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - TAB_BAR_HEIGHT }}
       testID="discover-search-list"
     >
-      <SearchContainer>
-        <CurrencySelectionList
-          footerSpacer
-          fromDiscover
-          itemProps={itemProps}
-          keyboardDismissMode="on-drag"
-          // @ts-expect-error - FIXME: ens results / rainbow token results are not compatible with one another
-          listItems={currencyList}
-          loading={swapCurrencyListLoading || isFetchingEns}
-          query={searchQueryForSearch}
-          ref={sectionListRef}
-          showList
-          testID="discover-currency-select-list"
-        />
-      </SearchContainer>
+      <CurrencySelectionList
+        footerSpacer
+        fromDiscover
+        itemProps={itemProps}
+        keyboardDismissMode="on-drag"
+        // @ts-expect-error - FIXME: ens results / rainbow token results are not compatible with one another
+        listItems={currencyList}
+        loading={swapCurrencyListLoading || isFetchingEns}
+        query={searchQueryForSearch}
+        ref={sectionListRef}
+        showList
+        testID="discover-currency-select-list"
+      />
     </View>
   );
 }

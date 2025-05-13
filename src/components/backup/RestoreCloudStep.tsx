@@ -8,20 +8,16 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { useDimensions, useInitializeWallet } from '@/hooks';
 import * as lang from '@/languages';
 import { logger } from '@/logger';
-import {
-  BackupFile,
-  getLocalBackupPassword,
-  restoreCloudBackup,
-  RestoreCloudBackupResultStates,
-  saveLocalBackupPassword,
-} from '@/model/backup';
+import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
+import { KeyboardArea } from 'react-native-keyboard-area';
+
 import { Navigation, useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
-import { loadWallets, setAllWalletsWithIdsAsBackedUp, useWalletsStore } from '@/state/wallets/walletsStore';
-import { RestoreSheetParams } from '@/screens/RestoreSheet';
+import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { loadWallets, setAllWalletsWithIdsAsBackedUp, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -31,7 +27,6 @@ import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { Source } from 'react-native-fast-image';
-import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
@@ -80,18 +75,9 @@ const KeyboardSizeView = styled(KeyboardArea)({
   backgroundColor: ({ theme: { colors } }: ComponentProps) => colors.transparent,
 });
 
-type RestoreCloudStepParams = {
-  RestoreSheet: {
-    selectedBackup: BackupFile;
-  };
-};
-
 export default function RestoreCloudStep() {
-  const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
-  const { password } = backupsStore(state => ({
-    password: state.password,
-  }));
-
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
+  const password = backupsStore(state => state.password);
   const loadingState = walletLoadingStore(state => state.loadingState);
 
   const { selectedBackup } = params;
@@ -139,12 +125,12 @@ export default function RestoreCloudStep() {
   const onSubmit = useCallback(async () => {
     // NOTE: Localizing password to prevent an empty string from being saved if we re-render
     const pwd = password.trim();
-    let filename = selectedBackup.name;
+    let filename = selectedBackup?.name;
 
     const prevWalletsState = await loadWallets();
 
     try {
-      if (!selectedBackup.name) {
+      if (!filename) {
         throw new Error('No backup file selected');
       }
 
@@ -179,9 +165,7 @@ export default function RestoreCloudStep() {
           logger.debug('[RestoreCloudStep]: Updating backup state of wallets with ids', {
             walletIds: JSON.stringify(walletIdsToUpdate),
           });
-          logger.debug('[RestoreCloudStep]: Selected backup name', {
-            fileName: selectedBackup.name,
-          });
+          logger.debug(`[RestoreCloudStep]: Selected backup name: ${filename}`);
 
           setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename);
 
@@ -205,7 +189,6 @@ export default function RestoreCloudStep() {
           const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
 
           if (firstWallet && firstAddress) {
-            const { setSelectedWallet } = useWalletsStore.getState();
             setSelectedWallet(firstWallet, firstAddress);
             await initializeWallet({
               shouldRunMigrations: false,
@@ -226,7 +209,7 @@ export default function RestoreCloudStep() {
             true
           );
         } else {
-          Navigation.handleAction(Routes.WALLET_SCREEN, {});
+          Navigation.handleAction(Routes.WALLET_SCREEN);
         }
       } else {
         switch (status) {
@@ -248,7 +231,7 @@ export default function RestoreCloudStep() {
         loadingState: null,
       });
     }
-  }, [password, selectedBackup.name, dispatch, onRestoreSuccess, initializeWallet]);
+  }, [password, selectedBackup?.name, dispatch, onRestoreSuccess, initializeWallet]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

@@ -19,6 +19,7 @@ import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { Wallet } from '@ethersproject/wallet';
 import React, { useCallback, useState } from 'react';
@@ -33,7 +34,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { STEP_TRANSITION_DURATION } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { useTokenLaunchGasOptions } from '../hooks/useTokenLaunchGasOptions';
@@ -50,7 +50,7 @@ function HoldToCreateButton() {
   const setStep = useTokenLauncherStore(state => state.setStep);
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
   const chainId = useTokenLauncherStore(state => state.chainId);
-  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const isHardwareWallet = useIsHardwareWallet();
   const biometryType = useBiometryType();
   const { accountAddress } = useAccountSettings();
   const { transactionOptions } = useTokenLaunchGasOptions({

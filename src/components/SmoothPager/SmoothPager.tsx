@@ -9,6 +9,7 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
@@ -41,7 +42,9 @@ const PagerGroup: React.FC<GroupProps> = ({ children }) => {
 
 interface SmoothPagerRef {
   goBack: () => void;
+  goForward: () => void;
   goToPage: (id: PageId) => void;
+  currentPageIndex: SharedValue<number>;
 }
 
 export function usePagerNavigation() {
@@ -50,11 +53,14 @@ export function usePagerNavigation() {
   const goBack = useCallback(() => {
     ref.current?.goBack();
   }, []);
+  const goForward = useCallback(() => {
+    ref.current?.goForward();
+  }, []);
   const goToPage = useCallback((id: PageId) => {
     ref.current?.goToPage(id);
   }, []);
 
-  return { goBack, goToPage, ref };
+  return { goBack, goForward, goToPage, ref };
 }
 
 // This is used to initialize the shared value that keeps track of the active subpage ID for each page group
@@ -107,7 +113,7 @@ const getPageIdToIndexMap = (children: React.ReactElement<PageProps | GroupProps
 interface SmoothPagerProps {
   children: React.ReactElement<PageProps | GroupProps>[];
   enableSwipeToGoBack?: boolean;
-  enableSwipeToGoForward?: boolean;
+  enableSwipeToGoForward?: boolean | 'always';
   initialPage: PageId;
   pageGap?: number;
   verticalPageAlignment?: AlignVertical;
@@ -143,6 +149,14 @@ const SmoothPagerComponent = (
         }
       })();
     },
+    goForward() {
+      runOnUI(() => {
+        const currentPageIndexValue = Math.round(currentPageIndex.value);
+        if (currentPageIndexValue < numberOfPages - 1) {
+          currentPageIndex.value = withTiming(currentPageIndexValue + 1, PAGE_ANIMATION_CONFIG);
+        }
+      })();
+    },
     goToPage(id: PageId) {
       runOnUI(() => {
         const pageIndex = pageIdToIndex[id];
@@ -152,6 +166,7 @@ const SmoothPagerComponent = (
         }
       })();
     },
+    currentPageIndex,
   }));
 
   // This handles making the correct subpage active when navigating to pages that exist within page groups. It also
@@ -214,6 +229,10 @@ const SmoothPagerComponent = (
     };
   });
 
+  const forwardSwipeEnabled = useDerivedValue(() => {
+    return enableSwipeToGoForward === 'always' || (enableSwipeToGoForward && deepestReachedPageIndex.value > currentPageIndex.value);
+  });
+
   const swipeGestureHandler = useAnimatedGestureHandler({
     onStart: (event, context: { startX: number; startPage: number }) => {
       context.startPage = Math.round(currentPageIndex.value);
@@ -224,13 +243,11 @@ const SmoothPagerComponent = (
       const dragPages = dragDistance / (DEVICE_WIDTH + pageGap);
       let newPageIndex = context.startPage - dragPages;
 
-      const forwardSwipeEnabled = enableSwipeToGoForward && deepestReachedPageIndex.value > currentPageIndex.value;
-
-      if (enableSwipeToGoBack && forwardSwipeEnabled) {
+      if (enableSwipeToGoBack && forwardSwipeEnabled.value) {
         newPageIndex = clamp(newPageIndex, 0, numberOfPages - 1);
       } else if (enableSwipeToGoBack && dragDistance > 0) {
         newPageIndex = clamp(newPageIndex, 0, context.startPage);
-      } else if (forwardSwipeEnabled && dragDistance < 0) {
+      } else if (forwardSwipeEnabled.value && dragDistance < 0) {
         newPageIndex = clamp(newPageIndex, context.startPage, numberOfPages - 1);
       } else {
         newPageIndex = context.startPage;
@@ -250,11 +267,9 @@ const SmoothPagerComponent = (
         targetPage = Math.round(currentPageIndex.value);
       }
 
-      const forwardSwipeEnabled = enableSwipeToGoForward && deepestReachedPageIndex.value > currentPageIndex.value;
-
-      if (enableSwipeToGoBack && !forwardSwipeEnabled) {
+      if (enableSwipeToGoBack && !forwardSwipeEnabled.value) {
         targetPage = clamp(targetPage, 0, context.startPage);
-      } else if (!enableSwipeToGoBack && forwardSwipeEnabled) {
+      } else if (!enableSwipeToGoBack && forwardSwipeEnabled.value) {
         targetPage = clamp(targetPage, context.startPage, numberOfPages - 1);
       } else {
         targetPage = clamp(targetPage, 0, numberOfPages - 1);
@@ -268,7 +283,7 @@ const SmoothPagerComponent = (
     <PanGestureHandler
       activeOffsetX={[-5, 5]}
       failOffsetY={[-10, 10]}
-      enabled={enableSwipeToGoBack || enableSwipeToGoForward}
+      enabled={enableSwipeToGoBack || enableSwipeToGoForward !== false}
       onGestureEvent={swipeGestureHandler}
     >
       <Animated.View style={styles.pagerContainer}>
@@ -327,7 +342,9 @@ const SmoothPagerComponent = (
  * Enables horizontal navigation between multiple pages with smooth, animated transitions and built-in swipe gestures.
  * It supports individual pages and grouped pages, and allows programmatic navigation via the `usePagerNavigation` hook.
  *
- * - `enableSwipeToGoBack: boolean` and `enableSwipeToGoForward: boolean` allow control over swipe behaviors.
+ * - `enableSwipeToGoBack: boolean` and `enableSwipeToGoForward: boolean | 'always'` allow control over swipe behaviors.
+ * - `enableSwipeToGoForward: 'always'` allows forward swipe gestures to be enabled even when the current page is the
+ * deepest reached page.
  * - `initialPage: string` allows setting the initially active page by specifying its `id`.
  * - `pageGap: number` defines the spacing between consecutive pages.
  * - `verticalPageAlignment: 'top' | 'center' | 'bottom'` specifies how pages should align vertically in the event the

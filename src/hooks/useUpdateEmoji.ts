@@ -1,16 +1,23 @@
-import { setSelectedWallet, updateWallets, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import {
+  setSelectedWallet,
+  updateWallets,
+  useAccountProfileInfo,
+  useAccountAddress,
+  useWallets,
+  useSelectedWallet,
+} from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';
 import { useWebData } from './index';
-import useAccountSettings from './useAccountSettings';
+import { isLowerCaseMatch } from '../utils';
 
 export default function useUpdateEmoji() {
   const { accountColor, accountName } = useAccountProfileInfo();
-  const wallets = useWalletsStore(state => state.wallets);
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const wallets = useWallets();
+  const selectedWallet = useSelectedWallet();
   const { updateWebProfile, getWebProfile } = useWebData();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { colors } = useTheme();
 
   const saveInfo = useCallback(
@@ -23,7 +30,7 @@ export default function useUpdateEmoji() {
         [walletId]: {
           ...wallets![walletId],
           addresses: wallets![walletId].addresses.map(singleAddress =>
-            singleAddress.address.toLowerCase() === accountAddress.toLowerCase()
+            isLowerCaseMatch(singleAddress.address, accountAddress)
               ? {
                   ...singleAddress,
                   ...(name && { label: name }),

@@ -11,13 +11,12 @@ import * as i18n from '@/languages';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backups/routes';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { cloudPlatform } from '@/utils/platform';
 import React, { useCallback, useMemo } from 'react';
 import { Source } from 'react-native-fast-image';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ButtonPressAnimation } from '../animations';
 import { ImgixImage } from '../images';
 
@@ -26,11 +25,9 @@ const imageSize = 72;
 export default function BackupSheetSectionNoProvider() {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const createBackup = useCreateBackup();
-  const { status } = backupsStore(state => ({
-    status: state.status,
-  }));
+  const status = backupsStore(state => state.status);
 
   const onCloudBackup = useCallback(() => {
     if (!selectedWallet) return;
@@ -61,7 +58,7 @@ export default function BackupSheetSectionNoProvider() {
 
     goBack();
     navigate(Routes.SETTINGS_SHEET, {
-      screen: SETTINGS_BACKUP_ROUTES.SECRET_WARNING,
+      screen: Routes.SECRET_WARNING,
       params: {
         isBackingUp: true,
         title,

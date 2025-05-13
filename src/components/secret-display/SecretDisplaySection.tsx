@@ -19,11 +19,12 @@ import { SecretDisplayStates, SecretDisplayStatesType } from '@/components/secre
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
-import RoutesWithPlatformDifferences from '@/navigation/routesNames';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
+import { useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { InteractionManager } from 'react-native';
 import { Source } from 'react-native-fast-image';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { ImgixImage } from '../images';
 import { SheetActionButton } from '../sheet';
 
@@ -48,27 +49,13 @@ type Props = {
   onWalletTypeIdentified?: (walletType: EthereumWalletType) => void;
 };
 
-type SecretDisplaySectionParams = {
-  SecretDisplaySection: {
-    title: string;
-    privateKeyAddress?: string;
-    isBackingUp?: boolean;
-    backupType?: keyof typeof WalletBackupTypes;
-    walletId: string;
-    secretText: string;
-  };
-};
-
 export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }: Props) {
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
-  const { params } = useRoute<RouteProp<SecretDisplaySectionParams, 'SecretDisplaySection'>>();
-  const selectedWallet = useWalletsStore(state => state.selected);
-  const wallets = useWalletsStore(state => state.wallets);
-
-  const { backupProvider } = backupsStore(state => ({
-    backupProvider: state.backupProvider,
-  }));
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SHOW_SECRET>>();
+  const selectedWallet = useSelectedWallet();
+  const wallets = useWallets();
+  const backupProvider = backupsStore(state => state.backupProvider);
   const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { navigate } = useNavigation();
 
@@ -133,7 +120,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       if (!backupProvider) {
         backupsStore.getState().setBackupProvider(WalletBackupTypes.manual);
       }
-      navigate(RoutesWithPlatformDifferences.SETTINGS_SECTION_BACKUP);
+      navigate(Routes.SETTINGS_SECTION_BACKUP);
     }
   }, [backupType, onManuallyBackupWalletId, walletId, backupProvider, navigate]);
 

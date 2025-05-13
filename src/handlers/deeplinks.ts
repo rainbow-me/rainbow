@@ -23,7 +23,7 @@ import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 
-import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { navigateToSwaps, NavigateToSwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { searchVerifiedTokens, TokenLists } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { clamp } from '@/__swaps__/utils/swaps';
@@ -122,7 +122,6 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
           // First go back to home to dismiss any open shit
           // and prevent a weird crash
           if (initialRoute !== Routes.WELCOME_SCREEN) {
-            // @ts-expect-error FIXME: Expected 2-3 arguments, but got 1.
             Navigation.handleAction(Routes.WALLET_SCREEN);
           }
 
@@ -241,6 +240,11 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
           const { errorMessage, decodedRequest } = response.error;
           await sendFailureToClient(errorMessage, decodedRequest);
         }
+        break;
+      }
+
+      case 'e2e': {
+        // Ignore, will be handled in TestDeeplinkHandler.
         break;
       }
 
@@ -401,7 +405,7 @@ async function handleSwapsDeeplink(url: string) {
 
   await setFromWallet(query.from);
 
-  const params: SwapsParams = {};
+  const params: NavigateToSwapsParams = {};
 
   const inputAsset = querySwapAsset(query.inputAsset?.toLowerCase());
   const outputAsset = querySwapAsset(query.outputAsset?.toLowerCase());
@@ -414,17 +418,23 @@ async function handleSwapsDeeplink(url: string) {
     params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
   } else if (isNumericString(query.inputAmount)) {
     params.inputAmount = query.inputAmount;
-  } else if (isNumericString(query.outputAmount)) {
-    params.outputAmount = query.outputAmount;
   }
+  // Output-based quotes aren't currently supported
+  // else if (isNumericString(query.outputAmount)) {
+  //   params.outputAmount = query.outputAmount;
+  // }
 
   const gasSpeed = query.gasSpeed?.toLowerCase();
   if (isValidGasSpeed(gasSpeed)) {
     params.gasSpeed = gasSpeed;
   }
 
-  params.inputAsset = await inputAsset;
-  params.outputAsset = await outputAsset;
+  const inputAssetToSet = await inputAsset;
+  const outputAssetToSet = await outputAsset;
+
+  if (inputAssetToSet) params.inputAsset = inputAssetToSet;
+  if (outputAssetToSet) params.outputAsset = outputAssetToSet;
+
   navigateToSwaps(params);
 }
 

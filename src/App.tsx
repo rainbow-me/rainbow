@@ -1,6 +1,6 @@
 import '@/languages';
 import * as Sentry from '@sentry/react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
@@ -33,13 +33,13 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
-import { IS_DEV } from '@/env';
+import { IS_DEV, IS_TEST } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
-import { useWalletsStore } from './state/wallets/walletsStore';
+import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -55,8 +55,7 @@ const sx = StyleSheet.create({
   },
 });
 
-function App() {
-  const walletReady = useWalletsStore(state => state.walletReady);
+function AppComponent() {
   const { initialRoute } = useApplicationSetup();
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
@@ -81,63 +80,21 @@ function App() {
         <OfflineToast />
         <Toaster />
       </View>
-      <NotificationsHandler walletReady={walletReady} />
-      <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
+      <NotificationsHandler />
+      <DeeplinkHandler initialRoute={initialRoute} />
+      {IS_TEST && <TestDeeplinkHandler />}
       <BackupsSync />
       <AbsolutePortalRoot />
     </>
   );
 }
 
+const App = memo(AppComponent);
+
 function Root() {
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    async function initializeApplication() {
-      PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
-      await Promise.all([initializeRemoteConfig(), migrate(), analytics.initializeRudderstack()]);
-
-      const isReturningUser = ls.device.get(['isReturningUser']);
-      const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
-
-      // Initial telemetry; amended with wallet context later in `useInitializeWallet`
-      Sentry.setUser({ id: deviceId });
-      analytics.setDeviceId(deviceId);
-      analytics.identify();
-
-      /**
-       * We previously relied on the existence of a deviceId on keychain to
-       * determine if a user was new or not. For backwards compat, we do this
-       * still with `deviceIdWasJustCreated`, but we also set a new value on
-       * local storage `isReturningUser` so that other parts of the app can
-       * read from that, if necessary.
-       *
-       * This block of code will only run once.
-       */
-      if (deviceIdWasJustCreated && !isReturningUser) {
-        // on very first open, set some default data and fire event
-        logger.debug(`[App]: User opened application for the first time`);
-
-        const { width: screenWidth, height: screenHeight, scale: screenScale } = Dimensions.get('screen');
-
-        analytics.identify({ screenHeight, screenWidth, screenScale });
-        analytics.track(analytics.event.firstAppOpen);
-      }
-
-      /**
-       * Always set this — we may have just migrated deviceId with
-       * `getOrCreateDeviceId`, which would mean `deviceIdWasJustCreated` would
-       * be false and the new-user block of code above won't run.
-       *
-       * But by this point in the `initializeApplication`, we've handled new
-       * user events and migrations, so we need to make sure this is set to
-       * `true`.
-       */
-      ls.device.set(['isReturningUser'], true);
-
-      PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
-    }
-
     initializeApplication()
       .then(() => {
         logger.debug(`[App]: Application initialized with Sentry and analytics`);
@@ -155,16 +112,6 @@ function Root() {
 
     initializeReservoirClient();
   }, [setInitializing]);
-
-  // The report param is not currently used as we have our own time tracking, but it is available at the time we want to finish the app startup report
-  const onReportPrepared = useCallback(() => {
-    PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.tti);
-    PerformanceTracking.finishReportSegment(
-      PerformanceReports.appStartup,
-      PerformanceReportSegments.appStartup.initialScreenInteractiveRender
-    );
-    PerformanceTracking.finishReport(PerformanceReports.appStartup);
-  }, []);
 
   return initializing ? null : (
     <PerformanceProfiler useRenderTimeouts={false} onReportPrepared={onReportPrepared}>
@@ -205,3 +152,58 @@ const PlaygroundWithReduxStore = () => (
 );
 
 AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithSentry));
+
+// The report param is not currently used as we have our own time tracking, but it is available at the time we want to finish the app startup report
+function onReportPrepared() {
+  PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.tti);
+  PerformanceTracking.finishReportSegment(
+    PerformanceReports.appStartup,
+    PerformanceReportSegments.appStartup.initialScreenInteractiveRender
+  );
+  PerformanceTracking.finishReport(PerformanceReports.appStartup);
+}
+
+async function initializeApplication() {
+  PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
+  await Promise.all([initializeRemoteConfig(), migrate()]);
+
+  const isReturningUser = ls.device.get(['isReturningUser']);
+  const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
+
+  // Initial telemetry; amended with wallet context later in `useInitializeWallet`
+  Sentry.setUser({ id: deviceId });
+  analytics.setDeviceId(deviceId);
+  analytics.identify();
+
+  /**
+   * We previously relied on the existence of a deviceId on keychain to
+   * determine if a user was new or not. For backwards compat, we do this
+   * still with `deviceIdWasJustCreated`, but we also set a new value on
+   * local storage `isReturningUser` so that other parts of the app can
+   * read from that, if necessary.
+   *
+   * This block of code will only run once.
+   */
+  if (deviceIdWasJustCreated && !isReturningUser) {
+    // on very first open, set some default data and fire event
+    logger.debug(`[App]: User opened application for the first time`);
+
+    const { width: screenWidth, height: screenHeight, scale: screenScale } = Dimensions.get('screen');
+
+    analytics.identify({ screenHeight, screenWidth, screenScale });
+    analytics.track(analytics.event.firstAppOpen);
+  }
+
+  /**
+   * Always set this — we may have just migrated deviceId with
+   * `getOrCreateDeviceId`, which would mean `deviceIdWasJustCreated` would
+   * be false and the new-user block of code above won't run.
+   *
+   * But by this point in the `initializeApplication`, we've handled new
+   * user events and migrations, so we need to make sure this is set to
+   * `true`.
+   */
+  ls.device.set(['isReturningUser'], true);
+
+  PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
+}

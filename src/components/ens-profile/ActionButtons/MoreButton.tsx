@@ -1,17 +1,16 @@
-import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import { IS_ANDROID as android, IS_IOS as ios } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { showDeleteContactActionSheet } from '@/components/contacts';
 import More from '../MoreButton/MoreButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useClipboard, useContacts, useSwitchWallet, useWatchWallet } from '@/hooks';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { ChainId } from '@/state/backendNetworks/types';
 
@@ -25,17 +24,17 @@ const ACTIONS = {
 };
 
 export default function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
-    if (!selectedWallet || !selectedWallet.addresses) return false;
+    if (!selectedWallet?.addresses) return false;
 
-    const visibleWallet = selectedWallet.addresses.find((wallet: { visible: boolean }) => wallet.visible);
-    return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
+    const visibleWallet = selectedWallet.addresses.find(wallet => wallet.visible);
+    return isLowerCaseMatch(visibleWallet?.address || '', address);
   }, [selectedWallet, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
@@ -131,23 +130,23 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
           nickname: contact!.nickname,
           removeContact: onRemoveContact,
         });
-        android && Keyboard.dismiss();
+        IS_ANDROID && Keyboard.dismiss();
       }
       if (actionKey === ACTIONS.SHARE) {
         const walletDisplay = ensName || address;
         const shareLink = `${RAINBOW_PROFILES_BASE_URL}/${walletDisplay}`;
-        Share.share(android ? { message: shareLink } : { url: shareLink });
+        Share.share(IS_ANDROID ? { message: shareLink } : { url: shareLink });
       }
     },
     [address, contact, ensName, isSelectedWallet, navigate, onRemoveContact, setClipboard, switchToWalletWithAddress]
   );
 
-  const menuConfig = useMemo(() => ({ menuItems, ...(ios && { menuTitle: '' }) }), [menuItems]);
+  const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }), [menuItems]);
   return (
     <ContextMenuButton
       enableContextMenu
       menuConfig={menuConfig}
-      {...(android ? { handlePressMenuItem } : {})}
+      {...(IS_ANDROID ? { handlePressMenuItem } : {})}
       isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}

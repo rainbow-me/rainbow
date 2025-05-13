@@ -1,3 +1,4 @@
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SheetActionButton } from '@/components/sheet';
 import { Box, Stack } from '@/design-system';
@@ -10,13 +11,13 @@ import { SwapMetadata } from '@/raps/references';
 import { SingleLineTransactionDetailsRow } from '@/screens/transaction-details/components/SingleLineTransactionDetailsRow';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import { shortenTxHashString } from '@/screens/transaction-details/helpers/shortenTxHashString';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { ethereumUtils, haptics } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Clipboard from '@react-native-clipboard/clipboard';
 import startCase from 'lodash/startCase';
 import React, { useCallback, useMemo } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -27,7 +28,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;
-  const isReadOnly = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnly = useIsReadOnlyWallet();
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
     const data = swapMetadataStorage.getString(hash ?? '');
@@ -44,7 +45,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
 
     // TODO: Add retry swap logic back for swaps
-    Navigation.handleAction(Routes.SWAP, {});
+    navigateToSwaps();
   }, []);
 
   if (!hash || !network) {

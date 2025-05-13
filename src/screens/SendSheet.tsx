@@ -68,7 +68,7 @@ import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { getWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsHardwareWallet, getWallets } from '@/state/wallets/walletsStore';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
@@ -141,7 +141,7 @@ export default function SendSheet() {
     updateDefaultGasLimit,
     updateTxFee,
     l1GasFeeOptimism,
-  } = useGas();
+  } = useGas({ enableTracking: true });
   const recipientFieldRef = useRef<TextInput | null>(null);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -149,7 +149,7 @@ export default function SendSheet() {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
-  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const isHardwareWallet = useIsHardwareWallet();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
     step: REGISTRATION_STEPS.TRANSFER,
@@ -167,7 +167,7 @@ export default function SendSheet() {
   const prevChainId = usePrevious(currentChainId);
   const [currentInput, setCurrentInput] = useState('');
 
-  const { params } = useRoute<RouteProp<RootStackParamList, 'SendSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_SHEET>>();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 
@@ -720,7 +720,7 @@ export default function SendSheet() {
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
-    if (buttonDisabled) return;
+    if (buttonDisabled || !selected) return;
     let toAddress = recipient;
     const isValid = await checkIsValidAddressOrDomain(recipient);
     if (isValid) {

@@ -294,8 +294,8 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
         currentlyBeingClosedTabIds.value.length > 0 ||
         tabViewGestureState.value === TabViewGestureStates.DRAG_END_ENTERING,
     }),
-    (current, previous) => {
-      if (previous && !current.shouldBlock && current.operations.length > 0) {
+    current => {
+      if (!current.shouldBlock && current.operations.length > 0) {
         processOperationQueueWorklet();
       }
     },

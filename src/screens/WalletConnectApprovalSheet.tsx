@@ -24,7 +24,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletWithAccount, useSelectedWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletconnectMeta } from '@/walletConnect/types';
@@ -126,10 +126,10 @@ const NetworkPill = ({ chainIds, onPress }: { chainIds: ChainId[]; onPress: () =
 export function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
   const { goBack } = useNavigation();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'WalletConnectApprovalSheet'>>();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_APPROVAL_SHEET>>();
   const { chainId: settingsChainId, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const selectedWallet = useWalletsStore(state => state.selected);
+  const selectedWallet = useSelectedWallet();
   const handled = useRef(false);
   const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet | null }>(() => {
     const accountAddressAsAddress = accountAddress as Address;
@@ -161,7 +161,6 @@ export function WalletConnectApprovalSheet() {
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
   const timedOut = params?.timedOut;
-  const failureExplainSheetVariant = params?.failureExplainSheetVariant;
   const chainIds = meta?.chainIds; // WC v2 supports multi-chain
   const chainId = meta?.proposedChainId || chainIds?.[0] || ChainId.mainnet; // WC v1 only supports 1
   const currentChainId = params?.currentChainId;
@@ -284,7 +283,7 @@ export function WalletConnectApprovalSheet() {
     type === WalletConnectApprovalSheetType.connect &&
       Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
         currentAccountAddress: approvalAccount.address,
-        onChangeWallet: (address: Address, wallet: RainbowWallet) => {
+        onChangeWallet: (address, wallet) => {
           setApprovalAccount({ address, wallet });
           goBack();
         },
@@ -307,10 +306,10 @@ export function WalletConnectApprovalSheet() {
     if (!timedOut) return;
     goBack();
     navigate(Routes.EXPLAIN_SHEET, {
-      type: failureExplainSheetVariant || 'failed_wc_connection',
+      type: 'failed_wc_connection',
     });
     return;
-  }, [failureExplainSheetVariant, goBack, navigate, timedOut]);
+  }, [goBack, navigate, timedOut]);
 
   const menuItems = useMemo(() => networksMenuItems(), []);
   const sheetHeight = type === WalletConnectApprovalSheetType.connect ? 408 : 438;

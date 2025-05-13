@@ -10,7 +10,7 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { watchingAlert } from '@/utils';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { POINTS_ROUTES } from '../PointsScreen';
 
@@ -19,7 +19,7 @@ export function ClaimContent() {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
   const { rewards_enabled } = useRemoteConfig();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
 

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAccountSettings, useENSRegistration } from '.';
+import { useENSRegistration } from '.';
 import { ENSRegistrationState } from '@/entities';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useNavigation } from '@/navigation';
@@ -9,9 +9,10 @@ import { AppState } from '@/redux/store';
 import Routes from '@/navigation/routesNames';
 import { getENSNFTAvatarUrl } from '@/utils';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export default function useENSPendingRegistrations() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { removeRegistrationByName, startRegistration } = useENSRegistration();
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
@@ -56,7 +57,7 @@ export default function useENSPendingRegistrations() {
     (name: string) => {
       startRegistration(name, REGISTRATION_MODES.CREATE);
       setTimeout(() => {
-        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {});
+        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { name });
       }, 100);
     },
     [navigate, startRegistration]

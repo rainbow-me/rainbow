@@ -1,0 +1,8 @@
+appId: ${APP_ID}
+---
+- runFlow:
+    when:
+      visible: ".* isn't responding"
+      platform: Android
+    commands:
+      - tapOn: 'Close app'

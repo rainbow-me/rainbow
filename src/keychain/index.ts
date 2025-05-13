@@ -6,7 +6,6 @@ import {
   getInternetCredentials,
   getSupportedBiometryType as originalGetSupportedBiometryType,
   hasInternetCredentials,
-  Options,
   resetInternetCredentials,
   setInternetCredentials,
   UserCredentials,
@@ -14,6 +13,8 @@ import {
   requestSharedWebCredentials,
   setSharedWebCredentials as originalSetSharedWebCredentials,
   SharedWebCredentials,
+  SetOptions,
+  GetOptions,
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
@@ -28,7 +29,7 @@ export const encryptor = new AesEncryptor();
 
 const EXEMPT_ENCRYPTED_KEYS = [keychainConstants.pinKey, keychainConstants.signingWallet, keychainConstants.signingWalletAddress];
 
-export type KeychainOptions = Options & {
+export type KeychainOptions<T> = T & {
   /**
    * If we already have the user's pin in memory, pass it here to prevent
    * another authentication prompt and lookup.
@@ -57,7 +58,7 @@ const cache = new MMKV({
   id: 'rainbowKeychainLocalStorage',
 });
 
-export const publicAccessControlOptions: Options = {
+export const publicAccessControlOptions: SetOptions = {
   accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
 
@@ -66,7 +67,7 @@ export const publicAccessControlOptions: Options = {
  * encrypted, we'll prompt the user to authenticate with their PIN and then
  * decrypt the data.
  */
-export async function get(key: string, options: KeychainOptions = {}): Promise<Result<string>> {
+export async function get(key: string, options: KeychainOptions<GetOptions> = {}): Promise<Result<string>> {
   logger.debug(`[keychain]: get`, { key }, logger.DebugContext.keychain);
 
   async function _get(attempts = 0): Promise<Result<string>> {
@@ -208,7 +209,7 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
 /**
  * Set a value on the keychain
  */
-export async function set(key: string, value: string, options: KeychainOptions = {}): Promise<void> {
+export async function set(key: string, value: string, options: KeychainOptions<SetOptions> = {}): Promise<void> {
   logger.debug(`[keychain]: set`, { key }, logger.DebugContext.keychain);
 
   // only save public data to mmkv
@@ -237,7 +238,7 @@ export async function set(key: string, value: string, options: KeychainOptions =
  */
 export async function getObject<T extends Record<string, any> = Record<string, unknown>>(
   key: string,
-  options: KeychainOptions = {}
+  options: KeychainOptions<GetOptions> = {}
 ): Promise<Result<T>> {
   logger.debug(`[keychain]: getObject`, { key }, logger.DebugContext.keychain);
 
@@ -257,7 +258,7 @@ export async function getObject<T extends Record<string, any> = Record<string, u
  * A convenience method for stringifying an object and storing it on the
  * keychain.
  */
-export async function setObject(key: string, value: Record<string, any>, options: KeychainOptions = {}): Promise<void> {
+export async function setObject(key: string, value: Record<string, any>, options: KeychainOptions<SetOptions> = {}): Promise<void> {
   logger.debug(`[keychain]: setObject`, { key }, logger.DebugContext.keychain);
 
   await set(key, JSON.stringify(value), options);
@@ -368,7 +369,7 @@ export async function setSharedWebCredentials(username: string, password: string
  * Returns our standard private access control options, based on certain
  * environment variables.
  */
-export async function getPrivateAccessControlOptions(): Promise<Options> {
+export async function getPrivateAccessControlOptions(): Promise<SetOptions> {
   logger.debug(`[keychain]: getPrivateAccessControlOptions`, {}, logger.DebugContext.keychain);
 
   const isSimulator = IS_DEV && (await DeviceInfo.isEmulator());

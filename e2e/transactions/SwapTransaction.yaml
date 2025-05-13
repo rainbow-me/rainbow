@@ -1,0 +1,35 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/Prepare.yaml
+- runFlow: ../utils/ImportWalletWithKey.yaml
+
+# Send ETH to test wallet
+- tapOn:
+    id: fund-test-wallet-button
+
+# Connect to Anvil (test network)
+- tapOn:
+    id: dev-button-anvil
+
+# Open swap screen
+- tapOn:
+    id: swap-button
+- assertVisible:
+    id: swap-screen
+# Select DAI as output token
+- tapOn: 'Find a token to buy'
+- inputText: 'DAI'
+- tapOn:
+    id: token-to-buy-dai-1
+- assertVisible: 'DAI'
+- assertVisible: 'No Balance'
+# Add swap execution and validation.
+# Currenlty on detox we don't do either.

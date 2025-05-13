@@ -1,15 +1,15 @@
 import { opacity } from '@/__swaps__/utils/swaps';
+import { BlendColor, Circle, Group, ImageSVG, LinearGradient, Mask, Paint, Rect, Shadow, vec } from '@shopify/react-native-skia';
+import React, { memo, useState } from 'react';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { SkiaText, SkiaTextChild } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
-import { BlendColor, Circle, Group, ImageSVG, LinearGradient, Mask, Paint, Rect, Shadow, vec } from '@shopify/react-native-skia';
-import React, { memo, useCallback, useState } from 'react';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import Navigation from '@/navigation/Navigation';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 import { plusButtonSvg, stars } from './cardSvgs';
 
@@ -61,9 +61,14 @@ const CARD_PROPS: Partial<SkiaCardProps> = {
   },
 };
 
-export const LaunchCard = memo(function LaunchCard() {
-  const { navigate } = useNavigation();
+function navigateToTokenLauncher(): void {
+  if (!enableActionsOnReadOnlyWallet && getIsReadOnlyWallet()) {
+    return watchingAlert();
+  }
+  Navigation.handleAction(Routes.TOKEN_LAUNCHER_SCREEN);
+}
 
+export const LaunchCard = memo(function LaunchCard() {
   const [svgs] = useState(() => ({
     plusButton: plusButtonSvg(),
     stars: {
@@ -72,13 +77,6 @@ export const LaunchCard = memo(function LaunchCard() {
       three: stars.three(),
     },
   }));
-
-  const navigateToTokenLauncher = useCallback(() => {
-    if (!enableActionsOnReadOnlyWallet && getIsReadOnlyWallet()) {
-      return watchingAlert();
-    }
-    navigate(Routes.TOKEN_LAUNCHER_SCREEN);
-  }, [navigate]);
 
   useCleanup(() => {
     svgs.plusButton?.dispose?.();

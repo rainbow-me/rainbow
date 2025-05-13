@@ -136,9 +136,9 @@ const AirdropsList = () => {
       return (
         <AirdropCoinRow
           address={item.asset.address}
-          airdropValue={item.value.nativeAsset.display}
+          airdropValue={item.totalCurrencyValue.display}
           chainId={item.chainId}
-          hasZeroValue={Number(item.value.nativeAsset.amount) === 0}
+          hasZeroValue={Number(item.totalCurrencyValue.amount) === 0}
           icon={item.asset.icon_url ?? item.iconUrl}
           name={item.asset.name}
           onPress={() => onPressCoinRow(item)}

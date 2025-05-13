@@ -1,47 +1,61 @@
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { TrendingTokens } from '@/components/Discover/TrendingTokens';
-import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
-import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
-import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
-import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
-import { GasCard } from '@/components/cards/GasCard';
-import { LearnCard } from '@/components/cards/LearnCard';
-import { LedgerCard } from '@/components/cards/LedgerCard';
-import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
-import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
-import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
-import { RemoteCardCarousel } from '@/components/cards/remote-cards';
-import { AirdropsCard } from '@/components/cards/skia-cards/AirdropsCard';
-import { LaunchCard } from '@/components/cards/skia-cards/LaunchCard';
-import { avoidScamsCard, backupsCard, cryptoAndWalletsCard } from '@/components/cards/utils/constants';
-import { Box, Inline, Inset, Separator, Stack, useColorMode } from '@/design-system';
-import { IS_TEST } from '@/env';
-import { isTestnetChain } from '@/handlers/web3';
-import walletTypes from '@/helpers/walletTypes';
-import { useAccountSettings } from '@/hooks';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import React from 'react';
 import useExperimentalFlag, {
-  FEATURED_RESULTS,
+  OP_REWARDS,
+  PROFILES,
   HARDWARE_WALLETS,
   MINTS,
   NEW_DISCOVER_CARDS,
   NFT_OFFERS,
-  OP_REWARDS,
-  PROFILES,
+  FEATURED_RESULTS,
   TRENDING_TOKENS,
+  KING_OF_THE_HILL,
 } from '@rainbow-me/config/experimentalHooks';
-import React, { useCallback } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { Inline, Inset, Stack, Box } from '@/design-system';
+import { useAccountSettings } from '@/hooks';
+import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
+import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
+import { GasCard } from '@/components/cards/GasCard';
+import { LearnCard } from '@/components/cards/LearnCard';
+import { avoidScamsCard, backupsCard, cryptoAndWalletsCard } from '@/components/cards/utils/constants';
+import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
+import { LedgerCard } from '@/components/cards/LedgerCard';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import walletTypes from '@/helpers/walletTypes';
+import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
+import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
+import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
+import { IS_TEST } from '@/env';
+import { TrendingTokens } from '@/components/Discover/TrendingTokens';
+import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
+import { AirdropsCard } from '@/components/cards/skia-cards/AirdropsCard';
+import { LaunchCard } from '@/components/cards/skia-cards/LaunchCard';
+import { isTestnetChain } from '@/handlers/web3';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
+import { DiscoverSeparator } from './DiscoverSeparator';
+import { KingOfTheHill } from './KingOfTheHill';
+import { useWallets } from '@/state/wallets/walletsStore';
 
 export const HORIZONTAL_PADDING = 20;
 
+function onNavigate(url: string): void {
+  Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, {
+    url,
+  });
+}
+
 export default function DiscoverHome() {
-  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, new_discover_cards_enabled } =
-    useRemoteConfig();
-  const { isDarkMode } = useColorMode();
+  const {
+    profiles_enabled,
+    mints_enabled,
+    op_rewards_enabled,
+    featured_results,
+    trending_tokens_enabled,
+    new_discover_cards_enabled,
+    king_of_the_hill_enabled,
+  } = useRemoteConfig();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -52,26 +66,18 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
+  const kingOfTheHillEnabled = (useExperimentalFlag(KING_OF_THE_HILL) || king_of_the_hill_enabled) && !IS_TEST;
+
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
-  const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => (wallets || {})[key].type === walletTypes.bluetooth).length > 0;
 
-  const onNavigate = useCallback(
-    (url: string) => {
-      navigate(Routes.DAPP_BROWSER_SCREEN, {
-        url,
-      });
-    },
-    [navigate]
-  );
-
   return (
-    <Inset top="20px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
+    <Inset top="12px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
       {!testNetwork ? (
         <Box gap={20}>
           {newDiscoverCardsEnabled ? (
@@ -85,13 +91,9 @@ export default function DiscoverHome() {
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
           )}
-          <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
-          {trendingTokensEnabled && (
-            <>
-              <TrendingTokens />
-              <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} thickness={1} />
-            </>
-          )}
+          {kingOfTheHillEnabled && <KingOfTheHill />}
+          <DiscoverSeparator />
+          {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />
           {mintsEnabled && (
             <Stack space="20px">

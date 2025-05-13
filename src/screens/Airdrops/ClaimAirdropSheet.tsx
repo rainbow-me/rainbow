@@ -51,7 +51,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Address } from 'viem';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
 import { GasInfo } from './utils';
 
@@ -93,7 +93,7 @@ function getButtonLabel(claimStatus: ClaimStatus, gasInfo: GasInfo) {
 export const ClaimAirdropSheet = () => {
   const {
     params: { claimable, hideViewTokenButton = false },
-  } = useRoute<RouteProp<RootStackParamList, 'ClaimAirdropSheet'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.CLAIM_AIRDROP_SHEET>>();
 
   const [{ iconUrl, symbolHasEmoji }] = useState(() => ({
     iconUrl: { uri: getSizedImageUrl(claimable.asset.icon_url, COIN_ICON_SIZE) },
@@ -102,6 +102,13 @@ export const ClaimAirdropSheet = () => {
 
   const color = usePersistentDominantColorFromImage(claimable.asset.icon_url || iconUrl.uri);
   const highContrastColor = useMemo(() => getBrightenedColor(color), [color]);
+
+  const [asset] = claimable.assets;
+
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+
+  const { goBack } = useNavigation();
+  const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
 
   return (
     <ColorModeProvider value="dark">
@@ -125,8 +132,8 @@ export const ClaimAirdropSheet = () => {
 
           <Stack alignHorizontal="center" space="20px">
             <PanelContent
-              airdropAmount={claimable.value.claimAsset.amount}
-              airdropValue={claimable.value.nativeAsset.display}
+              airdropAmount={asset.amount.amount}
+              airdropValue={claimable.totalCurrencyValue.display}
               creatorAddress={claimable.creatorAddress}
               highContrastColor={highContrastColor}
               symbol={claimable.asset.symbol}
@@ -301,7 +308,7 @@ const PanelFooter = ({
   highContrastColor: string;
 }) => {
   const { goBack } = useNavigation();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
 
   const claimAirdrop = useCallback(() => {

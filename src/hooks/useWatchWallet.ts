@@ -2,11 +2,12 @@ import { useDeleteWallet, useImportingWallet, useInitializeWallet } from '@/hook
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { setSelectedWallet, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { doesWalletsContainAddress } from '@/utils';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -20,7 +21,7 @@ export default function useWatchWallet({
   showImportModal?: boolean;
 }) {
   const { goBack, navigate } = useNavigation();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const watchingWallet = useMemo(() => {
     return Object.values<RainbowWallet>(wallets || {}).find(wallet =>
@@ -51,17 +52,24 @@ export default function useWatchWallet({
     [initializeWallet, wallets]
   );
 
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const { isImporting, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
     showImportModal,
   });
   const watchWallet = useCallback(async () => {
     if (!isWatching) {
       handleSetSeedPhrase(ensName ?? '');
-      handlePressImportButton({
+      await handlePressImportButton({
         forceAddress: ensName,
         avatarUrl: avatarUrl ?? undefined,
       });
+
+      // NOTE: Make sure this is cleaned up due to the ProfileSheet calling this function directly
+      if (walletLoadingStore.getState().loadingState) {
+        walletLoadingStore.setState({
+          loadingState: null,
+        });
+      }
     } else {
       // If there's more than 1 account,
       // it's deletable

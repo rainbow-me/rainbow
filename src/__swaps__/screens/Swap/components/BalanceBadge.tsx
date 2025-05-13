@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { DerivedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { AnimatedText, Bleed, Box, useColorMode } from '@/design-system';

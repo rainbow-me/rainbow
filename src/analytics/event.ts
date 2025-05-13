@@ -1,4 +1,4 @@
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
@@ -12,6 +12,8 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { ENSRapActionType } from '../raps/common';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
+import { PairHardwareWalletNavigatorParams } from '@/navigation/types';
+import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 /**
  * All events, used by `analytics.track()`
@@ -195,6 +197,7 @@ export const event = {
   swapsSucceeded: 'swaps.succeeded',
   swapsQuoteFailed: 'swaps.quote_failed',
   swapsGasUpdatedPrice: 'Updated Gas Price',
+  insufficientNativeAssetForAction: 'insufficient_native_asset_for_action',
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
@@ -299,39 +302,33 @@ export const event = {
 
   // app store review
   appStoreReviewPrompted: 'app_store_review.prompted',
-} as const;
 
-export type QuickBuyAnalyticalData =
-  | {
-      assetUniqueId: UniqueId;
-      buyWithAssetUniqueId: UniqueId;
-      currencyAmount: number;
-      assetAmount: number;
-    }
-  | undefined;
+  // refresh account data
+  refreshAccountData: 'refresh_account_data',
+} as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   type: T;
   isBridge: boolean;
   inputAssetSymbol: string;
   inputAssetName: string;
-  inputAssetAddress: AddressOrEth;
+  inputAssetAddress: AddressOrEth | string;
   inputAssetChainId: ChainId;
   inputAssetType: string;
   inputAssetAmount: number;
   outputAssetSymbol: string;
   outputAssetName: string;
-  outputAssetAddress: AddressOrEth;
+  outputAssetAddress: AddressOrEth | string;
   outputAssetChainId: ChainId;
   outputAssetType: string;
   outputAssetAmount: number;
-  mainnetAddress: string;
+  mainnetAddress: string | undefined;
   tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
   isSwappingToTrendingAsset: boolean;
   isHardwareWallet: boolean;
-  quickBuyData?: QuickBuyAnalyticalData;
+  quickBuyMetadata: SwapsParams['quickBuyMetadata'];
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -479,13 +476,8 @@ export type EventProperties = {
      */
     sessionId?: string;
   };
-  [event.pairHwWalletNavEntered]: {
-    entryPoint: string;
-    isFirstWallet: boolean;
-  };
-  [event.pairHwWalletNavExited]: {
-    entryPoint: string;
-    isFirstWallet: boolean;
+  [event.pairHwWalletNavEntered]: PairHardwareWalletNavigatorParams;
+  [event.pairHwWalletNavExited]: PairHardwareWalletNavigatorParams & {
     step: string;
   };
   [event.rewardsViewedSheet]: undefined;
@@ -722,8 +714,8 @@ export type EventProperties = {
 
   [event.swapsFlippedAssets]: {
     inputAmount: string | number;
-    previousInputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
-    previousOutputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+    previousInputAsset: { address: string; chainId: ChainId; symbol: string } | null;
+    previousOutputAsset: { address: string; chainId: ChainId; symbol: string } | null;
   };
 
   [event.swapsToggledDegenMode]: {
@@ -739,6 +731,10 @@ export type EventProperties = {
   [event.swapsSubmitted]: SwapEventParameters<'swap' | 'crosschainSwap'>;
   [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
   [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
+  [event.insufficientNativeAssetForAction]: {
+    type: string;
+    nativeAssetSymbol: string | undefined;
+  };
 
   [event.swapsQuoteFailed]: {
     error_code: number | undefined;
@@ -782,28 +778,29 @@ export type EventProperties = {
     claimableId: string;
     claimableType: 'transaction' | 'multi_transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
-    asset: {
+    assets: {
       symbol: string;
       address: string;
-    };
+      amount: string;
+    }[];
     outputAsset: {
       symbol: string;
       address: string;
     };
     outputChainId: ChainId;
     isSwapping: boolean;
-    amount: string;
-    usdValue: number;
+    usdValue: string;
   };
 
   [event.claimClaimableFailed]: {
     claimableId: string;
     claimableType: 'transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
-    asset: {
+    assets: {
       symbol: string;
       address: string;
-    };
+      amount: string;
+    }[];
     isSwapping: boolean;
     outputAsset: {
       symbol: string;
@@ -811,8 +808,7 @@ export type EventProperties = {
     };
     outputChainId: ChainId;
     failureStep: 'claim' | 'swap' | 'unknown';
-    amount: string;
-    usdValue: number;
+    usdValue: string;
     errorMessage: string;
   };
 
@@ -820,12 +816,12 @@ export type EventProperties = {
     claimableId: string;
     claimableType: 'transaction' | 'multi_transaction' | 'sponsored' | 'rainbowCoin';
     chainId: ChainId;
-    asset: {
+    assets: {
       symbol: string;
       address: string;
-    };
-    amount: string;
-    usdValue: number;
+      amount: string;
+    }[];
+    usdValue: string;
   };
 
   [event.errorBoundary]: { error: Error | null };
@@ -1091,5 +1087,8 @@ export type EventProperties = {
   [event.appStoreReviewPrompted]: {
     action: string;
     promptCount: number;
+  };
+  [event.refreshAccountData]: {
+    duration: number;
   };
 };

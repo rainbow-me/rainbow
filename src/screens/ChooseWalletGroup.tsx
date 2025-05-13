@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { createAccount, loadWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { createAccount, loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { profileUtils } from '@/utils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
@@ -29,11 +29,9 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
     navigate(Routes.MODAL_SCREEN, {
       actionType: 'Create',
       numWalletGroups,
-      onCloseModal: async (args: { name: string; color: number }) => {
-        if (!args) return;
+      onCloseModal: async ({ name }) => {
         try {
-          const { name, color } = args;
-          await createWallet({ color, name });
+          await createWallet({ name });
           await loadWallets();
           // @ts-expect-error - needs refactor to object params
           await initializeWallet();
@@ -111,10 +109,8 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
       actionType: 'Create',
       asset: [],
       isNewProfile: true,
-      onCloseModal: async (args: { name: string; color: number }) => {
-        if (!args) return;
+      onCloseModal: async ({ name, color }) => {
         try {
-          const { name, color } = args;
           if (wallet.damaged) throw new Error('Wallet is damaged');
           createAccount({
             id: wallet.id,
@@ -176,7 +172,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
 
 export function ChooseWalletGroup() {
   const { goBack } = useNavigation();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const groups = Object.values(wallets || {}).filter(wallet => wallet.type === WalletTypes.mnemonic);
 

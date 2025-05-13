@@ -1,8 +1,8 @@
 import Divider from '@/components/Divider';
-import { useAccountSettings, useDimensions, useWebData } from '@/hooks';
+import { useDimensions, useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import lang from 'i18n-js';
@@ -54,7 +54,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
   const { initializeShowcaseIfNeeded } = useWebData();
 

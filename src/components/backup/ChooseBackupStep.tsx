@@ -52,11 +52,9 @@ const Masthead = styled(Box).attrs({
 export function ChooseBackupStep() {
   const { colors } = useTheme();
 
-  const { status, backups, mostRecentBackup } = backupsStore(state => ({
-    status: state.status,
-    backups: state.backups,
-    mostRecentBackup: state.mostRecentBackup,
-  }));
+  const status = backupsStore(state => state.status);
+  const backups = backupsStore(state => state.backups);
+  const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
 
   const isLoading = LoadingStates.includes(status);
 

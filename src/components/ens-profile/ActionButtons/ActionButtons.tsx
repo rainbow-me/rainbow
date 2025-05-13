@@ -4,7 +4,7 @@ import MoreButton from './MoreButton';
 import SendButton from './SendButton';
 import WatchButton from './WatchButton';
 import { Inline } from '@/design-system';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
 export default function ActionButtons({
   address: primaryAddress,
@@ -15,8 +15,8 @@ export default function ActionButtons({
   ensName?: string;
   avatarUrl?: string | null;
 }) {
-  const wallets = useWalletsStore(state => state.wallets);
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const wallets = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const isOwner = useMemo(() => {
     return Object.values(wallets || {}).some(

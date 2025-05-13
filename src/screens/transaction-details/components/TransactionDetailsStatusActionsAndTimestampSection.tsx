@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const SIZE = 40;
 
@@ -24,7 +24,7 @@ type Props = {
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({ transaction, hideIcon }) => {
   const { minedAt, status, type, from } = transaction;
   const { navigate } = useNavigation();
-  const accountAddress = useWalletsStore(state => state.accountAddress);
+  const accountAddress = useAccountAddress();
   const date = formatTransactionDetailsDate(minedAt ?? undefined);
   const { colors } = useTheme();
   const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status);

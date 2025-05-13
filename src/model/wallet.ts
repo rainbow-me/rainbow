@@ -22,6 +22,7 @@ import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import store from '@/redux/store';
 import { Network } from '@/state/backendNetworks/types';
 import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { ethereumUtils } from '@/utils';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
@@ -38,7 +39,7 @@ import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import { hdkey as EthereumHDKey, default as LibWallet } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { GetOptions, SetOptions } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -251,6 +252,7 @@ export const walletInit = async ({
   image = null,
   // Import the wallet "silently" in the background (i.e. no "loading" prompts).
   silent = false,
+  userPin,
 }: InitializeWalletParams): Promise<WalletInitialized> => {
   let walletAddress = null;
 
@@ -268,6 +270,7 @@ export const walletInit = async ({
       checkedWallet,
       image,
       silent,
+      userPin,
     });
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
@@ -899,7 +902,7 @@ export const createWallet = async ({
 
     if (!silent) {
       logger.debug('[wallet]: setting selected wallet', {}, DebugContext.wallet);
-      await setSelectedWalletToStorage(allWallets[id]);
+      await setSelectedWalletInKeychain(allWallets[id]);
     }
 
     logger.debug('[wallet]: saving all wallets', {}, DebugContext.wallet);
@@ -929,7 +932,7 @@ export const saveKeyForWallet = async (
   address: EthereumAddress,
   walletKey: null | EthereumPrivateKey | HardwareKey,
   hardware: boolean,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ) => {
   if (hardware) {
     return await saveHardwareKey(address, walletKey as HardwareKey, {
@@ -966,7 +969,7 @@ export const getKeyForWallet = async (
 export const savePrivateKey = async (
   address: EthereumAddress,
   privateKey: null | EthereumPrivateKey,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ) => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
@@ -992,7 +995,7 @@ export const savePrivateKey = async (
 export const saveHardwareKey = async (
   address: EthereumAddress,
   privateKey: null | HardwareKey,
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ) => {
   const key = `${address}_${privateKeyKey}`;
   const val = {
@@ -1078,7 +1081,7 @@ export const getHardwareKey = async (address: EthereumAddress): Promise<null | P
 export const saveSeedPhrase = async (
   seedphrase: EthereumWalletSeed,
   keychain_id: RainbowWallet['id'],
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<SetOptions>, 'androidEncryptionPin'> = {}
 ): Promise<void> => {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
   const key = `${keychain_id}_${seedPhraseKey}`;
@@ -1096,7 +1099,7 @@ export const saveSeedPhrase = async (
 
 export const getSeedPhrase = async (
   id: RainbowWallet['id'],
-  { androidEncryptionPin }: Pick<kc.KeychainOptions, 'androidEncryptionPin'> = {}
+  { androidEncryptionPin }: Pick<kc.KeychainOptions<GetOptions>, 'androidEncryptionPin'> = {}
 ): Promise<null | SeedPhraseData> => {
   try {
     const key = `${id}_${seedPhraseKey}`;
@@ -1117,7 +1120,7 @@ export const getSeedPhrase = async (
   }
 };
 
-export const setSelectedWalletToStorage = async (wallet: RainbowWallet): Promise<void> => {
+export const setSelectedWalletInKeychain = async (wallet: RainbowWallet): Promise<void> => {
   const val = {
     version: selectedWalletVersion,
     wallet,
@@ -1126,7 +1129,7 @@ export const setSelectedWalletToStorage = async (wallet: RainbowWallet): Promise
   return keychain.saveObject(selectedWalletKey, val, keychain.publicAccessControlOptions);
 };
 
-export const getSelectedWalletFromStorage = async (): Promise<null | RainbowSelectedWalletData> => {
+export const getSelectedWalletFromKeychain = async (): Promise<null | RainbowSelectedWalletData> => {
   try {
     const selectedWalletData = await keychain.loadObject(selectedWalletKey);
     if (selectedWalletData) {
@@ -1134,7 +1137,7 @@ export const getSelectedWalletFromStorage = async (): Promise<null | RainbowSele
     }
     return null;
   } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getSelectedWallet'), { error });
+    logger.error(new RainbowError('[wallet]: Error in getSelectedWalletFromKeychain'), { error });
     return null;
   }
 };
@@ -1278,7 +1281,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       logger.debug('[wallet]: new pkey saved', {}, DebugContext.wallet);
     }
 
-    const selectedWalletData = await getSelectedWalletFromStorage();
+    const selectedWalletData = await getSelectedWalletFromKeychain();
     const wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
     if (!wallet) {
       return null;

@@ -104,10 +104,15 @@ const Routes = {
   SETTINGS_SECTION_NETWORK: 'NetworkSection',
   SETTINGS_SECTION_NOTIFICATIONS: 'NotificationsSection',
   SETTINGS_SECTION_PRIVACY: 'PrivacySection',
+  VIEW_WALLET_BACKUP: 'ViewWalletBackup',
+  VIEW_CLOUD_BACKUPS: 'ViewCloudBackups',
+  SECRET_WARNING: 'SecretWarning',
+  SHOW_SECRET: 'ShowSecret',
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
   NETWORK_SELECTOR: 'NetworkSelector',
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
+  KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',
 } as const;
 
 export const NATIVE_ROUTES = [

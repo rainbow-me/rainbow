@@ -181,7 +181,7 @@ export const SendConfirmationSheet = () => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const { goBack, navigate, setParams } = useNavigation();
+  const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
   const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeAreaInsets();
@@ -196,7 +196,7 @@ export const SendConfirmationSheet = () => {
 
   const {
     params: { amountDetails, asset, callback, ensProfile, isL2, isNft, chainId, to, toAddress },
-  } = useRoute<RouteProp<RootStackParamList, 'SendConfirmationSheet'>>();
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_CONFIRMATION_SHEET>>();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const walletNames = useWalletsStore(state => state.walletNames);
@@ -214,7 +214,7 @@ export const SendConfirmationSheet = () => {
     }
   );
 
-  const { isSufficientGas, isValidGas, updateTxFee } = useGas();
+  const { isSufficientGas, isValidGas, updateTxFee } = useGas({ enableTracking: true });
 
   const contact = useMemo(() => {
     return contacts?.[toAddress?.toLowerCase()];

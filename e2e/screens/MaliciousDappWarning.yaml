@@ -1,0 +1,51 @@
+appId: ${APP_ID}
+tags:
+  - browser
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/Prepare.yaml
+- runFlow: ../utils/ImportWalletWithKey.yaml
+
+# Navigate to browser
+- swipe:
+    direction: LEFT
+- assertVisible:
+    id: discover-header
+- swipe:
+    direction: LEFT
+- assertVisible:
+    id: browser-screen
+
+# Note: Since we can't directly interact with WebView content,
+# we use coordinates. These may need adjustment based on device.
+
+# unsure if this will work on Android. having issues interacting with the browser context.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      # tap on browser search input
+      - tapOn:
+          point: 80, 80
+      - assertVisible: 'Find apps and more'
+      - inputText: 'https://test-dap-welps.vercel.app/'
+
+      # tap on connect button
+      - tapOn:
+          point: 275, 80
+
+      # tap on connect button
+      - tapOn:
+          point: 50, 325
+
+      # Verify warning appears
+      - assertVisible:
+          id: malicious-dapp-warning
+
+      - assertVisible: 'Find apps and more'
+      - inputText: 'https://test-dap-welps.vercel.app/'

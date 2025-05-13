@@ -3,7 +3,7 @@ import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Stack } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import React, { useState } from 'react';
 import { AnimatedText } from '../../components/AnimatedText';
@@ -14,7 +14,8 @@ import { Paragraph } from '../../components/Paragraph';
 import { textColors } from '../../constants';
 
 export const Review = () => {
-  const { accountENS, accountAddress } = useAccountProfileInfo();
+  const { accountENS } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const { goBack } = useNavigation();
 
   const [showDoneButton, setShowDoneButton] = useState(false);

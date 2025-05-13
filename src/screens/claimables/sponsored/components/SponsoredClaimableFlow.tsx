@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import React, { useCallback, useMemo } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ClaimButton } from '../../shared/components/ClaimButton';
 import { ClaimPanel } from '../../shared/components/ClaimPanel';
 import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
@@ -11,14 +11,16 @@ import { useSponsoredClaimableContext } from '../context/SponsoredClaimableConte
 export function SponsoredClaimableFlow() {
   const { goBack } = useNavigation();
   const { claim, claimable, claimStatus, setClaimStatus } = useSponsoredClaimableContext();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+
+  const [asset] = claimable.assets;
 
   const shouldShowClaimText = claimStatus === 'ready';
   const buttonLabel = useMemo(() => {
     switch (claimStatus) {
       case 'ready':
         if (shouldShowClaimText) {
-          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimable.value.claimAsset.display });
+          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: asset.amount.display });
         } else {
           return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
@@ -31,7 +33,7 @@ export function SponsoredClaimableFlow() {
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimStatus, claimable.value.claimAsset.display, shouldShowClaimText]);
+  }, [claimStatus, shouldShowClaimText, asset.amount.display]);
 
   const onPress = useCallback(() => {
     if (isReadOnlyWallet) {
@@ -49,13 +51,15 @@ export function SponsoredClaimableFlow() {
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>
       <ClaimValueDisplay
-        label={claimable.value.nativeAsset.display}
-        tokenIconUrl={claimable.asset.icon_url}
-        tokenSymbol={claimable.asset.symbol}
+        label={claimable.totalCurrencyValue.display}
+        tokenIconUrl={asset.asset.icon_url}
+        tokenSymbol={asset.asset.symbol}
         chainId={claimable.chainId}
       />
       <ClaimButton
         onPress={onPress}
+        enableHoldToPress={claimStatus !== 'success' && claimStatus !== 'pending'}
+        isLoading={claimStatus === 'claiming'}
         disabled={claimStatus === 'claiming'}
         shimmer
         biometricIcon={shouldShowClaimText}

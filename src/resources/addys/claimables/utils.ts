@@ -1,9 +1,18 @@
+import * as i18n from '@/languages';
 import { NativeCurrencyKey } from '@/entities';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import { add, convertAmountToNativeDisplayWorklet, convertRawAmountToBalanceWorklet } from '@/helpers/utilities';
 import { parseAsset } from '@/resources/assets/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { Network } from '@/state/backendNetworks/types';
-import { acceptedClaimableTypes, AddysClaimable, BaseClaimable, Claimable, RainbowClaimable, AcceptedClaimableType } from './types';
+import {
+  acceptedClaimableTypes,
+  AddysClaimable,
+  BaseClaimable,
+  Claimable,
+  RainbowClaimable,
+  AcceptedClaimableType,
+  ClaimableType,
+} from './types';
 
 function isAcceptedClaimableType(type: AddysClaimable['claim_action_type']): type is AcceptedClaimableType {
   if (!type || type === 'unknown') return false;
@@ -21,7 +30,21 @@ export const parseClaimables = <C extends Claimable>(
         return undefined;
       }
 
+      const totalCurrencyValue = claimable.assets.reduce((acc, curr) => add(acc, curr.usd_value), '0');
+
       const baseClaimable: BaseClaimable = {
+        assets: claimable.assets.map(({ asset, amount, ...rest }) => ({
+          ...rest,
+          amount: convertRawAmountToBalanceWorklet(amount, asset),
+          asset: parseAsset({
+            address: asset.asset_code,
+            asset: {
+              ...asset,
+              network: useBackendNetworksStore.getState().getChainsName()[claimable.network] as Network,
+              transferable: asset.transferable ?? false,
+            },
+          }),
+        })),
         asset: parseAsset({
           address: claimable.asset.asset_code,
           asset: {
@@ -30,16 +53,15 @@ export const parseClaimables = <C extends Claimable>(
             transferable: claimable.asset.transferable ?? false,
           },
         }),
+        dapp: claimable.dapp,
         chainId: claimable.network,
         name: claimable.name,
         uniqueId: claimable.unique_id,
-        analyticsId: claimable.type,
         iconUrl: claimable.dapp.icon_url,
         type: claimable.type,
-        value: {
-          claimAsset: convertRawAmountToBalance(claimable.amount, claimable.asset),
-          nativeAsset: convertRawAmountToNativeDisplay(claimable.amount, claimable.asset.decimals, claimable.asset.price.value, currency),
-          usd: claimable.total_usd_value,
+        totalCurrencyValue: {
+          amount: totalCurrencyValue,
+          display: convertAmountToNativeDisplayWorklet(totalCurrencyValue, currency),
         },
       };
 
@@ -71,4 +93,25 @@ export const parseClaimables = <C extends Claimable>(
       return undefined;
     })
     .filter((c): c is C => !!c);
+};
+
+export const isRainbowEthRewards = (uniqueId: string) => uniqueId === 'rainbow-eth-rewards';
+
+export const claimableTypeTransformation = (type: ClaimableType) => type?.replaceAll('_', '-');
+
+export const getClaimableName = (claimable: Claimable) => {
+  const transformedType = claimableTypeTransformation(claimable.type);
+  if (transformedType === ClaimableType.RainbowSuperTokenCreatorFees) {
+    return i18n.t(i18n.l.claimables.panel.creator_lp_fees);
+  }
+
+  if (transformedType === ClaimableType.merklClaimable && claimable.dapp) {
+    return i18n.t(i18n.l.claimables.panel.merkl_claimable, { dappName: claimable.dapp.name });
+  }
+
+  if (isRainbowEthRewards(claimable.uniqueId)) {
+    return i18n.t(i18n.l.claimables.panel.rainbow_eth_rewards);
+  }
+
+  return claimable.name;
 };

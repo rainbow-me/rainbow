@@ -5,15 +5,15 @@ import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system'
 import { UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { arcClient } from '@/graphql';
-import { PoapEvent } from '@/graphql/__generated__/arcDev';
 import { maybeSignUri } from '@/handlers/imgix';
 import { useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -21,7 +21,7 @@ import { watchingAlert } from '@/utils';
 import { delay } from '@/utils/delay';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { PoapMintError } from '@/utils/poaps';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
@@ -60,19 +60,15 @@ const BlurWrapper = styled(View).attrs({
   ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
-interface PoapSheetProps {
-  event: PoapEvent;
-}
-
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 
 const PoapSheet = () => {
-  const { accountAddress } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
-  const params = useRoute();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POAP_SHEET>>();
   const {
     data: { nfts },
   } = useLegacyNFTs({
@@ -83,7 +79,7 @@ const PoapSheet = () => {
   const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(undefined);
   const [nft, setNft] = useState<UniqueAsset | null>(null);
 
-  const poapEvent: PoapEvent = (params.params as PoapSheetProps)?.event;
+  const poapEvent = params.event;
 
   const poapMintType = poapEvent.secretWord ? 'secretWord' : 'qrHash';
 

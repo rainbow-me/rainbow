@@ -99,6 +99,7 @@ import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/NetworkSelector';
+import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -253,6 +254,7 @@ function BSNavigator() {
       <BSStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} />
       <BSStack.Screen component={LogSheet} name={Routes.LOG_SHEET} />
       <BSStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} options={tokenLauncherSheetPreset} />
+      <BSStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} />
     </BSStack.Navigator>
   );
 }

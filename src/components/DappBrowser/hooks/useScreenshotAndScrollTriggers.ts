@@ -29,6 +29,7 @@ export function useScreenshotAndScrollTriggers() {
     tabSwitchGestureX,
     tabViewProgress,
     tabViewVisible,
+    triggerScreenshot,
   } = useBrowserContext();
   const { setScreenshotDataWorklet } = useBrowserWorkletsContext();
 
@@ -65,16 +66,23 @@ export function useScreenshotAndScrollTriggers() {
 
   return useAnimatedReaction(
     () => ({
+      screenshotTriggered: triggerScreenshot.value,
       tabSwitchGestureX: tabSwitchGestureX.value,
       tabViewProgress: tabViewProgress.value,
     }),
     (current, previous) => {
+      const didTriggerManualScreenshot = current.screenshotTriggered && previous !== null && !previous.screenshotTriggered;
       const changesDetected =
         previous !== null &&
-        (current.tabSwitchGestureX !== previous.tabSwitchGestureX || current.tabViewProgress !== previous.tabViewProgress);
+        (current.tabSwitchGestureX !== previous.tabSwitchGestureX ||
+          current.tabViewProgress !== previous.tabViewProgress ||
+          didTriggerManualScreenshot);
       const isTabBeingClosed = currentlyBeingClosedTabIds.value.length > 0;
 
-      if (!changesDetected || isTabBeingClosed) return;
+      if (!changesDetected || isTabBeingClosed) {
+        if (current.screenshotTriggered) triggerScreenshot.value = false;
+        return;
+      }
 
       const didBeginSwitchingTabs = current.tabSwitchGestureX !== 0 && previous.tabSwitchGestureX === 0;
       const didFinishSwitchingTabs =
@@ -87,7 +95,7 @@ export function useScreenshotAndScrollTriggers() {
       const enterTabViewAnimationIsComplete = tabViewVisible.value && previous.tabViewProgress > 100 && current.tabViewProgress <= 100;
       const exitTabViewAnimationIsComplete = !tabViewVisible.value && current.tabViewProgress === 0 && previous.tabViewProgress !== 0;
 
-      const shouldAttemptScreenshot = didBeginSwitchingTabs || enterTabViewAnimationIsComplete;
+      const shouldAttemptScreenshot = didBeginSwitchingTabs || enterTabViewAnimationIsComplete || didTriggerManualScreenshot;
       const shouldAttemptScroll = didFinishSwitchingTabs || exitTabViewAnimationIsComplete;
 
       // 📸 Trigger screenshot capture within the active tab once the tab view is fully entered, if necessary
@@ -104,13 +112,14 @@ export function useScreenshotAndScrollTriggers() {
           const oneMinuteAgo = Date.now() - 1000 * 60;
           const isScreenshotStale = !!screenshotData && screenshotData.timestamp < oneMinuteAgo;
 
-          const shouldCaptureScreenshot = !previousScreenshotExists || urlChanged || isScreenshotStale;
+          const shouldCaptureScreenshot =
+            !previousScreenshotExists || urlChanged || (didTriggerManualScreenshot ? false : isScreenshotStale);
 
-          if (shouldCaptureScreenshot) {
-            runOnJS(captureAndSaveScreenshot)(tabUrl, tabId);
-          }
+          if (shouldCaptureScreenshot) runOnJS(captureAndSaveScreenshot)(tabUrl, tabId);
         }
       }
+
+      if (current.screenshotTriggered) triggerScreenshot.value = false;
       // 📸 END screenshot capture logic
 
       // 🪄 Invisibly scroll the tab view to vertically center the active tab once the tab view is fully exited

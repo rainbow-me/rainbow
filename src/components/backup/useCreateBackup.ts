@@ -6,21 +6,17 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWalletCloudBackup } from '@/hooks';
 import * as i18n from '@/languages';
 import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { useWallets } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type UseCreateBackupProps = {
   walletId?: string;
-  navigateToRoute?: {
-    route: string;
-    params?: Record<string, unknown>;
-  };
 };
 
 type ConfirmBackupProps = {
@@ -29,10 +25,9 @@ type ConfirmBackupProps = {
 
 export const useCreateBackup = () => {
   const dispatch = useDispatch();
-  const { navigate } = useNavigation();
 
   const walletCloudBackup = useWalletCloudBackup();
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
 
   const setLoadingStateWithTimeout = useCallback(
     ({ state, outOfSync = false, failInMs = 10_000 }: { state: CloudBackupState; outOfSync?: boolean; failInMs?: number }) => {
@@ -84,7 +79,7 @@ export const useCreateBackup = () => {
   );
 
   const onConfirmBackup = useCallback(
-    async ({ password, walletId, navigateToRoute }: ConfirmBackupProps) => {
+    async ({ password, walletId }: ConfirmBackupProps) => {
       analytics.track(analytics.event.backupConfirmed);
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
@@ -118,12 +113,8 @@ export const useCreateBackup = () => {
         password,
         walletId,
       });
-
-      if (navigateToRoute) {
-        navigate(navigateToRoute.route, navigateToRoute.params || {});
-      }
     },
-    [walletCloudBackup, onError, wallets, onSuccess, dispatch, navigate]
+    [walletCloudBackup, onError, wallets, onSuccess, dispatch]
   );
 
   const getPassword = useCallback(async (props: UseCreateBackupProps): Promise<string | null> => {

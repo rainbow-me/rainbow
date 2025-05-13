@@ -4,7 +4,7 @@ import { Bleed, Box, Stack } from '@/design-system';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import { usePoints } from '@/resources/points';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { addDays, format, startOfWeek, subWeeks } from 'date-fns';
 import React, { useState } from 'react';
@@ -20,7 +20,8 @@ export const ViewWeeklyEarnings = () => {
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
 
   const { goBack } = useNavigation();
-  const { accountENS, accountAddress } = useAccountProfileInfo();
+  const { accountENS } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
   const { data: points } = usePoints({
     walletAddress: accountAddress,
   });

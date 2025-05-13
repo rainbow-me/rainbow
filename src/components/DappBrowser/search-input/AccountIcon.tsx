@@ -1,21 +1,19 @@
-import { ButtonPressAnimation } from '@/components/animations';
-import { ContactAvatar } from '@/components/contacts';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { Bleed, useColorMode } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { useAppSessionsStore } from '@/state/appSessions';
-import { useBrowserStore } from '@/state/browser/browserStore';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { ContactAvatar } from '@/components/contacts';
+import { Bleed, useColorMode } from '@/design-system';
+import { useAppSessionsStore } from '@/state/appSessions';
+import { getDappHost } from '../handleProviderRequest';
+import { ButtonPressAnimation } from '@/components/animations';
+import { useBrowserStore } from '@/state/browser/browserStore';
+import { getAccountProfileInfo, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
-import { getDappHost } from '../handleProviderRequest';
 
 export const AccountIcon = React.memo(function AccountIcon() {
-  const { navigate } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { isDarkMode } = useColorMode();
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
 
@@ -57,10 +55,10 @@ export const AccountIcon = React.memo(function AccountIcon() {
   }, [currentAddress]);
 
   const handleOnPress = useCallback(() => {
-    navigate(Routes.DAPP_BROWSER_CONTROL_PANEL, {
+    Navigation.handleAction(Routes.DAPP_BROWSER_CONTROL_PANEL, {
       activeTabRef,
     });
-  }, [activeTabRef, navigate]);
+  }, [activeTabRef]);
 
   return (
     <Bleed space="8px">

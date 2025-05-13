@@ -115,14 +115,18 @@ export const getNativeAssetForNetwork = async ({
       }
     );
     if (externalAsset) {
-      // @ts-ignore
       nativeAsset = {
         ...externalAsset,
+        chainId,
         network: useBackendNetworksStore.getState().getChainsName()[chainId],
         uniqueId: getUniqueId(chainNativeAsset.address, chainId),
         address: chainNativeAsset.address,
         decimals: chainNativeAsset.decimals,
         symbol: chainNativeAsset.symbol,
+        price: {
+          ...externalAsset.price,
+          value: externalAsset.price.value ?? 0,
+        },
       };
     }
 
@@ -175,8 +179,8 @@ const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
   return accountAsset ?? externalAsset;
 };
 
-const getAccountAsset = (uniqueId: EthereumAddress | undefined): ParsedAddressAsset | undefined => {
-  const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
+const getAccountAsset = (uniqueId: EthereumAddress): ParsedAddressAsset | undefined => {
+  const loweredUniqueId = uniqueId.toLowerCase();
   return userAssetsStore.getState().getLegacyUserAsset(loweredUniqueId) ?? undefined;
 };
 
@@ -405,8 +409,7 @@ async function parseEthereumUrl(data: string) {
     const chainId = useBackendNetworksStore.getState().getChainsIdByName()[network];
     asset = getNetworkNativeAsset({ chainId });
 
-    // @ts-ignore
-    if (!asset || asset?.balance.amount === 0) {
+    if (!asset || isZero(asset?.balance?.amount ?? '0')) {
       Alert.alert(lang.t('wallet.alerts.ooops'), lang.t('wallet.alerts.dont_have_asset_in_wallet'));
       return;
     }
@@ -416,8 +419,7 @@ async function parseEthereumUrl(data: string) {
     // Send ERC-20
     const targetUniqueId = getUniqueId(ethUrl.target_address, chainId);
     asset = getAccountAsset(targetUniqueId);
-    // @ts-ignore
-    if (!asset || asset?.balance.amount === 0) {
+    if (!asset || isZero(asset?.balance?.amount ?? '0')) {
       Alert.alert(lang.t('wallet.alerts.ooops'), lang.t('wallet.alerts.dont_have_asset_in_wallet'));
       return;
     }
@@ -484,9 +486,9 @@ const calculateL1FeeOptimism = async (
     const OVM_GasPriceOracle = new Contract(OVM_GAS_PRICE_ORACLE, optimismGasOracleAbi, provider);
     const l1FeeInWei = await OVM_GasPriceOracle.getL1Fee(serializedTx);
     return l1FeeInWei;
-  } catch (e: any) {
-    logger.error(new RainbowError(`[ethereumUtils]: error calculating l1 fee`), {
-      message: e.message,
+  } catch (e) {
+    logger.error(new RainbowError(`[ethereumUtils]: error calculating l1 fee`, e), {
+      message: e instanceof Error ? e.message : 'Unknown error',
     });
   }
 };

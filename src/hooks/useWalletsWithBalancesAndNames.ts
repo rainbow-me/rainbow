@@ -1,5 +1,5 @@
 import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import mapValues from 'lodash/mapValues';
 import { useMemo } from 'react';
@@ -10,7 +10,7 @@ import useWalletBalances from './useWalletBalances';
 export default function useWalletsWithBalancesAndNames() {
   const { nativeCurrency } = useAccountSettings();
   const walletNames = useWalletsStore(state => state.walletNames);
-  const wallets = useWalletsStore(state => state.wallets);
+  const wallets = useWallets();
   const { balances } = useWalletBalances(wallets || {});
   const hiddenBalances = userAssetsStoreManager(state => state.hiddenAssetBalances);
 

@@ -31,7 +31,7 @@ export function useSwapNavigation({
   quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
   selectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   selectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  swapInfo: DerivedValue<{ areBothAssetsSet: boolean; isBridging: boolean }>;
+  swapInfo: DerivedValue<{ areAllInputsZero: boolean; areBothAssetsSet: boolean; isBridging: boolean }>;
 }) {
   const navigateBackToReview = useSharedValue(false);
 
