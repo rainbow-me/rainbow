@@ -642,7 +642,7 @@ export const createWallet = async ({
   silent = false,
   clearCallbackOnStartCreation = false,
   userPin,
-}: CreateWalletParams): Promise<null | EthereumWallet> => {
+}: CreateWalletParams): Promise<null | Wallet | ReadOnlyWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;

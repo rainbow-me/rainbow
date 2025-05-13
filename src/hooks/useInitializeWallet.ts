@@ -51,7 +51,7 @@ export default function useInitializeWallet() {
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
-      switching,
+      switching = false,
       image,
       silent = false,
     }: InitializeWalletParams) => {

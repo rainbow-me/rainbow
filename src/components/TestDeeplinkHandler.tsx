@@ -23,7 +23,11 @@ export function TestDeeplinkHandler() {
 
       switch (action) {
         case 'import':
-          await initializeWallet(query.privateKey, null, query.name, false, false, null, false, null, false, '1111');
+          await initializeWallet({
+            seedPhrase: query.privateKey,
+            name: query.name,
+            userPin: '1111',
+          });
           Navigation.handleAction(
             Routes.SWIPE_LAYOUT,
             {
