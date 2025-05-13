@@ -27,7 +27,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { greaterThan } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames } from '@/hooks';
+import { useInitializeWallet, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
@@ -366,6 +366,7 @@ const HomePanel = memo(function HomePanel({
 }) {
   const accountAddress = useAccountAddress();
   const wallets = useWallets();
+  const initializeWallet = useInitializeWallet();
 
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
@@ -416,17 +417,14 @@ const HomePanel = memo(function HomePanel({
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
       setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
-<<<<<<< HEAD
       initializeWallet({
         shouldRunMigrations: false,
         overwrite: false,
         switching: true,
       });
-=======
->>>>>>> wallet-state
     }
     return true;
-  }, [accountAddress, selectedWallet, wallets]);
+  }, [accountAddress, initializeWallet, selectedWallet, wallets]);
 
   const handleOnPressSwap = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
