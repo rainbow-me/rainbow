@@ -51,7 +51,7 @@ export const GenericCard = ({
   <ConditionalWrap
     condition={!!onPress}
     wrap={(children: React.ReactNode) => (
-      <ButtonPressAnimation onPress={onPress} disabled={disabled} scaleTo={0.96} overflowMargin={50} skipTopMargin>
+      <ButtonPressAnimation onPress={onPress} testID={testID} disabled={disabled} scaleTo={0.96} overflowMargin={50} skipTopMargin>
         {children}
       </ButtonPressAnimation>
     )}
@@ -88,7 +88,7 @@ export const GenericCard = ({
           borderWidth: borderColor ? 1 : undefined,
         }}
         padding={padding}
-        testID={testID}
+        testID={!onPress ? testID : undefined}
       >
         {children}
       </Box>
