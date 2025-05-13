@@ -65,14 +65,15 @@ tags:
 
 # Test transaction was done
 - assertVisible: 'Pending'
-- assertVisible: 'Sending.*'
+- assertVisible: 'Sending*.'
 
-- tapOn: Sending.*
+- tapOn: Sending*.
 
 - assertVisible: 'Sending'
+- assertVisible: '.*Tx Hash*.'
+- assertVisible: 'View on Etherscan'
 - retry:
     maxRetries: 3
     commands:
       - swipe:
           direction: DOWN
-- assertVisible: Sending.*
