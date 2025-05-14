@@ -637,7 +637,7 @@ export const isImportedWallet = (address: string): boolean => {
 // TODO (APP-2643): fix | undefined return types on info
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
-  const info = useWalletsStore(state => state.accountProfileInfo);
+  const info = useWalletsStore(state => state.accountProfileInfo!);
   return useMemo(() => {
     return {
       ...info,
