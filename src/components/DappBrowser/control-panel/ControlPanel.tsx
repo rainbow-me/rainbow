@@ -991,6 +991,7 @@ const ConnectButton = memo(function ControlPanelButton({
         pointerEvents="auto"
         scaleTo={0.82}
         style={[controlPanelStyles.buttonContainer]}
+        testID="connect-button"
       >
         <Box paddingHorizontal={IS_IOS ? '16px' : undefined} paddingVertical={IS_IOS ? '10px' : undefined}>
           <Stack alignHorizontal="center" space="10px">
