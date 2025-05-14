@@ -46,12 +46,9 @@ export const AccountIcon = React.memo(function AccountIcon() {
   }, [accountAddress, activeTabHost, currentSession, hostSessions?.activeSessionAddress, isOnHomepage]);
 
   const accountInfo = useMemo(() => {
-    const profileInfo = getAccountProfileInfo({
+    return getAccountProfileInfo({
       address: currentAddress,
     });
-    return {
-      ...profileInfo,
-    };
   }, [currentAddress]);
 
   const handleOnPress = useCallback(() => {
