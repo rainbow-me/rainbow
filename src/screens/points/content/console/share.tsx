@@ -22,7 +22,7 @@ export const Share = () => {
 
   const [showShareButtons, setShowShareButtons] = useState(false);
 
-  const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
+  const accountName = abbreviateEnsForDisplay(accountENS, 10) || (accountAddress ? formatAddress(accountAddress, 4, 5) : '');
 
   return (
     <Box height="full" justifyContent="space-between">
