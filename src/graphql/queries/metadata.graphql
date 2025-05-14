@@ -565,6 +565,11 @@ query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
       value
     }
     rainbow
+    rainbowTokenDetails {
+      onchainData {
+        creatorAddress
+      }
+    }
     totalSupply
     volume1d
   }
