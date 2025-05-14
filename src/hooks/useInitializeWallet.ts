@@ -164,7 +164,7 @@ export default function useInitializeWallet() {
       } catch (e) {
         const error = ensureError(e);
         PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
-        logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet', error), {
+        logger.error(new RainbowError(`[useInitializeWallet]: Error while initializing wallet`, error), {
           walletStatus,
         });
         analytics.track(event.walletInitializationFailed, {
