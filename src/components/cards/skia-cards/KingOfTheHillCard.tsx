@@ -7,7 +7,7 @@ import { AnimatedText, Box, ColorModeProvider, globalColors, Inline, Text, TextS
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { formatCurrency, formatNumber } from '@/helpers/strings';
 import { getSizedImageUrl } from '@/handlers/imgix';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useAnimatedCountdown } from '@/hooks/reanimated/useAnimatedCountdown';
@@ -35,17 +35,15 @@ function AnimatedCountdownText({ targetUnixTimestamp, color }: { targetUnixTimes
 }
 
 export function KingOfTheHillCard({ token }: { token: KingOfTheHillToken }) {
-  const { navigate } = useNavigation();
-  // const { token } = king;
   const coinIconImage = useImage(token.visuals.iconUrl);
 
   const { width } = useDimensions();
   const cardWidth = width - 20 * 2;
-  // const hasTokenPriceIncreased = token.price.relativeChange24h > 0;
   const hasTokenPriceIncreased = Number(token.marketData.priceChangePercent24h) > 0;
   const priceColor = hasTokenPriceIncreased ? 'green' : 'red';
   const sizedIconUrl = getSizedImageUrl(token.visuals.iconUrl, 40);
   const primaryColor = token.visuals.color;
+  const endUnixTimestamp = useMemo(() => new Date(token.window.end).getTime() / 1000, [token.window.end]);
 
   const { marketCap, price, priceChange24h, volume } = useMemo(
     () => ({
@@ -58,12 +56,12 @@ export function KingOfTheHillCard({ token }: { token: KingOfTheHillToken }) {
   );
 
   const onPress = useCallback(() => {
-    navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: token,
       address: token.address,
       chainId: token.chainId,
     });
-  }, [navigate, token]);
+  }, [token]);
 
   return (
     <SkiaCard
@@ -103,7 +101,7 @@ export function KingOfTheHillCard({ token }: { token: KingOfTheHillToken }) {
                       {i18n.t(i18n.l.king_of_hill.current_king)}
                     </Text>
                   </TextShadow>
-                  <AnimatedCountdownText targetUnixTimestamp={token.window.end} color={primaryColor} />
+                  <AnimatedCountdownText targetUnixTimestamp={endUnixTimestamp} color={primaryColor} />
                 </Inline>
                 <Inline wrap={false} alignHorizontal="justify" space={'8px'}>
                   <Box style={{ flex: 1 }} flexDirection="row" alignItems="center" gap={6}>

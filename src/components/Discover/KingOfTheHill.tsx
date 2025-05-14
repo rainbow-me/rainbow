@@ -5,7 +5,7 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap
 import FastImage from 'react-native-fast-image';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { KingOfTheHillToken, useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
@@ -16,22 +16,21 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { usePrevious } from '@/hooks';
 
 const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHillToken }) {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const fillTertiaryColor = useBackgroundColor('fillTertiary');
   const sizedIconUrl = getSizedImageUrl(lastWinnerToken.visuals.iconUrl, 16);
 
   const navigateToLastWinner = useCallback(() => {
-    navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: lastWinnerToken,
       address: lastWinnerToken.address,
       chainId: lastWinnerToken.chainId,
     });
-  }, [lastWinnerToken, navigate]);
+  }, [lastWinnerToken]);
 
   const navigateToExplainSheet = useCallback(() => {
-    navigate(Routes.KING_OF_THE_HILL_EXPLAIN_SHEET);
-  }, [navigate]);
+    Navigation.handleAction(Routes.KING_OF_THE_HILL_EXPLAIN_SHEET);
+  }, []);
 
   return (
     <Box flexDirection="row" justifyContent="space-between" paddingHorizontal={'10px'}>

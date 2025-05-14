@@ -3,25 +3,20 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
 import { metadataClient } from '@/graphql';
 import { userAssetsStoreManager } from '../assets/userAssetsStoreManager';
-import { KingOfTHeHill } from '@/graphql/__generated__/metadata';
+import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { useNavigationStore } from '../navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
 
 export type { KingOfTheHillToken } from '@/graphql/__generated__/metadata';
 
-// TODO: fix once backend fixes typo
-export type KingOfTheHill = KingOfTHeHill;
-
 async function kingOfTheHillQueryFunction({ currency }: { currency: string }): Promise<KingOfTheHill | null> {
   try {
     const { kingOfTheHill } = await metadataClient.kingOfTheHill({ currency });
-    if (!kingOfTheHill) {
-      return null;
-    }
+
+    if (!kingOfTheHill) return null;
 
     return kingOfTheHill;
   } catch (e) {
-    console.log('cause', e.message);
     logger.error(new RainbowError('[kingOfTheHillQueryFunction]: King of the Hill failed', e), { currency });
     return null;
   }

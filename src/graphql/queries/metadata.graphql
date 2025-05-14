@@ -682,7 +682,7 @@ query marketStats($chainID: Int!, $address: String!) {
 }
 
 query kingOfTheHill($currency: String) {
-  kingOfTheHill {
+  kingOfTheHill(currency: $currency) {
     current {
       address
       chainId

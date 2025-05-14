@@ -10,7 +10,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { isNativeAsset } from '@/handlers/assets';
-import { Token, TokenKing } from '@/graphql/__generated__/metadata';
+import { Token, KingOfTheHillToken } from '@/graphql/__generated__/metadata';
 import { useColorMode } from '@/design-system';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -62,7 +62,12 @@ interface AccentColors {
   surfaceSecondary: string;
 }
 // We can receive a variety of assets as param depending on where we navigated from
-export type ExpandedSheetParamAsset = ParsedAddressAsset | TrendingToken | FormattedExternalAsset | EnrichedExchangeAsset | TokenKing;
+export type ExpandedSheetParamAsset =
+  | ParsedAddressAsset
+  | TrendingToken
+  | FormattedExternalAsset
+  | EnrichedExchangeAsset
+  | KingOfTheHillToken;
 
 export type BasicAsset = Pick<
   Token,
@@ -143,6 +148,7 @@ export function ExpandedAssetSheetContextProvider({
   // This is constructed so that rendering is not delayed by the external asset fetch
   const basicAsset = useMemo(() => {
     const chainName = useBackendNetworksStore.getState().getChainsName()[chainId];
+    // @ts-expect-error TODO: REMOVE
     const assetColors = 'color' in asset && asset.color ? { primary: asset.color } : asset.colors;
 
     const base: BasicAsset = {
@@ -153,6 +159,7 @@ export function ExpandedAssetSheetContextProvider({
       name: asset.name,
       symbol: asset.symbol,
       decimals: asset.decimals,
+      // @ts-expect-error TODO: REMOVE
       iconUrl: 'iconUrl' in asset ? asset.iconUrl : asset.icon_url,
       isNativeAsset: isNativeAsset(address, chainId),
       colors: assetColors ?? { primary: colors.blueGreyDark },
