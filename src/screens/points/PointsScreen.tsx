@@ -41,7 +41,7 @@ export function PointsScreen() {
   const pointsNotificationsToggleEnabled = useExperimentalFlag(POINTS_NOTIFICATIONS_TOGGLE) || points_notifications_toggle;
   const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
   const { data } = usePoints({
-    walletAddress: accountAddress,
+    walletAddress: accountAddress || '',
   });
   const { data: referralCode, refetch: resetReferralCode } = usePointsReferralCode();
 

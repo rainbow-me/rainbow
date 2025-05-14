@@ -1,8 +1,11 @@
 name: Android e2e tests
 
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 jobs:
   android-e2e:
+    if: github.event.pull_request.draft == false
     runs-on: blacksmith-8vcpu-ubuntu-2204
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,8 +18,8 @@ jobs:
       # the test run. Note that the video is limited to 3 minutes.
       DEBUG: false
       SHARDS: 1
-      ANDROID_EMULATOR_API_LEVEL: 30
-      ANDROID_EMULATOR_PROFILE: pixel_5
+      ANDROID_EMULATOR_API_LEVEL: 31
+      ANDROID_EMULATOR_PROFILE: pixel_6
       ANDROID_EMULATOR_CORES: 4
       ANDROID_EMULATOR_RAM_SIZE: 8192
       ARTIFACTS_FOLDER: e2e-artifacts

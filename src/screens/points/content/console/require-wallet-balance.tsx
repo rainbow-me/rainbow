@@ -17,8 +17,8 @@ export const RequireWalletBalance = () => {
   const [shouldShowButton, setShouldShowButton] = useState(false);
   const { accountENS, accountAddress } = useAccountProfileInfo();
   const { navigate } = useNavigation();
+  const accountName = abbreviateEnsForDisplay(accountENS, 10) || (accountAddress ? formatAddress(accountAddress, 4, 5) : '');
 
-  const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
   return (
     <Box height="full" justifyContent="space-between">
       <Stack separator={<LineBreak lines={3} />}>

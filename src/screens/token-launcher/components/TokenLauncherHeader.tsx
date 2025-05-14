@@ -23,7 +23,7 @@ export const TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS = { bottom: 42, top: TOKEN_L
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { width: deviceWidth } = useDimensions();
-  const { accountColor, accountImage, accountAddress } = useAccountProfileInfo();
+  const { accountColorHex, accountImage, accountAddress } = useAccountProfileInfo();
   const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
@@ -77,13 +77,15 @@ export function TokenLauncherHeader() {
               onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}
               scaleTo={0.8}
             >
-              <AddressAvatar
-                url={accountImage}
-                address={accountAddress}
-                label={accountAddress}
-                color={accountColor}
-                size={EXIT_BUTTON_SIZE}
-              />
+              {accountAddress && (
+                <AddressAvatar
+                  url={accountImage}
+                  address={accountAddress}
+                  label={accountAddress}
+                  color={accountColorHex}
+                  size={EXIT_BUTTON_SIZE}
+                />
+              )}
             </ButtonPressAnimation>
           )}
           {step === NavigationSteps.REVIEW && (

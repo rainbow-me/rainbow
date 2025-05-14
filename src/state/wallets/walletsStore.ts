@@ -35,6 +35,16 @@ import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetr
 import { createRainbowStore } from '../internal/createRainbowStore';
 import { Address } from 'viem';
 import { isLowerCaseMatch } from '../../utils';
+import { useMemo } from 'react';
+
+interface AccountProfileInfo {
+  accountAddress: string;
+  accountColor: number;
+  accountENS?: string;
+  accountImage?: string | null;
+  accountName?: string;
+  accountSymbol?: string | false;
+}
 
 interface WalletsState {
   walletReady: boolean;
@@ -66,6 +76,7 @@ interface WalletsState {
   clearAllWalletsBackupStatus: () => void;
 
   accountAddress: Address;
+  accountProfileInfo: AccountProfileInfo | null;
   setAccountAddress: (address: Address) => void;
 
   refreshWalletENSAvatars: () => Promise<void>;
@@ -76,14 +87,7 @@ interface WalletsState {
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
-  getAccountProfileInfo: (props: { address: string; wallet?: RainbowWallet }) => {
-    accountAddress: string;
-    accountColor: number;
-    accountENS?: string;
-    accountImage?: string | null;
-    accountName?: string;
-    accountSymbol?: string | false;
-  };
+  getAccountProfileInfo: (props: { address: string; wallet?: RainbowWallet }) => AccountProfileInfo;
 }
 
 export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
@@ -125,9 +129,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>((set, get) => ({
   // TODO follow-on and fix this type better - this is matching existing bug from before refactor
   // see PD-188
   accountAddress: `0x`,
+  accountProfileInfo: null,
   setAccountAddress: (accountAddress: Address) => {
     set({
       accountAddress,
+      accountProfileInfo: getAccountProfileInfo({ address: accountAddress }),
     });
   },
 
@@ -640,15 +646,14 @@ export const isImportedWallet = (address: string): boolean => {
 
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
-  const accountAddress = useAccountAddress();
-  const info = getAccountProfileInfo({
-    address: accountAddress,
-  });
-
-  return {
-    ...info,
-    accountColorHex: info?.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
-  };
+  // TODO (APP-2643): fix the non-null assertion / return types on info
+  const info = useWalletsStore(state => state.accountProfileInfo!);
+  return useMemo(() => {
+    return {
+      ...info,
+      accountColorHex: info?.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
+    };
+  }, [colors.avatarBackgrounds, info]);
 };
 
 // export static functions
