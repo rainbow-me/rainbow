@@ -2,7 +2,7 @@ import { AllRainbowWallets } from '@/model/wallet';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
-import { useAddysSummary } from '@/resources/summary/summary';
+import { useAddysSummary } from '@/resources/addys/summary';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 
 const QUERY_CONFIG = {

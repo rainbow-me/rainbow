@@ -7,7 +7,7 @@ import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { addysSummaryQueryKey } from '@/resources/summary/summary';
+import { addysSummaryQueryKey } from '@/resources/addys/summary';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';

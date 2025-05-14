@@ -1,8 +1,9 @@
 import { NativeCurrencyKey } from '@/entities';
-import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/react-query';
 import { Address } from 'viem';
 import { getAddysHttpClient } from '@/resources/addys/client';
+import { createQueryStore } from '../../state/internal/createQueryStore';
+import { time } from '../../utils';
 
 interface AddysSummary {
   data: {
@@ -68,27 +69,19 @@ interface AddysSummary {
   };
 }
 
-// ///////////////////////////////////////////////
-// Query Types
-
 export type AddysSummaryArgs = {
   addresses: Address[];
   currency: NativeCurrencyKey;
 };
 
-// ///////////////////////////////////////////////
-// Query Key
-
 export const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
   createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 2 });
 
-type AddysSummaryQueryKey = ReturnType<typeof addysSummaryQueryKey>;
-
-// ///////////////////////////////////////////////
-// Query Function
-
-async function addysSummaryQueryFunction({ queryKey: [{ addresses, currency }] }: QueryFunctionArgs<typeof addysSummaryQueryKey>) {
-  const { data } = await getAddysHttpClient().post(
+export async function getAddysSummary(
+  { addresses, currency }: AddysSummaryArgs,
+  abortController: AbortController | null
+): Promise<AddysSummary> {
+  const { data } = await getAddysHttpClient({ abortController }).post(
     `/summary`,
     JSON.stringify({
       currency,
@@ -96,21 +89,23 @@ async function addysSummaryQueryFunction({ queryKey: [{ addresses, currency }] }
       enableThirdParty: true,
     })
   );
-  return data as AddysSummary;
+  return data;
 }
 
-type AddysSumaryResult = QueryFunctionResult<typeof addysSummaryQueryFunction>;
-
-// ///////////////////////////////////////////////
-// Query Hook
-
-export function useAddysSummary(
-  { addresses, currency }: AddysSummaryArgs,
-  config: QueryConfigWithSelect<AddysSumaryResult, Error, AddysSumaryResult, AddysSummaryQueryKey> = {}
-) {
-  return useQuery(addysSummaryQueryKey({ addresses, currency }), addysSummaryQueryFunction, {
-    ...config,
-    staleTime: 1000 * 60 * 2, // Set data to become stale after 2 minutes
-    cacheTime: 1000 * 60 * 60 * 24, // Keep unused data in cache for 24 hours
-  });
-}
+export const useAddysSummary = createQueryStore<AddysSummary, AddysSummaryArgs>(
+  {
+    fetcher: getAddysSummary,
+    params: {
+      addresses: [],
+      currency: 'USD',
+    },
+    staleTime: time.minutes(2),
+    cacheTime: time.hours(24),
+  },
+  () => ({
+    data: null,
+  }),
+  {
+    storageKey: 'addysSummary',
+  }
+);

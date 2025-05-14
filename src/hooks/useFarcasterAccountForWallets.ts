@@ -1,7 +1,7 @@
 import { queryClient } from '@/react-query';
 import useWallets from './useWallets';
 import { useEffect, useMemo, useState } from 'react';
-import { addysSummaryQueryKey, useAddysSummary } from '@/resources/summary/summary';
+import { addysSummaryQueryKey, useAddysSummary } from '@/resources/addys/summary';
 import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
 import store from '@/redux/store';
