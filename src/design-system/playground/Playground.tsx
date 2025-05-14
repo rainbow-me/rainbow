@@ -20,7 +20,7 @@ import textPlayground from '../components/Text/Text.playground';
 import textLinkPlayground from '../components/TextLink/TextLink.playground';
 import { Docs, Example, Meta } from '../docs/types';
 import { getSourceFromExample } from '../docs/utils/getSourceFromExample';
-import { hideSplashScreen } from '@/helpers/hideSplashScreen';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 
 const allDocs = [
   backgroundPlayground,

@@ -20,7 +20,7 @@ import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { hideSplashScreen } from '@/helpers/hideSplashScreen';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (

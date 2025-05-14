@@ -10,6 +10,8 @@ import { RainbowError, logger } from '@/logger';
 import { AppIconKey } from '@/appIcons/appIcons';
 const { RainbowSplashScreen } = NativeModules;
 
+// NOTE: should be moved to hideSplashScreen but avoiding updating rainbow-scripts for now
+
 let alreadyLoggedPerformance = false;
 let didSetStatusBar = false;
 

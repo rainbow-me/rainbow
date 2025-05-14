@@ -31,7 +31,7 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import { hideSplashScreen } from '@/helpers/hideSplashScreen';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 
 const Container = styled(View)({
   ...position.coverAsObject,
