@@ -646,7 +646,8 @@ export const isImportedWallet = (address: string): boolean => {
 
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
-  const info = useWalletsStore(state => state.accountProfileInfo);
+  // TODO (APP-2643): fix the non-null assertion / return types on info
+  const info = useWalletsStore(state => state.accountProfileInfo!);
   return useMemo(() => {
     return {
       ...info,
