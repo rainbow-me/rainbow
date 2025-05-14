@@ -682,65 +682,71 @@ query marketStats($chainID: Int!, $address: String!) {
 }
 
 query kingOfTheHill($currency: String) {
-  kingOfTheHill(currency: $currency) {
-    currentKing {
-      token {
-        name
-        address
-        symbol
-        iconUrl
-        decimals
-        chainID
-        network
-        colors {
-          primary
-          fallback
-          shadow
-        }
-        market {
-          volume {
-            h24
-          }
-          marketCap
-        }
-        price {
-          value
-          relativeChange24h
-        }
+  kingOfTheHill {
+    current {
+      address
+      chainId
+      name
+      symbol
+      decimals
+      marketData {
+        priceChangePercent24h
+        currentPrice
+        marketCap
+        volume24h
+        holders
       }
       window {
         start
         end
+        durationSeconds
+        interval
+        secondsRemaining
+        isActive
+      }
+      rankingDetails {
+        rankingCriteria
+        rankingCriteriaDesc
+        windowTradingVolume
+        lastUpdated
+      }
+      visuals {
+        iconUrl
+        color
+        fallbackColor
       }
     }
     lastWinner {
-      token {
-        name
-        address
-        symbol
-        iconUrl
-        decimals
-        chainID
-        network
-        colors {
-          primary
-          fallback
-          shadow
-        }
-        market {
-          volume {
-            h24
-          }
-          marketCap
-        }
-        price {
-          value
-          relativeChange24h
-        }
+      address
+      chainId
+      name
+      symbol
+      decimals
+      marketData {
+        priceChangePercent24h
+        currentPrice
+        marketCap
+        volume24h
+        holders
       }
       window {
         start
         end
+        durationSeconds
+        interval
+        secondsRemaining
+        isActive
+      }
+      rankingDetails {
+        rankingCriteria
+        rankingCriteriaDesc
+        windowTradingVolume
+        lastUpdated
+      }
+      visuals {
+        iconUrl
+        color
+        fallbackColor
       }
     }
   }
