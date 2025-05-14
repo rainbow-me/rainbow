@@ -11,7 +11,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useAnimatedCountdown } from '@/hooks/reanimated/useAnimatedCountdown';
-import { KingOfTheHillKing } from '@/state/kingOfTheHill/kingOfTheHillStore';
+import { KingOfTheHillToken } from '@/state/kingOfTheHill/kingOfTheHillStore';
 
 const CARD_HEIGHT = 84;
 const startingNextRoundText = i18n.t(i18n.l.king_of_hill.starting_next_round);
@@ -34,32 +34,34 @@ function AnimatedCountdownText({ targetUnixTimestamp, color }: { targetUnixTimes
   );
 }
 
-export function KingOfTheHillCard({ king }: { king: KingOfTheHillKing }) {
+export function KingOfTheHillCard({ token }: { token: KingOfTheHillToken }) {
   const { navigate } = useNavigation();
-  const { token } = king;
-  const coinIconImage = useImage(king.token.iconUrl);
+  // const { token } = king;
+  const coinIconImage = useImage(token.visuals.iconUrl);
 
   const { width } = useDimensions();
   const cardWidth = width - 20 * 2;
-  const hasTokenPriceIncreased = token.price.relativeChange24h > 0;
+  // const hasTokenPriceIncreased = token.price.relativeChange24h > 0;
+  const hasTokenPriceIncreased = Number(token.marketData.priceChangePercent24h) > 0;
   const priceColor = hasTokenPriceIncreased ? 'green' : 'red';
-  const sizedIconUrl = getSizedImageUrl(token.iconUrl, 40);
+  const sizedIconUrl = getSizedImageUrl(token.visuals.iconUrl, 40);
+  const primaryColor = token.visuals.color;
 
   const { marketCap, price, priceChange24h, volume } = useMemo(
     () => ({
-      marketCap: formatNumber(token.market.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' }),
-      price: formatCurrency(token.price.value),
-      priceChange24h: `${formatNumber(token.price.relativeChange24h, { decimals: 2, useOrderSuffix: true })}%`,
-      volume: formatNumber(token.market.volume.h24, { useOrderSuffix: true, decimals: 1, style: '$' }),
+      marketCap: formatNumber(token.marketData.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' }),
+      price: formatCurrency(token.marketData.currentPrice),
+      priceChange24h: `${formatNumber(token.marketData.priceChangePercent24h, { decimals: 2, useOrderSuffix: true })}%`,
+      volume: formatNumber(token.marketData.volume24h, { useOrderSuffix: true, decimals: 1, style: '$' }),
     }),
-    [token.price, token.market.volume.h24, token.market.marketCap]
+    [token.marketData]
   );
 
   const onPress = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: token,
       address: token.address,
-      chainId: token.chainID,
+      chainId: token.chainId,
     });
   }, [navigate, token]);
 
@@ -83,15 +85,8 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillKing }) {
           <Box width="full" height="full" justifyContent="center" paddingVertical={'16px'} paddingHorizontal={'20px'}>
             <Inline wrap={false} alignVertical="center" space={'12px'}>
               <Box justifyContent="center" alignItems="center" width={48} height={48}>
-                {sizedIconUrl && <ShinyCoinIcon imageUrl={sizedIconUrl} size={40} color={token.colors.primary} />}
-                <Box
-                  position="absolute"
-                  borderRadius={24}
-                  width={48}
-                  height={48}
-                  borderWidth={2}
-                  borderColor={{ custom: token.colors.primary }}
-                />
+                {sizedIconUrl && <ShinyCoinIcon imageUrl={sizedIconUrl} size={40} color={primaryColor} />}
+                <Box position="absolute" borderRadius={24} width={48} height={48} borderWidth={2} borderColor={{ custom: primaryColor }} />
                 <Text
                   color="label"
                   size="20pt"
@@ -103,12 +98,12 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillKing }) {
               </Box>
               <Box style={{ flex: 1 }} gap={12}>
                 <Inline wrap={false} alignVertical="center" alignHorizontal="justify" space={'8px'}>
-                  <TextShadow blur={8} shadowOpacity={0.24} color={token.colors.primary}>
-                    <Text color={{ custom: token.colors.primary }} size="11pt" weight="black">
+                  <TextShadow blur={8} shadowOpacity={0.24} color={primaryColor}>
+                    <Text color={{ custom: primaryColor }} size="11pt" weight="black">
                       {i18n.t(i18n.l.king_of_hill.current_king)}
                     </Text>
                   </TextShadow>
-                  <AnimatedCountdownText targetUnixTimestamp={king.window.end} color={token.colors.primary} />
+                  <AnimatedCountdownText targetUnixTimestamp={token.window.end} color={primaryColor} />
                 </Inline>
                 <Inline wrap={false} alignHorizontal="justify" space={'8px'}>
                   <Box style={{ flex: 1 }} flexDirection="row" alignItems="center" gap={6}>

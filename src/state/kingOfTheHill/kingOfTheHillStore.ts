@@ -3,14 +3,16 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
 import { metadataClient } from '@/graphql';
 import { userAssetsStoreManager } from '../assets/userAssetsStoreManager';
-import { KingOfHillResponse, TokenKing, TokenWindow } from '@/graphql/__generated__/metadata';
+import { KingOfTHeHill } from '@/graphql/__generated__/metadata';
 import { useNavigationStore } from '../navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
 
-export type KingOfTheHillToken = TokenKing;
-export type KingOfTheHillKing = TokenWindow;
+export type { KingOfTheHillToken } from '@/graphql/__generated__/metadata';
 
-async function kingOfTheHillQueryFunction({ currency }: { currency: string }): Promise<KingOfHillResponse | null> {
+// TODO: fix once backend fixes typo
+export type KingOfTheHill = KingOfTHeHill;
+
+async function kingOfTheHillQueryFunction({ currency }: { currency: string }): Promise<KingOfTheHill | null> {
   try {
     const { kingOfTheHill } = await metadataClient.kingOfTheHill({ currency });
     if (!kingOfTheHill) {
@@ -19,6 +21,7 @@ async function kingOfTheHillQueryFunction({ currency }: { currency: string }): P
 
     return kingOfTheHill;
   } catch (e) {
+    console.log('cause', e.message);
     logger.error(new RainbowError('[kingOfTheHillQueryFunction]: King of the Hill failed', e), { currency });
     return null;
   }
@@ -28,7 +31,7 @@ type KingOfTheHillQueryParams = {
   currency: string;
 };
 
-export const useKingOfTheHillStore = createQueryStore<KingOfHillResponse | null, KingOfTheHillQueryParams>(
+export const useKingOfTheHillStore = createQueryStore<KingOfTheHill | null, KingOfTheHillQueryParams>(
   {
     fetcher: kingOfTheHillQueryFunction,
     onFetched: ({ set }) => {
@@ -46,5 +49,5 @@ export const useKingOfTheHillStore = createQueryStore<KingOfHillResponse | null,
     staleTime: time.seconds(5),
   },
 
-  { storageKey: 'kingOfTheHill' }
+  { storageKey: 'kingOfTheHill', version: 1 }
 );

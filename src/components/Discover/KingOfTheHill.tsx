@@ -19,13 +19,13 @@ const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToke
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const fillTertiaryColor = useBackgroundColor('fillTertiary');
-  const sizedIconUrl = getSizedImageUrl(lastWinnerToken.iconUrl, 16);
+  const sizedIconUrl = getSizedImageUrl(lastWinnerToken.visuals.iconUrl, 16);
 
   const navigateToLastWinner = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: lastWinnerToken,
       address: lastWinnerToken.address,
-      chainId: lastWinnerToken.chainID,
+      chainId: lastWinnerToken.chainId,
     });
   }, [lastWinnerToken, navigate]);
 
@@ -100,8 +100,8 @@ export function KingOfTheHill() {
   return (
     <>
       <Box gap={6}>
-        <LastWinnerSection lastWinnerToken={kingOfTheHill.lastWinner.token} />
-        <KingOfTheHillCard king={kingOfTheHill.currentKing} />
+        {kingOfTheHill.lastWinner && <LastWinnerSection lastWinnerToken={kingOfTheHill.lastWinner} />}
+        <KingOfTheHillCard token={kingOfTheHill.current} />
       </Box>
       <SyncStoreEnabled />
     </>
