@@ -12,7 +12,7 @@ import runMigrations from '../../model/migrations';
 import { InitializeWalletParams, walletInit } from '../../model/wallet';
 import { settingsLoadNetwork } from '../../redux/settings';
 import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
-import { hideSplashScreen } from '../../helpers/hideSplashScreen';
+import { hideSplashScreen } from '@/helpers/hideSplashScreen';
 import { loadTokensData } from '@/state/tokens/loadTokensData';
 import { loadSettingsData } from '../settings/loadSettingsData';
 import { PerformanceTracking } from '../../performance/tracking';

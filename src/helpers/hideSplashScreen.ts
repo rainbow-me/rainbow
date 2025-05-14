@@ -26,6 +26,7 @@ export const hideSplashScreen = async () => {
     }
 
     if (IS_ANDROID && !didSetStatusBar) {
+      didSetStatusBar = true;
       handleAndroidStatusBar();
     }
 
