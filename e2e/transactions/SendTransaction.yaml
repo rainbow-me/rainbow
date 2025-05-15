@@ -72,8 +72,5 @@ tags:
 - assertVisible: 'Sending'
 - assertVisible: '.*Tx Hash*.'
 - assertVisible: 'View on Etherscan'
-- retry:
-    maxRetries: 3
-    commands:
-      - swipe:
-          direction: DOWN
+- swipe:
+    direction: DOWN
