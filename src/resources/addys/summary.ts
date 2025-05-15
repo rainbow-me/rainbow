@@ -34,6 +34,10 @@ export const useAddysSummary = () => {
   return useAddysQueryStore(state => [state.getData(), state.getStatus()] as const);
 };
 
+export const refetchAddysSummary = () => {
+  return useAddysQueryStore.getState().fetch();
+};
+
 const useAddysQueryStore = createQueryStore<AddysSummary, AddysSummaryArgs>(
   {
     fetcher: getAddysSummary,

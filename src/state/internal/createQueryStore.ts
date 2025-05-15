@@ -124,6 +124,9 @@ export type CacheEntry<TData> = {
  * - **`isDataExpired(override?)`**: Checks if the current data has expired based on `cacheTime`.
  * - **`isStale(override?)`**: Checks if the current data is stale based on `staleTime`.
  * - **`reset()`**: Resets the store to its initial state, clearing data and errors.
+ *
+ * Notes on usage:
+ * - You can refetch a store using `useQueryStore.getState().refetch()`
  */
 export interface QueryStore<
   TData,
