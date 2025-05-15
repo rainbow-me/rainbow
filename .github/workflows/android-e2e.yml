@@ -1,9 +1,12 @@
 name: Android e2e tests
 
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 jobs:
   android-e2e:
-    runs-on: blacksmith-16vcpu-ubuntu-2204
+    if: github.event.pull_request.draft == false
+    runs-on: blacksmith-8vcpu-ubuntu-2204
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true

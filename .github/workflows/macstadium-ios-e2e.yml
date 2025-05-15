@@ -6,64 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Job for linting and unit tests
-  linting-and-unit-tests:
-    runs-on: ["self-hosted"]
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up github keys
-        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
-
-      - name: Set sanitized branch name
-        id: sanitize
-        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-            !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Set up ENV vars & scripts
-        env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-        run: |
-          source ~/.zshrc
-          git clone git@github.com:rainbow-me/rainbow-env.git
-          mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          eval $CI_SCRIPTS
-      - name: Install dependencies
-        run: |
-          yarn install && yarn setup
-
-      - name: Check for frozen lockfile
-        run: ./scripts/check-lockfile.sh
-
-      - name: Audit CI
-        run: yarn audit-ci --config audit-ci.jsonc
-
-      - name: Remove ESLint cache
-        run: rm -f .eslintcache
-
-      - name: Lint
-        run: yarn lint:ci
-
-      - name: Unit tests
-        run: yarn test
-
   # iOS build and e2e tests
   e2e-ios:
+    if: github.event.pull_request.draft == false
     runs-on: ["self-hosted"]
     concurrency:
       group: e2e-ios-${{ github.workflow }}-${{ github.ref }}

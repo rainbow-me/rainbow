@@ -224,7 +224,6 @@ const CreatedBySection = memo(function CreatedBySection({ creatorAddress }: { cr
       opacity: withTiming(hasLoaded ? 1 : 0, TIMING_CONFIGS.slowestFadeConfig),
       transform: [{ translateY: withTiming(hasLoaded ? 0 : 10, TIMING_CONFIGS.slowestFadeConfig) }],
     };
-    ``;
   });
 
   useEffect(() => {
@@ -580,7 +579,7 @@ function getFallbackAddress(address: Address) {
   return formatAddressForDisplay(address, 4, 6);
 }
 
-async function fetchAndSetEnsData({
+export async function fetchAndSetEnsData({
   address,
   avatarUrl,
   ensOrAddress,
