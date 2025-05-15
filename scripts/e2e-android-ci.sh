@@ -31,24 +31,6 @@ for DEVICE in $DEVICES; do
   fi
 done
 
-# Always start Anvil for CI runs
-echo "Starting Anvil for tests..."
-
-# Kill any existing Anvil process
-ANVIL_PID=$(lsof -t -i:8545 -c anvil 2>/dev/null)
-if [ -n "$ANVIL_PID" ]; then
-  kill $ANVIL_PID
-fi
-sleep 1
-
-# Start Anvil in the background (show logs in terminal + save to file)
-bash ./scripts/anvil.sh --host 0.0.0.0 2>&1 | grep -v "eth_" | tee anvil.log &
-ANVIL_PID=$!
-echo "Anvil started (PID: $ANVIL_PID)"
-
-# Wait for Anvil to initialize
-sleep 5
-
 # Run the tests
 ./scripts/e2e-android.sh --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG
 TEST_STATUS=$?
@@ -61,14 +43,5 @@ for DEVICE in $DEVICES; do
     adb -s $DEVICE pull /data/local/tmp/recording.mp4 $ARTIFACTS_FOLDER/recording_$DEVICE.mp4
   fi
 done
-
-# Kill the Anvil process
-echo "Killing Anvil (PID: $ANVIL_PID)"
-kill "$ANVIL_PID" 2>/dev/null || true
-# kill any other processes using port 8545
-kill $(lsof -t -i:8545) 2>/dev/null || true
-
-# Remove the Anvil log file
-rm -rf anvil.log
 
 exit $TEST_STATUS
