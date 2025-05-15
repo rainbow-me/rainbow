@@ -92,7 +92,7 @@ export default function ChangeWalletSheet() {
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
   const initialPinnedAddressCount = useMemo(() => usePinnedWalletsStore.getState().pinnedAddresses.length, []);
-  const { transactionCounts, isLoading: isLoadingTransactionCounts } = useWalletTransactionCounts(wallets || {});
+  const { transactionCounts, isLoading: isLoadingTransactionCounts } = useWalletTransactionCounts();
   const hasAutoPinnedAddresses = usePinnedWalletsStore(state => state.hasAutoPinnedAddresses);
 
   const featureHintTooltipRef = useRef<TooltipRef>(null);

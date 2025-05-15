@@ -56,7 +56,9 @@ interface WalletsState {
   walletNames: { [address: string]: string };
   updateWalletNames: (names: { [address: string]: string }) => void;
 
+  // walletsAddresses is just a derived value of wallets
   wallets: { [id: string]: RainbowWallet } | null;
+  walletsAddresses: Address[];
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
@@ -115,10 +117,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     },
 
     wallets: null,
+    walletsAddresses: [],
     async updateWallets(wallets) {
       await saveAllWallets(wallets);
       set({
         wallets,
+        walletsAddresses: Object.values(wallets).flatMap(wallet =>
+          (wallet.addresses || []).map(account => ensureValidHex(account.address))
+        ),
       });
     },
 

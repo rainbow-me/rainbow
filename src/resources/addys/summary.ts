@@ -4,6 +4,54 @@ import { Address } from 'viem';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { createQueryStore } from '../../state/internal/createQueryStore';
 import { time } from '../../utils';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+
+export type AddysSummaryArgs = {
+  addresses: Address[];
+  currency: NativeCurrencyKey;
+};
+
+export const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
+  createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 2 });
+
+export async function getAddysSummary(
+  { addresses, currency }: AddysSummaryArgs,
+  abortController: AbortController | null
+): Promise<AddysSummary> {
+  const { data } = await getAddysHttpClient({ abortController }).post(
+    `/summary`,
+    JSON.stringify({
+      currency,
+      addresses,
+      enableThirdParty: true,
+    })
+  );
+  return data;
+}
+
+export const useAddysSummary = () => {
+  return useAddysQueryStore(state => [state.getData(), state.getStatus()] as const);
+};
+
+const useAddysQueryStore = createQueryStore<AddysSummary, AddysSummaryArgs>(
+  {
+    fetcher: getAddysSummary,
+    params: {
+      addresses: $ => $(useWalletsStore).walletsAddresses,
+      currency: $ => $(userAssetsStoreManager).currency,
+    },
+    staleTime: time.minutes(1),
+    cacheTime: time.hours(24),
+    retryDelay: time.minutes(2),
+  },
+  () => ({
+    data: null,
+  }),
+  {
+    storageKey: 'addysSummary',
+  }
+);
 
 interface AddysSummary {
   data: {
@@ -68,44 +116,3 @@ interface AddysSummary {
     };
   };
 }
-
-export type AddysSummaryArgs = {
-  addresses: Address[];
-  currency: NativeCurrencyKey;
-};
-
-export const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
-  createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 2 });
-
-export async function getAddysSummary(
-  { addresses, currency }: AddysSummaryArgs,
-  abortController: AbortController | null
-): Promise<AddysSummary> {
-  const { data } = await getAddysHttpClient({ abortController }).post(
-    `/summary`,
-    JSON.stringify({
-      currency,
-      addresses,
-      enableThirdParty: true,
-    })
-  );
-  return data;
-}
-
-export const useAddysSummary = createQueryStore<AddysSummary, AddysSummaryArgs>(
-  {
-    fetcher: getAddysSummary,
-    params: {
-      addresses: [],
-      currency: 'USD',
-    },
-    staleTime: time.minutes(2),
-    cacheTime: time.hours(24),
-  },
-  () => ({
-    data: null,
-  }),
-  {
-    storageKey: 'addysSummary',
-  }
-);

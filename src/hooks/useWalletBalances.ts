@@ -1,16 +1,9 @@
-import { AllRainbowWallets } from '@/model/wallet';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
 import { useAddysSummary } from '@/resources/addys/summary';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-
-const QUERY_CONFIG = {
-  staleTime: 60_000, // 1 minute
-  cacheTime: 1000 * 60 * 60 * 24, // 24 hours
-  refetchInterval: 120_000, // 2 minutes
-};
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export type WalletBalance = {
   assetBalanceAmount: string;
@@ -32,22 +25,10 @@ export type WalletBalanceResult = {
  * @param wallets - All Rainbow wallets
  * @returns Balances for all wallets
  */
-const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
-  const accountAddress = useAccountAddress();
+const useWalletBalances = (): WalletBalanceResult => {
   const { nativeCurrency } = useAccountSettings();
-
-  const allAddresses = useMemo(
-    () => Object.values(wallets).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address)),
-    [wallets]
-  );
-
-  const { data: summaryData, isLoading } = useAddysSummary(
-    {
-      addresses: allAddresses,
-      currency: nativeCurrency,
-    },
-    QUERY_CONFIG
-  );
+  const [summaryData, { isInitialLoading: isLoading }] = useAddysSummary();
+  const allAddresses = useWalletsStore(state => state.walletsAddresses);
 
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};
