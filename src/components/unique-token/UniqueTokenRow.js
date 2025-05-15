@@ -1,14 +1,14 @@
+import Routes from '@/navigation/routesNames';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { magicMemo } from '../../utils';
 import { Row } from '../layout';
 import { CardSize, UniqueTokenCardMargin, UniqueTokenRowPadding } from './CardSize';
 import UniqueTokenCard from './UniqueTokenCard';
-import { useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { padding, position } from '@/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   ...padding.object(0, UniqueTokenRowPadding),
@@ -23,7 +23,7 @@ const UniqueTokenCardItem = styled(UniqueTokenCard).attrs({
 });
 
 const UniqueTokenRow = magicMemo(({ item, external = false }) => {
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(

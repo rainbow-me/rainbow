@@ -7,7 +7,8 @@ import { avatarMetadataAtom } from '../components/ens-registration/RegistrationA
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
-import { useAccountSettings, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
+import { useWalletENSAvatar, useENSRegistration } from '.';
+import { useWalletsStore, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
@@ -92,12 +93,12 @@ const formatENSActionParams = (registrationParameters: RegistrationParameters): 
 };
 
 const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step, sendReverseRecord = false, yearsDuration = 1 }) => {
-  const { accountAddress } = useAccountSettings();
-  const { registrationParameters } = useENSRegistration();
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { updateWalletENSAvatars } = useWalletENSAvatar();
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useIsHardwareWallet();
+  const accountAddress = useAccountAddress();
+  const { registrationParameters } = useENSRegistration();
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);

@@ -1,12 +1,11 @@
-import { useSelector } from 'react-redux';
+import { getAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
-import reduxStore, { AppState } from '@/redux/store';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { QueryEnabledUserAssetsState } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 function getOrCreateStore(address?: Address | string): ReturnType<typeof createUserAssetsStore> {
-  const rawAddress = address?.length ? address : reduxStore.getState().settings.accountAddress;
+  const rawAddress = address?.length ? address : getAccountAddress();
   const { address: cachedAddress, cachedStore } = userAssetsStoreManager.getState();
   /**
    * This fallback can be removed once Redux is no longer the source of truth for the current
@@ -23,7 +22,7 @@ function getOrCreateStore(address?: Address | string): ReturnType<typeof createU
 }
 
 function useUserAssetsStoreInternal<T>(selector: (state: QueryEnabledUserAssetsState) => T): T {
-  const address = useSelector((state: AppState) => state.settings.accountAddress);
+  const address = useWalletsStore(state => state.accountAddress);
   return getOrCreateStore(address)(selector);
 }
 

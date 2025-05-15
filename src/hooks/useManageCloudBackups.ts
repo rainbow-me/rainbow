@@ -1,23 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
-import lang from 'i18n-js';
-import { useDispatch } from 'react-redux';
-import { cloudPlatform } from '../utils/platform';
-import { WrappedAlert as Alert } from '@/helpers/alert';
+import { IS_ANDROID } from '@/env';
+import { authenticateWithPIN } from '@/handlers/authentication';
 import {
   GoogleDriveUserData,
-  getGoogleAccountUserData,
   deleteAllBackups,
-  logoutFromGoogleDrive as logout,
+  getGoogleAccountUserData,
   login,
+  logoutFromGoogleDrive as logout,
 } from '@/handlers/cloudBackup';
-import { clearAllWalletsBackupStatus } from '@/redux/wallets';
-import { showActionSheetWithOptions } from '@/utils';
-import { IS_ANDROID } from '@/env';
-import { RainbowError, logger } from '@/logger';
-import * as i18n from '@/languages';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as keychain from '@/keychain';
-import { authenticateWithPIN } from '@/handlers/authentication';
+import * as i18n from '@/languages';
+import { RainbowError, logger } from '@/logger';
+import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
+import { CloudBackupState, backupsStore } from '@/state/backups/backups';
+import { showActionSheetWithOptions } from '@/utils';
+import lang from 'i18n-js';
+import { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { cloudPlatform } from '../utils/platform';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
@@ -53,8 +53,8 @@ export default function useManageCloudBackups() {
       });
     };
 
-    const removeBackupStateFromAllWallets = async () => {
-      await dispatch(clearAllWalletsBackupStatus());
+    const removeBackupStateFromAllWallets = () => {
+      clearAllWalletsBackupStatus();
     };
 
     const logoutFromGoogleDrive = async () => {

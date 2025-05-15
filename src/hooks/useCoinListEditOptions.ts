@@ -2,7 +2,7 @@ import { difference } from 'lodash';
 import { useCallback, useMemo, useRef } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
-import useAccountSettings from './useAccountSettings';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import EditAction from '@/helpers/EditAction';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
@@ -18,7 +18,7 @@ export interface BooleanMap {
 const INITIAL_PINNED_COINS: BooleanMap = {};
 
 export default function useCoinListEditOptions() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const setSelectedItems = useSetRecoilState(selectedItemsAtom);
 
@@ -83,7 +83,7 @@ export default function useCoinListEditOptions() {
 }
 
 export function useCoinListFinishEditingOptions() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const hiddenAssets = useUserAssetsStore(state => state.getHiddenAssetsIds());
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 

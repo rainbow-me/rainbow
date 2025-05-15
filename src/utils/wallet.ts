@@ -1,29 +1,40 @@
 import { NativeModules } from 'react-native';
 import { hdkey } from 'ethereumjs-wallet';
 import { Wallet } from '@ethersproject/wallet';
-import { addHexPrefix, toChecksumAddress } from '@/handlers/web3';
+import { addHexPrefix, ensureChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import { DEFAULT_HD_PATH, identifyWalletType, WalletLibraryType, EthereumPrivateKey, EthereumWalletSeed, getHdPath } from '@/model/wallet';
+import {
+  DEFAULT_HD_PATH,
+  identifyWalletType,
+  WalletLibraryType,
+  EthereumPrivateKey,
+  EthereumWalletSeed,
+  getHdPath,
+  EthereumWalletFromSeed,
+  ReadOnlyWallet,
+} from '@/model/wallet';
 import { mnemonicToSeed } from 'bip39';
 import { IS_IOS } from '@/env';
 import { getEthApp } from './ledger';
 
 const { RNBip39 } = NativeModules;
 
-export const deriveAccountFromBluetoothHardwareWallet = async (deviceId: string, index = 0) => {
+export const deriveAccountFromBluetoothHardwareWallet = async (deviceId: string, index = 0): Promise<EthereumWalletFromSeed> => {
   const eth = await getEthApp(deviceId);
   const path = getHdPath({
     type: WalletLibraryType.ledger,
     index: Number(index),
   });
   const { address } = await eth.getAddress(path, false);
-  const wallet = {
-    address: toChecksumAddress(address),
+
+  const wallet: ReadOnlyWallet = {
+    address: ensureChecksumAddress(address),
     privateKey: `${deviceId}/${index}`,
   };
 
   return {
-    address: wallet.address,
+    hdnode: null,
+    address: wallet.address || '',
     isHDWallet: false,
     root: null,
     type: WalletTypes.bluetooth,
@@ -32,7 +43,7 @@ export const deriveAccountFromBluetoothHardwareWallet = async (deviceId: string,
   };
 };
 
-export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0) => {
+export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0): Promise<EthereumWalletFromSeed> => {
   let seed;
   if (IS_IOS) {
     seed = await mnemonicToSeed(mnemonic);
@@ -45,18 +56,20 @@ export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0) => 
   const child = root.deriveChild(index);
   const wallet = child.getWallet();
   return {
-    address: toChecksumAddress(wallet.getAddress().toString('hex')),
+    address: ensureChecksumAddress(wallet.getAddress().toString('hex')),
     isHDWallet: true,
     root,
     type: WalletTypes.mnemonic,
+    hdnode: null,
     wallet,
     walletType: WalletLibraryType.bip39,
   };
 };
 
-export const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
+export const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey): EthereumWalletFromSeed => {
   const ethersWallet = new Wallet(addHexPrefix(privateKey));
   return {
+    hdnode: null,
     address: ethersWallet.address,
     isHDWallet: false,
     root: null,
@@ -66,7 +79,7 @@ export const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
   };
 };
 
-export const deriveAccountFromWalletInput = (input: EthereumWalletSeed) => {
+export const deriveAccountFromWalletInput = async (input: EthereumWalletSeed): Promise<EthereumWalletFromSeed> => {
   const type = identifyWalletType(input);
   if (type === WalletTypes.privateKey) {
     return deriveAccountFromPrivateKey(input);
@@ -75,6 +88,7 @@ export const deriveAccountFromWalletInput = (input: EthereumWalletSeed) => {
   } else if (type === WalletTypes.readOnly) {
     const ethersWallet = { address: addHexPrefix(input), privateKey: null };
     return {
+      hdnode: null,
       address: addHexPrefix(input),
       isHDWallet: false,
       root: null,

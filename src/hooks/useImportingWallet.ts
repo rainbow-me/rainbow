@@ -4,14 +4,12 @@ import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
-import useAccountSettings from './useAccountSettings';
 import { fetchENSAvatar } from './useENSAvatar';
-import useInitializeWallet from './useInitializeWallet';
+import { initializeWallet } from '../state/wallets/initializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import useWalletENSAvatar from './useWalletENSAvatar';
-import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
@@ -20,7 +18,6 @@ import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from 
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
-import { walletsLoadState } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
@@ -32,13 +29,14 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { loadWallets, useWallets, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
-  const { accountAddress } = useAccountSettings();
-  const { selectedWallet, wallets } = useWallets();
+  const accountAddress = useAccountAddress();
+  const selectedWallet = useSelectedWallet();
+  const wallets = useWallets();
 
   const { getParent: dangerouslyGetParent, navigate, replace, setOptions } = useNavigation<typeof Routes.MODAL_SCREEN>();
-  const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
@@ -285,32 +283,26 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         });
 
         if (!showImportModal) {
-          await walletInit(
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
-            input,
+          await walletInit({
+            seedPhrase: input,
             color,
-            name ? name : '',
-            false,
+            name: name ? name : '',
+            overwrite: false,
             checkedWallet,
-            undefined,
             image,
-            true
-          );
-          await dispatch(walletsLoadState());
+            silent: true,
+          });
+          await loadWallets();
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
-          initializeWallet(
-            input,
-            // @ts-expect-error Initialize wallet is not typed properly now, will be fixed with a refactoring. TODO: remove comment when changing intializeWallet
+          initializeWallet({
+            seedPhrase: input,
             color,
-            name ? name : '',
-            false,
-            false,
-            checkedWallet,
-            undefined,
-            image
-          )
+            name: name ? name : '',
+            image,
+          });
+          initializeWallet({})
             .then(success => {
               ios && handleSetImporting(false);
               if (success) {
@@ -359,8 +351,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                 // Wait for error messages then refocus
                 setTimeout(() => {
                   inputRef.current?.focus();
-                  // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
-                  initializeWallet();
+                  initializeWallet({});
                 }, 100);
               }
             })
@@ -370,8 +361,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               logger.error(new RainbowError(`[useImportingWallet]: Error importing seed phrase: ${error}`));
               setTimeout(() => {
                 inputRef.current?.focus();
-                // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
-                initializeWallet();
+                initializeWallet({});
               }, 100);
             });
         }
@@ -390,8 +380,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     replace,
     resolvedAddress,
     seedPhrase,
-    selectedWallet.id,
-    selectedWallet.type,
+    selectedWallet?.id,
+    selectedWallet?.type,
     wallets,
     wasImporting,
     updateWalletENSAvatars,

@@ -1,41 +1,41 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { analytics } from '@/analytics';
+import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
+import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { ButtonPressAnimation } from '@/components/animations';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { SheetHandleFixedToTop } from '@/components/sheet';
+import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
+import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
+import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
+import { EthereumAddress } from '@/entities';
+import { IS_IOS } from '@/env';
+import { removeWalletData } from '@/handlers/localstorage/removeWallet';
+import { addDisplay } from '@/helpers/utilities';
+import WalletTypes from '@/helpers/walletTypes';
+import { useAccountSettings, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
+import { useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
+import { WalletList } from '@/screens/change-wallet/components/WalletList';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
+import { setSelectedWallet, useWallets, useSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
+import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import { useDispatch } from 'react-redux';
-import { ButtonPressAnimation } from '@/components/animations';
-import { WalletList } from '@/screens/change-wallet/components/WalletList';
-import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
-import { useNavigation } from '@/navigation/Navigation';
-import { addressSetSelected, walletsSetSelected, walletsUpdate } from '@/redux/wallets';
-import WalletTypes from '@/helpers/walletTypes';
-import { analytics } from '@/analytics';
-import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
-import { logger, RainbowError } from '@/logger';
-import { useTheme } from '@/theme';
-import { EthereumAddress } from '@/entities';
-import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { IS_IOS } from '@/env';
-import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
-import { RootStackParamList } from '@/navigation/types';
-import { Box, globalColors, HitSlop, Inline, Stack, Text } from '@/design-system';
-import { addDisplay } from '@/helpers/utilities';
-import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { SheetHandleFixedToTop } from '@/components/sheet';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { MenuConfig, MenuItem } from '@/components/DropdownMenu';
-import { NOTIFICATIONS, useExperimentalFlag } from '@/config';
-import { FeatureHintTooltip, TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
-import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import ConditionalWrap from 'conditional-wrap';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
-import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { Address } from 'viem';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
@@ -80,15 +80,14 @@ export default function ChangeWalletSheet() {
   const { params = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHANGE_WALLET_SHEET>>();
 
   const { onChangeWallet, watchOnly = false, currentAccountAddress, hideReadOnlyWallets = false } = params;
-  const { selectedWallet, wallets } = useWallets();
+  const selectedWallet = useSelectedWallet();
+  const wallets = useWallets();
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { colors, isDarkMode } = useTheme();
   const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
-  const dispatch = useDispatch();
-  const initializeWallet = useInitializeWallet();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
@@ -251,12 +250,13 @@ export default function ChangeWalletSheet() {
       try {
         setCurrentAddress(address);
         setCurrentSelectedWallet(wallet);
-        const p1 = dispatch(walletsSetSelected(wallet));
-        const p2 = dispatch(addressSetSelected(address));
-        await Promise.all([p1, p2]);
+        setSelectedWallet(wallet, address);
         remotePromoSheetsStore.setState({ isShown: false });
-        // @ts-expect-error initializeWallet is not typed correctly
-        initializeWallet(null, null, null, false, false, null, true);
+        initializeWallet({
+          shouldRunMigrations: false,
+          overwrite: false,
+          switching: true,
+        });
         if (!fromDeletion) {
           goBack();
         }
@@ -266,7 +266,7 @@ export default function ChangeWalletSheet() {
         });
       }
     },
-    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, wallets, watchOnly]
+    [currentAddress, editMode, goBack, onChangeWallet, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(
@@ -284,19 +284,22 @@ export default function ChangeWalletSheet() {
           ),
         },
       };
+
+      const { updateWallets } = useWalletsStore.getState();
+
       // If there are no visible wallets
       // then delete the wallet
       const visibleAddresses = ((newWallets as any)[walletId]?.addresses || []).filter((account: any) => account.visible);
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newWallets[walletId];
-        dispatch(walletsUpdate(newWallets));
+        updateWallets(newWallets);
       } else {
-        dispatch(walletsUpdate(newWallets));
+        updateWallets(newWallets);
       }
       removeWalletData(address);
     },
-    [dispatch, wallets]
+    [wallets]
   );
 
   const renameWallet = useCallback(
@@ -339,14 +342,13 @@ export default function ChangeWalletSheet() {
                   [walletId]: updatedWallet,
                 };
 
-                if (currentSelectedWallet.id === walletId) {
-                  setCurrentSelectedWallet(updatedWallet);
-                  dispatch(walletsSetSelected(updatedWallet));
+                if (currentSelectedWallet && currentSelectedWallet.id === walletId) {
+                  const { updateWallets, setSelectedWallet } = useWalletsStore.getState();
+                  setSelectedWallet(updatedWallet);
+                  updateWallets(updatedWallets);
                 }
 
                 updateWebProfile(address, name, colors.avatarBackgrounds[color]);
-
-                dispatch(walletsUpdate(updatedWallets));
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }
@@ -361,7 +363,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [wallets, goBack, navigate, dispatch, currentSelectedWallet.id, updateWebProfile, colors.avatarBackgrounds]
+    [wallets, goBack, navigate, currentSelectedWallet, updateWebProfile, colors.avatarBackgrounds]
   );
 
   const onPressEdit = useCallback(

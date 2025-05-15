@@ -4,6 +4,7 @@ import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
 import { useAddysSummary } from '@/resources/addys/summary';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const QUERY_CONFIG = {
   staleTime: 60_000, // 1 minute
@@ -32,6 +33,7 @@ export type WalletBalanceResult = {
  * @returns Balances for all wallets
  */
 const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
+  const accountAddress = useAccountAddress();
   const { nativeCurrency } = useAccountSettings();
 
   const allAddresses = useMemo(

@@ -18,6 +18,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { filterList } from '@/utils';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,
@@ -73,7 +74,7 @@ export default function SendContactList({
   userAccounts,
   watchedAccounts,
 }) {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { isDarkMode } = useTheme();

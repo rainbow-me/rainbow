@@ -1,6 +1,15 @@
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { Box } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { toChecksumAddress } from '@/handlers/web3';
+import { useDimensions } from '@/hooks';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { padding, shadow } from '@/styles';
 import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { CopyFloatingEmojis } from '../components/floating-emojis';
@@ -9,15 +18,7 @@ import QRCode from '../components/qr-code/QRCode';
 import ShareButton from '../components/qr-code/ShareButton';
 import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
-import { abbreviations, deviceUtils, safeAreaInsetValues } from '../utils';
-import { useAccountProfile, useDimensions } from '@/hooks';
-import styled from '@/styled-thing';
-import { padding, shadow } from '@/styles';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { Box } from '@/design-system';
+import { abbreviations, deviceUtils } from '../utils';
 
 const QRCodeSize = IS_IOS ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
@@ -53,7 +54,7 @@ const lowercaseAccountAddressSelector = createSelector(accountAddressSelector, t
 
 export default function ReceiveModal() {
   const accountAddress = useSelector(lowercaseAccountAddressSelector);
-  const { accountName } = useAccountProfile();
+  const { accountName } = useAccountProfileInfo();
 
   const [copiedText, setCopiedText] = useState(undefined);
   const [copyCount, setCopyCount] = useState(0);

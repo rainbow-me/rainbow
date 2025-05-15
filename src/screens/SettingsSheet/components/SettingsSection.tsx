@@ -1,14 +1,7 @@
-import * as lang from '@/languages';
-import React, { useCallback, useMemo } from 'react';
-import { Share } from 'react-native';
-import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
-import { AppVersionStamp } from '@/components/AppVersionStamp';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import BackupWarningIcon from '@/assets/BackupWarning.png';
+import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import AppIconIcon from '@/assets/settingsAppIcon.png';
 import AppIconIconDark from '@/assets/settingsAppIconDark.png';
-import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import CurrencyIcon from '@/assets/settingsCurrency.png';
 import CurrencyIconDark from '@/assets/settingsCurrencyDark.png';
 import DarkModeIcon from '@/assets/settingsDarkMode.png';
@@ -19,21 +12,29 @@ import NotificationsIcon from '@/assets/settingsNotifications.png';
 import NotificationsIconDark from '@/assets/settingsNotificationsDark.png';
 import PrivacyIcon from '@/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
-import BackupWarningIcon from '@/assets/BackupWarning.png';
-import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
+import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
+import { AppVersionStamp } from '@/components/AppVersionStamp';
 import useExperimentalFlag, { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/config/experimentalHooks';
-import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
+import { Box } from '@/design-system';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { useAccountSettings, useSendFeedback } from '@/hooks';
+import * as lang from '@/languages';
+import { backupsStore } from '@/state/backups/backups';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { ReviewPromptAction } from '@/storage/schema';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
+import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { ReviewPromptAction } from '@/storage/schema';
+import { capitalize } from 'lodash';
+import React, { useCallback, useMemo } from 'react';
+import { Share } from 'react-native';
+import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
 import { SettingsExternalURLs } from '../constants';
 import { checkLocalWalletsForBackupStatus } from '../utils';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { Box } from '@/design-system';
-import { capitalize } from 'lodash';
-import { backupsStore } from '@/state/backups/backups';
-import { openInBrowser } from '@/utils/openInBrowser';
+import Menu from './Menu';
+import MenuContainer from './MenuContainer';
+import MenuItem from './MenuItem';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -63,7 +64,7 @@ const SettingsSection = ({
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
-  const { wallets, isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
@@ -94,7 +95,7 @@ const SettingsSection = ({
 
   const onPressLearn = useCallback(() => openInBrowser(SettingsExternalURLs.rainbowLearn), []);
 
-  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
+  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(backups), [backups]);
 
   const themeMenuConfig = useMemo(() => {
     return {
