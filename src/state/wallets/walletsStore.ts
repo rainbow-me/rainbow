@@ -637,12 +637,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
-export const useWallets = () => useWalletsStore(state => state.wallets);
 export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
 
+export const useWallets = () => useWalletsStore(state => state.wallets);
+export const useWalletAddresses = () => useWalletsStore(state => state.walletsAddresses);
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);
 export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());

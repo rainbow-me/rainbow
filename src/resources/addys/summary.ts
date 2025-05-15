@@ -1,5 +1,4 @@
 import { NativeCurrencyKey } from '@/entities';
-import { createQueryKey } from '@/react-query';
 import { Address } from 'viem';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { createQueryStore } from '../../state/internal/createQueryStore';
@@ -12,10 +11,7 @@ export type AddysSummaryArgs = {
   currency: NativeCurrencyKey;
 };
 
-export const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
-  createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 2 });
-
-export async function getAddysSummary(
+async function fetchAddysSummary(
   { addresses, currency }: AddysSummaryArgs,
   abortController: AbortController | null
 ): Promise<AddysSummary> {
@@ -34,13 +30,17 @@ export const useAddysSummary = () => {
   return useAddysQueryStore(state => [state.getData(), state.getStatus()] as const);
 };
 
+export const getAddysSummary = () => {
+  return useAddysQueryStore.getState().getData();
+};
+
 export const refetchAddysSummary = () => {
   return useAddysQueryStore.getState().fetch();
 };
 
 const useAddysQueryStore = createQueryStore<AddysSummary, AddysSummaryArgs>(
   {
-    fetcher: getAddysSummary,
+    fetcher: fetchAddysSummary,
     params: {
       addresses: $ => $(useWalletsStore).walletsAddresses,
       currency: $ => $(userAssetsStoreManager).currency,
