@@ -11,7 +11,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useAnimatedCountdown } from '@/hooks/reanimated/useAnimatedCountdown';
-import { KingOfTheHillToken } from '@/state/kingOfTheHill/kingOfTheHillStore';
+import { KingOfTheHillToken } from '@/graphql/__generated__/metadata';
 
 const CARD_HEIGHT = 84;
 const startingNextRoundText = i18n.t(i18n.l.king_of_hill.starting_next_round);
@@ -34,25 +34,25 @@ function AnimatedCountdownText({ targetUnixTimestamp, color }: { targetUnixTimes
   );
 }
 
-export function KingOfTheHillCard({ token }: { token: KingOfTheHillToken }) {
-  const coinIconImage = useImage(token.visuals.iconUrl);
+export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
+  const { token } = king;
+  const coinIconImage = useImage(token.iconUrl);
 
   const { width } = useDimensions();
   const cardWidth = width - 20 * 2;
-  const hasTokenPriceIncreased = Number(token.marketData.priceChangePercent24h) > 0;
+  const hasTokenPriceIncreased = Number(token.price.relativeChange24h) > 0;
   const priceColor = hasTokenPriceIncreased ? 'green' : 'red';
-  const sizedIconUrl = getSizedImageUrl(token.visuals.iconUrl, 40);
-  const primaryColor = token.visuals.color;
-  const endUnixTimestamp = useMemo(() => new Date(token.window.end).getTime() / 1000, [token.window.end]);
+  const sizedIconUrl = getSizedImageUrl(token.iconUrl, 40);
+  const primaryColor = token.colors.primary;
 
   const { marketCap, price, priceChange24h, volume } = useMemo(
     () => ({
-      marketCap: formatNumber(token.marketData.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' }),
-      price: formatCurrency(token.marketData.currentPrice),
-      priceChange24h: `${formatNumber(token.marketData.priceChangePercent24h, { decimals: 2, useOrderSuffix: true })}%`,
-      volume: formatNumber(token.marketData.volume24h, { useOrderSuffix: true, decimals: 1, style: '$' }),
+      marketCap: formatNumber(token.marketCap ?? 0, { useOrderSuffix: true, decimals: 1, style: '$' }),
+      price: formatCurrency(token.price.value ?? 0),
+      priceChange24h: `${formatNumber(token.price.relativeChange24h ?? 0, { decimals: 2, useOrderSuffix: true })}%`,
+      volume: formatNumber(token.marketData?.volume24h ?? 0, { useOrderSuffix: true, decimals: 1, style: '$' }),
     }),
-    [token.marketData]
+    [token.marketCap, token.price, token.marketData]
   );
 
   const onPress = useCallback(() => {
@@ -101,7 +101,7 @@ export function KingOfTheHillCard({ token }: { token: KingOfTheHillToken }) {
                       {i18n.t(i18n.l.king_of_hill.current_king)}
                     </Text>
                   </TextShadow>
-                  <AnimatedCountdownText targetUnixTimestamp={endUnixTimestamp} color={primaryColor} />
+                  <AnimatedCountdownText targetUnixTimestamp={king.window.end} color={primaryColor} />
                 </Inline>
                 <Inline wrap={false} alignHorizontal="justify" space={'8px'}>
                   <Box style={{ flex: 1 }} flexDirection="row" alignItems="center" gap={6}>

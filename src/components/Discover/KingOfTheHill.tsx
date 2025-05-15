@@ -8,25 +8,27 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { KingOfTheHillToken, useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
+import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
+import { KingOfTheHillToken } from '@/graphql/__generated__/metadata';
 import { KingOfTheHillCard } from '@/components/cards/skia-cards/KingOfTheHillCard';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import isEqual from 'react-fast-compare';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { usePrevious } from '@/hooks';
 
-const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToken }: { lastWinnerToken: KingOfTheHillToken }) {
+const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinner }: { lastWinner: KingOfTheHillToken }) {
+  const { token } = lastWinner;
   const { isDarkMode } = useColorMode();
   const fillTertiaryColor = useBackgroundColor('fillTertiary');
-  const sizedIconUrl = getSizedImageUrl(lastWinnerToken.visuals.iconUrl, 16);
+  const sizedIconUrl = getSizedImageUrl(token.iconUrl, 16);
 
   const navigateToLastWinner = useCallback(() => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset: lastWinnerToken,
-      address: lastWinnerToken.address,
-      chainId: lastWinnerToken.chainId,
+      asset: token,
+      address: token.address,
+      chainId: token.chainId,
     });
-  }, [lastWinnerToken]);
+  }, [token]);
 
   const navigateToExplainSheet = useCallback(() => {
     Navigation.handleAction(Routes.KING_OF_THE_HILL_EXPLAIN_SHEET);
@@ -44,13 +46,13 @@ const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinnerToke
           style={{ height: 26 }}
         >
           <Box height="full" justifyContent="center" paddingLeft={'10px'} paddingRight={{ custom: 5 }}>
-            <Inline alignVertical="center" space={'6px'}>
+            <Inline alignVertical="center" space={'6px'} wrap={false}>
               <Text color="labelQuaternary" size="11pt" weight="bold">
                 {i18n.t(i18n.l.king_of_hill.last_winner)}
               </Text>
               <Box height={16} width={1} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} />
               <Text color="labelTertiary" size="11pt" weight="heavy">
-                {lastWinnerToken.symbol}
+                {token.symbol}
               </Text>
               <FastImage source={{ uri: sizedIconUrl }} style={{ width: 16, height: 16, borderRadius: 8 }} />
             </Inline>
@@ -99,8 +101,8 @@ export function KingOfTheHill() {
   return (
     <>
       <Box gap={6}>
-        {kingOfTheHill.lastWinner && <LastWinnerSection lastWinnerToken={kingOfTheHill.lastWinner} />}
-        <KingOfTheHillCard token={kingOfTheHill.current} />
+        {kingOfTheHill.lastWinner && <LastWinnerSection lastWinner={kingOfTheHill.lastWinner} />}
+        <KingOfTheHillCard king={kingOfTheHill.current} />
       </Box>
       <SyncStoreEnabled />
     </>

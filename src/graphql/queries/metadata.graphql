@@ -684,17 +684,29 @@ query marketStats($chainID: Int!, $address: String!) {
 query kingOfTheHill($currency: String) {
   kingOfTheHill(currency: $currency) {
     current {
-      address
-      chainId
-      name
-      symbol
-      decimals
-      marketData {
-        priceChangePercent24h
-        currentPrice
+      token {
+        chainId
+        address
+        decimals
+        name
+        symbol
+        iconUrl
+        colors {
+          primary
+          fallback
+          shadow
+        }
+        marketData {
+          marketCapFDV
+          volume24h
+          holders
+        }
         marketCap
-        volume24h
-        holders
+        volume1d
+        price {
+          value
+          relativeChange24h
+        }
       }
       window {
         start
@@ -709,25 +721,32 @@ query kingOfTheHill($currency: String) {
         rankingCriteriaDesc
         windowTradingVolume
         lastUpdated
-      }
-      visuals {
-        iconUrl
-        color
-        fallbackColor
       }
     }
     lastWinner {
-      address
-      chainId
-      name
-      symbol
-      decimals
-      marketData {
-        priceChangePercent24h
-        currentPrice
+      token {
+        chainId
+        address
+        decimals
+        name
+        symbol
+        iconUrl
+        colors {
+          primary
+          fallback
+          shadow
+        }
+        marketData {
+          marketCapFDV
+          volume24h
+          holders
+        }
         marketCap
-        volume24h
-        holders
+        volume1d
+        price {
+          value
+          relativeChange24h
+        }
       }
       window {
         start
@@ -742,11 +761,6 @@ query kingOfTheHill($currency: String) {
         rankingCriteriaDesc
         windowTradingVolume
         lastUpdated
-      }
-      visuals {
-        iconUrl
-        color
-        fallbackColor
       }
     }
   }
