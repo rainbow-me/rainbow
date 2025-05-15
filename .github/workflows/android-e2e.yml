@@ -26,8 +26,6 @@ jobs:
       ARCH: x86_64
 
     steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
       - name: Checkout repo
         uses: actions/checkout@v4
 
