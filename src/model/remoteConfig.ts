@@ -77,6 +77,7 @@ export interface RainbowConfig extends Record<string, string | boolean | number 
   trending_tokens_enabled: boolean;
   new_discover_cards_enabled: boolean;
   rainbow_trending_tokens_list_enabled: boolean;
+  prince_of_the_hill_enabled: boolean;
   king_of_the_hill_enabled: boolean;
 }
 
@@ -195,6 +196,7 @@ export const DEFAULT_CONFIG = {
   new_discover_cards_enabled: false,
   rainbow_trending_tokens_list_enabled: false,
   king_of_the_hill_enabled: false,
+  prince_of_the_hill_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
