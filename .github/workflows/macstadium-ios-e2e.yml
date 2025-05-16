@@ -80,6 +80,20 @@ jobs:
         with:
           model: 'iPhone 16'
           wait_for_boot: true
+      - name: Ensure Simulator is fully booted
+        run: |
+          echo "Waiting for simulator to be fully booted..."
+          timeout=0
+          while [[ "$(xcrun simctl list | grep "${{ steps.simulator.outputs.udid }}" | grep -o 'Booted')" != "Booted" ]]; do
+            sleep 5
+            timeout=$((timeout+5))
+            echo "Still waiting... ($timeout seconds)"
+            if [ $timeout -ge 120 ]; then
+              echo "Timed out waiting for simulator"
+              exit 1
+            fi
+          done
+          echo "Simulator is ready."
       - name: Run Tests
         run: ./scripts/e2e-ios-ci.sh
         env:
