@@ -61,7 +61,7 @@ const useInterpolationRange = isCoinListEdited => {
       (_left, top) => {
         setRanges([top - (navbarHeight + safeAreaInsetTop), top]);
       },
-      () => { }
+      () => {}
     );
   }, [scrollViewRef]);
   return {
