@@ -324,8 +324,9 @@ export async function clear() {
  * Wrapper around the underlying library's method by the same name.
  */
 export async function getSupportedBiometryType(): Promise<BIOMETRY_TYPE | undefined> {
-  logger.debug(`[keychain]: getSupportedBiometryType`, {}, logger.DebugContext.keychain);
-  return (await originalGetSupportedBiometryType()) || undefined;
+  const result = (await originalGetSupportedBiometryType()) || undefined;
+  logger.debug(`[keychain]: getSupportedBiometryType result: ${result}`, {}, logger.DebugContext.keychain);
+  return result;
 }
 
 /**
