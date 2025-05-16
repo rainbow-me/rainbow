@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import PropTypes from 'prop-types';
-import { globalColors } from '@/design-system';
+import { globalColors } from '@/design-system/color/palettes';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
 

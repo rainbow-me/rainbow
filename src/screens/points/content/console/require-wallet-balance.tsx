@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import { Paragraph } from '../../components/Paragraph';
-import { Line } from '../../components/Line';
-import { AnimatedText } from '../../components/AnimatedText';
-import { textColors } from '../../constants';
-import * as i18n from '@/languages';
-import { useAccountProfile } from '@/hooks';
-import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
-import { NeonButton } from '../../components/NeonButton';
-import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
+import React, { useState } from 'react';
+import { AnimatedText } from '../../components/AnimatedText';
+import { Line } from '../../components/Line';
+import { LineBreak } from '../../components/LineBreak';
+import { NeonButton } from '../../components/NeonButton';
+import { Paragraph } from '../../components/Paragraph';
+import { textColors } from '../../constants';
 
 export const RequireWalletBalance = () => {
   const [shouldShowButton, setShouldShowButton] = useState(false);
-  const { accountENS, accountAddress } = useAccountProfile();
+  const { accountENS, accountAddress } = useAccountProfileInfo();
   const { navigate } = useNavigation();
+  const accountName = abbreviateEnsForDisplay(accountENS, 10) || (accountAddress ? formatAddress(accountAddress, 4, 5) : '');
 
-  const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
   return (
     <Box height="full" justifyContent="space-between">
       <Stack separator={<LineBreak lines={3} />}>

@@ -1,37 +1,35 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
-import { useSharedValue } from 'react-native-reanimated';
-
-import useWallets from '../../hooks/useWallets';
-import Routes from '@/navigation/routesNames';
-
-import ImgixImage from '../../components/images/ImgixImage';
-import { SheetActionButton, SheetActionButtonRow, SlackSheet } from '../../components/sheet';
-import { CardSize } from '../../components/unique-token/CardSize';
+import { analytics } from '@/analytics';
+import { ButtonPressAnimation } from '@/components/animations';
+import Spinner from '@/components/Spinner';
 import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system';
-import { useAccountProfile, useDimensions } from '@/hooks';
+import { UniqueAsset } from '@/entities';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { arcClient } from '@/graphql';
+import { maybeSignUri } from '@/handlers/imgix';
+import { useDimensions } from '@/hooks';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { maybeSignUri } from '@/handlers/imgix';
-import { ButtonPressAnimation } from '@/components/animations';
+import { delay } from '@/utils/delay';
+import { openInBrowser } from '@/utils/openInBrowser';
+import { PoapMintError } from '@/utils/poaps';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
-import { arcClient } from '@/graphql';
-import Spinner from '@/components/Spinner';
-import { delay } from '@/utils/delay';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { UniqueAsset } from '@/entities';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import * as i18n from '@/languages';
-import { PoapMintError } from '@/utils/poaps';
-import { analytics } from '@/analytics';
-import { openInBrowser } from '@/utils/openInBrowser';
-import { RootStackParamList } from '@/navigation/types';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
+import { useSharedValue } from 'react-native-reanimated';
+import ImgixImage from '../../components/images/ImgixImage';
+import { SheetActionButton, SheetActionButtonRow, SlackSheet } from '../../components/sheet';
+import { CardSize } from '../../components/unique-token/CardSize';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -65,11 +63,11 @@ const BlurWrapper = styled(View).attrs({
 type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 
 const PoapSheet = () => {
-  const { accountAddress } = useAccountProfile();
+  const accountAddress = useAccountAddress();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POAP_SHEET>>();
   const {
     data: { nfts },

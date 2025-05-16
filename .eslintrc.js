@@ -39,6 +39,7 @@ module.exports = {
     ],
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
+    'no-await-in-loop': 'off',
     'no-nested-ternary': 'off',
     'react-hooks/exhaustive-deps': [
       'warn',

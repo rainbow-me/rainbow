@@ -1,27 +1,7 @@
-import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
-import { usePrevious, useSwitchWallet, useWallets } from '@/hooks';
-import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import {
-  FixedRemoteMessage,
-  MarketingNotificationData,
-  MinimalNotification,
-  NotificationTypes,
-  TransactionNotificationData,
-} from '@/notifications/types';
-import { handleShowingForegroundNotification } from '@/notifications/foregroundHandler';
-import { registerTokenRefreshListener, saveFCMToken } from '@/notifications/tokens';
-import { useDispatch, useSelector } from 'react-redux';
-import { ThunkDispatch } from 'redux-thunk';
-import store, { AppState } from '@/redux/store';
-import { AnyAction } from 'redux';
-import { NotificationStorage } from '@/notifications/deferredNotificationStorage';
-import { Navigation } from '@/navigation';
-import Routes from '@rainbow-me/routes';
-import { AppState as ApplicationState, AppStateStatus, NativeEventSubscription } from 'react-native';
-import notifee, { Event as NotifeeEvent, EventType } from '@notifee/react-native';
-import { isLowerCaseMatch } from '@/utils';
 import walletTypes from '@/helpers/walletTypes';
+import { usePrevious } from '@/hooks';
+import { logger } from '@/logger';
+import { Navigation } from '@/navigation';
 import {
   NotificationSubscriptionChangesListener,
   registerNotificationSubscriptionChangesListener,
@@ -29,18 +9,38 @@ import {
   trackTappedPushNotification,
   trackWalletsSubscribedForNotifications,
 } from '@/notifications/analytics';
+import { NotificationStorage } from '@/notifications/deferredNotificationStorage';
+import { handleShowingForegroundNotification } from '@/notifications/foregroundHandler';
 import { AddressWithRelationship, WalletNotificationRelationship } from '@/notifications/settings';
 import { initializeNotificationSettingsForAllAddresses } from '@/notifications/settings/initialization';
-import { logger } from '@/logger';
+import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
+import { registerTokenRefreshListener, saveFCMToken } from '@/notifications/tokens';
+import {
+  FixedRemoteMessage,
+  MarketingNotificationData,
+  MinimalNotification,
+  NotificationTypes,
+  TransactionNotificationData,
+} from '@/notifications/types';
+import store, { AppState } from '@/redux/store';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
+import { switchWallet } from '@/state/wallets/switchWallet';
+import { getAccountAddress, getWalletReady, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { isLowerCaseMatch } from '@/utils';
+import notifee, { EventType, Event as NotifeeEvent } from '@notifee/react-native';
+import Routes from '@rainbow-me/routes';
+import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { useCallback, useEffect, useRef } from 'react';
+import { AppState as ApplicationState, AppStateStatus, NativeEventSubscription } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 
 type Callback = () => void;
 
 export const NotificationsHandler = () => {
-  const { wallets } = useWallets();
-  const walletSwitcher = useSwitchWallet();
+  const wallets = useWallets();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
-  const walletSwitcherRef = useRef(walletSwitcher);
   const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
@@ -50,14 +50,8 @@ export const NotificationsHandler = () => {
   const notifeeForegroundEventListener = useRef<Callback>();
   const alreadyRanInitialization = useRef(false);
 
-  const walletReady = useSelector((state: AppState) => state.appState.walletReady);
+  const walletReady = useWalletsStore(state => state.walletReady);
   const prevWalletReady = usePrevious(walletReady);
-
-  /*
-  We need to save wallets property to a ref in order to have an up-to-date value
-  inside the event listener callbacks closure
-   */
-  walletSwitcherRef.current = walletSwitcher;
 
   const onForegroundRemoteNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
     const type = remoteMessage?.data?.type;
@@ -74,18 +68,6 @@ export const NotificationsHandler = () => {
       NotificationStorage.clearDeferredNotification();
     }
   }, []);
-
-  const handleAppOpenedWithNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage | null) => {
-    if (!remoteMessage) {
-      return;
-    }
-    const notification: MinimalNotification = {
-      title: remoteMessage.notification?.title,
-      body: remoteMessage.notification?.body,
-      data: remoteMessage.data,
-    };
-    handleOpenedNotification(notification);
-  };
 
   const handleNotificationPressed = (event: NotifeeEvent) => {
     if (event.type === EventType.PRESS) {
@@ -108,7 +90,7 @@ export const NotificationsHandler = () => {
     trackTappedPushNotification(notification);
     // Need to call getState() directly, because the event handler
     // has the old value reference in its closure
-    if (!store.getState().appState.walletReady) {
+    if (!getWalletReady()) {
       NotificationStorage.deferNotification(notification);
       return;
     }
@@ -127,12 +109,12 @@ export const NotificationsHandler = () => {
       // casting data payload to type that was agreed on with backend
       const data = notification.data as unknown as TransactionNotificationData;
 
-      const walletSwitcher = walletSwitcherRef.current;
-      const { accountAddress, nativeCurrency } = store.getState().settings;
+      const { nativeCurrency } = store.getState().settings;
+      const accountAddress = getAccountAddress();
 
       let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
-        walletAddress = await walletSwitcher.switchToWalletWithAddress(data.address);
+        walletAddress = await switchWallet(data.address);
       }
       if (!walletAddress) {
         return;
@@ -176,6 +158,18 @@ export const NotificationsHandler = () => {
   };
 
   useEffect(() => {
+    const handleAppOpenedWithNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage | null) => {
+      if (!remoteMessage) {
+        return;
+      }
+      const notification: MinimalNotification = {
+        title: remoteMessage.notification?.title,
+        body: remoteMessage.notification?.body,
+        data: remoteMessage.data,
+      };
+      handleOpenedNotification(notification);
+    };
+
     setupAndroidChannels();
     saveFCMToken();
     trackWalletsSubscribedForNotifications();
@@ -200,6 +194,7 @@ export const NotificationsHandler = () => {
       notificationOpenedListener.current?.();
       appStateListener.current?.remove();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -232,6 +227,7 @@ export const NotificationsHandler = () => {
 
       alreadyRanInitialization.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, walletReady]);
 
   return null;

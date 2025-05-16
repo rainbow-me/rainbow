@@ -1,5 +1,7 @@
 /* eslint-disable no-nested-ternary */
+import { TurboModuleRegistry } from 'react-native';
 import '../../src/languages';
+import { getPreference } from '@/model/preferences';
 
 global.ios = false;
 global.android = false;
@@ -44,6 +46,8 @@ jest.mock('react-native-permissions', () => ({
   requestNotifications: jest.fn(),
 }));
 
+const deviceHeight = 874
+
 jest.mock('@/utils', () => {
   const time = {
     seconds: seconds => seconds * 1000,
@@ -58,10 +62,47 @@ jest.mock('@/utils', () => {
   return {
     deviceUtils: {
       dimensions: {
-        height: 874,
+        height: deviceHeight,
         width: 402,
       },
     },
     time,
+    safeAreaInsetValues: {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    }
   };
 });
+
+jest.mock('react-native-extra-dimensions-android', () => {
+  return {
+    getRealWindowHeight() {
+      return deviceHeight
+    }
+  }
+})
+
+jest.mock('@/handlers/ens', () => {
+  return {
+    async fetchReverseRecord() {
+      return ''
+    }
+  }
+})
+
+jest.mock('@/model/backup', () => {
+  return {
+    parseTimestampFromBackupFile: () => Date.now()
+  }
+})
+
+jest.mock('@/model/preferences', () => {
+  return {
+    setPreference: () => {
+      return true
+    },
+    getPreference: () => '',
+  }
+})

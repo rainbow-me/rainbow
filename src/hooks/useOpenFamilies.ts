@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
-import useAccountSettings from './useAccountSettings';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export default function useOpenFamilies() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const [openFamilies, setOpenFamilies] = useMMKVObject<Record<string, boolean>>('open-families-' + accountAddress);
 
   const updateOpenFamilies = useCallback(

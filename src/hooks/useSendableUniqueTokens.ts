@@ -1,12 +1,12 @@
 import { groupBy } from 'lodash';
-import { useAccountSettings } from '.';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useNftSort } from './useNFTsSortBy';
 import { useMemo } from 'react';
 
 export default function useUniqueTokens() {
   const { nftSort, nftSortDirection } = useNftSort();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const {
     data: { nfts: uniqueTokens },
     isLoading: isFetchingNfts,

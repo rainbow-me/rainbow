@@ -7,7 +7,7 @@ import { IS_ANDROID, IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
-import { WalletContext } from './utils';
+import { WalletContext } from './getWalletContext';
 
 type DefaultMetadata = {
   walletAddressHash: WalletContext['walletAddressHash'];
