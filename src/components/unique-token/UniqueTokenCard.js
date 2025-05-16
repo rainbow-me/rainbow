@@ -2,11 +2,10 @@ import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
-import UniqueTokenImage from './UniqueTokenImage';
+import { UniqueTokenImage } from './UniqueTokenImage';
 import { usePersistentAspectRatio } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
-import isSVGImage from '@/utils/isSVG';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const UniqueTokenCardBorderRadius = 20;
@@ -27,18 +26,14 @@ const UniqueTokenCard = ({
   enableHapticFeedback = true,
   item,
   onPress,
-  resizeMode = undefined,
   scaleTo = 0.96,
   shadow = undefined,
   size = CardSize,
-  smallENSName = true,
   style = undefined,
   ...props
 }) => {
   usePersistentAspectRatio(item.lowResUrl);
   usePersistentDominantColorFromImage(item.lowResUrl);
-
-  const isSVG = isSVGImage(item.image_url);
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -64,9 +59,13 @@ const UniqueTokenCard = ({
           backgroundColor={item.background || colors.lightestGrey}
           imageUrl={item.lowResUrl || item.image_url}
           isCard
-          item={item}
-          resizeMode={resizeMode}
-          small={smallENSName}
+          fullUniqueId={item.fullUniqueId}
+          id={item.id}
+          collectionName={item.collection?.name ?? ''}
+          name={item.name}
+          uniqueId={item.uniqueId}
+          mimeType={item.mimeType}
+          address={item.asset_contract?.address}
         />
         {borderEnabled && <InnerBorder opacity={0.04} radius={UniqueTokenCardBorderRadius} width={0.5} />}
       </Content>

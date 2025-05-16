@@ -18,6 +18,7 @@ export interface UniqueAsset {
   image_preview_url?: string | null;
   image_thumbnail_url?: string | null;
   image_url?: string | null;
+  mime_type?: string | null;
   last_sale?: UniqueAssetLastSale | null;
   name: string;
   permalink: string;
@@ -66,7 +67,7 @@ export interface UniqueAsset {
 
   // hacky shit
   video_url: string | null;
-  video_properties: {
+  video_properties?: {
     width: number | null;
     height: number | null;
     duration: number | null;
@@ -74,19 +75,19 @@ export interface UniqueAsset {
     audio_coding: string | null;
     size: number | string;
     mime_type: string | null;
-  } | null;
+  };
   audio_url: string | null;
-  audio_properties: {
+  audio_properties?: {
     duration: number | null;
     audio_coding: string | null;
-    size: number | string;
-    mime_type: string | null;
-  } | null;
-  model_url: string | null;
-  model_properties: {
     size: number | null;
     mime_type: string | null;
-  } | null;
+  };
+  model_url: string | null;
+  model_properties?: {
+    size: number | null;
+    mime_type: string | null;
+  };
 }
 
 export interface UniqueAssetTrait {
