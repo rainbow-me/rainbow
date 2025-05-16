@@ -3,7 +3,7 @@ import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
 import { useAddysSummary } from '@/resources/addys/summary';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWalletAddresses } from '@/state/wallets/walletsStore';
 
 export type WalletBalance = {
   assetBalanceAmount: string;
@@ -28,7 +28,7 @@ export type WalletBalanceResult = {
 const useWalletBalances = (): WalletBalanceResult => {
   const { nativeCurrency } = useAccountSettings();
   const [summaryData, { isInitialLoading: isLoading }] = useAddysSummary();
-  const allAddresses = useWalletsStore(state => state.walletsAddresses);
+  const allAddresses = useWalletAddresses();
 
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};

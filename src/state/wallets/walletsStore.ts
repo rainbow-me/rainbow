@@ -16,7 +16,6 @@ import { hasKey } from '../../model/keychain';
 import { PreferenceActionType, setPreference } from '../../model/preferences';
 import {
   AllRainbowWallets,
-  ensureEthereumWallet,
   generateAccount,
   getAllWallets,
   getSelectedWalletFromKeychain,
@@ -58,7 +57,6 @@ interface WalletsState {
 
   // walletsAddresses is just a derived value of wallets
   wallets: { [id: string]: RainbowWallet } | null;
-  walletsAddresses: Address[];
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
@@ -122,9 +120,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       await saveAllWallets(wallets);
       set({
         wallets,
-        walletsAddresses: Object.values(wallets).flatMap(wallet =>
-          (wallet.addresses || []).map(account => ensureValidHex(account.address))
-        ),
       });
     },
 
@@ -274,7 +269,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       // Set the wallet selected (KEYCHAIN)
       await setSelectedWallet(newWallets[id]);
 
-      set({ selected: newWallets[id], wallets: newWallets });
+      set({
+        selected: newWallets[id],
+        wallets: newWallets,
+      });
 
       return newWallets;
     },
@@ -326,6 +324,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         wallets: newWallets,
       });
+
       if (selected?.id === walletId) {
         set({
           selected: newWallets[walletId],
@@ -643,12 +642,20 @@ export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
 
 export const useWallets = () => useWalletsStore(state => state.wallets);
-export const useWalletAddresses = () => useWalletsStore(state => state.walletsAddresses);
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);
 export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
 export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
 export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamaged());
+
+export function getWalletAddresses(wallets: { [key: string]: RainbowWallet }) {
+  return Object.values(wallets).flatMap(wallet => (wallet.addresses || []).map(account => ensureValidHex(account.address)));
+}
+
+export const useWalletAddresses = () => {
+  const wallets = useWalletsStore(state => state.wallets);
+  return useMemo(() => (wallets ? getWalletAddresses(wallets) : []), [wallets]);
+};
 
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();

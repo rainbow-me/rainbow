@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { useAddysSummary } from '@/resources/addys/summary';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWalletAddresses } from '@/state/wallets/walletsStore';
 
 export type WalletTransactionCountsResult = {
   transactionCounts: Record<string, number>;
@@ -14,7 +14,7 @@ export type WalletTransactionCountsResult = {
  */
 export const useWalletTransactionCounts = (): WalletTransactionCountsResult => {
   const [summaryData, { isInitialLoading: isLoading }] = useAddysSummary();
-  const allAddresses = useWalletsStore(state => state.walletsAddresses);
+  const allAddresses = useWalletAddresses();
 
   const transactionCounts = useMemo(() => {
     const result: Record<Address, number> = {};

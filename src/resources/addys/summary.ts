@@ -3,7 +3,7 @@ import { Address } from 'viem';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { createQueryStore } from '../../state/internal/createQueryStore';
 import { time } from '../../utils';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export type AddysSummaryArgs = {
@@ -15,6 +15,7 @@ async function fetchAddysSummary(
   { addresses, currency }: AddysSummaryArgs,
   abortController: AbortController | null
 ): Promise<AddysSummary> {
+  console.log('fetching', addresses, currency);
   const { data } = await getAddysHttpClient({ abortController }).post(
     `/summary`,
     JSON.stringify({
@@ -42,7 +43,7 @@ const useAddysQueryStore = createQueryStore<AddysSummary, AddysSummaryArgs>(
   {
     fetcher: fetchAddysSummary,
     params: {
-      addresses: $ => $(useWalletsStore).walletsAddresses,
+      addresses: $ => $(useWalletsStore, state => getWalletAddresses(state.wallets || {})),
       currency: $ => $(userAssetsStoreManager).currency,
     },
     staleTime: time.minutes(1),
