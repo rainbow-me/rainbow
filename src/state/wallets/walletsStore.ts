@@ -50,7 +50,7 @@ interface WalletsState {
   setWalletReady: () => void;
 
   selected: RainbowWallet | null;
-  setSelectedWallet: (wallet: RainbowWallet, address?: string) => Promise<void>;
+  setSelectedWallet: (wallet: RainbowWallet, address?: string) => void;
 
   walletNames: { [address: string]: string };
   updateWalletNames: (names: { [address: string]: string }) => void;
@@ -96,13 +96,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
     selected: null,
-    async setSelectedWallet(wallet, address) {
-      await setSelectedWalletInKeychain(wallet);
+    setSelectedWallet(wallet, address) {
+      setSelectedWalletInKeychain(wallet);
       set({
         selected: wallet,
       });
       if (address) {
         saveAddress(address);
+        setAccountAddress(ensureValidHex(address));
       }
     },
 
