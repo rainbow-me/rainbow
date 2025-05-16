@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { getOrCreateDeviceId, getWalletContext } from '@/analytics/utils';
+import { getOrCreateDeviceId } from '@/analytics/utils';
+import { getWalletContext } from '@/analytics/getWalletContext';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';

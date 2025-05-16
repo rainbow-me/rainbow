@@ -4,7 +4,7 @@ const { compilerOptions } = require('./tsconfig');
 
 module.exports = {
   preset: 'react-native',
-  setupFiles: ['./config/test/jest-setup.js'],
+  setupFiles: ['@shopify/react-native-skia/jestSetup.js', './config/test/jest-setup.js'],
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))(?<!\\.disabled)\\.[jt]sx?$',
   testPathIgnorePatterns: ['node_modules', 'e2e'],
   transform: {
@@ -16,7 +16,7 @@ module.exports = {
     ],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?|react-native-reanimated|react-native-linear-gradient|react-native-markdown-display)/)',
+    'node_modules/(?!((jest-)?react-native|uuid|@ledgerhq|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?|react-native-reanimated|@shopify\/react-native-skia|react-native-linear-gradient|react-native-markdown-display)/)',
   ],
   moduleNameMapper: {
     ...pathsToModuleNameMapper(compilerOptions.paths, {
