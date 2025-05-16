@@ -8,7 +8,7 @@ import useExperimentalFlag, {
   NFT_OFFERS,
   FEATURED_RESULTS,
   TRENDING_TOKENS,
-  KING_OF_THE_HILL,
+  PRINCE_OF_THE_HILL,
 } from '@rainbow-me/config/experimentalHooks';
 import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
@@ -53,7 +53,7 @@ export default function DiscoverHome() {
     featured_results,
     trending_tokens_enabled,
     new_discover_cards_enabled,
-    king_of_the_hill_enabled,
+    prince_of_the_hill_enabled,
   } = useRemoteConfig();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
@@ -65,7 +65,7 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
-  const kingOfTheHillEnabled = (useExperimentalFlag(KING_OF_THE_HILL) || king_of_the_hill_enabled) && !IS_TEST;
+  const princeOfTheHillEnabled = (useExperimentalFlag(PRINCE_OF_THE_HILL) || prince_of_the_hill_enabled) && !IS_TEST;
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
@@ -90,7 +90,7 @@ export default function DiscoverHome() {
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
           )}
-          {kingOfTheHillEnabled && <KingOfTheHill />}
+          {princeOfTheHillEnabled && <KingOfTheHill />}
           <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />
