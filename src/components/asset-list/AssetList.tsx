@@ -9,6 +9,7 @@ import { UniqueAsset } from '@/entities';
 import { ListFooterHeight } from '../list/ListFooter';
 import { useWalletSectionsData } from '@/hooks';
 import { IS_ANDROID } from '@/env';
+import { ViewableItemsChangedCallback } from './RecyclerAssetList2/core/RawRecyclerList';
 
 const FabSizeWithPadding = FloatingActionButtonSize + FabWrapperBottomPosition * 2;
 
@@ -47,6 +48,7 @@ interface DefaultProps extends BaseAssetListProps, RecyclerList2 {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
 
 type AssetListProps = LoadingProps | ShowcaseProps | DefaultProps;
@@ -92,6 +94,7 @@ const AssetList = (props: AssetListProps) => {
         externalAddress={props.externalAddress}
         onPressUniqueToken={props.onPressUniqueToken}
         type={props.type}
+        onViewableItemsChanged={props.onViewableItemsChanged}
       />
     );
   }
