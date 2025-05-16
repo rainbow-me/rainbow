@@ -49,9 +49,6 @@ const useAddysQueryStore = createQueryStore<AddysSummary, AddysSummaryArgs>(
     cacheTime: time.hours(24),
     retryDelay: time.minutes(2),
   },
-  () => ({
-    data: null,
-  }),
   {
     storageKey: 'addysSummary',
   }
