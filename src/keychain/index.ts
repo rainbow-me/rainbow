@@ -15,6 +15,7 @@ import {
   SharedWebCredentials,
   SetOptions,
   GetOptions,
+  STORAGE_TYPE,
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
@@ -379,5 +380,6 @@ export async function getPrivateAccessControlOptions(): Promise<SetOptions> {
   return {
     accessControl: ios ? ACCESS_CONTROL.USER_PRESENCE : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
     accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    storage: STORAGE_TYPE.RSA,
   };
 }
