@@ -9,9 +9,9 @@ export let discoverScrollToTopFnRef: () => number | null = () => null;
 export let discoverOpenSearchFnRef: () => void = () => null;
 
 type DiscoverScreenContextType = {
-  scrollViewRef: RefObject<Animated.ScrollView>;
-  sectionListRef: RefObject<SectionList>;
-  searchInputRef: RefObject<TextInput>;
+  scrollViewRef: RefObject<Animated.ScrollView | null>;
+  sectionListRef: RefObject<SectionList | null>;
+  searchInputRef: RefObject<TextInput | null>;
   cancelSearch: () => void;
   scrollToTop: () => number | null;
   onTapSearch: () => void;

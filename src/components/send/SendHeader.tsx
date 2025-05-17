@@ -88,7 +88,7 @@ type SendHeaderProps = {
   onPressPaste: (recipient: string) => void;
   onRefocusInput?: () => void;
   recipient: string;
-  recipientFieldRef: React.RefObject<TextInput>;
+  recipientFieldRef: React.RefObject<TextInput | null>;
   removeContact: (address: string) => void;
   showAssetList: boolean;
   userAccounts: RainbowAccount[];

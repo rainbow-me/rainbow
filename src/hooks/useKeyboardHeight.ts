@@ -18,7 +18,7 @@ export default function useKeyboardHeight(options: UseKeyboardHeightOptions = {}
   // keyboards can different heights depending on whether
   // things like "autofill" or "autocomplete" are enabled on the target input.
   const { keyboardType = KeyboardTypes.default, shouldListen = true } = options;
-  const listenerRef = useRef<EmitterSubscription>();
+  const listenerRef = useRef<EmitterSubscription>(undefined);
 
   const dispatch = useDispatch();
 

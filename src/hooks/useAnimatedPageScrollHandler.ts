@@ -135,7 +135,7 @@ interface ScrollEvent extends NativeScrollEvent {
 export function useAnimatedPageScrollHandler<TContext extends Context>(
   handlers: ScrollHandler<TContext>,
   dependencies?: DependencyList
-): RefObject<WorkletEventHandler<ScrollEvent>> {
+): RefObject<WorkletEventHandler<ScrollEvent> | null> {
   // case when handlers is a function
   const scrollHandlers: Record<string, Handler<ScrollEvent, TContext>> = {
     onPageScroll: handlers,
