@@ -86,7 +86,7 @@ const DEFAULT_OPTIONS: UseListenOptions<unknown> = {
  *     if (candles?.unsupported) return unsubscribe();
  *     updateTokenPrice(token, getPriceUpdate(candles, previous));
  *     runOnUI(() => chartManager.value?.setCandles(candles))();
- *   },
+ *   }
  * );
  * ```
  */

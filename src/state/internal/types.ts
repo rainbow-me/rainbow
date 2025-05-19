@@ -5,7 +5,7 @@ import { UseBoundStoreWithEqualityFn } from 'zustand/traditional';
 /**
  * Configuration options for creating a persistable Rainbow store.
  */
-export interface RainbowPersistConfig<S, PersistedState = Partial<S>> {
+export type RainbowPersistConfig<S, PersistedState = Partial<S>> = {
   /**
    * A function to convert the serialized string back into the state object.
    * If not provided, the default deserializer is used.
@@ -47,15 +47,15 @@ export interface RainbowPersistConfig<S, PersistedState = Partial<S>> {
    * @default 0
    */
   version?: number;
-}
+};
 
-export interface LazyPersistParams<S, PersistedState extends Partial<S>> {
+export type LazyPersistParams<S, PersistedState extends Partial<S>> = {
   name: string;
   partialize: NonNullable<RainbowPersistConfig<S, PersistedState>['partialize']>;
   serializer: NonNullable<RainbowPersistConfig<S, PersistedState>['serializer']>;
   storageKey: string;
   value: StorageValue<S> | StorageValue<PersistedState>;
-}
+};
 
 type SubscribeWithSelector = ['zustand/subscribeWithSelector', never];
 type Persist<PersistedState> = ['zustand/persist', PersistedState];
