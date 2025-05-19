@@ -1,0 +1,439 @@
+import { TextProps, useTextStyle } from '@/design-system';
+import React, { useMemo, useRef, useEffect, useCallback } from 'react';
+import { View, Text, StyleProp, TextStyle, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  FadeIn,
+  ExitAnimationsValues,
+  runOnUI,
+  LayoutAnimationsValues,
+  useAnimatedRef,
+  measure,
+  interpolate,
+  WithTimingConfig,
+  FadeOut,
+  SharedValue,
+} from 'react-native-reanimated';
+import { EasingGradient } from '../easing-gradient/EasingGradient';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { disableForTestingEnvironment } from '../animations/animationConfigs';
+
+// TODO:
+// - add trend prop to animate individual digit color red / green
+// - add same exit animation translation fixing for separators
+// - handle value changes in middle of animations
+
+const DEFAULT_ANIMATION_DURATION = 800;
+const EASING_KEYFRAMES = [
+  0, 0.005, 0.019, 0.039, 0.066, 0.096, 0.129, 0.165, 0.202, 0.24, 0.278, 0.316, 0.354, 0.39, 0.426, 0.461, 0.494, 0.526, 0.557, 0.586,
+  0.614, 0.64, 0.665, 0.689, 0.711, 0.731, 0.751, 0.769, 0.786, 0.802, 0.817, 0.831, 0.844, 0.856, 0.867, 0.877, 0.887, 0.896, 0.904, 0.912,
+  0.919, 0.925, 0.931, 0.937, 0.942, 0.947, 0.951, 0.955, 0.959, 0.962, 0.965, 0.968, 0.971, 0.973, 0.976, 0.978, 0.98, 0.981, 0.983, 0.984,
+  0.986, 0.987, 0.988, 0.989, 0.99, 0.991, 0.992, 0.992, 0.993, 0.994, 0.994, 0.995, 0.995, 0.996, 0.996, 0.9963, 0.9967, 0.9969, 0.9972,
+  0.9975, 0.9977, 0.9979, 0.9981, 0.9982, 0.9984, 0.9985, 0.9987, 0.9988, 0.9989, 1,
+];
+
+function customEasing(t: number) {
+  'worklet';
+  const n = EASING_KEYFRAMES.length;
+  if (t <= 0) return 0;
+  if (t >= 1) return 1;
+  const scaled = t * (n - 1);
+  const i = Math.floor(scaled);
+  const j = Math.min(i + 1, n - 1);
+  const localT = scaled - i;
+  return EASING_KEYFRAMES[i] + (EASING_KEYFRAMES[j] - EASING_KEYFRAMES[i]) * localT;
+}
+
+const DEFAULT_TIMING_CONFIG = disableForTestingEnvironment({ duration: DEFAULT_ANIMATION_DURATION, easing: customEasing });
+
+type NumberPartType = 'integer' | 'separator' | 'prefix' | 'suffix';
+
+type Part = {
+  value: string;
+  type: NumberPartType;
+  key: string;
+  index: number;
+};
+
+function EasingGradients({
+  easingHeight,
+  easingWidth,
+  backgroundColor,
+}: {
+  easingHeight: number;
+  easingWidth: number;
+  backgroundColor: string;
+}) {
+  return (
+    <>
+      <EasingGradient
+        startPosition="left"
+        endPosition="right"
+        startColor={backgroundColor}
+        endColor={backgroundColor}
+        startOpacity={1}
+        endOpacity={0}
+        style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: easingWidth }}
+      />
+      <EasingGradient
+        startPosition="top"
+        endPosition="bottom"
+        startColor={backgroundColor}
+        endColor={backgroundColor}
+        startOpacity={1}
+        endOpacity={0}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: easingHeight }}
+      />
+      <EasingGradient
+        startPosition="bottom"
+        endPosition="top"
+        startColor={backgroundColor}
+        endColor={backgroundColor}
+        startOpacity={1}
+        endOpacity={0}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: easingHeight }}
+      />
+    </>
+  );
+}
+
+interface DigitProps {
+  part: Part;
+  textStyle?: StyleProp<TextStyle>;
+  timingConfig: WithTimingConfig;
+  digitHeight: number;
+  previousWidthDelta: SharedValue<number>;
+}
+
+const Digit = React.memo(function Digit({ part, textStyle, timingConfig, digitHeight, previousWidthDelta }: DigitProps) {
+  const value = parseInt(part.value);
+  const translateY = useSharedValue(0);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    const targetY = -value * digitHeight;
+
+    if (isInitialMount.current) {
+      runOnUI(() => {
+        translateY.value = 0;
+        translateY.value = withTiming(targetY, timingConfig);
+      })();
+    }
+
+    isInitialMount.current = false;
+
+    if (targetY !== translateY.value) {
+      runOnUI(() => {
+        translateY.value = withTiming(targetY, timingConfig);
+      })();
+    }
+  }, [value, digitHeight, timingConfig, translateY]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
+
+  const numerals = useMemo(() => {
+    return Array.from({ length: 10 }).map((_, i) => (
+      <View
+        key={i}
+        style={[
+          {
+            height: digitHeight,
+            justifyContent: 'center',
+          },
+        ]}
+      >
+        <Text style={textStyle}>{i}</Text>
+      </View>
+    ));
+  }, [textStyle, digitHeight]);
+
+  const exitingAnimation = useCallback(
+    (values: ExitAnimationsValues) => {
+      'worklet';
+      const translateX = values.currentOriginX + previousWidthDelta.value;
+      // spin towards the further of 0 or 9
+      const targetOriginY = (value < 5 ? -1 : 1) * (9 * digitHeight);
+
+      const animations = {
+        opacity: withTiming(0, timingConfig),
+        originY: withTiming(targetOriginY, timingConfig),
+        originX: translateX,
+      };
+      const initialValues = {
+        opacity: 1,
+        originY: values.currentOriginY,
+        originX: 0,
+      };
+      return {
+        initialValues,
+        animations,
+      };
+    },
+    [digitHeight, previousWidthDelta, timingConfig, value]
+  );
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      entering={FadeIn.duration(timingConfig.duration ?? DEFAULT_ANIMATION_DURATION)}
+      exiting={exitingAnimation}
+      style={[{ height: digitHeight, overflow: 'visible' }]}
+    >
+      <Animated.View style={animatedStyle}>{numerals}</Animated.View>
+    </Animated.View>
+  );
+});
+
+function getParts(value: string): Part[] {
+  const characters = value.split('');
+
+  return characters.map((char, index) => {
+    const isDigit = !isNaN(parseInt(char));
+    const inverseIndex = characters.length - index - 1;
+
+    if (!isDigit && index === 0) {
+      return {
+        value: char,
+        key: `prefix-${char}`,
+        type: 'prefix',
+        index,
+      };
+    } else if (!isDigit && index === characters.length - 1) {
+      return {
+        value: char,
+        key: `suffix-${char}`,
+        type: 'suffix',
+        index,
+      };
+    } else if (char === '.' || char === ',') {
+      return {
+        value: char,
+        key: `${char}-${inverseIndex}`,
+        type: 'separator',
+        index,
+      };
+    } else if (isDigit) {
+      // Use position from right for stable keys
+      return {
+        value: char,
+        key: `digit-${inverseIndex}`,
+        type: 'integer',
+        index,
+      };
+    } else {
+      return {
+        value: char,
+        key: `other-${index}`,
+        type: 'separator',
+        index,
+      };
+    }
+  });
+}
+
+type AnimatedNumberProps = Omit<TextProps, 'children'> & {
+  value: string;
+  timingConfig?: WithTimingConfig;
+  easingMaskColor?: string;
+};
+
+export const AnimatedNumber = React.memo(function AnimatedNumber({
+  value,
+  timingConfig = DEFAULT_TIMING_CONFIG,
+  easingMaskColor = 'white',
+  ...textProps
+}: AnimatedNumberProps) {
+  const numberContainerRef = useAnimatedRef<Animated.View>();
+
+  const maskWidth = useSharedValue(0);
+  const maskTranslateX = useSharedValue(0);
+  const prefixTranslateX = useSharedValue(0);
+  const suffixTranslateX = useSharedValue(0);
+  const numberContainerGlobalOriginX = useSharedValue(0);
+  const transitionProgress = useSharedValue(0);
+  const previousWidthDelta = useSharedValue(0);
+
+  let textStyle = useTextStyle(textProps);
+
+  const parts = useMemo(() => {
+    const allParts = getParts(value);
+    return {
+      prefix: allParts.find(part => part.type === 'prefix'),
+      number: allParts.filter(part => part.type !== 'prefix' && part.type !== 'suffix'),
+      suffix: allParts.find(part => part.type === 'suffix'),
+    };
+  }, [value]);
+
+  const digitHeight = useMemo(() => {
+    const lineHeight = textStyle.lineHeight ?? textStyle.fontSize;
+    return lineHeight * 1.1;
+  }, [textStyle]);
+
+  textStyle = {
+    ...textStyle,
+    lineHeight: digitHeight,
+  };
+
+  const layoutTransition = useCallback((values: LayoutAnimationsValues) => {
+    'worklet';
+    // there is a bug in renimated for the currentGlobalOriginX value, it is always be equal to the targetGlobalOriginX
+    const currentGlobalOriginX = numberContainerGlobalOriginX.value;
+    const widthDelta = values.currentWidth - values.targetWidth;
+    const xDelta = currentGlobalOriginX - values.targetGlobalOriginX;
+    const newTranslateX = xDelta + widthDelta;
+
+    const animations = {
+      transform: [{ translateX: withTiming(0, timingConfig) }],
+    };
+    const initialValues = {
+      transform: [{ translateX: newTranslateX }],
+    };
+
+    // Running separate animations inside the layout transition function is a bit of a hack, but is better than running them in the onLayout callback
+    prefixTranslateX.value = -newTranslateX;
+    prefixTranslateX.value = withTiming(0, timingConfig);
+
+    suffixTranslateX.value = newTranslateX;
+    suffixTranslateX.value = withTiming(0, timingConfig);
+
+    // animate the mask to reveal new digits
+    maskTranslateX.value = -newTranslateX * 2;
+    maskWidth.value = values.currentWidth;
+
+    maskWidth.value = withTiming(values.targetWidth, timingConfig);
+    maskTranslateX.value = withTiming(0, timingConfig);
+
+    transitionProgress.value = withTiming(1, timingConfig, () => {
+      transitionProgress.value = 0;
+    });
+
+    numberContainerGlobalOriginX.value = values.targetGlobalOriginX;
+    previousWidthDelta.value = widthDelta;
+
+    return {
+      initialValues,
+      animations,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const renderParts = useCallback(
+    (parts: Part[]) => {
+      return parts.map(part => {
+        if (part.type === 'integer') {
+          return (
+            <Digit
+              key={part.key}
+              part={part}
+              textStyle={textStyle}
+              timingConfig={timingConfig}
+              digitHeight={digitHeight}
+              previousWidthDelta={previousWidthDelta}
+            />
+          );
+        } else {
+          return (
+            <Animated.View
+              key={part.key}
+              style={{ height: digitHeight, justifyContent: 'center' }}
+              entering={FadeIn.duration(timingConfig.duration ?? DEFAULT_ANIMATION_DURATION)}
+              exiting={FadeOut.duration(timingConfig.duration ?? DEFAULT_ANIMATION_DURATION)}
+            >
+              <Animated.Text style={textStyle}>{part.value}</Animated.Text>
+            </Animated.View>
+          );
+        }
+      });
+    },
+    [textStyle, timingConfig, digitHeight, previousWidthDelta]
+  );
+
+  const maskElementAnimatedStyle = useAnimatedStyle(() => {
+    if (maskWidth.value === 0) {
+      return {
+        width: undefined,
+        transform: [{ translateX: 0 }],
+      };
+    }
+    return {
+      width: maskWidth.value,
+      transform: [{ translateX: maskTranslateX.value }],
+    };
+  });
+
+  const easingMaskAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(transitionProgress.value, [0, 0.05, 0.95, 1], [0, 1, 1, 0]),
+    };
+  });
+
+  const onNumberContainerLayout = useCallback(() => {
+    runOnUI(() => {
+      if (numberContainerGlobalOriginX.value === 0) {
+        const measurements = measure(numberContainerRef);
+        if (!measurements) return;
+        numberContainerGlobalOriginX.value = measurements.pageX;
+      }
+    })();
+  }, [numberContainerGlobalOriginX, numberContainerRef]);
+
+  const prefixPartAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: prefixTranslateX.value }],
+    };
+  });
+  const suffixPartAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: suffixTranslateX.value }],
+    };
+  });
+
+  const maskElementStyle = {
+    height: digitHeight,
+    // arbitrary color
+    backgroundColor: 'red',
+  };
+
+  const easingMaskWidth = textStyle.fontSize * 0.25;
+  const easingMaskHeight = textStyle.fontSize * 0.25;
+
+  return (
+    <View style={styles.container}>
+      {parts.prefix && (
+        <Animated.View style={[prefixPartAnimatedStyle, { height: digitHeight }]}>{renderParts([parts.prefix])}</Animated.View>
+      )}
+      <Animated.View
+        ref={numberContainerRef}
+        layout={layoutTransition}
+        onLayout={onNumberContainerLayout}
+        style={[
+          {
+            height: digitHeight,
+          },
+        ]}
+      >
+        <MaskedView maskElement={<Animated.View style={[maskElementAnimatedStyle, maskElementStyle]} />}>
+          <Animated.View style={styles.container}>{renderParts(parts.number)}</Animated.View>
+        </MaskedView>
+        <Animated.View style={[StyleSheet.absoluteFill, maskElementAnimatedStyle, easingMaskAnimatedStyle]}>
+          <EasingGradients easingHeight={easingMaskHeight} easingWidth={easingMaskWidth} backgroundColor={easingMaskColor} />
+        </Animated.View>
+      </Animated.View>
+      {parts.suffix && (
+        <Animated.View style={[suffixPartAnimatedStyle, { height: digitHeight }]}>{renderParts([parts.suffix])}</Animated.View>
+      )}
+    </View>
+  );
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+  },
+});
