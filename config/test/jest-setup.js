@@ -1,7 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { TurboModuleRegistry } from 'react-native';
 import '../../src/languages';
-import { getPreference } from '@/model/preferences';
 
 global.ios = false;
 global.android = false;
