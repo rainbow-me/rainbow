@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { useCollectible } from '@/hooks';
-import Navigation from '@/navigation/Navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
@@ -22,14 +22,7 @@ export default React.memo(function WrappedNFT({
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const assetCollectible = useCollectible(uniqueId, externalAddress);
-
-  const asset = useMemo(
-    () => ({
-      ...assetCollectible,
-    }),
-    [assetCollectible]
-  );
+  const asset = useCollectible(uniqueId, externalAddress);
 
   const handleItemPress = useCallback(
     // @ts-expect-error passed to an untyped JS component
@@ -38,13 +31,13 @@ export default React.memo(function WrappedNFT({
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
-        external: assetCollectible?.isExternal || false,
+        external: asset?.isExternal || false,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,
         type: 'unique_token',
       }),
-    [assetCollectible?.isExternal]
+    []
   );
 
   const placementProps: BoxProps =
