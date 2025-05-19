@@ -5,6 +5,7 @@ import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getBatchedProvider } from '@/handlers/web3';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
+import { logger } from '@/logger';
 
 type NonceData = {
   currentNonce?: number;
@@ -19,45 +20,100 @@ type GetNonceArgs = {
 type UpdateNonceArgs = NonceData & GetNonceArgs;
 
 export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }): Promise<number> {
+  logger.info('[getNextNonce]: start', { address, chainId });
+
   const { getNonce } = nonceStore.getState();
   const localNonceData = getNonce({ address, chainId });
-  const localNonce = localNonceData?.currentNonce || -1;
-  const provider = getBatchedProvider({ chainId });
-  const privateMempoolTimeout = useBackendNetworksStore.getState().getChainsPrivateMempoolTimeout()[chainId];
+  const localNonce = localNonceData?.currentNonce ?? -1;
 
-  const pendingTxCountRequest = provider.getTransactionCount(address, 'pending');
-  const latestTxCountRequest = provider.getTransactionCount(address, 'latest');
-  const [pendingTxCountFromPublicRpc, latestTxCountFromPublicRpc] = await Promise.all([pendingTxCountRequest, latestTxCountRequest]);
+  const provider = getBatchedProvider({ chainId });
+  const privateMempoolTimeout = 30 * 60_000;//useBackendNetworksStore.getState().getChainsPrivateMempoolTimeout()[chainId];
+
+  logger.info('[getNextNonce]: local state', { localNonce, privateMempoolTimeout });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // 1. Fetch on-chain transaction counts (pending vs latest)
+  // ────────────────────────────────────────────────────────────────────────────
+  const [pendingTxCountFromPublicRpc, latestTxCountFromPublicRpc] = await Promise.all([
+    provider.getTransactionCount(address, 'pending'),
+    provider.getTransactionCount(address, 'latest'),
+  ]);
+
   const numPendingPublicTx = pendingTxCountFromPublicRpc - latestTxCountFromPublicRpc;
   const numPendingLocalTx = Math.max(localNonce + 1 - latestTxCountFromPublicRpc, 0);
-  if (numPendingLocalTx === numPendingPublicTx) return pendingTxCountFromPublicRpc; // nothing in private mempool, proceed normally
-  if (numPendingLocalTx === 0 && numPendingPublicTx > 0) return latestTxCountFromPublicRpc; // catch up with public
 
+  logger.info('[getNextNonce]: RPC counts', {
+    pendingTxCountFromPublicRpc,
+    latestTxCountFromPublicRpc,
+    numPendingPublicTx,
+    numPendingLocalTx,
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // 2. Fast paths — no private mempool crossover
+  // ────────────────────────────────────────────────────────────────────────────
+  if (numPendingLocalTx === numPendingPublicTx) {
+    logger.info('[getNextNonce]: no private mempool tx; proceeding', {
+      nextNonce: pendingTxCountFromPublicRpc,
+    });
+    return pendingTxCountFromPublicRpc;
+  }
+
+  if (numPendingLocalTx === 0 && numPendingPublicTx > 0) {
+    logger.info('[getNextNonce]: local behind public; catching up', {
+      nextNonce: latestTxCountFromPublicRpc,
+    });
+    return latestTxCountFromPublicRpc;
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // 3. Inspect pending transactions for this address + chain
+  // ────────────────────────────────────────────────────────────────────────────
   const { pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
   const pendingTransactions: RainbowTransaction[] = storePendingTransactions[address]?.filter(txn => txn.chainId === chainId) || [];
 
+  logger.info('[getNextNonce]: inspecting pendingTransactions', {
+    pendingCount: pendingTransactions.length,
+  });
+
   let nextNonce = localNonce + 1;
+
   for (const pendingTx of pendingTransactions) {
-    if (!pendingTx.nonce || pendingTx.nonce < pendingTxCountFromPublicRpc) {
-      continue;
-    } else {
-      if (!pendingTx.timestamp) continue;
-      if (pendingTx.nonce === pendingTxCountFromPublicRpc) {
-        if (Date.now() - pendingTx.timestamp > privateMempoolTimeout) {
-          // if the pending txn is older than the private mempool timeout,
-          // we assume it has been dropped and use the next available public pending tx count
-          nextNonce = pendingTxCountFromPublicRpc;
-          break;
-        } else {
-          nextNonce = localNonce + 1;
-          break;
-        }
-      } else {
+    // Guard clauses
+    if (!pendingTx.nonce || pendingTx.nonce < pendingTxCountFromPublicRpc) continue;
+    if (!pendingTx.timestamp) continue;
+
+    const ageMs = Date.now() - pendingTx.timestamp;
+
+    logger.info('[getNextNonce]: evaluating pendingTx', {
+      hash: pendingTx.hash,
+      nonce: pendingTx.nonce,
+      ageMs,
+    });
+
+    // Same nonce as public-pending
+    if (pendingTx.nonce === pendingTxCountFromPublicRpc) {
+      const isOlderThanTimeout = ageMs > privateMempoolTimeout;
+
+      if (isOlderThanTimeout) {
+        // Assume dropped — sync with public RPC
         nextNonce = pendingTxCountFromPublicRpc;
-        break;
+        logger.info('[getNextNonce]: assumed dropped; using public count', { nextNonce });
+      } else {
+        // Still alive — bump local once
+        nextNonce = localNonce + 1;
+        logger.info('[getNextNonce]: still pending; incrementing local', { nextNonce });
       }
+      break;
     }
+
+    // Gap detected — adopt public pending count
+    nextNonce = pendingTxCountFromPublicRpc;
+    logger.info('[getNextNonce]: nonce gap detected; using public count', { nextNonce });
+    break;
   }
+
+  logger.info('[getNextNonce]: final nextNonce', { nextNonce });
   return nextNonce;
 }
 
