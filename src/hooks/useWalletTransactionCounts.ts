@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Address } from 'viem';
-import { useAddysSummary } from '@/resources/addys/summary';
+import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { useWalletAddresses } from '@/state/wallets/walletsStore';
 
 export type WalletTransactionCountsResult = {
@@ -13,7 +13,7 @@ export type WalletTransactionCountsResult = {
  * @returns Number of transactions originating from Rainbow for each wallet
  */
 export const useWalletTransactionCounts = (): WalletTransactionCountsResult => {
-  const [summaryData, { isInitialLoading: isLoading }] = useAddysSummary();
+  const [summaryData, { isInitialLoading: isLoading }] = useWalletSummary();
   const allAddresses = useWalletAddresses();
 
   const transactionCounts = useMemo(() => {

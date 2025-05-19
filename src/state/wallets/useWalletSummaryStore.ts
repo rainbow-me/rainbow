@@ -1,20 +1,20 @@
 import { NativeCurrencyKey } from '@/entities';
 import { Address } from 'viem';
 import { getAddysHttpClient } from '@/resources/addys/client';
-import { createQueryStore } from '../../state/internal/createQueryStore';
-import { time } from '../../utils';
+import { createQueryStore } from '../internal/createQueryStore';
+import { time } from '@/utils';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
-export type AddysSummaryArgs = {
+export type WalletSummaryArgs = {
   addresses: Address[];
   currency: NativeCurrencyKey;
 };
 
-async function fetchAddysSummary(
-  { addresses, currency }: AddysSummaryArgs,
+async function fetchWalletSummary(
+  { addresses, currency }: WalletSummaryArgs,
   abortController: AbortController | null
-): Promise<AddysSummary> {
+): Promise<WalletSummary> {
   console.log('fetching', addresses, currency);
   const { data } = await getAddysHttpClient({ abortController }).post(
     `/summary`,
@@ -27,21 +27,21 @@ async function fetchAddysSummary(
   return data;
 }
 
-export const useAddysSummary = () => {
-  return useAddysQueryStore(state => [state.getData(), state.getStatus()] as const);
+export const useWalletSummary = () => {
+  return useWalletQueryStore(state => [state.getData(), state.getStatus()] as const);
 };
 
-export const getAddysSummary = () => {
-  return useAddysQueryStore.getState().getData();
+export const getWalletSummary = () => {
+  return useWalletQueryStore.getState().getData();
 };
 
-export const refetchAddysSummary = () => {
-  return useAddysQueryStore.getState().fetch();
+export const refetchWalletSummary = () => {
+  return useWalletQueryStore.getState().fetch();
 };
 
-const useAddysQueryStore = createQueryStore<AddysSummary, AddysSummaryArgs>(
+const useWalletQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs>(
   {
-    fetcher: fetchAddysSummary,
+    fetcher: fetchWalletSummary,
     params: {
       addresses: $ => $(useWalletsStore, state => getWalletAddresses(state.wallets || {})),
       currency: $ => $(userAssetsStoreManager).currency,
@@ -51,11 +51,11 @@ const useAddysQueryStore = createQueryStore<AddysSummary, AddysSummaryArgs>(
     retryDelay: time.minutes(2),
   },
   {
-    storageKey: 'addysSummary',
+    storageKey: 'walletSummary',
   }
 );
 
-interface AddysSummary {
+interface WalletSummary {
   data: {
     addresses: {
       [key: Address]: {

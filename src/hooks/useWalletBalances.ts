@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
-import { useAddysSummary } from '@/resources/addys/summary';
+import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useWalletAddresses } from '@/state/wallets/walletsStore';
 
@@ -27,7 +27,7 @@ export type WalletBalanceResult = {
  */
 const useWalletBalances = (): WalletBalanceResult => {
   const { nativeCurrency } = useAccountSettings();
-  const [summaryData, { isInitialLoading: isLoading }] = useAddysSummary();
+  const [summaryData, { isInitialLoading: isLoading }] = useWalletSummary();
   const allAddresses = useWalletAddresses();
 
   const balances = useMemo(() => {

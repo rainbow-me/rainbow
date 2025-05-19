@@ -10,7 +10,7 @@ import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { createQueryKey, queryClient } from '@/react-query';
-import { refetchAddysSummary } from '@/resources/addys/summary';
+import { refetchAddysSummary } from '@/state/wallets/useWalletSummaryStore';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
