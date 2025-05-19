@@ -22,17 +22,33 @@ tags:
       - tapOn:
           id: dev-button-anvil
 
-      # Open swap screen
-      - tapOn:
-          id: swap-button
-      - assertVisible:
-          id: swap-screen
-      # Select DAI as output token
-      - tapOn: 'Find a token to buy'
-      - inputText: 'DAI'
-      - tapOn:
-          id: token-to-buy-dai-1
-      - assertVisible: 'DAI.*'
-      - assertVisible: 'No Balance'
-      # Add swap execution and validation.
-      # Currenlty on detox we don't do either.
+# Open swap screen
+- tapOn:
+    id: swap-button
+- assertVisible:
+    id: swap-screen
+# Select DAI as output token
+- tapOn: 'Find a token to buy'
+- inputText: 'DAI'
+- tapOn:
+    id: token-to-buy-dai-1
+- assertVisible: 'DAI.*'
+- assertVisible: 'No Balance'
+- hideKeyboard
+# cant get swap-bottom-action-button to work. investigate after. accessible label ??
+- longPressOn:
+    point: 675, 2100
+- runFlow: ../utils/MaybeSetupPin.yaml
+- tapOn:
+    id: tab-bar-icon-ProfileScreen
+
+# Test transaction was done
+- assertVisible: 'Pending'
+- assertVisible: 'Swapping*.'
+
+- tapOn: Swapping*.
+# also having issues with this test id.
+- tapOn:
+    id: transaction-details-context-menu-button
+- assertVisible: 'Speed Up'
+- assertVisible: 'Cancel'
