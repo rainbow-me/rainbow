@@ -15,6 +15,7 @@ import {
   SharedWebCredentials,
   SetOptions,
   GetOptions,
+  STORAGE_TYPE,
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
@@ -323,8 +324,9 @@ export async function clear() {
  * Wrapper around the underlying library's method by the same name.
  */
 export async function getSupportedBiometryType(): Promise<BIOMETRY_TYPE | undefined> {
-  logger.debug(`[keychain]: getSupportedBiometryType`, {}, logger.DebugContext.keychain);
-  return (await originalGetSupportedBiometryType()) || undefined;
+  const result = (await originalGetSupportedBiometryType()) || undefined;
+  logger.debug(`[keychain]: getSupportedBiometryType result: ${result}`, {}, logger.DebugContext.keychain);
+  return result;
 }
 
 /**
@@ -379,5 +381,6 @@ export async function getPrivateAccessControlOptions(): Promise<SetOptions> {
   return {
     accessControl: ios ? ACCESS_CONTROL.USER_PRESENCE : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
     accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    storage: STORAGE_TYPE.RSA,
   };
 }
