@@ -82,8 +82,9 @@ const DEFAULT_OPTIONS: UseListenOptions<unknown> = {
  * useListen(
  *   useCandlestickStore,
  *   state => state.getData(),
- *   candles => {
- *     if (!candles?.length) return;
+ *   (candles, previous, unsubscribe) => {
+ *     if (candles?.unsupported) return unsubscribe();
+ *     updateTokenPrice(token, getPriceUpdate(candles, previous));
  *     runOnUI(() => chartManager.value?.setCandles(candles))();
  *   },
  * );
