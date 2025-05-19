@@ -68,7 +68,7 @@ export type PersistedRainbowStore<S, PersistedState = Partial<S>> = UseBoundStor
   Mutate<BaseRainbowStore<S>, [Persist<PersistedState>]>
 >;
 
-export type RainbowStore<S, PersistedState = never> = [PersistedState] extends [never]
+export type RainbowStore<S, PersistedState extends Partial<S> = never> = [PersistedState] extends [never]
   ? BaseRainbowStore<S>
   : PersistedRainbowStore<S, PersistedState>;
 
