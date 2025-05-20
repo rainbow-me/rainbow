@@ -21,6 +21,6 @@ export default function useNavigationForNonReadOnlyWallets() {
         setTimeout(() => navigate(routeName, params), 50);
       });
     },
-    [goBack, isReadOnlyWallet, navigate]
+    [goBack, navigate]
   );
 }
