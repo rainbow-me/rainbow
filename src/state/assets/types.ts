@@ -12,6 +12,18 @@ export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
   UserAssetsStateToPersist
 >;
 
+export type UserAssetsRouter = UserAssetsStoreType & {
+  getState(address?: Address | string): QueryEnabledUserAssetsState;
+  setState(
+    partial:
+      | QueryEnabledUserAssetsState
+      | Partial<QueryEnabledUserAssetsState>
+      | ((state: QueryEnabledUserAssetsState) => QueryEnabledUserAssetsState | Partial<QueryEnabledUserAssetsState>),
+    replace?: boolean,
+    address?: Address | string
+  ): void;
+};
+
 export type FetchedUserAssetsData = {
   chainIdsWithErrors: ChainId[] | null;
   parsedAssetsDict: ParsedAssetsDictByChain | null;
