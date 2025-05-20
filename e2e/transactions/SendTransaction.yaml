@@ -40,29 +40,37 @@ tags:
       - assertVisible:
           id: send-asset-list
 
-# Test Add Contact functionality
+# Test Send Functionality
 - tapOn:
-    id: add-contact-button
-- assertVisible:
-    id: wallet-info-input
-- tapOn: 'Cancel'
-- tapOn:
-    id: add-contact-button
-- tapOn: 'Add Contact'
+    id: send-asset
 
-# Test updating contact name after edit
-- tapOn:
-    id: edit-contact-button
-- tapOn: 'Edit Contact'
-- inputText: '123'
-- tapOn:
-    id: wallet-info-submit-button
-- assertVisible: 'rainbowwallet.eth123'
+- assertVisible: 'Enter an Amount'
 
-# Test showing Add Contact Button after deleting contact
-- tapOn:
-    id: edit-contact-button
-- tapOn: 'Delete Contact'
-- tapOn: 'Delete Contact'
-- assertVisible:
-    id: add-contact-button
+- inputText: '0.01'
+
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible: .*Review
+- tapOn: .*Review
+
+# Test enter amount
+- assertVisible: 'Sending'
+- assertVisible: '$0.01'
+- assertVisible: 'rainbowwallet.eth'
+- assertVisible: 'Hold to Send'
+- longPressOn: 'Hold to Send'
+
+- runFlow: ../utils/MaybeSetupPin.yaml
+
+# Test transaction was done
+- assertVisible: 'Pending'
+- assertVisible: 'Sending*.'
+
+- tapOn: Sending*.
+
+- assertVisible: 'Sending'
+- assertVisible: '.*Tx Hash*.'
+- assertVisible: 'View on Etherscan'
+- swipe:
+    direction: DOWN
