@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash';
 import { useEffect, useState } from 'react';
 import { Address } from 'viem';
 import { useAccountAddress, useWalletAddresses, useWallets } from '@/state/wallets/walletsStore';
-import { getAddysSummary } from '@/state/wallets/useWalletSummaryStore';
+import { getWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 
 const getWalletForAddress = (wallets: AllRainbowWallets | null, address: string) => {
   return Object.values(wallets || {}).find(wallet => (wallet.addresses || []).some(addr => isLowerCaseMatch(addr.address, address)));
@@ -18,7 +18,7 @@ export const useFarcasterAccountForWallets = () => {
   const allAddresses = useWalletAddresses();
 
   useEffect(() => {
-    const summaryData = getAddysSummary();
+    const summaryData = getWalletSummary();
     const addresses = summaryData?.data.addresses;
 
     if (!addresses || isEmpty(addresses) || isEmpty(wallets)) {

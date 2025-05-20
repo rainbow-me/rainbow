@@ -10,7 +10,7 @@ import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { createQueryKey, queryClient } from '@/react-query';
-import { refetchAddysSummary } from '@/state/wallets/useWalletSummaryStore';
+import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
@@ -24,7 +24,7 @@ export default function useRefreshAccountData() {
     const getWalletENSAvatars = profilesEnabled ? refreshWalletENSAvatars() : null;
 
     // These queries can take too long to fetch, so we do not wait for them
-    refetchAddysSummary();
+    refetchWalletSummary();
     queryClient.invalidateQueries([createQueryKey('nfts', { address: accountAddress })]);
 
     await Promise.all([
