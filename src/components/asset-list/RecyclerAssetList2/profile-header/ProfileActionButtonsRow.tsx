@@ -5,7 +5,7 @@ import * as lang from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useAccountAddress, useIsDamagedWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet, useAccountAddress, useIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
@@ -162,16 +162,14 @@ function BuyButton() {
 }
 
 function SwapButton() {
-  const isReadOnlyWallet = useIsReadOnlyWallet();
-
   const handlePress = React.useCallback(async () => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
       navigateToSwaps();
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet]);
+  }, []);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">
@@ -181,17 +179,15 @@ function SwapButton() {
 }
 
 function SendButton() {
-  const isReadOnlyWallet = useIsReadOnlyWallet();
-
   const handlePress = React.useCallback(() => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSend, { category: 'home screen' });
 
       Navigation.handleAction(Routes.SEND_FLOW);
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet]);
+  }, []);
 
   return (
     <ActionButton icon="􀈟" onPress={handlePress} testID="send-button">

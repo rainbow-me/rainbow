@@ -11,7 +11,7 @@ import { useNavigation } from '@/navigation';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { watchingAlert } from '@/utils';
@@ -47,11 +47,10 @@ const AvailableNetworksv2 = ({
   };
 
   const { goBack } = useNavigation();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const convertAssetAndNavigate = useCallback(
     (chainId: ChainId) => {
-      if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
+      if (getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet) {
         watchingAlert();
         return;
       }
@@ -110,7 +109,7 @@ const AvailableNetworksv2 = ({
         navigateToSwaps({ inputAsset: null, outputAsset: parsedAsset });
       }
     },
-    [asset, goBack, isReadOnlyWallet, networks]
+    [asset, goBack, networks]
   );
 
   const handlePressContextMenu = useCallback((chainId: string) => convertAssetAndNavigate(+chainId), [convertAssetAndNavigate]);

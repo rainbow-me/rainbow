@@ -2,7 +2,7 @@ import Divider from '@/components/Divider';
 import { useDimensions, useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import { useAccountAddress, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import lang from 'i18n-js';
@@ -53,30 +53,29 @@ const StickyBackgroundBlocker = styled.View({
 export default function ListHeader({ children, contextMenuOptions, isCoinListEdited, showDivider = true, title, totalValue }) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
   const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
   const { initializeShowcaseIfNeeded } = useWebData();
 
   const handleShare = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    if (!getIsReadOnlyWallet()) {
       initializeShowcaseIfNeeded();
     }
     const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountENS || accountAddress}`;
     const shareOptions = {
-      message: isReadOnlyWallet
+      message: getIsReadOnlyWallet()
         ? lang.t('list.share.check_out_this_wallet', { showcaseUrl })
         : lang.t('list.share.check_out_my_wallet', { showcaseUrl }),
     };
     Share.share(shareOptions);
-  }, [accountAddress, accountENS, initializeShowcaseIfNeeded, isReadOnlyWallet]);
+  }, [accountAddress, accountENS, initializeShowcaseIfNeeded]);
 
   if (title === lang.t('pools.pools_title')) {
     return (
       <SavingsListHeader
         emoji="whale"
         isOpen={false}
-        onPress={() => {}}
+        onPress={() => { }}
         savingsSumValue={totalValue}
         showSumValue
         title={lang.t('pools.pools_title')}
