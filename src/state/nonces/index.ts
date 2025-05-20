@@ -1,11 +1,10 @@
 import create from 'zustand';
 import { createStore } from '../internal/createStore';
-import { RainbowTransaction } from '@/entities/transactions';
 import { Network, ChainId } from '@/state/backendNetworks/types';
-import { getBatchedProvider } from '@/handlers/web3';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { getBatchedProvider, getProvider } from '@/handlers/web3';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { logger } from '@/logger';
+import { RainbowTransaction } from '../../entities';
 
 type NonceData = {
   currentNonce?: number;
@@ -19,102 +18,135 @@ type GetNonceArgs = {
 
 type UpdateNonceArgs = NonceData & GetNonceArgs;
 
-export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }): Promise<number> {
-  logger.info('[getNextNonce]: start', { address, chainId });
+/**
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Section 0:  Hash-watch helper (unchanged, but moved to top so we can invoke
+ *             it from getNextNonce).
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+interface HashEntry {
+  chainId: ChainId;
+  status: 'PENDING' | 'DROPPED' | 'MINED' | 'UNKNOWN';
+}
+const __hashWatch: Record<string, HashEntry> = {};
+export function getHashWatchList() {
+  return __hashWatch;
+}
+export function trackHash(hash: string, chainId: ChainId) {
+  if (__hashWatch[hash]) return; // already watching
+  __hashWatch[hash] = { chainId, status: 'UNKNOWN' };
+  logger.info(`[HashWatch] Now tracking ${hash.slice(0, 10)}… on chain ${chainId}`);
+}
+setInterval(async () => {
+  const entries = Object.entries(__hashWatch);
+  if (!entries.length) return;
+  for (const [hash, { chainId, status: prev }] of entries) {
+    const provider = getProvider({ chainId });
+    let next: HashEntry['status'] = prev;
+    try {
+      const tx = await provider.getTransaction(hash);
+      if (!tx) next = 'DROPPED';
+      else if (tx.blockNumber) next = 'MINED';
+      else next = 'PENDING';
+    } catch {
+      next = 'UNKNOWN';
+    }
+    if (next !== prev) {
+      __hashWatch[hash].status = next;
+      logger.info(`[HashWatch] ${hash.slice(0, 10)}… → ${next}`);
+    }
+  }
+}, 30_000); // poll every 30 s
 
+/**
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Section 1:  Beginner-friendly getNextNonce **now auto-tracks hashes**
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+type Snapshot = {
+  ts: string;
+  address: string;
+  chainId: ChainId;
+  localNonce: number;
+  pendingRPC: number;
+  latestRPC: number;
+  decided: number;
+  comment: string;
+};
+const __nonceDebugHistory: Snapshot[] = [];
+export function getNonceDebugHistory() {
+  return __nonceDebugHistory;
+}
+const short = (addr: string) => addr.slice(0, 6) + '…' + addr.slice(-4);
+
+export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }): Promise<number> {
+  const stamp = () => new Date().toISOString().split('T')[1].split('Z')[0];
   const { getNonce } = nonceStore.getState();
-  const localNonceData = getNonce({ address, chainId });
-  const localNonce = localNonceData?.currentNonce ?? -1;
+  const localNonce = getNonce({ address, chainId })?.currentNonce ?? -1;
 
   const provider = getBatchedProvider({ chainId });
-  const privateMempoolTimeout = 30 * 60_000;//useBackendNetworksStore.getState().getChainsPrivateMempoolTimeout()[chainId];
-
-  logger.info('[getNextNonce]: local state', { localNonce, privateMempoolTimeout });
-
-  // ────────────────────────────────────────────────────────────────────────────
-  // 1. Fetch on-chain transaction counts (pending vs latest)
-  // ────────────────────────────────────────────────────────────────────────────
-  const [pendingTxCountFromPublicRpc, latestTxCountFromPublicRpc] = await Promise.all([
+  const [pendingRPC, latestRPC] = await Promise.all([
     provider.getTransactionCount(address, 'pending'),
     provider.getTransactionCount(address, 'latest'),
   ]);
+  const numPendingPublic = pendingRPC - latestRPC;
+  const numPendingLocal = Math.max(localNonce + 1 - latestRPC, 0);
 
-  const numPendingPublicTx = pendingTxCountFromPublicRpc - latestTxCountFromPublicRpc;
-  const numPendingLocalTx = Math.max(localNonce + 1 - latestTxCountFromPublicRpc, 0);
+  // helper to emit + auto-track hash for the *decided* nonce if present
+  function done(comment: string, decided: number) {
+    const snap: Snapshot = {
+      ts: stamp(),
+      address: short(address),
+      chainId,
+      localNonce,
+      pendingRPC,
+      latestRPC,
+      decided,
+      comment,
+    };
+    __nonceDebugHistory.push(snap);
+    logger.info(`[NonceDebug] ${comment}`, snap);
 
-  logger.info('[getNextNonce]: RPC counts', {
-    pendingTxCountFromPublicRpc,
-    latestTxCountFromPublicRpc,
-    numPendingPublicTx,
-    numPendingLocalTx,
-  });
+    // try to find a tx we just created with this nonce & start watching it
+    const store = pendingTransactionsStore.getState().pendingTransactions;
+    const txSameNonce: RainbowTransaction | undefined = store[address]?.find(t => t.chainId === chainId && t.nonce === decided);
+    if (txSameNonce?.hash) trackHash(txSameNonce.hash, chainId);
 
-  // ────────────────────────────────────────────────────────────────────────────
-  // 2. Fast paths — no private mempool crossover
-  // ────────────────────────────────────────────────────────────────────────────
-  if (numPendingLocalTx === numPendingPublicTx) {
-    logger.info('[getNextNonce]: no private mempool tx; proceeding', {
-      nextNonce: pendingTxCountFromPublicRpc,
-    });
-    return pendingTxCountFromPublicRpc;
+    return decided;
   }
 
-  if (numPendingLocalTx === 0 && numPendingPublicTx > 0) {
-    logger.info('[getNextNonce]: local behind public; catching up', {
-      nextNonce: latestTxCountFromPublicRpc,
-    });
-    return latestTxCountFromPublicRpc;
+  // ── Fast exit paths ──────────────────────────────────────────────────────
+  if (numPendingLocal === numPendingPublic) {
+    return done('No private mempool tx – use RPC pending.', pendingRPC);
+  }
+  if (numPendingLocal === 0 && numPendingPublic > 0) {
+    return done('Local behind – sync to RPC latest.', latestRPC);
   }
 
-  // ────────────────────────────────────────────────────────────────────────────
-  // 3. Inspect pending transactions for this address + chain
-  // ────────────────────────────────────────────────────────────────────────────
-  const { pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
-  const pendingTransactions: RainbowTransaction[] = storePendingTransactions[address]?.filter(txn => txn.chainId === chainId) || [];
-
-  logger.info('[getNextNonce]: inspecting pendingTransactions', {
-    pendingCount: pendingTransactions.length,
-  });
-
+  // ── Inspect Rainbow-tracked pending txs ──────────────────────────────────
+  const tracked = pendingTransactionsStore.getState().pendingTransactions[address]?.filter(t => t.chainId === chainId) || [];
   let nextNonce = localNonce + 1;
-
-  for (const pendingTx of pendingTransactions) {
-    // Guard clauses
-    if (!pendingTx.nonce || pendingTx.nonce < pendingTxCountFromPublicRpc) continue;
-    if (!pendingTx.timestamp) continue;
-
-    const ageMs = Date.now() - pendingTx.timestamp;
-
-    logger.info('[getNextNonce]: evaluating pendingTx', {
-      hash: pendingTx.hash,
-      nonce: pendingTx.nonce,
-      ageMs,
-    });
-
-    // Same nonce as public-pending
-    if (pendingTx.nonce === pendingTxCountFromPublicRpc) {
-      const isOlderThanTimeout = ageMs > privateMempoolTimeout;
-
-      if (isOlderThanTimeout) {
-        // Assume dropped — sync with public RPC
-        nextNonce = pendingTxCountFromPublicRpc;
-        logger.info('[getNextNonce]: assumed dropped; using public count', { nextNonce });
+  let note = 'Default bump local +1.';
+  for (const tx of tracked) {
+    if (!tx.nonce || tx.nonce < pendingRPC || !tx.timestamp) continue;
+    const age = Date.now() - tx.timestamp;
+    const timeout = 30 * 60_000; // 30-min test value
+    if (tx.nonce === pendingRPC) {
+      if (age > timeout) {
+        nextNonce = pendingRPC;
+        note = `Tracked nonce ${tx.nonce} >30m old — assume dropped.`;
       } else {
-        // Still alive — bump local once
         nextNonce = localNonce + 1;
-        logger.info('[getNextNonce]: still pending; incrementing local', { nextNonce });
+        note = `Tracked nonce ${tx.nonce} still fresh — keep bumping.`;
       }
       break;
     }
-
-    // Gap detected — adopt public pending count
-    nextNonce = pendingTxCountFromPublicRpc;
-    logger.info('[getNextNonce]: nonce gap detected; using public count', { nextNonce });
+    nextNonce = pendingRPC;
+    note = `Gap ahead of RPC — adopt RPC pending ${pendingRPC}.`;
     break;
   }
-
-  logger.info('[getNextNonce]: final nextNonce', { nextNonce });
-  return nextNonce;
+  return done(note, nextNonce);
 }
 
 type NoncesV0 = {
