@@ -74,7 +74,7 @@ https://reactnative.dev/docs/getting-started
 
    - Etherscan: https://etherscan.io/apis
    - Infura: https://infura.io/
-   - ETH Gas Station: https://docs.ethgasstation.info/
+   - ETH Gas Station: https://docs.etherscan.io/api-endpoints/gas-tracker
    - Imgix: https://www.imgix.com/
 
 3. Ensure a `google-services.json` has been added to the relevant project
