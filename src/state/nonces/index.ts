@@ -19,10 +19,7 @@ type GetNonceArgs = {
 type UpdateNonceArgs = NonceData & GetNonceArgs;
 
 /**
- * ─────────────────────────────────────────────────────────────────────────────
- * Section 0:  Hash-watch helper (unchanged, but moved to top so we can invoke
- *             it from getNextNonce).
- * ─────────────────────────────────────────────────────────────────────────────
+ * This helper watches the hashes after nonce is called ongoing, for debugging:
  */
 interface HashEntry {
   chainId: ChainId;
@@ -57,12 +54,6 @@ setInterval(async () => {
     }
   }
 }, 30_000); // poll every 30 s
-
-/**
- * ─────────────────────────────────────────────────────────────────────────────
- * Section 1:  Beginner-friendly getNextNonce **now auto-tracks hashes**
- * ─────────────────────────────────────────────────────────────────────────────
- */
 
 type Snapshot = {
   ts: string;
