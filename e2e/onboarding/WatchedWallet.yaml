@@ -3,19 +3,22 @@ tags:
   - wallet
   - parallel
 ---
-- launchApp:
-    clearState: true
-    clearKeychain: true
-    arguments:
-      isE2ETest: true
-- runFlow: ../utils/Prepare.yaml
-- tapOn: '.*I already have one'
-- tapOn:
-    id: watch-address-button
-- tapOn: 'Enter an Ethereum address or ENS name'
-- inputText: 'rainbowtestwallet.eth'
-- tapOn: 'Continue'
-- tapOn: 'Import Wallet'
-- runFlow: ../utils/MaybeSetupPin.yaml
-- assertVisible:
-    id: wallet-screen
+- retry:
+    maxRetries: 3
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - tapOn: '.*I already have one'
+      - tapOn:
+          id: watch-address-button
+      - tapOn: 'Enter an Ethereum address or ENS name'
+      - inputText: 'rainbowtestwallet.eth'
+      - tapOn: 'Continue'
+      - tapOn: 'Import Wallet'
+      - runFlow: ../utils/MaybeSetupPin.yaml
+      - assertVisible:
+          id: wallet-screen

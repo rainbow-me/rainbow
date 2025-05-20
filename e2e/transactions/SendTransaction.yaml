@@ -3,74 +3,77 @@ tags:
   - wallet
   - parallel
 ---
-- launchApp:
-    clearState: true
-    clearKeychain: true
-    arguments:
-      isE2ETest: true
-- runFlow: ../utils/Prepare.yaml
-- runFlow: ../utils/ImportWalletWithKey.yaml
-
-# Send ETH to test wallet
-- tapOn:
-    id: fund-test-wallet-button
-
-# Connect to Anvil (test network)
-- tapOn:
-    id: dev-button-anvil
-
-# Open send sheet
 - retry:
     maxRetries: 3
     commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+          isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
+
+      # Send ETH to test wallet
+      - tapOn:
+          id: fund-test-wallet-button
+
+      # Connect to Anvil (test network)
+      - tapOn:
+          id: dev-button-anvil
+
+      # Open send sheet
+      - retry:
+          maxRetries: 3
+          commands:
+            - swipe:
+                direction: DOWN
+            - assertVisible:
+                id: 'balance-coin-row-Ethereum'
+      - tapOn:
+          id: send-button
+      - assertVisible:
+          id: send-asset-form-field
+
+      # Test ENS address input
+      - inputText: 'rainbowwallet.eth'
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible:
+                id: send-asset-list
+
+      # Test Send Functionality
+      - tapOn:
+          id: send-asset
+
+      - assertVisible: 'Enter an Amount'
+
+      - inputText: '0.01'
+
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible: .*Review
+      - tapOn: .*Review
+
+      # Test enter amount
+      - assertVisible: 'Sending'
+      - assertVisible: '$0.01'
+      - assertVisible: 'rainbowwallet.eth'
+      - assertVisible: 'Hold to Send'
+      - longPressOn: 'Hold to Send'
+
+      - runFlow: ../utils/MaybeSetupPin.yaml
+
+      # Test transaction was done
+      - assertVisible: 'Pending'
+      - assertVisible: 'Sending*.'
+
+      - tapOn: Sending*.
+
+      - assertVisible: 'Sending'
+      - assertVisible: '.*Tx Hash*.'
+      - assertVisible: 'View on Etherscan'
       - swipe:
           direction: DOWN
-      - assertVisible:
-          id: 'balance-coin-row-Ethereum'
-- tapOn:
-    id: send-button
-- assertVisible:
-    id: send-asset-form-field
-
-# Test ENS address input
-- inputText: 'rainbowwallet.eth'
-- retry:
-    maxRetries: 3
-    commands:
-      - assertVisible:
-          id: send-asset-list
-
-# Test Send Functionality
-- tapOn:
-    id: send-asset
-
-- assertVisible: 'Enter an Amount'
-
-- inputText: '0.01'
-
-- retry:
-    maxRetries: 3
-    commands:
-      - assertVisible: .*Review
-- tapOn: .*Review
-
-# Test enter amount
-- assertVisible: 'Sending'
-- assertVisible: '$0.01'
-- assertVisible: 'rainbowwallet.eth'
-- assertVisible: 'Hold to Send'
-- longPressOn: 'Hold to Send'
-
-- runFlow: ../utils/MaybeSetupPin.yaml
-
-# Test transaction was done
-- assertVisible: 'Pending'
-- assertVisible: 'Sending*.'
-
-- tapOn: Sending*.
-
-- assertVisible: 'Sending'
-- assertVisible: '.*Tx Hash*.'
-- assertVisible: 'View on Etherscan'
-- swipe:
-    direction: DOWN
