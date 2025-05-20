@@ -226,7 +226,7 @@ const ViewWalletBackup = () => {
         error: e,
       });
     }
-  }, [creatingWallet, isDamaged, navigate, wallet]);
+  }, [creatingWallet, navigate, wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {
