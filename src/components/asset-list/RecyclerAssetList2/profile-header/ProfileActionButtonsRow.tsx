@@ -5,7 +5,7 @@ import * as lang from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { getIsReadOnlyWallet, useAccountAddress, useIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
@@ -139,10 +139,8 @@ function ActionButton({
 }
 
 function BuyButton() {
-  const isDamaged = useIsDamagedWallet();
-
   const handlePress = React.useCallback(() => {
-    if (isDamaged) {
+    if (getIsDamagedWallet()) {
       showWalletErrorAlert();
       return;
     }
@@ -150,7 +148,7 @@ function BuyButton() {
     analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
     Navigation.handleAction(Routes.ADD_CASH_SHEET);
-  }, [isDamaged]);
+  }, []);
 
   return (
     <Box>
@@ -199,10 +197,9 @@ function SendButton() {
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const accountAddress = useAccountAddress();
-  const isDamaged = useIsDamagedWallet();
 
   const handlePressCopy = React.useCallback(() => {
-    if (isDamaged) {
+    if (getIsDamagedWallet()) {
       showWalletErrorAlert();
       return;
     }
@@ -214,7 +211,7 @@ export function CopyButton() {
       }, 2000);
     }
     Clipboard.setString(accountAddress);
-  }, [accountAddress, isDamaged, isToastActive, setToastActive]);
+  }, [accountAddress, isToastActive, setToastActive]);
 
   return (
     <>
