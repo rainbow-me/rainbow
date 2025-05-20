@@ -672,8 +672,12 @@ export const isImportedWallet = (address: string): boolean => {
 
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
-  // TODO (APP-2643): fix the non-null assertion / return types on info
-  const info = useWalletsStore(state => state.accountProfileInfo!);
+  const info = useWalletsStore(state => state.accountProfileInfo);
+
+  if (!info) {
+    throw new Error(`Error: useAccountProfileInfo hook must be used after selecting a wallet.`);
+  }
+
   return useMemo(() => {
     return {
       ...info,
