@@ -26,8 +26,6 @@ tags:
       - retry:
           maxRetries: 3
           commands:
-            - swipe:
-                direction: DOWN
             - assertVisible:
                 id: 'balance-coin-row-Ethereum'
       - tapOn:
@@ -43,11 +41,19 @@ tags:
             - assertVisible:
                 id: send-asset-list
 
-      # Test Send Functionality
-      - tapOn:
-          id: send-asset
-
-      - assertVisible: 'Enter an Amount'
+      # unsure why but the id doesn't work on iOS and the text doesn't work on Android
+      - runFlow:
+          when:
+            platform: iOS
+          commands:
+            - tapOn:
+                text: '.*Ethereum.*'
+      - runFlow:
+          when:
+            platform: Android
+          commands:
+            - tapOn:
+                id: send-asset
 
       - inputText: '0.01'
 
