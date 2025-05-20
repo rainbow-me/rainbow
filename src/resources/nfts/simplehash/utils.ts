@@ -62,7 +62,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
 
   const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
-  return {
+  const asset: UniqueAsset = {
     animation_url: nft?.video_url ?? nft.audio_url ?? nft.model_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
     asset_contract: {
       address: lowercasedContractAddress,
@@ -112,6 +112,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     marketplaceCollectionUrl: marketplace?.collection_url,
     marketplaceId: marketplace?.marketplace_id ?? null,
     marketplaceName: marketplace?.marketplace_name ?? null,
+    mime_type: nft.image_properties?.mime_type ?? undefined,
     name: nft.name,
     network: nft.chain as Network, // gets converted from simplehash chain to Network in arc
     permalink: marketplace?.nft_url ?? '',
@@ -122,7 +123,12 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     uniqueId: isENS ? nft.name ?? `${nft.contract_address}_${nft.token_id}` : `${nft.contract_address}_${nft.token_id}`,
     urlSuffixForAsset: `${nft.contract_address}/${nft.token_id}`,
     video_url: nft.video_url ?? null,
-    video_properties: {
+    audio_url: nft.audio_url ?? null,
+    model_url: nft.model_url ?? null,
+  };
+
+  if (nft.video_properties) {
+    asset.video_properties = {
       width: nft.video_properties?.width ?? null,
       height: nft.video_properties?.height ?? null,
       duration: nft.video_properties?.duration ?? null,
@@ -130,17 +136,26 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
       audio_coding: nft.video_properties?.audio_coding ?? null,
       size: nft.video_properties?.size ?? 0,
       mime_type: nft.video_properties?.mime_type ?? null,
-    },
-    audio_url: nft.audio_url ?? null,
-    audo_properties: {
-      duration: nft.audio_properties?.duration,
-      audio_coding: nft.audio_properties?.audio_coding,
-      size: nft.audio_properties?.size ?? null,
-      mime_type: nft.audio_properties?.mime_type ?? null,
-    },
-    model_url: nft.model_url ?? null,
-    model_properties: { size: nft.model_properties?.size ?? null, mime_type: nft.model_properties?.mime_type ?? null },
-  };
+    };
+  }
+
+  if (nft.audio_properties) {
+    asset.audio_properties = {
+      duration: nft.audio_properties.duration ?? null,
+      audio_coding: nft.audio_properties.audio_coding ?? null,
+      size: nft.audio_properties.size ?? null,
+      mime_type: nft.audio_properties.mime_type ?? null,
+    };
+  }
+
+  if (nft.model_properties) {
+    asset.model_properties = {
+      size: nft.model_properties?.size ?? null,
+      mime_type: nft.model_properties?.mime_type ?? null,
+    };
+  }
+
+  return asset;
 }
 
 /**

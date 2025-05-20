@@ -12,7 +12,7 @@ type SendActionButtonProps = SheetActionButtonProps & {
   asset: RainbowToken | UniqueAsset | ParsedAddressAsset;
 };
 
-function SendActionButton({ asset, color: givenColor, ...props }: SendActionButtonProps) {
+function SendActionButton({ asset, color: givenColor, textColor, ...props }: SendActionButtonProps) {
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
   const handlePress = useCallback(
@@ -33,7 +33,7 @@ function SendActionButton({ asset, color: givenColor, ...props }: SendActionButt
       onPress={handlePress}
       testID="send"
     >
-      <Text align="center" color="label" size="20pt" weight="heavy">
+      <Text align="center" color={textColor ? { custom: textColor } : 'label'} size="20pt" weight="heavy">
         {lang.t('button.send')}
       </Text>
     </SheetActionButton>
