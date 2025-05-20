@@ -6,7 +6,7 @@ import { useDimensions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Network } from '@/state/backendNetworks/types';
-import { useAccountAddress, useIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -175,14 +175,13 @@ const AddFundsInterstitial = ({ network }) => {
   const onAddFromFaucet = accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
-  const isDamaged = useIsDamagedWallet();
   const accountAddress = useAccountAddress();
   const { colors } = useTheme();
   const { name: routeName } = useRoute();
 
   const handlePressAmount = useCallback(
     amount => {
-      if (isDamaged) {
+      if (getIsDamagedWallet()) {
         showWalletErrorAlert();
         captureMessage('Damaged wallet preventing add cash');
         return;
@@ -199,7 +198,7 @@ const AddFundsInterstitial = ({ network }) => {
         routeName,
       });
     },
-    [isDamaged, navigate, routeName]
+    [navigate, routeName]
   );
 
   const addFundsToAccountAddress = useCallback(() => onAddFromFaucet(accountAddress), [accountAddress]);

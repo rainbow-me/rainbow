@@ -31,7 +31,7 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { useWallets, useIsDamagedWallet, createAccount } from '@/state/wallets/walletsStore';
+import { useWallets, createAccount, getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -124,7 +124,6 @@ const ViewWalletBackup = () => {
 
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
-  const isDamaged = useIsDamagedWallet();
   const wallets = useWallets();
   const wallet = wallets?.[walletId];
 
@@ -202,7 +201,7 @@ const ViewWalletBackup = () => {
                 logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
                   error: e,
                 });
-                if (isDamaged) {
+                if (getIsDamagedWallet()) {
                   setTimeout(() => {
                     showWalletErrorAlert();
                   }, 1000);
