@@ -6,7 +6,7 @@ import store from '@/redux/store';
 import { lightModeThemeColors } from '@/styles';
 import { captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty, keys } from 'lodash';
+import { add, isEmpty, keys } from 'lodash';
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '@/handlers/localstorage/walletNames';
 import { ensureValidHex } from '@/handlers/web3';
@@ -75,7 +75,7 @@ interface WalletsState {
 
   clearAllWalletsBackupStatus: () => void;
 
-  accountAddress: Address;
+  accountAddress: Address | null;
   accountProfileInfo: AccountProfileInfo | null;
   setAccountAddress: (address: Address) => void;
 
@@ -129,9 +129,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({ walletReady: true });
     },
 
-    // TODO follow-on and fix this type better - this is matching existing bug from before refactor
-    // see PD-188
-    accountAddress: `0x`,
+    accountAddress: null,
     accountProfileInfo: null,
     setAccountAddress: (accountAddress: Address) => {
       set({
@@ -637,13 +635,27 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
-export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
+const MISSING_ACCOUNT_ADDRESS_ERROR = `Error: useAccountAddress hook must be used after selecting a wallet.`;
+
+export const getAccountAddress = () => {
+  const address = useWalletsStore.getState().accountAddress;
+  if (!address) {
+    throw new Error(MISSING_ACCOUNT_ADDRESS_ERROR);
+  }
+  return address;
+};
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
 
 export const useWallets = () => useWalletsStore(state => state.wallets);
-export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
+export const useAccountAddress = () => {
+  const address = useWalletsStore(state => state.accountAddress);
+  if (!address) {
+    throw new Error(MISSING_ACCOUNT_ADDRESS_ERROR);
+  }
+  return address;
+};
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);
 export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
 export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
