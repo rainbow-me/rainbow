@@ -6,7 +6,7 @@ import store from '@/redux/store';
 import { lightModeThemeColors } from '@/styles';
 import { captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { add, isEmpty, keys } from 'lodash';
+import { isEmpty, keys } from 'lodash';
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '@/handlers/localstorage/walletNames';
 import { ensureValidHex } from '@/handlers/web3';
