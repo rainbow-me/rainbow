@@ -68,7 +68,7 @@ tags:
       - assertVisible: '$0.01'
       - assertVisible: 'rainbowwallet.eth'
 
-      # iOS is 'Hold to Send' button is stuck on 'Loading...' 
+      # iOS is 'Hold to Send' button is stuck on 'Loading...'
       # atm for some reason. Need to investigate. Unblocking e2e for now.
       - runFlow:
           when:
