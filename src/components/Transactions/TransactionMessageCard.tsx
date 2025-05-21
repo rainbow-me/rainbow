@@ -27,10 +27,61 @@ type TransactionMessageCardProps = {
   method: string;
 };
 
-export const TransactionMessageCard = ({ expandedCardBottomInset, message, method }: TransactionMessageCardProps) => {
+const headerHeight = CARD_ROW_HEIGHT * 2.5;
+
+function TransactionHeader({ message }: { message: string }) {
   const { setClipboard } = useClipboard();
+
   const [didCopy, setDidCopy] = useState(false);
 
+  const handleCopyPress = useCallback(
+    (message: string) => {
+      if (didCopy) return;
+      setClipboard(message);
+      setDidCopy(true);
+      const copyTimer = setTimeout(() => {
+        setDidCopy(false);
+      }, 2000);
+      return () => clearTimeout(copyTimer);
+    },
+    [didCopy, setClipboard]
+  );
+
+  return (
+    <Box
+      paddingHorizontal="24px"
+      alignItems="flex-end"
+      flexDirection="row"
+      justifyContent="space-between"
+      height={{ custom: headerHeight }}
+    >
+      <Inline alignVertical="center" space="12px">
+        <IconContainer>
+          <Text align="center" color="label" size="icon 15px" weight="bold">
+            􀙤
+          </Text>
+        </IconContainer>
+        <Text color="label" size="17pt" weight="bold">
+          {i18n.t(i18n.l.walletconnect.simulation.message_card.title)}
+        </Text>
+      </Inline>
+      <ButtonPressAnimation hitSlop={20} disabled={didCopy} onPress={() => handleCopyPress(message)}>
+        <Bleed space="24px">
+          <Box style={{ padding: 24 }}>
+            <Inline alignHorizontal="right" alignVertical="center" space={{ custom: 4 }}>
+              <AnimatedCheckmark visible={didCopy} />
+              <Text align="right" color={didCopy ? 'labelQuaternary' : 'blue'} size="15pt" weight="bold">
+                {i18n.t(i18n.l.walletconnect.simulation.message_card.copy)}
+              </Text>
+            </Inline>
+          </Box>
+        </Bleed>
+      </ButtonPressAnimation>
+    </Box>
+  );
+}
+
+export const TransactionMessageCard = ({ expandedCardBottomInset, message, method }: TransactionMessageCardProps) => {
   let displayMessage = message;
   if (isSignTypedData(method)) {
     try {
@@ -48,65 +99,27 @@ export const TransactionMessageCard = ({ expandedCardBottomInset, message, metho
 
   const estimatedMessageHeight = useMemo(() => estimateMessageHeight(displayMessage), [displayMessage]);
 
-  const cardHeight = useSharedValue(
-    estimatedMessageHeight > MAX_CARD_HEIGHT ? MAX_CARD_HEIGHT : estimatedMessageHeight + CARD_BORDER_WIDTH * 2
-  );
+  const totalInitialHeight = estimatedMessageHeight + headerHeight;
+  const initialCardHeightValue =
+    totalInitialHeight + CARD_BORDER_WIDTH * 2 >= MAX_CARD_HEIGHT ? MAX_CARD_HEIGHT : totalInitialHeight + CARD_BORDER_WIDTH * 2;
+  const cardHeight = useSharedValue(initialCardHeightValue);
   const contentHeight = useSharedValue(estimatedMessageHeight);
-
-  const handleCopyPress = useCallback(
-    (message: string) => {
-      if (didCopy) return;
-      setClipboard(message);
-      setDidCopy(true);
-      const copyTimer = setTimeout(() => {
-        setDidCopy(false);
-      }, 2000);
-      return () => clearTimeout(copyTimer);
-    },
-    [didCopy, setClipboard]
-  );
 
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
+      header={<TransactionHeader message={message} />}
+      headerHeight={headerHeight}
       contentHeight={contentHeight}
       expandedCardBottomInset={expandedCardBottomInset}
       expandedCardTopInset={EXPANDED_CARD_TOP_INSET}
-      initialScrollEnabled={estimatedMessageHeight > MAX_CARD_HEIGHT}
+      initialScrollEnabled={totalInitialHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT}
       isExpanded
       skipCollapsedState
     >
-      <Stack space="24px">
-        <Box alignItems="flex-end" flexDirection="row" justifyContent="space-between" height={{ custom: CARD_ROW_HEIGHT }}>
-          <Inline alignVertical="center" space="12px">
-            <IconContainer>
-              <Text align="center" color="label" size="icon 15px" weight="bold">
-                􀙤
-              </Text>
-            </IconContainer>
-            <Text color="label" size="17pt" weight="bold">
-              {i18n.t(i18n.l.walletconnect.simulation.message_card.title)}
-            </Text>
-          </Inline>
-          <TouchableWithoutFeedback>
-            <ButtonPressAnimation disabled={didCopy} onPress={() => handleCopyPress(message)}>
-              <Bleed space="24px">
-                <Box style={{ padding: 24 }}>
-                  <Inline alignHorizontal="right" alignVertical="center" space={{ custom: 4 }}>
-                    <AnimatedCheckmark visible={didCopy} />
-                    <Text align="right" color={didCopy ? 'labelQuaternary' : 'blue'} size="15pt" weight="bold">
-                      {i18n.t(i18n.l.walletconnect.simulation.message_card.copy)}
-                    </Text>
-                  </Inline>
-                </Box>
-              </Bleed>
-            </ButtonPressAnimation>
-          </TouchableWithoutFeedback>
-        </Box>
-        <Text color="labelTertiary" size="15pt" weight="medium">
-          {displayMessage}
-        </Text>
-      </Stack>
+      <Text color="labelTertiary" size="15pt" weight="medium">
+        {displayMessage}
+      </Text>
     </FadedScrollCard>
   );
 };

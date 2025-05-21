@@ -35,6 +35,8 @@ const timingConfig = {
 type FadedScrollCardProps = {
   cardHeight: SharedValue<number>;
   children: React.ReactNode;
+  header: React.ReactNode;
+  headerHeight?: number;
   contentHeight: SharedValue<number>;
   expandedCardBottomInset?: number;
   expandedCardTopInset?: number;
@@ -47,6 +49,8 @@ type FadedScrollCardProps = {
 export const FadedScrollCard = ({
   cardHeight,
   children,
+  header,
+  headerHeight = 0,
   contentHeight,
   expandedCardBottomInset = 120,
   expandedCardTopInset = 120,
@@ -70,7 +74,7 @@ export const FadedScrollCard = ({
   const containerStyle = useAnimatedStyle(() => {
     return {
       height:
-        cardHeight.value > MAX_CARD_HEIGHT || !skipCollapsedState
+        cardHeight.value >= MAX_CARD_HEIGHT || !skipCollapsedState
           ? interpolate(
               cardHeight.value,
               [MAX_CARD_HEIGHT, MAX_CARD_HEIGHT, maxExpandedHeight],
@@ -83,15 +87,17 @@ export const FadedScrollCard = ({
   });
 
   const backdropStyle = useAnimatedStyle(() => {
-    const canExpandFully = contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
+    const totalHeight = contentHeight.value + headerHeight + CARD_BORDER_WIDTH * 2;
+    const canExpandFully = totalHeight > MAX_CARD_HEIGHT;
     return {
       opacity: canExpandFully && isFullyExpanded ? withTiming(1, timingConfig) : withTiming(0, timingConfig),
     };
   });
 
   const cardStyle = useAnimatedStyle(() => {
-    const canExpandFully = contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
-    const expandedCardHeight = Math.min(contentHeight.value + CARD_BORDER_WIDTH * 2, maxExpandedHeight);
+    const totalHeight = contentHeight.value + headerHeight + CARD_BORDER_WIDTH * 2;
+    const canExpandFully = totalHeight > MAX_CARD_HEIGHT;
+    const expandedCardHeight = Math.min(totalHeight, maxExpandedHeight);
 
     const outputRange = [0, 0];
 
@@ -111,7 +117,7 @@ export const FadedScrollCard = ({
         [0, MAX_CARD_HEIGHT, expandedCardHeight],
         isDarkMode ? ['#1F2023', '#1F2023', '#242527'] : ['#F5F7F8', '#F5F7F8', '#FBFCFD']
       ),
-      height: cardHeight.value > MAX_CARD_HEIGHT ? cardHeight.value : undefined,
+      height: cardHeight.value >= MAX_CARD_HEIGHT ? cardHeight.value : undefined,
       position: canExpandFully && isFullyExpanded ? 'absolute' : 'relative',
       transform: [
         {
@@ -175,6 +181,7 @@ export const FadedScrollCard = ({
   useAnimatedReaction(
     () => ({ contentHeight: contentHeight.value, isExpanded, isFullyExpanded }),
     ({ contentHeight, isExpanded, isFullyExpanded }, previous) => {
+      const totalHeight = contentHeight + headerHeight;
       if (
         isFullyExpanded !== previous?.isFullyExpanded ||
         isExpanded !== previous?.isExpanded ||
@@ -182,22 +189,22 @@ export const FadedScrollCard = ({
       ) {
         if (isFullyExpanded) {
           const expandedCardHeight =
-            contentHeight + CARD_BORDER_WIDTH * 2 > maxExpandedHeight ? maxExpandedHeight : contentHeight + CARD_BORDER_WIDTH * 2;
-          if (contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT && cardHeight.value >= MAX_CARD_HEIGHT) {
+            totalHeight + CARD_BORDER_WIDTH * 2 > maxExpandedHeight ? maxExpandedHeight : totalHeight + CARD_BORDER_WIDTH * 2;
+          if (totalHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT && cardHeight.value >= MAX_CARD_HEIGHT) {
             cardHeight.value = withTiming(expandedCardHeight, timingConfig);
           } else {
             runOnJS(setIsFullyExpanded)(false);
           }
         } else if (isExpanded) {
           cardHeight.value = withTiming(
-            contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT ? MAX_CARD_HEIGHT : contentHeight + CARD_BORDER_WIDTH * 2,
+            totalHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT ? MAX_CARD_HEIGHT : totalHeight + CARD_BORDER_WIDTH * 2,
             timingConfig
           );
         } else {
           cardHeight.value = withTiming(COLLAPSED_CARD_HEIGHT, timingConfig);
         }
 
-        const enableScroll = isExpanded && contentHeight + CARD_BORDER_WIDTH * 2 > (isFullyExpanded ? maxExpandedHeight : MAX_CARD_HEIGHT);
+        const enableScroll = isExpanded && totalHeight + CARD_BORDER_WIDTH * 2 > (isFullyExpanded ? maxExpandedHeight : MAX_CARD_HEIGHT);
         runOnJS(setScrollEnabled)(enableScroll);
       }
     }
@@ -239,7 +246,6 @@ export const FadedScrollCard = ({
         ]}
       >
         <Animated.View
-          onTouchStart={handleOnLayout}
           ref={cardRef}
           style={[
             {
@@ -253,7 +259,9 @@ export const FadedScrollCard = ({
             cardStyle,
           ]}
         >
+          {header}
           <Animated.ScrollView
+            onTouchStart={handleOnLayout}
             onContentSizeChange={handleContentSizeChange}
             showsVerticalScrollIndicator={false}
             scrollEnabled={scrollEnabled}
