@@ -35,7 +35,7 @@ const timingConfig = {
 type FadedScrollCardProps = {
   cardHeight: SharedValue<number>;
   children: React.ReactNode;
-  header: React.ReactNode;
+  header?: React.ReactNode;
   headerHeight?: number;
   contentHeight: SharedValue<number>;
   expandedCardBottomInset?: number;
