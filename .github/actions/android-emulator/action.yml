@@ -20,6 +20,8 @@ inputs:
   emulators:
     description: 'The number of emulators to run'
     default: '1'
+  emulator-build:
+    description: 'The emulator build to use'
 
 runs:
   using: "composite"
@@ -38,20 +40,21 @@ runs:
         path: |
           ~/.android/avd/*
           ~/.android/adb*
-        key: avd-${{ inputs.api-level }}-${{ inputs.emulators }}-${{ inputs.cores }}-${{ inputs.profile }}-${{ inputs.ram-size }}-${{ inputs.arch }}
+        key: avd-${{ inputs.api-level }}-${{ inputs.emulators }}-${{ inputs.cores }}-${{ inputs.profile }}-${{ inputs.ram-size }}-${{ inputs.arch }}-${{ inputs.emulator-build }}
 
     - name: Create AVD and Generate Snapshot for Caching
       if: steps.avd-cache.outputs.cache-hit != 'true'
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: ${{ inputs.api-level }}
-        target: google_apis
+        target: google_apis_playstore
         arch: ${{ inputs.arch }}
         force-avd-creation: false
-        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
+        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
         disable-animations: false
         profile: ${{ inputs.profile }}
         cores: ${{ inputs.cores }}
         ram-size: ${{ inputs.ram-size }}
+        emulator-build: ${{ inputs.emulator-build }}
         script: |
           echo "Generated AVD snapshot for caching."
