@@ -23,12 +23,12 @@ export const useWalletTransactionCounts = (): WalletTransactionCountsResult => {
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const transactionCount = summaryData?.data?.addresses?.[lowerCaseAddress]?.meta.rainbow?.transactions || 0;
+      const transactionCount = summaryData?.addresses?.[lowerCaseAddress]?.meta.rainbow?.transactions || 0;
       result[lowerCaseAddress] = transactionCount;
     }
 
     return result;
-  }, [isLoading, allAddresses, summaryData?.data?.addresses]);
+  }, [isLoading, allAddresses, summaryData?.addresses]);
 
   return {
     transactionCounts,

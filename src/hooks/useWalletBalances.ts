@@ -37,9 +37,9 @@ const useWalletBalances = (): WalletBalanceResult => {
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value?.toString() || '0';
-      const positionsBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.positions_value?.toString() || '0';
-      const claimablesBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.claimables_value?.toString() || '0';
+      const assetBalance = summaryData?.addresses?.[lowerCaseAddress]?.summary?.asset_value?.toString() || '0';
+      const positionsBalance = summaryData?.addresses?.[lowerCaseAddress]?.summary?.positions_value?.toString() || '0';
+      const claimablesBalance = summaryData?.addresses?.[lowerCaseAddress]?.summary?.claimables_value?.toString() || '0';
 
       const totalAccountBalance = add(assetBalance, add(positionsBalance, claimablesBalance));
 
@@ -54,7 +54,7 @@ const useWalletBalances = (): WalletBalanceResult => {
     }
 
     return result;
-  }, [isLoading, allAddresses, summaryData?.data?.addresses, nativeCurrency]);
+  }, [isLoading, allAddresses, summaryData?.addresses, nativeCurrency]);
 
   return {
     balances,
