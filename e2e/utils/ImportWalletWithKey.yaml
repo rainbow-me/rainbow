@@ -8,7 +8,7 @@ env:
     visible:
       id: welcome-screen
     # the test fail quite often if the timeout is too low
-    timeout: 300000
+    timeout: 30000
 - openLink: rainbow://e2e/import?privateKey=${PKEY}&name=${NAME}
 # The first time a simulator opens a link it shows a dialog.
 - runFlow:
@@ -24,4 +24,4 @@ env:
     visible:
       id: receive-card
     # the test fail quite often if the timeout is too low
-    timeout: 300000
+    timeout: 30000
