@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { AnimatedText, AnimatedTextProps } from '@/design-system';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AnimatedText, AnimatedTextProps, useForegroundColor } from '@/design-system';
 import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/liveTokens/liveTokensStore';
-import { useSharedValue, SharedValue } from 'react-native-reanimated';
+import { useSharedValue, SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useRoute } from '@react-navigation/native';
 
@@ -13,14 +13,16 @@ interface LiveTokenValueParams {
   selector: (token: TokenData) => string;
 }
 
-export function useLiveTokenValue({
+const toUnixTime = (date: string) => new Date(date).getTime() / 1000;
+
+export function useLiveTokenSharedValue({
   tokenId,
   initialValueLastUpdated,
   initialValue,
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): SharedValue<string> {
-  const route = useRoute();
+  const { name: routeName } = useRoute();
   const liveValue = useSharedValue(initialValue);
   // prevValue and liveValue will always be equal, but there is a cost to reading shared values
   const prevValue = useRef(initialValue);
@@ -31,7 +33,7 @@ export function useLiveTokenValue({
       // 'worklet';
       const newValue = selector(token);
 
-      if (token.lastUpdated > initialValueLastUpdated && newValue !== prevValue.current) {
+      if (toUnixTime(token.updatedAt) > initialValueLastUpdated && newValue !== prevValue.current) {
         liveValue.value = newValue;
         prevValue.current = newValue;
       }
@@ -39,18 +41,56 @@ export function useLiveTokenValue({
     [initialValueLastUpdated, liveValue, selector]
   );
 
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated, { debugMode: false });
+  useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated);
 
   useEffect(() => {
     if (!autoSubscriptionEnabled) return;
 
-    addSubscribedToken({ route: route.name, tokenId });
+    addSubscribedToken({ route: routeName, tokenId });
 
     return () => {
-      removeSubscribedToken({ route: route.name, tokenId });
+      removeSubscribedToken({ route: routeName, tokenId });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [autoSubscriptionEnabled, routeName, tokenId]);
+
+  return liveValue;
+}
+
+export function useLiveTokenValue({
+  tokenId,
+  initialValueLastUpdated,
+  initialValue,
+  autoSubscriptionEnabled = true,
+  selector,
+}: LiveTokenValueParams): string {
+  const { name: routeName } = useRoute();
+  const [liveValue, setLiveValue] = useState(initialValue);
+  // prevLiveValue and liveValue will always be equal, but state is async
+  const prevLiveValue = useRef(initialValue);
+
+  const onTokenUpdated = useCallback(
+    (token: TokenData) => {
+      const newValue = selector(token);
+
+      if (toUnixTime(token.updatedAt) > initialValueLastUpdated && newValue !== prevLiveValue.current) {
+        setLiveValue(newValue);
+        prevLiveValue.current = newValue;
+      }
+    },
+    [initialValueLastUpdated, selector]
+  );
+
+  useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated);
+
+  useEffect(() => {
+    if (!autoSubscriptionEnabled) return;
+
+    addSubscribedToken({ route: routeName, tokenId });
+
+    return () => {
+      removeSubscribedToken({ route: routeName, tokenId });
+    };
+  }, [autoSubscriptionEnabled, routeName, tokenId]);
 
   return liveValue;
 }
@@ -65,7 +105,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   selector,
   ...textProps
 }) {
-  const liveValue = useLiveTokenValue({
+  const liveValue = useLiveTokenSharedValue({
     tokenId,
     initialValueLastUpdated,
     initialValue,
@@ -73,11 +113,35 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
     selector,
   });
 
+  const baseColor = useForegroundColor(textProps.color ?? 'label');
+  const textColor = useSharedValue(baseColor);
+
+  useAnimatedReaction(
+    () => liveValue.value,
+    (value, previousValue) => {
+      if (!previousValue || value === previousValue) return;
+
+      let animateToColor = baseColor;
+      if (value > previousValue) {
+        animateToColor = 'green';
+      } else if (value < previousValue) {
+        animateToColor = 'red';
+      }
+
+      textColor.value = withTiming(animateToColor, { duration: 250 }, () => {
+        textColor.value = withDelay(250, withTiming(baseColor, { duration: 250 }));
+      });
+    }
+  );
+
+  const textStyle = useAnimatedStyle(() => {
+    return {
+      color: textColor.value,
+    };
+  });
+
   return (
-    <AnimatedText
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...textProps}
-    >
+    <AnimatedText {...textProps} style={[textStyle, textProps.style]}>
       {liveValue}
     </AnimatedText>
   );

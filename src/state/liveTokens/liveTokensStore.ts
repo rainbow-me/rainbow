@@ -74,7 +74,7 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTok
     const basePrice = parseInt(id.substring(2, 5), 16) / 10 || 10;
     const fluctuation = (Math.random() - 0.1) * 0.5;
     tokens[id] = {
-      price: convertAmountToNativeDisplayWorklet(basePrice + fluctuation, currency),
+      price: (basePrice + fluctuation).toFixed(2),
       change24hPct: (fluctuation * 100).toFixed(2),
       change1hPct: (fluctuation * 100).toFixed(2),
       volume24h: (basePrice * 1000 + fluctuation * 1000).toFixed(2),

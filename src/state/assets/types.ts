@@ -6,6 +6,7 @@ import { QueryStoreState } from '@/state/internal/queryStore/types';
 import { OptionallyPersistedRainbowStore } from '@/state/internal/types';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { UserAssetsStateToPersist } from './persistence';
+import { LiveTokensData } from '../liveTokens/liveTokensStore';
 
 export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
   QueryStoreState<TransformedUserAssetsData, UserAssetsParams, UserAssetsState>,

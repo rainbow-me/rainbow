@@ -19,7 +19,7 @@ import {
   parsedSearchAssetToParsedAddressAsset,
   setUserAssets,
 } from './utils';
-import { convertAmountToNativeDisplayWorklet, multiply } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
@@ -209,29 +209,21 @@ export const createUserAssetsStore = (address: Address | string) =>
       updateTokens: (tokens: LiveTokensData) => {
         set(state => {
           for (const [tokenId, token] of Object.entries(tokens)) {
+            // This indicates the backend has overridden the balance this token due to low liquidity
+            if (!token.valuation.allowed) continue;
+
             const asset = state.userAssets.get(tokenId);
-            // TODO: could get currency from account settings but now sure how backend is going to handle given codex only USD
-            const currency = 'USD';
+            const currency = userAssetsStoreManager.getState().currency;
             // TODO: once backend updates with last updated time, we need to check if our update is actually newer
             if (asset?.price) {
               asset.price = {
                 value: Number(token.price),
-                relative_change_24h: Number(token.priceChange24h),
+                relative_change_24h: Number(token.change24hPct),
               };
-              asset.balance = {
-                amount: asset.balance.amount,
-                display: convertAmountToNativeDisplayWorklet(multiply(token.price, asset.balance.amount), currency),
-              };
-              asset.native = {
-                balance: {
-                  amount: asset.native.balance.amount,
-                  display: convertAmountToNativeDisplayWorklet(multiply(token.price, asset.native.balance.amount), currency),
-                },
-                price: {
-                  change: '0',
-                  amount: Number(token.price),
-                  display: convertAmountToNativeDisplayWorklet(token.price, currency),
-                },
+              asset.native.price = {
+                change: '0',
+                amount: Number(token.price),
+                display: convertAmountToNativeDisplayWorklet(token.price, currency),
               };
             }
           }

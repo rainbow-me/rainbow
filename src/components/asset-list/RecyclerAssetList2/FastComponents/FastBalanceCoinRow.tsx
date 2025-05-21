@@ -14,6 +14,8 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -111,9 +113,27 @@ const MemoizedBalanceCoinRow = React.memo(
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: valueColor }} size="16px / 22px (Deprecated)" weight="medium">
+                {/* <Text align="right" color={{ custom: valueColor }} size="16px / 22px (Deprecated)" weight="medium">
                   {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
-                </Text>
+                </Text> */}
+                {item?.uniqueId && (
+                  <LiveTokenText
+                    selector={token => {
+                      const tokenAmount = item?.balance?.amount;
+                      if (!tokenAmount) return `${nativeCurrencySymbol}0.00`;
+
+                      const { display } = convertRawAmountToNativeDisplay(tokenAmount, 1, token.price, nativeCurrency);
+                      return display;
+                    }}
+                    tokenId={item?.uniqueId}
+                    initialValueLastUpdated={item?.price?.changed_at ?? 0}
+                    initialValue={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
+                    autoSubscriptionEnabled={false}
+                    color={{ custom: valueColor }}
+                    size="14px / 19px (Deprecated)"
+                    weight="medium"
+                  />
+                )}
               </View>
 
               <View style={[sx.row, sx.bottom]}>
