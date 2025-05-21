@@ -50,7 +50,7 @@ runs:
         target: google_apis_playstore
         arch: ${{ inputs.arch }}
         force-avd-creation: false
-        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
+        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: false
         profile: ${{ inputs.profile }}
         cores: ${{ inputs.cores }}

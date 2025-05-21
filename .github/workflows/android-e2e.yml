@@ -135,7 +135,7 @@ jobs:
           target: google_apis_playstore
           arch: ${{ env.ARCH }}
           force-avd-creation: false
-          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
           cores: ${{ env.ANDROID_EMULATOR_CORES }}
