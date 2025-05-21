@@ -5,6 +5,7 @@ import { createQueryStore } from '../internal/createQueryStore';
 import { time } from '@/utils';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import isEqual from 'react-fast-compare';
 
 export type WalletSummaryArgs = {
   addresses: Address[];
@@ -15,7 +16,6 @@ async function fetchWalletSummary(
   { addresses, currency }: WalletSummaryArgs,
   abortController: AbortController | null
 ): Promise<WalletSummary> {
-  console.log('fetching', addresses, currency);
   const { data } = await getAddysHttpClient({ abortController }).post(
     `/summary`,
     JSON.stringify({
@@ -28,7 +28,7 @@ async function fetchWalletSummary(
 }
 
 export const useWalletSummary = () => {
-  return useWalletQueryStore(state => [state.getData(), state.getStatus()] as const);
+  return useWalletQueryStore(state => [state.getData()?.data, state.getStatus()] as const, isEqual);
 };
 
 export const getWalletSummary = () => {
