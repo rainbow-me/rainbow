@@ -6,7 +6,7 @@ on:
 jobs:
   android-e2e:
     if: github.event.pull_request.draft == false
-    runs-on: blacksmith-8vcpu-ubuntu-2204
+    runs-on: blacksmith-8vcpu-ubuntu-2404
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
