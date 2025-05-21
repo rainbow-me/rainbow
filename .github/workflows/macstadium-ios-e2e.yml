@@ -75,11 +75,11 @@ jobs:
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
           ./scripts/e2e-ios-build.sh
-      - uses: futureware-tech/simulator-action@v4
-        id: simulator
-        with:
-          model: 'iPhone 16'
-          wait_for_boot: true
+      # - uses: futureware-tech/simulator-action@v4
+      #   id: simulator
+      #   with:
+      #     model: 'iPhone 16'
+      #     wait_for_boot: true
       # - name: Ensure Simulator is fully booted
       #   run: |
       #     echo "Waiting for simulator to be fully booted..."
