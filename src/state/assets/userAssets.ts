@@ -4,7 +4,7 @@ import reduxStore, { AppState } from '@/redux/store';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { UserAssetsStateToPersist } from './persistence';
-import { QueryEnabledUserAssetsState, UserAssetsStoreType } from './types';
+import { QueryEnabledUserAssetsState, UserAssetsRouter, UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<UserAssetsStoreType, UserAssetsStateToPersist>(
@@ -42,29 +42,15 @@ function useUserAssetsStoreInternal<T>(
   return selector ? store(selector, equalityFn) : store();
 }
 
-export const useUserAssetsStore: UserAssetsStoreType & {
-  getState(address?: Address | string): QueryEnabledUserAssetsState;
-  setState(
-    partial:
-      | QueryEnabledUserAssetsState
-      | Partial<QueryEnabledUserAssetsState>
-      | ((state: QueryEnabledUserAssetsState) => QueryEnabledUserAssetsState | Partial<QueryEnabledUserAssetsState>),
-    replace?: boolean,
-    address?: Address | string
-  ): void;
-} = Object.assign(useUserAssetsStoreInternal, {
+export const useUserAssetsStore: UserAssetsRouter = Object.assign(useUserAssetsStoreInternal, {
   destroy: () => getOrCreateStore().destroy(),
   getInitialState: () => getOrCreateStore().getInitialState(),
   getState: (address?: Address | string) => getOrCreateStore(address).getState(),
   persist,
-  setState: (
-    partial:
-      | QueryEnabledUserAssetsState
-      | Partial<QueryEnabledUserAssetsState>
-      | ((state: QueryEnabledUserAssetsState) => QueryEnabledUserAssetsState | Partial<QueryEnabledUserAssetsState>),
-    replace?: boolean,
-    address?: Address | string
-  ) => getOrCreateStore(address).setState(partial, replace),
+  setState: (...args: Parameters<UserAssetsRouter['setState']>) => {
+    const [partial, replace, address] = args;
+    return getOrCreateStore(address).setState(partial, replace);
+  },
   subscribe: portableSubscribe,
 });
 

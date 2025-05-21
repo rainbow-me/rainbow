@@ -12,7 +12,7 @@ import { BaseRainbowStore } from '../types';
 export type ListenHandle = {
   /** `true` while the listener is attached. */
   isActive: boolean;
-  /** Attach (or re-attach) the listener. Pass `true` to force a fresh attach. */
+  /** Re-attach the listener. Pass `true` to force a fresh attach. */
   resubscribe: (force?: boolean) => void;
   /** Detach the listener. Safe to call more than once. */
   unsubscribe: () => void;
@@ -28,7 +28,7 @@ export type UseListenOptions<Selected> = {
    */
   debugMode?: boolean;
   /**
-   * Dictates whether `react` should be called on store state changes.
+   * Dictates whether `react` should be called on state slice changes.
    * Compares the previous and current selected values.
    * @default Object.is
    */
@@ -70,7 +70,7 @@ const DEFAULT_OPTIONS: UseListenOptions<unknown> = {
  * @param store - Zustand store to listen to. Should be a stable reference.
  * @param selector - Selects the slice of the store state to listen to.
  * @param react - Triggered when the selected slice changes. Receives `(current, previous, unsubscribe)`.
- * @param options - Optional `equalityFn`, `fireImmediately` settings, forwarded to `store.subscribe`.
+ * @param optionsOrEqualityFn - Optional `equalityFn`, `fireImmediately` settings, forwarded to `store.subscribe`.
  *
  * ---
  * 💡 *Note:* Changes in `options` are **not reactive**. They take effect only if a resubscription occurs.
@@ -80,13 +80,13 @@ const DEFAULT_OPTIONS: UseListenOptions<unknown> = {
  * @example
  * ```ts
  * useListen(
- *   useBrowserStore,
- *   state => state.tabIds[0],
- *   (firstTabId, prevFirstTabId) => {
- *     // Runs only when the first tab ID changes
- *     console.log('First tab ID:', firstTabId);
- *     console.log('Previous first tab ID:', prevFirstTabId);
- *   },
+ *   useCandlestickStore,
+ *   state => state.getData(),
+ *   (candles, previous, unsubscribe) => {
+ *     if (candles?.unsupported) return unsubscribe();
+ *     updateTokenPrice(token, getPriceUpdate(candles, previous));
+ *     runOnUI(() => chartManager.value?.setCandles(candles))();
+ *   }
  * );
  * ```
  */
@@ -94,13 +94,13 @@ export function useListen<S, Selected>(
   store: BaseRainbowStore<S>,
   selector: (state: S) => Selected,
   react: (current: Selected, previous: Selected, unsubscribe: () => void) => void,
-  options: UseListenOptions<Selected> = DEFAULT_OPTIONS
+  optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn'] = DEFAULT_OPTIONS
 ): MutableRefObject<Readonly<ListenHandle>> {
-  const listenerRef = useRef<ListenerRef<S, Selected>>(() => createListenerRef(selector, react, options));
+  const listenerRef = useRef<ListenerRef<S, Selected>>(() => createListenerRef(selector, react, optionsOrEqualityFn));
 
   listenerRef.current.react = react;
   listenerRef.current.selector = selector;
-  listenerRef.current.options = options;
+  setOptions(listenerRef, optionsOrEqualityFn);
 
   useLayoutEffect(() => {
     attachListener(store, listenerRef, false);
@@ -164,12 +164,12 @@ function detachListener<S, Selected>(listenerRef: MutableRefObject<ListenerRef<S
 function createListenerRef<S, Selected>(
   selector: (state: S) => Selected,
   react: (current: Selected, previous: Selected, unsubscribe: () => void) => void,
-  options: UseListenOptions<Selected>
+  optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']
 ): ListenerRef<S, Selected> {
   return {
     selector,
     react,
-    options,
+    options: buildOptionsObject(optionsOrEqualityFn),
     isActive: false,
     resubscribe: () => {
       return;
@@ -178,4 +178,18 @@ function createListenerRef<S, Selected>(
       return;
     },
   };
+}
+
+function buildOptionsObject<Selected>(
+  optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']
+): UseListenOptions<Selected> {
+  return typeof optionsOrEqualityFn === 'object' ? optionsOrEqualityFn : { equalityFn: optionsOrEqualityFn };
+}
+
+function setOptions<S, Selected>(
+  listenerRef: MutableRefObject<ListenerRef<S, Selected>>,
+  optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']
+): void {
+  if (typeof optionsOrEqualityFn === 'object') listenerRef.current.options = optionsOrEqualityFn;
+  else listenerRef.current.options.equalityFn = optionsOrEqualityFn;
 }

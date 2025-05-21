@@ -377,7 +377,17 @@ export const buildBriefUniqueTokenList = (
   return result;
 };
 
-export const buildUniqueTokenName = ({ collection, id, name, uniqueId }: any) => {
+export const buildUniqueTokenName = ({
+  collection,
+  id,
+  name,
+  uniqueId,
+}: {
+  collection: { name: string };
+  id: string;
+  name: string;
+  uniqueId: string;
+}) => {
   if (name) return name;
   if (id) return `${collection?.name} #${id}`;
   return uniqueId;

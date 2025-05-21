@@ -6,12 +6,23 @@ import { QueryStoreState } from '@/state/internal/queryStore/types';
 import { OptionallyPersistedRainbowStore } from '@/state/internal/types';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { UserAssetsStateToPersist } from './persistence';
-import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
 
 export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
   QueryStoreState<TransformedUserAssetsData, UserAssetsParams, UserAssetsState>,
   UserAssetsStateToPersist
 >;
+
+export type UserAssetsRouter = UserAssetsStoreType & {
+  getState(address?: Address | string): QueryEnabledUserAssetsState;
+  setState(
+    partial:
+      | QueryEnabledUserAssetsState
+      | Partial<QueryEnabledUserAssetsState>
+      | ((state: QueryEnabledUserAssetsState) => QueryEnabledUserAssetsState | Partial<QueryEnabledUserAssetsState>),
+    replace?: boolean,
+    address?: Address | string
+  ): void;
+};
 
 export type FetchedUserAssetsData = {
   chainIdsWithErrors: ChainId[] | null;

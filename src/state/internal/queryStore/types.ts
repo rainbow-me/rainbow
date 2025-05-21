@@ -48,7 +48,7 @@ export type QueryStatusInfo = {
 /**
  * Expanded options for debouncing query store parameter changes.
  */
-export interface DebounceOptions {
+export type DebounceOptions = {
   /* The number of milliseconds to delay. */
   delay: number;
   /* Specify invoking on the leading edge of the timeout. */
@@ -57,12 +57,12 @@ export interface DebounceOptions {
   maxWait?: number;
   /* Specify invoking on the trailing edge of the timeout. */
   trailing?: boolean;
-}
+};
 
 /**
  * Defines additional options for a data fetch operation.
  */
-export interface FetchOptions {
+export type FetchOptions = {
   /**
    * Overrides the store's default cacheTime for this fetch, which dictates when the data fetched in this operation
    * will become eligible for pruning.
@@ -107,7 +107,7 @@ export interface FetchOptions {
    * Defaults to `true` unless `skipStoreUpdates: true` is specified, in which case the default is `false`.
    */
   updateQueryKey?: boolean;
-}
+};
 
 /**
  * Represents an entry in the query cache, which stores fetched data along with metadata, and error information
@@ -388,7 +388,7 @@ export type ParamResolvable<T, TParams extends Record<string, unknown>, S extend
   | T
   | (($: SignalFunction, store: BaseRainbowStore<S>) => AttachValue<T>);
 
-export interface ResolvedParamsResult<TParams> {
+export type ResolvedParamsResult<TParams> = {
   /**
    * Reactive parameter values wrapped in `AttachValue`, which trigger refetches when they change.
    */
@@ -401,9 +401,9 @@ export interface ResolvedParamsResult<TParams> {
    * Fully resolved parameters, merging both direct and reactive values.
    */
   resolvedParams: TParams;
-}
+};
 
-export interface ResolvedEnabledResult {
+export type ResolvedEnabledResult = {
   /**
    * The reactive enabled state, if provided as a function returning an AttachValue.
    */
@@ -416,7 +416,7 @@ export interface ResolvedEnabledResult {
    * The final enabled state, derived from either the reactive or static value.
    */
   resolvedEnabled: boolean;
-}
+};
 
 /**
  * The keys that make up the internal state of the store.

@@ -19,6 +19,7 @@ export async function fetchSimpleHashNFT(
   tokenId: string,
   chainId: Omit<ChainId, ChainId.goerli> = ChainId.mainnet
 ): Promise<SimpleHashNFT | undefined> {
+  return undefined;
   const simplehashNetwork = useBackendNetworksStore.getState().getChainsSimplehashNetwork()[chainId as ChainId];
 
   if (!simplehashNetwork) {
@@ -41,6 +42,7 @@ export async function fetchSimpleHashNFTListing(
   tokenId: string,
   chainId: Omit<ChainId, ChainId.goerli> = ChainId.mainnet
 ): Promise<SimpleHashListing | undefined> {
+  return undefined;
   // array of all eth listings on OpenSea for this token
   let listings: SimpleHashListing[] = [];
   let cursor = START_CURSOR;
@@ -83,6 +85,7 @@ export async function fetchSimpleHashNFTListing(
  * @param nft
  */
 export async function refreshNFTContractMetadata(nft: UniqueAsset) {
+  return;
   const simplehashNetwork = useBackendNetworksStore.getState().getChainsSimplehashNetwork()[nft.isPoap ? ChainId.gnosis : nft.chainId];
 
   if (!simplehashNetwork) {
@@ -135,6 +138,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
  * @param nft
  */
 export async function reportNFT(nft: UniqueAsset) {
+  return;
   const simplehashNetwork = useBackendNetworksStore.getState().getChainsSimplehashNetwork()[nft.isPoap ? ChainId.gnosis : nft.chainId];
 
   if (!simplehashNetwork) {
