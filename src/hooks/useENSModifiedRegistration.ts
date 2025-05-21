@@ -1,7 +1,7 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useAccountSettings, useENSAvatar, useENSCover, useENSRecords, useENSRegistration, usePrevious } from '.';
+import { useENSAvatar, useENSCover, useENSRecords, useENSRegistration, usePrevious } from '.';
 import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
