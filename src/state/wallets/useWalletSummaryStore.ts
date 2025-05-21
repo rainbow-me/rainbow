@@ -5,6 +5,7 @@ import { createQueryStore } from '../internal/createQueryStore';
 import { time } from '@/utils';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import isEqual from 'react-fast-compare';
 
 export type WalletSummaryArgs = {
   addresses: Address[];
@@ -15,7 +16,6 @@ async function fetchWalletSummary(
   { addresses, currency }: WalletSummaryArgs,
   abortController: AbortController | null
 ): Promise<WalletSummary> {
-  console.log('fetching', addresses, currency);
   const { data } = await getAddysHttpClient({ abortController }).post(
     `/summary`,
     JSON.stringify({
@@ -28,18 +28,22 @@ async function fetchWalletSummary(
 }
 
 export const useWalletSummary = () => {
-  return useWalletQueryStore(state => [state.getData(), state.getStatus()] as const);
+  return useWalletSummaryQueryStore(
+    state => [state.getData()?.data, state.getStatus()] as const,
+    // compare status first as its cheaper:
+    (a, b) => isEqual(a[1], b[1]) && isEqual(a[0], b[0])
+  );
 };
 
 export const getWalletSummary = () => {
-  return useWalletQueryStore.getState().getData();
+  return useWalletSummaryQueryStore.getState().getData();
 };
 
 export const refetchWalletSummary = () => {
-  return useWalletQueryStore.getState().fetch();
+  return useWalletSummaryQueryStore.getState().fetch(undefined, { force: true });
 };
 
-const useWalletQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs>(
+const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs>(
   {
     fetcher: fetchWalletSummary,
     params: {
@@ -48,7 +52,6 @@ const useWalletQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs>(
     },
     staleTime: time.minutes(1),
     cacheTime: time.hours(24),
-    retryDelay: time.minutes(2),
   },
   {
     storageKey: 'walletSummary',
