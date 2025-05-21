@@ -52,7 +52,6 @@ const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummary
     },
     staleTime: time.minutes(1),
     cacheTime: time.hours(24),
-    retryDelay: time.minutes(2),
   },
   {
     storageKey: 'walletSummary',
