@@ -1,6 +1,7 @@
 import { Claimable } from '@/resources/addys/claimables/types';
 import { ClaimablesArgs, getClaimables } from '@/resources/addys/claimables/query';
-import { CacheEntry, createQueryStore } from '@/state/internal/createQueryStore';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { CacheEntry } from '@/state/internal/queryStore/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { time } from '@/utils';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
@@ -35,7 +36,7 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
         const cacheEntry = queryCache[queryKey];
 
         let newClaimables: ClaimablesStore['claimables'] | null = null;
-        let newTotalValue: string = '';
+        let newTotalValue = '';
         let newCacheEntry: CacheEntry<ClaimablesStore> | null = null;
 
         const claimables = getData()?.claimables;

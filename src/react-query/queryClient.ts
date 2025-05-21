@@ -42,5 +42,6 @@ export const persistOptions: Omit<PersistQueryClientOptions, 'queryClient'> = {
     shouldDehydrateQuery: query => Boolean(query.cacheTime !== 0 && (query.queryKey[2] as { persisterVersion?: number })?.persisterVersion),
   },
   maxAge: time.weeks(4),
+  buster: '1',
   persister: new MMKVPersister(),
 };

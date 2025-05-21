@@ -1,11 +1,17 @@
 import { useSelector } from 'react-redux';
 import { Address } from 'viem';
 import reduxStore, { AppState } from '@/redux/store';
+import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
-import { QueryEnabledUserAssetsState } from './types';
+import { UserAssetsStateToPersist } from './persistence';
+import { QueryEnabledUserAssetsState, UserAssetsRouter, UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 
-function getOrCreateStore(address?: Address | string): ReturnType<typeof createUserAssetsStore> {
+const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<UserAssetsStoreType, UserAssetsStateToPersist>(
+  getOrCreateStore
+);
+
+function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
   const rawAddress = address?.length ? address : reduxStore.getState().settings.accountAddress;
   const { address: cachedAddress, cachedStore } = userAssetsStoreManager.getState();
   /**
@@ -18,29 +24,34 @@ function getOrCreateStore(address?: Address | string): ReturnType<typeof createU
   if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 
   const newStore = createUserAssetsStore(accountAddress);
+
+  if (cachedStore) rebindSubscriptions(cachedStore, newStore);
+
   userAssetsStoreManager.setState({ address: accountAddress, cachedStore: newStore });
   return newStore;
 }
 
-function useUserAssetsStoreInternal<T>(selector: (state: QueryEnabledUserAssetsState) => T): T {
+function useUserAssetsStoreInternal(): QueryEnabledUserAssetsState;
+function useUserAssetsStoreInternal<T>(selector: (state: QueryEnabledUserAssetsState) => T, equalityFn?: (a: T, b: T) => boolean): T;
+function useUserAssetsStoreInternal<T>(
+  selector?: (state: QueryEnabledUserAssetsState) => T,
+  equalityFn?: (a: T, b: T) => boolean
+): QueryEnabledUserAssetsState | T {
   const address = useSelector((state: AppState) => state.settings.accountAddress);
-  return getOrCreateStore(address)(selector);
+  const store = getOrCreateStore(address);
+  return selector ? store(selector, equalityFn) : store();
 }
 
-export const useUserAssetsStore = Object.assign(useUserAssetsStoreInternal, {
+export const useUserAssetsStore: UserAssetsRouter = Object.assign(useUserAssetsStoreInternal, {
+  destroy: () => getOrCreateStore().destroy(),
+  getInitialState: () => getOrCreateStore().getInitialState(),
   getState: (address?: Address | string) => getOrCreateStore(address).getState(),
-
-  setState: (
-    partial:
-      | QueryEnabledUserAssetsState
-      | Partial<QueryEnabledUserAssetsState>
-      | ((state: QueryEnabledUserAssetsState) => QueryEnabledUserAssetsState | Partial<QueryEnabledUserAssetsState>),
-    replace?: boolean,
-    address?: Address | string
-  ) => getOrCreateStore(address).setState(partial, replace),
-
-  subscribe: (listener: (state: QueryEnabledUserAssetsState, prevState: QueryEnabledUserAssetsState) => void, address?: Address | string) =>
-    getOrCreateStore(address).subscribe(listener),
+  persist,
+  setState: (...args: Parameters<UserAssetsRouter['setState']>) => {
+    const [partial, replace, address] = args;
+    return getOrCreateStore(address).setState(partial, replace);
+  },
+  subscribe: portableSubscribe,
 });
 
 // TODO: Remove this and consolidate into useUserAssetsStore

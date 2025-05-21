@@ -10,7 +10,8 @@ import { getAddysHttpClient } from '@/resources/addys/client';
 import { AddysConsolidatedError } from '@/resources/addys/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { CacheEntry, createQueryStore } from '@/state/internal/createQueryStore';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { CacheEntry } from '@/state/internal/queryStore/types';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { time } from '@/utils/time';
 
