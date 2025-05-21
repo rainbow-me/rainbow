@@ -40,7 +40,7 @@ export const getWalletSummary = () => {
 };
 
 export const refetchWalletSummary = () => {
-  return useWalletSummaryQueryStore.getState().fetch();
+  return useWalletSummaryQueryStore.getState().fetch(undefined, { force: true });
 };
 
 const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs>(
