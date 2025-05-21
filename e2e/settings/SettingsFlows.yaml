@@ -10,7 +10,7 @@ tags:
           clearState: true
           clearKeychain: true
           arguments:
-          isE2ETest: true
+            isE2ETest: true
       - runFlow: ../utils/Prepare.yaml
       - runFlow: ../utils/ImportWalletWithKey.yaml
 
