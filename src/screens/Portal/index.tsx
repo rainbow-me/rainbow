@@ -26,6 +26,7 @@ export function Portal() {
     <Box style={styles.container}>
       <TapToDismiss />
       <Panel height={params.sheetHeight} innerBorderWidth={0} outerBorderWidth={0} style={styles.panel}>
+        {/* @ts-expect-error react 19 upgrade */}
         {params.children({})}
       </Panel>
     </Box>

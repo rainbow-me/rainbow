@@ -32,7 +32,6 @@ module.exports = function (api) {
     ],
     '@babel/plugin-transform-export-namespace-from',
     'babel-plugin-styled-components',
-    '@babel/plugin-proposal-numeric-separator',
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],

@@ -30,6 +30,12 @@ if (process.env.CI) {
   transformer.babelTransformerPath = require.resolve('./metro.transform.js');
 }
 
+/**
+ * Metro configuration
+ * https://reactnative.dev/docs/metro
+ *
+ * @type {import('@react-native/metro-config').MetroConfig}
+ */
 const rainbowConfig = {
   resolver: {
     blacklistRE,
@@ -76,11 +82,17 @@ const rainbowConfig = {
       } catch (error) {
         console.warn('\n5️⃣ getDefaultConfig cannot resolve: ', moduleName);
       }
+
+      throw new Error(`Unable to resolve module: ${moduleName}`);
     },
   },
   transformer,
 };
 const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
+
+// Need support for import.meta to enable this.
+config.resolver.unstable_enablePackageExports = false;
+
 const sentryConfig = withSentryConfig(config, {
   annotateReactComponents: true,
 });
