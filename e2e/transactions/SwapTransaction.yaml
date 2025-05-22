@@ -35,9 +35,9 @@ tags:
       - assertVisible: 'DAI.*'
       - assertVisible: 'No Balance'
       - hideKeyboard
-      # cant get swap-bottom-action-button to work. investigate after. accessible label ??
+      # cant get swap-bottom-action-button to work, but that would be ideal.
       - longPressOn:
-          point: 675, 2100
+          point: 64%, 94%
       - runFlow: ../utils/MaybeSetupPin.yaml
       - tapOn:
           id: tab-bar-icon-ProfileScreen
