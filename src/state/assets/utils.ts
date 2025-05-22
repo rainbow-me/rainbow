@@ -32,7 +32,6 @@ export async function fetchUserAssets(
   abortController: AbortController | null
 ): Promise<{ chainIdsWithErrors: ChainId[] | null; parsedAssetsDict: ParsedAssetsDictByChain | null } | null> {
   const { address, currency, testnetMode } = params;
-  logger.log('fetchUserAssets', { address, currency, testnetMode });
 
   if (testnetMode) {
     const { assets, chainIdsInResponse } = await fetchAnvilBalancesByChainId(address);

@@ -96,8 +96,6 @@ export async function shouldAuthenticateWithPIN(): Promise<boolean> {
     return false;
   }
 
-  // TODO: Maybe check for existing PIN here.
-  // const validPin = await getExistingPIN();
   const hasPasscode = await kc.isPasscodeAuthAvailable();
   return !hasPasscode;
 }

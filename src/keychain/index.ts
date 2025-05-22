@@ -23,7 +23,7 @@ import { MMKV } from 'react-native-mmkv';
 import * as keychainConstants from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { delay } from '@/utils/delay';
-import { IS_DEV, IS_ANDROID } from '@/env';
+import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import { authenticateWithPINAndCreateIfNeeded, authenticateWithPIN, shouldAuthenticateWithPIN } from '@/handlers/authentication';
 
@@ -231,8 +231,6 @@ export async function set(key: string, value: string, options: KeychainOptions<S
     }
   }
 
-  console.log(options);
-
   await setInternetCredentials(key, key, String(value), options);
 }
 
@@ -386,10 +384,11 @@ export async function setSharedWebCredentials(username: string, password: string
 export async function getPrivateAccessControlOptions(): Promise<SetOptions> {
   logger.debug(`[keychain]: getPrivateAccessControlOptions`, {}, logger.DebugContext.keychain);
 
-  const usePin = await shouldAuthenticateWithPIN();
-  // const isSimulator = IS_DEV && (await DeviceInfo.isEmulator());
+  const isSimulator = IS_DEV && IS_IOS && (await DeviceInfo.isEmulator());
 
-  // if (isSimulator) return {};
+  if (isSimulator) return {};
+
+  const usePin = await shouldAuthenticateWithPIN();
 
   return {
     accessControl: ios ? ACCESS_CONTROL.USER_PRESENCE : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
