@@ -45,7 +45,7 @@ tags:
       # Open diagnostics
       - scrollUntilVisible:
           element:
-          id: app-version-stamp
+            id: app-version-stamp
           direction: DOWN
       # TODO: fix. Currently passing on local but failing on CI.
       # - tapOn:
