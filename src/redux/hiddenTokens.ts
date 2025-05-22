@@ -3,7 +3,7 @@ import { concat, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
-import { getAccountAddress, getIsReadOnlyWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
 const HIDDEN_TOKENS_LOAD_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_LOAD_SUCCESS';
 const HIDDEN_TOKENS_FETCH_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_FETCH_SUCCESS';
@@ -156,8 +156,6 @@ export const addHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTok
  * @param tokenId The token ID to remove.
  */
 export const removeHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTokensUpdateAction>, getState: AppGetState) => {
-  const { getIsReadOnlyWallet, accountAddress } = useWalletsStore.getState();
-
   if (getIsReadOnlyWallet()) return;
 
   const { network } = getState().settings;
@@ -170,7 +168,7 @@ export const removeHiddenToken = (tokenId: string) => (dispatch: Dispatch<Hidden
     type: HIDDEN_TOKENS_UPDATE,
   });
 
-  saveHiddenTokens(updatedHiddenTokens, accountAddress, network);
+  saveHiddenTokens(updatedHiddenTokens, getAccountAddress(), network);
 };
 
 const INITIAL_STATE: HiddenTokensState = {

@@ -10,7 +10,7 @@ import React, { useCallback } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import ImgixImage from '../images/ImgixImage';
 import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
@@ -26,7 +26,6 @@ const GRADIENT: Gradient = {
 
 export const ENSCreateProfileCard = () => {
   const { navigate } = useNavigation();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { width: deviceWidth } = useDimensions();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
@@ -37,7 +36,7 @@ export const ENSCreateProfileCard = () => {
   const { uniqueDomain } = useAccountENSDomains();
 
   const handlePress = useCallback(() => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       if (uniqueDomain?.name) {
         prefetchENSAvatar(uniqueDomain.name);
         prefetchENSRecords(uniqueDomain.name);
@@ -52,7 +51,7 @@ export const ENSCreateProfileCard = () => {
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate, routeName, uniqueDomain?.name]);
+  }, [navigate, routeName, uniqueDomain?.name]);
 
   return (
     <ColorModeProvider value="lightTinted">

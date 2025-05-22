@@ -4,13 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
 import { addHiddenToken as rawAddHiddenToken, removeHiddenToken as rawRemoveHiddenToken } from '../redux/hiddenTokens';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import useWebData from './useWebData';
 
 export default function useHiddenTokens() {
   const dispatch = useDispatch();
   const { updateWebHidden } = useWebData();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const hiddenTokens: string[] = useSelector(
     // @ts-expect-error
@@ -20,6 +19,7 @@ export default function useHiddenTokens() {
   const addHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
       dispatch(rawAddHiddenToken(asset.fullUniqueId));
+      const isReadOnlyWallet = getIsReadOnlyWallet();
       !isReadOnlyWallet && updateWebHidden([...hiddenTokens, asset.fullUniqueId]);
 
       analytics.track(analytics.event.toggledAnNFTAsHidden, {
@@ -28,12 +28,13 @@ export default function useHiddenTokens() {
         isHidden: true,
       });
     },
-    [dispatch, isReadOnlyWallet, hiddenTokens, updateWebHidden]
+    [dispatch, hiddenTokens, updateWebHidden]
   );
 
   const removeHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
       dispatch(rawRemoveHiddenToken(asset.fullUniqueId));
+      const isReadOnlyWallet = getIsReadOnlyWallet();
       !isReadOnlyWallet && updateWebHidden(hiddenTokens.filter(id => id !== asset.fullUniqueId));
 
       analytics.track(analytics.event.toggledAnNFTAsHidden, {
@@ -42,7 +43,7 @@ export default function useHiddenTokens() {
         isHidden: false,
       });
     },
-    [dispatch, isReadOnlyWallet, hiddenTokens, updateWebHidden]
+    [dispatch, hiddenTokens, updateWebHidden]
   );
 
   return {

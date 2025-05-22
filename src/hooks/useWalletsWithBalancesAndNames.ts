@@ -11,7 +11,7 @@ export default function useWalletsWithBalancesAndNames() {
   const { nativeCurrency } = useAccountSettings();
   const walletNames = useWalletsStore(state => state.walletNames);
   const wallets = useWallets();
-  const { balances } = useWalletBalances(wallets || {});
+  const { balances } = useWalletBalances();
   const hiddenBalances = userAssetsStoreManager(state => state.hiddenAssetBalances);
 
   const walletsWithBalancesAndNames = useMemo(
