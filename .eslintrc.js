@@ -1,3 +1,5 @@
+// eslint.config.js / .eslintrc.js  (CommonJS style)
+
 const fs = require('fs');
 const path = require('path');
 const { parse: babelParse } = require('@babel/parser');
@@ -20,11 +22,19 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
 
 module.exports = {
   root: true,
-  extends: ['rainbow'],
+  extends: ['rainbow', 'plugin:yml/standard'],
   parserOptions: {
     project: ['./tsconfig.json'],
   },
+  plugins: ['yml'],
   globals: globalVars,
+
+  overrides: [
+    {
+      files: ['*.yml', '*.yaml'],
+      parser: 'yaml-eslint-parser',
+    },
+  ],
   rules: {
     'no-restricted-imports': [
       'warn',
