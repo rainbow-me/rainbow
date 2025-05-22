@@ -1,5 +1,3 @@
-// eslint.config.js / .eslintrc.js  (CommonJS style)
-
 const fs = require('fs');
 const path = require('path');
 const { parse: babelParse } = require('@babel/parser');
