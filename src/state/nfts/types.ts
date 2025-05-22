@@ -12,10 +12,12 @@ export type NftParams = {
   walletAddress: Address | string;
   sortBy: NftCollectionSortCriterion;
   sortDirection: SortDirection;
+  collectionId?: CollectionId;
 };
 
 export type NftStore = {
   collections: Map<CollectionId, Collection>;
+  nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
 };
 
 export type Collection = {
@@ -27,14 +29,13 @@ export type Collection = {
 
 export interface NftsState {
   address: Address | string;
+  collectionId: CollectionId | undefined;
   nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
   collections: Map<CollectionId, Collection>;
   getCollection: (collectionId: CollectionId) => Collection | undefined;
   getCollections: () => Collection[];
   getNftsByCollection: (collectionName: CollectionName) => Map<UniqueId, UniqueAsset> | undefined;
   getNft: (collectionName: CollectionName, uniqueId: UniqueId) => UniqueAsset | undefined;
-
-  fetchNftsForCollection: (collectionId: CollectionId) => Promise<void>;
 }
 
 export type NftsStateRequiredForPersistence = Pick<NftsState, 'nftsByCollection' | 'collections'>;

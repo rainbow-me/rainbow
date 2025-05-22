@@ -481,6 +481,7 @@ query getNftCollections($walletAddress: String!, $sortBy: NFTCollectionSortCrite
     nft_ids
     collection_details {
       image_url
+      spam_score
       name
     }
   }

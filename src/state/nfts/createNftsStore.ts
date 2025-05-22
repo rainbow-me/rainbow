@@ -4,108 +4,98 @@ import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
 import { nftsStoreManager } from './nftsStoreManager';
-import { NftsState, NftParams, NftStore, NftsStateRequiredForPersistence, CollectionId } from './types';
+import { NftsState, NftParams, NftStore, NftsStateRequiredForPersistence } from './types';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 
-const fetchCollections = async (params: NftParams) => {
+const fetchNftData = async (params: NftParams) => {
   try {
     if (!params.walletAddress) return null;
 
-    const { walletAddress, sortBy, sortDirection } = params;
+    const { walletAddress, sortBy, sortDirection, collectionId } = params;
+
+    if (collectionId) {
+      const data = await arcClient.getNftsByCollection({ walletAddress, sortBy, sortDirection, collectionId });
+      return data;
+    }
+
     const data = await arcClient.getNftCollections({ walletAddress, sortBy, sortDirection });
     return data;
   } catch (error) {
+    console.log(error);
     logger.error(new RainbowError('Failed to fetch collections data', error));
     return null;
   }
 };
 
-const fetchNftsForCollection = async (params: NftParams & { collectionId: CollectionId }) => {
-  try {
-    if (!params.walletAddress) return null;
-
-    const { walletAddress, sortBy, sortDirection, collectionId } = params;
-    const data = await arcClient.getNftsByCollection({ walletAddress, sortBy, sortDirection, collectionId });
-    return data;
-  } catch (error) {
-    logger.error(new RainbowError('Failed to fetch collection data', error), {
-      collectionId: params.collectionId,
-    });
-    return null;
-  }
-};
-
-export type RawCollectionResponse = Awaited<ReturnType<typeof fetchCollections>>;
+export type RawCollectionResponse = Awaited<ReturnType<typeof fetchNftData>>;
 
 export const createNftsStore = (address: Address | string) =>
   createQueryStore<RawCollectionResponse, NftParams, NftsState, NftStore>(
     {
-      fetcher: fetchCollections,
+      fetcher: fetchNftData,
       transform: (data, params) => {
-        if (!data?.nftCollections?.length || !params.walletAddress) {
-          return { collections: new Map() } satisfies NftStore;
+        if (!data) return { collections: new Map(), nftsByCollection: new Map() } satisfies NftStore;
+
+        if ('nftCollections' in data) {
+          return {
+            collections: new Map(
+              data.nftCollections.map(item => [
+                item.collection_id,
+                {
+                  image: item.collection_details.image_url,
+                  name: item.collection_details.name,
+                  total: item.nft_ids.length.toString(),
+                  nftIds: item.nft_ids ?? [],
+                },
+              ])
+            ),
+            nftsByCollection: new Map(),
+          };
         }
+
+        const collectionNfts = new Map();
+        data.nftsByCollection.forEach(item => {
+          collectionNfts.set(item.nft_id!, simpleHashNFTToUniqueAsset(item, params.walletAddress));
+        });
+
         return {
-          collections: new Map(
-            data.nftCollections.map(item => [
-              item.collection_id,
-              {
-                image: item.collection_details.image_url,
-                name: item.collection_details.name,
-                total: item.nft_ids.length.toString(),
-                nftIds: item.nft_ids ?? [],
-              },
-            ])
-          ),
-        } satisfies NftStore;
+          collections: new Map(),
+          nftsByCollection: new Map([[params.collectionId, collectionNfts]]),
+        };
       },
       setData: ({ data, set }) => {
-        if (!data?.collections.size) return;
-        set({ collections: new Map(data.collections) });
+        set(state => {
+          if (data.collections.size) {
+            state.collections = new Map(data.collections);
+          }
+
+          if (data.nftsByCollection.size) {
+            state.nftsByCollection = new Map(data.nftsByCollection);
+          }
+
+          return state;
+        });
       },
       keepPreviousData: true,
       cacheTime: time.hours(1),
+      // staleTime: time.minutes(10),
       staleTime: time.seconds(10),
       params: {
         walletAddress: address,
         sortBy: $ => $(nftsStoreManager, state => state.sortBy),
         sortDirection: $ => $(nftsStoreManager, state => state.sortDirection),
+        collectionId: undefined,
       },
     },
-    (set, get) => ({
+    (_, get) => ({
       address,
+      collectionId: undefined,
       collections: new Map(),
       nftsByCollection: new Map(),
       getCollection: collectionId => get().collections.get(collectionId),
       getCollections: () => Array.from(get().collections.values()),
       getNftsByCollection: collectionId => get().nftsByCollection.get(collectionId),
       getNft: (collectionId, uniqueId) => get().nftsByCollection.get(collectionId)?.get(uniqueId),
-
-      fetchNftsForCollection: async collectionId => {
-        const { queryKey, nftsByCollection } = get();
-        const [sortBy, sortDirection, walletAddress] = JSON.parse(queryKey);
-
-        if (!walletAddress || !sortBy || !sortDirection) return;
-
-        const data = await fetchNftsForCollection({ walletAddress, sortBy, sortDirection, collectionId });
-
-        if (!data?.nftsByCollection?.length) return;
-
-        const nftsForCollection = new Map();
-
-        data.nftsByCollection.forEach(item => {
-          nftsForCollection.set(item.nft_id!, simpleHashNFTToUniqueAsset(item, walletAddress));
-        });
-
-        console.log({
-          nftsByCollection,
-          nftsForCollection,
-        });
-
-        set({
-          nftsByCollection: new Map(nftsByCollection).set(collectionId, nftsForCollection),
-        });
-      },
     }),
 
     address.length

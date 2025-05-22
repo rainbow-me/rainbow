@@ -18,7 +18,6 @@ type Props = {
 export default React.memo(function WrappedTokenFamilyHeader({ name, total, image, theme, testID, uid }: Props) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
-  const fetchNftsForCollection = useNftsStore(state => state.fetchNftsForCollection);
 
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
@@ -31,7 +30,13 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
 
   useEffect(() => {
     if (isFamilyOpen) {
-      fetchNftsForCollection(uid);
+      useNftsStore.getState().fetch(
+        { collectionId: uid },
+        {
+          force: true,
+          staleTime: 0,
+        }
+      );
     }
   }, [isFamilyOpen]);
 
