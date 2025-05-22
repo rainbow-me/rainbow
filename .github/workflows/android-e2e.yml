@@ -6,7 +6,7 @@ on:
 jobs:
   android-e2e:
     if: github.event.pull_request.draft == false
-    runs-on: blacksmith-8vcpu-ubuntu-2204
+    runs-on: blacksmith-8vcpu-ubuntu-2404
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -22,6 +22,7 @@ jobs:
       ANDROID_EMULATOR_PROFILE: pixel_6
       ANDROID_EMULATOR_CORES: 4
       ANDROID_EMULATOR_RAM_SIZE: 8192
+      ANDROID_EMULATOR_BUILD: 10696886
       ARTIFACTS_FOLDER: e2e-artifacts
       ARCH: x86_64
 
@@ -124,20 +125,22 @@ jobs:
           cores: ${{ env.ANDROID_EMULATOR_CORES }}
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
           arch: ${{ env.ARCH }}
+          emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
 
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         id: e2e_test
         with:
           api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
-          target: google_apis
+          target: google_apis_playstore
           arch: ${{ env.ARCH }}
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-metrics
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
           cores: ${{ env.ANDROID_EMULATOR_CORES }}
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+          emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
           script: ./scripts/e2e-android-ci.sh
 
       - name: Upload artifacts
