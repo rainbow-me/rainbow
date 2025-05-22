@@ -19,20 +19,22 @@ export type NftStore = {
 };
 
 export type Collection = {
-  uniqueId: string;
   image: string | null | undefined;
   name: string;
   total: string;
+  nftIds: string[];
 };
 
 export interface NftsState {
   address: Address | string;
   nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
   collections: Map<CollectionId, Collection>;
-  getCollection: (name: CollectionName) => Collection | undefined;
+  getCollection: (collectionId: CollectionId) => Collection | undefined;
   getCollections: () => Collection[];
   getNftsByCollection: (collectionName: CollectionName) => Map<UniqueId, UniqueAsset> | undefined;
   getNft: (collectionName: CollectionName, uniqueId: UniqueId) => UniqueAsset | undefined;
+
+  fetchNftsForCollection: (collectionId: CollectionId) => Promise<void>;
 }
 
 export type NftsStateRequiredForPersistence = Pick<NftsState, 'nftsByCollection' | 'collections'>;

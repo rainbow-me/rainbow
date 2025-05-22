@@ -136,7 +136,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.NFTS_EMPTY:
       return <NFTEmptyState />;
     case CellType.FAMILY_HEADER: {
-      const { name, image, total } = data as NFTFamilyExtraData;
+      const { name, image, total, uid } = data as NFTFamilyExtraData;
 
       return (
         <WrappedTokenFamilyHeader
@@ -145,11 +145,12 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
           testID={`token-family-header-${name}`}
           theme={extendedState.theme}
           total={total}
+          uid={uid}
         />
       );
     }
     case CellType.NFT: {
-      const { index, uniqueId } = data as NFTExtraData;
+      const { index, uniqueId, collectionId } = data as NFTExtraData;
 
       return (
         <WrappedNFT
@@ -157,6 +158,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
           onPress={extendedState.onPressUniqueToken}
           placement={index % 2 === 0 ? 'left' : 'right'}
           uniqueId={uniqueId}
+          collectionId={collectionId}
         />
       );
     }

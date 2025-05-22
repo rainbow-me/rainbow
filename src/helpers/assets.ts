@@ -10,6 +10,7 @@ import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { CollectionName, Collection } from '@/state/nfts/types';
 
 const COINS_TO_SHOW = 5;
 
@@ -245,7 +246,7 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
 };
 
 export const buildBriefUniqueTokenList = (
-  uniqueTokens: UniqueAsset[],
+  collections: Map<CollectionName, Collection>,
   selectedShowcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
@@ -256,30 +257,30 @@ export const buildBriefUniqueTokenList = (
 ) => {
   const hiddenUniqueTokensIds: string[] = [];
   const uniqueTokensInShowcaseIds: string[] = [];
-  const filteredUniqueTokens: UniqueAsset[] = [];
+  const filteredCollections: Map<CollectionName, Collection> = new Map();
 
-  for (const token of uniqueTokens) {
-    if (hiddenTokens.includes(token.fullUniqueId)) {
-      hiddenUniqueTokensIds.push(token.uniqueId);
+  for (const [uniqueId, collection] of collections) {
+    if (hiddenTokens.includes(uniqueId)) {
+      hiddenUniqueTokensIds.push(uniqueId);
       continue;
     }
 
-    if (selectedShowcaseTokens.includes(token.uniqueId)) {
-      uniqueTokensInShowcaseIds.push(token.uniqueId);
+    if (selectedShowcaseTokens.includes(uniqueId)) {
+      uniqueTokensInShowcaseIds.push(uniqueId);
     }
 
     if (listType === 'select-nft') {
-      const format = getUniqueTokenFormat(token);
-      const type = getUniqueTokenType(token);
-      if (format === 'image' && type === 'NFT') {
-        filteredUniqueTokens.push(token);
-      }
+      // @ts-expect-error TODO - need to address this issue here
+      // const format = getUniqueTokenFormat(collection);
+      // const type = getUniqueTokenType(collection);
+      // if (format === 'image' && type === 'NFT') {
+      //   filteredCollections.set(uniqueId, collection);
+      // }
+      filteredCollections.set(uniqueId, collection);
     } else {
-      filteredUniqueTokens.push(token);
+      filteredCollections.set(uniqueId, collection);
     }
   }
-
-  const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.familyName);
 
   const result: CellTypes[] = [
     {
@@ -329,28 +330,28 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
   }
 
-  if (!Object.keys(assetsByName).length) {
+  if (!filteredCollections.size) {
     if (!isFetchingNfts) {
       result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
     } else {
       result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading-${nftSort}` });
     }
   } else {
-    for (const family of Object.keys(assetsByName)) {
+    for (const [collectionId, collection] of filteredCollections) {
       result.push({
-        image: assetsByName[family][0].familyImage ?? undefined,
-        name: family,
-        total: assetsByName[family].length,
+        image: collection.image ?? undefined,
+        name: collection.name,
+        total: collection.total,
         type: CellType.FAMILY_HEADER,
-        uid: family,
+        uid: collectionId,
       });
-      const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
-      for (let index = 0; index < tokens.length; index++) {
-        const uniqueId = tokens[index];
-        result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId });
+
+      for (let index = 0; index < collection.nftIds.length; index++) {
+        const uniqueId = collection.nftIds[index];
+        result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId, collectionId });
       }
 
-      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${family}-space-after` });
+      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${collectionId}-space-after` });
     }
   }
 

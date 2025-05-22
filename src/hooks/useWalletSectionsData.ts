@@ -19,7 +19,7 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useNftsStore } from '@/state/nfts/nfts';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -35,7 +35,7 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { nftSort, nftSortDirection } = useNftSort();
+  const { nftSort } = useNftSort();
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
   const { showcaseTokens } = useShowcaseTokens();
@@ -78,17 +78,8 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
-  const {
-    data: { nfts: uniqueTokens },
-    isLoading: isFetchingNfts,
-  } = useLegacyNFTs({
-    address: accountAddress,
-    sortBy: nftSort,
-    sortDirection: nftSortDirection,
-    config: {
-      enabled: !!accountAddress,
-    },
-  });
+  const collections = useNftsStore(state => state.collections);
+  const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -129,7 +120,7 @@ export default function useWalletSectionsData({
       isReadOnlyWallet,
       listType: type,
       showcaseTokens,
-      uniqueTokens,
+      collections,
       isFetchingNfts,
       experimentalConfig,
       positions,
@@ -139,7 +130,7 @@ export default function useWalletSectionsData({
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
-    const hasNFTs = uniqueTokens.length > 0;
+    const hasNFTs = collections.size > 0;
 
     return {
       hasNFTs,
@@ -164,7 +155,7 @@ export default function useWalletSectionsData({
     isReadOnlyWallet,
     type,
     showcaseTokens,
-    uniqueTokens,
+    collections,
     isFetchingNfts,
     experimentalConfig,
     positions,
