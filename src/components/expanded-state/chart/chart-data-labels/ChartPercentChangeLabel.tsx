@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { SharedValue, useAnimatedStyle, useDerivedValue, DerivedValue } from 'react-native-reanimated';
 import { AnimatedText, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useChartData } from '@/react-native-animated-charts/src';
@@ -10,7 +10,7 @@ import { toFixedWorklet } from '@/safe-math/SafeMath';
 const UP_ARROW = IS_ANDROID ? '' : '↑';
 const DOWN_ARROW = IS_ANDROID ? '' : '↓';
 
-export default memo(function ChartPercentChangeLabel({ latestChange }: { latestChange: DerivedValue<number | undefined> }) {
+export default memo(function ChartPercentChangeLabel({ latestChange }: { latestChange: SharedValue<string | undefined> }) {
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
@@ -33,7 +33,7 @@ export default memo(function ChartPercentChangeLabel({ latestChange }: { latestC
     if (firstValue && lastValue) {
       return ((lastValue - firstValue) / firstValue) * 100;
     } else if (latestChange.value) {
-      return latestChange.value;
+      return Number(latestChange.value);
     }
 
     return null;
