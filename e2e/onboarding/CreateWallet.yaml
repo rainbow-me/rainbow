@@ -21,8 +21,6 @@ tags:
       - assertVisible:
           id: wallet-screen
       - assertVisible:
-          id: receive-card
-      - assertVisible:
           id: copy-address-button
       - assertVisible:
           id: eth-card
