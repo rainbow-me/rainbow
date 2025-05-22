@@ -1,5 +1,4 @@
-import { IS_ANDROID, IS_DEV } from '@/env';
-import { authenticateWithPINAndCreateIfNeeded, getExistingPIN } from '@/handlers/authentication';
+import { authenticateWithPINAndCreateIfNeeded, getExistingPIN, shouldAuthenticateWithPIN } from '@/handlers/authentication';
 import * as keychain from '@/keychain';
 
 const FAKE_LOCAL_AUTH_KEY = `fake-local-auth-key`;
@@ -13,13 +12,13 @@ async function maybeSaveFakeAuthKey() {
 }
 
 export async function isAuthenticated(): Promise<boolean> {
-  const hasBiometricsEnabled = await keychain.getSupportedBiometryType();
-  if (hasBiometricsEnabled || !IS_ANDROID || IS_DEV) {
+  const usePin = await shouldAuthenticateWithPIN();
+  if (!usePin) {
     await maybeSaveFakeAuthKey();
     const options = await keychain.getPrivateAccessControlOptions();
     const { value } = await keychain.get(FAKE_LOCAL_AUTH_KEY, options);
     return Boolean(value === FAKE_LOCAL_AUTH_VALUE);
-  } else if (!hasBiometricsEnabled && IS_ANDROID) {
+  } else {
     // if user does not have biometrics enabled, we fallback to PIN
     try {
       const pin = await authenticateWithPINAndCreateIfNeeded();
@@ -29,6 +28,4 @@ export async function isAuthenticated(): Promise<boolean> {
       return false;
     }
   }
-
-  return false;
 }

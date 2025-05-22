@@ -22,7 +22,12 @@ import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
-import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, decryptPIN } from '@/handlers/authentication';
+import {
+  decryptPIN,
+  maybeAuthenticateWithPIN,
+  maybeAuthenticateWithPINAndCreateIfNeeded,
+  shouldAuthenticateWithPIN,
+} from '@/handlers/authentication';
 import * as i18n from '@/languages';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
 import { cloudPlatform } from '@/utils/platform';
@@ -208,14 +213,11 @@ export async function backupAllWalletsToCloud({
   dispatch: AppDispatch;
 }) {
   let userPIN: string | undefined;
-  const hasBiometricsEnabled = await kc.getSupportedBiometryType();
-  if (IS_ANDROID && !hasBiometricsEnabled) {
-    try {
-      userPIN = (await authenticateWithPIN()) ?? undefined;
-    } catch (e) {
-      onError?.(i18n.t(i18n.l.back_up.wrong_pin));
-      return;
-    }
+  try {
+    userPIN = await maybeAuthenticateWithPIN();
+  } catch (e) {
+    onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+    return;
   }
 
   try {
@@ -343,8 +345,7 @@ export async function addWalletToCloudBackup({
 export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<string, string>, userPIN?: string) {
   const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
-  const hasBiometricsEnabled = await kc.getSupportedBiometryType();
-  if (IS_ANDROID && !hasBiometricsEnabled) {
+  if (await shouldAuthenticateWithPIN()) {
     /*
      * The PIN code is passed as an argument.
      * Authentication is handled at the call site.
@@ -445,13 +446,10 @@ export async function restoreCloudBackup({
 
     // ANDROID ONLY - pin auth if biometrics are disabled
     let userPIN: string | undefined;
-    const hasBiometricsEnabled = await kc.getSupportedBiometryType();
-    if (IS_ANDROID && !hasBiometricsEnabled) {
-      try {
-        userPIN = await authenticateWithPINAndCreateIfNeeded();
-      } catch (e) {
-        return RestoreCloudBackupResultStates.incorrectPinCode;
-      }
+    try {
+      userPIN = await maybeAuthenticateWithPINAndCreateIfNeeded();
+    } catch (e) {
+      return RestoreCloudBackupResultStates.incorrectPinCode;
     }
 
     const restoredSuccessfully = await restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
