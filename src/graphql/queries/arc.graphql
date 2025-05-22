@@ -474,6 +474,17 @@ query getNFTs($walletAddress: String!, $sortBy: NFTCollectionSortCriterion, $sor
   }
 }
 
+query getNftCollections($walletAddress: String!, $sortBy: NFTCollectionSortCriterion, $sortDirection: SortDirection) {
+  nftCollections(walletAddress: $walletAddress, sortBy: $sortBy, sortDirection: $sortDirection) {
+    collection_id
+    total_copies_owned
+    collection_details {
+      image_url
+      name
+    }
+  }
+}
+
 query getFeaturedResults($placementId: String!, $walletAddress: String!, $country: String, $limit: Int) {
   featuredResults(placementId: $placementId, walletAddress: $walletAddress, country: $country, limit: $limit) {
     items {

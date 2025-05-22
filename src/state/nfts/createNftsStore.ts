@@ -3,16 +3,15 @@ import { arcClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
-import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { nftsStoreManager } from './nftsStoreManager';
-import { NftsState, NftParams, NftStore } from './types';
+import { NftsState, NftParams, NftStore, NftsStateRequiredForPersistence, CollectionName, UniqueId } from './types';
 
-const fetchNfts = async (params: NftParams) => {
+const fetchCollections = async (params: NftParams) => {
   try {
     if (!params.walletAddress) return null;
 
     const { walletAddress, sortBy, sortDirection } = params;
-    const data = await arcClient.getNFTs({ walletAddress, sortBy, sortDirection });
+    const data = await arcClient.getNftCollections({ walletAddress, sortBy, sortDirection });
     return data;
   } catch (error) {
     logger.error(new RainbowError('Failed to fetch NFT data', error));
@@ -20,29 +19,33 @@ const fetchNfts = async (params: NftParams) => {
   }
 };
 
-export type RawNftResponse = Awaited<ReturnType<typeof fetchNfts>>;
+export type RawCollectionResponse = Awaited<ReturnType<typeof fetchCollections>>;
 
 export const createNftsStore = (address: Address | string) =>
-  createQueryStore<RawNftResponse, NftParams, NftsState, NftStore>(
+  createQueryStore<RawCollectionResponse, NftParams, NftsState, NftStore>(
     {
-      fetcher: fetchNfts,
+      fetcher: fetchCollections,
       transform: (data, params) => {
-        if (!data?.nftsV2?.length || !params.walletAddress) {
-          return { nfts: new Map() } satisfies NftStore;
+        if (!data?.nftCollections?.length || !params.walletAddress) {
+          return { collections: new Map() } satisfies NftStore;
         }
-        const nfts = data.nftsV2.map(nft => simpleHashNFTToUniqueAsset(nft, params.walletAddress));
-        return { nfts: new Map(nfts.map(item => [item.uniqueId, item])) } satisfies NftStore;
+        return {
+          collections: new Map(
+            data.nftCollections.map(item => [
+              item.collection_id,
+              {
+                uniqueId: item.collection_id,
+                image: item.collection_details.image_url,
+                name: item.collection_details.name,
+                total: item.total_copies_owned,
+              },
+            ])
+          ),
+        } satisfies NftStore;
       },
       setData: ({ data, set }) => {
-        if (!data?.nfts || !data.nfts.size) return;
-
-        set(state => {
-          const nftsMap = new Map(state.nfts);
-          for (const [uniqueId, asset] of data.nfts) {
-            nftsMap.set(uniqueId, asset);
-          }
-          return { nfts: nftsMap };
-        });
+        if (!data?.collections.size) return;
+        set({ collections: new Map(data.collections) });
       },
       keepPreviousData: true,
       cacheTime: time.hours(1),
@@ -53,18 +56,23 @@ export const createNftsStore = (address: Address | string) =>
         sortDirection: $ => $(nftsStoreManager, state => state.sortDirection),
       },
     },
-
     (_, get) => ({
       address,
-      nfts: new Map(),
-      getNft: uniqueId => get().nfts.get(uniqueId) || null,
-      getNfts: () => Array.from(get().nfts.values()),
-      getUniqueIds: () => Array.from(get().nfts.keys()),
+      collections: new Map(),
+      nftsByCollection: new Map(),
+      getCollection: (name: CollectionName) => get().collections.get(name),
+      getCollections: () => Array.from(get().collections.values()),
+      getNftsByCollection: (collectionName: CollectionName) => get().nftsByCollection.get(collectionName),
+      getNft: (collectionName: CollectionName, uniqueId: UniqueId) => get().nftsByCollection.get(collectionName)?.get(uniqueId),
     }),
 
     address.length
       ? {
-          partialize: state => ({ nfts: state.nfts }) satisfies NftStore,
+          partialize: state =>
+            ({
+              collections: state.collections,
+              nftsByCollection: state.nftsByCollection,
+            }) satisfies NftsStateRequiredForPersistence,
           storageKey: `nfts_${address}`,
           version: 1,
         }

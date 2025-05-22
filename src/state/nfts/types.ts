@@ -4,7 +4,9 @@ import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated
 import { QueryStoreState } from '@/state/internal/queryStore/types';
 import { OptionallyPersistedRainbowStore } from '@/state/internal/types';
 
+export type CollectionId = string;
 export type UniqueId = string;
+export type CollectionName = string | 'Showcase';
 
 export type NftParams = {
   walletAddress: Address | string;
@@ -13,18 +15,32 @@ export type NftParams = {
 };
 
 export type NftStore = {
-  nfts: Map<UniqueId, UniqueAsset>;
+  collections: Map<CollectionId, Collection>;
+};
+
+export type Collection = {
+  uniqueId: string;
+  image: string | null | undefined;
+  name: string;
+  total: string;
 };
 
 export interface NftsState {
   address: Address | string;
-  nfts: Map<UniqueId, UniqueAsset>;
-  getNft: (uniqueId: UniqueId) => UniqueAsset | null;
-  getNfts: () => UniqueAsset[];
-  getUniqueIds: () => UniqueId[];
+  nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
+  collections: Map<CollectionId, Collection>;
+  getCollection: (name: CollectionName) => Collection | undefined;
+  getCollections: () => Collection[];
+  getNftsByCollection: (collectionName: CollectionName) => Map<UniqueId, UniqueAsset> | undefined;
+  getNft: (collectionName: CollectionName, uniqueId: UniqueId) => UniqueAsset | undefined;
 }
 
-export type NftsStoreType = OptionallyPersistedRainbowStore<QueryStoreState<NftStore, NftParams, NftsState>, Partial<NftsState>>;
+export type NftsStateRequiredForPersistence = Pick<NftsState, 'nftsByCollection' | 'collections'>;
+
+export type NftsStoreType = OptionallyPersistedRainbowStore<
+  QueryStoreState<NftStore, NftParams, NftsState>,
+  Partial<NftsStateRequiredForPersistence>
+>;
 
 export type QueryEnabledNftsState = ReturnType<NftsStoreType['getState']>;
 
