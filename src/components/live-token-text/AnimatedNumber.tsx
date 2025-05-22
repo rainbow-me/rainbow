@@ -1,6 +1,16 @@
 import { TextProps, useTextStyle } from '@/design-system';
-import React, { useMemo, useRef, useEffect, useCallback, MutableRefObject } from 'react';
-import { Animated as RNAnimated, Text, StyleProp, TextStyle, StyleSheet, ViewStyle, View, useAnimatedValue } from 'react-native';
+import React, { useMemo, useRef, useEffect, useCallback, MutableRefObject, useState } from 'react';
+import {
+  Animated as RNAnimated,
+  Text,
+  StyleProp,
+  TextStyle,
+  StyleSheet,
+  ViewStyle,
+  View,
+  useAnimatedValue,
+  LayoutAnimation,
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,6 +25,10 @@ import Animated, {
   WithTimingConfig,
   FadeOut,
   SharedValue,
+  useAnimatedReaction,
+  runOnJS,
+  DerivedValue,
+  LayoutAnimationConfig,
 } from 'react-native-reanimated';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -25,8 +39,10 @@ import { measureText } from '@/utils';
 // - add trend prop to animate individual digit color red / green
 // - add same exit animation translation fixing for separators
 // - handle value changes in middle of animations
+// - require and document why text alignment prop is required
 
-const DEFAULT_ANIMATION_DURATION = 600;
+const DEFAULT_ANIMATION_DURATION = 700;
+// credit to https://github.com/barvian/number-flow
 const EASING_KEYFRAMES = [
   0, 0.005, 0.019, 0.039, 0.066, 0.096, 0.129, 0.165, 0.202, 0.24, 0.278, 0.316, 0.354, 0.39, 0.426, 0.461, 0.494, 0.526, 0.557, 0.586,
   0.614, 0.64, 0.665, 0.689, 0.711, 0.731, 0.751, 0.769, 0.786, 0.802, 0.817, 0.831, 0.844, 0.856, 0.867, 0.877, 0.887, 0.896, 0.904, 0.912,
@@ -69,19 +85,28 @@ interface DigitProps {
   previousWidthDelta: SharedValue<number>;
   textStyle?: StyleProp<TextStyle>;
   numeralWidthsRef: MutableRefObject<number[]>;
+  isInitialRenderRef: MutableRefObject<boolean>;
 }
 
-const Digit = React.memo(function Digit({ part, textStyle, timingConfig, digitHeight, previousWidthDelta, numeralWidthsRef }: DigitProps) {
+const Digit = React.memo(function Digit({
+  part,
+  textStyle,
+  timingConfig,
+  digitHeight,
+  previousWidthDelta,
+  numeralWidthsRef,
+  isInitialRenderRef,
+}: DigitProps) {
   const value = parseInt(part.value);
-  const isInitialMount = useRef(true);
-  const translateY = useSharedValue(0);
+  const isDigitInitialRenderRef = useRef(true);
+  const translateY = useSharedValue(-value * digitHeight);
   const currentDigitWidth = useSharedValue(numeralWidthsRef.current[value]);
-  // const digitWidth = useAnimatedValue(numeralWidthsRef.current[value] ?? 0);
 
   useEffect(() => {
     const targetY = -value * digitHeight;
 
-    if (isInitialMount.current) {
+    // prevents against animating when toggling disabled state
+    if (isDigitInitialRenderRef.current && isInitialRenderRef.current) {
       runOnUI((numeralWidths: number[]) => {
         currentDigitWidth.value = numeralWidths[value];
         translateY.value = 0;
@@ -89,7 +114,7 @@ const Digit = React.memo(function Digit({ part, textStyle, timingConfig, digitHe
       })(numeralWidthsRef.current);
     }
 
-    isInitialMount.current = false;
+    isDigitInitialRenderRef.current = false;
 
     if (targetY !== translateY.value) {
       // if (numeralWidthsRef.current[value]) {
@@ -194,6 +219,7 @@ const Digit = React.memo(function Digit({ part, textStyle, timingConfig, digitHe
 });
 
 function getParts(value: string): Part[] {
+  'worklet';
   const characters = value.split('');
 
   return characters.map((char, index) => {
@@ -239,19 +265,35 @@ function getParts(value: string): Part[] {
   });
 }
 
+function getPartsByType(value: string) {
+  'worklet';
+  const allParts = getParts(value);
+  return {
+    prefix: allParts.find(part => part.type === 'prefix'),
+    number: allParts.filter(part => part.type !== 'prefix' && part.type !== 'suffix'),
+    suffix: allParts.find(part => part.type === 'suffix'),
+    all: allParts,
+  };
+}
+
 type AnimatedNumberProps = Omit<TextProps, 'children'> & {
-  value: string;
+  value: string | SharedValue<string> | DerivedValue<string>;
   timingConfig?: TimingAnimationConfig;
   easingMaskColor?: string;
+  disabled?: boolean;
 };
 
 export const AnimatedNumber = React.memo(function AnimatedNumber({
   value,
   timingConfig = DEFAULT_TIMING_CONFIG,
   easingMaskColor = 'white',
+  disabled = false,
   ...textProps
 }: AnimatedNumberProps) {
   const numberContainerRef = useAnimatedRef<Animated.View>();
+  // holds the width of each numeral 0-9 for the current text style
+  const numeralWidthsRef = useRef<number[]>([]);
+  const isInitialRenderRef = useRef(true);
 
   const maskWidth = useSharedValue(0);
   const maskTranslateX = useSharedValue(0);
@@ -261,37 +303,55 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   const transitionProgress = useSharedValue(0);
   const previousWidthDelta = useSharedValue(0);
 
-  // holds the width of each numeral 0-9 for the current text style
-  const numeralWidthsRef = useRef<number[]>([]);
+  // const isAnimationDisabled = useSyncSharedValue(animationDisabled);
 
-  let textStyle = useTextStyle(textProps);
+  // This is not ideal, but required to accommodate the use of a shared value for the value prop
+  const [parts, setParts] = useState(() => (typeof value === 'string' ? getPartsByType(value) : getPartsByType(value.value)));
+  useAnimatedReaction(
+    () => value,
+    value => {
+      runOnJS(setParts)(typeof value === 'string' ? getPartsByType(value) : getPartsByType(value.value));
+    }
+  );
 
-  const parts = useMemo(() => {
-    const allParts = getParts(value);
-    return {
-      prefix: allParts.find(part => part.type === 'prefix'),
-      number: allParts.filter(part => part.type !== 'prefix' && part.type !== 'suffix'),
-      suffix: allParts.find(part => part.type === 'suffix'),
-    };
-  }, [value]);
-
+  const baseTextStyle = useTextStyle(textProps);
+  // TODO: should be configurable
   const digitHeight = useMemo(() => {
-    const lineHeight = textStyle.lineHeight ?? textStyle.fontSize;
+    const lineHeight = baseTextStyle.lineHeight ?? baseTextStyle.fontSize;
     return lineHeight * 1.1;
-  }, [textStyle]);
+  }, [baseTextStyle]);
 
-  textStyle = {
-    ...textStyle,
-    lineHeight: digitHeight,
-  };
+  const textStyle = useMemo(() => {
+    return {
+      ...baseTextStyle,
+      lineHeight: digitHeight,
+    };
+  }, [baseTextStyle, digitHeight]);
 
   const layoutTransition = useCallback((values: LayoutAnimationsValues) => {
     'worklet';
-    // there is a bug in renimated for the currentGlobalOriginX value, it is always be equal to the targetGlobalOriginX
+    const currentWidth = values.currentWidth;
+    const targetWidth = values.targetWidth;
     const currentGlobalOriginX = numberContainerGlobalOriginX.value;
-    const widthDelta = values.currentWidth - values.targetWidth;
-    const xDelta = currentGlobalOriginX - values.targetGlobalOriginX;
+    const targetGlobalOriginX = values.targetGlobalOriginX;
+    // there is a bug in renimated for the currentGlobalOriginX value, it is always be equal to the targetGlobalOriginX
+    const widthDelta = currentWidth - targetWidth;
+    const xDelta = currentGlobalOriginX - targetGlobalOriginX;
+    // Correct for if component is centered in the screen
     const newTranslateX = xDelta + widthDelta;
+    const newSuffixTranslateX = newTranslateX;
+    let newPrefixTranslateX = -newTranslateX;
+    let newMaskTranslateX = -newTranslateX * 2;
+
+    const anchor = textStyle.textAlign ?? 'center';
+
+    if (anchor === 'right') {
+      newPrefixTranslateX = -widthDelta;
+      newMaskTranslateX = -widthDelta;
+    } else if (anchor === 'left') {
+      newPrefixTranslateX = 0;
+      newMaskTranslateX = -widthDelta;
+    }
 
     const animations = {
       transform: [{ translateX: withTiming(0, timingConfig) }],
@@ -300,17 +360,16 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       transform: [{ translateX: newTranslateX }],
     };
 
-    // Running separate animations inside the layout transition function is a bit of a hack, but is better than running them in the onLayout callback
-    prefixTranslateX.value = -newTranslateX;
-    prefixTranslateX.value = withTiming(0, timingConfig);
-
-    suffixTranslateX.value = newTranslateX;
-    suffixTranslateX.value = withTiming(0, timingConfig);
-
-    // animate the mask to reveal new digits
-    maskTranslateX.value = -newTranslateX * 2;
+    // Set offset values so that number appears to grow and shift from previous value
+    prefixTranslateX.value = newPrefixTranslateX;
+    suffixTranslateX.value = newSuffixTranslateX;
+    maskTranslateX.value = newMaskTranslateX;
     maskWidth.value = values.currentWidth;
 
+    // Animate the number to its new position
+    suffixTranslateX.value = withTiming(0, timingConfig);
+    prefixTranslateX.value = withTiming(0, timingConfig);
+    // Animates mask to reveal new / hide removed digits
     maskWidth.value = withTiming(values.targetWidth, timingConfig);
     maskTranslateX.value = withTiming(0, timingConfig);
 
@@ -341,6 +400,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
               digitHeight={digitHeight}
               previousWidthDelta={previousWidthDelta}
               numeralWidthsRef={numeralWidthsRef}
+              isInitialRenderRef={isInitialRenderRef}
             />
           );
         } else {
@@ -416,6 +476,11 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     if (!textProps.tabularNumbers) {
       setNumeralWidths();
     }
+
+    if (isInitialRenderRef.current) {
+      isInitialRenderRef.current = false;
+      return;
+    }
   }, [textStyle, textProps.tabularNumbers]);
 
   const maskElementStyle = {
@@ -424,52 +489,66 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     backgroundColor: 'red',
   };
 
-  const easingMaskWidth = textStyle.fontSize * 0.25;
-  const easingMaskHeight = textStyle.fontSize * 0.25;
+  const easingMaskWidth = textStyle.fontSize * 0.2;
+  const easingMaskHeight = textStyle.fontSize * 0.2;
+
+  if (disabled) {
+    return (
+      <View style={[styles.container, { height: digitHeight }]}>
+        {parts.all.map(part => (
+          <View key={part.key} style={{ height: digitHeight, justifyContent: 'center', alignItems: 'center' }}>
+            <Animated.Text style={textStyle}>{part.value}</Animated.Text>
+          </View>
+        ))}
+      </View>
+    );
+  }
 
   return (
-    <View style={[styles.container, { height: digitHeight }]}>
-      {parts.prefix && <Animated.View style={[prefixPartAnimatedStyle]}>{renderParts([parts.prefix])}</Animated.View>}
-      <Animated.View ref={numberContainerRef} layout={layoutTransition} onLayout={onNumberContainerLayout}>
-        <MaskedView maskElement={<Animated.View style={[maskElementAnimatedStyle, maskElementStyle]} />}>
-          <Animated.View style={[styles.container, {}]}>{renderParts(parts.number)}</Animated.View>
-        </MaskedView>
-        <Animated.View style={[StyleSheet.absoluteFill, maskElementAnimatedStyle]}>
-          <Animated.View style={[StyleSheet.absoluteFill, horizontalEasingMaskAnimatedStyle]}>
+    <LayoutAnimationConfig skipEntering skipExiting>
+      <View style={[styles.container, { height: digitHeight }]}>
+        {parts.prefix && <Animated.View style={[prefixPartAnimatedStyle]}>{renderParts([parts.prefix])}</Animated.View>}
+        <Animated.View ref={numberContainerRef} layout={layoutTransition} onLayout={onNumberContainerLayout}>
+          <MaskedView maskElement={<Animated.View style={[maskElementAnimatedStyle, maskElementStyle]} />}>
+            <Animated.View style={styles.container}>{renderParts(parts.number)}</Animated.View>
+          </MaskedView>
+          <Animated.View style={[StyleSheet.absoluteFill, maskElementAnimatedStyle]}>
+            <Animated.View style={[StyleSheet.absoluteFill, horizontalEasingMaskAnimatedStyle]}>
+              <EasingGradient
+                startPosition="left"
+                endPosition="right"
+                startColor={easingMaskColor}
+                endColor={easingMaskColor}
+                startOpacity={1}
+                endOpacity={0}
+                style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: easingMaskWidth }}
+              />
+            </Animated.View>
             <EasingGradient
-              startPosition="left"
-              endPosition="right"
+              startPosition="top"
+              endPosition="bottom"
               startColor={easingMaskColor}
               endColor={easingMaskColor}
               startOpacity={1}
               endOpacity={0}
-              style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: easingMaskWidth }}
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, height: easingMaskHeight }}
+            />
+            <EasingGradient
+              startPosition="bottom"
+              endPosition="top"
+              startColor={easingMaskColor}
+              endColor={easingMaskColor}
+              startOpacity={1}
+              endOpacity={0}
+              style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: easingMaskHeight }}
             />
           </Animated.View>
-          <EasingGradient
-            startPosition="top"
-            endPosition="bottom"
-            startColor={easingMaskColor}
-            endColor={easingMaskColor}
-            startOpacity={1}
-            endOpacity={0}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, height: easingMaskHeight }}
-          />
-          <EasingGradient
-            startPosition="bottom"
-            endPosition="top"
-            startColor={easingMaskColor}
-            endColor={easingMaskColor}
-            startOpacity={1}
-            endOpacity={0}
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: easingMaskHeight }}
-          />
         </Animated.View>
-      </Animated.View>
-      {parts.suffix && (
-        <Animated.View style={[suffixPartAnimatedStyle, { height: digitHeight }]}>{renderParts([parts.suffix])}</Animated.View>
-      )}
-    </View>
+        {parts.suffix && (
+          <Animated.View style={[suffixPartAnimatedStyle, { height: digitHeight }]}>{renderParts([parts.suffix])}</Animated.View>
+        )}
+      </View>
+    </LayoutAnimationConfig>
   );
 });
 

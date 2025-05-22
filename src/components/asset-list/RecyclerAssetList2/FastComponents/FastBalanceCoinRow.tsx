@@ -132,6 +132,7 @@ const MemoizedBalanceCoinRow = React.memo(
                     color={{ custom: valueColor }}
                     size="14px / 19px (Deprecated)"
                     weight="medium"
+                    align="right"
                   />
                 )}
               </View>

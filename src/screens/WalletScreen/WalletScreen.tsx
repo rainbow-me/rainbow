@@ -101,21 +101,11 @@ function WalletScreen() {
   );
 
   const handleViewableItemsChanged = useCallback(
-    ({
-      viewableItems,
-      // TODO: this does not reliably work
-      // viewableItemsAdded,
-      viewableItemsRemoved,
-    }: {
-      viewableItems: CellTypes[];
-      // viewableItemsAdded: CellTypes[];
-      viewableItemsRemoved: CellTypes[];
-    }) => {
+    ({ viewableItems, viewableItemsRemoved }: { viewableItems: CellTypes[]; viewableItemsRemoved: CellTypes[] }) => {
       const viewableTokenUniqueIdsRemoved = extractTokenRowIds(viewableItemsRemoved);
 
       // removal cannot be debounced
       if (viewableTokenUniqueIdsRemoved.length > 0) {
-        // console.log('[WalletScreen] viewableTokenUniqueIdsRemoved', viewableTokenUniqueIdsRemoved);
         removeSubscribedTokens({ route: route.name, tokenIds: viewableTokenUniqueIdsRemoved });
       }
 

@@ -92,10 +92,13 @@ export default function ChartPriceLabel({
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
 
+  // called when chart is actively being scrubbed
   const formatWorklet = useCallback(
     (value: string) => {
       'worklet';
-      if (!value) return priceValue;
+      if (!value) {
+        return priceValue;
+      }
       return toCompactNotation({
         value,
         prefix: nativeSelected.symbol,

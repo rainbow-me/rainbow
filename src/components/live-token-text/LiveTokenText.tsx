@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatedText, AnimatedTextProps, useForegroundColor } from '@/design-system';
+import { AnimatedText, TextProps, useForegroundColor } from '@/design-system';
 import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useSharedValue, SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/hooks/useListen';
@@ -95,7 +95,7 @@ export function useLiveTokenValue({
   return liveValue;
 }
 
-type LiveTokenTextProps = LiveTokenValueParams & AnimatedTextProps;
+type LiveTokenTextProps = LiveTokenValueParams & Omit<TextProps, 'children'>;
 
 export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
   tokenId,
@@ -141,6 +141,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   });
 
   return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <AnimatedText {...textProps} style={[textStyle, textProps.style]}>
       {liveValue}
     </AnimatedText>

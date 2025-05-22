@@ -6,15 +6,20 @@ import { useChartData } from '@/react-native-animated-charts/src';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useTheme } from '@/theme';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
+import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';
 const DOWN_ARROW = IS_ANDROID ? '' : '↓';
 
 export default memo(function ChartPercentChangeLabel({ latestChange }: { latestChange: SharedValue<string | undefined> }) {
-  const { originalY, data } = useChartData();
+  const { originalY, data, isActive } = useChartData();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
+  const { accentColors } = useExpandedAssetSheetContext();
   const labelSecondary = useForegroundColor('labelSecondary');
+  const isChartGestureActive = useSharedValueState(isActive, { initialValue: isActive.value });
 
   const percentageChange: DerivedValue<number | null> = useDerivedValue(() => {
     const hasData = data?.points?.length > 0;
@@ -60,6 +65,21 @@ export default memo(function ChartPercentChangeLabel({ latestChange }: { latestC
       textShadowColor: isDarkMode ? opacityWorklet(color, 0.24) : 'transparent',
     };
   });
+
+  // TODO: figure out how to add the text shadow, fix colors
+  return (
+    <AnimatedNumber
+      value={percentageChangeText}
+      easingMaskColor={accentColors.background}
+      style={textStyle}
+      align="left"
+      size="20pt"
+      weight="heavy"
+      tabularNumbers
+      disabled={isChartGestureActive}
+      color={'label'}
+    />
+  );
 
   return (
     <TextShadow blur={12} shadowOpacity={0.24}>
