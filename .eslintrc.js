@@ -20,11 +20,19 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
 
 module.exports = {
   root: true,
-  extends: ['rainbow'],
+  extends: ['rainbow', 'plugin:yml/standard'],
   parserOptions: {
     project: ['./tsconfig.json'],
   },
+  plugins: ['yml'],
   globals: globalVars,
+
+  overrides: [
+    {
+      files: ['*.yml', '*.yaml'],
+      parser: 'yaml-eslint-parser',
+    },
+  ],
   rules: {
     'no-restricted-imports': [
       'warn',
