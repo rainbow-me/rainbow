@@ -36,7 +36,7 @@ index 70912a9..006f7d8 100644
      val keyForUsername = stringPreferencesKey(getKeyForUsername(service))
      val keyForPassword = stringPreferencesKey(getKeyForPassword(service))
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-index 722a5ed..0cb4ec3 100644
+index 722a5ed..311a2f4 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 @@ -281,6 +281,49 @@ class KeychainModule(reactContext: ReactApplicationContext) :
@@ -89,6 +89,27 @@ index 722a5ed..0cb4ec3 100644
    @ReactMethod
    fun getAllGenericPasswordServices(options: ReadableMap?, promise: Promise) {
      try {
+@@ -767,19 +810,13 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+           BiometricManager.Authenticators.DEVICE_CREDENTIAL
+ 
+         else ->
+-          null
++          BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+       }
+ 
+       if (allowedAuthenticators != null) {
+         promptInfoBuilder.setAllowedAuthenticators(allowedAuthenticators)
+       }
+ 
+-      if (!usePasscode) {
+-        promptInfoOptionsMap?.getString(AuthPromptOptions.CANCEL)?.let {
+-          promptInfoBuilder.setNegativeButtonText(it)
+-        }
+-      }
+-
+       /* Bypass confirmation to avoid KeyStore unlock timeout being exceeded when using passive biometrics */
+       promptInfoBuilder.setConfirmationRequired(false)
+       return promptInfoBuilder.build()
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
 index d165f3e..91fd8b1 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
@@ -102,170 +123,8 @@ index d165f3e..91fd8b1 100644
    fun removeEntry(service: String)
  
    fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
-diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerInteractiveDeviceCredential.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerInteractiveDeviceCredential.kt
-new file mode 100644
-index 0000000..218ec3c
---- /dev/null
-+++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerInteractiveDeviceCredential.kt
-@@ -0,0 +1,156 @@
-+package com.oblador.keychain.resultHandler
-+
-+import android.app.Activity
-+import android.app.KeyguardManager
-+import android.content.Context
-+import android.content.Intent
-+import android.os.Build
-+import android.os.Handler
-+import android.os.Looper
-+import android.util.Log
-+import androidx.biometric.BiometricPrompt
-+import com.facebook.react.bridge.BaseActivityEventListener
-+import com.facebook.react.bridge.ReactApplicationContext
-+import com.oblador.keychain.cipherStorage.CipherStorage
-+import com.oblador.keychain.cipherStorage.CipherStorageBase
-+import com.oblador.keychain.exceptions.CryptoFailedException
-+import java.util.concurrent.locks.ReentrantLock
-+import kotlin.concurrent.withLock
-+
-+class ResultHandlerInteractiveDeviceCredential(
-+  private val reactContext: ReactApplicationContext,
-+  private val storage: CipherStorage,
-+  private var promptInfo: BiometricPrompt.PromptInfo
-+) : ResultHandler {
-+  override var decryptionResult: CipherStorage.DecryptionResult? = null
-+  override var encryptionResult: CipherStorage.EncryptionResult? = null
-+  override var error: Throwable? = null
-+
-+  private var context: CryptoContext? = null
-+  private val lock = ReentrantLock()
-+  private val condition = lock.newCondition()
-+
-+  private val LOG_TAG = ResultHandlerInteractiveDeviceCredential::class.java.simpleName
-+
-+  private val REQUEST_CODE = 49127
-+
-+  private val activityEventListener = object : BaseActivityEventListener() {
-+    override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
-+      if (requestCode == REQUEST_CODE) {
-+        if (resultCode == Activity.RESULT_OK) {
-+          onAuthenticationSucceeded()
-+        } else {
-+          val failure = CryptoFailedException("User canceled or failed device credential authentication")
-+          when (context?.operation) {
-+            CryptoOperation.ENCRYPT -> onEncrypt(null, failure)
-+            CryptoOperation.DECRYPT -> onDecrypt(null, failure)
-+            null -> Log.e(LOG_TAG, "No operation context available")
-+          }
-+        }
-+      }
-+    }
-+  }
-+
-+  init {
-+    reactContext.addActivityEventListener(activityEventListener)
-+  }
-+
-+  override fun askAccessPermissions(context: CryptoContext) {
-+    this.context = context
-+
-+    startAuthentication()
-+  }
-+
-+  /** Trigger interactive authentication. */
-+  fun startAuthentication() {
-+    val activity = reactContext.currentActivity ?: throw NullPointerException("Not assigned current activity")
-+
-+    // Code can be executed only from MAIN thread
-+    if (Thread.currentThread() != Looper.getMainLooper().thread) {
-+      activity.runOnUiThread { startAuthentication() }
-+      waitResult()
-+      return
-+    }
-+
-+    val keyguardManager = reactContext.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-+
-+    val intent = keyguardManager.createConfirmDeviceCredentialIntent(
-+      promptInfo.title,
-+      promptInfo.description
-+    )
-+
-+    if (intent == null) {
-+      val failure = CryptoFailedException("Failed to create credential intent")
-+      when (context?.operation) {
-+        CryptoOperation.ENCRYPT -> onEncrypt(null, failure)
-+        CryptoOperation.DECRYPT -> onDecrypt(null, failure)
-+        null -> Log.e(LOG_TAG, "No operation context available")
-+      }
-+      return
-+    }
-+
-+    activity.startActivityForResult(intent, REQUEST_CODE)
-+  }
-+
-+  private fun onAuthenticationSucceeded() {
-+    try {
-+      val ctx = context ?: throw NullPointerException("Crypto context is not assigned yet.")
-+      val key = ctx.key
-+      val storageBase = storage as CipherStorageBase
-+
-+      when (ctx.operation) {
-+        CryptoOperation.ENCRYPT -> {
-+          val encrypted = CipherStorage.EncryptionResult(
-+            storageBase.encryptString(key, String(ctx.username)),
-+            storageBase.encryptString(key, String(ctx.password)),
-+            storageBase
-+          )
-+          onEncrypt(encrypted, null)
-+        }
-+        CryptoOperation.DECRYPT -> {
-+          val decrypted = CipherStorage.DecryptionResult(
-+            storageBase.decryptBytes(key, ctx.username),
-+            storageBase.decryptBytes(key, ctx.password)
-+          )
-+          onDecrypt(decrypted, null)
-+        }
-+      }
-+    } catch (e: Throwable) {
-+      when (context?.operation) {
-+        CryptoOperation.ENCRYPT -> onEncrypt(null, e)
-+        CryptoOperation.DECRYPT -> onDecrypt(null, e)
-+        null -> Log.e(LOG_TAG, "No operation context available")
-+      }
-+    }
-+  }
-+
-+  override fun onEncrypt(encryptionResult: CipherStorage.EncryptionResult?, error: Throwable?) {
-+    lock.withLock {
-+      this.encryptionResult = encryptionResult
-+      this.error = error
-+      condition.signalAll()
-+    }
-+  }
-+
-+  override fun onDecrypt(decryptionResult: CipherStorage.DecryptionResult?, error: Throwable?) {
-+    lock.withLock {
-+      this.decryptionResult = decryptionResult
-+      this.error = error
-+      condition.signalAll()
-+    }
-+  }
-+
-+  override fun waitResult() {
-+    if (Thread.currentThread() == Looper.getMainLooper().thread) {
-+      throw IllegalStateException("waitResult() should not be called from main thread")
-+    }
-+
-+    Log.i(LOG_TAG, "Blocking thread for credential prompt result")
-+
-+    lock.withLock {
-+      condition.await()
-+    }
-+
-+    Log.i(LOG_TAG, "Resuming thread after credential prompt result")
-+  }
-+}
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerProvider.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerProvider.kt
-index dd89f83..f462440 100644
+index dd89f83..5bcd053 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerProvider.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerProvider.kt
 @@ -4,6 +4,7 @@ import android.os.Build
@@ -276,21 +135,15 @@ index dd89f83..f462440 100644
  
  // NOTE: the logic for handling OnePlus bug is taken from the following forum post:
  // https://forums.oneplus.com/threads/oneplus-7-pro-fingerprint-biometricprompt-does-not-show.1035821/#post-21710422
-@@ -39,7 +40,13 @@ object ResultHandlerProvider {
+@@ -38,7 +39,7 @@ object ResultHandlerProvider {
+     storage: CipherStorage,
      promptInfo: BiometricPrompt.PromptInfo
    ): ResultHandler {
-     return if (storage.isAuthSupported()) {
--      if (hasOnePlusBiometricBug()) {
-+      if (!DeviceAvailability.isStrongBiometricAuthAvailable(reactContext)) {
-+        ResultHandlerInteractiveDeviceCredential(
-+          reactContext,
-+          storage,
-+          promptInfo
-+        )
-+      } else if (hasOnePlusBiometricBug()) {
+-    return if (storage.isAuthSupported()) {
++    return if (storage.isAuthSupported() && DeviceAvailability.isDevicePasscodeAvailable(reactContext)) {
+       if (hasOnePlusBiometricBug()) {
          ResultHandlerInteractiveBiometricManualRetry(reactContext, storage, promptInfo)
        } else {
-         ResultHandlerInteractiveBiometric(reactContext, storage, promptInfo)
 diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
 index 6888ff0..23675f3 100644
 --- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
