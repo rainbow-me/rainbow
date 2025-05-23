@@ -10,9 +10,8 @@ import { analytics } from '@/analytics';
 import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { logger, RainbowError } from '@/logger';
-import { getSupportedBiometryType } from '@/keychain';
 import { IS_ANDROID } from '@/env';
-import { authenticateWithPIN } from '@/handlers/authentication';
+import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import * as i18n from '@/languages';
 import { openInBrowser } from '@/utils/openInBrowser';
 
@@ -111,14 +110,11 @@ export default function useWalletCloudBackup() {
 
       // For Android devices without biometrics enabled, we need to ask for PIN
       let userPIN: string | undefined;
-      const hasBiometricsEnabled = await getSupportedBiometryType();
-      if (IS_ANDROID && !hasBiometricsEnabled) {
-        try {
-          userPIN = (await authenticateWithPIN()) ?? undefined;
-        } catch (e) {
-          onError?.(i18n.t(i18n.l.back_up.wrong_pin));
-          return false;
-        }
+      try {
+        userPIN = await maybeAuthenticateWithPIN();
+      } catch (e) {
+        onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+        return false;
       }
 
       // We have the password and we need to add it to an existing backup

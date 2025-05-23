@@ -1,10 +1,12 @@
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import AesEncryptor from '../handlers/aesEncryption';
 import * as keychain from '../model/keychain';
+import * as kc from '@/keychain';
 import { Navigation } from '../navigation';
 import { pinKey } from '@/utils/keychainConstants';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
+import { IS_ANDROID } from '@/env';
 
 const encryptor = new AesEncryptor();
 
@@ -87,4 +89,27 @@ export async function authenticateWithPIN(): Promise<string | undefined> {
       validPin,
     });
   });
+}
+
+export async function shouldAuthenticateWithPIN(): Promise<boolean> {
+  if (!IS_ANDROID) {
+    return false;
+  }
+
+  const hasPasscode = await kc.isPasscodeAuthAvailable();
+  return !hasPasscode;
+}
+
+export async function maybeAuthenticateWithPIN(): Promise<string | undefined> {
+  if (!(await shouldAuthenticateWithPIN())) {
+    return undefined;
+  }
+  return (await authenticateWithPIN()) ?? undefined;
+}
+
+export async function maybeAuthenticateWithPINAndCreateIfNeeded(userPin?: string): Promise<string | undefined> {
+  if (!(await shouldAuthenticateWithPIN())) {
+    return undefined;
+  }
+  return userPin ?? (await authenticateWithPINAndCreateIfNeeded()) ?? undefined;
 }
