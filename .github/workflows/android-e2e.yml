@@ -25,6 +25,7 @@ jobs:
       ANDROID_EMULATOR_BUILD: 10696886
       ARTIFACTS_FOLDER: e2e-artifacts
       ARCH: x86_64
+      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 60
 
     steps:
       - name: Checkout repo
