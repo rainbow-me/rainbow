@@ -10,6 +10,7 @@ import { sumWorklet } from '@/safe-math/SafeMath';
 export type ClaimablesStore = {
   claimables: Claimable[];
   totalValue: string;
+  totalValueAmount: string;
 };
 
 export type ClaimablesActions = {
@@ -37,16 +38,15 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
 
         let newClaimables: ClaimablesStore['claimables'] | null = null;
         let newTotalValue = '';
+        let newTotalValueAmount = '';
         let newCacheEntry: CacheEntry<ClaimablesStore> | null = null;
 
         const claimables = getData()?.claimables;
         if (claimables?.length) {
           const { currency } = userAssetsStoreManager.getState();
           newClaimables = claimables.filter(c => c.uniqueId !== uniqueId);
-          newTotalValue = convertAmountToNativeDisplayWorklet(
-            newClaimables.reduce((acc, claimable) => sumWorklet(acc, claimable.totalCurrencyValue.amount || '0'), '0'),
-            currency
-          );
+          newTotalValueAmount = newClaimables.reduce((acc, claimable) => sumWorklet(acc, claimable.totalCurrencyValue.amount || '0'), '0');
+          newTotalValue = convertAmountToNativeDisplayWorklet(newTotalValueAmount, currency);
         }
 
         if (newClaimables && newTotalValue && cacheEntry?.data) {
@@ -56,6 +56,7 @@ export const useClaimablesStore = createQueryStore<ClaimablesStore, ClaimablesAr
               ...cacheEntry.data,
               claimables: newClaimables,
               totalValue: newTotalValue,
+              totalValueAmount: newTotalValueAmount,
             },
           };
         }
