@@ -11,6 +11,8 @@ import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { CollectionName, Collection } from '@/state/nfts/types';
+import { ChainName } from '@/state/backendNetworks/types';
+import { Address } from 'viem';
 
 const COINS_TO_SHOW = 5;
 
@@ -245,6 +247,14 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
   return rows;
 };
 
+function normalizeNftId(nftId: string, includeChainName = false) {
+  const [chainName, address, tokenId] = nftId.split('.');
+  if (includeChainName) {
+    return `${chainName}_${address}_${tokenId}`.toLowerCase();
+  }
+  return `${address}_${tokenId}`.toLowerCase();
+}
+
 export const buildBriefUniqueTokenList = (
   collections: Map<CollectionName, Collection>,
   selectedShowcaseTokens: string[] | undefined = [],
@@ -260,24 +270,18 @@ export const buildBriefUniqueTokenList = (
   const filteredCollections: Map<CollectionName, Collection> = new Map();
 
   for (const [uniqueId, collection] of collections) {
-    if (hiddenTokens.includes(uniqueId)) {
-      hiddenUniqueTokensIds.push(uniqueId);
-      continue;
-    }
+    for (const nftId of collection.nftIds) {
+      const hiddenNftId = normalizeNftId(nftId, true);
+      const showcaseNftId = normalizeNftId(nftId);
+      if (hiddenTokens.includes(hiddenNftId)) {
+        hiddenUniqueTokensIds.push(hiddenNftId);
+        continue;
+      }
 
-    if (selectedShowcaseTokens.includes(uniqueId)) {
-      uniqueTokensInShowcaseIds.push(uniqueId);
-    }
+      if (selectedShowcaseTokens.includes(showcaseNftId)) {
+        uniqueTokensInShowcaseIds.push(showcaseNftId);
+      }
 
-    if (listType === 'select-nft') {
-      // @ts-expect-error TODO - need to address this issue here
-      // const format = getUniqueTokenFormat(collection);
-      // const type = getUniqueTokenType(collection);
-      // if (format === 'image' && type === 'NFT') {
-      //   filteredCollections.set(uniqueId, collection);
-      // }
-      filteredCollections.set(uniqueId, collection);
-    } else {
       filteredCollections.set(uniqueId, collection);
     }
   }
