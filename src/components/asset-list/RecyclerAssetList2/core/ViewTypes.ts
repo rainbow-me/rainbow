@@ -78,6 +78,7 @@ export type NFTExtraData = {
   type: CellType.NFT;
   index: number;
   uniqueId: string;
+  collectionId: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
 export type PositionExtraData = {
@@ -100,6 +101,7 @@ export type NFTFamilyExtraData = {
   name: string;
   total?: number;
   image?: string;
+  uid: string;
 };
 
 export type ProfileActionButtonsRowExtraData = {

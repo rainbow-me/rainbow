@@ -15,6 +15,7 @@ import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
 import { time } from '@/utils';
 import { analytics } from '@/analytics';
+import { useNftsStore } from '@/state/nfts/nfts';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
@@ -37,10 +38,7 @@ export default function useRefreshAccountData() {
     const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
 
     // These queries can take too long to fetch, so we do not wait for them
-    queryClient.invalidateQueries([
-      addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }),
-      createQueryKey('nfts', { address: accountAddress }),
-    ]);
+    queryClient.invalidateQueries([addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency })]);
 
     await Promise.all([
       delay(MIN_REFRESH_DURATION),
@@ -50,6 +48,7 @@ export default function useRefreshAccountData() {
       useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
       usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
       useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
+      useNftsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
     ]);
   }, [accountAddress, allAddresses, dispatch, nativeCurrency, profilesEnabled]);
 

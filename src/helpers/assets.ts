@@ -10,6 +10,9 @@ import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { CollectionName, Collection } from '@/state/nfts/types';
+import { ChainName } from '@/state/backendNetworks/types';
+import { Address } from 'viem';
 
 const COINS_TO_SHOW = 5;
 
@@ -244,8 +247,16 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
   return rows;
 };
 
+function normalizeNftId(nftId: string, includeChainName = false) {
+  const [chainName, address, tokenId] = nftId.split('.');
+  if (includeChainName) {
+    return `${chainName}_${address}_${tokenId}`.toLowerCase();
+  }
+  return `${address}_${tokenId}`.toLowerCase();
+}
+
 export const buildBriefUniqueTokenList = (
-  uniqueTokens: UniqueAsset[],
+  collections: Map<CollectionName, Collection>,
   selectedShowcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
@@ -256,30 +267,24 @@ export const buildBriefUniqueTokenList = (
 ) => {
   const hiddenUniqueTokensIds: string[] = [];
   const uniqueTokensInShowcaseIds: string[] = [];
-  const filteredUniqueTokens: UniqueAsset[] = [];
+  const filteredCollections: Map<CollectionName, Collection> = new Map();
 
-  for (const token of uniqueTokens) {
-    if (hiddenTokens.includes(token.fullUniqueId)) {
-      hiddenUniqueTokensIds.push(token.uniqueId);
-      continue;
-    }
-
-    if (selectedShowcaseTokens.includes(token.uniqueId)) {
-      uniqueTokensInShowcaseIds.push(token.uniqueId);
-    }
-
-    if (listType === 'select-nft') {
-      const format = getUniqueTokenFormat(token);
-      const type = getUniqueTokenType(token);
-      if (format === 'image' && type === 'NFT') {
-        filteredUniqueTokens.push(token);
+  for (const [uniqueId, collection] of collections) {
+    for (const nftId of collection.nftIds) {
+      const hiddenNftId = normalizeNftId(nftId, true);
+      const showcaseNftId = normalizeNftId(nftId);
+      if (hiddenTokens.includes(hiddenNftId)) {
+        hiddenUniqueTokensIds.push(hiddenNftId);
+        continue;
       }
-    } else {
-      filteredUniqueTokens.push(token);
+
+      if (selectedShowcaseTokens.includes(showcaseNftId)) {
+        uniqueTokensInShowcaseIds.push(showcaseNftId);
+      }
+
+      filteredCollections.set(uniqueId, collection);
     }
   }
-
-  const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.familyName);
 
   const result: CellTypes[] = [
     {
@@ -329,28 +334,28 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
   }
 
-  if (!Object.keys(assetsByName).length) {
+  if (!filteredCollections.size) {
     if (!isFetchingNfts) {
       result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
     } else {
       result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading-${nftSort}` });
     }
   } else {
-    for (const family of Object.keys(assetsByName)) {
+    for (const [collectionId, collection] of filteredCollections) {
       result.push({
-        image: assetsByName[family][0].familyImage ?? undefined,
-        name: family,
-        total: assetsByName[family].length,
+        image: collection.image ?? undefined,
+        name: collection.name,
+        total: collection.total,
         type: CellType.FAMILY_HEADER,
-        uid: family,
+        uid: collectionId,
       });
-      const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
-      for (let index = 0; index < tokens.length; index++) {
-        const uniqueId = tokens[index];
-        result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId });
+
+      for (let index = 0; index < collection.nftIds.length; index++) {
+        const uniqueId = collection.nftIds[index];
+        result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId, collectionId });
       }
 
-      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${family}-space-after` });
+      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${collectionId}-space-after` });
     }
   }
 

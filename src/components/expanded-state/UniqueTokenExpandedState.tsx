@@ -47,7 +47,6 @@ import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
-  useCollectible,
   useDimensions,
   useENSProfile,
   useENSRegistration,
@@ -224,14 +223,13 @@ const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
   }
 };
 
-const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenExpandedStateProps) => {
+const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateProps) => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-  const collectible = useCollectible(passedAsset?.uniqueId);
-  const asset = external ? passedAsset : collectible;
+
   const {
     data: { nftOffers },
   } = useNFTOffers({

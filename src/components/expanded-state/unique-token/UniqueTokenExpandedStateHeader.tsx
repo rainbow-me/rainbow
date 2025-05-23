@@ -192,6 +192,8 @@ const UniqueTokenExpandedStateHeader = ({
   onRefresh,
   onReport,
 }: UniqueTokenExpandedStateHeaderProps) => {
+  console.log('asset', asset);
+  console.log('collection', asset.collection);
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
