@@ -75,8 +75,10 @@ interface WalletsState {
   clearAllWalletsBackupStatus: () => void;
 
   accountAddress: Address;
-  accountProfileInfo: AccountProfileInfo | null;
   setAccountAddress: (address: Address) => void;
+
+  accountProfileInfo: AccountProfileInfo | null;
+  updateAccountProfileInfo: () => void;
 
   refreshWalletENSAvatars: () => Promise<void>;
   refreshWalletNames: () => Promise<void>;
@@ -120,6 +122,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         wallets,
       });
+      updateAccountProfileInfo();
     },
 
     walletReady: false,
@@ -130,11 +133,18 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     // TODO follow-on and fix this type better - this is matching existing bug from before refactor
     // see PD-188
     accountAddress: `0x`,
-    accountProfileInfo: null,
     setAccountAddress: (accountAddress: Address) => {
       set({
         accountAddress,
-        accountProfileInfo: getAccountProfileInfo({ address: accountAddress }),
+      });
+      updateAccountProfileInfo();
+    },
+
+    accountProfileInfo: null,
+    // this is tied to both accountAddress and wallets, and should be updated alongside both
+    updateAccountProfileInfo() {
+      set({
+        accountProfileInfo: getAccountProfileInfo({ address: get().accountAddress }),
       });
     },
 
@@ -655,6 +665,8 @@ export const isImportedWallet = (address: string): boolean => {
   }
   return false;
 };
+
+export const updateAccountProfileInfo = () => useWalletsStore.getState().updateAccountProfileInfo();
 
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();

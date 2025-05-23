@@ -5,8 +5,6 @@ import { toChecksumAddress } from '@/handlers/web3';
 import { abbreviations } from '@/utils';
 
 const TruncatedAddress = ({ address, firstSectionLength, truncationLength, ...props }, ref) => {
-  console.log('address?', address)
-
   const text = useMemo(
     () =>
       address
