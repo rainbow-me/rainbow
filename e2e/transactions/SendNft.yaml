@@ -31,9 +31,6 @@ tags:
 
       - tapOn: '.*Rainbow Pooly.*'
 
-      - assertVisible:
-          id: 'wrapped-nft-Rainbow Pooly 104'
-
       - tapOn:
           id: 'wrapped-nft-Rainbow Pooly 104'
 
