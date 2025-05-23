@@ -24,14 +24,7 @@ export function ProfileBalanceRow() {
           </Skeleton>
         </Box>
       ) : (
-        // TODO: Arbitrary negative margin to account for the padding in the animated number, which is font size dependent
-        <Box
-          paddingHorizontal={'36px'}
-          width="full"
-          style={{ alignItems: 'center' }}
-          height={ProfileBalanceRowHeight}
-          marginTop={{ custom: -12 }}
-        >
+        <Box paddingHorizontal={'36px'} width="full" style={{ alignItems: 'center' }} height={ProfileBalanceRowHeight}>
           <AnimatedNumber
             value={totalBalance}
             tabularNumbers

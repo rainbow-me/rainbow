@@ -1,10 +1,15 @@
 import React, { useCallback } from 'react';
 import { Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { ChartYLabel } from '@/react-native-animated-charts/src';
+import { useChartData } from '@/react-native-animated-charts/src';
 import { SupportedCurrency, supportedNativeCurrencies } from '@/references';
 import { orderOfMagnitudeWorklet, significantDecimalsWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { toCompactNotation } from '@/helpers/strings';
+import { useDerivedValue } from 'react-native-reanimated';
+import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
+import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 
 function calculateDecimalPlaces({
   amount,
@@ -90,7 +95,12 @@ export default function ChartPriceLabel({
   priceValue: string;
 }) {
   const { nativeCurrency } = useAccountSettings();
+  const { accentColors, basicAsset } = useExpandedAssetSheetContext();
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { isActive, data: __, ...chartData } = useChartData();
+  const sharedValue = chartData['originalY'];
+  const isChartGestureActive = useSharedValueState(isActive, { initialValue: isActive.value });
 
   // called when chart is actively being scrubbed
   const formatWorklet = useCallback(
@@ -109,11 +119,35 @@ export default function ChartPriceLabel({
     [nativeSelected, priceValue]
   );
 
+  const liveTokenPrice = useLiveTokenSharedValue({
+    tokenId: basicAsset.uniqueId,
+    initialValueLastUpdated: 0,
+    initialValue: basicAsset.price.value?.toString() ?? '0',
+    selector: state => state.price,
+  });
+
+  const text = useDerivedValue(() => {
+    if (isActive.value) {
+      return formatWorklet(sharedValue.value);
+    } else {
+      return formatWorklet(liveTokenPrice.value);
+    }
+  });
+
   return isNoPriceData ? (
     <Text color="label" numberOfLines={1} size="23px / 27px (Deprecated)" weight="bold">
       {defaultValue}
     </Text>
   ) : (
-    <ChartYLabel formatWorklet={formatWorklet} size="34pt" weight="heavy" />
+    <AnimatedNumber
+      value={text}
+      size="34pt"
+      weight="heavy"
+      align="left"
+      color="label"
+      tabularNumbers
+      easingMaskColor={accentColors.background}
+      disabled={isChartGestureActive}
+    />
   );
 }
