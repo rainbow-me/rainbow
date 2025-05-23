@@ -4,14 +4,11 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { toChecksumAddress } from '@/handlers/web3';
 import { useDimensions } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding, shadow } from '@/styles';
-import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Column, ColumnWithMargins } from '../components/layout';
 import QRCode from '../components/qr-code/QRCode';
@@ -49,11 +46,8 @@ const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))({});
 
-const accountAddressSelector = state => state.settings.accountAddress;
-const lowercaseAccountAddressSelector = createSelector(accountAddressSelector, toLower);
-
 export default function ReceiveModal() {
-  const accountAddress = useSelector(lowercaseAccountAddressSelector);
+  const accountAddress = useAccountAddress();
   const { accountName } = useAccountProfileInfo();
 
   const [copiedText, setCopiedText] = useState(undefined);
