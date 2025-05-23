@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { FasterImageView } from '@candlefinance/faster-image';
 import { BlurView } from 'react-native-blur-view';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
@@ -11,6 +12,7 @@ import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { Colors } from '@/styles';
+import { RainbowImage } from '../RainbowImage';
 
 function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
   const variants = {
@@ -86,8 +88,8 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       )}
       {shouldShowRegularImage && (
         <>
-          <Image onError={onError} onLoad={onLoad} source={{ uri: imageUrl }} style={StyleSheet.absoluteFill} />
-          {!isLoaded && lowResImageUrl && <Image source={{ uri: lowResImageUrl }} style={StyleSheet.absoluteFill} />}
+          <RainbowImage onError={onError} onLoad={onLoad} source={{ url: imageUrl }} containerStyle={StyleSheet.absoluteFill} />
+          {!isLoaded && lowResImageUrl && <RainbowImage source={{ url: lowResImageUrl }} containerStyle={StyleSheet.absoluteFill} />}
         </>
       )}
       {isHiddenToken && isCard && <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
