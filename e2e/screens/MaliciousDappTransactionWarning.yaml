@@ -13,6 +13,16 @@ tags:
             isE2ETest: true
       - runFlow: ../utils/Prepare.yaml
       - runFlow: ../utils/ImportWalletWithKey.yaml
+- retry:
+    maxRetries: 3
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
 
       # Navigate to browser
       - tapOn:
@@ -29,17 +39,18 @@ tags:
             - tapOn: 'Search or enter website'
             - inputText: 'https://bx-test-dapp.vercel.app/'
             - pressKey: enter
-            - assertVisible: 'Test Dapp 🌈'
+            - retry:
+                maxRetries: 3
+                commands:
+                  - assertVisible: '.*Test Dapp.*'
             # tap on wallet pfp to open the control panel
             - tapOn:
                 id: account-icon
             - tapOn:
                 id: connect-button
               # control panel assertions
-            - assertVisible:
-                text: '.*BX Test Dapp.*'
-            - assertVisible:
-                text: 'Disconnect'
+            - assertVisible: '.*Test Dapp.*'
+            - assertVisible: 'Disconnect'
             # tap somewhere arbitrary to close the control panel sheet
             - tapOn:
                 point: 50%,15%

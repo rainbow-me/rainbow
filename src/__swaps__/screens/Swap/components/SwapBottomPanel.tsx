@@ -119,9 +119,8 @@ export function SwapBottomPanel() {
               <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} direction="vertical" thickness={1} />
             </Box>
           </Animated.View>
-          <Box style={{ flex: 1 }}>
+          <Box style={{ flex: 1 }} testID="swap-bottom-action-button">
             <SwapActionButton
-              testID="swap-bottom-action-button"
               asset={internalSelectedOutputAsset}
               holdProgress={holdProgress}
               icon={icon}
