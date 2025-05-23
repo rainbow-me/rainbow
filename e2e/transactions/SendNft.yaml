@@ -29,7 +29,7 @@ tags:
             - assertVisible:
                 id: 'balance-coin-row-Ethereum'
 
-      - tapOn: 'Rainbow Pooly'
+      - tapOn: '.*Rainbow Pooly.*'
 
       - assertVisible:
           id: 'wrapped-nft-Rainbow Pooly 104'
