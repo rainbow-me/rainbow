@@ -47,7 +47,7 @@ const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
 }))({});
 
 export default function ReceiveModal() {
-  const accountAddress = useAccountAddress()
+  const accountAddress = useAccountAddress();
   const { accountName } = useAccountProfileInfo();
 
   const [copiedText, setCopiedText] = useState(undefined);

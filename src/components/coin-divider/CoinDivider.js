@@ -74,11 +74,11 @@ const useInterpolationRange = isCoinListEdited => {
         {
           translateY: isCoinListEdited
             ? position?.interpolate({
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'extend',
-              inputRange: range,
-              outputRange: range.map(r => r - range[0]),
-            })
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'extend',
+                inputRange: range,
+                outputRange: range.map(r => r - range[0]),
+              })
             : 0,
         },
       ],
