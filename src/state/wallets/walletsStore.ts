@@ -477,6 +477,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         set({
           wallets: updatedWallets,
         });
+        updateAccountProfileInfo();
       }
     },
 
@@ -504,6 +505,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         walletNames: updatedWalletNames,
       });
+      updateAccountProfileInfo();
       saveWalletNames(updatedWalletNames);
     },
 
