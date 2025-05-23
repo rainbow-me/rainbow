@@ -85,6 +85,7 @@ const ProfileModal = ({
   submitButtonText,
   placeholder,
 }: ProfileModalProps) => {
+  console.log('addressaddressaddressaddress', address);
   const { colors, isDarkMode } = useTheme();
   const inputRef = useRef<any>(null);
 
