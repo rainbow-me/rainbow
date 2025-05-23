@@ -8,9 +8,10 @@ interface NftsStoreManagerState {
   cachedStore: NftsStoreType | null;
   sortBy: NftCollectionSortCriterion;
   sortDirection: SortDirection;
-  setSortBy: (sortBy: NftCollectionSortCriterion) => void;
-  setSortDirection: (sortDirection: SortDirection) => void;
+  updateSort: (sort: NftSort) => void;
 }
+
+export type NftSort = `${NftCollectionSortCriterion}|${SortDirection}`;
 
 export const nftsStoreManager = createRainbowStore<NftsStoreManagerState>(
   set => ({
@@ -18,8 +19,10 @@ export const nftsStoreManager = createRainbowStore<NftsStoreManagerState>(
     cachedStore: null,
     sortBy: NftCollectionSortCriterion.MostRecent,
     sortDirection: SortDirection.Desc,
-    setSortBy: (sortBy: NftCollectionSortCriterion) => set({ sortBy }),
-    setSortDirection: (sortDirection: SortDirection) => set({ sortDirection }),
+    updateSort: (sort: NftSort) => {
+      const [sortBy, sortDirection] = sort.split('|');
+      set({ sortBy: sortBy as NftCollectionSortCriterion, sortDirection: sortDirection as SortDirection });
+    },
   }),
   {
     partialize: state => ({

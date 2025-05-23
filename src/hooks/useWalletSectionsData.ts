@@ -14,12 +14,12 @@ import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
-import { useNftSort } from './useNFTsSortBy';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { nftsStoreManager } from '@/state/nfts/nftsStoreManager';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -35,7 +35,7 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { nftSort } = useNftSort();
+  const nftSort = nftsStoreManager(state => state.sortBy);
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
   const { showcaseTokens } = useShowcaseTokens();
