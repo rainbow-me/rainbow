@@ -79,6 +79,7 @@ interface WalletsState {
 
   accountProfileInfo: AccountProfileInfo | null;
   updateAccountProfileInfo: () => void;
+  getAccountProfileInfo: (props: { address: string; wallet?: RainbowWallet }) => AccountProfileInfo;
 
   refreshWalletENSAvatars: () => Promise<void>;
   refreshWalletNames: () => Promise<void>;
@@ -88,7 +89,6 @@ interface WalletsState {
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
-  getAccountProfileInfo: (props: { address: string; wallet?: RainbowWallet }) => AccountProfileInfo;
 }
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
@@ -146,6 +146,46 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         accountProfileInfo: getAccountProfileInfo({ address: get().accountAddress }),
       });
+    },
+
+    getAccountProfileInfo: props => {
+      const { selected, walletNames, getWalletWithAccount } = get();
+      const accountAddress = props?.address || get().accountAddress;
+      const wallet = props?.wallet || (accountAddress ? getWalletWithAccount(accountAddress) : null) || selected;
+
+      if (!wallet || !accountAddress || !wallet?.addresses?.length) {
+        return {
+          accountAddress,
+          accountColor: 0,
+        };
+      }
+
+      const accountENS = walletNames?.[accountAddress];
+      const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, accountAddress));
+
+      if (!selectedAccount) {
+        return {
+          accountAddress,
+          accountColor: 0,
+        };
+      }
+
+      const { label, color, image } = selectedAccount;
+      const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
+      const accountName = labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
+      const emojiAvatar = returnStringFirstEmoji(label);
+      const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(accountAddress));
+      const accountColor = color;
+      const accountImage = image && isValidImagePath(image) ? image : null;
+
+      return {
+        accountAddress,
+        accountColor,
+        accountENS,
+        accountImage,
+        accountName,
+        accountSymbol,
+      };
     },
 
     async loadWallets() {
@@ -211,9 +251,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           }
 
           if (!account) return;
-          set({
-            accountAddress: ensureValidHex(account.address),
-          });
+          setAccountAddress(ensureValidHex(account.address));
           await saveAddress(account.address);
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
@@ -224,6 +262,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           walletNames,
           wallets,
         });
+        updateAccountProfileInfo();
 
         return wallets;
       } catch (error) {
@@ -587,46 +626,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         }
       });
       return walletWithAccount;
-    },
-
-    getAccountProfileInfo: props => {
-      const { selected, walletNames, getWalletWithAccount } = get();
-      const accountAddress = props?.address || get().accountAddress;
-      const wallet = props?.wallet || (accountAddress ? getWalletWithAccount(accountAddress) : null) || selected;
-
-      if (!wallet || !accountAddress || !wallet?.addresses?.length) {
-        return {
-          accountAddress,
-          accountColor: 0,
-        };
-      }
-
-      const accountENS = walletNames?.[accountAddress];
-      const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, accountAddress));
-
-      if (!selectedAccount) {
-        return {
-          accountAddress,
-          accountColor: 0,
-        };
-      }
-
-      const { label, color, image } = selectedAccount;
-      const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-      const accountName = labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
-      const emojiAvatar = returnStringFirstEmoji(label);
-      const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(accountAddress));
-      const accountColor = color;
-      const accountImage = image && isValidImagePath(image) ? image : null;
-
-      return {
-        accountAddress,
-        accountColor,
-        accountENS,
-        accountImage,
-        accountName,
-        accountSymbol,
-      };
     },
   }),
   {
