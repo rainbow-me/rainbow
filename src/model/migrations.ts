@@ -19,7 +19,7 @@ import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteD
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
+import { getSelectedWallet, getWallets, loadWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { captureException } from '@sentry/react-native';
@@ -797,8 +797,9 @@ export default async function runMigrations() {
    */
   const v28 = async () => {
     // @ts-expect-error: this has been removed but should still be persisted
-    const previousSelected = store.getState()['wallets'].selected;
+    const previousSelected = store.getState()['wallets']?.selected;
     if (previousSelected) {
+      await loadWallets();
       setSelectedWallet(previousSelected);
     }
   };
