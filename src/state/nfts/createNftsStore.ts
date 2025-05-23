@@ -9,8 +9,6 @@ import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 
 const fetchNftData = async (params: NftParams) => {
   try {
-    if (!params.walletAddress) return null;
-
     const { walletAddress, sortBy, sortDirection, collectionId } = params;
 
     if (collectionId) {
@@ -21,7 +19,6 @@ const fetchNftData = async (params: NftParams) => {
     const data = await arcClient.getNftCollections({ walletAddress, sortBy, sortDirection });
     return data;
   } catch (error) {
-    console.log(error);
     logger.error(new RainbowError('Failed to fetch collections data', error));
     return null;
   }
@@ -34,6 +31,7 @@ export const createNftsStore = (address: Address | string) =>
     {
       fetcher: fetchNftData,
       transform: (data, params) => {
+        // exit early if no data is returned
         if (!data) return { collections: new Map(), nftsByCollection: new Map() } satisfies NftStore;
 
         if ('nftCollections' in data) {
@@ -66,11 +64,11 @@ export const createNftsStore = (address: Address | string) =>
       setData: ({ data, set }) => {
         set(state => {
           if (data.collections.size) {
-            state.collections = new Map(data.collections);
+            state.collections = new Map([...data.collections, ...state.collections]);
           }
 
           if (data.nftsByCollection.size) {
-            state.nftsByCollection = new Map(data.nftsByCollection);
+            state.nftsByCollection = new Map([...data.nftsByCollection, ...state.nftsByCollection]);
           }
 
           return state;
@@ -78,8 +76,7 @@ export const createNftsStore = (address: Address | string) =>
       },
       keepPreviousData: true,
       cacheTime: time.hours(1),
-      // staleTime: time.minutes(10),
-      staleTime: time.seconds(10),
+      staleTime: time.minutes(10),
       params: {
         walletAddress: address,
         sortBy: $ => $(nftsStoreManager, state => state.sortBy),
