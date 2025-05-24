@@ -1,19 +1,14 @@
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { useWallets } from '@/hooks';
-import { getWalletENSAvatars } from '@/redux/wallets';
+import { refreshWalletENSAvatars } from '@/state/wallets/walletsStore';
+import { useCallback } from 'react';
 
 export default function useWalletENSAvatar() {
-  const dispatch = useDispatch();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-
-  const { wallets, walletNames, selectedWallet } = useWallets();
 
   const updateWalletENSAvatars = useCallback(async () => {
     if (!profilesEnabled) return;
-    await getWalletENSAvatars({ selected: selectedWallet, walletNames, wallets }, dispatch);
-  }, [dispatch, profilesEnabled, selectedWallet, walletNames, wallets]);
+    await refreshWalletENSAvatars();
+  }, [profilesEnabled]);
 
   return { updateWalletENSAvatars };
 }

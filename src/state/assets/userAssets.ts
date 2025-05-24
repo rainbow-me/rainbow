@@ -1,6 +1,5 @@
-import { useSelector } from 'react-redux';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
-import reduxStore, { AppState } from '@/redux/store';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { UserAssetsStateToPersist } from './persistence';
@@ -12,7 +11,7 @@ const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUt
 );
 
 function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
-  const rawAddress = address?.length ? address : reduxStore.getState().settings.accountAddress;
+  const rawAddress = address?.length ? address : getAccountAddress();
   const { address: cachedAddress, cachedStore } = userAssetsStoreManager.getState();
   /**
    * This fallback can be removed once Redux is no longer the source of truth for the current
@@ -37,7 +36,7 @@ function useUserAssetsStoreInternal<T>(
   selector?: (state: QueryEnabledUserAssetsState) => T,
   equalityFn?: (a: T, b: T) => boolean
 ): QueryEnabledUserAssetsState | T {
-  const address = useSelector((state: AppState) => state.settings.accountAddress);
+  const address = useAccountAddress();
   const store = getOrCreateStore(address);
   return selector ? store(selector, equalityFn) : store();
 }

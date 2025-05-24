@@ -10,7 +10,6 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
 import { Box, globalColors, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { useAccountProfile } from '@/hooks';
 import * as i18n from '@/languages';
 import { useDiscoverSearchQueryStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import Navigation from '@/navigation/Navigation';
@@ -20,11 +19,12 @@ import { PullToRefresh } from './Airdrops/AirdropsSheet';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { DiscoverSearchBar } from '@/components/Discover/DiscoverSearchBar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 
 const Content = () => {
   const { isDarkMode } = useColorMode();
   const { top: topInset } = useSafeAreaInsets();
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
 
   const { scrollViewRef, onTapSearch } = useDiscoverScreenContext();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
