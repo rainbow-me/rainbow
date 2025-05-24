@@ -10,6 +10,7 @@ import { isEmpty, keys } from 'lodash';
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '@/handlers/localstorage/walletNames';
 import { ensureValidHex } from '@/handlers/web3';
+import { dequal } from 'dequal';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { hasKey } from '@/model/keychain';
@@ -77,9 +78,7 @@ interface WalletsState {
   accountAddress: Address;
   setAccountAddress: (address: Address) => void;
 
-  accountProfileInfo: AccountProfileInfo | null;
-  updateAccountProfileInfo: () => void;
-  getAccountProfileInfo: (props: { address: string; wallet?: RainbowWallet }) => AccountProfileInfo;
+  getAccountProfileInfo: () => AccountProfileInfo;
 
   refreshWalletENSAvatars: () => Promise<void>;
   refreshWalletNames: () => Promise<void>;
@@ -122,7 +121,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         wallets,
       });
-      updateAccountProfileInfo();
     },
 
     walletReady: false,
@@ -137,55 +135,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         accountAddress,
       });
-      updateAccountProfileInfo();
     },
 
-    accountProfileInfo: null,
-    // this is tied to both accountAddress and wallets, and should be updated alongside both
-    updateAccountProfileInfo() {
-      set({
-        accountProfileInfo: getAccountProfileInfo({ address: get().accountAddress }),
-      });
-    },
-
-    getAccountProfileInfo: props => {
-      const { selected, walletNames, getWalletWithAccount } = get();
-      const accountAddress = props?.address || get().accountAddress;
-      const wallet = props?.wallet || (accountAddress ? getWalletWithAccount(accountAddress) : null) || selected;
-
-      if (!wallet || !accountAddress || !wallet?.addresses?.length) {
-        return {
-          accountAddress,
-          accountColor: 0,
-        };
-      }
-
-      const accountENS = walletNames?.[accountAddress];
-      const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, accountAddress));
-
-      if (!selectedAccount) {
-        return {
-          accountAddress,
-          accountColor: 0,
-        };
-      }
-
-      const { label, color, image } = selectedAccount;
-      const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-      const accountName = labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
-      const emojiAvatar = returnStringFirstEmoji(label);
-      const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(accountAddress));
-      const accountColor = color;
-      const accountImage = image && isValidImagePath(image) ? image : null;
-
-      return {
-        accountAddress,
-        accountColor,
-        accountENS,
-        accountImage,
-        accountName,
-        accountSymbol,
-      };
+    getAccountProfileInfo: () => {
+      const state = get();
+      const { getWalletWithAccount } = state;
+      const address = state.accountAddress;
+      const wallet = getWalletWithAccount(address);
+      return getAccountProfileInfoFromState({ address, wallet }, state);
     },
 
     async loadWallets() {
@@ -252,7 +209,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
           if (!account) return;
           setAccountAddress(ensureValidHex(account.address));
-          await saveAddress(account.address);
+          saveAddress(account.address);
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
@@ -262,7 +219,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           walletNames,
           wallets,
         });
-        updateAccountProfileInfo();
 
         return wallets;
       } catch (error) {
@@ -477,7 +433,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         set({
           wallets: updatedWallets,
         });
-        updateAccountProfileInfo();
       }
     },
 
@@ -505,7 +460,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         walletNames: updatedWalletNames,
       });
-      updateAccountProfileInfo();
       saveWalletNames(updatedWalletNames);
     },
 
@@ -636,7 +590,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       selected: state.selected,
       accountAddress: state.accountAddress,
       wallets: state.wallets,
-      accountProfileInfo: state.accountProfileInfo,
       walletNames: state.walletNames,
     }),
   }
@@ -667,12 +620,9 @@ export const isImportedWallet = (address: string): boolean => {
   return false;
 };
 
-export const updateAccountProfileInfo = () => useWalletsStore.getState().updateAccountProfileInfo();
-
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
-  // TODO (APP-2643): fix the non-null assertion / return types on info
-  const info = useWalletsStore(state => state.accountProfileInfo!);
+  const info = useWalletsStore(state => state.getAccountProfileInfo(), dequal);
   return useMemo(() => {
     return {
       ...info,
@@ -681,12 +631,54 @@ export const useAccountProfileInfo = () => {
   }, [colors.avatarBackgrounds, info]);
 };
 
+export const getAccountProfileInfo = (props: { address: string; wallet?: RainbowWallet }) => {
+  return getAccountProfileInfoFromState(props, useWalletsStore.getState());
+};
+
+const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
+  const wallet = props.wallet || state.selected;
+  const { accountAddress, walletNames } = state;
+
+  if (!wallet || !accountAddress || !wallet?.addresses?.length) {
+    return {
+      accountAddress,
+      accountColor: 0,
+    };
+  }
+
+  const accountENS = walletNames?.[accountAddress];
+  const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, accountAddress));
+
+  if (!selectedAccount) {
+    return {
+      accountAddress,
+      accountColor: 0,
+    };
+  }
+
+  const { label, color, image } = selectedAccount;
+  const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
+  const accountName = labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
+  const emojiAvatar = returnStringFirstEmoji(label);
+  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(accountAddress));
+  const accountColor = color;
+  const accountImage = image && isValidImagePath(image) ? image : null;
+
+  return {
+    accountAddress,
+    accountColor,
+    accountENS,
+    accountImage,
+    accountName,
+    accountSymbol,
+  };
+};
+
 // export static functions
 export const {
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
   createAccount,
-  getAccountProfileInfo,
   getIsDamaged,
   getIsHardwareWallet,
   getIsReadOnlyWallet,
