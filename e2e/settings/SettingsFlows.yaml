@@ -24,7 +24,7 @@ tags:
       # Change currency to euros and validate
       - tapOn:
           id: currency-section
-      - tapOn: 'Euro'
+      - tapOn: '.*Euro'
       - tapOn: 'Done'
       - assertVisible:
           text: '.*€.*'
@@ -36,12 +36,12 @@ tags:
             - tapOn: 'Settings'
       # Change theme to dark and validate
       - assertVisible:
-          id: theme-section-light
+          id: choose-theme-section-light
       - tapOn:
-          id: choose-theme-section
+          id: choose-theme-section.*
       - tapOn: 'Dark'
       - assertVisible:
-          id: theme-section-dark
+          id: choose-theme-section-dark
       # Open diagnostics
       - scrollUntilVisible:
           element:
