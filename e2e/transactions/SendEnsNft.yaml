@@ -1,0 +1,50 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- retry:
+    maxRetries: 3
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
+
+      # Send ETH to test wallet
+      - tapOn:
+          id: fund-test-wallet-button
+
+      # Connect to Anvil (test network)
+      - tapOn:
+          id: dev-button-anvil
+
+      # Open send sheet
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible:
+                id: balance-coin-row-Ethereum
+
+      - tapOn:
+          id: tab-bar-icon-DiscoverScreen
+
+      - tapOn:
+          id: discover-search-icon
+
+      - tapOn:
+          id: discover-search-input
+
+      # Test ENS address input
+      - inputText: 0xtester.eth
+
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible:
+                id: discover-currency-select-list
+            - tapOn:
+                id: discover-currency-select-list
