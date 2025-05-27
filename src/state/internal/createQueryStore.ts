@@ -3,7 +3,7 @@ import { debounce } from 'lodash';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { createWithEqualityFn } from 'zustand/traditional';
 import { IS_DEV, IS_TEST } from '@/env';
-import { RainbowError, logger } from '@/logger';
+import { RainbowError, ensureError, logger } from '@/logger';
 import { time } from '@/utils';
 import { createRainbowStore } from './createRainbowStore';
 import { SubscriptionManager } from './queryStore/classes/SubscriptionManager';
@@ -31,6 +31,7 @@ import {
   RainbowStateCreator,
   RainbowStore,
   SubscribeArgs,
+  SubscribeOverloads,
 } from './types';
 import { omitStoreMethods } from './utils/persistUtils';
 
@@ -54,6 +55,9 @@ const SHOULD_PERSIST_INTERNAL_STATE_MAP: Record<string, boolean> = {
   reset: discard,
 } satisfies Record<InternalStateKeys, boolean>;
 
+/**
+ * Five seconds.
+ */
 const MIN_STALE_TIME = time.seconds(5);
 
 /**
@@ -189,16 +193,17 @@ export function createQueryStore<
 >(
   config: QueryStoreConfig<TQueryFnData, TParams, TData, QueryStoreState<TData, TParams, U>> &
     QueryStoreParams<TParams, QueryStoreState<TData, TParams, U>, TData>,
-  arg1?:
+  creatorOrPersistConfig?:
     | QueryStoreStateCreator<QueryStoreState<TData, TParams, U>, U>
     | RainbowPersistConfig<QueryStoreState<TData, TParams, U>, PersistedState>,
-  arg2?: RainbowPersistConfig<QueryStoreState<TData, TParams, U>, PersistedState>
+  maybePersistConfig?: RainbowPersistConfig<QueryStoreState<TData, TParams, U>, PersistedState>
 ): RainbowStore<QueryStoreState<TData, TParams, U>> | RainbowStore<QueryStoreState<TData, TParams, U>, PersistedState> {
   type S = QueryStoreState<TData, TParams, U>;
 
   /* If arg1 is a function, it's the custom state creator; otherwise, it's the persistConfig. */
-  const customStateCreator = typeof arg1 === 'function' ? arg1 : () => ({}) as U;
-  const persistConfig = typeof arg1 === 'object' && 'storageKey' in arg1 ? arg1 : arg2;
+  const customStateCreator = typeof creatorOrPersistConfig === 'function' ? creatorOrPersistConfig : () => ({}) as U;
+  const persistConfig =
+    typeof creatorOrPersistConfig === 'object' && 'storageKey' in creatorOrPersistConfig ? creatorOrPersistConfig : maybePersistConfig;
 
   const {
     fetcher,
@@ -219,7 +224,7 @@ export function createQueryStore<
     retryDelay = defaultRetryDelay,
     staleTime = time.minutes(2),
     suppressStaleTimeWarning = false,
-    useParsableQueryKey = false,
+    useParsableQueryKeys = false,
   } = config;
 
   if (IS_DEV && !suppressStaleTimeWarning && staleTime < MIN_STALE_TIME) {
@@ -230,7 +235,7 @@ export function createQueryStore<
     );
   }
 
-  const getQueryKeyFn = useParsableQueryKey ? getParsableQueryKey : getQueryKey;
+  const getQueryKeyFn = useParsableQueryKeys ? getParsableQueryKey : getQueryKey;
 
   const abortError = new Error('[createQueryStore: AbortError] Fetch interrupted');
   const cacheTimeIsFunction = typeof cacheTime === 'function';
@@ -348,12 +353,12 @@ export function createQueryStore<
         }
       },
 
-      onLastUnsubscribe: () => {
+      onLastUnsubscribe: (skipAbortFetch?: boolean) => {
         if (activeRefetchTimeout) {
           clearTimeout(activeRefetchTimeout);
           activeRefetchTimeout = null;
         }
-        if (abortInterruptedFetches) abortActiveFetch();
+        if (abortInterruptedFetches && !skipAbortFetch) abortActiveFetch();
       },
     });
 
@@ -585,11 +590,11 @@ export function createQueryStore<
             }
 
             const shouldThrow = !isInternalFetch && options?.throwOnError === true;
-            const typedError = error instanceof Error ? error : new Error(String(error));
+            const typedError = ensureError(error);
 
             if (skipStoreUpdates) {
               logger.error(new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`), {
-                error,
+                error: typedError,
               });
               if (shouldThrow) throw typedError;
               return null;
@@ -656,7 +661,7 @@ export function createQueryStore<
             }
 
             logger.error(new RainbowError(`[createQueryStore: ${persistConfig?.storageKey || currentQueryKey}]: Failed to fetch data`), {
-              error,
+              error: typedError,
             });
 
             if (shouldThrow) throw typedError;
@@ -734,16 +739,15 @@ export function createQueryStore<
     };
 
     // Override the store's subscribe method
-    const originalSubscribe = api.subscribe;
-    api.subscribe = ((...args: SubscribeArgs<S>) => {
+    const originalSubscribe: SubscribeOverloads<S, unknown, true> = api.subscribe;
+    api.subscribe = (...args: SubscribeArgs<S>) => {
       const internalUnsubscribe = subscriptionManager.subscribe();
       const unsubscribe = args.length === 1 ? originalSubscribe(args[0]) : originalSubscribe(...args);
-      return () => {
-        internalUnsubscribe();
+      return (skipAbortFetch?: boolean) => {
+        internalUnsubscribe(skipAbortFetch);
         unsubscribe();
       };
-    }) satisfies typeof originalSubscribe;
-
+    };
     return baseMethods;
   };
 

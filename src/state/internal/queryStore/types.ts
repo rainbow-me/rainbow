@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { AttachValue, SignalFunction } from '../signal';
-import { BaseRainbowStore, RainbowStore } from '../types';
+import { BaseRainbowStore, DebounceOptions, RainbowStore } from '../types';
 
 /**
  * Helper type that represents the store returned by `createQueryStore()`.
@@ -11,7 +11,7 @@ export type QueryStore<
   U = unknown,
   TData = TQueryFnData,
   PersistedState extends Partial<QueryStoreState<TData, TParams, U>> = Partial<QueryStoreState<TData, TParams, U>>,
-> = RainbowStore<QueryStoreState<TData, TParams, U>> | RainbowStore<QueryStoreState<TData, TParams, U>, PersistedState>;
+> = RainbowStore<QueryStoreState<TData, TParams, U>> | RainbowStore<QueryStoreState<TData, TParams, U>, PersistedState, true>;
 
 /**
  * A set of constants representing the various stages of a query's remote data fetching process.
@@ -43,20 +43,6 @@ export type QueryStatusInfo = {
   isIdle: boolean;
   isInitialLoading: boolean;
   isSuccess: boolean;
-};
-
-/**
- * Expanded options for debouncing query store parameter changes.
- */
-export type DebounceOptions = {
-  /* The number of milliseconds to delay. */
-  delay: number;
-  /* Specify invoking on the leading edge of the timeout. */
-  leading?: boolean;
-  /* The maximum time func is allowed to be delayed before it’s invoked. */
-  maxWait?: number;
-  /* Specify invoking on the trailing edge of the timeout. */
-  trailing?: boolean;
 };
 
 /**
@@ -375,7 +361,7 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * This enables retrieving parsed params from the `queryKey` via `parseQueryKey`.
    * @default false
    */
-  useParsableQueryKey?: boolean;
+  useParsableQueryKeys?: boolean;
 };
 
 /**
