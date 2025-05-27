@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { Address } from 'viem';
 import reduxStore, { AppState } from '@/redux/store';
-import { EqualityFn } from '../internal/types';
+import { EqualityFn, Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { UserAssetsStateToPersist } from './persistence';
@@ -33,9 +33,9 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
 }
 
 function useUserAssetsStoreInternal(): QueryEnabledUserAssetsState;
-function useUserAssetsStoreInternal<T>(selector: (state: QueryEnabledUserAssetsState) => T, equalityFn?: EqualityFn<T>): T;
+function useUserAssetsStoreInternal<T>(selector: Selector<QueryEnabledUserAssetsState, T>, equalityFn?: EqualityFn<T>): T;
 function useUserAssetsStoreInternal<T>(
-  selector?: (state: QueryEnabledUserAssetsState) => T,
+  selector?: Selector<QueryEnabledUserAssetsState, T>,
   equalityFn?: EqualityFn<T>
 ): QueryEnabledUserAssetsState | T {
   const address = useSelector((state: AppState) => state.settings.accountAddress);
