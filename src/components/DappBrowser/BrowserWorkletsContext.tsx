@@ -3,10 +3,11 @@ import { runOnJS, useAnimatedReaction, useSharedValue, withSpring } from 'react-
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { deepEqual } from '@/worklets/comparisons';
+import { generateUniqueId } from '@/worklets/strings';
 import { useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
 import { BrowserWorkletsContextType, ScreenshotType, TabOperation, TabViewGestureStates } from './types';
-import { generateUniqueId, normalizeUrlWorklet } from './utils';
+import { normalizeUrlWorklet } from './utils';
 
 export const BrowserWorkletsContext = createContext<BrowserWorkletsContextType | undefined>(undefined);
 
