@@ -37,7 +37,7 @@ tags:
       - hideKeyboard
       # cant get swap-bottom-action-button to work, but that would be ideal.
       - longPressOn:
-          point: 64%, 94%
+          point: 63%, 88%
       - runFlow: ../utils/MaybeSetupPin.yaml
       - tapOn:
           id: tab-bar-icon-ProfileScreen
