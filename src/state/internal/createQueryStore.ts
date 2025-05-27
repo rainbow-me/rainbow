@@ -78,33 +78,9 @@ export function createQueryStore<
 >(
   config: QueryStoreConfig<TQueryFnData, TParams, TData, QueryStoreState<TData, TParams, U>> &
     QueryStoreParams<TParams, QueryStoreState<TData, TParams, U>, TData>,
-  RainbowStateCreator: QueryStoreStateCreator<QueryStoreState<TData, TParams, U>, U>,
+  stateCreator: QueryStoreStateCreator<QueryStoreState<TData, TParams, U>, U>,
   persistConfig: RainbowPersistConfig<QueryStoreState<TData, TParams, U>, PersistedState>
 ): PersistedRainbowStore<QueryStoreState<TData, TParams, U>, PersistedState>;
-
-/**
- * Creates a conditionally persisted, query-enabled Rainbow store with data-fetching capabilities.
- *
- * `persistConfig` may be `undefined` – the returned store exposes `persist?`.
- *
- * @template TQueryFnData - The raw data type returned by the fetcher
- * @template TParams - Parameters passed to the fetcher function
- * @template U - User-defined custom store state
- * @template TData - The transformed data type, if applicable (defaults to `TQueryFnData`)
- * @template PersistedState - The persisted state type, if a stricter type than `Partial<U>` is desired
- */
-export function createQueryStore<
-  TQueryFnData,
-  TParams extends Record<string, unknown> = Record<string, never>,
-  U = unknown,
-  TData = TQueryFnData,
-  PersistedState extends Partial<U> = Partial<U>,
->(
-  config: QueryStoreConfig<TQueryFnData, TParams, TData, QueryStoreState<TData, TParams, U>> &
-    QueryStoreParams<TParams, QueryStoreState<TData, TParams, U>, TData>,
-  RainbowStateCreator: QueryStoreStateCreator<QueryStoreState<TData, TParams, U>, U>,
-  persistConfig: RainbowPersistConfig<QueryStoreState<TData, TParams, U>, PersistedState> | undefined
-): OptionallyPersistedRainbowStore<QueryStoreState<TData, TParams, U>, PersistedState>;
 
 /**
  * Creates a persisted, query-enabled Rainbow store with data fetching capabilities.
@@ -126,6 +102,63 @@ export function createQueryStore<
 ): PersistedRainbowStore<BaseQueryStoreState<TData, TParams>, PersistedState>;
 
 /**
+ * Creates a query-enabled Rainbow store with data fetching capabilities.
+ *
+ * @template TQueryFnData - The raw data type returned by the fetcher
+ * @template TParams - Parameters passed to the fetcher function
+ * @template U - User-defined custom store state
+ * @template TData - The transformed data type, if applicable (defaults to `TQueryFnData`)
+ */
+export function createQueryStore<
+  TQueryFnData,
+  TParams extends Record<string, unknown> = Record<string, never>,
+  U = unknown,
+  TData = TQueryFnData,
+>(
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, QueryStoreState<TData, TParams, U>> &
+    QueryStoreParams<TParams, QueryStoreState<TData, TParams, U>, TData>,
+  stateCreator: QueryStoreStateCreator<QueryStoreState<TData, TParams, U>, U>,
+  persistConfig?: undefined
+): RainbowStore<QueryStoreState<TData, TParams, U>>;
+
+/**
+ * Creates a query-enabled Rainbow store with data fetching capabilities.
+ *
+ * @template TQueryFnData - The raw data type returned by the fetcher
+ * @template TParams - Parameters passed to the fetcher function
+ * @template TData - The transformed data type, if applicable (defaults to `TQueryFnData`)
+ */
+export function createQueryStore<TQueryFnData, TParams extends Record<string, unknown> = Record<string, never>, TData = TQueryFnData>(
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, BaseQueryStoreState<TData, TParams>> &
+    QueryStoreParams<TParams, BaseQueryStoreState<TData, TParams>, TData>,
+  persistConfig?: undefined
+): RainbowStore<BaseQueryStoreState<TData, TParams>>;
+
+/**
+ * Creates a conditionally persisted, query-enabled Rainbow store with data-fetching capabilities.
+ *
+ * `persistConfig` may be `undefined` – the returned store exposes `persist?`.
+ *
+ * @template TQueryFnData - The raw data type returned by the fetcher
+ * @template TParams - Parameters passed to the fetcher function
+ * @template U - User-defined custom store state
+ * @template TData - The transformed data type, if applicable (defaults to `TQueryFnData`)
+ * @template PersistedState - The persisted state type, if a stricter type than `Partial<U>` is desired
+ */
+export function createQueryStore<
+  TQueryFnData,
+  TParams extends Record<string, unknown> = Record<string, never>,
+  U = unknown,
+  TData = TQueryFnData,
+  PersistedState extends Partial<U> = Partial<U>,
+>(
+  config: QueryStoreConfig<TQueryFnData, TParams, TData, QueryStoreState<TData, TParams, U>> &
+    QueryStoreParams<TParams, QueryStoreState<TData, TParams, U>, TData>,
+  stateCreator: QueryStoreStateCreator<QueryStoreState<TData, TParams, U>, U>,
+  persistConfig: RainbowPersistConfig<QueryStoreState<TData, TParams, U>, PersistedState> | undefined
+): OptionallyPersistedRainbowStore<QueryStoreState<TData, TParams, U>, PersistedState>;
+
+/**
  * Creates a conditionally persisted, query-enabled Rainbow store with data fetching capabilities.
  *
  * @template TQueryFnData - The raw data type returned by the fetcher
@@ -143,37 +176,6 @@ export function createQueryStore<
     QueryStoreParams<TParams, BaseQueryStoreState<TData, TParams>, TData>,
   persistConfig: RainbowPersistConfig<BaseQueryStoreState<TData, TParams>, PersistedState> | undefined
 ): OptionallyPersistedRainbowStore<BaseQueryStoreState<TData, TParams>, PersistedState>;
-
-/**
- * Creates a query-enabled Rainbow store with data fetching capabilities.
- *
- * @template TQueryFnData - The raw data type returned by the fetcher
- * @template TParams - Parameters passed to the fetcher function
- * @template U - User-defined custom store state
- * @template TData - The transformed data type, if applicable (defaults to `TQueryFnData`)
- */
-export function createQueryStore<
-  TQueryFnData,
-  TParams extends Record<string, unknown> = Record<string, never>,
-  U = unknown,
-  TData = TQueryFnData,
->(
-  config: QueryStoreConfig<TQueryFnData, TParams, TData, QueryStoreState<TData, TParams, U>> &
-    QueryStoreParams<TParams, QueryStoreState<TData, TParams, U>, TData>,
-  RainbowStateCreator: QueryStoreStateCreator<QueryStoreState<TData, TParams, U>, U>
-): RainbowStore<QueryStoreState<TData, TParams, U>>;
-
-/**
- * Creates a query-enabled Rainbow store with data fetching capabilities.
- *
- * @template TQueryFnData - The raw data type returned by the fetcher
- * @template TParams - Parameters passed to the fetcher function
- * @template TData - The transformed data type, if applicable (defaults to `TQueryFnData`)
- */
-export function createQueryStore<TQueryFnData, TParams extends Record<string, unknown> = Record<string, never>, TData = TQueryFnData>(
-  config: QueryStoreConfig<TQueryFnData, TParams, TData, BaseQueryStoreState<TData, TParams>> &
-    QueryStoreParams<TParams, BaseQueryStoreState<TData, TParams>, TData>
-): RainbowStore<BaseQueryStoreState<TData, TParams>>;
 
 /**
  * Creates a query-enabled Rainbow store with data fetching capabilities.
