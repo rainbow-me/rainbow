@@ -1,3 +1,4 @@
+import { IS_DEV } from '@/env';
 import { authenticateWithPINAndCreateIfNeeded, getExistingPIN, shouldAuthenticateWithPIN } from '@/handlers/authentication';
 import * as keychain from '@/keychain';
 
@@ -13,7 +14,7 @@ async function maybeSaveFakeAuthKey() {
 
 export async function isAuthenticated(): Promise<boolean> {
   const usePin = await shouldAuthenticateWithPIN();
-  if (!usePin) {
+  if (!usePin || IS_DEV) {
     await maybeSaveFakeAuthKey();
     const options = await keychain.getPrivateAccessControlOptions();
     const { value } = await keychain.get(FAKE_LOCAL_AUTH_KEY, options);
