@@ -31,6 +31,12 @@ module.exports = {
     {
       files: ['*.yml', '*.yaml'],
       parser: 'yaml-eslint-parser',
+      rules: {
+        // currently we use single quotes for yaml files
+        'yml/quotes': ['warn', { prefer: 'single', avoidEscape: false }],
+        // we also put scalars in quotes
+        'yml/plain-scalar': 'off',
+      },
     },
   ],
   rules: {
