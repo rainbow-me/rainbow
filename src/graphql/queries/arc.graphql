@@ -474,14 +474,26 @@ query getNFTs($walletAddress: String!, $sortBy: NFTCollectionSortCriterion, $sor
   }
 }
 
+query getNftCollectionsPaginated($walletAddress: String!, $limit: Int, $pageKey: String) {
+  getNftCollectionsForAddress(walletAddress: $walletAddress, limit: $limit, pageKey: $pageKey) {
+    data {
+      id
+      name
+      imageUrl
+      floorPrice
+      totalCount
+    }
+    nextPageKey
+    totalCollections
+  }
+}
+
 query getNftCollections($walletAddress: String!, $sortBy: NFTCollectionSortCriterion, $sortDirection: SortDirection) {
   nftCollections(walletAddress: $walletAddress, sortBy: $sortBy, sortDirection: $sortDirection) {
     collection_id
-    total_copies_owned
     nft_ids
     collection_details {
       image_url
-      spam_score
       name
     }
   }

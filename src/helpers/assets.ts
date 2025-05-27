@@ -10,7 +10,7 @@ import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
-import { CollectionName, Collection } from '@/state/nfts/types';
+import { CollectionName, Collection, CollectionId } from '@/state/nfts/types';
 import { ChainName } from '@/state/backendNetworks/types';
 import { Address } from 'viem';
 
@@ -256,63 +256,69 @@ function normalizeNftId(nftId: string, includeChainName = false) {
 }
 
 export const buildBriefUniqueTokenList = (
-  collections: Map<CollectionName, Collection>,
+  collections: Collection[] | null,
   selectedShowcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
-  nftSort = NftCollectionSortCriterion.MostRecent,
   isFetchingNfts = false
 ) => {
-  const hiddenUniqueTokensIds: string[] = [];
-  const uniqueTokensInShowcaseIds: string[] = [];
-  const filteredCollections: Map<CollectionName, Collection> = new Map();
+  // const hiddenUniqueTokensIds: { collectionId: string; nftId: string }[] = [];
+  // const uniqueTokensInShowcaseIds: { collectionId: string; nftId: string }[] = [];
+  // const filteredCollections: Map<CollectionId, Collection> = new Map();
 
-  for (const [uniqueId, collection] of collections) {
-    for (const nftId of collection.nftIds) {
-      const hiddenNftId = normalizeNftId(nftId, true);
-      const showcaseNftId = normalizeNftId(nftId);
-      if (hiddenTokens.includes(hiddenNftId)) {
-        hiddenUniqueTokensIds.push(hiddenNftId);
-        continue;
-      }
+  // for (const [uniqueId, collection] of collections) {
+  //   for (const nftId of collection.) {
+  //     const hiddenNftId = normalizeNftId(nftId, true);
+  //     const showcaseNftId = normalizeNftId(nftId);
+  //     if (hiddenTokens.includes(hiddenNftId)) {
+  //       hiddenUniqueTokensIds.push({
+  //         collectionId: uniqueId,
+  //         nftId,
+  //       });
+  //       continue;
+  //     }
 
-      if (selectedShowcaseTokens.includes(showcaseNftId)) {
-        uniqueTokensInShowcaseIds.push(showcaseNftId);
-      }
+  //     if (selectedShowcaseTokens.includes(showcaseNftId)) {
+  //       uniqueTokensInShowcaseIds.push({
+  //         collectionId: uniqueId,
+  //         nftId,
+  //       });
+  //     }
 
-      filteredCollections.set(uniqueId, collection);
-    }
-  }
+  //     filteredCollections.set(uniqueId, collection);
+  //   }
+  // }
 
   const result: CellTypes[] = [
     {
       type: CellType.NFTS_HEADER,
-      nftSort,
-      uid: `nft-headers-${nftSort}`,
+      uid: `nft-headers`,
     },
     { type: CellType.NFTS_HEADER_SPACE_AFTER, uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
-    result.push({
-      name: i18n.t(i18n.l.account.tab_showcase),
-      total: uniqueTokensInShowcaseIds.length,
-      type: CellType.FAMILY_HEADER,
-      uid: 'showcase',
-    });
-    for (let index = 0; index < uniqueTokensInShowcaseIds.length; index++) {
-      const uniqueId = uniqueTokensInShowcaseIds[index];
-      result.push({
-        index,
-        type: CellType.NFT,
-        uid: `showcase-${uniqueId}`,
-        uniqueId,
-      });
-    }
+  // TODO: Bring back showcase and hidden categories
+  // if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
+  //   result.push({
+  //     name: i18n.t(i18n.l.account.tab_showcase),
+  //     total: uniqueTokensInShowcaseIds.length,
+  //     type: CellType.FAMILY_HEADER,
+  //     uid: 'showcase',
+  //   });
+  //   for (let index = 0; index < uniqueTokensInShowcaseIds.length; index++) {
+  //     const { collectionId, nftId} = uniqueTokensInShowcaseIds[index];
+  //     result.push({
+  //       index,
+  //       type: CellType.NFT,
+  //       uid: `showcase-${nftId}`,
+  //       uniqueId: nftId,
+  //       collectionId,
+  //     });
+  //   }
 
-    result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
-  }
+  //   result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
+  // }
 
   // i18n all names
   if (sellingTokens.length > 0) {
@@ -334,50 +340,51 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
   }
 
-  if (!filteredCollections.size) {
+  if (!collections?.length) {
     if (!isFetchingNfts) {
       result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
     } else {
-      result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading-${nftSort}` });
+      result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading` });
     }
   } else {
-    for (const [collectionId, collection] of filteredCollections) {
+    for (const { id, name, imageUrl, totalCount } of collections) {
       result.push({
-        image: collection.image ?? undefined,
-        name: collection.name,
-        total: collection.total,
+        image: imageUrl ?? undefined,
+        name,
+        total: totalCount,
         type: CellType.FAMILY_HEADER,
-        uid: collectionId,
+        uid: id,
       });
 
-      for (let index = 0; index < collection.nftIds.length; index++) {
-        const uniqueId = collection.nftIds[index];
-        result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId, collectionId });
+      for (let index = 0; index < Number(totalCount); index++) {
+        const uniqueId = `${id}.${index}`;
+        result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId, collectionId: id });
       }
 
-      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${collectionId}-space-after` });
+      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${id}-space-after` });
     }
   }
 
-  if (hiddenUniqueTokensIds?.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
-    result.push({
-      name: lang.t('button.hidden'),
-      total: hiddenUniqueTokensIds.length,
-      type: CellType.FAMILY_HEADER,
-      uid: 'hidden',
-    });
-    for (let index = 0; index < hiddenUniqueTokensIds.length; index++) {
-      const uniqueId = hiddenUniqueTokensIds[index];
-      result.push({
-        index,
-        type: CellType.NFT,
-        uid: `hidden-${uniqueId}`,
-        uniqueId,
-      });
-    }
+  // if (hiddenUniqueTokensIds?.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
+  //   result.push({
+  //     name: lang.t('button.hidden'),
+  //     total: hiddenUniqueTokensIds.length,
+  //     type: CellType.FAMILY_HEADER,
+  //     uid: 'hidden',
+  //   });
+  //   for (let index = 0; index < hiddenUniqueTokensIds.length; index++) {
+  //     const { collectionId, nftId} = hiddenUniqueTokensIds[index];
+  //     result.push({
+  //       index,
+  //       type: CellType.NFT,
+  //       uid: `hidden-${nftId}`,
+  //       uniqueId: nftId,
+  //       collectionId,
+  //     });
+  //   }
 
-    result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
-  }
+  //   result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
+  // }
 
   return result;
 };

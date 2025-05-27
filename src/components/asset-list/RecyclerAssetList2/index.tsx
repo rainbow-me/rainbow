@@ -46,7 +46,9 @@ export interface RecyclerAssetList2Props {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  onEndReached?: () => void;
 }
+
 function RecyclerAssetList({
   accentColor,
   disablePullDownToRefresh,
@@ -54,6 +56,7 @@ function RecyclerAssetList({
   onPressUniqueToken,
   type = 'wallet',
   walletBriefSectionsData,
+  onEndReached,
 }: RecyclerAssetList2Props) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
@@ -78,6 +81,7 @@ function RecyclerAssetList({
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
+          onEndReached={onEndReached}
           scrollIndicatorInsets={{
             bottom: insets.bottom + 14,
             top: 132,

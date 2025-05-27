@@ -37,9 +37,9 @@ const CollectiblesHeader = () => {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const sortBy = nftsStoreManager(state => state.sortBy);
-  const sortDirection = nftsStoreManager(state => state.sortDirection);
-  const updateNFTSort = nftsStoreManager(state => state.updateSort);
+  // const sortBy = nftsStoreManager(state => state.sortBy);
+  // const sortDirection = nftsStoreManager(state => state.sortDirection);
+  // const updateNFTSort = nftsStoreManager(state => state.updateSort);
 
   if (!nftsEnabled) return null;
 
@@ -49,7 +49,7 @@ const CollectiblesHeader = () => {
       paddingBottom="2px"
       paddingHorizontal={'19px (Deprecated)'}
       justifyContent="flex-end"
-      key={`collectibles_${sortBy}`}
+      // key={`collectibles_${sortBy}`}
       testID={`collectibles-list-header`}
     >
       <Inline alignHorizontal="justify" alignVertical="center">
@@ -57,7 +57,7 @@ const CollectiblesHeader = () => {
           {i18n.t(i18n.l.account.tab_collectibles)}
         </Text>
 
-        <ListHeaderMenu
+        {/* <ListHeaderMenu
           selected={`${sortBy}|${sortDirection}`}
           menuItems={Object.values(NftCollectionSortCriterion).map(sortCriterion => {
             return {
@@ -98,7 +98,7 @@ const CollectiblesHeader = () => {
           selectItem={updateNFTSort}
           icon={getIconForSortType(sortBy)}
           text={i18n.t(i18n.l.nfts.sort[sortBy])}
-        />
+        /> */}
       </Inline>
     </Box>
   );

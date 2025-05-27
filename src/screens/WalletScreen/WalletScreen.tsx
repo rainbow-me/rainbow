@@ -20,6 +20,7 @@ import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { useNftsStore } from '@/state/nfts/nfts';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -53,6 +54,7 @@ function WalletScreen() {
   const { network: currentNetwork, accountAddress } = useAccountSettings();
   const insets = useSafeAreaInsets();
   const hideSplashScreen = useHideSplashScreen();
+  const fetchNextPage = useNftsStore(state => state.fetchNextPage);
 
   const {
     isWalletEthZero,
@@ -88,6 +90,7 @@ function WalletScreen() {
           disableRefreshControl={disableRefreshControl}
           isWalletEthZero={isWalletEthZero}
           network={currentNetwork}
+          onEndReached={fetchNextPage}
           walletBriefSectionsData={walletBriefSectionsData}
         />
         <ToastComponent />

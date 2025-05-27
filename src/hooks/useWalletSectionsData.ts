@@ -19,7 +19,6 @@ import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewT
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { nftsStoreManager } from '@/state/nfts/nftsStoreManager';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -35,7 +34,6 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const nftSort = nftsStoreManager(state => state.sortBy);
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
   const { showcaseTokens } = useShowcaseTokens();
@@ -78,7 +76,7 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
-  const collections = useNftsStore(state => state.collections);
+  const collections = useNftsStore(state => state.getCollections());
   const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
@@ -125,12 +123,11 @@ export default function useWalletSectionsData({
       experimentalConfig,
       positions,
       claimables,
-      nftSort,
       remoteCards,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
-    const hasNFTs = collections.size > 0;
+    const hasNFTs = (collections?.length || 0) > 0;
 
     return {
       hasNFTs,
@@ -160,7 +157,6 @@ export default function useWalletSectionsData({
     experimentalConfig,
     positions,
     claimables,
-    nftSort,
     remoteCards,
   ]);
 }

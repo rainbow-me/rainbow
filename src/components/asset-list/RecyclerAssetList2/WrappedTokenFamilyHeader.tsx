@@ -30,6 +30,7 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
 
   useEffect(() => {
     if (isFamilyOpen) {
+      console.log('fetching nfts for collection', uid);
       useNftsStore.getState().fetch(
         { collectionId: uid },
         {

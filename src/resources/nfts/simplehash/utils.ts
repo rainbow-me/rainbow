@@ -155,6 +155,8 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     };
   }
 
+  console.log('asset', JSON.stringify(asset, null, 2));
+
   return asset;
 }
 
