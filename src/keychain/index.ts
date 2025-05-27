@@ -393,6 +393,7 @@ export async function getPrivateAccessControlOptions(): Promise<SetOptions> {
   return {
     accessControl: ios ? ACCESS_CONTROL.USER_PRESENCE : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
     accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    // storage is explicitly set in order to specify RSA instead of the symmetric AES_GCM default.
     storage: usePin ? STORAGE_TYPE.AES_GCM_NO_AUTH : STORAGE_TYPE.RSA,
   };
 }
