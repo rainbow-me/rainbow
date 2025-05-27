@@ -3,9 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { CoinIconIndicator } from '@/components/coin-icon';
 import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
-
 import { ExtendedState } from '../core/RawRecyclerList';
-
 import { Text } from '@/design-system';
 import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
@@ -14,8 +12,9 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -55,7 +54,9 @@ const CoinCheckButton = React.memo(function CoinCheckButton({ isHidden, isPinned
   );
 });
 
-const formatPercentageString = (percentString?: string) => (percentString ? percentString.split('-').join('- ') : '-');
+function formatPercentageString(percentString?: string) {
+  return percentString ? percentString.split('-').join('- ') : '-';
+}
 
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
@@ -69,6 +70,11 @@ interface MemoizedBalanceCoinRowProps {
 const MemoizedBalanceCoinRow = React.memo(
   ({ uniqueId, nativeCurrency, theme, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
     const item = useAccountAsset(uniqueId, nativeCurrency);
+    const nativeBalanceDisplay = item?.balance?.display ?? '';
+    const chainId = item?.chainId || ChainId.mainnet;
+    const tokenBalanceAmount = item?.balance?.amount ?? '0';
+    const percentChange = item?.native?.change || undefined;
+    const percentageChangeDisplay = formatPercentageString(percentChange);
 
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
@@ -79,18 +85,29 @@ const MemoizedBalanceCoinRow = React.memo(
       }
     }, [item, maybeCallback]);
 
-    const percentChange = item?.native?.change || undefined;
-    const percentageChangeDisplay = formatPercentageString(percentChange);
+    const tokenPriceSelector = useCallback(
+      (token: TokenData) => {
+        const { display } = convertRawAmountToNativeDisplay(tokenBalanceAmount, 1, token.price, nativeCurrency);
+        return display;
+      },
+      [tokenBalanceAmount, nativeCurrency]
+    );
 
-    const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
+    const tokenPriceChangeSelector = useCallback((token: TokenData) => {
+      return `${formatPercentageString(token.change24hPct)}%`;
+    }, []);
 
-    const changeColor = isPositive ? theme.colors.green : theme.colors.blueGreyDark50;
+    const livePriceChange = useLiveTokenValue({
+      tokenId: uniqueId,
+      // TODO:
+      initialValueLastUpdated: 0,
+      initialValue: percentageChangeDisplay,
+      autoSubscriptionEnabled: false,
+      selector: tokenPriceChangeSelector,
+    });
 
-    const nativeDisplay = item?.balance?.display;
-
-    const valueColor = nativeDisplay ? theme.colors.dark : theme.colors.blueGreyLight;
-
-    const chainId = item?.chainId || ChainId.mainnet;
+    const isPositivePriceChange = livePriceChange && parseFloat(livePriceChange) >= 0;
+    const priceChangeColor = isPositivePriceChange ? theme.colors.green : theme.colors.blueGreyDark50;
 
     return (
       <View style={sx.flex} testID={'fast-coin-info'}>
@@ -112,40 +129,28 @@ const MemoizedBalanceCoinRow = React.memo(
                     {item?.name}
                   </Text>
                 </View>
-
-                {/* <Text align="right" color={{ custom: valueColor }} size="16px / 22px (Deprecated)" weight="medium">
-                  {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
-                </Text> */}
-                {item?.uniqueId && (
-                  <LiveTokenText
-                    selector={token => {
-                      const tokenAmount = item?.balance?.amount;
-                      if (!tokenAmount) return `${nativeCurrencySymbol}0.00`;
-
-                      const { display } = convertRawAmountToNativeDisplay(tokenAmount, 1, token.price, nativeCurrency);
-                      return display;
-                    }}
-                    tokenId={item?.uniqueId}
-                    initialValueLastUpdated={item?.price?.changed_at ?? 0}
-                    initialValue={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
-                    autoSubscriptionEnabled={false}
-                    color={{ custom: valueColor }}
-                    size="14px / 19px (Deprecated)"
-                    weight="medium"
-                    align="right"
-                  />
-                )}
+                <LiveTokenText
+                  selector={tokenPriceSelector}
+                  tokenId={uniqueId}
+                  initialValueLastUpdated={item?.price?.changed_at ?? 0}
+                  initialValue={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
+                  autoSubscriptionEnabled={false}
+                  color={{ custom: theme.colors.dark }}
+                  size="14px / 19px (Deprecated)"
+                  weight="medium"
+                  align="right"
+                />
               </View>
 
               <View style={[sx.row, sx.bottom]}>
                 <View style={sx.textWrapper}>
                   <Text color={{ custom: theme.colors.blueGreyDark50 }} numberOfLines={1} size="14px / 19px (Deprecated)" weight="medium">
-                    {nativeDisplay ?? ''}
+                    {nativeBalanceDisplay}
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: changeColor }} size="14px / 19px (Deprecated)" weight="medium">
-                  {percentageChangeDisplay}
+                <Text align="right" color={{ custom: priceChangeColor }} size="14px / 19px (Deprecated)" weight="medium">
+                  {livePriceChange}
                 </Text>
               </View>
             </View>

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatedText, TextProps, useForegroundColor } from '@/design-system';
+import { useTheme } from '@/theme';
 import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useSharedValue, SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/hooks/useListen';
@@ -29,8 +30,9 @@ export function useLiveTokenSharedValue({
 
   const onTokenUpdated = useCallback(
     (token: TokenData) => {
-      // TODO: would need selector to be worklet too, does it matter in this case of setting singular value?
-      // 'worklet';
+      // TODO: this shouldn't be possible
+      if (!token) return;
+
       const newValue = selector(token);
 
       if (toUnixTime(token.updatedAt) > initialValueLastUpdated && newValue !== prevValue.current) {
@@ -70,6 +72,9 @@ export function useLiveTokenValue({
 
   const onTokenUpdated = useCallback(
     (token: TokenData) => {
+      // TODO: this shouldn't be possible
+      if (!token) return;
+
       const newValue = selector(token);
 
       if (toUnixTime(token.updatedAt) > initialValueLastUpdated && newValue !== prevLiveValue.current) {
@@ -95,7 +100,10 @@ export function useLiveTokenValue({
   return liveValue;
 }
 
-type LiveTokenTextProps = LiveTokenValueParams & Omit<TextProps, 'children'>;
+type LiveTokenTextProps = LiveTokenValueParams &
+  Omit<TextProps, 'children'> & {
+    animateTrendChange?: boolean;
+  };
 
 export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
   tokenId,
@@ -103,6 +111,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   initialValue,
   autoSubscriptionEnabled = true,
   selector,
+  animateTrendChange = false,
   ...textProps
 }) {
   const liveValue = useLiveTokenSharedValue({
@@ -113,23 +122,25 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
     selector,
   });
 
+  const theme = useTheme();
+
   const baseColor = useForegroundColor(textProps.color ?? 'label');
   const textColor = useSharedValue(baseColor);
 
   useAnimatedReaction(
     () => liveValue.value,
     (value, previousValue) => {
-      if (!previousValue || value === previousValue) return;
+      if (!animateTrendChange || !previousValue || value === previousValue) return;
 
       let animateToColor = baseColor;
       if (value > previousValue) {
-        animateToColor = 'green';
+        animateToColor = theme.colors.green;
       } else if (value < previousValue) {
-        animateToColor = 'red';
+        animateToColor = theme.colors.red;
       }
 
-      textColor.value = withTiming(animateToColor, { duration: 250 }, () => {
-        textColor.value = withDelay(250, withTiming(baseColor, { duration: 250 }));
+      textColor.value = withTiming(animateToColor, { duration: 150 }, () => {
+        textColor.value = withDelay(50, withTiming(baseColor, { duration: 150 }));
       });
     }
   );
