@@ -102,7 +102,9 @@ export function useLiveTokenValue({
 
 type LiveTokenTextProps = LiveTokenValueParams &
   Omit<TextProps, 'children'> & {
+    // TODO: do not like these prop names
     animateTrendChange?: boolean;
+    usePriceChangeColor?: boolean;
   };
 
 export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
@@ -112,6 +114,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   autoSubscriptionEnabled = true,
   selector,
   animateTrendChange = false,
+  usePriceChangeColor = false,
   ...textProps
 }) {
   const liveValue = useLiveTokenSharedValue({
@@ -130,6 +133,17 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   useAnimatedReaction(
     () => liveValue.value,
     (value, previousValue) => {
+      if (usePriceChangeColor) {
+        if (parseFloat(value) > 0) {
+          textColor.value = theme.colors.green;
+        } else if (parseFloat(value) < 0) {
+          textColor.value = theme.colors.red;
+        } else {
+          textColor.value = baseColor;
+        }
+        return;
+      }
+
       if (!animateTrendChange || !previousValue || value === previousValue) return;
 
       let animateToColor = baseColor;

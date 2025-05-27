@@ -2,7 +2,6 @@ import { time } from '@/utils';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 
 // route -> token id -> subscription count
 type TokenSubscriptionCountByRoute = Record<string, Record<string, number>>;
@@ -12,6 +11,7 @@ export interface TokenData {
   change24hPct: string;
   change1hPct: string;
   volume24h: string;
+  marketCap: string;
   updatedAt: string;
   valuation: {
     allowed: boolean;
@@ -78,6 +78,7 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTok
       change24hPct: ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 50)).toFixed(2),
       change1hPct: (fluctuation * 100).toFixed(2),
       volume24h: (basePrice * 1000 + fluctuation * 1000).toFixed(2),
+      marketCap: (basePrice * 1000000 + fluctuation * 1000000).toFixed(2),
       updatedAt: new Date().toISOString(),
       valuation: {
         allowed: true,

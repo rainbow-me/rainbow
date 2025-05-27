@@ -471,7 +471,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   // TODO: not yet added to the token data by backend
                   initialValueLastUpdated={0}
                   initialValue={price}
-                  selector={token => token.price}
+                  selector={token => formatCurrency(token.price, { currency })}
                   color="label"
                   numberOfLines={1}
                   size="15pt"
@@ -499,26 +499,51 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   <Text color="labelQuaternary" size="11pt" weight="bold">
                     MCAP
                   </Text>
-                  <Text color="labelTertiary" numberOfLines={1} size="11pt" weight="bold">
-                    {marketCap}
-                  </Text>
+                  <LiveTokenText
+                    tokenId={token.uniqueId}
+                    // TODO: not yet added to the token data by backend
+                    initialValueLastUpdated={0}
+                    initialValue={marketCap}
+                    selector={token => formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' })}
+                    color="labelTertiary"
+                    numberOfLines={1}
+                    size="11pt"
+                    weight="bold"
+                  />
                 </View>
               </View>
             </View>
 
             <View style={{ gap: 12, marginLeft: 'auto', maxWidth: 75 }}>
               <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
-                <Text color={getPriceChangeColor(token.priceChange.day)} size="15pt" weight="bold">
-                  {formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%
-                </Text>
+                <LiveTokenText
+                  tokenId={token.uniqueId}
+                  // TODO: not yet added to the token data by backend
+                  initialValueLastUpdated={0}
+                  initialValue={formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}
+                  selector={token => `${formatNumber(token.change24hPct, { decimals: 2, useOrderSuffix: true })}%`}
+                  color="label"
+                  numberOfLines={1}
+                  size="15pt"
+                  weight="bold"
+                  usePriceChangeColor
+                />
               </View>
               <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
                 <Text color="labelQuaternary" size="11pt" weight="bold">
                   1H
                 </Text>
-                <Text color={getPriceChangeColor(token.priceChange.hr)} size="11pt" weight="bold">
-                  {formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}%
-                </Text>
+                <LiveTokenText
+                  tokenId={token.uniqueId}
+                  // TODO: not yet added to the token data by backend
+                  initialValueLastUpdated={0}
+                  initialValue={formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}
+                  selector={token => `${formatNumber(token.change1hPct, { decimals: 2, useOrderSuffix: true })}%`}
+                  color="label"
+                  size="11pt"
+                  weight="bold"
+                  usePriceChangeColor
+                />
               </View>
             </View>
           </View>
