@@ -40,7 +40,6 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
-  const connectedToAnvil = useConnectedToAnvilStore(state => state.connectedToAnvil);
   const setConnectedToAnvil = useConnectedToAnvilStore(state => state.setConnectedToAnvil);
   const [config, setConfig] = useState<Record<string, boolean>>(defaultConfigValues);
   const [globalState, updateGlobalState] = useState({});
@@ -76,7 +75,8 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const connectToAnvil = useCallback(async () => {
     try {
-      setConnectedToAnvil(!connectedToAnvil);
+      const currentValue = useConnectedToAnvilStore.getState().connectedToAnvil;
+      setConnectedToAnvil(!currentValue);
       logger.debug('connected to anvil');
     } catch (e) {
       setConnectedToAnvil(false);
@@ -85,7 +85,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       });
     }
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
-  }, [connectedToAnvil, setConnectedToAnvil]);
+  }, [setConnectedToAnvil]);
 
   const fundTestWallet = useCallback(async () => {
     if (!IS_TEST) return;
