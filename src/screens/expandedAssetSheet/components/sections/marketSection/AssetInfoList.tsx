@@ -31,6 +31,7 @@ import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { Address } from 'viem';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { sliderConfig, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 3;
 const LAYOUT_ANIMATION = FadeIn.duration(160);
@@ -237,6 +238,20 @@ export function AssetInfoList() {
     };
   });
 
+  const liveTokenMarketCap = useLiveTokenValue({
+    tokenId: asset.address,
+    initialValue: String(metadata?.marketCap ?? 0),
+    initialValueLastUpdated: 0,
+    selector: state => state.marketCap,
+  });
+
+  const liveTokenVolume1d = useLiveTokenValue({
+    tokenId: asset.address,
+    initialValue: String(metadata?.volume1d ?? 0),
+    initialValueLastUpdated: 0,
+    selector: state => state.volume24h,
+  });
+
   const hasCreatedBySection = useMemo(() => {
     return metadata?.rainbowTokenDetails?.onchainData?.creatorAddress !== undefined;
   }, [metadata]);
@@ -249,14 +264,14 @@ export function AssetInfoList() {
     if (metadata.marketCap) {
       items.push({
         title: i18n.t(i18n.l.expanded_state.sections.market_stats.market_cap),
-        value: bigNumberFormat(metadata.marketCap, nativeCurrency, true),
+        value: bigNumberFormat(liveTokenMarketCap, nativeCurrency, true),
         icon: '􁎢',
       });
     }
     if (metadata.volume1d) {
       items.push({
         title: i18n.t(i18n.l.expanded_state.sections.market_stats.volume_24_hours),
-        value: bigNumberFormat(metadata.volume1d, nativeCurrency, true),
+        value: bigNumberFormat(liveTokenVolume1d, nativeCurrency, true),
         icon: '􀣉',
       });
     }
@@ -267,6 +282,7 @@ export function AssetInfoList() {
         icon: '􁖩',
       });
     }
+    // TODO: will fully diluted valuation be available? If not, should we calculate it?
     if (metadata.fullyDilutedValuation) {
       items.push({
         title: i18n.t(i18n.l.expanded_state.sections.market_stats.fully_diluted_valuation),
@@ -298,7 +314,7 @@ export function AssetInfoList() {
     }
 
     return items;
-  }, [metadata, asset, nativeCurrency]);
+  }, [metadata, asset, nativeCurrency, liveTokenMarketCap, liveTokenVolume1d]);
 
   const ITEMS_COUNT = hasCreatedBySection ? DEFAULT_VISIBLE_ITEM_COUNT - 1 : DEFAULT_VISIBLE_ITEM_COUNT;
 
