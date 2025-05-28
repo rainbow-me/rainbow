@@ -15,7 +15,7 @@ import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { NativeCurrencyKey, UniqueAsset } from '@/entities';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
-import { useAccountSettings, useCoinListEdited, useCoinListEditOptions } from '@/hooks';
+import { useAccountSettings, useCoinListEdited, useCoinListEditOptions, usePrevious } from '@/hooks';
 import { useTheme } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
@@ -77,6 +77,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const y = useRecyclerAssetListPosition()!;
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
+  const viewableIndicesRef = useRef<number[]>([]);
+  const previousData = usePrevious(briefSectionsData);
 
   const layoutProvider = useMemo(
     () =>
@@ -141,6 +143,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const handleViewableIndicesChanged = useCallback(
     (viewableIndices: number[], viewableIndicesAdded: number[], viewableIndicesRemoved: number[]) => {
+      viewableIndicesRef.current = viewableIndices;
       if (!onViewableItemsChanged) return;
 
       const viewableItems = viewableIndices.map(index => briefSectionsData[index]);
@@ -151,6 +154,33 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     },
     [onViewableItemsChanged, briefSectionsData]
   );
+
+  // If viewable indices remain the same but the data changes, we need to trigger onViewableItemsChanged
+  useEffect(() => {
+    if (!onViewableItemsChanged || viewableIndicesRef.current.length === 0 || !previousData) return;
+
+    const currentViewableIndices = viewableIndicesRef.current;
+
+    const hasDataChanged = currentViewableIndices.some(index => {
+      const prevItem = previousData[index];
+      const currItem = briefSectionsData[index];
+
+      return !prevItem || !currItem || prevItem.uid !== currItem.uid;
+    });
+
+    if (hasDataChanged) {
+      const viewableItems = currentViewableIndices.map(index => briefSectionsData[index]);
+      const previousViewableItems = currentViewableIndices.map(index => previousData[index]);
+
+      const currentUids = new Set(viewableItems.map(item => item.uid));
+      const previousUids = new Set(previousViewableItems.map(item => item.uid));
+
+      const viewableItemsAdded = viewableItems.filter(item => !previousUids.has(item.uid));
+      const viewableItemsRemoved = previousViewableItems.filter(item => !currentUids.has(item.uid));
+
+      onViewableItemsChanged({ viewableItems, viewableItemsAdded, viewableItemsRemoved });
+    }
+  }, [briefSectionsData, onViewableItemsChanged, previousData]);
 
   const mergedExtendedState = useMemo<ExtendedState>(() => {
     return {
@@ -195,7 +225,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}
       renderAheadOffset={1000}
-      // renderAheadOffset={100}
       rowRenderer={rowRenderer}
       canChangeSize={type === 'wallet'}
       layoutSize={type === 'wallet' ? dimensions : undefined}
