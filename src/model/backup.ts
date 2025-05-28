@@ -23,10 +23,10 @@ import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
 import {
+  authenticateWithPIN,
   decryptPIN,
   maybeAuthenticateWithPIN,
   maybeAuthenticateWithPINAndCreateIfNeeded,
-  shouldAuthenticateWithPIN,
 } from '@/handlers/authentication';
 import * as i18n from '@/languages';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
@@ -341,22 +341,28 @@ export async function addWalletToCloudBackup({
   return encryptAndSaveDataToCloud(backup, password, filename);
 }
 
+async function authenticateWithPINForDecrypt() {
+  let userPIN: string | undefined;
+  try {
+    userPIN = await authenticateWithPIN();
+  } catch (e) {
+    // If we can't authenticate with PIN, we throw an error after.
+  }
+  if (!userPIN) {
+    throw new Error(CLOUD_BACKUP_ERRORS.MISSING_PIN);
+  }
+  return userPIN;
+}
+
 // we decrypt seedphrase and private key before backing up
-export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<string, string>, userPIN?: string) {
+export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<string, string>, maybeUserPIN?: string) {
   const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
-  if (await shouldAuthenticateWithPIN()) {
-    /*
-     * The PIN code is passed as an argument.
-     * Authentication is handled at the call site.
-     * If we don't have PIN information, we throw an error.
-     * Both for the developer and the user if something goes wrong.
-     */
-    if (userPIN === undefined) {
-      throw new Error(CLOUD_BACKUP_ERRORS.MISSING_PIN);
-    }
-
+  if (IS_ANDROID) {
     // We go through each secret here and try to decrypt it if it's needed
+    // We only prompt for PIN if it is currently needed, but it is possible
+    // that secrets were previously encrypted with PIN, so we also need
+    // to prompt for PIN here if needed.
     await Promise.all(
       Object.keys(processedSecrets).map(async key => {
         const secret = processedSecrets[key];
@@ -367,7 +373,8 @@ export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<stri
           const parsedSecret = JSON.parse(secret);
           const seedphrase = parsedSecret.seedphrase;
 
-          if (userPIN && seedphrase && seedphrase?.includes('cipher')) {
+          if (seedphrase && seedphrase?.includes('cipher')) {
+            const userPIN = maybeUserPIN || (await authenticateWithPINForDecrypt());
             const decryptedSeedPhrase = await encryptor.decrypt(userPIN, seedphrase);
             processedSecrets[key] = JSON.stringify({
               ...parsedSecret,
@@ -378,7 +385,8 @@ export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<stri
           const parsedSecret = JSON.parse(secret);
           const privateKey = parsedSecret.privateKey;
 
-          if (userPIN && privateKey && privateKey.includes('cipher')) {
+          if (privateKey && privateKey.includes('cipher')) {
+            const userPIN = maybeUserPIN || (await authenticateWithPINForDecrypt());
             const decryptedPrivateKey = await encryptor.decrypt(userPIN, privateKey);
             processedSecrets[key] = JSON.stringify({
               ...parsedSecret,
