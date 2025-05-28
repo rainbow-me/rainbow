@@ -15,7 +15,7 @@ type TrackedInvocation = {
   method: string;
 };
 
-type PathTracker = (store: BaseRainbowStore<unknown>, path: string[], isLeaf: boolean, invocation?: TrackedInvocation) => void;
+type TrackPathFn = (store: BaseRainbowStore<unknown>, path: string[], isLeaf: boolean, invocation?: TrackedInvocation) => void;
 
 type SubscriptionBuilder = (store: BaseRainbowStore<unknown>, selector: Selector<unknown, unknown>) => void;
 
@@ -29,7 +29,7 @@ type SubscriptionBuilder = (store: BaseRainbowStore<unknown>, selector: Selector
 export function getOrCreateProxy<S>(
   store: BaseRainbowStore<S>,
   rootProxyCache: WeakMap<BaseRainbowStore<unknown>, unknown>,
-  trackPath: PathTracker
+  trackPath: TrackPathFn
 ): S {
   // The WeakMap can't handle generics, so here we re-apply the correct type
   const proxyByStore = rootProxyCache.get(store) as S | undefined;
@@ -43,7 +43,7 @@ export function getOrCreateProxy<S>(
   return proxyByStore;
 }
 
-function createTrackingProxy<S>(snapshot: S, store: BaseRainbowStore<unknown>, trackPath: PathTracker, path: string[] = []): S {
+function createTrackingProxy<S>(snapshot: S, store: BaseRainbowStore<unknown>, trackPath: TrackPathFn, path: string[] = []): S {
   const bailedOutObjects = new WeakSet<object>();
   const subProxyCache = new WeakMap<object, object>();
   return buildProxy(snapshot, path, store, trackPath, bailedOutObjects, subProxyCache);
@@ -53,7 +53,7 @@ function buildProxy<T>(
   value: T,
   path: string[],
   store: BaseRainbowStore<unknown>,
-  trackPath: PathTracker,
+  trackPath: TrackPathFn,
   bailedOutObjects: WeakSet<object>,
   subProxyCache: WeakMap<object, object>
 ): T {
@@ -103,7 +103,7 @@ function buildProxy<T>(
       // -- Handle non-function property tracking
       // Primitives or nullish values: track as a leaf
       // Objects: track as ancestor usage
-      const isObject = childValue && typeof childValue === 'object';
+      const isObject = !!childValue && typeof childValue === 'object';
       trackPath(store, newPath, !isObject);
 
       // -- For objects, return a sub-proxy
@@ -146,14 +146,20 @@ function buildProxySubscriptions(finalPaths: Set<PathEntry>, createSubscription:
   if (shouldLog) logTrackedPaths(finalPaths);
 }
 
+/**
+ * Builds a selector that returns the value at the specified path.
+ */
 function buildPathSelector(path: string[]): Selector<unknown, unknown> {
   return state => getValueAtPath(state, path);
 }
 
+/**
+ * Builds a selector that returns the value returned by invoking the
+ * specified method on the parent object.
+ */
 function buildInvocationSelector(path: string[], invocation: TrackedInvocation): Selector<unknown, unknown> {
   const { method, args } = invocation;
   const parentPath = path.slice(0, -1);
-
   return state => {
     const parentObj = getValueAtPath(state, parentPath);
     const fn = (parentObj as Record<string, unknown> | undefined)?.[method];
@@ -161,6 +167,17 @@ function buildInvocationSelector(path: string[], invocation: TrackedInvocation):
   };
 }
 
+/**
+ * Gets the value at the specified path in an object.
+ *
+ * `path` is an array of keys used to traverse the object.
+ *
+ * @example
+ * ```ts
+ * const obj = { a: { b: { c: 1 } } };
+ * getValueAtPath(obj, ['a', 'b', 'c']); // 1
+ * ```
+ */
 function getValueAtPath<T>(obj: T, path: string[]): T {
   let current = obj;
   for (const p of path) {
@@ -174,19 +191,13 @@ function getValueAtPath<T>(obj: T, path: string[]): T {
 
 export type PathFinder = {
   buildProxySubscriptions(createSubscription: SubscriptionBuilder, shouldLog: boolean): void;
-  trackPath: PathTracker;
-};
-
-type TrieNode = {
-  children?: Record<string, TrieNode>;
-  isLeaf?: boolean;
-  invocation?: TrackedInvocation;
+  trackPath: TrackPathFn;
 };
 
 /**
- * A factory returning a proxy path-tracking object with two methods:
- *  - `buildProxySubscriptions()`: build subscriptions for the final paths
- *  - `trackPath()`: record usage of a store path
+ * A factory that returns a proxy path-tracking object with two methods:
+ *  - `buildProxySubscriptions()`: builds subscriptions to the final paths
+ *  - `trackPath()`: records usage of a store path
  */
 export function createPathFinder(): PathFinder {
   // Each store maps to its trie root node
@@ -204,8 +215,7 @@ export function createPathFinder(): PathFinder {
     trackPath(store, path, isLeaf, invocation) {
       let root = storeMap.get(store);
       if (!root) {
-        const newRoot: TrieNode = Object.create(null);
-        root = newRoot;
+        root = createTrieNode();
         storeMap.set(store, root);
       }
       insertPath(root, path, 0, isLeaf, invocation);
@@ -213,26 +223,43 @@ export function createPathFinder(): PathFinder {
   };
 }
 
-function insertPath(node: TrieNode, path: string[], idx: number, isLeaf?: boolean, invocation?: TrackedInvocation): void {
-  if (idx === path.length) {
+type TrieNode = {
+  children?: Record<string, TrieNode>;
+  invocation?: TrackedInvocation;
+  isLeaf?: boolean;
+};
+
+/**
+ * Creates a prototype-free trie node object.
+ */
+function createTrieNode<T extends TrieNode | Record<string, TrieNode> = TrieNode>(): T {
+  return Object.create(null);
+}
+
+/**
+ * Inserts a path into the trie, creating nodes to represent the path.
+ */
+function insertPath(node: TrieNode, path: string[], index: number, isLeaf?: boolean, invocation?: TrackedInvocation): void {
+  if (index === path.length) {
     if (isLeaf) node.isLeaf = true;
     if (invocation) node.invocation = invocation;
     return;
   }
   if (!node.children) {
-    // Avoid any prototype overhead
-    node.children = Object.create(null);
+    node.children = createTrieNode<Record<string, TrieNode>>();
   }
-  const segment = path[idx];
+  const segment = path[index];
   let child = node.children?.[segment];
   if (!child) {
-    const newChild: TrieNode = Object.create(null);
-    child = newChild;
-    if (node.children) node.children[segment] = newChild;
+    child = createTrieNode();
+    node.children[segment] = child;
   }
-  insertPath(child, path, idx + 1, isLeaf, invocation);
+  insertPath(child, path, index + 1, isLeaf, invocation);
 }
 
+/**
+ * Determines and collects the final paths to build selectors for.
+ */
 function collectMinimalPaths(
   node: TrieNode,
   store: BaseRainbowStore<unknown>,
@@ -307,11 +334,11 @@ function logTrackedPaths(paths: Set<PathEntry>): void {
   );
 }
 
-function isPersistedStore(store: BaseRainbowStore<unknown>): store is PersistedRainbowStore<unknown> {
-  return 'persist' in store;
-}
-
 function getStoreName(store: BaseRainbowStore<unknown>): string {
   const name = isPersistedStore(store) ? store.persist.getOptions().name : store.name;
   return name ?? store.name;
+}
+
+function isPersistedStore(store: BaseRainbowStore<unknown>): store is PersistedRainbowStore<unknown> {
+  return 'persist' in store;
 }
