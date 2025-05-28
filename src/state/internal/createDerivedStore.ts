@@ -10,6 +10,7 @@ import {
   DeriveOptions,
   DerivedRainbowStore,
   EqualityFn,
+  Listener,
   RainbowStore,
   Selector,
   SubscribeArgs,
@@ -112,11 +113,11 @@ export type DeriveGetter = {
  * - Selector-based listener
  */
 type Watcher<DerivedState, Selected = unknown> =
-  | ((state: DerivedState, prevState: DerivedState) => void)
+  | Listener<DerivedState>
   | {
       currentSlice: Selected;
       equalityFn: EqualityFn<Selected>;
-      listener: (newSlice: Selected, oldSlice: Selected) => void;
+      listener: Listener<Selected>;
       selector: Selector<DerivedState, Selected>;
     };
 
@@ -342,7 +343,7 @@ function derive<DerivedState>(
     flushUpdates,
     getState,
     subscribe,
-    // Not applicable to derived stores
+    // -- Not applicable to derived stores
     getInitialState: () => {
       throw new Error('[createDerivedStore]: getInitialState() is not available on derived stores.');
     },
