@@ -3,6 +3,7 @@ import { Image, View, ViewStyle, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { memoFn } from '../utils/memoFn';
 import { coerceToArray } from '../helpers/coerceToArray';
+import { ImgixImage } from './images';
 
 /**
  * Image component that tries to be fast
@@ -13,26 +14,44 @@ export const RainbowImage = ({ containerStyle, ...props }: FasterImageProps & { 
   const imageElement = (() => {
     const extension = getImageType(props.source.url);
 
-    if (extension === 'png' || extension === 'jpg' || extension === 'jpeg') {
-      return <FasterImageView {...props} style={[{ flex: 1 }, ...coerceToArray(props.style)]} />;
-    }
+    console.log('??', extension, props.source);
 
-    if (extension === 'bmp' || extension === 'webp' || extension === 'gif' || extension === 'avif') {
+    // if (extension === 'png' || extension === 'jpg' || extension === 'jpeg') {
+    //   return <FasterImageView {...props} style={[{ flex: 1 }, ...coerceToArray(props.style)]} />;
+    // }
+
+    // if (extension === 'imgix') {
+    return <ImgixImage size={200} {...props} />;
+    // }
+
+    if (
+      extension === 'png' ||
+      extension === 'jpg' ||
+      extension === 'jpeg' ||
+      extension === 'bmp' ||
+      extension === 'webp' ||
+      extension === 'gif' ||
+      extension === 'avif'
+    ) {
       return (
         <FastImage
           source={props.source}
           // @ts-expect-error fast-image defines a custom style that's a superset and a bit odd, but this should work
-          style={props.style}
-          onError={() => props.onError?.({ nativeEvent: { error: 'Error loading image' } })}
-          onLoad={e =>
+          style={[{ flex: 1 }, ...coerceToArray(props.style)]}
+          onError={() => {
+            console.log('err??');
+            props.onError?.({ nativeEvent: { error: 'Error loading image' } });
+          }}
+          onLoad={e => {
+            console.log('???????????????');
             props.onSuccess?.({
               nativeEvent: {
                 width: e.nativeEvent.width,
                 height: e.nativeEvent.height,
                 source: props.source.url,
               },
-            })
-          }
+            });
+          }}
         />
       );
     }
@@ -63,22 +82,27 @@ export const RainbowImage = ({ containerStyle, ...props }: FasterImageProps & { 
   return imageElement;
 };
 
-const getImageType = memoFn((path: string): string => {
+const fastImageExtension = {
+  png: 'png',
+  jpg: 'jpg',
+  jpeg: 'jpeg',
+  bmp: 'bmp',
+  webp: 'webp',
+  gif: 'gif',
+  avif: 'avif',
+} as const;
+
+type FastImageExtensions = keyof typeof fastImageExtension;
+
+const getImageType = memoFn((path: string): 'imgix' | FastImageExtensions | 'unknown' => {
+  if (path.includes('imgix.net')) {
+    return 'imgix';
+  }
   try {
     const url = new URL(path);
-
-    // we get urls like this from imgix:
-    // https://rainbow.imgix.net/https%3A%2F%2Fnft-cdn.alchemy.com%2Fblast-mainnet%2Ffb32114137151ee7ce0ad2a6cf8c8e21?w=525&fm=png&s=4ea01b89e4edd862e7fe7567b1af77fd
-    if (url.hostname.includes('imgix')) {
-      const fmParam = url.searchParams.get('fm');
-      if (fmParam) {
-        return fmParam.toLowerCase();
-      }
-    }
-
     const pathname = url.pathname;
     const extension = pathname.split('.').pop()?.toLowerCase() || '';
-    return extension;
+    return fastImageExtension[extension as FastImageExtensions] || 'unknown';
   } catch {
     return 'unknown';
   }
