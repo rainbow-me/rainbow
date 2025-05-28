@@ -101,7 +101,14 @@ function WalletScreen() {
   );
 
   const handleViewableItemsChanged = useCallback(
-    ({ viewableItems, viewableItemsRemoved }: { viewableItems: CellTypes[]; viewableItemsRemoved: CellTypes[] }) => {
+    ({
+      viewableItems,
+      viewableItemsRemoved,
+    }: {
+      viewableItems: CellTypes[];
+      viewableItemsAdded: CellTypes[];
+      viewableItemsRemoved: CellTypes[];
+    }) => {
       const viewableTokenUniqueIdsRemoved = extractTokenRowIds(viewableItemsRemoved);
 
       // removal cannot be debounced

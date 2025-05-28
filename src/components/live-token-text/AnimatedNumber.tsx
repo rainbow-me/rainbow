@@ -19,18 +19,17 @@ import Animated, {
   runOnJS,
   DerivedValue,
   LayoutAnimationConfig,
-  // EntryOrExitLayoutType,
-  AnimatedProps,
+  useDerivedValue,
   BaseAnimationBuilder,
   EntryExitAnimationFunction,
+  EntryAnimationsValues,
 } from 'react-native-reanimated';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { disableForTestingEnvironment } from '../animations/animationConfigs';
 import { measureText } from '@/utils';
-import { usePrevious } from '@/hooks';
 
-// reanimated does not export this type
+// reanimated defines but does not export this type
 type EntryOrExitLayoutType = BaseAnimationBuilder | typeof BaseAnimationBuilder | EntryExitAnimationFunction;
 
 // TODO:
@@ -38,6 +37,7 @@ type EntryOrExitLayoutType = BaseAnimationBuilder | typeof BaseAnimationBuilder 
 // - add same exit animation translation fixing for separators
 // - handle value changes in middle of animations
 // - require and document why text alignment prop is required
+// - fix 1 frame desync in parts layout update and disabled state
 
 const DEFAULT_ANIMATION_DURATION = 600;
 // credit to https://github.com/barvian/number-flow
@@ -78,7 +78,7 @@ type TimingAnimationConfig = WithTimingConfig & {
 
 interface DigitProps {
   part: Part;
-  previousPart: Part | undefined;
+  // previousPart: Part | undefined;
   timingConfig: TimingAnimationConfig;
   digitHeight: number;
   previousWidthDelta: SharedValue<number>;
@@ -86,11 +86,11 @@ interface DigitProps {
   numeralWidthsRef: MutableRefObject<number[]>;
   isInitialRenderRef: MutableRefObject<boolean>;
   enteringAnimation: EntryOrExitLayoutType | undefined;
+  isDisabled: SharedValue<boolean>;
 }
 
 const Digit = React.memo(function Digit({
   part,
-  previousPart,
   textStyle,
   timingConfig,
   digitHeight,
@@ -98,48 +98,53 @@ const Digit = React.memo(function Digit({
   numeralWidthsRef,
   isInitialRenderRef,
   enteringAnimation,
+  isDisabled,
 }: DigitProps) {
   const value = parseInt(part.value);
   const isDigitInitialRenderRef = useRef(true);
   const translateY = useSharedValue(0);
-  const currentDigitWidth = useSharedValue(numeralWidthsRef.current[value]);
+  // const currentDigitWidth = useSharedValue(numeralWidthsRef.current[value]);
 
-  useLayoutEffect(() => {
-    const targetY = -value * digitHeight;
-
-    if (isDigitInitialRenderRef.current) {
-      runOnUI((numeralWidths: number[]) => {
-        currentDigitWidth.value = numeralWidths[value];
-        translateY.value = 0;
-        translateY.value = withTiming(targetY, timingConfig);
-      })(numeralWidthsRef.current);
-
-      isDigitInitialRenderRef.current = false;
-    }
-
-    if (targetY !== translateY.value) {
-      // if (numeralWidthsRef.current[value]) {
-      //   RNAnimated.timing(digitWidth, {
-      //     toValue: numeralWidthsRef.current[value],
-      //     duration: timingConfig.duration,
-      //     easing: customEasing,
-      //     useNativeDriver: false,
-      //   }).start();
-      // }
-
-      runOnUI((numeralWidths: number[]) => {
-        // A layout animation would be preferred, but it's not properly animating the width of the entire number container
-        const targetWidth = numeralWidths[value];
-        if (targetWidth !== currentDigitWidth.value) {
-          currentDigitWidth.value = withTiming(targetWidth, {
-            ...timingConfig,
-            duration: timingConfig.duration * 0.5,
-          });
+  // TODO: This seems better than useEffect/useLayoutEffect with runOnUI but I'm not sure why
+  useAnimatedReaction(
+    () => {
+      return value;
+    },
+    currentValue => {
+      const targetY = -currentValue * digitHeight;
+      if (isDisabled.value) {
+        translateY.value = targetY;
+      } else {
+        if (isDigitInitialRenderRef.current && !isInitialRenderRef.current) {
+          translateY.value = 0;
+          translateY.value = withTiming(targetY, timingConfig);
+        } else {
+          translateY.value = withTiming(targetY, timingConfig);
         }
-        translateY.value = withTiming(targetY, timingConfig);
-      })(numeralWidthsRef.current);
+      }
+
+      // TODO: This breaks the container layout transition
+
+      // const targetWidth = numeralWidthsRef.current[value];
+      // if (isDigitInitialRenderRef.current && !isInitialRenderRef.current) {
+      //   runOnUI(() => {
+      //     currentDigitWidth.value = targetWidth;
+      //   })();
+      //   isDigitInitialRenderRef.current = false;
+      // } else if (targetWidth !== currentDigitWidth.value) {
+      //   runOnUI(() => {
+      //     if (isDisabled.value) {
+      //       currentDigitWidth.value = targetWidth;
+      //     } else {
+      //       currentDigitWidth.value = withTiming(targetWidth, {
+      //         ...timingConfig,
+      //         duration: timingConfig.duration * 0.5,
+      //       });
+      //     }
+      //   })();
+      // }
     }
-  }, [value, digitHeight, timingConfig, translateY, currentDigitWidth, numeralWidthsRef, isInitialRenderRef]);
+  );
 
   const numerals = useMemo(() => {
     const containerStyle = {
@@ -160,17 +165,17 @@ const Digit = React.memo(function Digit({
       'worklet';
       const translateX = values.currentOriginX + previousWidthDelta.value;
       // spin towards the further of 0 or 9
-      const targetOriginY = (value < 5 ? -1 : 1) * (9 * digitHeight);
+      const targetOriginY = value < 5 ? -9 * digitHeight : 0;
 
-      const animations = {
-        opacity: withTiming(0, timingConfig),
-        originY: withTiming(targetOriginY, timingConfig),
-        originX: translateX,
-      };
       const initialValues = {
         opacity: 1,
         originY: values.currentOriginY,
         originX: 0,
+      };
+      const animations = {
+        opacity: withTiming(0, timingConfig),
+        originY: withTiming(targetOriginY, timingConfig),
+        originX: translateX,
       };
       return {
         initialValues,
@@ -186,14 +191,16 @@ const Digit = React.memo(function Digit({
     };
   });
 
-  const containerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      // TODO: this breaks the container layout transition completely, do not know why.
-      // Even using a RNAnimated.View with the same width as the digitWidth does not work and breaks in the same way
-      // This prevents us from having non tabular numbers
-      // width: currentDigitWidth.value,
-    };
-  });
+  /**
+   * TODO: this breaks the container layout transition completely, do not know why.
+   * Even using a RNAnimated.View with the same width as the digitWidth does not work and breaks in the same way
+   * This prevents us from having non tabular numbers
+   */
+  // const containerAnimatedStyle = useAnimatedStyle(() => {
+  //   return {
+  //     width: currentDigitWidth.value,
+  //   };
+  // });
 
   const containerStyle: ViewStyle = useMemo(() => {
     return {
@@ -204,12 +211,7 @@ const Digit = React.memo(function Digit({
   }, [digitHeight]);
 
   return (
-    <Animated.View
-      pointerEvents="none"
-      entering={enteringAnimation}
-      exiting={exitingAnimation}
-      style={[containerStyle, containerAnimatedStyle]}
-    >
+    <Animated.View pointerEvents="none" entering={enteringAnimation} exiting={exitingAnimation} style={containerStyle}>
       <Animated.View style={numeralsAnimatedStyle}>{numerals}</Animated.View>
     </Animated.View>
   );
@@ -277,7 +279,7 @@ type AnimatedNumberProps = Omit<TextProps, 'children'> & {
   value: string | SharedValue<string> | DerivedValue<string>;
   timingConfig?: TimingAnimationConfig;
   easingMaskColor?: string;
-  disabled?: boolean;
+  disabled?: SharedValue<boolean> | boolean;
 };
 
 export const AnimatedNumber = React.memo(function AnimatedNumber({
@@ -301,9 +303,15 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   const transitionProgress = useSharedValue(0);
   const previousWidthDelta = useSharedValue(0);
 
+  const isDisabled = useDerivedValue(() => {
+    if (typeof disabled === 'boolean') {
+      return disabled;
+    }
+    return disabled.value;
+  });
+
   // This is not ideal, but required to accommodate the use of a shared value for the value prop
   const [parts, setParts] = useState(() => (typeof value === 'string' ? getPartsByType(value) : getPartsByType(value.value)));
-  const previousParts = usePrevious(parts);
 
   useAnimatedReaction(
     () => value,
@@ -340,6 +348,22 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   const layoutTransition = useCallback(
     (values: LayoutAnimationsValues) => {
       'worklet';
+      /* It's possible that the disabled state is not updated in time for the layout transition to be skipped.
+      This is a workaround to skip the layout transition when disabled.
+      */
+      if (isDisabled.value) {
+        numberContainerGlobalOriginX.value = values.targetGlobalOriginX;
+        previousWidthDelta.value = values.currentWidth - values.targetWidth;
+        prefixTranslateX.value = 0;
+        suffixTranslateX.value = 0;
+        maskTranslateX.value = 0;
+        maskWidth.value = values.targetWidth;
+        return {
+          initialValues: {},
+          animations: {},
+        };
+      }
+
       const currentWidth = values.currentWidth;
       const targetWidth = values.targetWidth;
       const currentGlobalOriginX = numberContainerGlobalOriginX.value;
@@ -393,13 +417,30 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [timingConfig, baseTextStyle]
+    [timingConfig, baseTextStyle, isDisabled]
   );
 
-  const characterEnteringAnimation = useMemo(() => {
-    // TODO: make this configurable
-    return FadeIn.duration(timingConfig.duration * 0.8);
-  }, [timingConfig]);
+  const characterEnteringAnimation = useCallback(() => {
+    'worklet';
+    if (isDisabled.value) {
+      return {
+        initialValues: {},
+        animations: {},
+      };
+    }
+    return {
+      initialValues: {
+        opacity: 0,
+      },
+      animations: {
+        opacity: withTiming(1, {
+          ...timingConfig,
+          // TODO: make this configurable
+          duration: timingConfig.duration * 0.8,
+        }),
+      },
+    };
+  }, [timingConfig, isDisabled]);
 
   const renderParts = useCallback(
     (parts: Part[]) => {
@@ -409,7 +450,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
             <Digit
               key={part.key}
               part={part}
-              previousPart={previousParts?.all[index]}
               textStyle={textStyle}
               timingConfig={timingConfig}
               digitHeight={digitHeight}
@@ -417,6 +457,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
               numeralWidthsRef={numeralWidthsRef}
               isInitialRenderRef={isInitialRenderRef}
               enteringAnimation={characterEnteringAnimation}
+              isDisabled={isDisabled}
             />
           );
         } else {
@@ -425,6 +466,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
               key={part.key}
               style={digitContainerStyle}
               entering={characterEnteringAnimation}
+              // TODO: convert to custom to disable for disabled state
               exiting={FadeOut.duration(timingConfig.duration)}
             >
               <Animated.Text style={textStyle}>{part.value}</Animated.Text>
@@ -433,7 +475,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
         }
       });
     },
-    [textStyle, previousParts, timingConfig, digitHeight, previousWidthDelta, digitContainerStyle, characterEnteringAnimation]
+    [textStyle, timingConfig, digitHeight, previousWidthDelta, digitContainerStyle, characterEnteringAnimation, isDisabled]
   );
 
   const maskElementAnimatedStyle = useAnimatedStyle(() => {
@@ -450,6 +492,9 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   });
 
   const horizontalEasingMaskAnimatedStyle = useAnimatedStyle(() => {
+    if (isDisabled.value) {
+      return { opacity: 0 };
+    }
     return {
       opacity: interpolate(transitionProgress.value, [0, 0.05, 0.8, 1], [0, 1, 1, 0]),
     };
@@ -470,6 +515,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       transform: [{ translateX: prefixTranslateX.value }],
     };
   });
+
   const suffixPartAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: suffixTranslateX.value }],
@@ -495,7 +541,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
 
     if (isInitialRenderRef.current) {
       isInitialRenderRef.current = false;
-      return;
     }
   }, [textStyle, textProps.tabularNumbers]);
 
@@ -507,18 +552,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
 
   const easingMaskWidth = baseTextStyle.fontSize * 0.2;
   const easingMaskHeight = baseTextStyle.fontSize * 0.2;
-
-  if (disabled) {
-    return (
-      <View style={[styles.row, { height: digitHeight, marginVertical: -easingMaskHeight }]}>
-        {parts.all.map(part => (
-          <View key={part.key} style={digitContainerStyle}>
-            <Animated.Text style={textStyle}>{part.value}</Animated.Text>
-          </View>
-        ))}
-      </View>
-    );
-  }
 
   return (
     <LayoutAnimationConfig skipEntering skipExiting>

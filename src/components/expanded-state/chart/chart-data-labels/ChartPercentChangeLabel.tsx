@@ -23,12 +23,11 @@ import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenT
 const UP_ARROW = IS_ANDROID ? '' : '↑';
 
 export default memo(function ChartPercentChangeLabel({ latestChange }: { latestChange: SharedValue<string | undefined> }) {
-  const { originalY, data, isActive } = useChartData();
+  const { originalY, data, isActive: isChartGestureActive } = useChartData();
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
   const { accentColors, basicAsset } = useExpandedAssetSheetContext();
   const labelSecondary = useForegroundColor('labelSecondary');
-  const isChartGestureActive = useSharedValueState(isActive, { initialValue: isActive.value });
   const percentageChangeDirectionRotation = useSharedValue(0);
 
   const liveTokenPercentageChange = useLiveTokenSharedValue({
@@ -46,7 +45,7 @@ export default memo(function ChartPercentChangeLabel({ latestChange }: { latestC
       return null;
     }
 
-    if (isActive.value) {
+    if (isChartGestureActive.value) {
       const firstPoint = data?.points?.[0]?.y;
       const lastPoint = data?.points?.[data.points.length - 1]?.y;
       // This is the current value of the scrubber
@@ -128,11 +127,11 @@ export default memo(function ChartPercentChangeLabel({ latestChange }: { latestC
     </Box>
   );
 
-  return (
-    <TextShadow blur={12} shadowOpacity={0.24}>
-      <AnimatedText numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="heavy">
-        {percentageChangeText}
-      </AnimatedText>
-    </TextShadow>
-  );
+  // return (
+  //   <TextShadow blur={12} shadowOpacity={0.24}>
+  //     <AnimatedText numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="heavy">
+  //       {percentageChangeText}
+  //     </AnimatedText>
+  //   </TextShadow>
+  // );
 });

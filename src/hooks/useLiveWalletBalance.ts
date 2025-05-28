@@ -16,9 +16,9 @@ export type WalletBalance = {
 };
 
 /**
- * Hook to fetch balances for a single wallet
- * @param address - The address to fetch balances for
- * @returns Balances for the wallet
+ * Hook to calculate the live wallet balance
+ * @param address - The address to calculate the balance for
+ * @returns The live wallet balance
  */
 export const useLiveWalletBalance = (address: string) => {
   const { nativeCurrency } = useAccountSettings();
