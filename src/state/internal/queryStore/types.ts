@@ -281,14 +281,6 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    */
   cacheTime?: number | ((params: TParams) => number);
   /**
-   * Delay before triggering a fetch when parameters change.
-   * Accepts a number (ms) or debounce options:
-   *
-   * `{ delay: number, leading?: boolean, trailing?: boolean, maxWait?: number }`
-   * @default 0
-   */
-  paramChangeThrottle?: number | DebounceOptions;
-  /**
    * If `true`, the store will log debug messages to the console.
    * @default false
    */
@@ -326,6 +318,14 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * @default 5
    */
   maxRetries?: number;
+  /**
+   * Delay before triggering a fetch when parameters change.
+   * Accepts a number (ms) or debounce options:
+   *
+   * `{ delay: number, leading?: boolean, trailing?: boolean, maxWait?: number }`
+   * @default 0
+   */
+  paramChangeThrottle?: number | DebounceOptions;
   /**
    * Parameters to be passed to the fetcher, defined as either direct values or `ParamResolvable` functions.
    * Dynamic parameters using `AttachValue` will cause the store to refetch when their values change.

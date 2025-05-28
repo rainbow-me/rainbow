@@ -41,7 +41,7 @@ export type EqualityFn<T = unknown> = (a: T, b: T) => boolean;
 
 export type UseStoreCallSignatures<S> = {
   (): S;
-  <T>(selector: (state: S) => T, equalityFn?: EqualityFn<T>): T;
+  <Selected>(selector: Selector<S, Selected>, equalityFn?: EqualityFn<Selected>): Selected;
 };
 
 export type InferStoreState<Store extends BaseRainbowStore<unknown>> = Store extends {
