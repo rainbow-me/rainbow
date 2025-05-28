@@ -1,13 +1,12 @@
 import { Address } from 'viem';
-import { arcClient } from '@/graphql';
+import { arcClient, arcPOSTClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
 import { NftsState, NftParams, NftsQueryData, PaginationInfo } from './types';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 
-export const INITIAL_LIMIT = 12;
-export const FULL_LIMIT = 12;
+export const PAGE_SIZE = 12;
 
 const EMPTY_RETURN_DATA: NftsQueryData = {
   collections: new Map(),
@@ -20,7 +19,7 @@ let paginationPromise: { address: Address | string; promise: Promise<void> } | n
 
 const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
   try {
-    const { walletAddress, limit, pageKey, collectionId } = params;
+    const { walletAddress, collectionId } = params;
 
     if (collectionId) {
       const data = await arcClient.getNftsByCollection({ walletAddress, collectionId });
@@ -38,19 +37,7 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
       };
     }
 
-    const requestParams: any = {
-      walletAddress,
-      limit,
-    };
-
-    if (pageKey) {
-      requestParams.pageKey = pageKey;
-    }
-
-    console.log(requestParams);
-
-    const data = await arcClient.getNftCollectionsPaginated(requestParams);
-
+    const data = await arcClient.getNftCollectionsPaginated(params);
     if (!data?.getNftCollectionsForAddress) return EMPTY_RETURN_DATA;
 
     const collections = new Map(data.getNftCollectionsForAddress.data.filter(Boolean).map(item => [item.id, item]));
@@ -82,7 +69,7 @@ export const createNftsStore = (address: Address | string) =>
       cacheTime: time.hours(1),
       params: {
         walletAddress: address,
-        limit: INITIAL_LIMIT,
+        limit: PAGE_SIZE,
         pageKey: null,
       },
       staleTime: STALE_TIME,
@@ -109,7 +96,7 @@ export const createNftsStore = (address: Address | string) =>
           if (!isStale) {
             paginationPromise = {
               address,
-              promise: fetch({ pageKey: nextPageKey, limit: FULL_LIMIT }, { force: true, skipStoreUpdates: true })
+              promise: fetch({ pageKey: nextPageKey, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true })
                 .then(data => {
                   if (!data) return;
                   set({
@@ -135,7 +122,7 @@ export const createNftsStore = (address: Address | string) =>
           // If the NFTs data is stale, refetch from the beginning
           paginationPromise = {
             address,
-            promise: fetch({ pageKey: null, limit: FULL_LIMIT }, { force: true, skipStoreUpdates: true })
+            promise: fetch({ pageKey: null, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true })
               .then(data => {
                 if (!data) return;
                 set({
@@ -270,7 +257,7 @@ function setOrPruneNftsData(
     const { nfts } = currentState;
 
     // Handle pull-to-refresh cases (when pageKey is null and we're fetching collections from the beginning)
-    if (!params.pageKey && params.limit === FULL_LIMIT && params.walletAddress && !params.collectionId) {
+    if (!params.pageKey && params.limit === PAGE_SIZE && params.walletAddress && !params.collectionId) {
       return {
         ...currentState,
         nfts: {

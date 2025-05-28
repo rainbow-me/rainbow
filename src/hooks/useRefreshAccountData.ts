@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Address } from 'viem';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { logger, RainbowError } from '@/logger';
-import { createQueryKey, queryClient } from '@/react-query';
+import { queryClient } from '@/react-query';
 import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
@@ -16,6 +16,7 @@ import useWallets from './useWallets';
 import { time } from '@/utils';
 import { analytics } from '@/analytics';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
@@ -48,7 +49,7 @@ export default function useRefreshAccountData() {
       useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
       usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
       useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
-      useNftsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
+      useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { cacheTime: time.zero, staleTime: time.seconds(2), updateQueryKey: false }),
     ]);
   }, [accountAddress, allAddresses, dispatch, nativeCurrency, profilesEnabled]);
 

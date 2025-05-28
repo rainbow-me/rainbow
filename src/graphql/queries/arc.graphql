@@ -483,8 +483,8 @@ query getNftCollectionsPaginated($walletAddress: String!, $limit: Int, $pageKey:
       floorPrice
       totalCount
     }
-    nextPageKey
     totalCollections
+    nextPageKey
   }
 }
 
