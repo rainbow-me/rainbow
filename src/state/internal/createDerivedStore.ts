@@ -160,20 +160,18 @@ function derive<DerivedState>(
     selector: Selector<S, Selected> = identity,
     equalityFn: EqualityFn<Selected> = Object.is
   ): Selected | S {
-    // Build subscriptions only if the derived store has watchers
-    if (shouldRebuildSubscriptions && watchers.size) {
-      if (arguments.length === 1) {
-        // -- Overload #1: $(store).maybe.a.path
-        if (!rootProxyCache) rootProxyCache = new WeakMap();
-        if (!pathFinder) pathFinder = createPathFinder();
-        return getOrCreateProxy(store, rootProxyCache, pathFinder.trackPath);
-      }
+    if (!shouldRebuildSubscriptions || !watchers.size) return selector(store.getState());
 
-      // -- Overload #2: $(store, selector, equalityFn?)
-      // No proxy, just a direct subscription to the store
-      const unsubscribe = store.subscribe(selector, () => invalidate(), { equalityFn });
-      unsubscribes.add(unsubscribe);
+    // -- Overload #1: $(store).maybe.a.path
+    if (arguments.length === 1) {
+      if (!rootProxyCache) rootProxyCache = new WeakMap();
+      if (!pathFinder) pathFinder = createPathFinder();
+      return getOrCreateProxy(store, rootProxyCache, pathFinder.trackPath);
     }
+    // -- Overload #2: $(store, selector, equalityFn?)
+    // No proxy, just a direct subscription to the store
+    const unsubscribe = store.subscribe(selector, () => invalidate(), { equalityFn });
+    unsubscribes.add(unsubscribe);
 
     return selector(store.getState());
   }
