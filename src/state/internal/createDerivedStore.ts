@@ -1,8 +1,9 @@
 import { debounce, identity } from 'lodash';
 import { useStoreWithEqualityFn } from 'zustand/traditional';
 import { StoreApi } from 'zustand/vanilla';
-import { IS_DEV, IS_TEST } from '@/env';
-import { buildProxySubscriptions, getOrCreateProxy, PathEntry, TrackedInvocation } from './derivedStore/deriveProxy';
+import { IS_DEV } from '@/env';
+import { pluralize } from '@/worklets/strings';
+import { createPathFinder, getOrCreateProxy, PathFinder } from './derivedStore/deriveProxy';
 import {
   BaseRainbowStore,
   DebounceOptions,
@@ -143,7 +144,7 @@ function derive<DerivedState>(
 
   // Lazily built proxy helpers
   let rootProxyCache: WeakMap<StoreApi<unknown>, unknown> | undefined;
-  let trackedPaths: Set<PathEntry> | undefined;
+  let pathFinder: PathFinder | undefined;
 
   // Core state
   let derivedState: DerivedState | undefined;
@@ -163,7 +164,8 @@ function derive<DerivedState>(
       if (arguments.length === 1) {
         // -- Overload #1: $(store).maybe.a.path
         if (!rootProxyCache) rootProxyCache = new WeakMap();
-        return getOrCreateProxy(store, rootProxyCache, trackPath);
+        if (!pathFinder) pathFinder = createPathFinder();
+        return getOrCreateProxy(store, rootProxyCache, pathFinder.trackPath);
       }
 
       // -- Overload #2: $(store, selector, equalityFn?)
@@ -175,11 +177,6 @@ function derive<DerivedState>(
     return selector(store.getState());
   }
 
-  function trackPath(store: BaseRainbowStore<unknown>, path: string[], invocation?: TrackedInvocation): void {
-    if (!trackedPaths) trackedPaths = new Set();
-    trackedPaths.add({ store, path, invocation });
-  }
-
   function unsubscribeAll(skipAbortFetch?: boolean): void {
     for (const unsub of unsubscribes) unsub(skipAbortFetch);
     unsubscribes.clear();
@@ -189,47 +186,38 @@ function derive<DerivedState>(
     if (!invalidated && derivedState !== undefined) return derivedState;
     invalidated = false;
 
-    // If we need to rebuild, unsubscribe old dependencies first
-    if (shouldRebuildSubscriptions) {
-      unsubscribeAll(true);
-    }
+    // If we need to rebuild subscriptions, unsubscribe existing ones first
+    if (shouldRebuildSubscriptions) unsubscribeAll(true);
 
     const prevState = derivedState;
     derivedState = deriveFunction($);
+    if (!watchers.size) return derivedState;
 
-    if (watchers.size) {
-      if (debugMode && prevState === undefined) {
-        const subscriptionCount = unsubscribes.size;
-        console.log('[🌀 Initial Derive Complete 🌀]: Created...');
-        console.log(`[🎯 ${subscriptionCount} Selector ${pluralize('Subscription', subscriptionCount)} 🎯]`);
-      }
+    const hasPreviousState = prevState !== undefined;
+    const shouldLogSubscriptions = debugMode && !hasPreviousState;
 
-      if (trackedPaths && shouldRebuildSubscriptions) {
-        // Create subscriptions for each proxy-generated dependency path
-        buildProxySubscriptions(
-          trackedPaths,
-          (store, selector) => {
-            const unsub = store.subscribe(selector, () => invalidate(), { equalityFn: Object.is });
-            unsubscribes.add(unsub);
-          },
-          debugMode && prevState === undefined
-        );
-      }
-
-      if (useStableSubscriptions) {
-        // Lock in subscriptions and dispose proxy state
-        shouldRebuildSubscriptions = false;
-        rootProxyCache = undefined;
-        trackedPaths = undefined;
-      } else {
-        // Reset proxy state for the next derivation
-        rootProxyCache = undefined;
-        trackedPaths?.clear();
-      }
+    if (shouldLogSubscriptions) {
+      console.log('[🌀 Initial Derive Complete 🌀]: Created...');
+      const subscriptionCount = unsubscribes.size;
+      console.log(`[🎯 ${subscriptionCount} ${pluralize('Selector Subscription', subscriptionCount)} 🎯]`);
     }
 
+    if (pathFinder && shouldRebuildSubscriptions) {
+      // Create subscriptions for each proxy-generated dependency path
+      pathFinder.buildProxySubscriptions((store, selector) => {
+        const unsub = store.subscribe(selector, () => invalidate(), { equalityFn: Object.is });
+        unsubscribes.add(unsub);
+      }, shouldLogSubscriptions);
+      // Reset proxy state for the next derivation
+      rootProxyCache = undefined;
+      pathFinder = undefined;
+    }
+
+    // Lock in subscriptions so we only build once
+    if (useStableSubscriptions) shouldRebuildSubscriptions = false;
+
     // Notify watchers if derived state changed
-    if (prevState !== undefined && !equalityFn(prevState, derivedState)) {
+    if (hasPreviousState && !equalityFn(prevState, derivedState)) {
       for (const w of watchers) {
         if (typeof w === 'function') {
           w(derivedState, prevState ?? derivedState);
@@ -245,7 +233,7 @@ function derive<DerivedState>(
       if (debugMode) {
         console.log(`[📻 New Derived Value 📻]: Notified ${watchers.size} ${pluralize('watcher', watchers.size)}`);
       }
-    } else if (debugMode && prevState !== undefined) {
+    } else if (debugMode && hasPreviousState) {
       console.log(`[🥷 Derive Complete 🥷]: No change detected`);
     }
 
@@ -341,7 +329,7 @@ function derive<DerivedState>(
     debouncedDerive?.cancel();
     unsubscribeAll();
     watchers.clear();
-    trackedPaths = undefined;
+    pathFinder = undefined;
     rootProxyCache = undefined;
     shouldRebuildSubscriptions = true;
     deriveScheduled = false;
@@ -386,8 +374,4 @@ function getOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
     equalityFn: options.equalityFn ?? Object.is,
     useStableSubscriptions: options.stableSubscriptions ?? false,
   };
-}
-
-function pluralize(word: string, count: number): string {
-  return count === 1 ? word : `${word}s`;
 }

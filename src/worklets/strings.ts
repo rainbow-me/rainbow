@@ -7,3 +7,13 @@ export function generateUniqueId(): string {
   const randomString = Math.random().toString(36).slice(2, 7);
   return `${timestamp}${randomString}`;
 }
+
+/**
+ * Returns a pluralized (by default: `word` + `'s'`) string based on the count.
+ *
+ * `word` should be provided in singular form.
+ */
+export function pluralize(word: string, count: number, pluralSuffix = 's'): string {
+  'worklet';
+  return count === 1 ? word : `${word}${pluralSuffix}`;
+}

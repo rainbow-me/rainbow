@@ -77,7 +77,7 @@ describe('createDerivedStore', () => {
       let deriveCount = 0;
       const useDerived = createDerivedStore($ => {
         deriveCount += 1;
-        const { count } = $(baseStore);
+        const count = $(baseStore).count;
         return count % 2 === 0 ? 'even' : 'odd';
       });
 
@@ -114,7 +114,7 @@ describe('createDerivedStore', () => {
   // Proxy-Based Subscription
   // ──────────────────────────────────────────────
   describe('Proxy-Based Subscription', () => {
-    it('should re-derive on new parent object references, skipping watcher notifications if the final nested value is unchanged', async () => {
+    it('should not trigger watchers when reassigning an identical nested value, but should when that nested value actually changes', async () => {
       const baseStore = createRainbowStore(() => ({
         user: {
           name: 'Alice',
@@ -147,7 +147,7 @@ describe('createDerivedStore', () => {
       });
       await flushMicrotasks();
 
-      expect(deriveCount).toBe(2);
+      expect(deriveCount).toBe(1);
       expect(watcher).toHaveBeenCalledTimes(0);
 
       // Now actually change the email => watchers see old -> new
@@ -160,14 +160,14 @@ describe('createDerivedStore', () => {
       });
       await flushMicrotasks();
 
-      expect(deriveCount).toBe(3);
+      expect(deriveCount).toBe(2);
       expect(watcher).toHaveBeenCalledTimes(1);
       expect(watcher).toHaveBeenLastCalledWith('newalice@example.com', 'alice@example.com');
 
       unsubscribe();
     });
 
-    it('should also re-derive if an unrelated property changes the parent reference, watchers only notified if the tracked path changes', async () => {
+    it('[selectors] should only notify watchers when the directly tracked property changes, ignoring other property or object reference updates', async () => {
       const baseStore = createRainbowStore(() => ({
         data: { key1: 10, key2: 20 },
       }));
@@ -175,7 +175,7 @@ describe('createDerivedStore', () => {
       let deriveCount = 0;
       const useDerived = createDerivedStore($ => {
         deriveCount += 1;
-        return $(baseStore).data.key1;
+        return $(baseStore, s => s.data.key1);
       });
 
       const watcher = jest.fn();
@@ -186,18 +186,18 @@ describe('createDerivedStore', () => {
       expect(deriveCount).toBe(1);
       expect(watcher).toHaveBeenCalledTimes(0);
 
-      // Set data with same key1 => watchers skip
+      // Set data with same key1 => should skip re-derivation
       baseStore.setState({ data: { key1: 10, key2: 999 } });
       await flushMicrotasks();
 
-      expect(deriveCount).toBe(2);
+      expect(deriveCount).toBe(1);
       expect(watcher).toHaveBeenCalledTimes(0);
 
       // Now actually change key1 => watchers see new
       baseStore.setState({ data: { key1: 11, key2: 999 } });
       await flushMicrotasks();
 
-      expect(deriveCount).toBe(3);
+      expect(deriveCount).toBe(2);
       expect(watcher).toHaveBeenCalledTimes(1);
       expect(watcher).toHaveBeenLastCalledWith(11, 10);
 
@@ -405,10 +405,10 @@ describe('createDerivedStore', () => {
     it('should not rebuild subscriptions on each re-derive', async () => {
       const baseStore = createRainbowStore(() => ({ count: 0 }));
 
-      const secondStore = createRainbowStore<{ multiplier: number; inc: () => void }>(set => ({
-        multiplier: 1,
+      const secondStore = createRainbowStore<{ nested: { multiplier: number }; inc: () => void }>(set => ({
+        nested: { multiplier: 1 },
         inc() {
-          set(state => ({ multiplier: state.multiplier * 10 }));
+          set(state => ({ nested: { multiplier: state.nested.multiplier * 10 } }));
         },
       }));
 
@@ -431,7 +431,7 @@ describe('createDerivedStore', () => {
       const useDerived = createDerivedStore(
         $ => {
           deriveCount += 1;
-          const value = $(baseStore).count * $(secondStore).multiplier;
+          const value = $(baseStore).count * $(secondStore).nested.multiplier;
           return value;
         },
         { stableSubscriptions: true }
