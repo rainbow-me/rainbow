@@ -28,6 +28,8 @@ export function getUserError(e: Error) {
       return i18n.t(i18n.l.back_up.errors.cant_get_encrypted_data);
     case CLOUD_BACKUP_ERRORS.MISSING_PIN:
       return i18n.t(i18n.l.back_up.errors.missing_pin);
+    case CLOUD_BACKUP_ERRORS.WRONG_PIN:
+      return i18n.t(i18n.l.back_up.wrong_pin);
     default:
       return i18n.t(i18n.l.back_up.errors.generic, {
         errorCodes: values(CLOUD_BACKUP_ERRORS).indexOf(e.message),

@@ -254,18 +254,9 @@ export async function backupAllWalletsToCloud({
 
     const data = {
       createdAt: now,
-      secrets: {},
+      secrets: await decryptAllPinEncryptedSecretsIfNeeded(allSecrets, userPIN),
     };
-    const promises = Object.entries(allSecrets).map(async ([username, password]) => {
-      const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded({ [username]: password }, userPIN);
 
-      data.secrets = {
-        ...data.secrets,
-        ...processedNewSecrets,
-      };
-    });
-
-    await Promise.all(promises);
     const updatedBackupFile = await encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
     const walletIdsToUpdate = Object.keys(wallets);
     await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, WalletBackupTypes.cloud, updatedBackupFile));
@@ -341,58 +332,34 @@ export async function addWalletToCloudBackup({
   return encryptAndSaveDataToCloud(backup, password, filename);
 }
 
-async function authenticateWithPINForDecrypt() {
-  let userPIN: string | undefined;
-  try {
-    userPIN = await authenticateWithPIN();
-  } catch (e) {
-    // If we can't authenticate with PIN, we throw an error after.
-  }
-  if (!userPIN) {
-    throw new Error(CLOUD_BACKUP_ERRORS.MISSING_PIN);
-  }
-  return userPIN;
-}
-
 // we decrypt seedphrase and private key before backing up
 export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<string, string>, maybeUserPIN?: string) {
   const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
   if (IS_ANDROID) {
-    // We go through each secret here and try to decrypt it if it's needed
+    let userPIN = maybeUserPIN;
     // We only prompt for PIN if it is currently needed, but it is possible
     // that secrets were previously encrypted with PIN, so we also need
     // to prompt for PIN here if needed.
+    if (!userPIN && Object.values(processedSecrets).some(secret => secret.includes('cipher'))) {
+      try {
+        // eslint-disable-next-line require-atomic-updates
+        userPIN = await authenticateWithPIN();
+      } catch (e) {
+        throw new Error(CLOUD_BACKUP_ERRORS.WRONG_PIN);
+      }
+    }
+    // We go through each secret here and try to decrypt it if it's needed
     await Promise.all(
       Object.keys(processedSecrets).map(async key => {
         const secret = processedSecrets[key];
         const theKeyIsASeedPhrase = endsWith(key, seedPhraseKey);
         const theKeyIsAPrivateKey = endsWith(key, privateKeyKey);
 
-        if (theKeyIsASeedPhrase) {
-          const parsedSecret = JSON.parse(secret);
-          const seedphrase = parsedSecret.seedphrase;
-
-          if (seedphrase && seedphrase?.includes('cipher')) {
-            const userPIN = maybeUserPIN || (await authenticateWithPINForDecrypt());
-            const decryptedSeedPhrase = await encryptor.decrypt(userPIN, seedphrase);
-            processedSecrets[key] = JSON.stringify({
-              ...parsedSecret,
-              seedphrase: decryptedSeedPhrase,
-            });
-          }
-        } else if (theKeyIsAPrivateKey) {
-          const parsedSecret = JSON.parse(secret);
-          const privateKey = parsedSecret.privateKey;
-
-          if (privateKey && privateKey.includes('cipher')) {
-            const userPIN = maybeUserPIN || (await authenticateWithPINForDecrypt());
-            const decryptedPrivateKey = await encryptor.decrypt(userPIN, privateKey);
-            processedSecrets[key] = JSON.stringify({
-              ...parsedSecret,
-              privateKey: decryptedPrivateKey,
-            });
-          }
+        if ((theKeyIsASeedPhrase || theKeyIsAPrivateKey) && secret?.includes('cipher')) {
+          const decryptedSecret = await encryptor.decrypt(userPIN, secret);
+          // eslint-disable-next-line require-atomic-updates
+          processedSecrets[key] = decryptedSecret;
         }
       })
     );
