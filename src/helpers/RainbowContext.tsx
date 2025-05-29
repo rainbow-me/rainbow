@@ -75,7 +75,8 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const connectToAnvil = useCallback(async () => {
     try {
-      setConnectedToAnvil(true);
+      const currentValue = useConnectedToAnvilStore.getState().connectedToAnvil;
+      setConnectedToAnvil(!currentValue);
       logger.debug('connected to anvil');
     } catch (e) {
       setConnectedToAnvil(false);
