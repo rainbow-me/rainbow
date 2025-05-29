@@ -13,6 +13,16 @@ tags:
             isE2ETest: true
       - runFlow: ../utils/Prepare.yaml
       - runFlow: ../utils/ImportWalletWithKey.yaml
+- retry:
+    maxRetries: 3
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
 
       # Navigate to browser
       - tapOn:
