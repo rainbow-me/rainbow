@@ -123,27 +123,6 @@ index d165f3e..91fd8b1 100644
    fun removeEntry(service: String)
  
    fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
-diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerProvider.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerProvider.kt
-index dd89f83..5bcd053 100644
---- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerProvider.kt
-+++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/resultHandler/ResultHandlerProvider.kt
-@@ -4,6 +4,7 @@ import android.os.Build
- import androidx.biometric.BiometricPrompt
- import com.facebook.react.bridge.ReactApplicationContext
- import com.oblador.keychain.cipherStorage.CipherStorage
-+import com.oblador.keychain.DeviceAvailability
- 
- // NOTE: the logic for handling OnePlus bug is taken from the following forum post:
- // https://forums.oneplus.com/threads/oneplus-7-pro-fingerprint-biometricprompt-does-not-show.1035821/#post-21710422
-@@ -38,7 +39,7 @@ object ResultHandlerProvider {
-     storage: CipherStorage,
-     promptInfo: BiometricPrompt.PromptInfo
-   ): ResultHandler {
--    return if (storage.isAuthSupported()) {
-+    return if (storage.isAuthSupported() && DeviceAvailability.isDevicePasscodeAvailable(reactContext)) {
-       if (hasOnePlusBiometricBug()) {
-         ResultHandlerInteractiveBiometricManualRetry(reactContext, storage, promptInfo)
-       } else {
 diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
 index 6888ff0..23675f3 100644
 --- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
@@ -236,7 +215,7 @@ index 6888ff0..23675f3 100644
                    resolver:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject)
 diff --git a/node_modules/react-native-keychain/lib/commonjs/index.js b/node_modules/react-native-keychain/lib/commonjs/index.js
-index da7ccb9..a49f39f 100644
+index da7ccb9..9ab42d5 100644
 --- a/node_modules/react-native-keychain/lib/commonjs/index.js
 +++ b/node_modules/react-native-keychain/lib/commonjs/index.js
 @@ -12,6 +12,8 @@ var _exportNames = {
@@ -292,7 +271,7 @@ index da7ccb9..a49f39f 100644
    setGenericPassword,
    getGenericPassword,
 diff --git a/node_modules/react-native-keychain/lib/module/index.js b/node_modules/react-native-keychain/lib/module/index.js
-index b4f2bb6..789a1de 100644
+index b4f2bb6..b19530c 100644
 --- a/node_modules/react-native-keychain/lib/module/index.js
 +++ b/node_modules/react-native-keychain/lib/module/index.js
 @@ -153,6 +153,24 @@ export function getInternetCredentials(server, options) {
@@ -321,7 +300,7 @@ index b4f2bb6..789a1de 100644
   * Deletes all internet password keychain entries for the given server.
   *
 diff --git a/node_modules/react-native-keychain/lib/typescript/index.d.ts b/node_modules/react-native-keychain/lib/typescript/index.d.ts
-index b868899..22936b2 100644
+index b868899..74f547b 100644
 --- a/node_modules/react-native-keychain/lib/typescript/index.d.ts
 +++ b/node_modules/react-native-keychain/lib/typescript/index.d.ts
 @@ -1,5 +1,5 @@
@@ -351,7 +330,7 @@ index b868899..22936b2 100644
  /**
   * Gets the type of biometric authentication supported by the device.
 diff --git a/node_modules/react-native-keychain/lib/typescript/types.d.ts b/node_modules/react-native-keychain/lib/typescript/types.d.ts
-index ff6a12e..0bc4135 100644
+index ff6a12e..e826925 100644
 --- a/node_modules/react-native-keychain/lib/typescript/types.d.ts
 +++ b/node_modules/react-native-keychain/lib/typescript/types.d.ts
 @@ -111,6 +111,21 @@ export type UserCredentials = {
