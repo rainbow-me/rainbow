@@ -273,7 +273,6 @@ function derive<DerivedState>(
       if (watchers.size) return derive();
       else return deriveFunction($);
     }
-    debouncedDerive?.flush();
     return derivedState;
   }
 
