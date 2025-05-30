@@ -198,7 +198,8 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   if ('signTransaction' in wallet) {
     throw new Error(`Not expected: Wallet not LibWallet`);
   }
-  if ('getPrivateKey' in wallet) {
+  // @ts-expect-error it's not directly "in" but it exists
+  if (typeof wallet.getPrivateKey !== 'function') {
     return wallet as any;
   }
   throw new Error(`Not expected: ReadOnly not LibWallet`);
@@ -252,7 +253,7 @@ export type InitializeWalletParams = CreateWalletParams & {
 };
 
 export const walletInit = async ({
-  seedPhrase = undefined,
+  seedPhrase,
   color = null,
   name = null,
   overwrite = false,
@@ -282,15 +283,20 @@ export const walletInit = async ({
       userPin,
     });
 
-    if (isLibWallet(wallet)) {
-      throw new Error(`Shouldn't ever hit!`);
+    if (wallet && 'address' in wallet) {
+      walletAddress = wallet?.address;
     }
 
-    walletAddress = wallet?.address;
-    return { isNew, walletAddress };
+    // if the user previously imported a wallet with a seed phrase then removed
+    // that wallet, then re-adds but only as a watch we don't have the address
+    // here and returning it will cause a keychain missing private key error, so
+    // instead we fall through
+    if (walletAddress) {
+      return { isNew, walletAddress };
+    }
+  } else {
+    walletAddress = await loadAddress();
   }
-
-  walletAddress = await loadAddress();
 
   if (!walletAddress) {
     const wallet = await createWallet({});
@@ -678,9 +684,9 @@ export const createWallet = async ({
     const isHardwareWallet = type === EthereumWalletType.bluetooth;
     let pkey = walletSeed;
     if (!walletResult || !address) return null;
-    ensureLibWallet(walletResult);
     const walletAddress = address;
     if (isHDWallet) {
+      ensureLibWallet(walletResult);
       pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
     } else if (isHardwareWallet) {
       // hardware pkey format is ${bluetooth device id}/${index}

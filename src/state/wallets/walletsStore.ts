@@ -35,7 +35,7 @@ import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetr
 import { createRainbowStore } from '../internal/createRainbowStore';
 import { Address } from 'viem';
 import { isLowerCaseMatch } from '@/utils';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 interface AccountProfileInfo {
   accountAddress: string;
@@ -229,6 +229,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     },
 
     createAccount: async ({ id, name, color }) => {
+      console.log('CREATE', { id, name, color });
       const { wallets } = get();
       const newWallets = { ...wallets };
 
@@ -373,6 +374,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         const wallet = wallets[key];
         const innerPromises = wallet?.addresses?.map(async account => {
           const ens = await fetchReverseRecord(account.address);
+
           const currentENSName = walletNames[account.address];
           if (ens) {
             const isNewEnsName = currentENSName !== ens;
@@ -623,6 +625,7 @@ export const isImportedWallet = (address: string): boolean => {
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
   const info = useWalletsStore(state => state.getAccountProfileInfo(), dequal);
+
   return useMemo(() => {
     return {
       ...info,

@@ -301,8 +301,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             color,
             name: name ? name : '',
             image,
-          });
-          initializeWallet({})
+          })
             .then(success => {
               ios && handleSetImporting(false);
               if (success) {

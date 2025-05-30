@@ -24,6 +24,7 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
     }
 
     ensureLibWallet(wallet);
+
     const privateKey = addHexPrefix(wallet.getPrivateKey().toString('hex'));
 
     const encryptor = new AesEncryptor();
