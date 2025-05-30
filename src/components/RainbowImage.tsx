@@ -1,11 +1,10 @@
-import { FasterImageView, type FasterImageProps, clearCache, prefetch } from '@candlefinance/faster-image';
-import { Image, View, ViewStyle, StyleSheet } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import { memoFn } from '../utils/memoFn';
-import { coerceToArray } from '../helpers/coerceToArray';
-import { ImgixImage } from './images';
+import { clearCache, FasterImageView, prefetch, type FasterImageProps } from '@candlefinance/faster-image';
 import React from 'react';
+import { Image, View, ViewStyle } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { coerceToArray } from '../helpers/coerceToArray';
 import { withStaticProperties } from '../helpers/withStaticProperties';
+import { memoFn } from '../utils/memoFn';
 
 prefetch;
 Image.prefetch;
@@ -94,7 +93,6 @@ const fastImageExtension = {
 } as const;
 
 type FastImageExtensions = keyof typeof fastImageExtension;
-
 type DetectedImageExtension = FastImageExtensions | 'unknown';
 type ImageHandler = 'faster-image' | 'fast-image' | 'image';
 
