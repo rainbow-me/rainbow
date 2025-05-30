@@ -1,10 +1,64 @@
 import { NativeCurrencyKey } from '@/entities';
-import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
-import { useQuery } from '@tanstack/react-query';
 import { Address } from 'viem';
 import { getAddysHttpClient } from '@/resources/addys/client';
+import { createQueryStore } from '../internal/createQueryStore';
+import { time } from '@/utils';
+import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import isEqual from 'react-fast-compare';
 
-interface AddysSummary {
+export type WalletSummaryArgs = {
+  addresses: Address[];
+  currency: NativeCurrencyKey;
+};
+
+async function fetchWalletSummary(
+  { addresses, currency }: WalletSummaryArgs,
+  abortController: AbortController | null
+): Promise<WalletSummary> {
+  const { data } = await getAddysHttpClient({ abortController }).post(
+    `/summary`,
+    JSON.stringify({
+      currency,
+      addresses,
+      enableThirdParty: true,
+    })
+  );
+  return data;
+}
+
+export const useWalletSummary = () => {
+  return useWalletSummaryQueryStore(
+    state => [state.getData()?.data, state.getStatus()] as const,
+    // compare status first as its cheaper:
+    (a, b) => isEqual(a[1], b[1]) && isEqual(a[0], b[0])
+  );
+};
+
+export const getWalletSummary = () => {
+  return useWalletSummaryQueryStore.getState().getData();
+};
+
+export const refetchWalletSummary = () => {
+  return useWalletSummaryQueryStore.getState().fetch(undefined, { force: true });
+};
+
+const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs>(
+  {
+    fetcher: fetchWalletSummary,
+    params: {
+      addresses: $ => $(useWalletsStore, state => getWalletAddresses(state.wallets || {})),
+      currency: $ => $(userAssetsStoreManager).currency,
+    },
+    staleTime: time.minutes(1),
+    cacheTime: time.hours(24),
+  },
+  {
+    storageKey: 'walletSummary',
+  }
+);
+
+interface WalletSummary {
   data: {
     addresses: {
       [key: Address]: {
@@ -66,51 +120,4 @@ interface AddysSummary {
       };
     };
   };
-}
-
-// ///////////////////////////////////////////////
-// Query Types
-
-export type AddysSummaryArgs = {
-  addresses: Address[];
-  currency: NativeCurrencyKey;
-};
-
-// ///////////////////////////////////////////////
-// Query Key
-
-export const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
-  createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 2 });
-
-type AddysSummaryQueryKey = ReturnType<typeof addysSummaryQueryKey>;
-
-// ///////////////////////////////////////////////
-// Query Function
-
-async function addysSummaryQueryFunction({ queryKey: [{ addresses, currency }] }: QueryFunctionArgs<typeof addysSummaryQueryKey>) {
-  const { data } = await getAddysHttpClient().post(
-    `/summary`,
-    JSON.stringify({
-      currency,
-      addresses,
-      enableThirdParty: true,
-    })
-  );
-  return data as AddysSummary;
-}
-
-type AddysSumaryResult = QueryFunctionResult<typeof addysSummaryQueryFunction>;
-
-// ///////////////////////////////////////////////
-// Query Hook
-
-export function useAddysSummary(
-  { addresses, currency }: AddysSummaryArgs,
-  config: QueryConfigWithSelect<AddysSumaryResult, Error, AddysSumaryResult, AddysSummaryQueryKey> = {}
-) {
-  return useQuery(addysSummaryQueryKey({ addresses, currency }), addysSummaryQueryFunction, {
-    ...config,
-    staleTime: 1000 * 60 * 2, // Set data to become stale after 2 minutes
-    cacheTime: 1000 * 60 * 60 * 24, // Keep unused data in cache for 24 hours
-  });
 }
