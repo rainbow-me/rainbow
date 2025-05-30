@@ -1,5 +1,6 @@
 import { pluralize } from '@/worklets/strings';
-import { BaseRainbowStore, PersistedRainbowStore, Selector } from '../types';
+import { BaseRainbowStore, Selector } from '../types';
+import { getStoreName } from '../utils/storeUtils';
 
 // ============ Types ========================================================== //
 
@@ -80,7 +81,8 @@ function buildProxy<T>(
 
       // -- Get the property value
       const childValue = Reflect.get(target, propKey, receiver);
-      const newPath = path.concat(String(propKey));
+      const propKeyString = String(propKey);
+      const newPath = path.concat(propKeyString);
 
       // -- Handle functions
       if (typeof childValue === 'function') {
@@ -90,7 +92,7 @@ function buildProxy<T>(
           // Return a wrapped function that tracks invocation when called. This allows us
           // to build a selector that points to the value *returned* by the method call.
           return function (...args: unknown[]) {
-            trackPath(store, newPath, true, { method: String(propKey), args: args.length ? args : undefined });
+            trackPath(store, newPath, true, { method: propKeyString, args: args.length ? args : undefined });
             return Reflect.apply(childValue, target, args);
           };
         }
@@ -123,6 +125,12 @@ function buildProxy<T>(
       trackPath(store, path, true);
       bailedOutObjects.add(target);
       return Reflect.getOwnPropertyDescriptor(target, prop);
+    },
+
+    has(target, prop) {
+      // Track `in` operator usage as a leaf
+      trackPath(store, path, true);
+      return Reflect.has(target, prop);
     },
 
     ownKeys(target) {
@@ -229,10 +237,12 @@ type TrieNode = {
   isLeaf?: boolean;
 };
 
+type RootNode = Record<string, TrieNode>;
+
 /**
  * Creates a prototype-free trie node object.
  */
-function createTrieNode<T extends TrieNode | Record<string, TrieNode> = TrieNode>(): T {
+function createTrieNode<T extends TrieNode | RootNode = TrieNode>(): T {
   return Object.create(null);
 }
 
@@ -246,7 +256,7 @@ function insertPath(node: TrieNode, path: string[], index: number, isLeaf?: bool
     return;
   }
   if (!node.children) {
-    node.children = createTrieNode<Record<string, TrieNode>>();
+    node.children = createTrieNode<RootNode>();
   }
   const segment = path[index];
   let child = node.children?.[segment];
@@ -332,13 +342,4 @@ function logTrackedPaths(paths: Set<PathEntry>): void {
       2
     )
   );
-}
-
-function getStoreName(store: BaseRainbowStore<unknown>): string {
-  const name = isPersistedStore(store) ? store.persist.getOptions().name : store.name;
-  return name ?? store.name;
-}
-
-function isPersistedStore(store: BaseRainbowStore<unknown>): store is PersistedRainbowStore<unknown> {
-  return 'persist' in store;
 }
