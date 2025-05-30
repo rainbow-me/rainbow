@@ -21,8 +21,10 @@ jobs:
     steps:
       - name: Install jq
         run: |
-            curl -L -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64
-            chmod +x /usr/local/bin/jq
+            mkdir -p $HOME/.local/bin
+            curl -L -o $HOME/.local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64
+            chmod +x $HOME/.local/bin/jq
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: 'Check jq'
         # language=sh
