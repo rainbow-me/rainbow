@@ -31,6 +31,7 @@ export type ClaimablesArgs = {
 const STABLE_CLAIMABLES: ClaimablesStore = {
   claimables: [],
   totalValue: '0',
+  totalValueAmount: '0',
 };
 
 export async function getClaimables({ address, currency, abortController }: ClaimablesArgs) {
@@ -113,12 +114,12 @@ export async function getClaimables({ address, currency, abortController }: Clai
 
     throttledClaimablesAnalytics(sortedClaimables);
 
+    const totalValueAmount = sortedClaimables.reduce((acc, claimable) => add(acc, claimable.totalCurrencyValue.amount || '0'), '0');
+
     return {
       claimables: sortedClaimables,
-      totalValue: convertAmountToNativeDisplay(
-        sortedClaimables.reduce((acc, claimable) => add(acc, claimable.totalCurrencyValue.amount || '0'), '0'),
-        currency
-      ),
+      totalValue: convertAmountToNativeDisplay(totalValueAmount, currency),
+      totalValueAmount,
     };
   } catch (e) {
     logger.error(new RainbowError('[getClaimables]: Failed to fetch claimables (client error)'), {

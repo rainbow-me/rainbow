@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
-import { ChartExpandedStateHeader } from '../expanded-state/chart';
+import { ChartExpandedStateHeader } from '../expanded-state/chart/ChartExpandedStateHeader';
 import { Column } from '../layout';
 import { Text, Box, Bleed, TextIcon, useColorMode } from '@/design-system';
 import Labels from './ExtremeLabels';

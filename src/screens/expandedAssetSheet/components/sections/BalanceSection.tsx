@@ -1,23 +1,49 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
-import { Bleed, Box, Text, TextShadow } from '@/design-system';
+import { Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { SheetSeparator } from '../shared/Separator';
 import Animated from 'react-native-reanimated';
 import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAccountSettings } from '@/hooks';
+import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export function BalanceSection() {
   const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
+  const { nativeCurrency } = useAccountSettings();
+  const tokenBalanceAmount = asset?.balance?.amount ?? '0';
+
+  const tokenBalanceSelector = useCallback(
+    (token: TokenData) => {
+      const { display } = convertRawAmountToNativeDisplay(tokenBalanceAmount, 1, token.price, nativeCurrency);
+      return display;
+    },
+    [tokenBalanceAmount, nativeCurrency]
+  );
+
+  const liveTokenBalance = useLiveTokenValue({
+    tokenId: asset?.uniqueId ?? '',
+    initialValue: asset?.native?.balance?.display ?? '0',
+    initialValueLastUpdated: asset?.price?.changed_at ?? 0,
+    selector: tokenBalanceSelector,
+  });
 
   if (!isOwnedAsset || !asset?.balance || !asset?.native?.balance) return null;
+
+  // TODO: must do this for the `AnimatedNumber` masking to work properly. However, this means this card will be very slightly a different color than the other cards. It's generally imperceptible, but we should use this background color for all the cards
+  const backgroundColor = getSolidColorEquivalent({ foreground: accentColors.color, background: accentColors.background, opacity: 0.06 });
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
       <Box
         padding="16px"
         borderRadius={20}
-        style={{ backgroundColor: accentColors.opacity6, borderColor: accentColors.opacity6, borderWidth: 1 }}
+        style={{ backgroundColor: backgroundColor, borderColor: accentColors.opacity6, borderWidth: 1 }}
         gap={12}
       >
         <Box flexDirection="row" justifyContent="space-between">
@@ -29,24 +55,28 @@ export function BalanceSection() {
           </Text>
         </Box>
         <Box alignItems="center" width="full" gap={8} flexDirection="row" justifyContent="flex-start">
-          <Bleed vertical="4px">
-            <RainbowCoinIcon
-              size={20}
-              chainId={asset.chainId}
-              color={asset.color}
-              icon={asset.icon_url}
-              showBadge={false}
-              symbol={asset.symbol}
-            />
-          </Bleed>
+          <RainbowCoinIcon
+            size={20}
+            chainId={asset.chainId}
+            color={asset.color}
+            icon={asset.icon_url}
+            showBadge={false}
+            symbol={asset.symbol}
+          />
           <TextShadow blur={12} containerStyle={{ flex: 1 }} shadowOpacity={0.24}>
-            <Text numberOfLines={1} style={{ flex: 1 }} ellipsizeMode="tail" weight="bold" size="20pt" color={'accent'}>
+            <Text numberOfLines={1} ellipsizeMode="tail" weight="bold" size="20pt" color={'accent'}>
               {asset.balance.display}
             </Text>
           </TextShadow>
-          <Text align="right" numberOfLines={1} weight="heavy" size="20pt" color="label">
-            {asset.native.balance.display}
-          </Text>
+          <AnimatedNumber
+            value={liveTokenBalance}
+            easingMaskColor={backgroundColor}
+            color="label"
+            numberOfLines={1}
+            size="20pt"
+            weight="heavy"
+            align="right"
+          />
         </Box>
       </Box>
       <SheetSeparator />
