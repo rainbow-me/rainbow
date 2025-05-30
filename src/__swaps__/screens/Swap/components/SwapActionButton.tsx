@@ -279,7 +279,7 @@ export const SwapActionButton = ({
         style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
       >
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <SwapButton {...props} disabled={disabled} testID={testID}>
+        <SwapButton {...props} disabled={disabled}>
           {holdProgress && <HoldProgress holdProgress={holdProgress} />}
         </SwapButton>
       </GestureHandlerButton>
