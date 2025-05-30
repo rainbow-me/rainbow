@@ -19,17 +19,17 @@ jobs:
     env:
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
-      - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@v3
-        with:
-          version: '${{ inputs.version }}'
-          force: '${{ inputs.force }}'
+      - name: Install jq
+        run: |
+            curl -L -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64
+            chmod +x /usr/local/bin/jq
 
       - name: 'Check jq'
         # language=sh
         run: |
           which jq
           jq --version
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
