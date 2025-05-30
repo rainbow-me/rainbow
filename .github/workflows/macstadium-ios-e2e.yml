@@ -19,6 +19,17 @@ jobs:
     env:
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v3
+        with:
+          version: '${{ inputs.version }}'
+          force: '${{ inputs.force }}'
+
+      - name: 'Check jq'
+        # language=sh
+        run: |
+          which jq
+          jq --version
       - name: Checkout repo
         uses: actions/checkout@v4
 
