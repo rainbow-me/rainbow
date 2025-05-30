@@ -4,6 +4,8 @@ import FastImage from 'react-native-fast-image';
 import { memoFn } from '../utils/memoFn';
 import { coerceToArray } from '../helpers/coerceToArray';
 import { ImgixImage } from './images';
+import React from 'react';
+import { withStaticProperties } from '../helpers/withStaticProperties';
 
 prefetch;
 Image.prefetch;
@@ -16,29 +18,16 @@ clearCache;
  *
  * @param props - source URL and other image properties
  */
-export const RainbowImage = ({ containerStyle, ...props }: FasterImageProps & { containerStyle?: ViewStyle }) => {
+const RainbowImageInternal = ({ containerStyle, ...props }: FasterImageProps & { containerStyle?: ViewStyle }) => {
   const imageElement = (() => {
     const extension = getImageType(props.source.url);
+    const handler = getHandlerFromType(extension);
 
-    console.log('??', extension, props.source);
+    if (handler === 'faster-image') {
+      return <FasterImageView {...props} style={[{ flex: 1 }, ...coerceToArray(props.style)]} />;
+    }
 
-    // if (extension === 'png' || extension === 'jpg' || extension === 'jpeg') {
-    //   return <FasterImageView {...props} style={[{ flex: 1 }, ...coerceToArray(props.style)]} />;
-    // }
-
-    // if (extension === 'imgix') {
-    return <ImgixImage size={200} {...props} />;
-    // }
-
-    if (
-      extension === 'png' ||
-      extension === 'jpg' ||
-      extension === 'jpeg' ||
-      extension === 'bmp' ||
-      extension === 'webp' ||
-      extension === 'gif' ||
-      extension === 'avif'
-    ) {
+    if (handler === 'fast-image') {
       return (
         <FastImage
           source={props.source}
@@ -88,6 +77,12 @@ export const RainbowImage = ({ containerStyle, ...props }: FasterImageProps & { 
   return imageElement;
 };
 
+export const RainbowImage = withStaticProperties(RainbowImageInternal, {
+  preload() {
+    // todo
+  },
+});
+
 const fastImageExtension = {
   png: 'png',
   jpg: 'jpg',
@@ -100,9 +95,23 @@ const fastImageExtension = {
 
 type FastImageExtensions = keyof typeof fastImageExtension;
 
-const getImageType = memoFn((path: string): 'imgix' | FastImageExtensions | 'unknown' => {
+type DetectedImageExtension = FastImageExtensions | 'unknown';
+type ImageHandler = 'faster-image' | 'fast-image' | 'image';
+
+const getHandlerFromType = (extension: DetectedImageExtension): ImageHandler => {
+  if (extension === 'png' || extension === 'jpg' || extension === 'jpeg') {
+    return 'faster-image';
+  }
+  if (extension === 'bmp' || extension === 'webp' || extension === 'gif' || extension === 'avif') {
+    return 'fast-image';
+  }
+  return 'image';
+};
+
+const getImageType = memoFn((path: string): DetectedImageExtension => {
   if (path.includes('imgix.net')) {
-    return 'imgix';
+    const [type = 'png'] = path.match(/fm=[a-z]+/) || [];
+    return fastImageExtension[type as FastImageExtensions] || 'unknown';
   }
   try {
     const url = new URL(path);

@@ -9008,7 +9008,7 @@ __metadata:
     react-native-dotenv: "npm:2.4.2"
     react-native-edge-to-edge: "npm:1.4.3"
     react-native-extra-dimensions-android: "npm:1.2.2"
-    react-native-fast-image: "npm:8.5.11"
+    react-native-fast-image: "npm:8.6.3"
     react-native-fs: "npm:2.16.6"
     react-native-gesture-handler: "npm:2.21.2"
     react-native-get-random-values: "npm:1.5.0"
@@ -22564,13 +22564,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-fast-image@npm:8.5.11":
-  version: 8.5.11
-  resolution: "react-native-fast-image@npm:8.5.11"
+"react-native-fast-image@npm:8.6.3":
+  version: 8.6.3
+  resolution: "react-native-fast-image@npm:8.6.3"
   peerDependencies:
-    react: ^16.8.6 || ^17.0.0
+    react: ^17 || ^18
     react-native: ">=0.60.0"
-  checksum: 10c0/cae9dea16bab9d5b29550abbd0fbc72404a703f1a9af09882aeecf213a24cef9facb16242b940b5324038c43375928d29cdcde797566ddf1622b159576308389
+  checksum: 10c0/4ebeae53ffeadf1e7e5e133c1cfda81f9efe978f9ece10c732a0338149fe9104681bfdabc8427dad7c934b02bfcbd0e205bb6ca43e2844abc6054630ebe34454
   languageName: node
   linkType: hard
 
