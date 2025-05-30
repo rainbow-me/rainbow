@@ -7,6 +7,7 @@ env:
 - extendedWaitUntil:
     visible:
       id: welcome-screen
+    # the test fail quite often if the timeout is too low
     timeout: 30000
 - openLink: rainbow://e2e/import?privateKey=${PKEY}&name=${NAME}
 # The first time a simulator opens a link it shows a dialog.
@@ -21,5 +22,6 @@ env:
 # Wait for the wallet screen to load.
 - extendedWaitUntil:
     visible:
-      id: receive-card
+      id: eth-card
+    # the test fail quite often if the timeout is too low
     timeout: 30000

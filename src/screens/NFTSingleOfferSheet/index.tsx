@@ -91,8 +91,9 @@ export function NFTSingleOfferSheet() {
   const { isReadOnlyWallet } = useWallets();
   const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas({ enableTracking: true });
+
   const {
-    data: { nftsMap },
+    data: { nftIndexMap, nfts },
   } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params;
@@ -108,7 +109,8 @@ export function NFTSingleOfferSheet() {
   const [isAccepting, setIsAccepting] = useState(false);
   const txsRef = useRef<string[]>([]);
 
-  const nft = nftsMap[offer.nft.uniqueId];
+  const nftIndex = nftIndexMap[offer.nft.uniqueId];
+  const nft = nfts[nftIndex];
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 

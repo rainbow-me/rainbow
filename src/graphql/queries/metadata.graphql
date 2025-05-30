@@ -565,6 +565,11 @@ query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
       value
     }
     rainbow
+    rainbowTokenDetails {
+      onchainData {
+        creatorAddress
+      }
+    }
     totalSupply
     volume1d
   }
@@ -678,26 +683,26 @@ query marketStats($chainID: Int!, $address: String!) {
 
 query kingOfTheHill($currency: String) {
   kingOfTheHill(currency: $currency) {
-    currentKing {
+    current {
       token {
-        name
+        chainId
         address
+        decimals
+        name
         symbol
         iconUrl
-        decimals
-        chainID
-        network
         colors {
           primary
           fallback
           shadow
         }
-        market {
-          volume {
-            h24
-          }
-          marketCap
+        marketData {
+          marketCapFDV
+          volume24h
+          holders
         }
+        marketCap
+        volume1d
         price {
           value
           relativeChange24h
@@ -706,28 +711,38 @@ query kingOfTheHill($currency: String) {
       window {
         start
         end
+        durationSeconds
+        interval
+        secondsRemaining
+        isActive
+      }
+      rankingDetails {
+        rankingCriteria
+        rankingCriteriaDesc
+        windowTradingVolume
+        lastUpdated
       }
     }
     lastWinner {
       token {
-        name
+        chainId
         address
+        decimals
+        name
         symbol
         iconUrl
-        decimals
-        chainID
-        network
         colors {
           primary
           fallback
           shadow
         }
-        market {
-          volume {
-            h24
-          }
-          marketCap
+        marketData {
+          marketCapFDV
+          volume24h
+          holders
         }
+        marketCap
+        volume1d
         price {
           value
           relativeChange24h
@@ -736,6 +751,16 @@ query kingOfTheHill($currency: String) {
       window {
         start
         end
+        durationSeconds
+        interval
+        secondsRemaining
+        isActive
+      }
+      rankingDetails {
+        rankingCriteria
+        rankingCriteriaDesc
+        windowTradingVolume
+        lastUpdated
       }
     }
   }

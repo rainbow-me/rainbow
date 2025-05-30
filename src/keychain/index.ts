@@ -12,18 +12,20 @@ import {
   BIOMETRY_TYPE,
   requestSharedWebCredentials,
   setSharedWebCredentials as originalSetSharedWebCredentials,
+  isPasscodeAuthAvailable as originalIsPasscodeAuthAvailable,
   SharedWebCredentials,
   SetOptions,
   GetOptions,
+  STORAGE_TYPE,
 } from 'react-native-keychain';
 import { MMKV } from 'react-native-mmkv';
 
 import * as keychainConstants from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { delay } from '@/utils/delay';
-import { IS_DEV, IS_ANDROID } from '@/env';
+import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
-import { authenticateWithPINAndCreateIfNeeded, authenticateWithPIN } from '@/handlers/authentication';
+import { authenticateWithPINAndCreateIfNeeded, authenticateWithPIN, shouldAuthenticateWithPIN } from '@/handlers/authentication';
 
 export const encryptor = new AesEncryptor();
 
@@ -216,7 +218,7 @@ export async function set(key: string, value: string, options: KeychainOptions<S
   // private data has accessControl
   if (!options.accessControl) {
     cache.set(key, value);
-  } else if (options.accessControl && IS_ANDROID && !(await getSupportedBiometryType())) {
+  } else if (options.accessControl && (await shouldAuthenticateWithPIN())) {
     logger.debug(`[keychain]: encrypting private data on android`, { key, options }, logger.DebugContext.keychain);
 
     const pin = options.androidEncryptionPin || (await authenticateWithPINAndCreateIfNeeded());
@@ -269,7 +271,7 @@ export async function setObject(key: string, value: Record<string, any>, options
  */
 export async function has(key: string): Promise<boolean> {
   logger.debug(`[keychain]: has`, { key }, logger.DebugContext.keychain);
-  return Boolean(await hasInternetCredentials(key));
+  return Boolean(await hasInternetCredentials({ server: key }));
 }
 
 /**
@@ -279,7 +281,7 @@ export async function remove(key: string) {
   logger.debug(`[keychain]: remove`, { key }, logger.DebugContext.keychain);
 
   cache.delete(key);
-  await resetInternetCredentials(key);
+  await resetInternetCredentials({ server: key });
 }
 
 /**
@@ -316,15 +318,25 @@ export async function clear() {
 
   if (!credentials) return;
 
-  await Promise.all(credentials?.map(c => resetInternetCredentials(c.username)));
+  await Promise.all(credentials?.map(c => resetInternetCredentials({ server: c.username })));
 }
 
 /**
  * Wrapper around the underlying library's method by the same name.
  */
 export async function getSupportedBiometryType(): Promise<BIOMETRY_TYPE | undefined> {
-  logger.debug(`[keychain]: getSupportedBiometryType`, {}, logger.DebugContext.keychain);
-  return (await originalGetSupportedBiometryType()) || undefined;
+  const result = (await originalGetSupportedBiometryType()) || undefined;
+  logger.debug(`[keychain]: getSupportedBiometryType result: ${result}`, {}, logger.DebugContext.keychain);
+  return result;
+}
+
+/**
+ * Wrapper around the underlying library's method by the same name.
+ */
+export async function isPasscodeAuthAvailable(): Promise<boolean> {
+  const result = await originalIsPasscodeAuthAvailable();
+  logger.debug(`[keychain]: isPasscodeAuthAvailable result: ${result}`, {}, logger.DebugContext.keychain);
+  return result;
 }
 
 /**
@@ -372,12 +384,16 @@ export async function setSharedWebCredentials(username: string, password: string
 export async function getPrivateAccessControlOptions(): Promise<SetOptions> {
   logger.debug(`[keychain]: getPrivateAccessControlOptions`, {}, logger.DebugContext.keychain);
 
-  const isSimulator = IS_DEV && (await DeviceInfo.isEmulator());
+  const isSimulator = IS_DEV && IS_IOS && (await DeviceInfo.isEmulator());
 
   if (isSimulator) return {};
+
+  const usePin = await shouldAuthenticateWithPIN();
 
   return {
     accessControl: ios ? ACCESS_CONTROL.USER_PRESENCE : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
     accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    // storage is explicitly set in order to specify RSA instead of the symmetric AES_GCM default.
+    storage: usePin ? STORAGE_TYPE.AES_GCM_NO_AUTH : STORAGE_TYPE.RSA,
   };
 }
