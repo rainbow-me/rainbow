@@ -73,8 +73,11 @@ jobs:
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
-      - name: Install bundler
-        run: sudo gem install bundler
+      - name: Install pods
+        run: |
+          rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
+          yarn install-bundle && yarn install-pods
+
       - name: RNEF Remote Build - iOS simulator
         id: rnef-remote-build-ios
         uses: callstackincubator/ios@v1
