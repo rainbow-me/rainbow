@@ -57,7 +57,13 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const [isLoaded, setIsLoaded] = useState(false);
 
   const onLoad = useCallback(() => setIsLoaded(true), [setIsLoaded]);
-  const onError = useCallback(() => setErrorLoadingImage(true), [setErrorLoadingImage]);
+  const onError = useCallback(
+    (e: any) => {
+      console.log('onError', e);
+      setErrorLoadingImage(true);
+    },
+    [setErrorLoadingImage]
+  );
 
   const isHiddenToken = useMemo(() => {
     return hiddenTokens.find(token => token === fullUniqueId);
@@ -71,6 +77,15 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const shouldShowSvg = hasImage && isSVG && !errorLoadingImage && !transformSvgs;
   const shouldShowRegularImage = hasImage && !isSVG && !errorLoadingImage;
   const shouldShowTextFallback = (!shouldShowSvg && !shouldShowRegularImage) || (isHiddenToken && isCard);
+
+  console.log('imageUrl', imageUrl);
+  console.log('lowResImageUrl', lowResImageUrl);
+  console.log(mimeType);
+  console.log({
+    shouldShowSvg,
+    shouldShowRegularImage,
+    shouldShowTextFallback,
+  });
 
   return (
     <Centered backgroundColor={backgroundColor} style={StyleSheet.absoluteFill}>
@@ -87,7 +102,7 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       {shouldShowRegularImage && (
         <>
           <Image onError={onError} onLoad={onLoad} source={{ uri: imageUrl }} style={StyleSheet.absoluteFill} />
-          {!isLoaded && lowResImageUrl && <Image source={{ uri: lowResImageUrl }} style={StyleSheet.absoluteFill} />}
+          {!isLoaded && lowResImageUrl && <Image source={{ uri: `lowResImageUrl` }} style={StyleSheet.absoluteFill} />}
         </>
       )}
       {isHiddenToken && isCard && <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}

@@ -12,8 +12,8 @@ const displayTypeRanks: Record<string, number> = {
  * This sorting mimics how OpenSea displays traits separated by display type
  */
 export default function uniqueAssetTraitDisplayTypeCompareFunction(a: UniqueAssetTrait, b: UniqueAssetTrait): number {
-  const aTypeRank = displayTypeRanks?.[a.display_type] ?? 0;
-  const bTypeRank = displayTypeRanks?.[b.display_type] ?? 0;
+  const aTypeRank = displayTypeRanks?.[a.trait_type] ?? 0;
+  const bTypeRank = displayTypeRanks?.[b.trait_type] ?? 0;
   if (aTypeRank < bTypeRank) {
     return -1;
   } else if (aTypeRank > bTypeRank) {

@@ -53,12 +53,14 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   disablePullDownToRefresh,
   scrollIndicatorInsets,
   extendedState,
+  onEndReached,
   type,
 }: {
   briefSectionsData: CellTypes[];
   disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   scrollIndicatorInsets?: object;
+  onEndReached?: () => void;
   type?: AssetListType;
 }) {
   const remoteConfig = useRemoteConfig();
@@ -172,6 +174,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       }
       itemAnimator={layoutItemAnimator}
       layoutProvider={layoutProvider}
+      onEndReachedThreshold={0.5}
+      onEndReached={onEndReached}
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={disablePullDownToRefresh ? undefined : <RefreshControl />}

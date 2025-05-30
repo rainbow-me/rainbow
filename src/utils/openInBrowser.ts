@@ -3,7 +3,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Linking } from 'react-native';
 
-export const openInBrowser = (url: string, internal = true) => {
+export const openInBrowser = (url: string | null | undefined, internal = true) => {
   if (!url) {
     logger.warn(`[openInBrowser] No url provided, returning early...`);
     return;

@@ -104,9 +104,9 @@ const CollectiblesSendRow = React.memo(
     const isENS = uniqueTokenType === 'ENS';
 
     const subtitle = useMemo(
-      () => (item.name && !isENS ? `${item.collection.name} #${item.id}` : item.collection.name),
+      () => (item.name && !isENS ? `${item.name}` : item.collectionName),
 
-      [isENS, item.collection.name, item.id, item.name]
+      [isENS, item.collectionName, item.name]
     );
 
     const Wrapper = disablePressAnimation ? TouchableWithoutFeedback : ButtonPressAnimation;

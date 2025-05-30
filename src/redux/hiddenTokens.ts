@@ -140,7 +140,7 @@ export const addHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTok
 
   const { accountAddress, network } = getState().settings;
   const { hiddenTokens } = getState().hiddenTokens;
-  const updatedHiddenTokens = concat(hiddenTokens, tokenId);
+  const updatedHiddenTokens = concat(hiddenTokens.filter(Boolean), tokenId);
   dispatch({
     payload: {
       hiddenTokens: updatedHiddenTokens,

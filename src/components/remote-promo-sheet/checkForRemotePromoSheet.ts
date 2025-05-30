@@ -49,6 +49,8 @@ export const checkForRemotePromoSheet = async () => {
     order: [PromoSheetOrder.PriorityDesc],
   });
 
+  console.log('promoSheetCollection', JSON.stringify(promoSheetCollection, null, 2));
+
   for (const promo of promoSheetCollection?.items || []) {
     if (!promo) continue;
     logger.debug(`[checkForPromoSheet]: Checking ${promo.campaignKey}`);

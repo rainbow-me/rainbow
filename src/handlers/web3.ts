@@ -551,24 +551,28 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
 export const getDataForNftTransfer = (
   from: string,
   to: string,
-  asset: Partial<Pick<UniqueAsset, 'id' | 'asset_contract' | 'chainId'>>
+  {
+    chainId,
+    contractAddress,
+    tokenId,
+    constractStandard,
+  }: Partial<Pick<UniqueAsset, 'tokenId' | 'contractAddress' | 'chainId' | 'constractStandard'>>
 ): string | undefined => {
-  if (!asset.id || !asset.asset_contract?.address) return;
-  const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
-  const standard = asset.asset_contract?.schema_name;
+  if (!tokenId || !contractAddress) return;
+  const standard = constractStandard;
   let data: string | undefined;
-  if (lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS && asset.chainId === ChainId.mainnet) {
+  if (contractAddress === CRYPTO_KITTIES_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.token_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(asset.id)]);
-  } else if (lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS && asset.chainId === ChainId.mainnet) {
+    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(tokenId)]);
+  } else if (contractAddress === CRYPTO_PUNKS_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.punk_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(asset.id)]);
+    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(tokenId)]);
   } else if (standard === TokenStandard.ERC1155) {
     const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
     data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
+      convertStringToHex(tokenId),
       convertStringToHex('1'),
       convertStringToHex('160'),
       convertStringToHex('0'),
@@ -578,7 +582,7 @@ export const getDataForNftTransfer = (
     data = ethereumUtils.getDataString(transferMethod.hash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
+      convertStringToHex(tokenId),
     ]);
   }
   return data;
@@ -622,12 +626,11 @@ export const buildTransaction = async (
     value,
   };
   if (assetIsUniqueAsset(asset) && asset.type === AssetType.nft) {
-    const contractAddress = asset.asset_contract?.address;
     const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,
       from: address,
-      to: contractAddress,
+      to: asset.contractAddress,
     };
   } else if (assetIsParsedAddressAsset(asset) && !isNativeAsset(asset.address, chainId)) {
     const transferData = getDataForTokenTransfer(value, _recipient);
