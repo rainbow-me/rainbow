@@ -1,9 +1,15 @@
-import { FasterImageView, type FasterImageProps } from '@candlefinance/faster-image';
+import { FasterImageView, type FasterImageProps, clearCache, prefetch } from '@candlefinance/faster-image';
 import { Image, View, ViewStyle, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { memoFn } from '../utils/memoFn';
 import { coerceToArray } from '../helpers/coerceToArray';
 import { ImgixImage } from './images';
+
+prefetch;
+Image.prefetch;
+FastImage.preload;
+
+clearCache;
 
 /**
  * Image component that tries to be fast
