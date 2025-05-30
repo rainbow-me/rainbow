@@ -1,18 +1,12 @@
 import { fetchReverseRecord } from '@/handlers/ens';
-import WalletTypes from '@/helpers/walletTypes';
-import { logger, RainbowError } from '@/logger';
-import { parseTimestampFromBackupFile } from '@/model/backup';
-import store from '@/redux/store';
-import { lightModeThemeColors } from '@/styles';
-import { captureMessage } from '@sentry/react-native';
-import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty, keys } from 'lodash';
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
 import { getWalletNames, saveWalletNames } from '@/handlers/localstorage/walletNames';
 import { ensureValidHex } from '@/handlers/web3';
-import { dequal } from 'dequal';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
+import { logger, RainbowError } from '@/logger';
+import { parseTimestampFromBackupFile } from '@/model/backup';
 import { hasKey } from '@/model/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
@@ -28,14 +22,20 @@ import {
   setSelectedWalletInKeychain,
 } from '@/model/wallet';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import store from '@/redux/store';
+import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
+import { isLowerCaseMatch } from '@/utils';
 import { address } from '@/utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
-import { createRainbowStore } from '../internal/createRainbowStore';
+import { captureMessage } from '@sentry/react-native';
+import { dequal } from 'dequal';
+import { toChecksumAddress } from 'ethereumjs-util';
+import { isEmpty, keys } from 'lodash';
+import { useMemo } from 'react';
 import { Address } from 'viem';
-import { isLowerCaseMatch } from '@/utils';
-import { useEffect, useMemo } from 'react';
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface AccountProfileInfo {
   accountAddress: string;
