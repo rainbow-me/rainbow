@@ -2223,13 +2223,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@candlefinance/faster-image@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@candlefinance/faster-image@npm:1.6.2"
+"@candlefinance/faster-image@npm:1.7.2":
+  version: 1.7.2
+  resolution: "@candlefinance/faster-image@npm:1.7.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/d9d5a2ead7351fe5305fe9b298cddd7f7debe8c8d2524faf4e0dc66a5f1dd275f3ef73464b69cda792ce636578a3f5c8ef9a1b047f4e8ae9941001fb5b8f6f26
+  checksum: 10c0/343c4613a3b4ea9bcef852ff2c934a0a37a240d8e9599de6015bb8a6d1c696396c5a3c168df67443de1f233695ad262c14d22cde1196c68d70e37db039c40e5e
   languageName: node
   linkType: hard
 
@@ -8808,7 +8808,7 @@ __metadata:
     "@babel/runtime": "npm:7.22.0"
     "@bankify/react-native-animate-number": "npm:0.2.1"
     "@bradgarropy/use-countdown": "npm:1.4.1"
-    "@candlefinance/faster-image": "npm:1.6.2"
+    "@candlefinance/faster-image": "npm:1.7.2"
     "@capsizecss/core": "npm:3.0.0"
     "@coinbase/mobile-wallet-protocol-host": "npm:0.1.7"
     "@ensdomains/address-encoder": "npm:0.2.16"
