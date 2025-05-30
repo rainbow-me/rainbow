@@ -88,7 +88,7 @@ export function useCoinListFinishEditingOptions() {
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
   const [selectedItems, setSelectedItems] = useRecoilState(selectedItemsAtom);
-  const selectedItemsNonReactive = useRef<string[]>();
+  const selectedItemsNonReactive = useRef<string[]>(undefined);
   selectedItemsNonReactive.current = selectedItems;
 
   const [pinnedCoins = {}, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
@@ -113,7 +113,7 @@ export function useCoinListFinishEditingOptions() {
     }
   }, [hiddenAssets, pinnedCoins, selectedItems]);
 
-  const currentActionNonReactive = useRef<keyof typeof EditAction>();
+  const currentActionNonReactive = useRef<keyof typeof EditAction>(undefined);
   currentActionNonReactive.current = currentAction;
 
   const setPinnedCoins = useCallback(() => {

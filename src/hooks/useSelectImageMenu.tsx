@@ -82,7 +82,7 @@ export default function useSelectImageMenu({
   // When this hook is inside a nested navigator, the child
   // navigator will still think it is focused. Here, we are
   // also checking if the parent has not been dismissed too.
-  const isFocused = useRef<boolean>();
+  const isFocused = useRef<boolean>(undefined);
   useFocusEffect(
     useCallback(() => {
       isFocused.current = true;

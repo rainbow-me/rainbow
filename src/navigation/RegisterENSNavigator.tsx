@@ -47,7 +47,7 @@ export type ENSRoutes = keyof typeof defaultScreenOptions;
 export default function RegisterENSNavigator() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.REGISTER_ENS_NAVIGATOR>>();
 
-  const sheetRef = useRef<any>();
+  const sheetRef = useRef<any>(undefined);
 
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 

@@ -62,7 +62,7 @@ function StickyHeaderInternal({
     }),
     [last, visibleAtYPosition, position, range]
   );
-  const ref = useRef<Animated.View>() as MutableRefObject<Animated.View>;
+  const ref = useRef<Animated.View>(undefined) as MutableRefObject<Animated.View>;
   const onLayout = useCallback(() => {
     // @ts-expect-error - getNativeScrollRef is not defined on BaseScrollView
     const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef();
@@ -120,7 +120,7 @@ export function StickyHeaderManager({ children, yOffset = 0 }: { children: React
 
     return rangesKeyed;
   }, [positions]);
-  const scrollViewRef = useRef<BaseScrollView>();
+  const scrollViewRef = useRef<BaseScrollView>(undefined);
   const setMeasures = useCallback((position: number | undefined, height: number | undefined, name: string) => {
     setPositions(prev => {
       if (position === undefined || height === undefined) {
