@@ -23,6 +23,7 @@ export const CLOUD_BACKUP_ERRORS = {
   UKNOWN_ERROR: 'Unknown Error',
   WALLET_BACKUP_STATUS_UPDATE_FAILED: 'Update wallet backup status failed',
   MISSING_PIN: 'The PIN code you entered is invalid',
+  WRONG_PIN: 'The PIN code you entered is wrong',
 };
 
 export function normalizeAndroidBackupFilename(filename: string) {
