@@ -1,5 +1,5 @@
-import { TextProps, useTextStyle } from '@/design-system';
-import React, { useMemo, useRef, useEffect, useCallback, MutableRefObject, useState, useLayoutEffect } from 'react';
+import { AnimatedText, TextProps, useTextStyle } from '@/design-system';
+import React, { useMemo, useRef, useEffect, useCallback, MutableRefObject, useState } from 'react';
 import { Animated as RNAnimated, StyleProp, TextStyle, StyleSheet, ViewStyle, View } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -86,10 +86,30 @@ interface DigitProps {
   numeralWidthsRef: MutableRefObject<number[]>;
   isInitialRenderRef: MutableRefObject<boolean>;
   enteringAnimation: EntryOrExitLayoutType | undefined;
-  isDisabled: SharedValue<boolean>;
+  disabled: SharedValue<boolean>;
 }
 
-const Digit = React.memo(function Digit({
+const numerals = Array.from({ length: 10 });
+
+const Numerals = React.memo(function Numerals({ textStyle, digitHeight }: { textStyle: StyleProp<TextStyle>; digitHeight: number }) {
+  const containerStyle = {
+    height: digitHeight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  } as const;
+
+  return (
+    <>
+      {numerals.map((_, i) => (
+        <View key={i} style={containerStyle}>
+          <Animated.Text style={textStyle}>{i}</Animated.Text>
+        </View>
+      ))}
+    </>
+  );
+});
+
+const Digit = function Digit({
   part,
   textStyle,
   timingConfig,
@@ -98,21 +118,21 @@ const Digit = React.memo(function Digit({
   numeralWidthsRef,
   isInitialRenderRef,
   enteringAnimation,
-  isDisabled,
+  disabled,
 }: DigitProps) {
   const value = parseInt(part.value);
   const isDigitInitialRenderRef = useRef(true);
   const translateY = useSharedValue(0);
   // const currentDigitWidth = useSharedValue(numeralWidthsRef.current[value]);
 
-  // TODO: This seems better than useEffect/useLayoutEffect with runOnUI but I'm not sure why
+  // TODO: This seems to have better performance than useEffect/useLayoutEffect with runOnUI but I'm not sure why
   useAnimatedReaction(
     () => {
       return value;
     },
     currentValue => {
       const targetY = -currentValue * digitHeight;
-      if (isDisabled.value) {
+      if (disabled.value) {
         translateY.value = targetY;
       } else {
         if (isDigitInitialRenderRef.current && !isInitialRenderRef.current) {
@@ -122,50 +142,39 @@ const Digit = React.memo(function Digit({
           translateY.value = withTiming(targetY, timingConfig);
         }
       }
-
-      // TODO: This breaks the container layout transition
-
-      // const targetWidth = numeralWidthsRef.current[value];
-      // if (isDigitInitialRenderRef.current && !isInitialRenderRef.current) {
-      //   runOnUI(() => {
-      //     currentDigitWidth.value = targetWidth;
-      //   })();
-      //   isDigitInitialRenderRef.current = false;
-      // } else if (targetWidth !== currentDigitWidth.value) {
-      //   runOnUI(() => {
-      //     if (isDisabled.value) {
-      //       currentDigitWidth.value = targetWidth;
-      //     } else {
-      //       currentDigitWidth.value = withTiming(targetWidth, {
-      //         ...timingConfig,
-      //         duration: timingConfig.duration * 0.5,
-      //       });
-      //     }
-      //   })();
-      // }
-    }
+    },
+    [disabled, value]
   );
 
-  const numerals = useMemo(() => {
-    const containerStyle = {
-      height: digitHeight,
-      justifyContent: 'center',
-      alignItems: 'center',
-    } as const;
+  // TODO: This breaks the container layout transition
 
-    return Array.from({ length: 10 }).map((_, i) => (
-      <View key={i} style={containerStyle}>
-        <Animated.Text style={textStyle}>{i}</Animated.Text>
-      </View>
-    ));
-  }, [textStyle, digitHeight]);
+  // const targetWidth = numeralWidthsRef.current[value];
+  // if (isDigitInitialRenderRef.current && !isInitialRenderRef.current) {
+  //   runOnUI(() => {
+  //     currentDigitWidth.value = targetWidth;
+  //   })();
+  //   isDigitInitialRenderRef.current = false;
+  // } else if (targetWidth !== currentDigitWidth.value) {
+  //   runOnUI(() => {
+  //     if (isDisabled.value) {
+  //       currentDigitWidth.value = targetWidth;
+  //     } else {
+  //       currentDigitWidth.value = withTiming(targetWidth, {
+  //         ...timingConfig,
+  //         duration: timingConfig.duration * 0.5,
+  //       });
+  //     }
+  //   })();
+  // }
+  //   }
 
   const exitingAnimation = useCallback(
     (values: ExitAnimationsValues) => {
       'worklet';
       const translateX = values.currentOriginX + previousWidthDelta.value;
       // spin towards the further of 0 or 9
-      const targetOriginY = value < 5 ? -9 * digitHeight : 0;
+      // const targetOriginY = value < 5 ? -9 * digitHeight : 0;
+      const targetOriginY = 0;
 
       const initialValues = {
         opacity: 1,
@@ -182,7 +191,7 @@ const Digit = React.memo(function Digit({
         animations,
       };
     },
-    [digitHeight, previousWidthDelta, timingConfig, value]
+    [timingConfig]
   );
 
   const numeralsAnimatedStyle = useAnimatedStyle(() => {
@@ -212,10 +221,69 @@ const Digit = React.memo(function Digit({
 
   return (
     <Animated.View pointerEvents="none" entering={enteringAnimation} exiting={exitingAnimation} style={containerStyle}>
-      <Animated.View style={numeralsAnimatedStyle}>{numerals}</Animated.View>
+      <Animated.View style={numeralsAnimatedStyle}>
+        <Numerals textStyle={textStyle} digitHeight={digitHeight} />
+      </Animated.View>
     </Animated.View>
   );
-});
+};
+
+interface NumberPartsProps {
+  parts: Part[];
+  textStyle: StyleProp<TextStyle>;
+  timingConfig: TimingAnimationConfig;
+  digitHeight: number;
+  previousWidthDelta: SharedValue<number>;
+  numeralWidthsRef: MutableRefObject<number[]>;
+  isInitialRenderRef: MutableRefObject<boolean>;
+  characterEnteringAnimation: EntryOrExitLayoutType;
+  disabled: SharedValue<boolean>;
+  digitContainerStyle: ViewStyle;
+}
+
+const NumberParts = function NumberParts({
+  parts,
+  textStyle,
+  timingConfig,
+  digitHeight,
+  previousWidthDelta,
+  numeralWidthsRef,
+  isInitialRenderRef,
+  characterEnteringAnimation,
+  disabled,
+  digitContainerStyle,
+}: NumberPartsProps) {
+  return parts.map(part => {
+    if (part.type === 'integer') {
+      return (
+        <Digit
+          key={part.key}
+          part={part}
+          textStyle={textStyle}
+          timingConfig={timingConfig}
+          digitHeight={digitHeight}
+          previousWidthDelta={previousWidthDelta}
+          numeralWidthsRef={numeralWidthsRef}
+          isInitialRenderRef={isInitialRenderRef}
+          enteringAnimation={characterEnteringAnimation}
+          disabled={disabled}
+        />
+      );
+    } else {
+      return (
+        <Animated.View
+          key={part.key}
+          style={digitContainerStyle}
+          entering={characterEnteringAnimation}
+          // TODO: convert to custom to disable for disabled state
+          exiting={FadeOut.duration(timingConfig.duration)}
+        >
+          <Animated.Text style={textStyle}>{part.value}</Animated.Text>
+        </Animated.View>
+      );
+    }
+  });
+};
 
 function getParts(value: string): Part[] {
   'worklet';
@@ -268,10 +336,11 @@ function getPartsByType(value: string) {
   'worklet';
   const allParts = getParts(value);
   return {
-    prefix: allParts.find(part => part.type === 'prefix'),
+    prefix: allParts.filter(part => part.type === 'prefix'),
     number: allParts.filter(part => part.type !== 'prefix' && part.type !== 'suffix'),
-    suffix: allParts.find(part => part.type === 'suffix'),
+    suffix: allParts.filter(part => part.type === 'suffix'),
     all: allParts,
+    value,
   };
 }
 
@@ -286,7 +355,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   value,
   timingConfig = DEFAULT_TIMING_CONFIG,
   easingMaskColor = 'white',
-  disabled = false,
+  disabled: disabledProp = false,
   style,
   ...textProps
 }: AnimatedNumberProps) {
@@ -303,21 +372,30 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   const transitionProgress = useSharedValue(0);
   const previousWidthDelta = useSharedValue(0);
 
-  const isDisabled = useDerivedValue(() => {
-    if (typeof disabled === 'boolean') {
-      return disabled;
+  const disabled = useDerivedValue(() => {
+    if (typeof disabledProp === 'boolean') {
+      return disabledProp;
     }
-    return disabled.value;
+    return disabledProp?.value ?? false;
   });
 
   // This is not ideal, but required to accommodate the use of a shared value for the value prop
   const [parts, setParts] = useState(() => (typeof value === 'string' ? getPartsByType(value) : getPartsByType(value.value)));
 
   useAnimatedReaction(
-    () => value,
-    value => {
-      runOnJS(setParts)(typeof value === 'string' ? getPartsByType(value) : getPartsByType(value.value));
-    }
+    () => {
+      return {
+        value: typeof value === 'string' ? value : value.value,
+        disabled: disabled.value,
+      };
+    },
+    (current, previous) => {
+      const wasJustDisabled = !previous?.disabled && current.disabled;
+      if (!current.disabled || wasJustDisabled) {
+        runOnJS(setParts)(getPartsByType(current.value));
+      }
+    },
+    [value, disabled]
   );
 
   const baseTextStyle = useTextStyle(textProps);
@@ -351,12 +429,9 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       /* It's possible that the disabled state is not updated in time for the layout transition to be skipped.
       This is a workaround to skip the layout transition when disabled.
       */
-      if (isDisabled.value) {
+      if (disabled.value) {
         numberContainerGlobalOriginX.value = values.targetGlobalOriginX;
         previousWidthDelta.value = values.currentWidth - values.targetWidth;
-        prefixTranslateX.value = 0;
-        suffixTranslateX.value = 0;
-        maskTranslateX.value = 0;
         maskWidth.value = values.targetWidth;
         return {
           initialValues: {},
@@ -417,12 +492,12 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [timingConfig, baseTextStyle, isDisabled]
+    [timingConfig, baseTextStyle, disabled]
   );
 
   const characterEnteringAnimation = useCallback(() => {
     'worklet';
-    if (isDisabled.value) {
+    if (disabled.value) {
       return {
         initialValues: {},
         animations: {},
@@ -440,43 +515,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
         }),
       },
     };
-  }, [timingConfig, isDisabled]);
-
-  const renderParts = useCallback(
-    (parts: Part[]) => {
-      return parts.map((part, index) => {
-        if (part.type === 'integer') {
-          return (
-            <Digit
-              key={part.key}
-              part={part}
-              textStyle={textStyle}
-              timingConfig={timingConfig}
-              digitHeight={digitHeight}
-              previousWidthDelta={previousWidthDelta}
-              numeralWidthsRef={numeralWidthsRef}
-              isInitialRenderRef={isInitialRenderRef}
-              enteringAnimation={characterEnteringAnimation}
-              isDisabled={isDisabled}
-            />
-          );
-        } else {
-          return (
-            <Animated.View
-              key={part.key}
-              style={digitContainerStyle}
-              entering={characterEnteringAnimation}
-              // TODO: convert to custom to disable for disabled state
-              exiting={FadeOut.duration(timingConfig.duration)}
-            >
-              <Animated.Text style={textStyle}>{part.value}</Animated.Text>
-            </Animated.View>
-          );
-        }
-      });
-    },
-    [textStyle, timingConfig, digitHeight, previousWidthDelta, digitContainerStyle, characterEnteringAnimation, isDisabled]
-  );
+  }, [timingConfig, disabled]);
 
   const maskElementAnimatedStyle = useAnimatedStyle(() => {
     if (maskWidth.value === 0) {
@@ -492,7 +531,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   });
 
   const horizontalEasingMaskAnimatedStyle = useAnimatedStyle(() => {
-    if (isDisabled.value) {
+    if (disabled.value) {
       return { opacity: 0 };
     }
     return {
@@ -550,54 +589,151 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     backgroundColor: 'red',
   };
 
-  const easingMaskWidth = baseTextStyle.fontSize * 0.2;
-  const easingMaskHeight = baseTextStyle.fontSize * 0.2;
+  const edgeGradientSizes = useMemo(() => {
+    return {
+      horizontal: baseTextStyle.fontSize * 0.2,
+      vertical: baseTextStyle.fontSize * 0.2,
+    };
+  }, [baseTextStyle]);
+
+  const staticContainerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: disabled.value ? 1 : 0,
+    };
+  });
+
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: disabled.value ? 0 : 1,
+    };
+  });
 
   return (
     <LayoutAnimationConfig skipEntering skipExiting>
-      <View style={[styles.row, { height: digitHeight, marginVertical: -easingMaskHeight }]}>
-        {parts.prefix && <Animated.View style={[prefixPartAnimatedStyle]}>{renderParts([parts.prefix])}</Animated.View>}
-        <Animated.View ref={numberContainerRef} layout={layoutTransition} onLayout={onNumberContainerLayout}>
-          <MaskedView maskElement={<Animated.View style={[maskElementAnimatedStyle, maskElementStyle]} />}>
-            <Animated.View style={styles.row}>{renderParts(parts.number)}</Animated.View>
-          </MaskedView>
-          <Animated.View style={[StyleSheet.absoluteFill, maskElementAnimatedStyle]}>
-            <Animated.View style={[StyleSheet.absoluteFill, horizontalEasingMaskAnimatedStyle]}>
-              <EasingGradient
-                startPosition="left"
-                endPosition="right"
-                startColor={easingMaskColor}
-                endColor={easingMaskColor}
-                startOpacity={1}
-                endOpacity={0}
-                style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: easingMaskWidth }}
+      <View style={[styles.row, { height: digitHeight, marginVertical: -edgeGradientSizes.vertical }]}>
+        <Animated.View
+          style={[
+            {
+              position: 'absolute',
+              height: digitHeight,
+              justifyContent: 'center',
+            },
+            staticContainerStyle,
+          ]}
+        >
+          <AnimatedText {...textProps} style={textStyle}>
+            {value}
+          </AnimatedText>
+        </Animated.View>
+        <Animated.View style={[styles.row, animatedContainerStyle]}>
+          {parts.prefix && (
+            <Animated.View style={prefixPartAnimatedStyle}>
+              <NumberParts
+                parts={parts.prefix}
+                textStyle={textStyle}
+                timingConfig={timingConfig}
+                digitHeight={digitHeight}
+                previousWidthDelta={previousWidthDelta}
+                numeralWidthsRef={numeralWidthsRef}
+                isInitialRenderRef={isInitialRenderRef}
+                characterEnteringAnimation={characterEnteringAnimation}
+                disabled={disabled}
+                digitContainerStyle={digitContainerStyle}
               />
             </Animated.View>
-            <EasingGradient
-              startPosition="top"
-              endPosition="bottom"
-              startColor={easingMaskColor}
-              endColor={easingMaskColor}
-              startOpacity={1}
-              endOpacity={0}
-              style={{ position: 'absolute', top: 0, left: 0, right: 0, height: easingMaskHeight }}
-            />
-            <EasingGradient
-              startPosition="bottom"
-              endPosition="top"
-              startColor={easingMaskColor}
-              endColor={easingMaskColor}
-              startOpacity={1}
-              endOpacity={0}
-              style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: easingMaskHeight }}
+          )}
+          <Animated.View ref={numberContainerRef} layout={layoutTransition} onLayout={onNumberContainerLayout}>
+            <MaskedView maskElement={<Animated.View style={[maskElementAnimatedStyle, maskElementStyle]} />}>
+              <View style={styles.row}>
+                <NumberParts
+                  parts={parts.number}
+                  textStyle={textStyle}
+                  timingConfig={timingConfig}
+                  digitHeight={digitHeight}
+                  previousWidthDelta={previousWidthDelta}
+                  numeralWidthsRef={numeralWidthsRef}
+                  isInitialRenderRef={isInitialRenderRef}
+                  characterEnteringAnimation={characterEnteringAnimation}
+                  disabled={disabled}
+                  digitContainerStyle={digitContainerStyle}
+                />
+              </View>
+            </MaskedView>
+            <AnimatedEdgeGradients
+              maskElementAnimatedStyle={maskElementAnimatedStyle}
+              horizontalEasingMaskAnimatedStyle={horizontalEasingMaskAnimatedStyle}
+              edgeSizes={edgeGradientSizes}
+              color={easingMaskColor}
             />
           </Animated.View>
+          {parts.suffix && (
+            <Animated.View style={[suffixPartAnimatedStyle, { height: digitHeight }]}>
+              <NumberParts
+                parts={parts.suffix}
+                textStyle={textStyle}
+                timingConfig={timingConfig}
+                digitHeight={digitHeight}
+                previousWidthDelta={previousWidthDelta}
+                numeralWidthsRef={numeralWidthsRef}
+                isInitialRenderRef={isInitialRenderRef}
+                characterEnteringAnimation={characterEnteringAnimation}
+                disabled={disabled}
+                digitContainerStyle={digitContainerStyle}
+              />
+            </Animated.View>
+          )}
         </Animated.View>
-        {parts.suffix && (
-          <Animated.View style={[suffixPartAnimatedStyle, { height: digitHeight }]}>{renderParts([parts.suffix])}</Animated.View>
-        )}
       </View>
     </LayoutAnimationConfig>
+  );
+});
+
+const AnimatedEdgeGradients = React.memo(function AnimatedEdgeGradients({
+  maskElementAnimatedStyle,
+  horizontalEasingMaskAnimatedStyle,
+  edgeSizes,
+  color,
+}: {
+  maskElementAnimatedStyle: StyleProp<ViewStyle>;
+  horizontalEasingMaskAnimatedStyle: StyleProp<ViewStyle>;
+  edgeSizes: {
+    horizontal: number;
+    vertical: number;
+  };
+  color: string;
+}) {
+  return (
+    <Animated.View style={[StyleSheet.absoluteFill, maskElementAnimatedStyle]}>
+      <Animated.View style={[StyleSheet.absoluteFill, horizontalEasingMaskAnimatedStyle]}>
+        <EasingGradient
+          startPosition="left"
+          endPosition="right"
+          startColor={color}
+          endColor={color}
+          startOpacity={1}
+          endOpacity={0}
+          style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: edgeSizes.horizontal }}
+        />
+      </Animated.View>
+      <EasingGradient
+        startPosition="top"
+        endPosition="bottom"
+        startColor={color}
+        endColor={color}
+        startOpacity={1}
+        endOpacity={0}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: edgeSizes.vertical }}
+      />
+      <EasingGradient
+        startPosition="bottom"
+        endPosition="top"
+        startColor={color}
+        endColor={color}
+        startOpacity={1}
+        endOpacity={0}
+        style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: edgeSizes.vertical }}
+      />
+    </Animated.View>
   );
 });
 
