@@ -40,6 +40,7 @@ if (!isE2E) {
     apply plugin: "io.sentry.android.gradle"
 
     sentry {
+        ignoredBuildTypes = ["debug"]
         // Enables or disables the automatic configuration of Native Symbols
         // for Sentry. This executes sentry-cli automatically so
         // you don't need to do it manually.
