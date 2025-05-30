@@ -741,7 +741,7 @@ export function createQueryStore<
     };
 
     // Override the store's subscribe method
-    const originalSubscribe: SubscribeOverloads<S, unknown, true> = api.subscribe;
+    const originalSubscribe: SubscribeOverloads<S, true> = api.subscribe;
     api.subscribe = (...args: SubscribeArgs<S>) => {
       const internalUnsubscribe = subscriptionManager.subscribe();
       const unsubscribe = args.length === 1 ? originalSubscribe(args[0]) : originalSubscribe(...args);

@@ -14,7 +14,7 @@ export type RainbowStateCreator<S> = StateCreator<S, [SubscribeWithSelector], [S
 export type BaseRainbowStore<S, ExtraSubscribeOptions extends boolean = false> = UseBoundStoreWithEqualityFn<
   Mutate<StoreApi<S>, [SubscribeWithSelector]>
 > & {
-  subscribe: SubscribeOverloads<S, unknown, ExtraSubscribeOptions>;
+  subscribe: SubscribeOverloads<S, ExtraSubscribeOptions>;
 };
 
 export type PersistedRainbowStore<
@@ -44,7 +44,7 @@ export type UseStoreCallSignatures<S> = {
   <Selected>(selector: Selector<S, Selected>, equalityFn?: EqualityFn<Selected>): Selected;
 };
 
-export type InferStoreState<Store extends BaseRainbowStore<unknown>> = Store extends {
+export type InferStoreState<Store extends StoreApi<unknown>> = Store extends {
   getState: () => infer T;
 }
   ? T
@@ -55,6 +55,7 @@ export type InferStoreState<Store extends BaseRainbowStore<unknown>> = Store ext
 export type SubscribeOptions<Selected> = {
   equalityFn?: EqualityFn<Selected>;
   fireImmediately?: boolean;
+  isDerivedStore?: boolean;
 };
 
 export type ListenerArgs<S> = [listener: Listener<S>];
@@ -64,9 +65,13 @@ export type SelectorArgs<S, Selected> = [
   options?: SubscribeOptions<Selected>,
 ];
 
-export type SubscribeOverloads<S, Selected = unknown, ExtraOptions extends boolean = false> = {
+export type SubscribeOverloads<S, ExtraOptions extends boolean = false> = {
   (listener: Listener<S>): UnsubscribeFn<ExtraOptions>;
-  (selector: Selector<S, Selected>, listener: Listener<Selected>, options?: SubscribeOptions<Selected>): UnsubscribeFn<ExtraOptions>;
+  <Selected>(
+    selector: Selector<S, Selected>,
+    listener: Listener<Selected>,
+    options?: SubscribeOptions<Selected>
+  ): UnsubscribeFn<ExtraOptions>;
 };
 
 export type SubscribeArgs<S, Selected = unknown> = ListenerArgs<S> | SelectorArgs<S, Selected>;

@@ -135,7 +135,7 @@ function derive<DerivedState>(
   deriveFunction: ($: DeriveGetter) => DerivedState,
   optionsOrEqualityFn: DeriveOptions<DerivedState> = Object.is
 ): WithFlushUpdates<StoreApi<DerivedState>> {
-  const { debounceOptions, debugMode, equalityFn, useStableSubscriptions } = getOptions(optionsOrEqualityFn);
+  const { debounceOptions, debugMode, equalityFn, useStableSubscriptions } = parseOptions(optionsOrEqualityFn);
 
   // Active subscriptions *to* the derived store
   const watchers = new Set<Watcher<DerivedState>>();
@@ -152,6 +152,9 @@ function derive<DerivedState>(
   let deriveScheduled = false;
   let invalidated = true;
   let shouldRebuildSubscriptions = true;
+
+  // Used to ensure synchronous derivation chains
+  let derivedWatchers = 0;
 
   function $<S>(store: BaseRainbowStore<S>): S;
   function $<S, Selected>(store: BaseRainbowStore<S>, selector: Selector<S, Selected>, equalityFn?: EqualityFn<Selected>): Selected;
@@ -170,7 +173,7 @@ function derive<DerivedState>(
     }
     // -- Overload #2: $(store, selector, equalityFn?)
     // No proxy, just a direct subscription to the store
-    const unsubscribe = store.subscribe(selector, () => invalidate(), { equalityFn });
+    const unsubscribe = store.subscribe(selector, () => invalidate(), { equalityFn, isDerivedStore: true });
     unsubscribes.add(unsubscribe);
 
     return selector(store.getState());
@@ -204,8 +207,8 @@ function derive<DerivedState>(
     if (pathFinder && shouldRebuildSubscriptions) {
       // Create subscriptions for each proxy-generated dependency path
       pathFinder.buildProxySubscriptions((store, selector) => {
-        const unsub = store.subscribe(selector, () => invalidate(), { equalityFn: Object.is });
-        unsubscribes.add(unsub);
+        const unsubscribe = store.subscribe(selector, () => invalidate(), { equalityFn: Object.is, isDerivedStore: true });
+        unsubscribes.add(unsubscribe);
       }, shouldLogSubscriptions);
       // Reset proxy state for the next derivation
       rootProxyCache = undefined;
@@ -215,28 +218,30 @@ function derive<DerivedState>(
     // Lock in subscriptions so we only build once
     if (useStableSubscriptions) shouldRebuildSubscriptions = false;
 
-    // Notify watchers if derived state changed
-    if (hasPreviousState && !equalityFn(prevState, derivedState)) {
-      for (const w of watchers) {
-        if (typeof w === 'function') {
-          w(derivedState, prevState ?? derivedState);
-        } else {
-          const newSlice = w.selector(derivedState);
-          if (!w.equalityFn(w.currentSlice, newSlice)) {
-            const oldSlice = w.currentSlice;
-            w.currentSlice = newSlice;
-            w.listener(newSlice, oldSlice);
-          }
-        }
-      }
-      if (debugMode) {
-        console.log(`[📻 New Derived Value 📻]: Notified ${watchers.size} ${pluralize('watcher', watchers.size)}`);
-      }
-    } else if (debugMode && hasPreviousState) {
-      console.log(`[🥷 Derive Complete 🥷]: No change detected`);
-    }
+    // Notify watchers if needed
+    notifyWatchers(derivedState, prevState);
 
     return derivedState;
+  }
+
+  function notifyWatchers(newState: DerivedState, prevState: DerivedState | undefined): void {
+    if (prevState === undefined || equalityFn(prevState, newState)) {
+      if (debugMode) console.log(`[🥷 Derive Complete 🥷]: No change detected`);
+      return;
+    }
+    if (debugMode) console.log(`[📻 Derive Complete 📻]: Notifying ${watchers.size} ${pluralize('watcher', watchers.size)}`);
+    for (const w of watchers) {
+      if (typeof w === 'function') {
+        w(newState, prevState ?? newState);
+      } else {
+        const newSlice = w.selector(newState);
+        if (!w.equalityFn(w.currentSlice, newSlice)) {
+          const oldSlice = w.currentSlice;
+          w.currentSlice = newSlice;
+          w.listener(newSlice, oldSlice);
+        }
+      }
+    }
   }
 
   const debouncedDerive = debounceOptions
@@ -264,9 +269,13 @@ function derive<DerivedState>(
   function invalidate(): void {
     if (!invalidated) {
       invalidated = true;
-      scheduleDerive();
+      // If we have derived watchers, we need to maintain a synchronous derivation chain
+      if (derivedWatchers && !debounceOptions) derive();
+      else scheduleDerive();
     }
   }
+
+  // ============ Public Store Methods ========================================= //
 
   function getState(): DerivedState {
     if (derivedState === undefined) {
@@ -305,6 +314,10 @@ function derive<DerivedState>(
     };
 
     watchers.add(watcher);
+
+    const isDerivedWatcher = options?.isDerivedStore ?? false;
+    if (isDerivedWatcher) derivedWatchers += 1;
+
     if (watchers.size === 1) {
       derivedState = undefined;
       derive();
@@ -316,6 +329,7 @@ function derive<DerivedState>(
 
     return () => {
       watchers.delete(watcher);
+      if (isDerivedWatcher) derivedWatchers -= 1;
       if (!watchers.size) destroy();
     };
   }
@@ -328,6 +342,7 @@ function derive<DerivedState>(
     debouncedDerive?.cancel();
     unsubscribeAll();
     watchers.clear();
+    derivedWatchers = 0;
     pathFinder = undefined;
     rootProxyCache = undefined;
     shouldRebuildSubscriptions = true;
@@ -353,7 +368,7 @@ function derive<DerivedState>(
 
 // ============ Helpers ======================================================== //
 
-function getOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
+function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
   debounceOptions: number | DebounceOptions | undefined;
   debugMode: boolean;
   equalityFn: EqualityFn<DerivedState>;
