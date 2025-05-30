@@ -1,16 +1,10 @@
-import { clearCache, FasterImageView, prefetch, type FasterImageProps } from '@candlefinance/faster-image';
+import { FasterImageView, prefetch, type FasterImageProps } from '@candlefinance/faster-image';
 import React from 'react';
 import { Image, View, ViewStyle } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { coerceToArray } from '../helpers/coerceToArray';
 import { withStaticProperties } from '../helpers/withStaticProperties';
 import { memoFn } from '../utils/memoFn';
-
-prefetch;
-Image.prefetch;
-FastImage.preload;
-
-clearCache;
 
 /**
  * Image component that tries to be fast
@@ -29,15 +23,17 @@ const RainbowImageInternal = ({ containerStyle, ...props }: FasterImageProps & {
     if (handler === 'fast-image') {
       return (
         <FastImage
-          source={props.source}
+          source={{
+            uri: props.source.url,
+            headers: props.source.headers,
+            priority: props.source.priority === 'veryLow' ? 'low' : props.source.priority === 'veryHigh' ? 'high' : props.source.priority,
+          }}
           // @ts-expect-error fast-image defines a custom style that's a superset and a bit odd, but this should work
           style={[{ flex: 1 }, ...coerceToArray(props.style)]}
           onError={() => {
-            console.log('err??');
             props.onError?.({ nativeEvent: { error: 'Error loading image' } });
           }}
           onLoad={e => {
-            console.log('???????????????');
             props.onSuccess?.({
               nativeEvent: {
                 width: e.nativeEvent.width,
@@ -77,8 +73,24 @@ const RainbowImageInternal = ({ containerStyle, ...props }: FasterImageProps & {
 };
 
 export const RainbowImage = withStaticProperties(RainbowImageInternal, {
-  preload() {
-    // todo
+  preload(...sources: string[]) {
+    for (const source of sources) {
+      const handler = getHandlerFromType(getImageType(source));
+      switch (handler) {
+        case 'faster-image': {
+          prefetch([source]);
+          break;
+        }
+        case 'fast-image': {
+          FastImage.preload([{ uri: source }]);
+          break;
+        }
+        case 'image': {
+          Image.prefetch(source);
+          break;
+        }
+      }
+    }
   },
 });
 
