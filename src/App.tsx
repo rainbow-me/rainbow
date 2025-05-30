@@ -40,6 +40,7 @@ import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
+import { Canvas, Fill, Group } from '@shopify/react-native-skia';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();

@@ -19,7 +19,7 @@ type TokenLauncherContextType = {
   tokenBackgroundImage: SkImage | null;
   tokenImage: SkImage | null | SharedValue<SkImage | null>;
   chainNativeAsset: BackendNetwork['nativeAsset'];
-  infoInputScrollRef: React.RefObject<ScrollView>;
+  infoInputScrollRef: React.RefObject<ScrollView | null>;
   infoInputScrollY: React.MutableRefObject<number>;
   accentColors: {
     opacity100: string;

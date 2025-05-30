@@ -48,7 +48,7 @@ const BubbleField = (
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
 
-  const ref = useRef();
+  const ref = useRef(undefined);
   useImperativeHandle(forwardedRef, () => ref.current);
 
   const formattedValue = useMemo(() => format(String(value || '')), [format, value]);

@@ -30,7 +30,14 @@ const ListHeaderEmoji = styled(Emoji).attrs({ size: 'medium' })({
   marginBottom: 3.5,
 });
 
-const SavingsListHeader = ({ emoji, isOpen, onPress, savingsSumValue, showSumValue, title }) => {
+const SavingsListHeader = ({
+  emoji = 'sunflower',
+  isOpen,
+  onPress,
+  savingsSumValue = '0',
+  showSumValue = false,
+  title = lang.t('account.tab_savings'),
+}) => {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
 
@@ -124,13 +131,6 @@ SavingsListHeader.propTypes = {
   savingsSumValue: PropTypes.string,
   showSumValue: PropTypes.bool,
   title: PropTypes.string,
-};
-
-SavingsListHeader.defaultProps = {
-  emoji: 'sunflower',
-  savingsSumValue: '0',
-  showSumValue: false,
-  title: lang.t('account.tab_savings'),
 };
 
 export default SavingsListHeader;
