@@ -6,8 +6,7 @@ import handleDeeplink from '@/handlers/deeplinks';
 import { InitialRoute } from '@/navigation/initialRoute';
 import { logger, RainbowError } from '@/logger';
 import { branchListener } from '@/utils/branch';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
+import { useWalletsStore } from '../state/wallets/walletsStore';
 
 type DeeplinkHandlerProps = {
   initialRoute: InitialRoute;
@@ -16,7 +15,7 @@ type DeeplinkHandlerProps = {
 export function DeeplinkHandler({ initialRoute }: DeeplinkHandlerProps) {
   const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
   const { handleRequestUrl, sendFailureToClient } = useMobileWalletProtocolHost();
-  const walletReady = useSelector((state: AppState) => state.appState.walletReady);
+  const walletReady = useWalletsStore(state => state.walletReady);
 
   const setupDeeplinking = useCallback(async () => {
     const initialUrl = await Linking.getInitialURL();

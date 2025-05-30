@@ -120,7 +120,9 @@ export async function fetchReverseRecordWithRetry(address: EthereumAddress) {
     try {
       return await fetchReverseRecord(address);
       // eslint-disable-next-line no-empty
-    } catch {}
+    } catch (err) {
+      console.log('error fetching', err);
+    }
   }
   return null;
 }

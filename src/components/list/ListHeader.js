@@ -1,18 +1,19 @@
+import Divider from '@/components/Divider';
+import { useDimensions, useWebData } from '@/hooks';
+import * as i18n from '@/languages';
+import { RAINBOW_PROFILES_BASE_URL } from '@/references';
+import { useAccountAddress, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
 import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { Share } from 'react-native';
-import Divider from '@/components/Divider';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
 import { SavingsListHeader } from '../savings';
 import { H1 } from '../text';
-import { useAccountProfile, useAccountSettings, useDimensions, useWallets, useWebData } from '@/hooks';
-import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import styled from '@/styled-thing';
-import { padding } from '@/styles';
-import * as i18n from '@/languages';
 
 export const ListHeaderHeight = 48;
 
@@ -52,9 +53,9 @@ const StickyBackgroundBlocker = styled.View({
 export default function ListHeader({ children, contextMenuOptions, isCoinListEdited, showDivider = true, title, totalValue }) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
-  const { isReadOnlyWallet } = useWallets();
-  const { accountAddress } = useAccountSettings();
-  const { accountENS } = useAccountProfile();
+  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const accountAddress = useAccountAddress();
+  const { accountENS } = useAccountProfileInfo();
   const { initializeShowcaseIfNeeded } = useWebData();
 
   const handleShare = useCallback(() => {

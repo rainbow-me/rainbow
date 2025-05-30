@@ -1,9 +1,9 @@
+import { globalColors, useColorMode } from '@/design-system';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
 import chroma from 'chroma-js';
 import { useMemo } from 'react';
-import { globalColors, useColorMode } from '@/design-system';
-import { useAccountProfile } from '@/hooks';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { useTheme } from '@/theme';
 
 const CONTRAST_THRESHOLD = 2.125;
 
@@ -23,7 +23,7 @@ export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
 };
 
 export function useAccountAccentColor() {
-  const { accountColor, accountImage, accountSymbol } = useAccountProfile();
+  const { accountColor, accountImage, accountSymbol } = useAccountProfileInfo();
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
 
@@ -44,7 +44,7 @@ export function useAccountAccentColor() {
     return getHighContrastColor(accentColor, isDarkMode);
   }, [accentColor, isDarkMode]);
 
-  const hasLoaded = accountImage || accountSymbol;
+  const hasLoaded = Boolean(accountImage || accountSymbol);
 
   return {
     accentColor,

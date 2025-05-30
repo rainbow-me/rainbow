@@ -3,19 +3,18 @@ import { queryClient } from '@/react-query';
 import { contactsLoadState } from '@/redux/contacts';
 import { imageMetadataCacheLoadState } from '@/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
-import { AppState } from '@/redux/store';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { promiseUtils } from '@/utils';
 import { logger } from '@/logger';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useWalletsStore } from '../state/wallets/walletsStore';
 
 const loadWalletBalanceNamesToCache = () => queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
 
 export default function useLoadGlobalLateData() {
   const dispatch = useDispatch();
-
-  const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
+  const walletReady = useWalletsStore(state => state.walletReady);
 
   const loadGlobalLateData = useCallback(async () => {
     if (!walletReady) {

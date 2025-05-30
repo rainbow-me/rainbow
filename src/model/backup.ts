@@ -1,46 +1,46 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NativeModules } from 'react-native';
-import { captureException } from '@sentry/react-native';
-import { endsWith } from 'lodash';
-import {
-  CLOUD_BACKUP_ERRORS,
-  encryptAndSaveDataToCloud,
-  getDataFromCloud,
-  isCloudBackupAvailable,
-  getGoogleAccountUserData,
-  login,
-  logoutFromGoogleDrive,
-  normalizeAndroidBackupFilename,
-} from '@/handlers/cloudBackup';
-import { Alert as NativeAlert } from '@/components/alerts';
-import WalletBackupTypes from '../helpers/walletBackupTypes';
-import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey, identifierForVendorKey } from '@/utils/keychainConstants';
-import * as keychain from '@/model/keychain';
-import * as kc from '@/keychain';
-import { AllRainbowWallets, createWallet, RainbowWallet } from './wallet';
 import { analytics } from '@/analytics';
-import { logger, RainbowError } from '@/logger';
+import { Alert as NativeAlert } from '@/components/alerts';
 import { IS_ANDROID, IS_DEV } from '@/env';
-import AesEncryptor from '../handlers/aesEncryption';
 import {
   authenticateWithPIN,
   decryptPIN,
   maybeAuthenticateWithPIN,
   maybeAuthenticateWithPINAndCreateIfNeeded,
 } from '@/handlers/authentication';
-import * as i18n from '@/languages';
+import {
+  CLOUD_BACKUP_ERRORS,
+  encryptAndSaveDataToCloud,
+  getDataFromCloud,
+  getGoogleAccountUserData,
+  isCloudBackupAvailable,
+  login,
+  logoutFromGoogleDrive,
+  normalizeAndroidBackupFilename,
+} from '@/handlers/cloudBackup';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
-import { cloudPlatform } from '@/utils/platform';
-import { setAllWalletsWithIdsAsBackedUp } from '@/redux/wallets';
+import * as kc from '@/keychain';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { clearAllStorages } from './mmkv';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { getRemoteConfig } from './remoteConfig';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 import { AppDispatch } from '@/redux/store';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
+import { allWalletsKey, identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey } from '@/utils/keychainConstants';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { cloudPlatform } from '@/utils/platform';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { captureException } from '@sentry/react-native';
+import { endsWith } from 'lodash';
+import { NativeModules } from 'react-native';
+import AesEncryptor from '../handlers/aesEncryption';
+import WalletBackupTypes from '../helpers/walletBackupTypes';
+import { clearAllStorages } from './mmkv';
+import { getRemoteConfig } from './remoteConfig';
+import { AllRainbowWallets, createWallet, RainbowWallet } from './wallet';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -259,7 +259,7 @@ export async function backupAllWalletsToCloud({
 
     const updatedBackupFile = await encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
     const walletIdsToUpdate = Object.keys(wallets);
-    await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, WalletBackupTypes.cloud, updatedBackupFile));
+    setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, WalletBackupTypes.cloud, updatedBackupFile);
 
     logger.debug(`[backup]: Successfully backed up all wallets to ${cloudPlatform}`, {
       category: 'backup',
@@ -486,7 +486,6 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
        * we need to re-encrypt them with a new PIN
        */
       if (valueStr.includes('cipher')) {
-        // eslint-disable-next-line no-await-in-loop
         secretPhraseOrOldAndroidBackupPrivateKey = await decryptSecretFromBackupPin({
           secret: valueStr,
           backupPIN,
@@ -515,7 +514,6 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
         continue;
       }
 
-      // eslint-disable-next-line no-await-in-loop
       await createWallet({
         seed: secretPhraseOrOldAndroidBackupPrivateKey,
         isRestoring: true,
