@@ -77,10 +77,11 @@ export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {
   type: CellType.NFT;
   index: number;
-  uniqueId: string;
+  uniqueId?: string;
   collectionId: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
+
 export type PositionExtraData = {
   type: CellType.POSITION;
   position: RainbowPosition;

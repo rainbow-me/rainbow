@@ -150,13 +150,13 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       );
     }
     case CellType.NFT: {
-      const { index, uniqueId, collectionId } = data as NFTExtraData;
+      const { index, collectionId, uniqueId } = data as NFTExtraData;
 
       return (
         <WrappedNFT
-          externalAddress={extendedState.externalAddress}
           onPress={extendedState.onPressUniqueToken}
           placement={index % 2 === 0 ? 'left' : 'right'}
+          index={index}
           uniqueId={uniqueId}
           collectionId={collectionId}
         />

@@ -10,30 +10,32 @@ import { useNftsStore } from '@/state/nfts/nfts';
 
 export default React.memo(function WrappedNFT({
   onPress,
-  uniqueId,
   collectionId,
   placement,
-  externalAddress,
+  index,
+  uniqueId,
 }: {
   onPress?: (asset: UniqueAsset) => void;
-  uniqueId: string;
   collectionId: string;
   placement: 'left' | 'right';
-  externalAddress?: string;
+  index: number;
+  uniqueId?: string;
 }) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const asset = useNftsStore(state => state.getNft(collectionId, uniqueId));
+  const asset = uniqueId
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useNftsStore(state => state.getNftByUniqueId(collectionId, uniqueId))
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useNftsStore(state => state.getNft(collectionId, index));
 
   const handleItemPress = useCallback(
-    // @ts-expect-error passed to an untyped JS component
-    asset =>
+    (asset: UniqueAsset) =>
       Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
-        external: asset?.isExternal || false,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,

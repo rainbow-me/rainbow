@@ -8,7 +8,7 @@ import { IS_TEST } from '@/env';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 
-const RemotePromoSheetSyncComponent = () => {
+export const RemotePromoSheetSyncComponent = () => {
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
 
   const onSuccess = useCallback((data: GetPromoSheetCollectionQuery) => {

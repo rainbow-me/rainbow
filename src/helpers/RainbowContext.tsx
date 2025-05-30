@@ -93,16 +93,11 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
       const wallet = new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
       const testWalletAddress = '0x4d14289265eb7c166cF111A76B6D742e3b85dF85';
-      console.log('provider', provider);
-      console.log('wallet', wallet);
-      console.log('testWalletAddress', testWalletAddress);
       await wallet.sendTransaction({
         to: testWalletAddress,
         value: ethers.utils.parseEther('20'),
       });
-      console.log('transaction sent');
     } catch (e) {
-      console.log('error', e);
       logger.error(new RainbowError('error funding test wallet'), {
         message: e instanceof Error ? e.message : String(e),
       });

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { TokenFamilyHeader } from '../../token-family';
-import { useLatestCallback, useOpenFamilies } from '@/hooks';
+import { useLatestCallback, useOpenFamilies, usePrevious } from '@/hooks';
 import { ThemeContextProps } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
@@ -21,6 +21,7 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
 
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
+  const previousOpen = usePrevious(isFamilyOpen);
 
   const handleToggle = useLatestCallback(() =>
     updateOpenFamilies({
@@ -29,17 +30,15 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
   );
 
   useEffect(() => {
-    if (isFamilyOpen) {
-      console.log('fetching nfts for collection', uid);
+    if (isFamilyOpen && !previousOpen) {
       useNftsStore.getState().fetch(
         { collectionId: uid },
         {
           force: true,
-          staleTime: 0,
         }
       );
     }
-  }, [isFamilyOpen]);
+  }, [isFamilyOpen, previousOpen, uid]);
 
   if (!nftsEnabled) return null;
 

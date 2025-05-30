@@ -22,7 +22,6 @@ import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import assetTypes from '@/entities/assetTypes';
 import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
@@ -92,7 +91,7 @@ export const EthCard = () => {
     {
       address: ETH_ADDRESS,
       mainnet_address: ETH_ADDRESS,
-      type: assetTypes.token,
+      type: 'token',
     },
     colors.appleBlue
   );

@@ -1,39 +1,41 @@
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { AssetType } from '.';
 import { Address } from 'viem';
-import { MimeType } from '@/components/Media';
-
-type TokenId = `${number}`;
+import { NftTokenType } from '@/graphql/__generated__/arc';
 
 export interface UniqueAssetTrait {
   trait_type: string;
-  value: string | number | null | undefined;
+  value: string;
 }
 
 export interface UniqueAsset {
-  contractAddress: Address;
-  constractStandard: 'ERC721' | 'ERC1155';
-  chainId: ChainId;
   name: string;
-  tokenId: TokenId;
-  description?: string;
-  uniqueId: `${Address}_${TokenId}`;
-  backgroundColor?: string;
-  highResUrl?: string;
-  lowResUrl?: string;
-  mimeType?: MimeType;
-  isTransferable: boolean;
+  acquiredAt?: string | null;
+  uniqueId: `${Network}_${Address}_${number}`;
+  contractAddress: Address;
+  tokenId: string;
+  chainId: ChainId;
+  description?: string | null;
+  standard: NftTokenType;
+  isSendable: boolean;
+  backgroundColor?: string | null;
+  images: {
+    highResUrl?: string | null;
+    lowResUrl?: string | null;
+    animatedUrl?: string | null;
+    mimeType?: string | null;
+  };
   type: AssetType;
-  collectionName: string;
-  collectionDescription?: string;
-  collectionImageUrl?: string; // we only need low res here as it's only ever displayed in a small size
-  discordUrl?: string;
-  twitterUrl?: string;
-  websiteUrl?: string;
-  marketplaceName?: string;
-  marketplaceUrl?: string;
-  floorPriceNative?: number;
-  lastSalePriceNative?: number;
+  collectionName?: string | null;
+  collectionUrl?: string | null;
+  collectionDescription?: string | null;
+  collectionImageUrl?: string | null;
+  discordUrl?: string | null;
+  twitterUrl?: string | null;
+  websiteUrl?: string | null;
+  marketplaceName?: string | null;
+  marketplaceUrl?: string | null;
+  floorPrice?: number | null;
   traits: UniqueAssetTrait[];
 }
 

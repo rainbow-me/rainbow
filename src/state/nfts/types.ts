@@ -34,18 +34,16 @@ export type Collection = {
 };
 
 export interface NftsState {
-  nfts: {
-    address: Address | string;
-    collections: Map<CollectionId, Collection>;
-    nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
-    fetchedPages: { [pageKey: string]: number };
-    pagination: PaginationInfo | null;
-  } | null;
+  collections: Map<CollectionId, Collection>;
+  nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
+  fetchedPages: { [pageKey: string]: number };
+  pagination: PaginationInfo | null;
   fetchNextPage: () => Promise<void>;
   getCollections: () => Collection[] | null;
   getCollection: (collectionId: CollectionId) => Collection | null;
   getNftsByCollection: (collectionId: CollectionId) => Map<UniqueId, UniqueAsset> | null;
-  getNft: (collectionId: CollectionId, uniqueId: UniqueId) => UniqueAsset | null;
+  getNftByUniqueId: (collectionId: CollectionId, uniqueId: UniqueId) => UniqueAsset | null;
+  getNft: (collectionId: CollectionId, index: number) => UniqueAsset | null;
   getPaginationInfo: () => PaginationInfo | null;
   hasNextPage: () => boolean;
   getCurrentPageKey: () => string | null;

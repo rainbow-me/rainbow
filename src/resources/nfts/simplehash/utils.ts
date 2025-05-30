@@ -19,9 +19,10 @@ import { PixelRatio } from 'react-native';
 import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
 import { handleNFTImages } from '@/utils/handleNFTImages';
-import { SimpleHashNft } from '@/graphql/__generated__/arc';
-import { Network } from '@/state/backendNetworks/types';
+import { GetNftsByCollectionQuery, SimpleHashNft } from '@/graphql/__generated__/arc';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { Address, isAddress } from 'viem';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -31,6 +32,59 @@ const size = deviceWidth * pixelRatio;
 const MAX_IMAGE_SCALE = 3;
 const FULL_NFT_IMAGE_SIZE = size * MAX_IMAGE_SCALE;
 const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
+
+export function parseUniqueId(uniqueId: string): {
+  network?: Network;
+  contractAddress: Address;
+  tokenId: string;
+} {
+  const parts = uniqueId.split('_');
+  if (parts.length === 2 && isAddress(parts[0])) {
+    const [contractAddress, tokenId] = parts;
+    return {
+      contractAddress: contractAddress as Address,
+      tokenId,
+    };
+  }
+  const [network, contractAddress, tokenId] = parts;
+  return {
+    network: network as Network,
+    contractAddress: contractAddress as Address,
+    tokenId,
+  };
+}
+
+export function parseUniqueAsset(
+  nft: GetNftsByCollectionQuery['nftsByCollection'][number],
+  chainIds: Record<Network, ChainId>
+): UniqueAsset {
+  const { network = Network.mainnet, contractAddress, tokenId } = parseUniqueId(nft.uniqueId);
+
+  const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
+    originalUrl: nft.images.highResUrl,
+    previewUrl: nft.images.lowResUrl,
+    mimeType: nft.images.mimeType,
+  });
+
+  console.log('imageUrl', imageUrl);
+  console.log('lowResUrl', lowResUrl);
+  console.log('mimeType', nft.images.mimeType);
+
+  return {
+    ...nft,
+    type: nft.type as AssetType,
+    standard: nft.standard,
+    images: {
+      highResUrl: imageUrl,
+      lowResUrl: lowResUrl,
+      mimeType: nft.images.mimeType,
+    },
+    uniqueId: nft.uniqueId as `${Network}_${Address}_${number}`,
+    tokenId,
+    contractAddress,
+    chainId: chainIds[network],
+  };
+}
 
 /**
  * Maps a `SimpleHashNFT` to a `UniqueAsset`.
@@ -154,8 +208,6 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
       mime_type: nft.model_properties?.mime_type ?? null,
     };
   }
-
-  console.log('asset', JSON.stringify(asset, null, 2));
 
   return asset;
 }
