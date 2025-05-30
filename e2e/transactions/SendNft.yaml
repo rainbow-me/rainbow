@@ -28,44 +28,27 @@ tags:
           commands:
             - assertVisible:
                 id: 'balance-coin-row-Ethereum'
+
+      - tapOn: '.*Rainbow Pooly.*'
+
       - tapOn:
-          id: send-button
-      - assertVisible:
-          id: send-asset-form-field
+          id: 'wrapped-nft-Rainbow Pooly 104'
+
+      # we need to wait for the sheet to be done before clicking on the send else Maestro will click on the image
+      - waitForAnimationToEnd:
+          timeout: 2000
+
+      - tapOn:
+          id: 'send-action-button'
 
       # Test ENS address input
       - inputText: 'rainbowwallet.eth'
-      - retry:
-          maxRetries: 3
-          commands:
-            - assertVisible:
-                id: send-asset-list
+      - assertVisible: '.*Review'
+      - tapOn: '.*Review'
 
-      # unsure why but the id doesn't work on iOS and the text doesn't work on Android
-      - runFlow:
-          when:
-            platform: iOS
-          commands:
-            - tapOn:
-                text: '.*Ethereum.*'
-      - runFlow:
-          when:
-            platform: Android
-          commands:
-            - tapOn:
-                id: send-asset
-
-      - inputText: '0.01'
-
-      - retry:
-          maxRetries: 3
-          commands:
-            - assertVisible: .*Review
-      - tapOn: .*Review
-
-      # Test enter amount
       - assertVisible: 'Sending'
-      - assertVisible: '$0.01'
+      - assertVisible: 'Rainbow Pooly 104'
+      - assertVisible: 'to'
       - assertVisible: 'rainbowwallet.eth'
 
       # iOS is 'Hold to Send' button is stuck on 'Loading...'
@@ -79,12 +62,12 @@ tags:
 
             # Test transaction was done
             - assertVisible: 'Pending'
-            - assertVisible: 'Sending*.'
+            - assertVisible: 'Sending.*'
 
-            - tapOn: Sending*.
+            - tapOn: Sending.*
 
             - assertVisible: 'Sending'
-            - assertVisible: '.*Tx Hash*.'
+            - assertVisible: '.*Tx Hash.*'
             - assertVisible: 'View on Etherscan'
             - swipe:
                 direction: DOWN
