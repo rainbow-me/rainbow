@@ -73,6 +73,8 @@ jobs:
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
+      - name: Install bundler
+        run: sudo gem install bundler
       - name: RNEF Remote Build - iOS simulator
         id: rnef-remote-build-ios
         uses: callstackincubator/ios@v1
