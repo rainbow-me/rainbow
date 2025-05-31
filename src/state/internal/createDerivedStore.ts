@@ -124,6 +124,13 @@ type Watcher<DerivedState, Selected = unknown> =
 // ============ Core Derive Function =========================================== //
 
 /**
+ * Sentinel value that indicates the store state is uninitialized.
+ */
+const UNINITIALIZED = Symbol();
+
+type UninitializedState = typeof UNINITIALIZED;
+
+/**
  * Powers the internals of `createDerivedStore`.
  *
  * - Intercepts `$` calls in `deriveFunction` to track and subscribe to dependencies.
@@ -148,7 +155,7 @@ function derive<DerivedState>(
   let pathFinder: PathFinder | undefined;
 
   // Core state
-  let derivedState: DerivedState | undefined;
+  let derivedState: DerivedState | UninitializedState = UNINITIALIZED;
   let deriveScheduled = false;
   let invalidated = true;
   let shouldRebuildSubscriptions = true;
@@ -185,7 +192,7 @@ function derive<DerivedState>(
   }
 
   function derive(): DerivedState {
-    if (!invalidated && derivedState !== undefined) return derivedState;
+    if (!invalidated && derivedState !== UNINITIALIZED) return derivedState;
     invalidated = false;
 
     // If we need to rebuild subscriptions, unsubscribe existing ones first
@@ -195,7 +202,7 @@ function derive<DerivedState>(
     derivedState = deriveFunction($);
     if (!watchers.size) return derivedState;
 
-    const hasPreviousState = prevState !== undefined;
+    const hasPreviousState = prevState !== UNINITIALIZED;
     const shouldLogSubscriptions = debugMode && !hasPreviousState;
 
     if (shouldLogSubscriptions) {
@@ -224,8 +231,8 @@ function derive<DerivedState>(
     return derivedState;
   }
 
-  function notifyWatchers(newState: DerivedState, prevState: DerivedState | undefined): void {
-    if (prevState === undefined || equalityFn(prevState, newState)) {
+  function notifyWatchers(newState: DerivedState, prevState: DerivedState | UninitializedState): void {
+    if (prevState === UNINITIALIZED || equalityFn(prevState, newState)) {
       if (debugMode) console.log(`[🥷 Derive Complete 🥷]: No change detected`);
       return;
     }
@@ -278,9 +285,8 @@ function derive<DerivedState>(
   // ============ Public Store Methods ========================================= //
 
   function getState(): DerivedState {
-    if (derivedState === undefined) {
-      if (watchers.size) return derive();
-      else return deriveFunction($);
+    if (derivedState === UNINITIALIZED) {
+      return watchers.size ? derive() : deriveFunction($);
     }
     return derivedState;
   }
@@ -292,7 +298,7 @@ function derive<DerivedState>(
       watchers.add(listener);
 
       if (watchers.size === 1) {
-        derivedState = undefined;
+        derivedState = UNINITIALIZED;
         derive();
       }
 
@@ -319,7 +325,7 @@ function derive<DerivedState>(
     if (isDerivedWatcher) derivedWatchers += 1;
 
     if (watchers.size === 1) {
-      derivedState = undefined;
+      derivedState = UNINITIALIZED;
       derive();
     }
 
@@ -348,7 +354,7 @@ function derive<DerivedState>(
     shouldRebuildSubscriptions = true;
     deriveScheduled = false;
     invalidated = true;
-    derivedState = undefined;
+    derivedState = UNINITIALIZED;
   }
 
   return {

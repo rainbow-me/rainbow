@@ -45,12 +45,18 @@ export function getOrCreateProxy<S>(
 }
 
 function createTrackingProxy<S>(snapshot: S, store: BaseRainbowStore<unknown>, trackPath: TrackPathFn, path: string[] = []): S {
+  // -- If the store state is a primitive or nullish, track as a leaf and return directly
+  if (!snapshot || typeof snapshot !== 'object') {
+    trackPath(store, path, true);
+    return snapshot;
+  }
+
   const bailedOutObjects = new WeakSet<object>();
   const subProxyCache = new WeakMap<object, object>();
   return buildProxy(snapshot, path, store, trackPath, bailedOutObjects, subProxyCache);
 }
 
-function buildProxy<T>(
+function buildProxy<T extends object>(
   value: T,
   path: string[],
   store: BaseRainbowStore<unknown>,
@@ -58,11 +64,7 @@ function buildProxy<T>(
   bailedOutObjects: WeakSet<object>,
   subProxyCache: WeakMap<object, object>
 ): T {
-  // If `value` is primitive or nullish, treat it as an object
-  const isObjectLike = value && typeof value === 'object';
-  const proxyTarget = isObjectLike ? value : Object(value);
-
-  return new Proxy(proxyTarget, {
+  return new Proxy<T>(value, {
     get(target, propKey, receiver) {
       // -- If we've already bailed out on this object, no further sub-proxies
       if (bailedOutObjects.has(target)) {
@@ -169,9 +171,9 @@ function buildInvocationSelector(path: string[], invocation: TrackedInvocation):
   const { method, args } = invocation;
   const parentPath = path.slice(0, -1);
   return state => {
-    const parentObj = getValueAtPath(state, parentPath);
-    const fn = (parentObj as Record<string, unknown> | undefined)?.[method];
-    return typeof fn === 'function' ? fn.apply(parentObj, args) : undefined;
+    const parentObject = getValueAtPath(state, parentPath);
+    const fn = (parentObject as Record<string, unknown> | undefined)?.[method];
+    return typeof fn === 'function' ? fn.apply(parentObject, args) : undefined;
   };
 }
 

@@ -205,7 +205,7 @@ export type LazyPersistParams<S, PersistedState extends Partial<S>> = {
 // ============ Common Store Settings ========================================== //
 
 /**
- * Expanded options for debouncing query store parameter changes.
+ * Expanded options for custom debounce behavior.
  */
 export type DebounceOptions = {
   /* The number of milliseconds to delay. */

@@ -307,6 +307,70 @@ describe('createDerivedStore', () => {
   });
 
   // ──────────────────────────────────────────────
+  // Synchronous Derivation Chains and Primitives
+  // ──────────────────────────────────────────────
+  describe('Synchronous Derivation Chains and Primitives', () => {
+    it('should derive synchronously when a derived store dependency chain exists, and handle primitive and nullish store states as leaves', async () => {
+      const baseStore = createRainbowStore<number | undefined>(() => undefined);
+      const secondStore = createRainbowStore(() => 0);
+
+      let totalIntermediaryDerives = 0;
+
+      const baseDerivedStore = createDerivedStore($ => {
+        totalIntermediaryDerives += 1;
+        return $(baseStore);
+      });
+      const secondDerivedStore = createDerivedStore($ => {
+        totalIntermediaryDerives += 1;
+        return $(secondStore);
+      });
+
+      let deriveCount = 0;
+      let lastValue = 0;
+      const useDerived = createDerivedStore($ => {
+        deriveCount += 1;
+        const value = ($(baseDerivedStore) ?? 0) * ($(secondDerivedStore) ?? 0);
+        lastValue = value;
+        return value;
+      });
+
+      let watcherCalls = 0;
+      const unsubscribe = useDerived.subscribe(
+        state => state,
+        () => (watcherCalls += 1)
+      );
+
+      // First derivation => watchers=0
+      expect(deriveCount).toBe(1);
+      expect(totalIntermediaryDerives / 2).toBe(2);
+      expect(watcherCalls).toBe(0);
+      expect(useDerived.getState()).toBe(0);
+
+      // Update the derivation chain four times
+      baseStore.setState(1);
+      secondStore.setState(2);
+      baseStore.setState(3);
+      secondStore.setState(4);
+      await flushMicrotasks();
+
+      // Should have resulted in two useDerivedStore derivations
+      expect(deriveCount).toBe(2);
+
+      // And four additional derivations for each pass-through derived store
+      expect(totalIntermediaryDerives / 2).toBe(6);
+
+      // But only a single watcher call
+      expect(watcherCalls).toBe(1);
+
+      // With the derivation chain in sync
+      expect(lastValue).toBe((baseStore.getState() ?? 0) * (secondStore.getState() ?? 0));
+      expect(lastValue).toBe((baseDerivedStore.getState() ?? 0) * (secondDerivedStore.getState() ?? 0));
+
+      unsubscribe();
+    });
+  });
+
+  // ──────────────────────────────────────────────
   // Debounce Option
   // ──────────────────────────────────────────────
   describe('Debounce Option', () => {
