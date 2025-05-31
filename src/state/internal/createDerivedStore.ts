@@ -232,10 +232,14 @@ function derive<DerivedState>(
   }
 
   function notifyWatchers(newState: DerivedState, prevState: DerivedState | UninitializedState): void {
-    if (prevState === UNINITIALIZED || equalityFn(prevState, newState)) {
+    if (prevState === UNINITIALIZED) return;
+
+    if (equalityFn(prevState, newState)) {
       if (debugMode) console.log(`[🥷 Derive Complete 🥷]: No change detected`);
       return;
     }
+
+    // -- Derived state changed, so notify watchers
     if (debugMode) console.log(`[📻 Derive Complete 📻]: Notifying ${watchers.size} ${pluralize('watcher', watchers.size)}`);
     for (const w of watchers) {
       if (typeof w === 'function') {
