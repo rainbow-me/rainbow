@@ -2,6 +2,151 @@ import { Mutate, StateCreator, StoreApi } from 'zustand';
 import { PersistOptions, StorageValue } from 'zustand/middleware';
 import { UseBoundStoreWithEqualityFn } from 'zustand/traditional';
 
+// ============ Middleware Helpers ============================================= //
+
+type SubscribeWithSelector = ['zustand/subscribeWithSelector', never];
+type Persist<PersistedState> = ['zustand/persist', PersistedState];
+
+// ============ Core Store Types =============================================== //
+
+export type RainbowStateCreator<S> = StateCreator<S, [SubscribeWithSelector], [SubscribeWithSelector]>;
+
+export type BaseRainbowStore<S, ExtraSubscribeOptions extends boolean = false> = UseBoundStoreWithEqualityFn<
+  Mutate<StoreApi<S>, [SubscribeWithSelector]>
+> & {
+  subscribe: SubscribeOverloads<S, ExtraSubscribeOptions>;
+};
+
+export type PersistedRainbowStore<
+  S,
+  PersistedState = Partial<S>,
+  ExtraSubscribeOptions extends boolean = false,
+> = UseBoundStoreWithEqualityFn<Mutate<BaseRainbowStore<S, ExtraSubscribeOptions>, [Persist<PersistedState>]>>;
+
+export type RainbowStore<S, PersistedState extends Partial<S> = never, ExtraSubscribeOptions extends boolean = false> = [
+  PersistedState,
+] extends [never]
+  ? BaseRainbowStore<S, ExtraSubscribeOptions>
+  : PersistedRainbowStore<S, PersistedState, ExtraSubscribeOptions>;
+
+export type OptionallyPersistedRainbowStore<S, PersistedState> = RainbowStore<S> & {
+  persist?: PersistedRainbowStore<S, PersistedState>['persist'];
+};
+
+// ============ Common Utility Types =========================================== //
+
+export type Listener<S> = (state: S, prevState: S) => void;
+export type Selector<S, Selected> = (state: S) => Selected;
+export type EqualityFn<T = unknown> = (a: T, b: T) => boolean;
+
+export type UseStoreCallSignatures<S> = {
+  (): S;
+  <Selected>(selector: Selector<S, Selected>, equalityFn?: EqualityFn<Selected>): Selected;
+};
+
+export type InferStoreState<Store extends StoreApi<unknown>> = Store extends {
+  getState: () => infer T;
+}
+  ? T
+  : never;
+
+// ============ Subscribe Types ================================================ //
+
+export type SubscribeOptions<Selected> = {
+  equalityFn?: EqualityFn<Selected>;
+  fireImmediately?: boolean;
+  isDerivedStore?: boolean;
+};
+
+export type ListenerArgs<S> = [listener: Listener<S>];
+export type SelectorArgs<S, Selected> = [
+  selector: Selector<S, Selected>,
+  listener: Listener<Selected>,
+  options?: SubscribeOptions<Selected>,
+];
+
+export type SubscribeOverloads<S, ExtraOptions extends boolean = false> = {
+  (listener: Listener<S>): UnsubscribeFn<ExtraOptions>;
+  <Selected>(
+    selector: Selector<S, Selected>,
+    listener: Listener<Selected>,
+    options?: SubscribeOptions<Selected>
+  ): UnsubscribeFn<ExtraOptions>;
+};
+
+export type SubscribeArgs<S, Selected = unknown> = ListenerArgs<S> | SelectorArgs<S, Selected>;
+export type UnsubscribeFn<Options extends boolean = false> = Options extends true ? (skipAbortFetch?: boolean) => void : () => void;
+export type SubscribeFn<S, Selected = S> = (...args: SubscribeArgs<S, Selected>) => UnsubscribeFn;
+
+// ============ Derived Store Types ============================================ //
+
+export type DerivedRainbowStore<S> = WithFlushUpdates<ReadOnlyDerivedStore<BaseRainbowStore<S>>>;
+
+export type WithFlushUpdates<Store extends StoreApi<unknown>> = Store & {
+  /**
+   * Flush all pending updates — only applicable to **debounced** derived stores.
+   */
+  flushUpdates: () => void;
+};
+
+type ReadOnlyDerivedStore<Store extends BaseRainbowStore<unknown>> = Omit<Store, 'getInitialState' | 'setState'> &
+  UseStoreCallSignatures<InferStoreState<Store>> & {
+    /**
+     * @deprecated **Not applicable to derived stores.** Will throw an error.
+     */
+    getInitialState: Store['getInitialState'];
+    /**
+     * @deprecated **Not applicable to derived stores.** Will throw an error.
+     */
+    setState: Store['setState'];
+  };
+
+/**
+ * Configuration for creating derived stores. You can pass either:
+ *  - A **function** (used as `equalityFn`), or
+ *  - An **object** with the fields below
+ */
+export type DeriveOptions<DerivedState = unknown> =
+  | EqualityFn<DerivedState>
+  | {
+      /**
+       * Delay before triggering a re-derive when dependencies change.
+       * Accepts a number (ms) or debounce options:
+       *
+       * `{ delay: number, leading?: boolean, trailing?: boolean, maxWait?: number }`
+       * @default 0
+       */
+      debounce?: number | DebounceOptions;
+      /**
+       * If `true`, the store will log debug messages to the console.
+       * @default false
+       */
+      debugMode?: boolean;
+      /**
+       * A custom comparison function for detecting state changes.
+       * @default `Object.is`
+       */
+      equalityFn?: EqualityFn<DerivedState>;
+      /**
+       * If `true`, subscriptions to underlying stores are established **once** and are not
+       * rebuilt on subsequent re-derives.
+       *
+       * Since unsubscribing/resubscribing in Zustand is already very cheap (typically just
+       * removing and re-adding an entry in a Set), this generally only yields a noticeable
+       * benefit in very high-churn derived stores.
+       *
+       * **Important:**
+       * - `$` calls must be pure and top-level in your `deriveFn` for this setting to work
+       *   without issue. It effectively freezes the derived store's dependency set, and the
+       *   selectors and equality functions used within your `$` calls.
+       *
+       * @default false
+       */
+      stableSubscriptions?: boolean;
+    };
+
+// ============ Persistence Types ============================================== //
+
 /**
  * Configuration options for creating a persistable Rainbow store.
  */
@@ -57,38 +202,18 @@ export type LazyPersistParams<S, PersistedState extends Partial<S>> = {
   value: StorageValue<S> | StorageValue<PersistedState>;
 };
 
-type SubscribeWithSelector = ['zustand/subscribeWithSelector', never];
-type Persist<PersistedState> = ['zustand/persist', PersistedState];
+// ============ Common Store Settings ========================================== //
 
-export type RainbowStateCreator<S> = StateCreator<S, [SubscribeWithSelector], [SubscribeWithSelector]>;
-
-export type BaseRainbowStore<S> = UseBoundStoreWithEqualityFn<Mutate<StoreApi<S>, [SubscribeWithSelector]>>;
-
-export type PersistedRainbowStore<S, PersistedState = Partial<S>> = UseBoundStoreWithEqualityFn<
-  Mutate<BaseRainbowStore<S>, [Persist<PersistedState>]>
->;
-
-export type RainbowStore<S, PersistedState extends Partial<S> = never> = [PersistedState] extends [never]
-  ? BaseRainbowStore<S>
-  : PersistedRainbowStore<S, PersistedState>;
-
-export type OptionallyPersistedRainbowStore<S, PersistedState> = RainbowStore<S> & {
-  persist?: PersistedRainbowStore<S, PersistedState>['persist'];
+/**
+ * Expanded options for custom debounce behavior.
+ */
+export type DebounceOptions = {
+  /* The number of milliseconds to delay. */
+  delay: number;
+  /* Specify invoking on the leading edge of the timeout. */
+  leading?: boolean;
+  /* The maximum time func is allowed to be delayed before it’s invoked. */
+  maxWait?: number;
+  /* Specify invoking on the trailing edge of the timeout. */
+  trailing?: boolean;
 };
-
-export type Selector<S, Selected> = (state: S) => Selected;
-export type InferStoreState<Store extends BaseRainbowStore<unknown>> = ReturnType<Store['getState']>;
-
-type ListenerArgs<S> = [listener: (state: S, prev: S) => void];
-type SelectorArgs<S, Selected> = [
-  selector: (state: S) => Selected,
-  listener: (slice: Selected, prev: Selected) => void,
-  options?: {
-    equalityFn?: (a: Selected, b: Selected) => boolean;
-    fireImmediately?: boolean;
-  },
-];
-
-export type SubscribeArgs<S, Selected = S> = ListenerArgs<S> | SelectorArgs<S, Selected>;
-export type UnsubscribeFn = () => void;
-export type SubscribeFn<S, Selected = S> = (...args: SubscribeArgs<S, Selected>) => UnsubscribeFn;
