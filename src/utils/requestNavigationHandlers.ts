@@ -403,7 +403,6 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
 export const handleWalletConnectRequest = async (request: WalletconnectRequestData) => {
   const chainId = request?.walletConnectV2RequestValues?.chainId;
   if (!chainId) return;
-  const network = useBackendNetworksStore.getState().getChainsName()[chainId];
   const address = request?.walletConnectV2RequestValues?.address;
 
   const onSuccess = async (result: string) => {

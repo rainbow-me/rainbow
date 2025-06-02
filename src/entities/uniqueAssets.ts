@@ -14,6 +14,7 @@ export interface UniqueAsset {
   uniqueId: `${Network}_${Address}_${number}`;
   contractAddress: Address;
   tokenId: string;
+  network: Network;
   chainId: ChainId;
   description?: string | null;
   standard: NftTokenType;

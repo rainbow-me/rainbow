@@ -2,14 +2,33 @@ import { EthereumAddress, UniqueAsset } from '@/entities';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { qs } from 'url-parse';
 
+export function parseCollectionSlugFromUrl(url: string) {
+  const urlObj = new URL(url);
+  const paths = urlObj.pathname.split('/');
+  let slug = '';
+  for (const path of paths) {
+    if (path.toLowerCase() === 'collection') {
+      slug = paths[paths.indexOf(path) + 1];
+      break;
+    }
+  }
+  return slug;
+}
+
 export function buildRainbowUrl(asset: UniqueAsset | null, accountENS: string, accountAddress: EthereumAddress): string {
+  if (!asset) {
+    return '';
+  }
+
+  const { uniqueId, network, collectionUrl } = asset;
+
   const address = accountENS || accountAddress;
-  const slug = asset?.collection?.slug;
-  const assetId = asset?.uniqueId;
-  const network = asset?.network ? (asset?.network + '_').replace('mainnet', 'ethereum') : '';
+  const slug = parseCollectionSlugFromUrl(collectionUrl ?? '');
+
+  const networkName = network ? (network + '_').replace('mainnet', 'ethereum') : '';
 
   const familyString = slug ? `?family=${slug}` : '';
-  const assetString = slug && assetId?.toString() ? `&nft=${network}${assetId?.toString()}` : '';
+  const assetString = uniqueId ? `&nft=${networkName}${uniqueId}` : '';
 
   const url = `${RAINBOW_PROFILES_BASE_URL}/profile/${address}${familyString}${assetString}`;
   return url;

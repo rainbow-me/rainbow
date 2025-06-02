@@ -32,7 +32,6 @@ import { resolveNameOrAddress } from '@/handlers/web3';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { ethereumUtils, profileUtils } from '@/utils';
-import { review } from '@/storage';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
@@ -788,6 +787,23 @@ export default async function runMigrations() {
   };
 
   migrations.push(v27);
+
+  /**
+   *************** Migration v28 ******************
+   * Delete nfts-sort-${address} from MMKV as it's no longer used
+   */
+  const v28 = async () => {
+    const { wallets } = store.getState().wallets;
+    if (!wallets) return;
+
+    for (const wallet of Object.values(wallets)) {
+      for (const { address } of (wallet as RainbowWallet).addresses || []) {
+        mmkv.delete(`nfts-sort-${address}`);
+      }
+    }
+  };
+
+  migrations.push(v28);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

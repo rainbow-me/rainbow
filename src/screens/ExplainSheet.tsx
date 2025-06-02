@@ -343,7 +343,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         }
       };
 
-      const symbol = ('symbol' in asset ? asset.symbol : asset.familyName) ?? '';
+      const symbol = ('symbol' in asset ? asset.symbol : asset.collectionName) ?? '';
       return {
         extraHeight: 120,
         emoji: '⚠️',

@@ -9,7 +9,7 @@ import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { Collection, CollectionId } from '@/state/nfts/types';
 import { isLowerCaseMatch } from '@/utils';
-import { parseUniqueId } from '@/resources/nfts/simplehash/utils';
+import { parseUniqueId } from '@/resources/nfts/utils';
 
 const COINS_TO_SHOW = 5;
 

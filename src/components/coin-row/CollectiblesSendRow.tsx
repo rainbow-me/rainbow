@@ -2,7 +2,7 @@ import React, { Fragment, useMemo } from 'react';
 import { PressableProps, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils, getUniqueTokenType, magicMemo } from '../../utils';
+import { deviceUtils, magicMemo } from '../../utils';
 import Divider from '@/components/Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -10,7 +10,7 @@ import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { UniqueAsset } from '@/entities';
+import { AssetType, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
 
@@ -100,8 +100,7 @@ const CollectiblesSendRow = React.memo(
   }) => {
     const { colors } = useTheme();
 
-    const uniqueTokenType = getUniqueTokenType(item);
-    const isENS = uniqueTokenType === 'ENS';
+    const isENS = item.type === AssetType.ens;
 
     const subtitle = useMemo(
       () => (item.name && !isENS ? `${item.name}` : item.collectionName),

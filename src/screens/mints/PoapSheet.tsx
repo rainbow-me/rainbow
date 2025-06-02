@@ -187,7 +187,7 @@ const PoapSheet = () => {
   }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, navigate, nft, poapMintType]);
 
   useEffect(() => {
-    const nft = nfts.find(item => item.image_original_url === poapEvent.imageUrl);
+    const nft = nfts.find(item => item.images.highResUrl === poapEvent.imageUrl);
     if (nft) {
       setClaimStatus('claimed');
       setNft(nft);

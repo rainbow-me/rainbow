@@ -23,12 +23,12 @@ export function getENSNFTAvatarUrl(uniqueTokens: UniqueAsset[], avatar?: string)
     if (isNFTAvatar) {
       const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
       const uniqueToken = uniqueTokens.find(
-        token => token.asset_contract.address?.toLowerCase() === contractAddress.toLowerCase() && token.id === tokenId
+        token => token.contractAddress?.toLowerCase() === contractAddress.toLowerCase() && token.tokenId === tokenId
       );
-      if (uniqueToken?.image_url) {
-        avatarUrl = uniqueToken?.image_url;
-      } else if (uniqueToken?.image_thumbnail_url) {
-        avatarUrl = uniqueToken?.image_thumbnail_url;
+      if (uniqueToken?.images?.highResUrl) {
+        avatarUrl = uniqueToken?.images?.highResUrl;
+      } else if (uniqueToken?.images?.lowResUrl) {
+        avatarUrl = uniqueToken?.images?.lowResUrl;
       }
     } else if (avatar.startsWith('http') || (avatar.startsWith('/') && !avatar.match(/^\/(ipfs|ipns)/))) {
       avatarUrl = avatar;

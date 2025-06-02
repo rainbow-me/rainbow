@@ -27,13 +27,11 @@ const getImageUrl = (
     const isNFT = isENSNFTRecord(recordValue);
     if (isNFT) {
       const { contractAddress, tokenId } = parseENSNFTRecord(records?.[key] || '');
-      const uniqueToken = uniqueTokens.find(token => token.asset_contract.address === contractAddress && token.id === tokenId);
-      if (uniqueToken?.image_url) {
-        imageUrl = svgToPngIfNeeded(uniqueToken?.image_url, false);
-      } else if (uniqueToken?.lowResUrl) {
-        imageUrl = uniqueToken?.lowResUrl;
-      } else if (uniqueToken?.image_thumbnail_url) {
-        imageUrl = uniqueToken?.image_thumbnail_url;
+      const uniqueToken = uniqueTokens.find(token => token.contractAddress === contractAddress && token.tokenId === tokenId);
+      if (uniqueToken?.images.highResUrl) {
+        imageUrl = svgToPngIfNeeded(uniqueToken.images.highResUrl, false);
+      } else if (uniqueToken?.images.lowResUrl) {
+        imageUrl = uniqueToken.images.lowResUrl;
       }
     } else if (
       recordValue?.startsWith('http') ||

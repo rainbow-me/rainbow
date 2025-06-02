@@ -27,11 +27,7 @@ import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-
-export enum TokenStandard {
-  ERC1155 = 'ERC1155',
-  ERC721 = 'ERC721',
-}
+import { NftTokenType } from '@/graphql/__generated__/arc';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 
@@ -451,8 +447,7 @@ export const getTransferNftTransaction = async (
     throw new Error(`Invalid recipient "${transaction.to}"`);
   }
 
-  const { from, nonce } = transaction;
-  const contractAddress = transaction.asset.asset_contract?.address;
+  const { from, nonce, asset: { contractAddress } = {} } = transaction;
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
@@ -551,15 +546,9 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
 export const getDataForNftTransfer = (
   from: string,
   to: string,
-  {
-    chainId,
-    contractAddress,
-    tokenId,
-    constractStandard,
-  }: Partial<Pick<UniqueAsset, 'tokenId' | 'contractAddress' | 'chainId' | 'constractStandard'>>
+  { chainId, contractAddress, tokenId, standard }: Partial<Pick<UniqueAsset, 'tokenId' | 'contractAddress' | 'chainId' | 'standard'>>
 ): string | undefined => {
   if (!tokenId || !contractAddress) return;
-  const standard = constractStandard;
   let data: string | undefined;
   if (contractAddress === CRYPTO_KITTIES_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.token_transfer;
@@ -567,7 +556,7 @@ export const getDataForNftTransfer = (
   } else if (contractAddress === CRYPTO_PUNKS_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.punk_transfer;
     data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(tokenId)]);
-  } else if (standard === TokenStandard.ERC1155) {
+  } else if (standard === NftTokenType.Erc1155) {
     const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
     data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
@@ -577,7 +566,7 @@ export const getDataForNftTransfer = (
       convertStringToHex('160'),
       convertStringToHex('0'),
     ]);
-  } else if (standard === TokenStandard.ERC721) {
+  } else if (standard === NftTokenType.Erc721) {
     const transferMethod = smartContractMethods.erc721_transfer;
     data = ethereumUtils.getDataString(transferMethod.hash, [
       ethereumUtils.removeHexPrefix(from),

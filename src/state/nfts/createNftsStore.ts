@@ -3,10 +3,9 @@ import { arcClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
-import { NftsState, NftParams, NftsQueryData, PaginationInfo, UniqueId } from './types';
-import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/simplehash/utils';
+import { NftsState, NftParams, NftsQueryData, PaginationInfo } from './types';
+import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
-import { UniqueAsset } from '@/entities';
 import Routes from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useNftsStore } from './nfts';
@@ -230,22 +229,6 @@ export const createNftsStore = (address: Address | string) =>
         }
         const nftArray = Array.from(nftsByCollection.get(collectionId)?.values() || []);
         return nftArray[index] || null;
-      },
-
-      getPoapNfts: () => {
-        const { nftsByCollection, getData } = get();
-        if (!nftsByCollection.size) {
-          const allNfts = Array.from(
-            getData()
-              ?.nftsByCollection?.values()
-              ?.flatMap((collection: Map<UniqueId, UniqueAsset>) => collection.values()) || []
-          );
-          return allNfts.filter((nft: UniqueAsset) => nft.type === 'poap');
-        }
-        const allNfts = Array.from(
-          nftsByCollection.values().flatMap((collection: Map<UniqueId, UniqueAsset>) => collection.values()) || []
-        );
-        return allNfts.filter((nft: UniqueAsset) => nft.type === 'poap');
       },
 
       getPaginationInfo: () => {
