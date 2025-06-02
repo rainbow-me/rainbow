@@ -30,9 +30,15 @@ function getMostUsedChains() {
 
 export const networkSwitcherStore = createRainbowStore<{
   pinnedNetworks: ChainId[];
-}>(() => ({ pinnedNetworks: getMostUsedChains().slice(0, 5) }), {
+  searchQuery: string;
+}>(() => ({ pinnedNetworks: getMostUsedChains().slice(0, 5), searchQuery: '' }), {
   storageKey: 'network-switcher',
   version: 0,
+  partialize(state) {
+    return {
+      pinnedNetworks: state.pinnedNetworks,
+    };
+  },
   onRehydrateStorage(state) {
     // if we are missing pinned networks, use the user most used chains
     if (state.pinnedNetworks.length === 0) {
@@ -40,6 +46,7 @@ export const networkSwitcherStore = createRainbowStore<{
       state.pinnedNetworks = mostUsedNetworks.slice(0, 5);
       analytics.identify({ mostUsedNetworks: mostUsedNetworks.filter(Boolean) });
     }
+    state.searchQuery = '';
   },
 });
 
