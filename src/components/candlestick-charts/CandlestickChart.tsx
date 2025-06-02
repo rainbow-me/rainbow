@@ -57,6 +57,10 @@ export type CandlestickChartProps = {
 };
 
 export type CandlestickConfig = {
+  animation: {
+    springConfig: WithSpringConfig;
+  };
+
   candles: {
     initialWidth: number;
     maxBorderRadius: number;
@@ -78,12 +82,6 @@ export type CandlestickConfig = {
      * @default 0.1
      */
     candlesPaddingRatioVertical: number;
-    /**
-     * Right padding to apply to the candles, in pixels. Determines how far from
-     * the chart's right edge the rightmost candle will be when the chart is
-     * scrolled all the way to the right.
-     * @default 72
-     */
     panGestureDeceleration: number;
     /**
      * Gap between the chart and the x-axis labels, in pixels.
@@ -136,6 +134,10 @@ export type CandlestickConfig = {
 };
 
 export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
+  animation: {
+    springConfig: { mass: 0.1, stiffness: 50, damping: 50 },
+  },
+
   candles: {
     initialWidth: 6,
     maxBorderRadius: 6,
@@ -250,7 +252,6 @@ function getYAxisLabelWidth(maxCharacters: number): number {
 
 const EMA_INDICATORS: IndicatorKey[] = ['EMA9', 'EMA20', 'EMA50'];
 const VOLUME_DECAY_FACTOR = 0.97;
-const Y_AXIS_SPRING: WithSpringConfig = { mass: 0.1, stiffness: 50, damping: 50 };
 
 class CandlestickChartManager {
   private __workletClass = true;
@@ -274,6 +275,7 @@ class CandlestickChartManager {
   private crosshairPicture: SharedValue<SkPicture>;
   private indicatorPicture: SharedValue<SkPicture>;
   private isDecelerating: SharedValue<boolean>;
+  private maxDisplayedVolume: SharedValue<number>;
   private offset: SharedValue<number>;
   private xAxisLabels: SharedValue<string[]>;
 
@@ -332,6 +334,7 @@ class CandlestickChartManager {
     crosshairPicture,
     indicatorPicture,
     isDecelerating,
+    maxDisplayedVolume,
     nativeCurrency,
     xAxisLabels,
   }: {
@@ -348,6 +351,7 @@ class CandlestickChartManager {
     crosshairPicture: SharedValue<SkPicture>;
     indicatorPicture: SharedValue<SkPicture>;
     isDecelerating: SharedValue<boolean>;
+    maxDisplayedVolume: SharedValue<number>;
     nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
     xAxisLabels: SharedValue<string[]>;
   }) {
@@ -371,6 +375,7 @@ class CandlestickChartManager {
     this.crosshairPicture = crosshairPicture;
     this.indicatorPicture = indicatorPicture;
     this.isDecelerating = isDecelerating;
+    this.maxDisplayedVolume = maxDisplayedVolume;
     this.offset = chartXOffset;
     this.xAxisLabels = xAxisLabels;
 
@@ -392,6 +397,7 @@ class CandlestickChartManager {
     this.paints.candleWick.setAntiAlias(true);
     this.paints.candleWick.setDither(true);
 
+    this.paints.volume.setColor(this.volumeBarColor);
     this.paints.volume.setAntiAlias(true);
     this.paints.volume.setDither(true);
 
@@ -453,7 +459,9 @@ class CandlestickChartManager {
     indicatorPathEffect?.dispose();
 
     // ========== Build Chart ==========
-    const { min, max } = this.getPriceBounds();
+    const { min, max, startIndex, endIndex } = this.getPriceBounds();
+    maxDisplayedVolume.value = this.getMaxDisplayedVolume(startIndex, endIndex);
+
     this.chartMinY.value = min;
     this.chartMaxY.value = max;
     this.yAxisWidth = this.getYAxisWidth(min, max);
@@ -462,41 +470,7 @@ class CandlestickChartManager {
     this.buildBaseCandlesPicture();
   }
 
-  // ============ Indicator Utilities ========================================== //
-
-  private getPriceBounds() {
-    const { startIndex, endIndex } = this.getVisibleIndices();
-    let min = Infinity;
-    let max = -Infinity;
-
-    for (let i = startIndex; i <= endIndex; i++) {
-      const { l, h } = this.candles[i];
-      if (l < min) min = l;
-      if (h > max) max = h;
-    }
-
-    const indicatorRange = this.indicatorBuilder.getMinMaxForRange(startIndex, endIndex);
-    if (indicatorRange) {
-      if (indicatorRange.min < min) min = indicatorRange.min;
-      if (indicatorRange.max > max) max = indicatorRange.max;
-    }
-
-    if (min === Infinity || max === -Infinity) return { min: 0, max: 1, startIndex, endIndex };
-
-    const range = max - min || 1;
-    const verticalPadding = range * this.config.chart.candlesPaddingRatioVertical;
-
-    const newBounds = { min: min - verticalPadding, max: max + verticalPadding, startIndex, endIndex };
-    this.yAxisWidth = this.getYAxisWidth(newBounds.min, newBounds.max);
-
-    return newBounds;
-  }
-
   // ============ Chart Layout Utilities ======================================= //
-
-  private getStride(width: number): number {
-    return width + width * this.config.candles.spacingRatio;
-  }
 
   private getVisibleIndices(): { startIndex: number; endIndex: number } {
     const chartWidth = this.chartWidth;
@@ -523,6 +497,41 @@ class CandlestickChartManager {
     return { startIndex, endIndex };
   }
 
+  private getPriceBounds() {
+    const { startIndex, endIndex } = this.getVisibleIndices();
+    let min = Infinity;
+    let max = -Infinity;
+
+    for (let i = startIndex; i <= endIndex; i++) {
+      const { l, h } = this.candles[i];
+      if (l < min) min = l;
+      if (h > max) max = h;
+    }
+
+    const indicatorRange = this.indicatorBuilder.getMinMaxForRange(startIndex, endIndex);
+    if (indicatorRange) {
+      if (indicatorRange.min < min) min = indicatorRange.min;
+      if (indicatorRange.max > max) max = indicatorRange.max;
+    }
+
+    if (min === Infinity || max === -Infinity) return { min: 0, max: 1, startIndex, endIndex };
+
+    const range = max - min || 1;
+    const verticalPadding = range * this.config.chart.candlesPaddingRatioVertical;
+    const newBounds = { min: min - verticalPadding, max: max + verticalPadding, startIndex, endIndex };
+    this.yAxisWidth = this.getYAxisWidth(newBounds.min, newBounds.max);
+    return newBounds;
+  }
+
+  private getMaxDisplayedVolume(startIndex: number, endIndex: number): number {
+    const volumes: number[] = [];
+    for (let i = startIndex; i <= endIndex; i++) volumes.push(this.candles[i].v);
+    const p100 = findPercentile(volumes, volumes.length);
+    this.maxVolumeDisplayed = Math.max(this.maxVolumeDisplayed * VOLUME_DECAY_FACTOR, p100);
+    const maxVolume = this.maxVolumeDisplayed;
+    return maxVolume;
+  }
+
   private getNiceInterval(value: number): number {
     const exponent = Math.floor(Math.log10(value));
     const base = Math.pow(10, exponent);
@@ -547,6 +556,10 @@ class CandlestickChartManager {
     const totalCandlesWidth = this.candles.length * stride;
     const minOffset = chartWidth - totalCandlesWidth;
     return clamp(value, minOffset, 0);
+  }
+
+  private getStride(width: number): number {
+    return width + width * this.config.candles.spacingRatio;
   }
 
   private getYAxisWidth(minPrice: number, maxPrice: number): number {
@@ -618,17 +631,10 @@ class CandlestickChartManager {
     }
 
     // ========== Volume Bars ==========
-    const volumes: number[] = [];
-    for (let i = startIndex; i <= endIndex; i++) volumes.push(this.candles[i].v);
-    const p100 = findPercentile(volumes, volumes.length);
-    this.maxVolumeDisplayed = Math.max(this.maxVolumeDisplayed * VOLUME_DECAY_FACTOR, p100);
-    const maxVolume = this.maxVolumeDisplayed;
-
-    this.paints.volume.setColor(this.volumeBarColor);
     for (let i = startIndex; i <= endIndex; i++) {
       const candle = this.candles[i];
       const cornerRadius = Math.min(this.config.candles.maxBorderRadius, candleWidth / 3);
-      const fractionOfMax = candle.v / maxVolume;
+      const fractionOfMax = candle.v / this.maxDisplayedVolume.value;
       const height = fractionOfMax * volumeRegionHeight;
       const x = i * stride + this.offset.value;
       const y = chartHeight - height;
@@ -798,6 +804,33 @@ class CandlestickChartManager {
     oldPicture.dispose();
   }
 
+  private handleAnimations(animate: boolean, forceRebuildBounds: boolean): void {
+    const { startIndex: lastStartIndex, endIndex: lastEndIndex } = this.lastVisibleRange;
+    const { min, max, startIndex, endIndex } = this.getPriceBounds();
+
+    if (animate) {
+      if (forceRebuildBounds || startIndex !== lastStartIndex || endIndex !== lastEndIndex) {
+        this.animator.spring([this.chartMinY, this.chartMaxY], [min, max], this.config.animation.springConfig);
+
+        const maxDisplayedVolume = this.getMaxDisplayedVolume(startIndex, endIndex);
+        if (forceRebuildBounds || maxDisplayedVolume !== this.maxDisplayedVolume.value) {
+          this.animator.spring(this.maxDisplayedVolume, maxDisplayedVolume, this.config.animation.springConfig);
+        }
+      }
+      return;
+    }
+
+    if (forceRebuildBounds || startIndex !== lastStartIndex || endIndex !== lastEndIndex) {
+      this.chartMinY.value = min;
+      this.chartMaxY.value = max;
+
+      const maxDisplayedVolume = this.getMaxDisplayedVolume(startIndex, endIndex);
+      if (forceRebuildBounds || maxDisplayedVolume !== this.maxDisplayedVolume.value) {
+        this.maxDisplayedVolume.value = maxDisplayedVolume;
+      }
+    }
+  }
+
   // ============ Public Methods =============================================== //
 
   public dispose(): void {
@@ -818,18 +851,7 @@ class CandlestickChartManager {
   }
 
   public rebuildChart(animate = true, forceRebuildBounds = false): void {
-    const { startIndex: lastStartIndex, endIndex: lastEndIndex } = this.lastVisibleRange;
-    const { min, max, startIndex, endIndex } = this.getPriceBounds();
-
-    if (animate) {
-      if (forceRebuildBounds || startIndex !== lastStartIndex || endIndex !== lastEndIndex) {
-        this.animator.spring([this.chartMinY, this.chartMaxY], [min, max], Y_AXIS_SPRING);
-      }
-    } else if (forceRebuildBounds || startIndex !== lastStartIndex || endIndex !== lastEndIndex) {
-      this.chartMinY.value = min;
-      this.chartMaxY.value = max;
-    }
-
+    this.handleAnimations(animate, forceRebuildBounds);
     this.buildBaseCandlesPicture();
     this.buildIndicatorPicture();
   }
@@ -843,6 +865,7 @@ class CandlestickChartManager {
     this.candles = newCandles;
     this.lastVisibleRange.startIndex = -1;
     this.lastVisibleRange.endIndex = -1;
+    this.maxDisplayedVolume.value = -1;
     this.indicatorBuilder.computeAll(newCandles);
     if (wasPinnedToRight) {
       this.getPriceBounds();
@@ -992,6 +1015,7 @@ function useCandlestickChart({
   const crosshairPicture = useSharedValue(initialPicture);
   const indicatorPicture = useSharedValue(initialPicture);
   const isDecelerating = useSharedValue(false);
+  const maxDisplayedVolume = useSharedValue(0);
   const xAxisLabels = useSharedValue<string[]>([]);
 
   useRunOnce(() => {
@@ -1011,11 +1035,22 @@ function useCandlestickChart({
         crosshairPicture,
         indicatorPicture,
         isDecelerating,
+        maxDisplayedVolume,
         nativeCurrency,
         xAxisLabels,
       });
     })();
   });
+
+  // -- TODO: Enable once the backend API is up
+  // useListen(
+  //   useCandlestickStore,
+  //   state => state.getData(),
+  //   candles => {
+  //     if (!candles?.length) return;
+  //     runOnUI(() => chartManager.value?.setCandles(candles))();
+  //   }
+  // );
 
   useAnimatedReaction(
     () => isDecelerating.value,
@@ -1051,13 +1086,15 @@ function useCandlestickChart({
   return {
     chartHeight,
     chartManager,
-    chartPicture,
     chartWidth,
     chartXOffset,
     config,
-    crosshairPicture,
-    indicatorPicture,
     isDecelerating,
+    pictures: {
+      chart: chartPicture,
+      crosshair: crosshairPicture,
+      indicator: indicatorPicture,
+    },
     xAxisLabels,
     xAxisWidth,
   };
@@ -1074,14 +1111,13 @@ export const CandlestickChart = memo(function CandlestickChart({
   const { isDarkMode } = useColorMode();
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
-  const { chartManager, chartPicture, chartXOffset, config, crosshairPicture, indicatorPicture, isDecelerating, xAxisLabels, xAxisWidth } =
-    useCandlestickChart({
-      backgroundColor,
-      candles,
-      chartHeight,
-      chartWidth,
-      providedConfig,
-    });
+  const { chartManager, chartXOffset, config, isDecelerating, pictures, xAxisLabels, xAxisWidth } = useCandlestickChart({
+    backgroundColor,
+    candles,
+    chartHeight,
+    chartWidth,
+    providedConfig,
+  });
 
   const leftXAxisLabel = useDerivedValue(() => xAxisLabels.value[0]);
   const rightXAxisLabel = useDerivedValue(() => xAxisLabels.value[1]);
@@ -1163,9 +1199,9 @@ export const CandlestickChart = memo(function CandlestickChart({
     >
       <GestureDetector gesture={chartGestures}>
         <Canvas style={styles.canvas}>
-          <Picture picture={chartPicture} />
-          <Picture picture={indicatorPicture} />
-          <Picture picture={crosshairPicture} />
+          <Picture picture={pictures.chart} />
+          <Picture picture={pictures.indicator} />
+          <Picture picture={pictures.crosshair} />
 
           <SkiaText
             color="labelQuinary"
