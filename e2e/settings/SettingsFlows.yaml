@@ -1,0 +1,55 @@
+appId: ${APP_ID}
+tags:
+  - backup
+  - parallel
+---
+- retry:
+    maxRetries: 3
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
+
+      # Navigate to settings
+      - retry:
+          maxRetries: 3
+          commands:
+            - tapOn:
+                id: settings-menu
+            - tapOn: 'Settings'
+      # Change currency to euros and validate
+      - tapOn:
+          id: currency-section
+      - tapOn: '.*Euro'
+      - tapOn: 'Done'
+      - assertVisible:
+          text: '.*€.*'
+      - retry:
+          maxRetries: 3
+          commands:
+            - tapOn:
+                id: settings-menu
+            - tapOn: 'Settings'
+      # Change theme to dark and validate
+      - assertVisible:
+          id: choose-theme-section-light
+      - tapOn:
+          id: choose-theme-section.*
+      - tapOn: 'Dark'
+      - assertVisible:
+          id: choose-theme-section-dark
+      # Open diagnostics
+      - scrollUntilVisible:
+          element:
+            id: app-version-stamp
+          direction: DOWN
+      # TODO: fix. Currently passing on local but failing on CI.
+      # - tapOn:
+      #     id: app-version-stamp
+      #     repeat: 15
+      #     delay: 500
+      # - assertVisible: 'Diagnostics'

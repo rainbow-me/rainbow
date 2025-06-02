@@ -32,6 +32,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         chainId: tx.chainId,
         address,
         currency: nativeCurrency,
+        originalType: tx.type,
       });
 
       return {

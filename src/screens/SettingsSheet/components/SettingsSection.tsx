@@ -211,13 +211,13 @@ const SettingsSection = ({
           menuAlignmentOverride="right"
           onPressMenuItem={handleSelectTheme}
           useActionSheetFallback={false}
+          testID={`choose-theme-section-${isDarkMode ? 'dark' : 'light'}`}
         >
           <MenuItem
             hasChevron
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
             rightComponent={<MenuItem.Selection>{colorScheme ? capitalize(colorScheme) : ''}</MenuItem.Selection>}
             size={60}
-            testID={`theme-section-${isDarkMode ? 'dark' : 'light'}`}
             titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.theme)} />}
           />
         </ContextMenuButton>
