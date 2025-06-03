@@ -681,10 +681,8 @@ export const createWallet = async ({
     if (!walletResult || !address) return null;
     const walletAddress = address;
     if (isHDWallet) {
-      console.log('IS HD?', walletResult, typeof walletResult.getPrivateKey);
       ensureLibWallet(walletResult);
       pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
-      console.log('what is pkey', pkey);
     } else if (isHardwareWallet) {
       // hardware pkey format is ${bluetooth device id}/${index}
       pkey = `${seed}/0`;
@@ -1217,7 +1215,6 @@ export const generateAccount = async (id: RainbowWallet['id'], index: number): P
     }
     const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase, index);
     if (!ethereumJSWallet) return null;
-    console.log('----asdasd??', ethereumJSWallet);
     ensureLibWallet(ethereumJSWallet);
     const walletAddress = addHexPrefix(toChecksumAddress(ethereumJSWallet.getAddress().toString('hex')));
     const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
@@ -1269,7 +1266,6 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
         {
           const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase);
           if (!ethereumJSWallet) return null;
-          console.log('ENSURING!', ethereumJSWallet);
           ensureLibWallet(ethereumJSWallet);
           const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
 
