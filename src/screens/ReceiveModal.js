@@ -57,7 +57,7 @@ export default function ReceiveModal() {
     setCopyCount(count => count + 1);
   }, []);
 
-  const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress), [accountAddress]);
+  const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress.toLowerCase()), [accountAddress]);
   const { height: deviceHeight } = useDimensions();
   const { top } = useSafeAreaInsets();
 
