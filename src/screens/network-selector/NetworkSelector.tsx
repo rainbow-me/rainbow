@@ -30,6 +30,7 @@ import React, {
   View,
   KeyboardAvoidingView as RNKeyboardAvoidingView,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -101,9 +102,10 @@ const BANNER_HEIGHT = 75;
 const SHEET_OUTER_INSET = 8;
 const SHEET_INNER_PADDING = 18;
 const ITEM_GAP = 12;
+const SECTION_GAP = 14;
 const ITEM_WIDTH = (DEVICE_WIDTH - SHEET_INNER_PADDING * 2 - SHEET_OUTER_INSET * 2 - ITEM_GAP) / 2;
 const ITEM_HEIGHT = 48;
-const MASTHEAD_BUTTON_HEIGHT = ITEM_HEIGHT + 14 * 2;
+const MASTHEAD_BUTTON_HEIGHT = ITEM_HEIGHT + SECTION_GAP * 2;
 const SEPARATOR_HEIGHT = 68;
 const SEPARATOR_HEIGHT_NETWORK_CHIP = 18;
 const SHEET_WIDTH = deviceUtils.dimensions.width - 16;
@@ -665,9 +667,7 @@ function getInitialNetworksState({
 type NetworksGridProps = NetworkSwitcherProps & {
   canSelect: boolean;
   expanded: SharedValue<boolean>;
-  scrollY: SharedValue<number>;
-  scrollViewHeight: SharedValue<number>;
-  scrollViewContentHeight: SharedValue<number>;
+  chains: Chain[];
   onSelectNetwork: (chainId: ChainId) => void;
 };
 
@@ -677,16 +677,12 @@ function NetworksGrid({
   editing,
   expanded,
   selected,
-  allowedNetworks,
-  scrollY,
-  scrollViewHeight,
-  scrollViewContentHeight,
+  chains,
   fillPinnedSection,
   canSelectAllNetworks,
   actionButton,
   onSelectNetwork,
 }: NetworksGridProps) {
-  const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
   const hasMastheadButton = !!actionButton || canSelectAllNetworks;
   const maxListHeight = useMemo(() => {
     if (hasMastheadButton) {
@@ -695,19 +691,14 @@ function NetworksGrid({
     return MAX_NETWORK_LIST_HEIGHT;
   }, [hasMastheadButton]);
 
+  const chainIds = useMemo(() => chains.map(chain => chain.id), [chains]);
   const networks = useSharedValue(
     getInitialNetworksState({
       fillPinnedSection,
-      allowedNetworks,
+      allowedNetworks: chainIds,
       hasMastheadButton,
     })
   );
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: event => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
 
   useEffect(() => {
     // persists pinned networks when closing the sheet
@@ -739,21 +730,8 @@ function NetworksGrid({
     };
   });
 
-  const onLayout = useCallback(
-    (event: LayoutChangeEvent) => {
-      scrollViewHeight.value = event.nativeEvent.layout.height;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
-
-  const onContentSizeChange = useCallback((width: number, height: number) => {
-    scrollViewContentHeight.value = height;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const paddingBottom = useDerivedValue(() => {
-    return expanded.value ? SEARCH_BAR_CLEARANCE : 18;
+    return expanded.value ? SEARCH_BAR_CLEARANCE : SHEET_INNER_PADDING;
   });
 
   const containerHeight = useDerivedValue(() => {
@@ -783,7 +761,13 @@ function NetworksGrid({
   });
 
   const containerStyle = useAnimatedStyle(() => ({
+    // height: withSpring(Math.min(containerHeight.value, maxListHeight), SPRING_CONFIGS.springConfig),
     height: withSpring(containerHeight.value, SPRING_CONFIGS.springConfig),
+  }));
+
+  const scrollViewStyle = useAnimatedStyle(() => ({
+    // maxHeight: withSpring(maxListHeight, SPRING_CONFIGS.springConfig),
+    maxHeight: withSpring(Math.min(containerHeight.value, maxListHeight), SPRING_CONFIGS.springConfig),
   }));
 
   const dragNetwork = Gesture.Pan()
@@ -826,7 +810,7 @@ function NetworksGrid({
           // Pin/Unpin
           if (section === Section.unpinned) networks[Section.pinned].splice(currentIndex, 1);
           else networks[Section.pinned].push(chainId);
-          networks[Section.unpinned] = sortedSupportedChainIds.filter(chainId => !networks[Section.pinned].includes(chainId));
+          networks[Section.unpinned] = chainIds.filter(chainId => !networks[Section.pinned].includes(chainId));
         } else if (section === Section.pinned && newIndex !== currentIndex) {
           // Reorder
           triggerHaptics('selection');
@@ -863,18 +847,15 @@ function NetworksGrid({
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
 
   return (
-    <Animated.ScrollView
-      onScroll={scrollHandler}
+    <ScrollView
       showsVerticalScrollIndicator={false}
       bounces={true}
-      // TODO: bottom padding when in expanded state for search bar. What do these overflows do?
-      style={{ overflow: 'hidden', maxHeight: maxListHeight }}
+      // TODO: What do these overflows do?
+      style={[{ overflow: 'hidden', maxHeight: maxListHeight }]}
       contentContainerStyle={{ overflow: 'hidden' }}
-      onLayout={onLayout}
-      onContentSizeChange={onContentSizeChange}
     >
       <GestureDetector gesture={gridGesture}>
-        <Animated.View style={[containerStyle, { marginTop: 14, overflow: 'hidden' }]}>
+        <Animated.View style={[{ marginTop: SECTION_GAP, overflow: 'hidden' }, containerStyle]}>
           {networks.value[Section.pinned].map(chainId => (
             <Draggable
               key={chainId}
@@ -912,7 +893,7 @@ function NetworksGrid({
           ))}
         </Animated.View>
       </GestureDetector>
-    </Animated.ScrollView>
+    </ScrollView>
   );
 }
 
@@ -1050,9 +1031,6 @@ export function NetworkSelector() {
 
   const editing = useSharedValue(false);
   const expanded = useSharedValue(false);
-  const scrollY = useSharedValue(0);
-  const scrollViewHeight = useSharedValue(0);
-  const scrollViewContentHeight = useSharedValue(0);
   const selectedNetwork = useSharedValue(typeof selected === 'number' ? selected : selected?.value);
   const isSearchFocused = useSharedValue(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -1092,6 +1070,15 @@ export function NetworkSelector() {
     }
   }, [isSearching, editing]);
 
+  const onBlurSearchBar = useCallback(() => {
+    isSearchFocused.value = false;
+  }, []);
+
+  const onFocusSearchBar = useCallback(() => {
+    isSearchFocused.value = true;
+    setIsSearching(true);
+  }, []);
+
   return (
     <Sheet onClose={onClose} expanded={expanded}>
       <Header onPressActionButton={onPressHeaderActionButton} title={title} canEdit={canEdit} editing={editing} isSearching={isSearching} />
@@ -1115,9 +1102,7 @@ export function NetworkSelector() {
             selected={selectedNetwork}
             setSelected={setSelected}
             allowedNetworks={allowedNetworks}
-            scrollY={scrollY}
-            scrollViewHeight={scrollViewHeight}
-            scrollViewContentHeight={scrollViewContentHeight}
+            chains={chains}
             goBackOnSelect={goBackOnSelect}
             canSelectAllNetworks={canSelectAllNetworks}
             actionButton={actionButton}
@@ -1128,11 +1113,11 @@ export function NetworkSelector() {
         </>
       )}
       {isSearching && <NetworkSearchGrid selected={selectedNetwork} chains={chains} onSelectNetwork={onSelectNetwork} />}
-      <Animated.View
+      {/* <Animated.View
         style={[
           searchBarStyle,
           {
-            bottom: 18,
+            bottom: SHEET_INNER_PADDING,
             width: '100%',
             alignSelf: 'center',
             position: 'absolute',
@@ -1141,18 +1126,9 @@ export function NetworkSelector() {
         ]}
       >
         <KeyboardStickyView offset={{ opened: PANEL_BOTTOM_OFFSET, closed: 0 }}>
-          <SearchBar
-            onFocus={() => {
-              isSearchFocused.value = true;
-              setIsSearching(true);
-            }}
-            onBlur={() => {
-              isSearchFocused.value = false;
-            }}
-            ref={searchBarRef}
-          />
+          <SearchBar onFocus={onFocusSearchBar} onBlur={onBlurSearchBar} ref={searchBarRef} />
         </KeyboardStickyView>
-      </Animated.View>
+      </Animated.View> */}
     </Sheet>
   );
 }
@@ -1175,14 +1151,14 @@ const sx = StyleSheet.create({
     position: 'absolute',
   },
   allNetworksContainer: {
-    gap: 14,
+    gap: SECTION_GAP,
     justifyContent: 'flex-end',
   },
   banner: {
     left: 0,
     position: 'absolute',
     right: 0,
-    top: -(BANNER_HEIGHT + 14),
+    top: -(BANNER_HEIGHT + SECTION_GAP),
   },
   bannerBlurView: {
     height: BANNER_HEIGHT,
