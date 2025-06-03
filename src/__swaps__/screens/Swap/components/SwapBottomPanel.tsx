@@ -22,7 +22,7 @@ import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { getIsHardwareWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
