@@ -31,7 +31,7 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { useWallets, useIsDamagedWallet, createAccount } from '@/state/wallets/walletsStore';
+import { useIsDamagedWallet, createAccount, useWallet } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -125,8 +125,7 @@ const ViewWalletBackup = () => {
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
   const isDamaged = useIsDamagedWallet();
-  const wallets = useWallets();
-  const wallet = wallets?.[walletId];
+  const wallet = useWallet(walletId);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
   const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;

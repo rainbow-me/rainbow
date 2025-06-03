@@ -44,7 +44,6 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { Contact } from '@/redux/contacts';
-import store from '@/redux/store';
 import { rainbowTokenList } from '@/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';

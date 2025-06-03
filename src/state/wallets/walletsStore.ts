@@ -598,6 +598,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 );
 
 export const useWallets = () => useWalletsStore(state => state.wallets);
+export const useWallet = (id: string) => useWallets()?.[id];
 export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
