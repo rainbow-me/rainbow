@@ -2,7 +2,7 @@ import Divider from '@/components/Divider';
 import { useDimensions, useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import { useAccountAddress, useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import lang from 'i18n-js';
@@ -53,7 +53,7 @@ const StickyBackgroundBlocker = styled.View({
 export default function ListHeader({ children, contextMenuOptions, isCoinListEdited, showDivider = true, title, totalValue }) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
   const { initializeShowcaseIfNeeded } = useWebData();

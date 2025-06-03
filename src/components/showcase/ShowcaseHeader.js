@@ -8,7 +8,7 @@ import { colors, padding } from '@/styles';
 import { abbreviations, profileUtils } from '@/utils';
 import lang from 'i18n-js';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';
@@ -80,7 +80,7 @@ function hashCode(text) {
 export function Header() {
   const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
-  const isReadOnlyWallet = useWalletsStore(state => state.getIsReadOnlyWallet());
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const { colors } = useTheme();
 
@@ -148,7 +148,7 @@ export function Header() {
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
       <Spacer />
-      <AvatarCircle image={null} onPress={() => {}} showcaseAccountColor={color} showcaseAccountSymbol={emoji} />
+      <AvatarCircle image={null} onPress={() => { }} showcaseAccountColor={color} showcaseAccountSymbol={emoji} />
       <ENSAddress address={mainText} as={isHexString(mainText) && TruncatedAddress}>
         {mainText}
       </ENSAddress>
