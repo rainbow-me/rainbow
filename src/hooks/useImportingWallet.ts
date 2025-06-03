@@ -47,7 +47,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const [checkedWallet, setCheckedWallet] = useState<Awaited<ReturnType<typeof deriveAccountFromWalletInput>> | null>(null);
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
   const wasImporting = usePrevious(isImporting);
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const backupProvider = backupsStore(state => state.backupProvider);
@@ -384,7 +383,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     selectedWallet?.type,
     wallets,
     wasImporting,
-    updateWalletENSAvatars,
     image,
     dispatch,
     showImportModal,
