@@ -596,17 +596,13 @@ class CandlestickChartManager {
     return clamp(value, minOffset, 0);
   }
 
-  private getPriceAtYPosition(y: number): string {
+  private getPriceAtYPosition(y: number): number {
     const chartHeight = this.chartHeight;
     const minPrice = this.chartMinY.value;
     const maxPrice = this.chartMaxY.value;
-    const volumeRegionHeight = chartHeight * this.config.volume.heightFactor;
-    const candleRegionHeight = chartHeight - volumeRegionHeight;
+    const candleRegionHeight = chartHeight - chartHeight * this.config.volume.heightFactor;
     const priceRange = Math.max(1, maxPrice - minPrice);
-
-    const currency = this.nativeCurrency.currency;
-    const price = minPrice + (priceRange * (candleRegionHeight - y)) / candleRegionHeight;
-    return formatPrice(price, currency);
+    return minPrice + (priceRange * (candleRegionHeight - y)) / candleRegionHeight;
   }
 
   private getStride(width: number): number {
@@ -666,8 +662,8 @@ class CandlestickChartManager {
       const y = chartHeight * (i / 4) + 0.5;
       canvas.drawLine(0, y, chartWidth, y, this.paints.grid);
 
-      const price = this.getPriceAtYPosition(y);
-      const paragraph = buildParagraph({ foregroundPaint: this.paints.text, text: price });
+      const formattedPrice = formatPrice(this.getPriceAtYPosition(y), this.nativeCurrency.currency);
+      const paragraph = buildParagraph({ foregroundPaint: this.paints.text, text: formattedPrice });
       if (paragraph) {
         paragraph.layout(chartWidth);
         if (!labelHeight) labelHeight = paragraph.getLineMetrics()[0].height;
@@ -868,7 +864,7 @@ class CandlestickChartManager {
         color: this.colors.crosshairPriceBubble,
         leftX: snappedX + 20,
         priceOrLabel: priceAtYPosition,
-        stabilizeWidth: true,
+        stabilizePriceWidth: true,
         strokeOpacity: 0.12,
         textColor: this.colors.labelSecondary,
       });
@@ -914,7 +910,7 @@ class CandlestickChartManager {
     color,
     leftX,
     priceOrLabel,
-    stabilizeWidth,
+    stabilizePriceWidth,
     strokeOpacity,
     textColor,
   }: {
@@ -923,20 +919,26 @@ class CandlestickChartManager {
     color: SkColor;
     leftX: number;
     priceOrLabel: number | string;
-    stabilizeWidth?: boolean;
+    stabilizePriceWidth?: boolean;
     strokeOpacity: number;
     textColor?: SkColor;
   }): void {
-    const formattedPrice = typeof priceOrLabel === 'number' ? formatPrice(priceOrLabel, this.nativeCurrency.currency) : priceOrLabel;
+    const didProvideRawPrice = typeof priceOrLabel === 'number';
+    const formattedPrice = didProvideRawPrice ? formatPrice(priceOrLabel, this.nativeCurrency.currency) : priceOrLabel;
     const paragraph = this.buildParagraph({ color: textColor ?? color, text: formattedPrice });
     if (!paragraph) return;
 
     paragraph.layout(this.chartWidth);
     const lineMetrics = paragraph.getLineMetrics()[0];
     const labelHeight = lineMetrics.height;
-    const labelWidth = stabilizeWidth
-      ? this.yAxisWidth - this.config.chart.yAxisPaddingLeft - this.config.chart.yAxisPaddingRight - 2
-      : lineMetrics.width;
+
+    let labelWidth: number;
+    if (stabilizePriceWidth && didProvideRawPrice) {
+      const currencyDecimals = this.nativeCurrency.decimals;
+      labelWidth = getYAxisLabelWidth(priceOrLabel.toFixed(currencyDecimals).length) - 2;
+    } else {
+      labelWidth = lineMetrics.width;
+    }
 
     const bubbleHeight = this.config.priceBubble.height;
     const bubblePaddingHorizontal = this.config.priceBubble.paddingHorizontal;
