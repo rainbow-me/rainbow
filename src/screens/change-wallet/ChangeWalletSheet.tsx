@@ -26,7 +26,7 @@ import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { setSelectedWallet, useWallets, useSelectedWallet, useWalletsStore, updateWallets } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, useWallets, useSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
@@ -284,8 +284,6 @@ export default function ChangeWalletSheet() {
           ),
         },
       };
-
-      const { updateWallets } = useWalletsStore.getState();
 
       // If there are no visible wallets
       // then delete the wallet
