@@ -17,7 +17,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { loadWallets, setAllWalletsWithIdsAsBackedUp, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { loadWallets, setAllWalletsWithIdsAsBackedUp, setSelectedWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
