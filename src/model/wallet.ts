@@ -201,7 +201,12 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   if (typeof wallet.getPrivateKey !== 'function') {
     return wallet as any;
   }
-  throw new Error(`Not expected: ReadOnly not LibWallet`);
+  // TODO we had bad types before, but this somehow worked alright
+  // i had this throwing an error but it was hitting in different areas, so want to just warn here
+  // and then follow up once i track all the places it's erroring at via sentry
+  console.error(
+    `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
+  );
 }
 
 export function isLibWallet(wallet: any): wallet is LibWallet {
