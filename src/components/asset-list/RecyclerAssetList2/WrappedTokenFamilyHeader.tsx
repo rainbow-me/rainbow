@@ -34,7 +34,7 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
       useNftsStore.getState().fetch(
         { collectionId: uid },
         {
-          force: true,
+          force: true, // TODO: This needs to be removed
         }
       );
     }
