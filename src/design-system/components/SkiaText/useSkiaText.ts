@@ -10,15 +10,22 @@ import { getSkiaFontWeight, useSkiaFontManager } from './skiaFontManager';
 
 export type TextSegment = {
   backgroundPaint?: SkPaint;
-  color?: string;
   foregroundPaint?: SkPaint;
-  opacity?: number;
   shadows?: SkTextShadow[];
   text: SharedOrDerivedValueText | string;
   weight?: TextWeight;
-};
+} & (
+  | {
+      color: SkColor;
+      opacity?: undefined;
+    }
+  | {
+      color?: string;
+      opacity?: number;
+    }
+);
 
-type UseSkiaTextOptions = {
+export type UseSkiaTextOptions = {
   additionalWeights?: TextWeight[];
   align?: TextAlign;
   backgroundPaint?: SkPaint;
@@ -122,7 +129,7 @@ function getTextStyle({
   weightOverride,
 }: {
   color: string;
-  colorOverride?: string;
+  colorOverride?: string | SkColor;
   defaultColor?: SkColor;
   fontInfo: (typeof typeHierarchy.text)[TextSize];
   letterSpacing: number | undefined;
@@ -134,7 +141,11 @@ function getTextStyle({
 } {
   'worklet';
   return {
-    color: colorOverride ? Skia.Color(colorOverride) : defaultColor ?? Skia.Color(color),
+    color: colorOverride
+      ? typeof colorOverride === 'string'
+        ? Skia.Color(colorOverride)
+        : colorOverride
+      : defaultColor ?? Skia.Color(color),
     fontFamilies: IS_IOS ? ['SF Pro Rounded'] : [`SFProRounded-${weightOverride ?? weight}`],
     fontSize: fontInfo.fontSize,
     fontStyle: IS_IOS ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : {},
