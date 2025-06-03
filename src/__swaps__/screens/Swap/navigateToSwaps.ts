@@ -10,7 +10,6 @@ import {
   trimTrailingZeros,
 } from '@/__swaps__/utils/swaps';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import walletTypes from '@/helpers/walletTypes';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
