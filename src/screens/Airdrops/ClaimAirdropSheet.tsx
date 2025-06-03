@@ -105,11 +105,6 @@ export const ClaimAirdropSheet = () => {
 
   const [asset] = claimable.assets;
 
-  const isReadOnlyWallet = useIsReadOnlyWallet();
-
-  const { goBack } = useNavigation();
-  const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
-
   return (
     <ColorModeProvider value="dark">
       <View style={styles.container}>
