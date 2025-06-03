@@ -188,7 +188,7 @@ export default function RestoreCloudStep() {
           const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
           const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
 
-          if (firstWallet && firstAddress) {
+          if (firstWallet) {
             setSelectedWallet(firstWallet, firstAddress);
             await initializeWallet({
               shouldRunMigrations: false,
