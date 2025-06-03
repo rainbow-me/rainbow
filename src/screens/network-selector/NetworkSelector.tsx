@@ -686,7 +686,6 @@ function NetworksGrid({
   actionButton,
   onSelectNetwork,
 }: NetworksGridProps) {
-  const { goBack } = useNavigation();
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
   const hasMastheadButton = !!actionButton || canSelectAllNetworks;
   const maxListHeight = useMemo(() => {
@@ -925,19 +924,37 @@ type NetworkSearchGridProps = {
 
 function NetworkSearchGrid({ selected, chains, onSelectNetwork }: NetworkSearchGridProps) {
   const searchQuery = networkSwitcherStore(state => state.searchQuery);
+  const pinnedNetworks = networkSwitcherStore.getState().pinnedNetworks;
 
   const chainIds = useMemo(() => {
     const query = searchQuery.toLowerCase();
-    return chains
-      .filter(chain => chain.name.toLowerCase().includes(query))
-      .sort((a, b) => {
-        const aStartsWith = a.name.toLowerCase().startsWith(query);
-        const bStartsWith = b.name.toLowerCase().startsWith(query);
-        if (aStartsWith && !bStartsWith) return -1;
-        if (!aStartsWith && bStartsWith) return 1;
-        return 0;
-      })
-      .map(chain => chain.id);
+    if (query.length > 0) {
+      return chains
+        .filter(chain => chain.name.toLowerCase().includes(query))
+        .sort((a, b) => {
+          const aStartsWith = a.name.toLowerCase().startsWith(query);
+          const bStartsWith = b.name.toLowerCase().startsWith(query);
+          if (aStartsWith && !bStartsWith) return -1;
+          if (!aStartsWith && bStartsWith) return 1;
+          return 0;
+        })
+        .map(chain => chain.id);
+    } else {
+      return chains
+        .sort((a, b) => {
+          const aIsPinned = pinnedNetworks.includes(a.id);
+          const bIsPinned = pinnedNetworks.includes(b.id);
+
+          if (aIsPinned && !bIsPinned) return -1;
+          if (!aIsPinned && bIsPinned) return 1;
+
+          if (aIsPinned && bIsPinned) {
+            return pinnedNetworks.indexOf(a.id) - pinnedNetworks.indexOf(b.id);
+          }
+          return 0;
+        })
+        .map(chain => chain.id);
+    }
   }, [chains, searchQuery]);
 
   return (
@@ -959,9 +976,11 @@ function NetworkSearchGrid({ selected, chains, onSelectNetwork }: NetworkSearchG
   );
 }
 
-type SheetProps = PropsWithChildren<Pick<NetworkSwitcherProps, 'onClose'>>;
+type SheetProps = PropsWithChildren<Pick<NetworkSwitcherProps, 'onClose'>> & {
+  expanded: SharedValue<boolean>;
+};
 
-function Sheet({ children, onClose }: SheetProps) {
+function Sheet({ children, onClose, expanded }: SheetProps) {
   const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
@@ -971,6 +990,12 @@ function Sheet({ children, onClose }: SheetProps) {
   useEffect(() => {
     return () => onClose?.();
   }, [onClose]);
+
+  const easingGradientStyle = useAnimatedStyle(() => {
+    return {
+      opacity: expanded.value ? 1 : 0,
+    };
+  });
 
   return (
     <>
@@ -985,13 +1010,20 @@ function Sheet({ children, onClose }: SheetProps) {
       >
         <KeyboardProvider>
           {children}
-          <EasingGradient
-            endColor={backgroundColor}
-            endOpacity={1}
-            startColor={backgroundColor}
-            startOpacity={0}
-            style={{ height: FOOTER_HEIGHT, position: 'absolute', bottom: 0, width: SHEET_WIDTH, pointerEvents: 'none' }}
-          />
+          <Animated.View
+            style={[
+              easingGradientStyle,
+              { position: 'absolute', bottom: 0, height: FOOTER_HEIGHT, width: SHEET_WIDTH, pointerEvents: 'none' },
+            ]}
+          >
+            <EasingGradient
+              endColor={backgroundColor}
+              endOpacity={1}
+              startColor={backgroundColor}
+              startOpacity={0}
+              style={{ height: '100%', width: '100%' }}
+            />
+          </Animated.View>
         </KeyboardProvider>
       </Box>
       <TapToDismiss />
@@ -1061,7 +1093,7 @@ export function NetworkSelector() {
   }, [isSearching, editing]);
 
   return (
-    <Sheet onClose={onClose}>
+    <Sheet onClose={onClose} expanded={expanded}>
       <Header onPressActionButton={onPressHeaderActionButton} title={title} canEdit={canEdit} editing={editing} isSearching={isSearching} />
       {!isSearching && (
         <>
