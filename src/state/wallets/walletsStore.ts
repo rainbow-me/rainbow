@@ -119,7 +119,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     async updateWallets(wallets) {
       await saveAllWallets(wallets);
       set({
-        wallets,
+        // ensure its a new object to break any memoization downstream
+        wallets: {
+          ...wallets,
+        },
       });
     },
 

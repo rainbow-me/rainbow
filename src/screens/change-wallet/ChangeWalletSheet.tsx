@@ -342,9 +342,9 @@ export default function ChangeWalletSheet() {
 
                 if (currentSelectedWallet && currentSelectedWallet.id === walletId) {
                   setSelectedWallet(updatedWallet);
-                  updateWallets(updatedWallets);
                 }
 
+                updateWallets(updatedWallets);
                 updateWebProfile(address, name, colors.avatarBackgrounds[color]);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
