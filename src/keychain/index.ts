@@ -70,7 +70,6 @@ export const publicAccessControlOptions: SetOptions = {
  * decrypt the data.
  */
 export async function get(key: string, options: KeychainOptions<GetOptions> = {}): Promise<Result<string>> {
-  await ensureBiometricsEnabled();
   logger.debug(`[keychain]: get`, { key }, logger.DebugContext.keychain);
 
   async function _get(attempts = 0): Promise<Result<string>> {
@@ -213,7 +212,6 @@ export async function get(key: string, options: KeychainOptions<GetOptions> = {}
  * Set a value on the keychain
  */
 export async function set(key: string, value: string, options: KeychainOptions<SetOptions> = {}): Promise<void> {
-  await ensureBiometricsEnabled();
   logger.debug(`[keychain]: set`, { key }, logger.DebugContext.keychain);
 
   // only save public data to mmkv
@@ -258,17 +256,6 @@ export async function getObject<T extends Record<string, any> = Record<string, u
   };
 }
 
-// Dev tools keychain clear fails silently if this isn't here
-async function ensureBiometricsEnabled() {
-  if (IS_DEV && !(await getSupportedBiometryType())) {
-    // Alert.alert(`Biometrics disabled`, `Biometrics not enabled on this device so keychain will hang`);
-    logger.log(`[keychain]: Note all keychain commands will silently hang due to biometrics not being available.
-
-In the iOS Simulator menu: Features ▸ Face ID (or Touch ID) ▸ Enrolled
-`);
-  }
-}
-
 /**
  * A convenience method for stringifying an object and storing it on the
  * keychain.
@@ -283,7 +270,6 @@ export async function setObject(key: string, value: Record<string, any>, options
  * Check if a value exists on the keychain.
  */
 export async function has(key: string): Promise<boolean> {
-  await ensureBiometricsEnabled();
   logger.debug(`[keychain]: has`, { key }, logger.DebugContext.keychain);
   return Boolean(await hasInternetCredentials({ server: key }));
 }
@@ -292,7 +278,6 @@ export async function has(key: string): Promise<boolean> {
  * Remove a value from the keychain.
  */
 export async function remove(key: string) {
-  await ensureBiometricsEnabled();
   logger.debug(`[keychain]: remove`, { key }, logger.DebugContext.keychain);
   cache.delete(key);
   await resetInternetCredentials({ server: key });
