@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
+import { Block, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
@@ -27,15 +27,17 @@ import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { http, createPublicClient, PublicClient } from 'viem';
+import { normalize } from 'viem/ens';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
   ERC721 = 'ERC721',
 }
 
-export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
+export const chainsProviders = new Map<ChainId, PublicClient>();
 
-export const chainsBatchProviders = new Map<ChainId, JsonRpcBatchProvider>();
+export const chainsBatchProviders = new Map<ChainId, PublicClient>();
 
 /**
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
@@ -106,33 +108,16 @@ export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainI
   return !!useBackendNetworksStore.getState().getDefaultChains()[chainId]?.testnet;
 };
 
-export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet): StaticJsonRpcProvider | undefined => {
+export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet): PublicClient | undefined => {
   return chainsProviders.get(chainId);
 };
 
-export const getBatchedProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): JsonRpcBatchProvider => {
+export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): PublicClient => {
   if (useConnectedToAnvilStore.getState().connectedToAnvil) {
-    const provider = new JsonRpcBatchProvider(chainAnvil.rpcUrls.default.http[0], ChainId.mainnet);
-    chainsBatchProviders.set(chainId, provider);
-
-    return provider;
-  }
-
-  const cachedProvider = chainsBatchProviders.get(chainId);
-  const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
-
-  if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
-    return cachedProvider;
-  }
-  const provider = new JsonRpcBatchProvider(providerUrl, chainId);
-  chainsBatchProviders.set(chainId, provider);
-
-  return provider;
-};
-
-export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
-  if (useConnectedToAnvilStore.getState().connectedToAnvil) {
-    const provider = new StaticJsonRpcProvider(chainAnvil.rpcUrls.default.http[0], ChainId.mainnet);
+    const provider = createPublicClient({
+      chain: chainAnvil,
+      transport: http(chainAnvil.rpcUrls.default.http[0]),
+    });
     chainsProviders.set(chainId, provider);
 
     return provider;
@@ -142,10 +127,23 @@ export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number })
 
   const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
 
-  if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
+  if (cachedProvider && cachedProvider?.chain?.rpcUrls?.default?.http?.[0] === providerUrl) {
     return cachedProvider;
   }
-  const provider = new StaticJsonRpcProvider(providerUrl, chainId);
+
+  const provider = createPublicClient({
+    chain: {
+      id: chainId,
+      name: useBackendNetworksStore.getState().getDefaultChains()[chainId]?.name,
+      nativeCurrency: useBackendNetworksStore.getState().getDefaultChains()[chainId]?.nativeCurrency,
+      rpcUrls: {
+        default: {
+          http: [providerUrl],
+        },
+      },
+    },
+    transport: http(providerUrl),
+  });
   chainsProviders.set(chainId, provider);
 
   return provider;
@@ -424,9 +422,8 @@ export const resolveNameOrAddress = async (nameOrAddress: string): Promise<strin
       const resolvedAddress = await resolveUnstoppableDomain(nameOrAddress);
       return resolvedAddress;
     }
-    const p = getProvider({ chainId: ChainId.mainnet });
-    const resolvedAddress = await p?.resolveName(nameOrAddress);
-
+    const provider = getProvider({ chainId: ChainId.mainnet });
+    const resolvedAddress = await provider.getEnsAddress({ name: normalize(nameOrAddress) });
     return resolvedAddress;
   }
   return nameOrAddress;
