@@ -197,7 +197,9 @@ const DevSection = () => {
         ]);
       });
 
+    console.log('isAuth2');
     const isAuth = await isAuthenticated();
+    console.log('isAuth', isAuth);
 
     // we should require auth before wiping the keychain
     if (isAuth) {

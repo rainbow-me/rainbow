@@ -291,7 +291,9 @@ export class Logger {
  *   `logger.disable()`
  *   `logger.enable()`
  */
-export const logger = new Logger();
+export const logger = new Logger({
+  level: LogLevel.Debug,
+});
 
 /**
  * Report to console in dev, Sentry in prod, nothing in test.

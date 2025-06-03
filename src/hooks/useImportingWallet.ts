@@ -300,6 +300,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             seedPhrase: input,
             color,
             name: name ? name : '',
+            checkedWallet,
             image,
           })
             .then(success => {
