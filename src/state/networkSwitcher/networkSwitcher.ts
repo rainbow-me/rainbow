@@ -46,7 +46,6 @@ export const networkSwitcherStore = createRainbowStore<{
       state.pinnedNetworks = mostUsedNetworks.slice(0, 5);
       analytics.identify({ mostUsedNetworks: mostUsedNetworks.filter(Boolean) });
     }
-    state.searchQuery = '';
   },
 });
 

@@ -22,20 +22,21 @@ import * as i18n from '@/languages';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
-import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import React, {
   LayoutChangeEvent,
   Pressable,
   StyleSheet,
   View,
   KeyboardAvoidingView as RNKeyboardAvoidingView,
-  ScrollView,
+  TextInput,
 } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import Animated, {
+  DerivedValue,
   Easing,
   FadeIn,
   FadeOutUp,
@@ -73,9 +74,10 @@ import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIc
 import { Navigation, useNavigation } from '@/navigation';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 import Routes from '@/navigation/routesNames';
-import { SearchBar } from './components/SearchBar';
-import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
+import { KeyboardProvider, KeyboardStickyView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Chain } from 'viem/chains';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
 
@@ -109,6 +111,7 @@ const ALL_NETWORKS_BADGE_SIZE = 16;
 const THICKER_BORDER_WIDTH = 5 / 3;
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 const MAX_NETWORK_LIST_HEIGHT = MAX_HEIGHT - HEADER_HEIGHT;
+const SEARCH_BAR_CLEARANCE = SEARCH_BAR_HEIGHT + SHEET_INNER_PADDING + 18;
 
 const ALL_BADGE_BORDER_COLORS = {
   default: {
@@ -122,29 +125,22 @@ const ALL_BADGE_BORDER_COLORS = {
 };
 
 const translations = {
-  edit: i18n.t(t.edit),
-  done: i18n.t(i18n.l.done),
+  edit: i18n.t(i18n.l.button.edit),
+  done: i18n.t(i18n.l.button.done),
+  cancel: i18n.t(i18n.l.button.cancel),
+  more: i18n.t(i18n.l.button.more),
   network: i18n.t(t.network),
-  more: i18n.t(t.more),
   show_more: i18n.t(t.show_more),
   show_less: i18n.t(t.show_less),
   drag_to_rearrange: i18n.t(t.drag_to_rearrange),
 };
 
-function EditButton({ editing }: Pick<NetworkSwitcherProps, 'editing'>) {
+function HeaderActionButton({ onPress, text }: { onPress: () => void; text: SharedValue<string> | DerivedValue<string> }) {
   const blue = useForegroundColor('blue');
-  const borderColor = chroma(blue).alpha(0.08).hex();
-
-  const text = useDerivedValue(() => (editing.value ? translations.done : translations.edit));
+  const borderColor = useMemo(() => chroma(blue).alpha(0.08).hex(), [blue]);
 
   return (
-    <ButtonPressAnimation
-      onPress={() => {
-        'worklet';
-        editing.value = !editing.value;
-      }}
-      style={[sx.editButton, { borderColor }]}
-    >
+    <ButtonPressAnimation onPress={onPress} style={[sx.editButton, { borderColor }]}>
       <TextShadow blur={12} shadowOpacity={0.4}>
         <AnimatedText align="center" color="blue" size="17pt" weight="bold">
           {text}
@@ -154,13 +150,23 @@ function EditButton({ editing }: Pick<NetworkSwitcherProps, 'editing'>) {
   );
 }
 
-function Header({ title, canEdit, editing }: Pick<NetworkSwitcherProps, 'title' | 'canEdit' | 'editing'>) {
+type HeaderProps = Pick<NetworkSwitcherProps, 'title' | 'canEdit' | 'editing'> & {
+  isSearching: boolean;
+  onPressActionButton: () => void;
+};
+
+function Header({ title, canEdit, editing, isSearching, onPressActionButton: onActionButtonPressed }: HeaderProps) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const fill = useForegroundColor('fill');
 
   const titleValue = useDerivedValue(() => {
     return editing.value ? translations.edit : title;
   });
+  const actionButtonText = useDerivedValue(() => {
+    if (isSearching) return translations.cancel;
+    return editing.value ? translations.done : translations.edit;
+  });
+  const shouldShowActionButton = canEdit || isSearching;
 
   return (
     <View style={[sx.headerContainer, { borderBottomColor: separatorTertiary }]}>
@@ -171,7 +177,7 @@ function Header({ title, canEdit, editing }: Pick<NetworkSwitcherProps, 'title' 
           {titleValue}
         </AnimatedText>
 
-        {canEdit && <EditButton editing={editing} />}
+        {shouldShowActionButton && <HeaderActionButton onPress={onActionButtonPressed} text={actionButtonText} />}
       </View>
     </View>
   );
@@ -662,6 +668,7 @@ type NetworksGridProps = NetworkSwitcherProps & {
   scrollY: SharedValue<number>;
   scrollViewHeight: SharedValue<number>;
   scrollViewContentHeight: SharedValue<number>;
+  onSelectNetwork: (chainId: ChainId) => void;
 };
 
 function NetworksGrid({
@@ -670,15 +677,14 @@ function NetworksGrid({
   editing,
   expanded,
   selected,
-  setSelected,
   allowedNetworks,
   scrollY,
   scrollViewHeight,
   scrollViewContentHeight,
-  goBackOnSelect,
   fillPinnedSection,
   canSelectAllNetworks,
   actionButton,
+  onSelectNetwork,
 }: NetworksGridProps) {
   const { goBack } = useNavigation();
   const sortedSupportedChainIds = useBackendNetworksStore.getState().getSortedSupportedChainIds();
@@ -747,6 +753,10 @@ function NetworksGrid({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const paddingBottom = useDerivedValue(() => {
+    return expanded.value ? SEARCH_BAR_CLEARANCE : 18;
+  });
+
   const containerHeight = useDerivedValue(() => {
     const length = networks.value[Section.unpinned].length;
 
@@ -757,18 +767,18 @@ function NetworksGrid({
           (ITEM_HEIGHT + ITEM_GAP)
       ) * 2;
 
-    const paddingBottom = 18;
+    const paddingBottomValue = paddingBottom.value;
     const unpinnedHeight = isUnpinnedHidden.value
       ? length === 0
         ? fillPinnedSection
           ? amountOfPinned === maxPinnedNetworks
-            ? paddingBottom + 10
-            : paddingBottom
-          : -SEPARATOR_HEIGHT + paddingBottom
+            ? paddingBottomValue + 10
+            : paddingBottomValue
+          : -SEPARATOR_HEIGHT + paddingBottomValue
         : 0
       : length === 0
-        ? ITEM_HEIGHT + paddingBottom
-        : Math.ceil((length + (editing.value ? 1 : 0)) / 2) * (ITEM_HEIGHT + ITEM_GAP) - ITEM_GAP + paddingBottom;
+        ? ITEM_HEIGHT + paddingBottomValue
+        : Math.ceil((length + (editing.value ? 1 : 0)) / 2) * (ITEM_HEIGHT + ITEM_GAP) - ITEM_GAP + paddingBottomValue;
 
     return sectionsOffsets.value[Section.unpinned].y + unpinnedHeight;
   });
@@ -776,21 +786,6 @@ function NetworksGrid({
   const containerStyle = useAnimatedStyle(() => ({
     height: withSpring(containerHeight.value, SPRING_CONFIGS.springConfig),
   }));
-
-  const onSelectNetwork = useCallback(
-    (chainId: ChainId) => {
-      'worklet';
-
-      triggerHaptics('selection');
-      selected.value = chainId;
-      runOnJS(setSelected)(chainId);
-
-      if (goBackOnSelect) {
-        runOnJS(goBack)();
-      }
-    },
-    [goBack]
-  );
 
   const dragNetwork = Gesture.Pan()
     .activateAfterLongPress(180)
@@ -922,27 +917,32 @@ function NetworksGrid({
   );
 }
 
-function NetworkSearchGrid({ selected, onSelectNetwork }: { selected: SelectedNetwork; onSelectNetwork: (chainId: ChainId) => void }) {
-  const supportedChains = useBackendNetworksStore.getState().getSupportedChains();
+type NetworkSearchGridProps = {
+  selected: SelectedNetwork;
+  chains: Chain[];
+  onSelectNetwork: (chainId: ChainId) => void;
+};
+
+function NetworkSearchGrid({ selected, chains, onSelectNetwork }: NetworkSearchGridProps) {
   const searchQuery = networkSwitcherStore(state => state.searchQuery);
 
   const chainIds = useMemo(() => {
-    const searchLower = searchQuery.toLowerCase();
-    return supportedChains
-      .filter(chain => chain.name.toLowerCase().includes(searchLower))
+    const query = searchQuery.toLowerCase();
+    return chains
+      .filter(chain => chain.name.toLowerCase().includes(query))
       .sort((a, b) => {
-        const aStartsWith = a.name.toLowerCase().startsWith(searchLower);
-        const bStartsWith = b.name.toLowerCase().startsWith(searchLower);
+        const aStartsWith = a.name.toLowerCase().startsWith(query);
+        const bStartsWith = b.name.toLowerCase().startsWith(query);
         if (aStartsWith && !bStartsWith) return -1;
         if (!aStartsWith && bStartsWith) return 1;
         return 0;
       })
       .map(chain => chain.id);
-  }, [supportedChains, searchQuery]);
+  }, [chains, searchQuery]);
 
   return (
-    <ScrollView keyboardDismissMode="none" style={{ height: MAX_HEIGHT - HEADER_HEIGHT }}>
-      <Box flexDirection="row" flexWrap="wrap" gap={ITEM_GAP} paddingTop={{ custom: 14 }}>
+    <KeyboardAwareScrollView keyboardDismissMode="none" style={{ height: MAX_HEIGHT - HEADER_HEIGHT }} showsVerticalScrollIndicator={false}>
+      <Box flexDirection="row" flexWrap="wrap" gap={ITEM_GAP} paddingTop={{ custom: 14 }} paddingBottom={{ custom: SEARCH_BAR_HEIGHT }}>
         {chainIds.map(chainId => (
           <GestureHandlerButton
             key={chainId}
@@ -955,19 +955,13 @@ function NetworkSearchGrid({ selected, onSelectNetwork }: { selected: SelectedNe
           </GestureHandlerButton>
         ))}
       </Box>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 
-type SheetProps = PropsWithChildren<Pick<NetworkSwitcherProps, 'onClose' | 'canEdit' | 'title'>> & {
-  editing: SharedValue<boolean>;
-  expanded: SharedValue<boolean>;
-  scrollY: SharedValue<number>;
-  scrollViewHeight: SharedValue<number>;
-  scrollViewContentHeight: SharedValue<number>;
-};
+type SheetProps = PropsWithChildren<Pick<NetworkSwitcherProps, 'onClose'>>;
 
-function Sheet({ children, title, editing, onClose, canEdit, scrollY, scrollViewHeight, scrollViewContentHeight }: SheetProps) {
+function Sheet({ children, onClose }: SheetProps) {
   const { isDarkMode } = useColorMode();
   const surfacePrimary = useBackgroundColor('surfacePrimary');
   const backgroundColor = isDarkMode ? '#191A1C' : surfacePrimary;
@@ -977,13 +971,6 @@ function Sheet({ children, title, editing, onClose, canEdit, scrollY, scrollView
   useEffect(() => {
     return () => onClose?.();
   }, [onClose]);
-
-  const gradientStyle = useAnimatedStyle(() => {
-    const distanceFromBottomOfScrollView = scrollViewContentHeight.value - (scrollY.value + scrollViewHeight.value);
-    return {
-      opacity: interpolate(distanceFromBottomOfScrollView, [0, 20], [0, 1]),
-    };
-  });
 
   return (
     <>
@@ -997,19 +984,14 @@ function Sheet({ children, title, editing, onClose, canEdit, scrollY, scrollView
         ]}
       >
         <KeyboardProvider>
-          <Header title={title} canEdit={canEdit} editing={editing} />
           {children}
-          <Animated.View
-            style={[gradientStyle, { height: FOOTER_HEIGHT, position: 'absolute', bottom: 0, width: SHEET_WIDTH, pointerEvents: 'none' }]}
-          >
-            <EasingGradient
-              endColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
-              endOpacity={1}
-              startColor={isDarkMode ? '#191A1C' : '#F5F5F5'}
-              startOpacity={0}
-              style={{ height: '100%', position: 'absolute', width: '100%' }}
-            />
-          </Animated.View>
+          <EasingGradient
+            endColor={backgroundColor}
+            endOpacity={1}
+            startColor={backgroundColor}
+            startOpacity={0}
+            style={{ height: FOOTER_HEIGHT, position: 'absolute', bottom: 0, width: SHEET_WIDTH, pointerEvents: 'none' }}
+          />
         </KeyboardProvider>
       </Box>
       <TapToDismiss />
@@ -1041,23 +1023,18 @@ export function NetworkSelector() {
   const scrollViewContentHeight = useSharedValue(0);
   const selectedNetwork = useSharedValue(typeof selected === 'number' ? selected : selected?.value);
   const isSearchFocused = useSharedValue(false);
-  const searchQuery = networkSwitcherStore(state => state.searchQuery);
-  const isSearching = searchQuery.length > 0;
+  const [isSearching, setIsSearching] = useState(false);
+  const searchBarRef = useRef<TextInput>(null);
+
+  const chains = useMemo(() => {
+    const allSupportedChains = useBackendNetworksStore.getState().getSupportedChains();
+    return allowedNetworks ? allSupportedChains.filter(chain => allowedNetworks.includes(chain.id)) : allSupportedChains;
+  }, [allowedNetworks]);
 
   const searchBarStyle = useAnimatedStyle(() => {
     const isVisible = expanded.value && !editing.value;
     return {
       display: isVisible ? 'flex' : 'none',
-    };
-  });
-  const searchGridAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      display: isSearchFocused.value ? 'flex' : 'none',
-    };
-  });
-  const gridAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      display: isSearchFocused.value ? 'none' : 'flex',
     };
   });
 
@@ -1073,49 +1050,52 @@ export function NetworkSelector() {
     }
   }, []);
 
+  const onPressHeaderActionButton = useCallback(() => {
+    if (isSearching) {
+      setIsSearching(false);
+      searchBarRef.current?.blur();
+      networkSwitcherStore.setState({ searchQuery: '' });
+    } else {
+      editing.value = !editing.value;
+    }
+  }, [isSearching, editing]);
+
   return (
-    <Sheet
-      title={title}
-      expanded={expanded}
-      editing={editing}
-      onClose={onClose}
-      canEdit={canEdit}
-      scrollY={scrollY}
-      scrollViewHeight={scrollViewHeight}
-      scrollViewContentHeight={scrollViewContentHeight}
-    >
-      <Animated.View style={gridAnimatedStyle}>
-        {canEdit && <CustomizeNetworksBanner editing={editing} />}
-        {(canSelectAllNetworks || actionButton) && (
-          <AllNetworksSection
+    <Sheet onClose={onClose}>
+      <Header onPressActionButton={onPressHeaderActionButton} title={title} canEdit={canEdit} editing={editing} isSearching={isSearching} />
+      {!isSearching && (
+        <>
+          {canEdit && <CustomizeNetworksBanner editing={editing} />}
+          {(canSelectAllNetworks || actionButton) && (
+            <AllNetworksSection
+              canSelect={canSelect}
+              editing={editing}
+              selected={selectedNetwork}
+              setSelected={setSelected}
+              goBackOnSelect={goBackOnSelect}
+              actionButton={actionButton}
+            />
+          )}
+          <NetworksGrid
             canSelect={canSelect}
             editing={editing}
+            expanded={expanded}
             selected={selectedNetwork}
             setSelected={setSelected}
+            allowedNetworks={allowedNetworks}
+            scrollY={scrollY}
+            scrollViewHeight={scrollViewHeight}
+            scrollViewContentHeight={scrollViewContentHeight}
             goBackOnSelect={goBackOnSelect}
+            canSelectAllNetworks={canSelectAllNetworks}
             actionButton={actionButton}
+            fillPinnedSection={fillPinnedSection}
+            canEdit={canEdit}
+            onSelectNetwork={onSelectNetwork}
           />
-        )}
-        <NetworksGrid
-          canSelect={canSelect}
-          editing={editing}
-          expanded={expanded}
-          selected={selectedNetwork}
-          setSelected={setSelected}
-          allowedNetworks={allowedNetworks}
-          scrollY={scrollY}
-          scrollViewHeight={scrollViewHeight}
-          scrollViewContentHeight={scrollViewContentHeight}
-          goBackOnSelect={goBackOnSelect}
-          canSelectAllNetworks={canSelectAllNetworks}
-          actionButton={actionButton}
-          fillPinnedSection={fillPinnedSection}
-          canEdit={canEdit}
-        />
-      </Animated.View>
-      <Animated.View style={searchGridAnimatedStyle}>
-        <NetworkSearchGrid selected={selectedNetwork} onSelectNetwork={onSelectNetwork} />
-      </Animated.View>
+        </>
+      )}
+      {isSearching && <NetworkSearchGrid selected={selectedNetwork} chains={chains} onSelectNetwork={onSelectNetwork} />}
       <Animated.View
         style={[
           searchBarStyle,
@@ -1130,8 +1110,14 @@ export function NetworkSelector() {
       >
         <KeyboardStickyView offset={{ opened: PANEL_BOTTOM_OFFSET, closed: 0 }}>
           <SearchBar
-            onFocus={() => (isSearchFocused.value = true)}
-            // onBlur={() => (isSearchFocused.value = false)}
+            onFocus={() => {
+              isSearchFocused.value = true;
+              setIsSearching(true);
+            }}
+            onBlur={() => {
+              isSearchFocused.value = false;
+            }}
+            ref={searchBarRef}
           />
         </KeyboardStickyView>
       </Animated.View>
