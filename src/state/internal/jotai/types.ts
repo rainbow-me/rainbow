@@ -114,7 +114,6 @@ export interface QueryAtomState<TData> {
 /**
  * The type of the global data cache atom.
  */
-// export type CacheAtom<TData> = PrimitiveAtom<CacheEntry<TData>>;
 export type CacheAtom<TData> = PrimitiveAtom<Omit<QueryAtomState<TData> & CacheEntry<TData>, 'queryKey'>>;
 
 /**
