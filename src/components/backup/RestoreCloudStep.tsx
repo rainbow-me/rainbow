@@ -231,7 +231,7 @@ export default function RestoreCloudStep() {
         loadingState: null,
       });
     }
-  }, [password, selectedBackup?.name, dispatch, onRestoreSuccess]);
+  }, [password, selectedBackup?.name, onRestoreSuccess]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
