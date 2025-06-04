@@ -1,7 +1,8 @@
 import { useRef } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type NotUndefined = {} | null;
+const UNINITIALIZED = Symbol();
+
+type UninitializedRef = typeof UNINITIALIZED;
 
 /**
  * **Initializes a value once**, guaranteeing stability across renders.
@@ -17,8 +18,8 @@ type NotUndefined = {} | null;
  * const initialState = useStableValue(() => getInitialState());
  * ```
  */
-export function useStableValue<T extends NotUndefined>(init: () => T): T {
-  const ref = useRef<T | undefined>(undefined);
-  if (ref.current === undefined) ref.current = init();
+export function useStableValue<T>(init: () => T): T {
+  const ref = useRef<T | UninitializedRef>(UNINITIALIZED);
+  if (ref.current === UNINITIALIZED) ref.current = init();
   return ref.current;
 }
