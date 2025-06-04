@@ -1,6 +1,6 @@
-import { Canvas, DrawingNodeProps, Group, LinearGradient, Paint, Path, Rect, Shadow, SkiaProps, vec } from '@shopify/react-native-skia';
+import { Canvas, DrawingNodeProps, Fill, Group, LinearGradient, Path, Rect, Shadow, SkiaProps, vec } from '@shopify/react-native-skia';
 import { getSvgPath } from 'figma-squircle';
-import React, { ReactElement, ReactNode, cloneElement, memo, useMemo } from 'react';
+import React, { ReactElement, ReactNode, memo, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { convertToRGBA } from 'react-native-reanimated';
 import { useDeepCompareMemo } from 'use-deep-compare';
@@ -82,17 +82,8 @@ export const SkiaCard = memo(function SkiaCard({
       <View style={styles.shadowLayer} />
       <View style={styles.innerContainer}>
         <Canvas style={styles.canvas}>
-          <Group
-            clip={backgroundRect}
-            // layer={
-            //   skiaBackground ? (
-            //     cloneElement(skiaBackground, { clip: backgroundRect })
-            //   ) : (
-            //     <Paint clip={backgroundRect} color={backgroundColor} />
-            //   )
-            // }
-          >
-            {skiaBackground}
+          <Group clip={backgroundRect}>
+            {skiaBackground ?? <Fill color={backgroundColor} />}
             <CardHighlights
               height={height}
               innerShadowColor={styles.innerShadowColor}

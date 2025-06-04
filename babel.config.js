@@ -18,6 +18,8 @@ function getAliasesFromTsConfig() {
 }
 
 module.exports = function (api) {
+  const isJest = api.caller(caller => caller?.name === 'babel-jest');
+
   api.cache(true);
 
   const plugins = [
@@ -36,14 +38,18 @@ module.exports = function (api) {
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
     'react-native-reanimated/plugin',
-    [
+  ];
+
+  // We don't want dotenv transform for unit tests.
+  if (!isJest) {
+    plugins.push([
       'module:react-native-dotenv',
       {
         allowUndefined: true,
         moduleName: 'react-native-dotenv',
       },
-    ],
-  ];
+    ]);
+  }
 
   const presets = ['module:@react-native/babel-preset'];
 
@@ -54,12 +60,7 @@ module.exports = function (api) {
         presets: presets,
       },
       production: {
-        plugins: [
-          ...plugins,
-          '@babel/plugin-transform-runtime',
-          '@babel/plugin-transform-react-inline-elements',
-          ['transform-remove-console', { exclude: ['error'] }],
-        ],
+        plugins: [...plugins, '@babel/plugin-transform-runtime', ['transform-remove-console', { exclude: ['error'] }]],
         presets: presets,
       },
     },
