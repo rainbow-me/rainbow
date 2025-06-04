@@ -12,9 +12,11 @@ const storeSignalCache = new WeakMap<
   Map<(state: unknown) => unknown, Map<(a: unknown, b: unknown) => boolean, AttachValue<unknown>>>
 >();
 
-export type AttachValue<T> = T & { value: T } & {
-  readonly [K in keyof T]: AttachValue<T[K]>;
-};
+type NestedAttachValue<T> = T extends object ? { readonly [K in keyof T]: AttachValue<T[K]> } : Record<string, never>;
+
+export type AttachValue<T> = {
+  readonly value: T;
+} & NestedAttachValue<T>;
 
 export type SignalFunction = {
   <T>(store: StoreApi<T>): AttachValue<T>;
