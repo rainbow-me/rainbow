@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -948,9 +948,13 @@ Upload Debug Symbols to Sentry */,
 				TargetAttributes = {
 					0299CE762886202800B5C7E7 = {
 						CreatedOnToolsVersion = 13.3.1;
+						DevelopmentTeam = L74NQAQB8H;
+						ProvisioningStyle = Automatic;
 					};
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = L74NQAQB8H;
 						LastSwiftMigration = 1120;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -962,15 +966,23 @@ Upload Debug Symbols to Sentry */,
 					};
 					C16DCF5B272BA6EF00FF5C78 = {
 						CreatedOnToolsVersion = 12.5.1;
+						DevelopmentTeam = L74NQAQB8H;
+						ProvisioningStyle = Automatic;
 					};
 					C16DCF7E272BAB9500FF5C78 = {
 						CreatedOnToolsVersion = 12.5.1;
+						DevelopmentTeam = L74NQAQB8H;
+						ProvisioningStyle = Automatic;
 					};
 					C9B3789F2C5159880085E5D0 = {
 						CreatedOnToolsVersion = 15.4;
+						DevelopmentTeam = L74NQAQB8H;
+						ProvisioningStyle = Automatic;
 					};
 					C9B378B72C515A860085E5D0 = {
 						CreatedOnToolsVersion = 15.4;
+						DevelopmentTeam = L74NQAQB8H;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -1111,7 +1123,7 @@ Upload Debug Symbols to Sentry */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\n# Setup for Sentry\nexport SENTRY_PROPERTIES=sentry.properties\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Run Sentry CLI to handle sourcemaps\nif [ ! \"$CONFIGURATION\" == \"Debug\" ]; then\n  export SENTRY_CLI=\"$PROJECT_ROOT/node_modules/@sentry/cli/bin/sentry-cli\"\n  $SENTRY_CLI react-native xcode \\\n  `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\nelse\n  `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\nfi\n";
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\n# Setup for Sentry\nexport SENTRY_PROPERTIES=sentry.properties\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\n\nexport CONFIG_CMD=\"dummy-workaround-value\"\nexport CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('@rnef/cli/package.json')) + '/dist/src/bin.js'\")\"\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\n\n# Run Sentry CLI to handle sourcemaps\nif [ ! \"$CONFIGURATION\" == \"Debug\" ]; then\n  export SENTRY_CLI=\"$PROJECT_ROOT/node_modules/@sentry/cli/bin/sentry-cli\"\n  $SENTRY_CLI react-native xcode \\\n  `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\nelse\n  `\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		0D76B7992410B84417343930 /* [CP] Copy Pods Resources */ = {
@@ -1672,11 +1684,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1728,11 +1736,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
@@ -1782,11 +1786,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
@@ -1835,11 +1835,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
@@ -1904,10 +1900,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = "Objective-C";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
@@ -1972,10 +1965,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = "Objective-C";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
@@ -2093,10 +2083,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = "Objective-C";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
@@ -2213,10 +2200,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = "Objective-C";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
@@ -2390,11 +2374,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = PriceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
@@ -2446,11 +2426,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = PriceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
@@ -2458,8 +2434,7 @@ Upload Debug Symbols to Sentry */ = {
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.rainbow.PriceWidget";
 				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2500,19 +2475,14 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = PriceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2553,19 +2523,14 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = PriceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2604,11 +2569,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SelectTokenIntent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
@@ -2658,11 +2619,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SelectTokenIntent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
@@ -2670,8 +2627,7 @@ Upload Debug Symbols to Sentry */ = {
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.rainbow.SelectTokenIntent";
 				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2710,19 +2666,14 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SelectTokenIntent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2761,19 +2712,14 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SelectTokenIntent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2820,11 +2766,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = "Open in Rainbow";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -2880,11 +2822,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = "Open in Rainbow";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
@@ -2937,11 +2875,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = "Open in Rainbow";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
@@ -2993,11 +2927,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = "Open in Rainbow";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
@@ -3053,11 +2983,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ShareWithRainbow;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -3113,11 +3039,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ShareWithRainbow;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
@@ -3170,11 +3092,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ShareWithRainbow;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
@@ -3226,11 +3144,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ShareWithRainbow;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
