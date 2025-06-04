@@ -223,9 +223,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           wallets,
         });
 
-        // TODO refresh should by much better structured to not be running here
-        refreshWalletENSAvatars();
-
         return wallets;
       } catch (error) {
         logger.error(new RainbowError('[walletsStore]: Exception during walletsLoadState'), {
