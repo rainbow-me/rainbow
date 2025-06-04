@@ -77,7 +77,6 @@ import { UserAssetFilter } from '@/__swaps__/types/assets';
 import Routes from '@/navigation/routesNames';
 import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
 import { KeyboardProvider, KeyboardStickyView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chain } from 'viem/chains';
 
 type RouteParams = RouteProp<RootStackParamList, 'NetworkSelector'>['params'];
@@ -414,11 +413,7 @@ function NetworkOption({ chainId, selected }: { chainId: ChainId; selected: Sele
   const { animatedStyle } = useNetworkOptionStyle(isSelected, chainColor);
 
   return (
-    <Animated.View
-      // TODO: this causes issues in search version, I'm not sure what it does in the normal version, see if can remove
-      // layout={LinearTransition.springify().mass(0.4)}
-      style={[sx.networkOption, animatedStyle]}
-    >
+    <Animated.View style={[sx.networkOption, animatedStyle]}>
       <ChainImage chainId={chainId} position="relative" size={24} />
       <Text align="center" color="label" size="17pt" weight="bold" style={sx.flex}>
         {chainName}
@@ -761,13 +756,8 @@ function NetworksGrid({
   });
 
   const containerStyle = useAnimatedStyle(() => ({
-    // height: withSpring(Math.min(containerHeight.value, maxListHeight), SPRING_CONFIGS.springConfig),
+    // TODO: When this animates to a value greater than maxListHeight, the animation is not smooth.
     height: withSpring(containerHeight.value, SPRING_CONFIGS.springConfig),
-  }));
-
-  const scrollViewStyle = useAnimatedStyle(() => ({
-    // maxHeight: withSpring(maxListHeight, SPRING_CONFIGS.springConfig),
-    maxHeight: withSpring(Math.min(containerHeight.value, maxListHeight), SPRING_CONFIGS.springConfig),
   }));
 
   const dragNetwork = Gesture.Pan()
@@ -847,13 +837,7 @@ function NetworksGrid({
   const gridGesture = Gesture.Exclusive(dragNetwork, tapNetwork);
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      bounces={true}
-      // TODO: What do these overflows do?
-      style={[{ overflow: 'hidden', maxHeight: maxListHeight }]}
-      contentContainerStyle={{ overflow: 'hidden' }}
-    >
+    <ScrollView showsVerticalScrollIndicator={false} bounces={true} style={[{ maxHeight: maxListHeight }]}>
       <GestureDetector gesture={gridGesture}>
         <Animated.View style={[{ marginTop: SECTION_GAP, overflow: 'hidden' }, containerStyle]}>
           {networks.value[Section.pinned].map(chainId => (
@@ -936,14 +920,19 @@ function NetworkSearchGrid({ selected, chains, onSelectNetwork }: NetworkSearchG
         })
         .map(chain => chain.id);
     }
-  }, [chains, searchQuery]);
+  }, [chains, pinnedNetworks, searchQuery]);
 
   return (
-    <KeyboardAwareScrollView keyboardDismissMode="none" style={{ height: MAX_HEIGHT - HEADER_HEIGHT }} showsVerticalScrollIndicator={false}>
-      <Box flexDirection="row" flexWrap="wrap" gap={ITEM_GAP} paddingTop={{ custom: 14 }} paddingBottom={{ custom: SEARCH_BAR_HEIGHT }}>
+    <KeyboardAwareScrollView
+      keyboardDismissMode="interactive"
+      style={{ height: MAX_HEIGHT - HEADER_HEIGHT }}
+      showsVerticalScrollIndicator={false}
+    >
+      <Box flexDirection="row" flexWrap="wrap" gap={ITEM_GAP} paddingTop={{ custom: 14 }} paddingBottom={{ custom: SEARCH_BAR_CLEARANCE }}>
         {chainIds.map(chainId => (
           <GestureHandlerButton
             key={chainId}
+            hapticTrigger="tap-end"
             onPressWorklet={() => {
               'worklet';
               onSelectNetwork(chainId);
@@ -1048,22 +1037,26 @@ export function NetworkSelector() {
     };
   });
 
-  const onSelectNetwork = useCallback((chainId: ChainId) => {
-    'worklet';
+  const onSelectNetwork = useCallback(
+    (chainId: ChainId) => {
+      'worklet';
 
-    triggerHaptics('selection');
-    selectedNetwork.value = chainId;
-    runOnJS(setSelected)(chainId);
+      triggerHaptics('selection');
+      selectedNetwork.value = chainId;
+      runOnJS(setSelected)(chainId);
 
-    if (goBackOnSelect) {
-      runOnJS(Navigation.goBack)();
-    }
-  }, []);
+      if (goBackOnSelect) {
+        runOnJS(Navigation.goBack)();
+      }
+    },
+    [goBackOnSelect, selectedNetwork, setSelected]
+  );
 
   const onPressHeaderActionButton = useCallback(() => {
     if (isSearching) {
       setIsSearching(false);
       searchBarRef.current?.blur();
+      searchBarRef.current?.clear();
       networkSwitcherStore.setState({ searchQuery: '' });
     } else {
       editing.value = !editing.value;
@@ -1072,12 +1065,12 @@ export function NetworkSelector() {
 
   const onBlurSearchBar = useCallback(() => {
     isSearchFocused.value = false;
-  }, []);
+  }, [isSearchFocused]);
 
   const onFocusSearchBar = useCallback(() => {
     isSearchFocused.value = true;
     setIsSearching(true);
-  }, []);
+  }, [isSearchFocused]);
 
   return (
     <Sheet onClose={onClose} expanded={expanded}>
@@ -1113,22 +1106,11 @@ export function NetworkSelector() {
         </>
       )}
       {isSearching && <NetworkSearchGrid selected={selectedNetwork} chains={chains} onSelectNetwork={onSelectNetwork} />}
-      {/* <Animated.View
-        style={[
-          searchBarStyle,
-          {
-            bottom: SHEET_INNER_PADDING,
-            width: '100%',
-            alignSelf: 'center',
-            position: 'absolute',
-            zIndex: 9999999,
-          },
-        ]}
-      >
+      <Animated.View style={[sx.searchBar, searchBarStyle]}>
         <KeyboardStickyView offset={{ opened: PANEL_BOTTOM_OFFSET, closed: 0 }}>
           <SearchBar onFocus={onFocusSearchBar} onBlur={onBlurSearchBar} ref={searchBarRef} />
         </KeyboardStickyView>
-      </Animated.View> */}
+      </Animated.View>
     </Sheet>
   );
 }
@@ -1263,7 +1245,6 @@ const sx = StyleSheet.create({
     borderRadius: 42,
     borderWidth: THICK_BORDER_WIDTH,
     bottom: PANEL_BOTTOM_OFFSET,
-    // bottom: safeAreaInsetValues.bottom,
     flex: 1,
     left: 8,
     overflow: 'hidden',
@@ -1284,5 +1265,12 @@ const sx = StyleSheet.create({
     position: 'absolute',
     top: 6,
     width: 36,
+  },
+  searchBar: {
+    bottom: SHEET_INNER_PADDING,
+    width: '100%',
+    alignSelf: 'center',
+    position: 'absolute',
+    zIndex: 2,
   },
 });
