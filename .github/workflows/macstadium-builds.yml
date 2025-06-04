@@ -50,6 +50,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - run: cd rainbow-scripts && git checkout @janic/rn79
+
       - name: Install dependencies
         run: |
           yarn install && yarn setup
