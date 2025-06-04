@@ -16,6 +16,7 @@ export { useCleanup } from './useCleanup';
 export { default as useClipboard } from './useClipboard';
 export { default as useCoinListEdited } from './useCoinListEdited';
 export { default as useCoinListEditOptions, useCoinListFinishEditingOptions } from './useCoinListEditOptions';
+export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
 export { default as useDimensions, type DeviceDimensions } from './useDimensions';

@@ -3,6 +3,10 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { qs } from 'url-parse';
 
 export function parseCollectionSlugFromUrl(url: string) {
+  if (!url.trim()) {
+    return '';
+  }
+
   const urlObj = new URL(url);
   const paths = urlObj.pathname.split('/');
   let slug = '';

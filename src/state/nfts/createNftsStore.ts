@@ -71,7 +71,6 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
         return fetchMultipleCollectionNfts(collectionId);
       }
       const data = await arcClient.getNftsByCollection({ walletAddress, collectionId });
-      console.log('data', data);
       if (!data) return EMPTY_RETURN_DATA;
 
       const chainIds = useBackendNetworksStore.getState().getChainsIdByName();
@@ -80,8 +79,6 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
       data.nftsByCollection.forEach(item => {
         collectionNfts.set(item.uniqueId, parseUniqueAsset(item, chainIds));
       });
-
-      console.log('collectionNfts', collectionNfts);
 
       return {
         collections: new Map(),

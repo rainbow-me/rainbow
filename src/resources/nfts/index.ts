@@ -8,7 +8,7 @@ import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';
 
-const NFTS_STALE_TIME = time.minutes(1);
+const NFTS_STALE_TIME = time.minutes(10);
 const NFTS_CACHE_TIME = time.minutes(10);
 
 export const nftsQueryKey = ({

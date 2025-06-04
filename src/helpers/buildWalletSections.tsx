@@ -10,7 +10,7 @@ import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { CollectionName, Collection, CollectionId } from '@/state/nfts/types';
+import { Collection } from '@/state/nfts/types';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
