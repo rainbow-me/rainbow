@@ -17,7 +17,7 @@ import { RainbowError, logger } from '@/logger';
 import * as i18n from '@/languages';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import * as keychain from '@/keychain';
-import { authenticateWithPIN } from '@/handlers/authentication';
+import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
@@ -99,15 +99,11 @@ export default function useManageCloudBackups() {
             async nextButtonIndex => {
               if (nextButtonIndex === 0) {
                 try {
-                  let userPIN: string | undefined;
-                  const hasBiometricsEnabled = await keychain.getSupportedBiometryType();
-                  if (IS_ANDROID && !hasBiometricsEnabled) {
-                    try {
-                      userPIN = (await authenticateWithPIN()) ?? undefined;
-                    } catch (e) {
-                      Alert.alert(i18n.t(i18n.l.back_up.wrong_pin));
-                      return;
-                    }
+                  try {
+                    await maybeAuthenticateWithPIN();
+                  } catch (e) {
+                    Alert.alert(i18n.t(i18n.l.back_up.wrong_pin));
+                    return;
                   }
 
                   // Prompt for authentication before allowing them to delete backups

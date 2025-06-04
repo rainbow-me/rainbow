@@ -1,4 +1,11 @@
-import { NativeCurrencyKey, RainbowTransaction, TransactionApiResponse } from '@/entities';
+import {
+  NativeCurrencyKey,
+  TransactionApiResponse,
+  TransactionStatus,
+  MinedTransaction,
+  RainbowTransaction,
+  TransactionType,
+} from '@/entities';
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
@@ -9,6 +16,34 @@ import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { createPublicClient, http, Hash, PublicClient, TransactionReceipt } from 'viem';
+import { foundry } from 'viem/chains';
+import { Platform } from 'react-native';
+import { IS_TEST } from '@/env';
+
+export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
+
+// Anvil uses a different RPC URL for Android emulators
+const ANVIL_RPC_URL = IS_TEST && Platform.OS === 'android' ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
+
+export const anvilChain = {
+  ...foundry,
+  id: 1337,
+  name: 'Ethereum',
+  network: 'ethereum',
+  rpcUrls: {
+    public: { http: [ANVIL_RPC_URL] },
+    default: { http: [ANVIL_RPC_URL] },
+  },
+} as const;
+
+let localPublicClient: PublicClient | null = null;
+if (IS_TEST) {
+  localPublicClient = createPublicClient({
+    chain: anvilChain,
+    transport: http(ANVIL_RPC_URL),
+  });
+}
 
 export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
 export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
@@ -18,6 +53,7 @@ export type TransactionArgs = {
   address: string;
   currency: NativeCurrencyKey;
   chainId: ChainId;
+  originalType?: TransactionType;
 };
 
 export type BackendTransactionArgs = {
@@ -26,12 +62,71 @@ export type BackendTransactionArgs = {
   enabled: boolean;
 };
 
-export const transactionQueryKey = ({ hash, address, currency, chainId }: TransactionArgs) =>
-  createQueryKey('transactions', { address, currency, chainId, hash }, { persisterVersion: 1 });
+export const transactionQueryKey = ({ hash, address, currency, chainId, originalType }: TransactionArgs) =>
+  createQueryKey('transactions', { address, currency, chainId, hash, originalType }, { persisterVersion: 1 });
 
 export const fetchTransaction = async ({
-  queryKey: [{ address, currency, chainId, hash }],
+  queryKey: [{ address, currency, chainId, hash, originalType }],
 }: QueryFunctionArgs<typeof transactionQueryKey>): Promise<RainbowTransaction | null> => {
+  if (IS_TEST && localPublicClient && chainId === anvilChain.id) {
+    try {
+      const client = localPublicClient as PublicClient;
+      const receipt: TransactionReceipt = await client.getTransactionReceipt({
+        hash: hash as Hash,
+      });
+
+      if (!receipt) {
+        return null;
+      }
+
+      const status = receipt.status === 'success' ? TransactionStatus.confirmed : TransactionStatus.failed;
+
+      // Use originalType if available, otherwise fallback to a generic type for title construction
+      const transactionTypeForTitle = originalType || 'contract_interaction';
+
+      let titleKey: string;
+      if (status === TransactionStatus.confirmed) {
+        titleKey = `${transactionTypeForTitle}.confirmed`;
+      } else if (status === TransactionStatus.failed) {
+        titleKey = `${transactionTypeForTitle}.failed`;
+      } else {
+        titleKey = transactionTypeForTitle;
+      }
+      const minedTx: MinedTransaction = {
+        hash: receipt.transactionHash,
+        blockNumber: Number(receipt.blockNumber),
+        from: receipt.from,
+        to: receipt.to,
+        status,
+        chainId,
+        minedAt: Math.floor(Date.now() / 1000),
+        confirmations: 1,
+        gasUsed: receipt.gasUsed.toString(),
+        title: titleKey,
+        type: (originalType || 'contract_interaction') as TransactionType,
+        network: anvilChain.network,
+        address: address,
+        value: '0',
+        nonce: 0,
+        data: receipt.logsBloom,
+      };
+
+      // Add to our E2E cache if confirmed and not already present
+      if (status === TransactionStatus.confirmed) {
+        if (!e2eAnvilConfirmedTransactions.find(tx => tx.hash === minedTx.hash)) {
+          e2eAnvilConfirmedTransactions.unshift(minedTx);
+        }
+      }
+
+      return minedTx;
+    } catch (e) {
+      logger.error(new RainbowError('[transaction][e2e]: Failed to fetch transaction from Anvil'), {
+        message: (e as Error)?.message,
+        hash,
+      });
+      return null;
+    }
+  }
   try {
     const url = `${ADDYS_BASE_URL}/${chainId}/${address}/transactions/${hash}`;
     const response = await rainbowFetch<{ payload: { transaction: TransactionApiResponse } }>(url, {
@@ -68,12 +163,14 @@ export const transactionFetchQuery = async ({
   currency,
   chainId,
   hash,
+  originalType,
 }: {
   address: string;
   currency: NativeCurrencyKey;
   chainId: ChainId;
   hash: string;
-}) => queryClient.fetchQuery(transactionQueryKey({ address, currency, chainId, hash }), fetchTransaction);
+  originalType?: TransactionType;
+}) => queryClient.fetchQuery(transactionQueryKey({ address, currency, chainId, hash, originalType }), fetchTransaction);
 
 export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
