@@ -7,7 +7,7 @@ import { avatarMetadataAtom } from '../components/ens-registration/RegistrationA
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
-import { useWalletENSAvatar, useENSRegistration } from '.';
+
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
@@ -28,6 +28,8 @@ import { noop } from 'lodash';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { IS_IOS } from '@/env';
+import useWalletENSAvatar from '@/hooks/useWalletENSAvatar';
+import useENSRegistration from '@/hooks/useENSRegistration';
 
 // Generic type for action functions
 type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;

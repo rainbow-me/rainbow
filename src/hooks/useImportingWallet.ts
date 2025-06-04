@@ -9,7 +9,6 @@ import { initializeWallet } from '../state/wallets/initializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
-import useWalletENSAvatar from './useWalletENSAvatar';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
