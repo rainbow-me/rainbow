@@ -33,17 +33,20 @@ function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
   }
 }
 
-export const initializeWallet = async ({
-  seedPhrase,
-  color = null,
-  name = null,
-  shouldRunMigrations = false,
-  overwrite = false,
-  checkedWallet = null,
-  switching = false,
-  image,
-  silent = false,
-}: InitializeWalletParams = {}) => {
+export const initializeWallet = async (props: InitializeWalletParams = {}) => {
+  const {
+    seedPhrase,
+    color = null,
+    name = null,
+    shouldRunMigrations = false,
+    overwrite = false,
+    checkedWallet = null,
+    switching = false,
+    image,
+    silent = false,
+    userPin,
+  } = props;
+
   const network = store.getState().settings.network;
   let walletStatus: WalletStatus = 'unknown';
   try {
@@ -66,6 +69,7 @@ export const initializeWallet = async ({
     // Load the network first
     await store.dispatch(settingsLoadNetwork());
 
+    console.log('init', props);
     const { isNew, walletAddress } = await walletInit({
       seedPhrase,
       color,
@@ -75,6 +79,7 @@ export const initializeWallet = async ({
       network,
       image,
       silent,
+      userPin,
     });
 
     walletStatus = getWalletStatus(isNew, isImporting);
