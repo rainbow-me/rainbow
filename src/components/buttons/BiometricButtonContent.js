@@ -2,10 +2,10 @@ import React from 'react';
 import { Text } from '../text';
 import { BiometryTypes } from '@/helpers';
 import { useBiometryType } from '@/hooks';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
-import { LedgerIcon } from '@/components/icons';
+import { LedgerIcon } from '../icons/svg/LedgerIcon';
 import { IS_ANDROID } from '@/env';
 import { useTheme } from '@/theme';
 
@@ -44,7 +44,7 @@ export function useBiometryIconString({ showIcon, isHardwareWallet }) {
 }
 
 export default function BiometricButtonContent({ label, showIcon = true, testID, ...props }) {
-  const isHardwareWallet = useWalletsStore(state => state.getIsHardwareWallet());
+  const isHardwareWallet = useIsHardwareWallet();
   const biometryIcon = useBiometryIconString({ showIcon: !IS_ANDROID && showIcon, isHardwareWallet });
   const { colors } = useTheme();
   return (
