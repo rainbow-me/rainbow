@@ -85,6 +85,7 @@ jobs:
           destination: simulator
           github-token: ${{ secrets.GITHUB_TOKEN }}
           configuration: Debug
+          comment-bot: false
 
       - name: Install Maestro
         run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
