@@ -1,12 +1,8 @@
 import { useCallback, useState } from 'react';
 import useGas from './useGas';
 import { ethereumUtils } from '@/utils';
-import { AssetType, ParsedAddressAsset, UniqueAsset } from '@/entities';
-
-const UniqueAssetTypes = [AssetType.nft, AssetType.ens, AssetType.poap];
-
-const isUniqueAsset = (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined) =>
-  inputCurrency === undefined || (inputCurrency.type && UniqueAssetTypes.includes(inputCurrency.type as AssetType));
+import { ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { assetIsUniqueAsset } from '@/handlers/web3';
 
 export default function useMaxInputBalance() {
   const [maxInputBalance, setMaxInputBalance] = useState<string>('0');
@@ -15,11 +11,7 @@ export default function useMaxInputBalance() {
 
   const updateMaxInputBalance = useCallback(
     (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined) => {
-      if (
-        !inputCurrency ||
-        isUniqueAsset(inputCurrency) ||
-        !('address' in inputCurrency && 'decimals' in inputCurrency && 'symbol' in inputCurrency)
-      ) {
+      if (!inputCurrency || assetIsUniqueAsset(inputCurrency)) {
         return '0';
       }
 

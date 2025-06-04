@@ -118,13 +118,7 @@ export const consoleTransport: Transport = (level, message, metadata) => {
     });
   }
 
-  if (message instanceof Error) {
-    log(
-      `${timestamp} ${withColor(color)(`[${level.toUpperCase()}]`)} ${message.toString()}${message.cause ? `\nCause: ${message.cause}` : ''}${extra}`
-    );
-  } else {
-    log(`${timestamp} ${withColor(color)(`[${level.toUpperCase()}]`)} ${message.toString()}${extra}`);
-  }
+  log(`${timestamp} ${withColor(color)(`[${level.toUpperCase()}]`)} ${message.toString()}${extra}`);
 };
 
 export const sentryTransport: Transport = (level: LogLevel, message, { type, tags, ...metadata }) => {

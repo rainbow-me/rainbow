@@ -20,6 +20,7 @@ import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChainId } from '@/state/backendNetworks/types';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { buildUniqueTokenName } from '@/helpers/assets';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -426,7 +427,12 @@ const UniqueTokenExpandedStateHeader = ({
     <Stack space="15px (Deprecated)">
       <Columns space="24px">
         <Heading containsEmoji color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
-          {asset.name || asset.collectionName || asset.uniqueId}
+          {buildUniqueTokenName({
+            collectionName: asset.collectionName ?? '',
+            tokenId: asset.tokenId,
+            name: asset.name ?? '',
+            uniqueId: asset.uniqueId,
+          })}
         </Heading>
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>

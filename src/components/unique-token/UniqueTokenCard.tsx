@@ -10,6 +10,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { ThemeContextProps, useTheme } from '@/theme';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { UniqueAsset } from '@/entities';
+import { parseUniqueId } from '@/resources/nfts/utils';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = (colors: ThemeContextProps['colors']) => [0, 2, 6, colors.shadow, 0.08];
@@ -82,7 +83,7 @@ const UniqueTokenCard = ({
           imageUrl={item.images.lowResUrl || item.images.highResUrl || item.images.animatedUrl}
           isCard
           fullUniqueId={item.uniqueId}
-          id={item.uniqueId}
+          id={item.tokenId}
           collectionName={item.collectionName ?? ''}
           name={item.name}
           uniqueId={item.uniqueId}

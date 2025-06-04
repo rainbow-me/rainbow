@@ -70,7 +70,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
             4
           )
         : undefined,
-    marketplaceName: marketplace?.marketplace_name,
+    marketplaceName: marketplace?.collection_url ? marketplace.marketplace_name : undefined,
     marketplaceUrl: marketplace?.collection_url,
   };
 }

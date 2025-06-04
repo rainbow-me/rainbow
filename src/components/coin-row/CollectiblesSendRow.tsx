@@ -115,7 +115,7 @@ const CollectiblesSendRow = React.memo(
             containerStyles={selected ? selectedStyles : null}
             selected={selected}
             subtitle={subtitle}
-            testID={testID + item.uniqueId}
+            testID={testID + item.name}
             topRowRender={TopRow}
           />
         </Wrapper>

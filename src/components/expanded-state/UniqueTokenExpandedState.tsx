@@ -69,6 +69,8 @@ import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { parseUniqueId } from '@/resources/nfts/utils';
+import { buildUniqueTokenName } from '@/helpers/assets';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -332,8 +334,12 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
     });
   }, [asset.chainId, navigate]);
 
-  const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.uniqueId) as boolean, [hiddenTokens, asset.uniqueId]);
-  const isShowcaseAsset = useMemo(() => showcaseTokens.includes(asset.uniqueId) as boolean, [showcaseTokens, asset.uniqueId]);
+  const { network, contractAddress, tokenId } = parseUniqueId(asset.uniqueId);
+
+  const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.uniqueId), [hiddenTokens, asset.uniqueId]);
+  const isShowcaseAsset = useMemo(() => {
+    return showcaseTokens.includes(asset.uniqueId) || (network && showcaseTokens.includes(`${network}_${contractAddress}_${tokenId}`));
+  }, [showcaseTokens, asset.uniqueId, network, contractAddress, tokenId]);
 
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
@@ -372,7 +378,12 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
 
     Share.share({
       message: IS_ANDROID ? shareUrl : undefined,
-      title: `Share ${asset.name} Info`,
+      title: `Share ${buildUniqueTokenName({
+        collectionName: asset.collectionName ?? '',
+        tokenId: asset.tokenId,
+        name: asset.name ?? '',
+        uniqueId: asset.uniqueId,
+      })} Info`,
       url: shareUrl,
     });
   }, [asset, isSupportedOnRainbowWeb, rainbowWebUrl]);

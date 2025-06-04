@@ -57,12 +57,7 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const [isLoaded, setIsLoaded] = useState(false);
 
   const onLoad = useCallback(() => setIsLoaded(true), [setIsLoaded]);
-  const onError = useCallback(
-    (e: any) => {
-      setErrorLoadingImage(true);
-    },
-    [setErrorLoadingImage]
-  );
+  const onError = useCallback(() => setErrorLoadingImage(true), [setErrorLoadingImage]);
 
   const isHiddenToken = useMemo(() => {
     return hiddenTokens.find(token => token === fullUniqueId);
@@ -92,15 +87,15 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       {shouldShowRegularImage && (
         <>
           <Image onError={onError} onLoad={onLoad} source={{ uri: imageUrl }} style={StyleSheet.absoluteFill} />
-          {!isLoaded && lowResImageUrl && <Image source={{ uri: `lowResImageUrl` }} style={StyleSheet.absoluteFill} />}
+          {!isLoaded && lowResImageUrl && <Image source={{ uri: lowResImageUrl }} style={StyleSheet.absoluteFill} />}
         </>
       )}
       {isHiddenToken && isCard && <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
       {shouldShowTextFallback && (
         <LegacyText align="center" color={getFallbackTextColor(backgroundColor, isDarkMode, colors)} lineHeight="looser" size="smedium">
           {buildUniqueTokenName({
-            collection: { name: collectionName },
-            id,
+            collectionName,
+            tokenId: id,
             name,
             uniqueId,
           })}

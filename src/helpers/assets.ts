@@ -537,17 +537,18 @@ export const legacyBuildBriefUniqueTokenList = (
 };
 
 export const buildUniqueTokenName = ({
-  collection,
-  id,
+  collectionName,
+  tokenId,
   name,
   uniqueId,
 }: {
-  collection: { name: string };
-  id: string;
+  collectionName: string;
+  tokenId: string;
   name: string;
   uniqueId: string;
 }) => {
   if (name) return name;
-  if (id) return `${collection?.name} #${id}`;
-  return uniqueId;
+  if (collectionName) return `${collectionName} #${tokenId}`;
+  const { contractAddress, tokenId: uniqueTokenId } = parseUniqueId(uniqueId);
+  return `${contractAddress}_${uniqueTokenId}`;
 };

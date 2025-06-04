@@ -1,42 +1,43 @@
 import React from 'react';
 import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
-import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
-import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
-import { colors } from '@/styles';
+// import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
+// import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
+// import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
-import { IS_IOS } from '@/env';
-import { nftsStoreManager } from '@/state/nfts/nftsStoreManager';
+// import { IS_IOS } from '@/env';
+// import { nftsStoreManager } from '@/state/nfts/nftsStoreManager';
 
 const TokenFamilyHeaderHeight = 48;
 
-const getIconForSortType = (selected: NftCollectionSortCriterion) => {
-  switch (selected) {
-    case NftCollectionSortCriterion.Abc:
-      return '􀋲';
-    case NftCollectionSortCriterion.FloorPrice:
-      return '􀅺';
-    case NftCollectionSortCriterion.MostRecent:
-      return '􀐫';
-  }
-};
+// const getIconForSortType = (selected: NftCollectionSortCriterion) => {
+//   switch (selected) {
+//     case NftCollectionSortCriterion.Abc:
+//       return '􀋲';
+//     case NftCollectionSortCriterion.FloorPrice:
+//       return '􀅺';
+//     case NftCollectionSortCriterion.MostRecent:
+//       return '􀐫';
+//   }
+// };
 
-const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
-  switch (value) {
-    case NftCollectionSortCriterion.Abc:
-      return 'list.bullet';
-    case NftCollectionSortCriterion.FloorPrice:
-      return 'plus.forwardslash.minus';
-    case NftCollectionSortCriterion.MostRecent:
-      return 'clock';
-  }
-};
+// const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
+//   switch (value) {
+//     case NftCollectionSortCriterion.Abc:
+//       return 'list.bullet';
+//     case NftCollectionSortCriterion.FloorPrice:
+//       return 'plus.forwardslash.minus';
+//     case NftCollectionSortCriterion.MostRecent:
+//       return 'clock';
+//   }
+// };
 
 const CollectiblesHeader = () => {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
+  // TODO: Bring this back once we can sort with pagination
   // const sortBy = nftsStoreManager(state => state.sortBy);
   // const sortDirection = nftsStoreManager(state => state.sortDirection);
   // const updateNFTSort = nftsStoreManager(state => state.updateSort);
@@ -49,6 +50,7 @@ const CollectiblesHeader = () => {
       paddingBottom="2px"
       paddingHorizontal={'19px (Deprecated)'}
       justifyContent="flex-end"
+      // TODO: Bring this back once we can sort with pagination
       // key={`collectibles_${sortBy}`}
       testID={`collectibles-list-header`}
     >
@@ -57,6 +59,7 @@ const CollectiblesHeader = () => {
           {i18n.t(i18n.l.account.tab_collectibles)}
         </Text>
 
+        {/* TODO: Bring this back once we can sort with pagination */}
         {/* <ListHeaderMenu
           selected={`${sortBy}|${sortDirection}`}
           menuItems={Object.values(NftCollectionSortCriterion).map(sortCriterion => {

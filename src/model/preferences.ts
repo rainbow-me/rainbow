@@ -145,7 +145,6 @@ export async function getPreference<K extends keyof PreferencesDataMap>(
 
     return data.data;
   } catch (e) {
-    console.log('e', e);
     logger.warn(`[preferences]: Preferences API failed to get preference`, {
       preferenceKey: key,
       error: e,
