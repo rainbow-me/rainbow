@@ -13,7 +13,7 @@ const TouchableBackdrop = ({ zIndex = 0, ...props }) => {
       {...position.centeredAsObject}
       {...position.coverAsObject}
       activeOpacity={1}
-      backgroundColor={colors.transparent}
+      style={{ backgroundColor: colors.transparent }}
       zIndex={zIndex}
     />
   );
