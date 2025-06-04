@@ -69,7 +69,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     // Load the network first
     await store.dispatch(settingsLoadNetwork());
 
-    console.log('initwallet', props);
     const { isNew, walletAddress } = await walletInit({
       seedPhrase,
       color,

@@ -190,7 +190,10 @@ export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is 
   if ('signTransaction' in wallet) {
     return wallet as any;
   }
-  throw new Error(`Not expected: ReadOnly not Wallet`);
+  console.error(
+    // @ts-expect-error using property types to log errors better
+    `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
+  );
 }
 
 export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWallet {
@@ -647,7 +650,6 @@ export const identifyWalletType = (walletSeed: EthereumWalletSeed): EthereumWall
 };
 
 export const createWallet = async (props: CreateWalletParams): Promise<null | EthereumWallet> => {
-  console.log('createWallet', props);
   const {
     seed = null,
     color = null,
