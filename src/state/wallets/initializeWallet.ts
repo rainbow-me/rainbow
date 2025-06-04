@@ -20,6 +20,7 @@ import { PerformanceTracking } from '../../performance/tracking';
 import { ensureValidHex } from '../../handlers/web3';
 import store from '@/redux/store';
 import { setIsSmallBalancesOpen } from '@/state/wallets/smallBalancesStore';
+import { refreshAccountData } from '@/hooks/useRefreshAccountData';
 
 type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
 
@@ -177,5 +178,10 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     Alert.alert(i18n.t(i18n.l.wallet.something_went_wrong_importing));
     setWalletReady();
     return null;
+  } finally {
+    // always finish wallet init by triggering a full refresh of account data
+    // ensures ens avatar, name, etc are in sync no matter where initialize is called from
+    // this isn't great - we should refactor all of initialize, this, and other areas into walletStore
+    refreshAccountData();
   }
 };
