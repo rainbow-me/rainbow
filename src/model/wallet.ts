@@ -28,7 +28,7 @@ import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { EthereumAddress } from '@/entities';
-import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
+import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
 import { createSignature } from '@/helpers/signingWallet';
@@ -180,7 +180,7 @@ export const allWalletsVersion = 1.0;
 export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
-const authenticationPrompt = lang.t('wallet.authenticate.please');
+const authenticationPrompt = { title: lang.t('wallet.authenticate.please') };
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
@@ -681,8 +681,7 @@ export const createWallet = async ({
 
     // load this up front and pass to other keychain setters to avoid multiple
     // auth requests
-    const androidEncryptionPin =
-      IS_ANDROID && !(await kc.getSupportedBiometryType()) ? userPin || (await authenticateWithPINAndCreateIfNeeded()) : undefined;
+    const androidEncryptionPin = await maybeAuthenticateWithPINAndCreateIfNeeded(userPin);
 
     await saveSeedPhrase(walletSeed, id, { androidEncryptionPin });
 
@@ -986,7 +985,7 @@ export const getPrivateKey = async (
     const key = `${address}_${privateKeyKey}`;
     const options = { authenticationPrompt };
 
-    const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+    const androidEncryptionPin = await maybeAuthenticateWithPIN();
     const { value: pkey, error } = await kc.getObject<PrivateKeyData>(key, {
       ...options,
       androidEncryptionPin,
@@ -1149,7 +1148,7 @@ export const generateAccount = async (id: RainbowWallet['id'], index: number): P
 
     // load this up front and pass to other keychain setters to avoid multiple
     // auth requests
-    const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+    const androidEncryptionPin = await maybeAuthenticateWithPIN();
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
@@ -1319,7 +1318,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
       }
     } else {
       logger.debug('[wallet]: Getting seed directly', {}, DebugContext.wallet);
-      const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+      const androidEncryptionPin = await maybeAuthenticateWithPIN();
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       seedPhrase = seedData?.seedphrase ?? null;
 
