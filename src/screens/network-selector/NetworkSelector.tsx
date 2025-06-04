@@ -1072,8 +1072,15 @@ export function NetworkSelector() {
     setIsSearching(true);
   }, [isSearchFocused]);
 
+  const onCloseSheet = useCallback(() => {
+    onClose?.();
+    searchBarRef.current?.blur();
+    searchBarRef.current?.clear();
+    networkSwitcherStore.setState({ searchQuery: '' });
+  }, [onClose]);
+
   return (
-    <Sheet onClose={onClose} expanded={expanded}>
+    <Sheet onClose={onCloseSheet} expanded={expanded}>
       <Header onPressActionButton={onPressHeaderActionButton} title={title} canEdit={canEdit} editing={editing} isSearching={isSearching} />
       {!isSearching && (
         <>
