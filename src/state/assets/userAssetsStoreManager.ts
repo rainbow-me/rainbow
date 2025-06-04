@@ -4,13 +4,13 @@ import { SupportedCurrencyKey } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { UserAssetsStoreType } from './types';
 
-interface StoreManagerState {
+type StoreManagerState = {
   address: Address | string | null;
   cachedStore: UserAssetsStoreType | null;
   currency: SupportedCurrencyKey;
   hiddenAssetBalances: Record<Address | string, string | undefined>;
   setHiddenAssetBalance: (address: Address | string, balance: string) => void;
-}
+};
 
 export const userAssetsStoreManager = createRainbowStore<StoreManagerState>(
   set => ({

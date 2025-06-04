@@ -26,7 +26,7 @@ interface SubscriptionHandlerConfig {
    */
   onSubscribe: (enabled: boolean, isFirstSubscription: boolean, shouldThrottle: boolean) => void;
   /** Callback executed when the last remaining subscription is removed. */
-  onLastUnsubscribe: () => void;
+  onLastUnsubscribe: (willResubscribe?: boolean) => void;
 }
 
 /**
@@ -83,7 +83,7 @@ export class SubscriptionManager {
    * Adds a new subscription and triggers relevant lifecycle callbacks.
    * @returns A cleanup function that removes the subscription when called
    */
-  subscribe(): () => void {
+  subscribe(): (skipAbortFetch?: boolean) => void {
     const isFirstSubscription = this.count === 0;
     const shouldThrottle =
       this.fetchThrottleMs !== null &&
@@ -96,12 +96,12 @@ export class SubscriptionManager {
     this.count += 1;
     this.lastSubscriptionTime = Date.now();
 
-    return () => {
+    return (skipAbortFetch?: boolean) => {
       const isLastSubscription = this.count === 1;
       this.count = Math.max(this.count - 1, 0);
 
       if (isLastSubscription) {
-        this.onLastUnsubscribe?.();
+        this.onLastUnsubscribe?.(skipAbortFetch);
         this.lastSubscriptionTime = null;
       }
     };

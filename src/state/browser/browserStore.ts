@@ -4,9 +4,10 @@ import { PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zu
 import { createWithEqualityFn } from 'zustand/traditional';
 import { RAINBOW_HOME } from '@/components/DappBrowser/constants';
 import { TabData, TabId } from '@/components/DappBrowser/types';
-import { generateUniqueIdWorklet, normalizeUrlWorklet } from '@/components/DappBrowser/utils';
+import { normalizeUrlWorklet } from '@/components/DappBrowser/utils';
 import { RainbowError, logger } from '@/logger';
 import { time } from '@/utils';
+import { generateUniqueId } from '@/worklets/strings';
 
 const BROWSER_STORAGE_ID = 'browserStore';
 const BROWSER_STORAGE_VERSION = 0;
@@ -125,7 +126,7 @@ const persistedBrowserStorage: PersistStorage<PersistedState> = {
 };
 
 const INITIAL_ACTIVE_TAB_INDEX = 0;
-const INITIAL_TAB_IDS = [generateUniqueIdWorklet()];
+const INITIAL_TAB_IDS = [generateUniqueId()];
 const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { canGoBack: false, canGoForward: false, url: RAINBOW_HOME }]]);
 const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: RAINBOW_HOME };
 
@@ -147,9 +148,9 @@ export interface BrowserState {
   setActiveTabIndex: (index: number) => void;
   setLogo: (logoUrl: string | undefined, tabId: TabId) => void;
   setNavState: (navState: { canGoBack: boolean; canGoForward: boolean }, tabId: TabId) => void;
+  setPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) => void;
   setTabIds: (tabIds: TabId[]) => void;
   setTitle: (title: string | undefined, tabId: TabId) => void;
-  silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) => void;
 }
 
 type PersistedState = Pick<BrowserState, 'activeTabIndex' | 'persistedTabUrls' | 'tabIds' | 'tabsData'>;
@@ -236,6 +237,18 @@ export const useBrowserStore = createWithEqualityFn<BrowserState>()(
             return state;
           }),
 
+        setLogo: (logoUrl, tabId) =>
+          set(state => {
+            const existingTabData = state.getTabData(tabId);
+            if (existingTabData?.logoUrl !== logoUrl) {
+              const updatedTabData = { ...existingTabData, logoUrl };
+              const newTabsData = new Map(state.tabsData);
+              newTabsData.set(tabId, updatedTabData);
+              return { tabsData: newTabsData };
+            }
+            return state;
+          }),
+
         setNavState: (navState, tabId) =>
           set(state => {
             const existingTabData = state.getTabData(tabId);
@@ -248,17 +261,7 @@ export const useBrowserStore = createWithEqualityFn<BrowserState>()(
             return state;
           }),
 
-        setLogo: (logoUrl, tabId) =>
-          set(state => {
-            const existingTabData = state.getTabData(tabId);
-            if (existingTabData?.logoUrl !== logoUrl) {
-              const updatedTabData = { ...existingTabData, logoUrl };
-              const newTabsData = new Map(state.tabsData);
-              newTabsData.set(tabId, updatedTabData);
-              return { tabsData: newTabsData };
-            }
-            return state;
-          }),
+        setPersistedTabUrls: persistedTabUrls => set({ persistedTabUrls }),
 
         setTabIds: newTabIds =>
           set(state => {
@@ -284,8 +287,6 @@ export const useBrowserStore = createWithEqualityFn<BrowserState>()(
             }
             return state;
           }),
-
-        silentlySetPersistedTabUrls: persistedTabUrls => set(() => ({ persistedTabUrls })),
       }),
       {
         name: BROWSER_STORAGE_ID,
@@ -297,7 +298,7 @@ export const useBrowserStore = createWithEqualityFn<BrowserState>()(
   Object.is
 );
 
-function scheduleTabUrlUpdate(url: string, tabId: TabId) {
+function scheduleTabUrlUpdate(url: string, tabId: TabId): void {
   setTimeout(() => {
     useBrowserStore.getState().goToPage(url, tabId);
   }, 0);
