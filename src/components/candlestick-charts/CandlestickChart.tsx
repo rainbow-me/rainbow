@@ -145,7 +145,7 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
   },
 
   candles: {
-    initialWidth: 6,
+    initialWidth: 7,
     maxBorderRadius: 6,
     maxWidth: 20,
     minWidth: 2,
@@ -432,12 +432,12 @@ class CandlestickChartManager {
     this.paints.text.setBlendMode(BlendMode.Src);
 
     this.paints.bottomShadow.setColor(this.backgroundColor);
-    this.paints.bottomShadow.setAlphaf(0.52);
-    this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 4, 4, this.backgroundColor, null));
+    this.paints.bottomShadow.setAlphaf(0.48);
+    this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
 
     this.paints.topShadow.setColor(this.backgroundColor);
-    this.paints.topShadow.setAlphaf(0.52);
-    this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 4, 4, this.backgroundColor, null));
+    this.paints.topShadow.setAlphaf(0.48);
+    this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
 
     this.paints.crosshairLine.setStrokeWidth(this.config.crosshair.strokeWidth);
     this.paints.crosshairLine.setStrokeCap(StrokeCap.Round);
@@ -763,7 +763,7 @@ class CandlestickChartManager {
         color: lastCandleColor,
         leftX: labelX,
         priceOrLabel: lastCandle.c,
-        strokeOpacity: 0.16,
+        strokeOpacity: 0.15,
       });
     }
 
@@ -945,7 +945,7 @@ class CandlestickChartManager {
     const bubbleY = centerY - bubbleHeight / 2;
 
     this.paints.candleBody.setColor(color);
-    this.paints.candleBody.setAlphaf(0.2);
+    this.paints.candleBody.setAlphaf(0.24);
 
     this.paints.candleStroke.setColor(color);
     this.paints.candleStroke.setAlphaf(strokeOpacity);
