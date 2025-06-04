@@ -165,7 +165,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           // If not then we should clear it and default to the first one
           const firstWalletKey = Object.keys(wallets)[0];
           selectedWallet = wallets[firstWalletKey];
-          await setSelectedWallet(selectedWallet);
+          setSelectedWallet(selectedWallet);
         }
 
         if (!selectedWallet) {
