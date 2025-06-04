@@ -51,17 +51,17 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
   let walletStatus: WalletStatus = 'unknown';
   try {
     PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
-    logger.debug('[useInitializeWallet]: Start wallet setup');
+    logger.debug('[initializeWallet]: Start wallet setup');
 
     const isImporting = !!seedPhrase;
-    logger.debug(`[useInitializeWallet]: isImporting? ${isImporting}`);
+    logger.debug(`[initializeWallet]: isImporting? ${isImporting}`);
 
     if (shouldRunMigrations && !seedPhrase) {
-      logger.debug('[useInitializeWallet]: shouldRunMigrations && !seedPhrase? => true');
+      logger.debug('[initializeWallet]: shouldRunMigrations && !seedPhrase? => true');
       await loadWallets();
-      logger.debug('[useInitializeWallet]: walletsLoadState call #1');
+      logger.debug('[initializeWallet]: walletsLoadState call #1');
       await runMigrations();
-      logger.debug('[useInitializeWallet]: done with migrations');
+      logger.debug('[initializeWallet]: done with migrations');
     }
 
     setIsSmallBalancesOpen(false);
@@ -83,7 +83,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     walletStatus = getWalletStatus(isNew, isImporting);
 
-    logger.debug('[useInitializeWallet]: walletInit returned', {
+    logger.debug('[initializeWallet]: walletInit returned', {
       isNew,
       walletAddress,
     });
@@ -111,12 +111,12 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     }
 
     if (seedPhrase || isNew) {
-      logger.debug('[useInitializeWallet]: walletsLoadState call #2');
+      logger.debug('[initializeWallet]: walletsLoadState call #2');
       await loadWallets();
     }
 
     if (isNil(walletAddress)) {
-      logger.debug('[useInitializeWallet]: walletAddress is nil');
+      logger.debug('[initializeWallet]: walletAddress is nil');
       Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
       if (!isImporting) {
         setWalletReady();
@@ -126,24 +126,24 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     if (!(isNew || isImporting)) {
       await loadSettingsData();
-      logger.debug('[useInitializeWallet]: loaded global data...');
+      logger.debug('[initializeWallet]: loaded global data...');
     }
 
     setAccountAddress(ensureValidHex(walletAddress));
-    logger.debug('[useInitializeWallet]: updated wallet address', {
+    logger.debug('[initializeWallet]: updated wallet address', {
       walletAddress,
     });
 
     // Newly created / imported accounts have no data in localstorage
     if (!(isNew || isImporting)) {
       await loadTokensData();
-      logger.debug('[useInitializeWallet]: loaded account data', {
+      logger.debug('[initializeWallet]: loaded account data', {
         network,
       });
     }
 
     setWalletReady();
-    logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
+    logger.debug('[initializeWallet]: 💰 Wallet initialized');
 
     PerformanceTracking.finishMeasuring(event.performanceInitializeWallet, {
       walletStatus,
@@ -154,7 +154,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     const error = ensureError(e);
     PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
     console.log('what was the error', error?.message, error?.stack);
-    logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet', error), {
+    logger.error(new RainbowError('[initializeWallet]: Error while initializing wallet', error), {
       walletStatus,
     });
     analytics.track(event.walletInitializationFailed, {
@@ -169,7 +169,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     try {
       hideSplashScreen();
     } catch (err) {
-      logger.error(new RainbowError('[useInitializeWallet]: Error while hiding splash screen'), {
+      logger.error(new RainbowError('[initializeWallet]: Error while hiding splash screen'), {
         error: err,
       });
     }
