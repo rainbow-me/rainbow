@@ -1,12 +1,12 @@
 import React, { forwardRef, ReactNode, useMemo } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useForegroundColor, useForegroundColors } from '../../color/useForegroundColor';
 import { useColorMode } from '../../color/ColorMode';
 import { Shadow, shadows } from '../../layout/shadow';
 import { Height, heights, Width, widths } from '../../layout/size';
 import { NegativeSpace, negativeSpace, positionSpace, PositionSpace, Space, space } from '../../layout/space';
-import { BackgroundProvider, BackgroundProviderProps } from '../BackgroundProvider/BackgroundProvider';
+import { BackgroundProvider } from '../BackgroundProvider/BackgroundProvider';
 import { Border, BorderProps } from '../Border/Border';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
@@ -88,29 +88,21 @@ export type BoxProps = {
   (
     | {
         background?: BackgroundColor | 'accent';
-        backgroundColor?: never;
         shadow?: never;
       }
     | {
         background: BackgroundColor | 'accent';
-        backgroundColor?: never;
         shadow: Shadow;
       }
     | {
         background?: never;
         backgroundColor: string;
-        shadow?: never;
-      }
-    | {
-        background?: never;
-        backgroundColor: string;
         shadow: Shadow;
       }
     | {
         background?: never;
-        backgroundColor?: never;
         shadow: Shadow;
-        style: ViewStyle & { backgroundColor: string };
+        style: StyleProp<ViewStyle> & { backgroundColor: string };
       }
   );
 
