@@ -42,7 +42,7 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     RCTSetDefaultColorSpace(RCTColorSpace.displayP3)
 
     let delegate = ReactNativeDelegate()
-    let factory = RCTReactNativeFactory(delegate: delegate)
+    let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
 
     reactNativeDelegate = delegate
@@ -146,14 +146,15 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
 
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
   override func sourceURL(for bridge: RCTBridge) -> URL? {
-    self.bundleURL()
+    // needed to return the correct URL for expo-dev-client.
+    bridge.bundleURL ?? bundleURL()
   }
 
   override func bundleURL() -> URL? {
 #if DEBUG
-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
 #else
-    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")!
+    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
   }
 }

@@ -1,14 +1,20 @@
-pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
-plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin")
+  def expoPluginsPath = new File(
+    providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })")
+    }.standardOutput.asText.get().trim(),
+    "../android/expo-gradle-plugin"
+  ).absolutePath
+  includeBuild(expoPluginsPath)
+}
+plugins { id("com.facebook.react.settings")
+id("expo-autolinking-settings")
+}
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand) }
 rootProject.name = 'rainbow'
-include ':react-native-ble-plx'
-project(':react-native-ble-plx').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-ble-plx/android')
-include ':react-native-palette-full'
-project(':react-native-palette-full').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-palette-full/android')
 include ':app'
-
 includeBuild('../node_modules/@react-native/gradle-plugin')
-
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
-useExpoModules()
+expoAutolinking.useExpoModules()
+expoAutolinking.useExpoVersionCatalog()
+includeBuild(expoAutolinking.reactNativeGradlePlugin)

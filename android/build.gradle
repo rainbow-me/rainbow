@@ -65,3 +65,4 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+apply plugin: "expo-root-project"
