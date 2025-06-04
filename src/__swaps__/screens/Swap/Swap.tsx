@@ -7,7 +7,7 @@ import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { DecoyScrollView } from '@/components/sheet/DecoyScrollView';
 import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -41,7 +41,7 @@ import { ReviewButton } from './components/ReviewButton';
  * this to bypass the JS thread when responding to user input, which avoids all
  * bridge-related bottlenecks and the resulting UI lag.
  *
- * We rely on Reanimated’s useAnimatedReaction to observe changes to any of the
+ * We rely on Reanimated's useAnimatedReaction to observe changes to any of the
  * input values (the inputValues), and then respond as needed depending on the
  * entered value and the inputMethod associated with the change.
  * (useAnimatedReaction is like a useEffect, but it runs on the UI thread and can
@@ -58,14 +58,14 @@ import { ReviewButton } from './components/ReviewButton';
  * but capable of directly rendering Animated shared values).
  *
  * The implication of this is that once the UI is initialized, even if the JS
- * thread is fully blocked, it won’t block user input, and it won’t block the UI.
+ * thread is fully blocked, it won't block user input, and it won't block the UI.
  * The UI will remain responsive up until it needs the result of a quote from the
  * JS thread.
  *
  * This approach has the added benefit of eliminating tons of otherwise necessary
  * re-renders, which further increases the speed of the swap flow.
  *
- * tldr, ⚡️ it’s fast ⚡️
+ * tldr, ⚡️ it's fast ⚡️
  */
 
 export function SwapScreen() {
@@ -159,12 +159,25 @@ const SliderAndKeyboardAndBottomControls = () => {
 
   const { AnimatedSwapStyles } = useSwapContext();
 
-  return shouldMount ? (
-    <Box as={Animated.View} width="full" position="absolute" bottom="0px" style={AnimatedSwapStyles.hideWhenInputsExpanded}>
+  // Maestro test logic. The view needs to be rendered and fully on screen to be interactable.
+  const shouldMountTestWrapper = IS_TEST ? true : shouldMount;
+  if (!shouldMountTestWrapper) {
+    return null;
+  }
+
+  return (
+    <Box
+      as={Animated.View}
+      width="full"
+      position="absolute"
+      bottom="0px"
+      style={AnimatedSwapStyles.hideWhenInputsExpanded && IS_TEST && { bottom: 50, height: 200 }}
+      testID="outer-text-please"
+    >
       <SliderAndKeyboard />
       <SwapBottomPanel />
     </Box>
-  ) : null;
+  );
 };
 
 const ExchangeRateBubbleAndWarning = () => {
