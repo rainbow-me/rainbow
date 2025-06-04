@@ -55,7 +55,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
+import { promiseUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -63,7 +63,7 @@ import { performanceTracking, TimeToSignOperation, Screens } from '@/state/perfo
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { RootStackParamList } from '@/navigation/types';
-import { ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { AssetType, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { useInteractionsCount } from '@/resources/addys/interactions';
 import { ShimmerAnimation } from '@/components/animations';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -228,8 +228,7 @@ export const SendConfirmationSheet = () => {
     return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
-  const uniqueTokenType = getUniqueTokenType(asset as UniqueAsset);
-  const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
+  const isENS = asset.type === AssetType.ens && profilesEnabled;
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, chainId, toAddress }));
 
@@ -429,7 +428,7 @@ export const SendConfirmationSheet = () => {
 
   const imageUrl = useMemo(() => {
     if (assetIsUniqueAsset(asset)) {
-      return svgToPngIfNeeded(asset.image_thumbnail_url || asset.image_url, true);
+      return svgToPngIfNeeded(asset.images.highResUrl || asset.images.lowResUrl, true);
     }
     return undefined;
   }, [asset, isNft]);
@@ -501,7 +500,7 @@ export const SendConfirmationSheet = () => {
                   {assetIsUniqueAsset(asset) ? (
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
-                      backgroundColor={asset.background || theme.colors.lightestGrey}
+                      backgroundColor={asset.backgroundColor || theme.colors.lightestGrey}
                       borderRadius={10}
                       chainId={asset?.chainId}
                       imageUrl={imageUrl}

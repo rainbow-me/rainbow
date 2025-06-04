@@ -40,35 +40,27 @@ const BottomRow = ({ selected, subtitle }: { selected: boolean; subtitle: string
   );
 };
 
-const TopRow = ({ id, name, selected }: { id: number; name: string; selected: boolean }) => {
+const TopRow = ({ tokenId, name, selected }: { tokenId: string; name: string; selected: boolean }) => {
   const { colors } = useTheme();
 
   return (
     <CoinName color={colors.dark} size={selected ? 'large' : 'lmedium'} weight={selected ? 'bold' : 'regular'}>
-      {name || `#${id}`}
+      {name || `#${tokenId}`}
     </CoinName>
   );
 };
 
 const UniqueTokenCoinIcon = magicMemo(
   asset => {
-    const {
-      collection: { name },
-      background,
-      image_thumbnail_url,
-      image_url,
-      selected,
-      shouldPrioritizeImageLoading,
-      ...props
-    } = asset;
+    const { collectionName, backgroundColor, images, selected, shouldPrioritizeImageLoading, ...props } = asset;
     const { colors } = useTheme();
-    const imageUrl = svgToPngIfNeeded(image_thumbnail_url || image_url, true);
+    const imageUrl = svgToPngIfNeeded(images.lowResUrl || images.highResUrl, true);
     return (
       <Centered>
         <RequestVendorLogoIcon
-          backgroundColor={background || colors.lightestGrey}
+          backgroundColor={backgroundColor || colors.lightestGrey}
           borderRadius={10}
-          dappName={name}
+          dappName={collectionName}
           imageUrl={imageUrl}
           noShadow={selected}
           shouldPrioritizeImageLoading={shouldPrioritizeImageLoading}
@@ -78,7 +70,7 @@ const UniqueTokenCoinIcon = magicMemo(
       </Centered>
     );
   },
-  ['background', 'image_thumbnail_url']
+  ['backgroundColor', 'images.lowResUrl', 'images.highResUrl']
 );
 
 const CollectiblesSendRow = React.memo(
@@ -102,11 +94,7 @@ const CollectiblesSendRow = React.memo(
 
     const isENS = item.type === AssetType.ens;
 
-    const subtitle = useMemo(
-      () => (item.name && !isENS ? `${item.name}` : item.collectionName),
-
-      [isENS, item.collectionName, item.name]
-    );
+    const subtitle = useMemo(() => (item.name ? item.name : item.collectionName), [isENS, item.collectionName, item.name]);
 
     const Wrapper = disablePressAnimation ? TouchableWithoutFeedback : ButtonPressAnimation;
 
@@ -127,7 +115,7 @@ const CollectiblesSendRow = React.memo(
             containerStyles={selected ? selectedStyles : null}
             selected={selected}
             subtitle={subtitle}
-            testID={testID + item.name}
+            testID={testID + item.uniqueId}
             topRowRender={TopRow}
           />
         </Wrapper>

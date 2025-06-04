@@ -3,7 +3,7 @@ import { useAccountSettings } from '.';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useMemo } from 'react';
 
-export default function useUniqueTokens() {
+export default function useSendableUniqueTokens() {
   const { accountAddress } = useAccountSettings();
   const {
     data: { nfts: uniqueTokens },

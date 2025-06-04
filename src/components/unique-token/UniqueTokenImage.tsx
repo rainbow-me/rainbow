@@ -59,7 +59,6 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const onLoad = useCallback(() => setIsLoaded(true), [setIsLoaded]);
   const onError = useCallback(
     (e: any) => {
-      console.log('onError', e);
       setErrorLoadingImage(true);
     },
     [setErrorLoadingImage]
@@ -77,15 +76,6 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const shouldShowSvg = hasImage && isSVG && !errorLoadingImage && !transformSvgs;
   const shouldShowRegularImage = hasImage && !isSVG && !errorLoadingImage;
   const shouldShowTextFallback = (!shouldShowSvg && !shouldShowRegularImage) || (isHiddenToken && isCard);
-
-  console.log('imageUrl', imageUrl);
-  console.log('lowResImageUrl', lowResImageUrl);
-  console.log(mimeType);
-  console.log({
-    shouldShowSvg,
-    shouldShowRegularImage,
-    shouldShowTextFallback,
-  });
 
   return (
     <Centered backgroundColor={backgroundColor} style={StyleSheet.absoluteFill}>

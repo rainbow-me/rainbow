@@ -40,7 +40,7 @@ import {
   Text,
   TextProps,
 } from '@/design-system';
-import { UniqueAsset } from '@/entities';
+import { AssetType, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
@@ -282,9 +282,9 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   );
 
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
-  const isPoap = asset.type === 'poap';
-  const isENS = asset.type === 'ens';
-  const isNFT = asset.type === 'nft';
+  const isPoap = asset.type === AssetType.poap;
+  const isENS = asset.type === AssetType.ens;
+  const isNFT = asset.type === AssetType.nft;
 
   // Fetch the ENS profile if the unique token is an ENS name.
   const cleanENSName = isENS ? (asset.uniqueId ? asset.uniqueId?.split(' ')?.[0] : asset.uniqueId) : '';
@@ -421,8 +421,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
     },
     { timeout: 5 * 1000 }
   );
-
-  console.log('asset', asset);
 
   return (
     <>

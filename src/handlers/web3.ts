@@ -233,8 +233,9 @@ export const estimateGas = async (estimateGasData: TransactionRequest, provider:
   }
 };
 
-export function assetIsUniqueAsset(asset: ParsedAddressAsset | UniqueAsset): asset is UniqueAsset {
-  return 'collection' in asset;
+export function assetIsUniqueAsset(asset: ParsedAddressAsset | UniqueAsset | undefined): asset is UniqueAsset {
+  if (!asset) return false;
+  return asset.type === AssetType.nft || asset.type === AssetType.ens || asset.type === AssetType.poap;
 }
 
 export function assetIsParsedAddressAsset(asset: ParsedAddressAsset | UniqueAsset): asset is ParsedAddressAsset {

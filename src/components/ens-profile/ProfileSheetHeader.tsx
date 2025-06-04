@@ -18,6 +18,7 @@ import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTran
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { useLegacyNFTs } from '@/resources/nfts';
 
 export default function ProfileSheetHeader({
   ensName: defaultEnsName,
