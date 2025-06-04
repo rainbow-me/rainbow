@@ -646,18 +646,21 @@ export const identifyWalletType = (walletSeed: EthereumWalletSeed): EthereumWall
   return EthereumWalletType.seed;
 };
 
-export const createWallet = async ({
-  seed = null,
-  color = null,
-  name = null,
-  isRestoring = false,
-  overwrite = false,
-  checkedWallet = null,
-  image = null,
-  silent = false,
-  clearCallbackOnStartCreation = false,
-  userPin,
-}: CreateWalletParams): Promise<null | EthereumWallet> => {
+export const createWallet = async (props: CreateWalletParams): Promise<null | EthereumWallet> => {
+  console.log('createWallet', props);
+  const {
+    seed = null,
+    color = null,
+    name = null,
+    isRestoring = false,
+    overwrite = false,
+    checkedWallet = null,
+    image = null,
+    silent = false,
+    clearCallbackOnStartCreation = false,
+    userPin,
+  } = props;
+
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;
