@@ -39,7 +39,7 @@ export function Moonpay({ accountAddress, config }: { accountAddress: string; co
             provider: FiatProviderName.Moonpay,
           });
 
-          openInBrowser(url);
+          openInBrowser(url, false);
         } catch (e) {
           logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Moonpay,
