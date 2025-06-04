@@ -313,7 +313,6 @@
     "@babel/core": "^7.25.2",
     "@babel/parser": "^7.25.0",
     "@babel/plugin-transform-export-namespace-from": "^7.25.9",
-    "@babel/plugin-transform-react-inline-elements": "^7.25.9",
     "@babel/plugin-transform-runtime": "^7.25.0",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",

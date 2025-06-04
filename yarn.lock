@@ -198,16 +198,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-builder-react-jsx@npm:^7.25.9":
-  version: 7.25.9
-  resolution: "@babel/helper-builder-react-jsx@npm:7.25.9"
-  dependencies:
-    "@babel/helper-annotate-as-pure": "npm:^7.25.9"
-    "@babel/types": "npm:^7.25.9"
-  checksum: 10c0/99d6e87eede0971f25b5e638220f5f966c56c03f6a6278a693c73ac0a31acddb86110208a89d948aa337c8cf7998fb317c00e8baf2e9fa0a42b9207b977dc9c6
-  languageName: node
-  linkType: hard
-
 "@babel/helper-compilation-targets@npm:^7.20.7, @babel/helper-compilation-targets@npm:^7.22.6, @babel/helper-compilation-targets@npm:^7.25.9, @babel/helper-compilation-targets@npm:^7.26.5":
   version: 7.27.0
   resolution: "@babel/helper-compilation-targets@npm:7.27.0"
@@ -1649,18 +1639,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 10c0/c14a07a9e75723c96f1a0a306b8a8e899ff1c6a0cc3d62bcda79bb1b54e4319127b258651c513a1a47da152cdc22e16525525a30ae5933a2980c7036fd0b4d24
-  languageName: node
-  linkType: hard
-
-"@babel/plugin-transform-react-inline-elements@npm:^7.25.9":
-  version: 7.25.9
-  resolution: "@babel/plugin-transform-react-inline-elements@npm:7.25.9"
-  dependencies:
-    "@babel/helper-builder-react-jsx": "npm:^7.25.9"
-    "@babel/helper-plugin-utils": "npm:^7.25.9"
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 10c0/d745bcfa8e51acc497b5ea2ff2fc4215cd39ebdb54703f2973962e3818a4829081ebc9e7818db28f90d1295e0b02e140986509ba48eef8aaa9de8c09b9434646
   languageName: node
   linkType: hard
 
@@ -9543,7 +9521,6 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/parser": "npm:^7.25.0"
     "@babel/plugin-transform-export-namespace-from": "npm:^7.25.9"
-    "@babel/plugin-transform-react-inline-elements": "npm:^7.25.9"
     "@babel/plugin-transform-runtime": "npm:^7.25.0"
     "@babel/preset-env": "npm:^7.25.3"
     "@babel/runtime": "npm:^7.25.0"

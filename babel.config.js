@@ -60,12 +60,7 @@ module.exports = function (api) {
         presets: presets,
       },
       production: {
-        plugins: [
-          ...plugins,
-          '@babel/plugin-transform-runtime',
-          '@babel/plugin-transform-react-inline-elements',
-          ['transform-remove-console', { exclude: ['error'] }],
-        ],
+        plugins: [...plugins, '@babel/plugin-transform-runtime', ['transform-remove-console', { exclude: ['error'] }]],
         presets: presets,
       },
     },
