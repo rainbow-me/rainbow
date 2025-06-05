@@ -270,7 +270,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       await saveAddress(account.address);
 
       // Set the wallet selected (KEYCHAIN)
-      await setSelectedWallet(newWallets[id]);
+      setSelectedWallet(newWallets[id]);
 
       set({ selected: newWallets[id], wallets: newWallets });
 
