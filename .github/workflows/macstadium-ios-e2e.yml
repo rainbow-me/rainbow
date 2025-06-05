@@ -82,7 +82,7 @@ jobs:
 
       - name: RNEF Remote Build - iOS simulator
         id: rnef-remote-build-ios
-        uses: callstackincubator/ios@v1.0.2
+        uses: callstackincubator/ios@v1
         with:
           destination: simulator
           github-token: ${{ secrets.GITHUB_TOKEN }}

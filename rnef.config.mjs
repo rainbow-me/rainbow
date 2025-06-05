@@ -11,5 +11,4 @@ export default {
     android: platformAndroid(),
   },
   remoteCacheProvider: 'github-actions',
-  internalPlugins: [],
 };
