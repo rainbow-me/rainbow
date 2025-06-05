@@ -283,10 +283,10 @@ class CandlestickChartManager {
   private yAxisWidth: number;
 
   private activeCandle: SharedValue<Bar | undefined>;
-  private candleScale: SharedValue<number>;
   private chartMaxY: SharedValue<number>;
   private chartMinY: SharedValue<number>;
   private chartPicture: SharedValue<SkPicture>;
+  private chartScale: SharedValue<number>;
   private crosshairPicture: SharedValue<SkPicture>;
   private indicatorPicture: SharedValue<SkPicture>;
   private isDecelerating: SharedValue<boolean>;
@@ -343,12 +343,12 @@ class CandlestickChartManager {
   constructor({
     activeCandle,
     buildParagraph,
-    candleScale,
     candles,
     chartHeight,
     chartMaxY,
     chartMinY,
     chartPicture,
+    chartScale,
     chartWidth,
     chartXOffset,
     config,
@@ -362,12 +362,12 @@ class CandlestickChartManager {
   }: {
     activeCandle: SharedValue<Bar | undefined>;
     buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
-    candleScale: SharedValue<number>;
     candles: Bar[];
     chartHeight: number;
     chartMaxY: SharedValue<number>;
     chartMinY: SharedValue<number>;
     chartPicture: SharedValue<SkPicture>;
+    chartScale: SharedValue<number>;
     chartWidth: number;
     chartXOffset: SharedValue<number>;
     config: CandlestickConfig;
@@ -394,10 +394,10 @@ class CandlestickChartManager {
 
     // ========== Shared Values ==========
     this.activeCandle = activeCandle;
-    this.candleScale = candleScale;
     this.chartMaxY = chartMaxY;
     this.chartMinY = chartMinY;
     this.chartPicture = chartPicture;
+    this.chartScale = chartScale;
     this.crosshairPicture = crosshairPicture;
     this.indicatorPicture = indicatorPicture;
     this.isDecelerating = isDecelerating;
@@ -1059,10 +1059,10 @@ class CandlestickChartManager {
   public onLongPressStart(x: number, y: number): void {
     triggerHaptics('impactMedium');
     requestAnimationFrame(() => {
-      this.candleScale.value = withTiming(0.9875, TIMING_CONFIGS.buttonPressConfig, isFinished => {
+      this.chartScale.value = withTiming(0.9875, TIMING_CONFIGS.buttonPressConfig, isFinished => {
         if (!isFinished) return;
         triggerHaptics('soft');
-        this.candleScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
+        this.chartScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
       });
     });
     this.buildCrosshairPicture(x, y, true);
@@ -1167,17 +1167,18 @@ function useCandlestickChart({
   });
 
   const activeCandle = useSharedValue<Bar | undefined>(undefined);
-  const candleScale = useSharedValue(1);
   const chartManager = useSharedValue<CandlestickChartManager | undefined>(undefined);
   const chartMaxY = useSharedValue(0);
   const chartMinY = useSharedValue(0);
-  const chartPicture = useSharedValue(initialPicture);
+  const chartScale = useSharedValue(1);
   const chartXOffset = useSharedValue(getInitialOffset(candles, chartWidth, config));
-  const crosshairPicture = useSharedValue(initialPicture);
-  const indicatorPicture = useSharedValue(initialPicture);
   const isDecelerating = useSharedValue(false);
   const maxDisplayedVolume = useSharedValue(0);
   const xAxisLabels = useSharedValue<string[]>([]);
+
+  const chartPicture = useSharedValue(initialPicture);
+  const crosshairPicture = useSharedValue(initialPicture);
+  const indicatorPicture = useSharedValue(initialPicture);
 
   useRunOnce(() => {
     const nativeCurrency = getNativeCurrency();
@@ -1185,12 +1186,12 @@ function useCandlestickChart({
       chartManager.value = new CandlestickChartManager({
         activeCandle,
         buildParagraph,
-        candleScale,
         candles,
         chartHeight,
         chartMaxY,
         chartMinY,
         chartPicture,
+        chartScale,
         chartWidth,
         chartXOffset,
         config,
@@ -1215,7 +1216,7 @@ function useCandlestickChart({
   //   }
   // );
 
-  const chartTransform = useDerivedValue(() => [{ scale: candleScale.value }]);
+  const chartTransform = useDerivedValue(() => [{ scale: chartScale.value }]);
 
   useAnimatedReaction(
     () => isDecelerating.value,
