@@ -123,7 +123,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     return () => {
       provider?.off('block', updateAvatars);
     };
-  }, [updateWalletENSAvatars]);
+  }, []);
 
   // actions
   const commitAction: ActionTypes[typeof REGISTRATION_STEPS.COMMIT] = useCallback(
