@@ -2,6 +2,7 @@ import {
   BlendMode,
   Canvas2 as Canvas,
   ClipOp,
+  Group,
   PaintStyle,
   Picture,
   SkCanvas,
@@ -26,9 +27,10 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Inline, SkiaText, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
@@ -281,6 +283,7 @@ class CandlestickChartManager {
   private yAxisWidth: number;
 
   private activeCandle: SharedValue<Bar | undefined>;
+  private candleScale: SharedValue<number>;
   private chartMaxY: SharedValue<number>;
   private chartMinY: SharedValue<number>;
   private chartPicture: SharedValue<SkPicture>;
@@ -340,6 +343,7 @@ class CandlestickChartManager {
   constructor({
     activeCandle,
     buildParagraph,
+    candleScale,
     candles,
     chartHeight,
     chartMaxY,
@@ -358,6 +362,7 @@ class CandlestickChartManager {
   }: {
     activeCandle: SharedValue<Bar | undefined>;
     buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
+    candleScale: SharedValue<number>;
     candles: Bar[];
     chartHeight: number;
     chartMaxY: SharedValue<number>;
@@ -389,6 +394,7 @@ class CandlestickChartManager {
 
     // ========== Shared Values ==========
     this.activeCandle = activeCandle;
+    this.candleScale = candleScale;
     this.chartMaxY = chartMaxY;
     this.chartMinY = chartMinY;
     this.chartPicture = chartPicture;
@@ -1051,7 +1057,14 @@ class CandlestickChartManager {
   // ============ Gesture Handlers ============================================= //
 
   public onLongPressStart(x: number, y: number): void {
-    triggerHaptics('rigid');
+    triggerHaptics('impactMedium');
+    requestAnimationFrame(() => {
+      this.candleScale.value = withTiming(0.9875, TIMING_CONFIGS.buttonPressConfig, isFinished => {
+        if (!isFinished) return;
+        triggerHaptics('soft');
+        this.candleScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
+      });
+    });
     this.buildCrosshairPicture(x, y, true);
   }
 
@@ -1154,6 +1167,7 @@ function useCandlestickChart({
   });
 
   const activeCandle = useSharedValue<Bar | undefined>(undefined);
+  const candleScale = useSharedValue(1);
   const chartManager = useSharedValue<CandlestickChartManager | undefined>(undefined);
   const chartMaxY = useSharedValue(0);
   const chartMinY = useSharedValue(0);
@@ -1171,6 +1185,7 @@ function useCandlestickChart({
       chartManager.value = new CandlestickChartManager({
         activeCandle,
         buildParagraph,
+        candleScale,
         candles,
         chartHeight,
         chartMaxY,
@@ -1199,6 +1214,8 @@ function useCandlestickChart({
   //     runOnUI(() => chartManager.value?.setCandles(candles))();
   //   }
   // );
+
+  const chartTransform = useDerivedValue(() => [{ scale: candleScale.value }]);
 
   useAnimatedReaction(
     () => isDecelerating.value,
@@ -1232,9 +1249,8 @@ function useCandlestickChart({
   });
 
   return {
-    chartHeight,
     chartManager,
-    chartWidth,
+    chartTransform,
     chartXOffset,
     config,
     isDecelerating,
@@ -1259,7 +1275,7 @@ export const CandlestickChart = memo(function CandlestickChart({
   const { isDarkMode } = useColorMode();
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
-  const { chartManager, chartXOffset, config, isDecelerating, pictures, xAxisLabels, xAxisWidth } = useCandlestickChart({
+  const { chartManager, chartTransform, chartXOffset, config, isDecelerating, pictures, xAxisLabels, xAxisWidth } = useCandlestickChart({
     backgroundColor,
     candles,
     chartHeight,
@@ -1348,9 +1364,11 @@ export const CandlestickChart = memo(function CandlestickChart({
     >
       <GestureDetector gesture={chartGestures}>
         <Canvas style={styles.canvas}>
-          <Picture picture={pictures.chart} />
-          <Picture picture={pictures.indicator} />
-          <Picture picture={pictures.crosshair} />
+          <Group origin={{ x: chartWidth / 2, y: chartHeight / 2 }} transform={chartTransform}>
+            <Picture picture={pictures.chart} />
+            <Picture picture={pictures.indicator} />
+            <Picture picture={pictures.crosshair} />
+          </Group>
 
           <SkiaText
             color="labelQuinary"
