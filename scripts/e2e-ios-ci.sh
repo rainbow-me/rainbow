@@ -23,7 +23,7 @@ xcrun simctl install "$DEVICE_UDID" "$APP_PATH"
 
 # Run the tests
 echo "Running tests..."
-./scripts/e2e-ios.sh --device "$DEVICE_UDID" --debug-output "$ARTIFACTS_FOLDER" --flatten-debug-output
+./scripts/e2e-ios.sh --device "$DEVICE_UDID" --debug-output "$ARTIFACTS_FOLDER" --flatten-debug-output --app "$APP_PATH"
 TEST_STATUS=$?
 
 exit $TEST_STATUS
