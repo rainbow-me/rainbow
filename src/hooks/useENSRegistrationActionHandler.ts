@@ -8,7 +8,7 @@ import { coverMetadataAtom } from '../components/ens-registration/RegistrationCo
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 
-import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { refreshWalletENSInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
@@ -28,7 +28,6 @@ import { noop } from 'lodash';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { IS_IOS } from '@/env';
-import useWalletENSAvatar from '@/hooks/useWalletENSAvatar';
 import useENSRegistration from '@/hooks/useENSRegistration';
 
 // Generic type for action functions
@@ -97,7 +96,6 @@ const formatENSActionParams = (registrationParameters: RegistrationParameters): 
 const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step, sendReverseRecord = false, yearsDuration = 1 }) => {
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const isHardwareWallet = useIsHardwareWallet();
   const accountAddress = useAccountAddress();
   const { registrationParameters } = useENSRegistration();
@@ -113,7 +111,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
     const updateAvatars = () => {
       if (updateAvatarsOnNextBlock.current) {
-        updateWalletENSAvatars();
+        refreshWalletENSInfo();
         updateAvatarsOnNextBlock.current = false;
       }
     };

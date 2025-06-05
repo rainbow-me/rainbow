@@ -3,15 +3,15 @@ import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { usePositionsStore } from '@/state/positions/positions';
-import { refreshWalletENSAvatars, refreshWalletNames, getAccountAddress, getWallets } from '@/state/wallets/walletsStore';
+import { getAccountAddress, getWallets, refreshWalletENSInfo } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { Address } from 'viem';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
@@ -30,8 +30,7 @@ export const refreshAccountData = async () => {
 
   await Promise.all([
     delay(MIN_REFRESH_DURATION),
-    refreshWalletNames(),
-    refreshWalletENSAvatars(),
+    refreshWalletENSInfo(),
     userAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
