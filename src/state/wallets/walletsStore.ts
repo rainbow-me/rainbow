@@ -56,7 +56,7 @@ interface WalletsState {
 
   walletNames: WalletNames;
   wallets: Wallets;
-  updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
+  updateWallets: (wallets: { [id: string]: RainbowWallet }) => void;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -110,8 +110,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     walletNames: {},
 
     wallets: null,
-    async updateWallets(wallets) {
-      await saveAllWallets(wallets);
+    updateWallets(wallets) {
+      saveAllWallets(wallets);
       set({
         // ensure its a new object to break any memoization downstream
         wallets: {
