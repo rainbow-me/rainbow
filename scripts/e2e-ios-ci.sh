@@ -7,7 +7,7 @@ export MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true
 ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
 
 # Install the app.
-xcrun simctl install $DEVICE_UDID ios/build/Build/Products/Release-iphonesimulator/Rainbow.app
+xcrun simctl install $DEVICE_UDID $ARTIFACT_PATH_FOR_E2E
 
 # Run the tests with proper parameters
 echo "Running tests..."
