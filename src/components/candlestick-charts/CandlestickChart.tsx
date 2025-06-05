@@ -1057,7 +1057,7 @@ class CandlestickChartManager {
   // ============ Gesture Handlers ============================================= //
 
   public onLongPressStart(x: number, y: number): void {
-    triggerHaptics('impactMedium');
+    triggerHaptics('soft');
     requestAnimationFrame(() => {
       this.chartScale.value = withTiming(0.9875, TIMING_CONFIGS.buttonPressConfig, isFinished => {
         if (!isFinished) return;
