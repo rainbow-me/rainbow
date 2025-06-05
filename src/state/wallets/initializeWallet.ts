@@ -20,7 +20,6 @@ import { PerformanceTracking } from '../../performance/tracking';
 import { ensureValidHex } from '../../handlers/web3';
 import store from '@/redux/store';
 import { setIsSmallBalancesOpen } from '@/state/wallets/smallBalancesStore';
-import { refreshAccountData } from '@/hooks/useRefreshAccountData';
 
 type WalletStatus = 'unknown' | 'new' | 'imported' | 'old';
 
