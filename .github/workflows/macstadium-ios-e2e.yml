@@ -105,7 +105,7 @@ jobs:
       - name: Download and Unpack IPA artifact
         id: download-artifact
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build-release.outputs.artifact-id }}/zip"
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.e2e-build-ios.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
           IPA_PATH=$(find downloaded-artifacts -name "*.ipa" -print -quit)
