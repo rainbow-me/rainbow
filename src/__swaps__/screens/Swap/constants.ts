@@ -21,6 +21,7 @@ export const REVIEW_SHEET_ROW_GAP = 24;
 export const REVIEW_SHEET_HEIGHT = 412;
 export const SETTINGS_SHEET_HEIGHT = 299;
 export const SETTINGS_SHEET_ROW_GAP = 28;
+export const ACTION_BUTTON_HEIGHT = 45;
 export const GAS_SHEET_HEIGHT = 274;
 export const BOTTOM_ACTION_BAR_HEIGHT = IS_ANDROID ? 48 + 32 + safeAreaInsetValues.bottom : 114;
 export const BASE_INPUT_HEIGHT = 104;
