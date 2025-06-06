@@ -9621,7 +9621,7 @@ __metadata:
     react-native-tcp: "npm:3.3.2"
     react-native-text-input-mask: "npm:2.0.0"
     react-native-text-size: "rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
-    react-native-tooltip: "rainbow-me/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590"
+    react-native-tooltip: "rainbow-me/react-native-tooltip#deaf176df8f1e5fb7bf04f83d1574992d369ee39"
     react-native-tooltips: "rainbow-me/react-native-tooltips#fdafbc7ba33ee231229f5d3f58b29d0d1c55ddfa"
     react-native-turbo-haptics: "npm:1.0.5"
     react-native-udp: "npm:2.7.0"
@@ -23850,10 +23850,10 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"react-native-tooltip@rainbow-me/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590":
+"react-native-tooltip@rainbow-me/react-native-tooltip#deaf176df8f1e5fb7bf04f83d1574992d369ee39":
   version: 5.2.1
-  resolution: "react-native-tooltip@https://github.com/rainbow-me/react-native-tooltip.git#commit=e0e88d212b5b7f350e5eabba87f588a32e0f2590"
-  checksum: 10c0/f9db51a5e9e037c0511dbf1dbd6b8b6dae64ab6d73dbe9165dda5fb18939a8c77ba95389d5a66457885f245a9cb18ae7eb5a278078bc463f62d4421c18eb2f83
+  resolution: "react-native-tooltip@https://github.com/rainbow-me/react-native-tooltip.git#commit=deaf176df8f1e5fb7bf04f83d1574992d369ee39"
+  checksum: 10c0/b55863efcbdf6d6d10cca7b63f4690062594b711695148c7eeba232385a7596cc8272b5ef3115abb1d77397149383c4a7f4ba63666e7d8090b5ccf67a04f7386
   languageName: node
   linkType: hard
 
