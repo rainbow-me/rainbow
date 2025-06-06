@@ -94,8 +94,8 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       {shouldShowTextFallback && (
         <LegacyText align="center" color={getFallbackTextColor(backgroundColor, isDarkMode, colors)} lineHeight="looser" size="smedium">
           {buildUniqueTokenName({
-            collection: { name: collectionName },
-            id,
+            collectionName,
+            tokenId: id,
             name,
             uniqueId,
           })}

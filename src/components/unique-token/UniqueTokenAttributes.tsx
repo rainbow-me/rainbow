@@ -43,7 +43,7 @@ const UniqueTokenAttributes = ({
 
   return (
     <Inline space="10px">
-      {sortedTraits.map(({ color, disableMenu, lowercase, value, originalValue, trait_type: type, max_value: maxValue }) => (
+      {sortedTraits.map(({ color, disableMenu, lowercase, value, originalValue, trait_type: type }) => (
         <Tag
           color={color}
           disableMenu={disableMenu}
@@ -52,7 +52,6 @@ const UniqueTokenAttributes = ({
           lowercase={lowercase}
           marketplaceId={marketplaceId}
           marketplaceName={marketplaceName}
-          maxValue={maxValue}
           originalValue={originalValue}
           slug={slug}
           text={value}

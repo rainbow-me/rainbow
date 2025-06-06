@@ -8,8 +8,8 @@ import useOpenClaimables from '@/hooks/useOpenClaimables';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const FILTER_TYPES = {
-  'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER],
-  'select-nft': [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER],
+  'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.LEGACY_NFT, CellType.LEGACY_FAMILY_HEADER],
+  'select-nft': [CellType.NFT_SPACE_AFTER, CellType.LEGACY_NFT, CellType.LEGACY_FAMILY_HEADER],
 } as { [key in AssetListType]: CellType[] };
 
 export default function useMemoBriefSectionData({
@@ -89,12 +89,12 @@ export default function useMemoBriefSectionData({
           }
         }
 
-        if (data.type === CellType.FAMILY_HEADER) {
+        if (data.type === CellType.FAMILY_HEADER || data.type === CellType.LEGACY_FAMILY_HEADER) {
           const name = (data as NFTFamilyExtraData).name;
           isGroupOpen = openFamilies[name];
         }
 
-        if (data.type === CellType.NFT || data.type === CellType.NFT_SPACE_AFTER) {
+        if (data.type === CellType.NFT || data.type === CellType.NFT_SPACE_AFTER || data.type === CellType.LEGACY_NFT) {
           return isGroupOpen;
         }
 

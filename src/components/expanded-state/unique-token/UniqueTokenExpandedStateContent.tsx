@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
@@ -9,6 +9,8 @@ import { ZoomableWrapper } from './ZoomableWrapper';
 import { usePersistentAspectRatio, useUniqueToken } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { UniqueAsset } from '@/entities';
+import { DerivedValue, SharedValue } from 'react-native-reanimated';
 
 const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));
 
@@ -20,6 +22,21 @@ const LoadingWrapper = styled(View)({
   paddingRight: 10,
   position: 'absolute',
 });
+
+type UniqueTokenExpandedStateContentProps = {
+  animationProgress?: SharedValue<number>;
+  asset: UniqueAsset;
+  borderRadius?: number;
+  horizontalPadding?: number;
+  imageColor: string;
+  resizeMode?: 'cover' | 'contain' | 'stretch' | 'repeat';
+  textColor?: string;
+  disablePreview?: boolean;
+  opacity?: DerivedValue<number>;
+  yPosition?: SharedValue<number>;
+  onContentFocus: () => void;
+  onContentBlur: () => void;
+};
 
 const UniqueTokenExpandedStateContent = ({
   animationProgress,
@@ -34,19 +51,22 @@ const UniqueTokenExpandedStateContent = ({
   yPosition,
   onContentFocus,
   onContentBlur,
-}) => {
+}: UniqueTokenExpandedStateContentProps) => {
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
 
-  const aspectRatio = usePersistentAspectRatio(asset.lowResUrl);
+  const aspectRatio = usePersistentAspectRatio(asset.images.lowResUrl);
   const aspectRatioWithFallback = supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
   // default to showing a loading spinner for 3D/video assets
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
+  const fallbackUrl = asset.images.highResUrl || asset.images.lowResUrl || '';
+
   return (
     <ZoomableWrapper
+      // @ts-expect-error animationProgress is optional... but javascript component
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
@@ -61,25 +81,27 @@ const UniqueTokenExpandedStateContent = ({
         {supportsVideo ? (
           <SimpleVideo
             loading={loading}
-            posterUri={asset.image_url}
+            posterUri={fallbackUrl}
             setLoading={setLoading}
             style={StyleSheet.absoluteFill}
-            uri={asset.animation_url || asset.image_url}
+            uri={asset.images.animatedUrl || ''}
           />
         ) : supports3d ? (
-          <ModelView fallbackUri={asset.image_url} loading={loading} setLoading={setLoading} uri={asset.animation_url || asset.image_url} />
+          <ModelView fallbackUri={fallbackUrl} loading={loading} setLoading={setLoading} uri={asset.images.animatedUrl || ''} />
         ) : supportsAudio ? (
-          <AudioPlayer fontColor={textColor} imageColor={imageColor} uri={asset.animation_url || asset.image_url} />
+          <AudioPlayer fontColor={textColor} imageColor={imageColor} uri={fallbackUrl} />
         ) : (
           <UniqueTokenImage
-            backgroundColor={asset.background}
-            imageUrl={asset.image_url}
-            lowResImageUrl={asset.lowResUrl}
-            collectionName={asset.collection?.name ?? ''}
-            fullUniqueId={asset.fullUniqueId}
-            id={asset.id}
-            address={asset.asset_contract?.address}
-            mimeType={asset.mime_type}
+            collectionName={asset.collectionName ?? ''}
+            name={asset.name}
+            backgroundColor={asset.backgroundColor || imageColor}
+            imageUrl={asset.images.highResUrl}
+            lowResImageUrl={asset.images.lowResUrl}
+            mimeType={asset.images.mimeType}
+            fullUniqueId={asset.uniqueId}
+            uniqueId={asset.uniqueId}
+            id={asset.uniqueId}
+            address={asset.contractAddress}
             transformSvgs={false}
           />
         )}

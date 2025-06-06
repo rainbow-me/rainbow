@@ -40,14 +40,12 @@ import {
   Text,
   TextProps,
 } from '@/design-system';
-import { UniqueAsset } from '@/entities';
+import { AssetType, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { buildUniqueTokenName } from '@/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
-  useCollectible,
   useDimensions,
   useENSProfile,
   useENSRegistration,
@@ -59,7 +57,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, magicMemo, safeAreaInsetValues } from '@/utils';
+import { magicMemo, safeAreaInsetValues } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import isHttpUrl from '@/helpers/isHttpUrl';
@@ -70,6 +68,9 @@ import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { parseUniqueId } from '@/resources/nfts/utils';
+import { buildUniqueTokenName } from '@/helpers/assets';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -224,21 +225,21 @@ const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
   }
 };
 
-const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenExpandedStateProps) => {
+const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateProps) => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
-  const collectible = useCollectible(passedAsset?.uniqueId);
-  const asset = external ? passedAsset : collectible;
+  const { top: topInset } = useSafeAreaInsets();
+
   const {
     data: { nftOffers },
   } = useNFTOffers({
     walletAddress: accountAddress,
   });
 
-  const offer = useMemo(() => nftOffers?.find(offer => offer.nft.uniqueId === asset.fullUniqueId), [asset.fullUniqueId, nftOffers]);
+  const offer = useMemo(() => nftOffers?.find(offer => offer.nft.uniqueId === asset.uniqueId), [asset.uniqueId, nftOffers]);
   const offerValue = useMemo(
     () =>
       offer
@@ -278,31 +279,17 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     }
   }, [isReportSpamToastActive]);
 
-  const {
-    collection: { description: familyDescription, external_url: familyLink, slug } = {},
-    description,
-    familyImage,
-    familyName,
-    isSendable,
-    marketplaceName,
-    traits = [],
-    uniqueId,
-    fullUniqueId,
-  } = asset;
-
-  const filteredTraits = traits.filter(
+  const filteredTraits = asset.traits.filter(
     trait => trait.value !== undefined && trait.value !== null && trait.value !== '' && trait.trait_type && !isHttpUrl(trait.value)
   );
 
-  const uniqueTokenType = getUniqueTokenType(asset);
-
   // Create deterministic boolean flags from the `uniqueTokenType` (for easier readability).
-  const isPoap = uniqueTokenType === 'POAP';
-  const isENS = uniqueTokenType === 'ENS';
-  const isNFT = uniqueTokenType === 'NFT';
+  const isPoap = asset.type === AssetType.poap;
+  const isENS = asset.type === AssetType.ens;
+  const isNFT = asset.type === AssetType.nft;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS ? (uniqueId ? uniqueId?.split(' ')?.[0] : uniqueId) : '';
+  const cleanENSName = isENS ? (asset.uniqueId ? asset.uniqueId?.split(' ')?.[0] : asset.uniqueId) : '';
   const ensProfile = useENSProfile(cleanENSName, {
     enabled: isENS,
   });
@@ -310,10 +297,10 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
 
   useFocusEffect(
     useCallback(() => {
-      if (uniqueTokenType === 'ENS') {
+      if (isENS) {
         setOptions({ limitActiveModals: false });
       }
-    }, [setOptions, uniqueTokenType])
+    }, [setOptions, isENS])
   );
 
   const profileInfoSectionAvailable = useMemo(() => {
@@ -347,12 +334,16 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     });
   }, [asset.chainId, navigate]);
 
-  const isHiddenAsset = useMemo(() => hiddenTokens.includes(fullUniqueId) as boolean, [hiddenTokens, fullUniqueId]);
-  const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId) as boolean, [showcaseTokens, uniqueId]);
+  const { network, contractAddress, tokenId } = parseUniqueId(asset.uniqueId);
+
+  const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.uniqueId), [hiddenTokens, asset.uniqueId]);
+  const isShowcaseAsset = useMemo(() => {
+    return showcaseTokens.includes(asset.uniqueId) || (network && showcaseTokens.includes(`${network}_${contractAddress}_${tokenId}`));
+  }, [showcaseTokens, asset.uniqueId, network, contractAddress, tokenId]);
 
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
-  const imageColor = usePersistentDominantColorFromImage(asset.lowResUrl) ?? colors.paleBlue;
+  const imageColor = usePersistentDominantColorFromImage(asset.images.lowResUrl) ?? colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -364,8 +355,8 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressMarketplaceName = useCallback(() => openInBrowser(asset.permalink), [asset.permalink]);
-  const handlePressParty = useCallback(() => openInBrowser(asset.external_link!), [asset.external_link]);
+  const handlePressMarketplaceName = useCallback(() => openInBrowser(asset.marketplaceUrl), [asset.marketplaceUrl]);
+  const handlePressParty = useCallback(() => openInBrowser(asset.websiteUrl!), [asset.websiteUrl]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -380,11 +371,19 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   }, [addShowcaseToken, isHiddenAsset, isShowcaseAsset, removeHiddenToken, removeShowcaseToken, asset]);
 
   const handlePressShare = useCallback(() => {
-    const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.permalink;
+    const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.marketplaceUrl;
+    if (!shareUrl) {
+      return;
+    }
 
     Share.share({
       message: IS_ANDROID ? shareUrl : undefined,
-      title: `Share ${buildUniqueTokenName(asset)} Info`,
+      title: `Share ${buildUniqueTokenName({
+        collectionName: asset.collectionName ?? '',
+        tokenId: asset.tokenId,
+        name: asset.name ?? '',
+        uniqueId: asset.uniqueId,
+      })} Info`,
       url: shareUrl,
     });
   }, [asset, isSupportedOnRainbowWeb, rainbowWebUrl]);
@@ -393,39 +392,42 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   const handlePressEdit = useCallback(() => {
     if (isENS) {
       InteractionManager.runAfterInteractions(() => {
-        startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
+        startRegistration(asset.uniqueId, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-          ensName: uniqueId,
-          externalAvatarUrl: asset?.lowResUrl,
+          ensName: asset.uniqueId,
+          externalAvatarUrl: asset.images.lowResUrl,
           mode: REGISTRATION_MODES.EDIT,
         });
       });
     }
-  }, [isENS, navigate, startRegistration, uniqueId, asset?.lowResUrl]);
+  }, [isENS, navigate, startRegistration, asset.uniqueId, asset.images.lowResUrl]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const isActionsEnabled = !external && !isReadOnlyWallet;
-  const hasSendButton = isSendable;
-  const isParty = asset?.external_link?.includes('party.app');
+  const hasSendButton = asset.isSendable;
+  const isParty = asset?.websiteUrl?.includes('party.app');
 
   const hasEditButton = isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
   const hasExtendDurationButton = !isReadOnlyWallet && profilesEnabled && isENS;
 
-  const familyLinkDisplay = useMemo(() => (familyLink ? new URL(familyLink).hostname.replace(/^www\./, '') : null), [familyLink]);
+  const familyLinkDisplay = useMemo(
+    () => (asset.websiteUrl ? new URL(asset.websiteUrl).hostname.replace(/^www\./, '') : null),
+    [asset.websiteUrl]
+  );
 
-  const hideNftMarketplaceAction = isPoap || !slug;
+  const hideNftMarketplaceAction = isPoap || !asset.marketplaceUrl;
 
   useTimeoutEffect(
     ({ elapsedTime }) => {
-      const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
-      const { name, description, image_url } = asset;
+      const { address, chainId } = getAddressAndChainIdFromUniqueId(asset.uniqueId);
+      const { name, description, images } = asset;
       analytics.track(analytics.event.tokenDetailsNFT, {
         eventSentAfterMs: elapsedTime,
-        token: { isPoap, isParty: !!isParty, isENS, address, chainId, name, image_url },
-        available_data: { description: !!description, image_url: !!image_url, floorPrice: !!offer?.floorPrice },
+        token: { isPoap, isParty: !!isParty, isENS, address, chainId, name, image_url: images.lowResUrl },
+        available_data: { description: !!description, image_url: !!images.lowResUrl, floorPrice: !!offer?.floorPrice },
       });
     },
     { timeout: 5 * 1000 }
@@ -437,16 +439,16 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
             <UniqueTokenImage
-              collectionName={asset.collection?.name ?? ''}
+              collectionName={asset.collectionName ?? ''}
               name={asset.name}
-              backgroundColor={asset.background || imageColor}
-              imageUrl={asset.image_url}
-              lowResImageUrl={asset.lowResUrl}
-              mimeType={asset.mime_type}
-              fullUniqueId={asset.fullUniqueId}
+              backgroundColor={asset.backgroundColor || imageColor}
+              imageUrl={asset.images.highResUrl}
+              lowResImageUrl={asset.images.lowResUrl}
+              mimeType={asset.images.mimeType}
+              fullUniqueId={asset.uniqueId}
               uniqueId={asset.uniqueId}
-              id={asset.id}
-              address={asset.asset_contract?.address}
+              id={asset.uniqueId}
+              address={asset.contractAddress}
             />
             <BackgroundBlur />
           </BackgroundImage>
@@ -466,7 +468,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
         <ColorModeProvider value="darkTinted">
           <AccentColorProvider color={imageColor}>
             <ImagePreviewOverlay enableZoom={IS_IOS} opacity={ensCoverOpacity} yPosition={yPosition}>
-              <Inset bottom={sectionSpace} top={{ custom: 33 }}>
+              <Inset bottom={sectionSpace} top={{ custom: topInset }}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
                     <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
@@ -481,10 +483,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                 onContentBlur={handleContentBlur}
                 onContentFocus={handleContentFocus}
                 opacity={contentOpacity}
-                // @ts-expect-error JavaScript component
-                sheetRef={sheetRef}
                 textColor={textColor}
-                uniqueId={asset.uniqueId}
                 yPosition={yPosition}
               />
               <Animated.View style={opacityStyle}>
@@ -501,7 +500,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                         ) : (
                           <View />
                         )}
-                        {isSupportedOnRainbowWeb || asset.permalink ? (
+                        {isSupportedOnRainbowWeb || asset.marketplaceUrl ? (
                           <TextButton align="right" onPress={handlePressShare}>
                             􀈂 {lang.t('button.share')}
                           </TextButton>
@@ -544,14 +543,14 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                                 Party
                               </Text>
                             </SheetActionButton>
-                          ) : asset.permalink ? (
+                          ) : asset.marketplaceUrl && asset.marketplaceName ? (
                             <SheetActionButton
                               color={imageColor}
                               label={
                                 hasSendButton
-                                  ? `􀮶 ${marketplaceName}`
+                                  ? `􀮶 ${asset.marketplaceName}`
                                   : `􀮶 ${lang.t('expanded_state.unique_expanded.view_on_marketplace_name', {
-                                      marketplaceName,
+                                      marketplaceName: asset.marketplaceName,
                                     })}`
                               }
                               nftShadows
@@ -600,9 +599,9 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                           {isENS && (
                             <ENSBriefTokenInfoRow
                               color={imageColor}
-                              ensName={uniqueId}
+                              ensName={asset.uniqueId}
                               expiryDate={ensData?.registration?.expiryDate}
-                              externalAvatarUrl={asset?.lowResUrl}
+                              externalAvatarUrl={asset.images.lowResUrl}
                               registrationDate={ensData?.registration?.registrationDate}
                               showExtendDuration={hasExtendDurationButton}
                             />
@@ -611,9 +610,9 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                       ) : null}
                       {(isNFT || isPoap) && (
                         <>
-                          {description ? (
+                          {asset.description ? (
                             <Section title={`${lang.t('expanded_state.unique_expanded.description')}`} titleEmoji="📖">
-                              <Markdown>{description}</Markdown>
+                              <Markdown>{asset.description}</Markdown>
                             </Section>
                           ) : null}
                           {filteredTraits.length ? (
@@ -622,7 +621,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                                 {...asset}
                                 color={imageColor}
                                 hideNftMarketplaceAction={hideNftMarketplaceAction}
-                                slug={slug ?? ''}
+                                slug={asset.marketplaceUrl ?? ''}
                               />
                             </Section>
                           ) : null}
@@ -646,7 +645,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                               <ProfileInfoSection
                                 allowEdit={hasEditButton}
                                 coinAddresses={ensData?.coinAddresses}
-                                ensName={uniqueId}
+                                ensName={asset.uniqueId}
                                 images={ensData?.images}
                                 isLoading={ensProfile.isLoading}
                                 records={ensData?.records}
@@ -659,7 +658,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                             titleEmoji="⚙️"
                           >
                             <ConfigurationSection
-                              externalAvatarUrl={asset?.lowResUrl}
+                              externalAvatarUrl={asset.images.lowResUrl}
                               isExternal={external}
                               isLoading={ensProfile.isLoading}
                               isOwner={ensProfile?.isOwner}
@@ -674,21 +673,21 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                           </Section>
                         </>
                       )}
-                      {familyDescription ? (
+                      {asset.collectionDescription ? (
                         <Section
                           paragraphSpace={{ custom: 26 }}
-                          title={`${lang.t('expanded_state.unique_expanded.about', { assetFamilyName: familyName })}`}
-                          titleImageUrl={familyImage}
+                          title={`${lang.t('expanded_state.unique_expanded.about', { assetFamilyName: asset.collectionName })}`}
+                          titleImageUrl={asset.collectionImageUrl}
                         >
                           <Stack space={sectionSpace}>
-                            <Markdown>{familyDescription}</Markdown>
-                            {familyLink ? (
+                            <Markdown>{asset.collectionDescription}</Markdown>
+                            {asset.collectionUrl ? (
                               <Bleed // Manually crop surrounding space until Link uses design system components
                                 bottom={IS_ANDROID ? '15px (Deprecated)' : undefined}
                                 top="15px (Deprecated)"
                               >
                                 {/* @ts-expect-error JavaScript component */}
-                                <Link color={imageColor} display={familyLinkDisplay} url={familyLink} weight="bold" />
+                                <Link color={imageColor} display={familyLinkDisplay} url={asset.collectionUrl} weight="bold" />
                               </Bleed>
                             ) : null}
                           </Stack>
