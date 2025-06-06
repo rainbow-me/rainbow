@@ -141,7 +141,6 @@ export function HoldToActivateButton({
           alignItems="center"
           width="full"
           backgroundColor={disabled ? disabledBackgroundColor : backgroundColor}
-          background={'accent'}
           height={height}
           overflow="hidden"
           borderRadius={height}
