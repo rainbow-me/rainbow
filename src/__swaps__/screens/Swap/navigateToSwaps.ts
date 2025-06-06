@@ -1,5 +1,15 @@
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { InputKeys, InputMethods } from '@/__swaps__/types/swap';
+import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
+import {
+  getDefaultSlippage,
+  parseAssetAndExtend,
+  slippageInBipsToString,
+  trimCurrencyZeros,
+  trimTrailingZeros,
+} from '@/__swaps__/utils/swaps';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import walletTypes from '@/helpers/walletTypes';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -9,17 +19,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { SwapsState, useSwapsStore } from '@/state/swaps/swapsStore';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { GasSpeed } from '@/__swaps__/types/gas';
-import { InputKeys, InputMethods } from '@/__swaps__/types/swap';
-import {
-  getDefaultSlippage,
-  parseAssetAndExtend,
-  slippageInBipsToString,
-  trimCurrencyZeros,
-  trimTrailingZeros,
-} from '@/__swaps__/utils/swaps';
-import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import { INITIAL_SLIDER_POSITION, SLIDER_WIDTH } from './constants';
 import { setSelectedGasSpeed } from './hooks/useSelectedGas';
@@ -40,7 +40,7 @@ export type NavigateToSwapsParams<
 >;
 
 export function navigateToSwaps(params: NavigateToSwapsParams = {}) {
-  if (!enableActionsOnReadOnlyWallet && isCurrentWalletReadOnly()) return watchingAlert();
+  if (!enableActionsOnReadOnlyWallet && getIsReadOnlyWallet()) return watchingAlert();
 
   const chainId = params.inputAsset?.chainId || params.outputAsset?.chainId || store.getState().settings.chainId;
   if (params.gasSpeed && chainId) setSelectedGasSpeed(chainId, params.gasSpeed);
@@ -148,10 +148,6 @@ type InputAmountRequest =
     };
 
 // ============ Helper Functions =============================================== //
-
-function isCurrentWalletReadOnly(): boolean {
-  return store.getState().wallets.selected?.type === walletTypes.readOnly;
-}
 
 function isExtendedAssetWithColors(
   asset: ExtendedAnimatedAssetWithColors | ParsedSearchAsset | null

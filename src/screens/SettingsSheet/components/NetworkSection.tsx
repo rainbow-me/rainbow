@@ -6,11 +6,12 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
-import { useAccountSettings, useLoadAccountData } from '@/hooks';
+import { useAccountSettings } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { isL2Chain } from '@/handlers/web3';
+import { loadTokensData } from '@/state/tokens/loadTokensData';
 
 interface NetworkSectionProps {
   inDevSection?: boolean;
@@ -18,18 +19,17 @@ interface NetworkSectionProps {
 
 const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const { chainId, testnetsEnabled } = useAccountSettings();
-  const loadAccountData = useLoadAccountData();
   const dispatch = useDispatch();
 
   const onNetworkChange = useCallback(
     async (chainId: ChainId) => {
       dispatch(settingsUpdateNetwork(chainId));
       InteractionManager.runAfterInteractions(async () => {
-        await loadAccountData();
+        await loadTokensData();
         analytics.track(analytics.event.changedNetwork, { chainId });
       });
     },
-    [dispatch, loadAccountData]
+    [dispatch]
   );
 
   const renderNetworkList = useCallback(() => {

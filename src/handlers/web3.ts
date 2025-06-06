@@ -27,6 +27,7 @@ import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { Address } from 'viem';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -192,6 +193,25 @@ export const isHexStringIgnorePrefix = (value: string): boolean => {
 export const addHexPrefix = (value: string): string => (startsWith(value, '0x') ? value : `0x${value}`);
 
 /**
+ * @desc Asserts "0x" prefix on a string.
+ * @param value The potential address string.
+ * @return The same string.
+ */
+export const assertValidHex: (value: string) => asserts value is Address = value => {
+  if (!value.startsWith(`0x`)) throw new Error(`Non address-like string`);
+};
+
+/**
+ * @desc Ensures "0x" prefix on a string.
+ * @param value The potential address string.
+ * @return The same string.
+ */
+export const ensureValidHex = (value: string): Address => {
+  assertValidHex(value);
+  return value;
+};
+
+/**
  * @desc is valid mnemonic
  * @param value The string to check.
  * @return Whether or not the string was a valid mnemonic.
@@ -221,6 +241,9 @@ export const toChecksumAddress = (address: string): string | null => {
     return null;
   }
 };
+
+// Ensures an address is a checksummed address (just a helper for naming consistency)
+export const ensureChecksumAddress = (address: string): string => getAddress(address);
 
 /**
  * @desc estimate gas limit

@@ -13,11 +13,12 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from './ViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@/entities';
-import { useCoinListEdited, useOpenFamilies, useOpenSmallBalances, usePrevious, useRefreshAccountData } from '@/hooks';
+import { useCoinListEdited, useOpenFamilies, usePrevious, useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { deviceUtils } from '@/utils';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
+import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {

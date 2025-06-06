@@ -1,22 +1,22 @@
-import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { noop } from 'lodash';
+import { OnboardPointsMutation, PointsErrorType, PointsOnboardingCategory } from '@/graphql/__generated__/metadataPOST';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { pointsQueryKey } from '@/resources/points';
-import * as i18n from '@/languages';
+import { noop } from 'lodash';
+import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
-import { OnboardPointsMutation, PointsOnboardingCategory, PointsErrorType } from '@/graphql/__generated__/metadataPOST';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 
-import { metadataPOSTClient } from '@/graphql';
-import { useAccountProfile, useWallets } from '@/hooks';
-import { loadWallet, signPersonalMessage } from '@/model/wallet';
-import { RainbowError, logger } from '@/logger';
-import { queryClient } from '@/react-query';
-import { useNavigation } from '@/navigation';
-import { getProvider } from '@/handlers/web3';
 import { analytics } from '@/analytics';
-import { delay } from '@/utils/delay';
+import { metadataPOSTClient } from '@/graphql';
+import { getProvider } from '@/handlers/web3';
+import { RainbowError, logger } from '@/logger';
+import { loadWallet, signPersonalMessage } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import { queryClient } from '@/react-query';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { delay } from '@/utils/delay';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -80,8 +80,8 @@ const PointsProfileContext = createContext<PointsProfileContext>({
 export const usePointsProfileContext = () => useContext(PointsProfileContext);
 
 export const PointsProfileProvider = ({ children }: { children: React.ReactNode }) => {
-  const { accountAddress } = useAccountProfile();
-  const { isHardwareWallet } = useWallets();
+  const accountAddress = useAccountAddress();
+  const isHardwareWallet = useIsHardwareWallet();
   const { navigate, goBack } = useNavigation();
 
   const [step, setStep] = useState<RainbowPointsFlowSteps>(RainbowPointsFlowSteps.Initialize);

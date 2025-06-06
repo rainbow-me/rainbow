@@ -1,25 +1,25 @@
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { enableActionsOnReadOnlyWallet } from '@/config';
+import { Box, Column, Columns, Inline, Text } from '@/design-system';
+import { RainbowToken } from '@/entities';
+import { implementation } from '@/entities/dispersion';
+import { useNavigation } from '@/navigation';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
+import { watchingAlert } from '@/utils';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from '../Divider';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { Box, Column, Columns, Inline, Text } from '@/design-system';
-import { useNavigation } from '@/navigation';
-import { colors, position } from '@/styles';
-import { watchingAlert } from '@/utils';
-import { useWallets } from '@/hooks';
-import { RainbowToken } from '@/entities';
-import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { implementation } from '@/entities/dispersion';
-import { enableActionsOnReadOnlyWallet } from '@/config';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
-import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import Divider from '../Divider';
 
 const NOOP = () => null;
 
@@ -47,7 +47,7 @@ const AvailableNetworksv2 = ({
   };
 
   const { goBack } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const convertAssetAndNavigate = useCallback(
     (chainId: ChainId) => {

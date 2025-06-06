@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useRef, useState } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { Row, RowWithMargins } from '../layout';
@@ -10,10 +9,11 @@ import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditAction from '@/helpers/EditAction';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { useAccountSettings, useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions, useOpenSmallBalances } from '@/hooks';
+import { useAccountSettings, useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;
@@ -61,7 +61,9 @@ const useInterpolationRange = isCoinListEdited => {
       (_left, top) => {
         setRanges([top - (navbarHeight + safeAreaInsetTop), top]);
       },
-      () => {}
+      () => {
+        // empty (avoid formatter messing up)
+      }
     );
   }, [scrollViewRef]);
   return {

@@ -24,10 +24,8 @@ import { getProvider } from '@/handlers/web3';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { Network, ChainId } from '@/state/backendNetworks/types';
-import { Address } from 'viem';
 
 // -- Constants ------------------------------------------------------------- //
-const SETTINGS_UPDATE_SETTINGS_ADDRESS = 'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS = 'settings/SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS';
 const SETTINGS_UPDATE_APP_ICON_SUCCESS = 'settings/SETTINGS_UPDATE_APP_ICON_SUCCESS';
 const SETTINGS_UPDATE_LANGUAGE_SUCCESS = 'settings/SETTINGS_UPDATE_LANGUAGE_SUCCESS';
@@ -42,7 +40,6 @@ const SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS = 'settings/SETTINGS_UPDATE_ACCOU
  */
 interface SettingsState {
   appIcon: string;
-  accountAddress: Address;
   chainId: number;
   language: Language;
   nativeCurrency: NativeCurrencyKey;
@@ -54,18 +51,12 @@ interface SettingsState {
  * A `settings` Redux action.
  */
 type SettingsStateUpdateAction =
-  | SettingsStateUpdateSettingsAddressAction
   | SettingsStateUpdateNativeCurrencySuccessAction
   | SettingsStateUpdateAppIconSuccessAction
   | SettingsStateUpdateNetworkSuccessAction
   | SettingsStateUpdateTestnetPrefAction
   | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
   | SettingsStateUpdateLanguageSuccessAction;
-
-interface SettingsStateUpdateSettingsAddressAction {
-  type: typeof SETTINGS_UPDATE_SETTINGS_ADDRESS;
-  payload: SettingsState['accountAddress'];
-}
 
 interface SettingsStateUpdateNativeCurrencySuccessAction {
   type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS;
@@ -203,14 +194,6 @@ export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<Se
   }
 };
 
-export const settingsUpdateAccountAddress =
-  (accountAddress: string) => async (dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>) => {
-    dispatch({
-      payload: accountAddress as Address,
-      type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
-    });
-  };
-
 export const settingsUpdateNetwork = (chainId: ChainId) => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
   getProvider({ chainId });
   try {
@@ -255,7 +238,6 @@ export const settingsChangeNativeCurrency =
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE: SettingsState = {
-  accountAddress: '' as Address,
   appIcon: 'og',
   chainId: 1,
   language: Language.EN_US,
@@ -266,11 +248,6 @@ export const INITIAL_STATE: SettingsState = {
 
 export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
   switch (action.type) {
-    case SETTINGS_UPDATE_SETTINGS_ADDRESS:
-      return {
-        ...state,
-        accountAddress: action.payload,
-      };
     case SETTINGS_UPDATE_APP_ICON_SUCCESS:
       return {
         ...state,

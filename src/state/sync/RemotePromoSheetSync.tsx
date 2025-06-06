@@ -5,11 +5,10 @@ import { usePromoSheetCollectionQuery } from '@/resources/promoSheet/promoSheetC
 import { GetPromoSheetCollectionQuery, PromoSheetOrder } from '@/graphql/__generated__/arc';
 import { useRunChecks } from '@/components/remote-promo-sheet/runChecks';
 import { IS_TEST } from '@/env';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
+import { useWalletsStore } from '../wallets/walletsStore';
 
 const RemotePromoSheetSyncComponent = () => {
-  const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
+  const walletReady = useWalletsStore(state => state.walletReady);
 
   const onSuccess = useCallback((data: GetPromoSheetCollectionQuery) => {
     remotePromoSheetsStore.getState().setSheets(data);

@@ -1,11 +1,10 @@
-import { MMKV } from 'react-native-mmkv';
-import { Campaign, CampaignCheckType, CampaignKey, GenericCampaignCheckResponse } from './localCampaignChecks';
-import { RainbowWallet } from '@/model/wallet';
-import { Navigation } from '@/navigation';
 import { logger } from '@/logger';
-import store from '@/redux/store';
-import Routes from '@/navigation/routesNames';
 import { STORAGE_IDS } from '@/model/mmkv';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { MMKV } from 'react-native-mmkv';
+import { getSelectedWallet } from '@/state/wallets/walletsStore';
+import { Campaign, CampaignCheckType, CampaignKey, GenericCampaignCheckResponse } from './localCampaignChecks';
 
 const mmkv = new MMKV();
 
@@ -27,11 +26,7 @@ export const notificationsCampaignCheck = async (): Promise<GenericCampaignCheck
 
   logger.debug('[notificationsCampaignCheck]: checking if notifications promo should show', { hasShownCampaign });
 
-  const {
-    selected: currentWallet,
-  }: {
-    selected: RainbowWallet | undefined;
-  } = store.getState().wallets;
+  const currentWallet = getSelectedWallet();
 
   /**
    * stop if:

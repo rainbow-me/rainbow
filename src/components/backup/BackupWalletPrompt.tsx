@@ -1,35 +1,37 @@
-import React, { useCallback, useMemo } from 'react';
-import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
-import * as i18n from '@/languages';
-import { ImgixImage } from '../images';
-import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
+import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
-import { Source } from 'react-native-fast-image';
-import { cloudPlatform } from '@/utils/platform';
-import { useTheme } from '@/theme';
-import { ButtonPressAnimation } from '../animations';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { useWallets } from '@/hooks';
-import WalletTypes from '@/helpers/walletTypes';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletTypes from '@/helpers/walletTypes';
+import * as i18n from '@/languages';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
+import { cloudPlatform } from '@/utils/platform';
+import React, { useCallback, useMemo } from 'react';
+import { Source } from 'react-native-fast-image';
+import { ButtonPressAnimation } from '../animations';
+import { ImgixImage } from '../images';
 
 const imageSize = 72;
 
 export default function BackupSheetSectionNoProvider() {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
-  const { selectedWallet } = useWallets();
+  const selectedWallet = useSelectedWallet();
   const createBackup = useCreateBackup();
   const status = backupsStore(state => state.status);
 
   const onCloudBackup = useCallback(() => {
+    if (!selectedWallet) return;
+
     // pop the bottom sheet, and navigate to the backup section inside settings sheet
     goBack();
     navigate(Routes.SETTINGS_SHEET, {
@@ -44,9 +46,11 @@ export default function BackupSheetSectionNoProvider() {
         }),
       logout: true,
     });
-  }, [createBackup, goBack, navigate, selectedWallet.id]);
+  }, [createBackup, goBack, navigate, selectedWallet]);
 
   const onManualBackup = useCallback(async () => {
+    if (!selectedWallet) return;
+
     const title =
       selectedWallet?.imported && selectedWallet.type === WalletTypes.privateKey
         ? (selectedWallet.addresses || [])[0].label
@@ -62,7 +66,7 @@ export default function BackupSheetSectionNoProvider() {
         walletId: selectedWallet.id,
       },
     });
-  }, [goBack, navigate, selectedWallet.addresses, selectedWallet.id, selectedWallet?.imported, selectedWallet.name, selectedWallet.type]);
+  }, [goBack, navigate, selectedWallet]);
 
   const isCloudBackupDisabled = useMemo(() => {
     return status !== CloudBackupState.Ready && status !== CloudBackupState.NotAvailable;

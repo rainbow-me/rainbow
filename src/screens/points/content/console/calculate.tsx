@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import { Paragraph } from '../../components/Paragraph';
-import { Line } from '../../components/Line';
-import { AnimatedText } from '../../components/AnimatedText';
-import { RainbowPointsFlowSteps, rainbowColors, textColors } from '../../constants';
-import * as i18n from '@/languages';
-import { useAccountProfile } from '@/hooks';
-import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
-import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
-import { NeonButton } from '../../components/NeonButton';
-import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
-import { analytics } from '@/analytics';
+import * as i18n from '@/languages';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
+import React, { useState } from 'react';
+import { AnimatedText } from '../../components/AnimatedText';
+import { Line } from '../../components/Line';
+import { LineBreak } from '../../components/LineBreak';
+import { NeonButton } from '../../components/NeonButton';
+import { Paragraph } from '../../components/Paragraph';
+import { RainbowPointsFlowSteps, rainbowColors, textColors } from '../../constants';
+import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 
 export const Calculate = () => {
   const {
@@ -27,7 +27,7 @@ export const Calculate = () => {
     setStep,
     setAnimationKey,
   } = usePointsProfileContext();
-  const { accountENS, accountAddress } = useAccountProfile();
+  const { accountENS, accountAddress } = useAccountProfileInfo();
 
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
   const [shouldShowContinueButton, setShouldShowContinueButton] = useState(false);
