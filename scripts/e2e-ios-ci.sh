@@ -10,6 +10,7 @@ ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
 
 # Unpack the IPA to extract .app
 APP_PAYLOAD_PATH=$(mktemp -d)
+echo "🧪 Using IPA at: $ARTIFACT_PATH_FOR_E2E"
 unzip -q "$ARTIFACT_PATH_FOR_E2E" -d "$APP_PAYLOAD_PATH"
 APP_PATH=$(find "$APP_PAYLOAD_PATH" -name "*.app" -type d | head -n 1)
 
