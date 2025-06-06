@@ -274,11 +274,11 @@ describe('createQueryStore', () => {
       // The queryKey should be reset based on the config ('[]' if no params).
       expect(store.getState().queryKey).toBe('[]');
 
-      // Test useParsableQueryKey
+      // Test useParsableQueryKeys
       const store2 = createQueryStore<TestData, { id?: number }>({
         fetcher,
         params: {},
-        useParsableQueryKey: true,
+        useParsableQueryKeys: true,
       });
 
       // Manually fetch with no params.

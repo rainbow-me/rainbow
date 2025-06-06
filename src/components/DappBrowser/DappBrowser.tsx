@@ -14,6 +14,7 @@ import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { time } from '@/utils';
+import { generateUniqueId } from '@/worklets/strings';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
@@ -32,7 +33,6 @@ import { pruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
 import { AnimatedTabUrls, TabViewGestureStates } from './types';
-import { generateUniqueIdWorklet } from './utils';
 
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
@@ -78,7 +78,7 @@ const NewTabTrigger = () => {
     () => newTabUrl,
     (current, previous) => {
       if (current && current !== previous) {
-        const newTabId = generateUniqueIdWorklet();
+        const newTabId = generateUniqueId();
         const updatedTabUrls = { ...animatedTabUrls.value, [newTabId]: current };
         const newActiveIndex = previous === null ? currentlyOpenTabIds.value.length : undefined;
 
@@ -93,9 +93,9 @@ const NewTabTrigger = () => {
 };
 
 function setNewTabUrl(updatedTabUrls: AnimatedTabUrls, newActiveIndex: number | undefined): void {
-  const { setActiveTabIndex, silentlySetPersistedTabUrls } = useBrowserStore.getState();
+  const { setActiveTabIndex, setPersistedTabUrls } = useBrowserStore.getState();
   // Set the new tab URL ahead of creating the tab so the URL is available when the tab is rendered
-  silentlySetPersistedTabUrls(updatedTabUrls);
+  setPersistedTabUrls(updatedTabUrls);
   if (newActiveIndex !== undefined) setActiveTabIndex(newActiveIndex);
   setParams<typeof Routes.DAPP_BROWSER_SCREEN>({ url: undefined });
 }
