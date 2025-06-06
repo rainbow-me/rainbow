@@ -107,13 +107,9 @@ jobs:
         run: |
           curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.e2e-build-ios.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
-          ls -l downloaded-artifacts
-          # IPA_PATH=$(find downloaded-artifacts -name "*.ipa" -print -quit)
-          APP_ARCHIVE=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
-          # echo "ARTIFACT_PATH_FOR_E2E=$IPA_PATH" >> $GITHUB_ENV
-          echo "📦 Found IPA at: $IPA_PATH"
-          # echo "ipa-path=$IPA_PATH" >> $GITHUB_OUTPUT
-          echo "ipa-path=$APP_ARCHIVE" >> $GITHUB_OUTPUT
+          APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
+          cp "$APP_ARCHIVE_PATH" "$GITHUB_WORKSPACE/app.tar.gz"
+          echo "ipa-path=$GITHUB_WORKSPACE/app.tar.gz" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Checkout repo
