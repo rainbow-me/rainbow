@@ -109,7 +109,9 @@ jobs:
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
           IPA_PATH=$(find downloaded-artifacts -name "*.ipa" -print -quit)
-          echo "ARTIFACT_PATH_FOR_E2E=$IPA_PATH" >> $GITHUB_ENV
+          # echo "ARTIFACT_PATH_FOR_E2E=$IPA_PATH" >> $GITHUB_ENV
+          echo "📦 Found IPA at: $IPA_PATH"
+          echo "ipa-path=$IPA_PATH" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Checkout repo
@@ -179,7 +181,7 @@ jobs:
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
-          # ARTIFACT_PATH_FOR_E2E: ${{ steps.download-artifact.outputs.ipa-path }}
+          ARTIFACT_PATH_FOR_E2E: ${{ steps.download-artifact.outputs.ipa-path }}
 
       - name: Upload artifacts
         if: ${{ always() }}
