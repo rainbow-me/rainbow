@@ -3,7 +3,7 @@ import { useStoreWithEqualityFn } from 'zustand/traditional';
 import { StoreApi } from 'zustand/vanilla';
 import { IS_DEV } from '@/env';
 import { pluralize } from '@/worklets/strings';
-import { createPathFinder, getOrCreateProxy, PathFinder } from './derivedStore/deriveProxy';
+import { PathFinder, createPathFinder, getOrCreateProxy } from './derivedStore/deriveProxy';
 import {
   BaseRainbowStore,
   DebounceOptions,
@@ -56,10 +56,10 @@ import {
  *
  * ---
  * You can optionally pass a second parameter (either an equality function or a config object)
- * to enable debouncing, customize the equality function, or set `stableSubscriptions: true`.
+ * to enable debouncing, customize the equality function, or set `fastMode: true`.
  *
- * (If stable subscriptions are enabled, dependencies are established once and are not rebuilt
- * on subsequent re-derives, which can be a performance win for certain workloads.)
+ * (In fast mode, dependencies are established once and are not rebuilt on subsequent re-derives,
+ * which can be a performance win for certain workloads.)
  *
  * ---
  * @example
@@ -93,8 +93,8 @@ export function createDerivedStore<Derived>(
 
 function attachStoreHook<S>(store: WithFlushUpdates<StoreApi<S>>): DerivedRainbowStore<S> {
   function useDerivedStore(): S;
-  function useDerivedStore<T>(selector: (state: S) => T, equalityFn?: EqualityFn<T>): T;
-  function useDerivedStore<T>(selector: (state: S) => T = identity, equalityFn: EqualityFn<T> = Object.is): S | T {
+  function useDerivedStore<T>(selector: Selector<S, T>, equalityFn?: EqualityFn<T>): T;
+  function useDerivedStore<T>(selector: Selector<S, T> = identity, equalityFn: EqualityFn<T> = Object.is): S | T {
     return useStoreWithEqualityFn(store, selector, equalityFn);
   }
   return Object.assign(useDerivedStore, store);
@@ -203,10 +203,11 @@ function derive<DerivedState>(
     if (!watchers.size) return derivedState;
 
     const hasPreviousState = prevState !== UNINITIALIZED;
-    const shouldLogSubscriptions = debugMode && !hasPreviousState;
+    const shouldLogSubscriptions = debugMode && (!hasPreviousState || (debugMode === 'verbose' && shouldRebuildSubscriptions));
 
     if (shouldLogSubscriptions) {
-      console.log('[🌀 Initial Derive Complete 🌀]: Created...');
+      if (!hasPreviousState) console.log('[🌀 Initial Derive Complete 🌀]: Created...');
+      else if (debugMode === 'verbose') console.log('[🌀 Rebuilding Subscriptions 🌀]: Created...');
       const subscriptionCount = unsubscribes.size;
       console.log(`[🎯 ${subscriptionCount} ${pluralize('Selector Subscription', subscriptionCount)} 🎯]`);
     }
@@ -301,14 +302,18 @@ function derive<DerivedState>(
       const listener = args[0];
       watchers.add(listener);
 
-      if (watchers.size === 1) {
-        derivedState = UNINITIALIZED;
+      if (watchers.size === 1 && derivedState === UNINITIALIZED) {
         derive();
       }
 
       return () => {
         watchers.delete(listener);
-        if (!watchers.size) destroy();
+
+        if (!watchers.size) {
+          queueMicrotask(() => {
+            if (!watchers.size) destroy();
+          });
+        }
       };
     }
 
@@ -328,8 +333,7 @@ function derive<DerivedState>(
     const isDerivedWatcher = options?.isDerivedStore ?? false;
     if (isDerivedWatcher) derivedWatchers += 1;
 
-    if (watchers.size === 1) {
-      derivedState = UNINITIALIZED;
+    if (watchers.size === 1 && derivedState === UNINITIALIZED) {
       derive();
     }
 
@@ -340,7 +344,12 @@ function derive<DerivedState>(
     return () => {
       watchers.delete(watcher);
       if (isDerivedWatcher) derivedWatchers -= 1;
-      if (!watchers.size) destroy();
+
+      if (!watchers.size) {
+        queueMicrotask(() => {
+          if (!watchers.size) destroy();
+        });
+      }
     };
   }
 
@@ -380,7 +389,7 @@ function derive<DerivedState>(
 
 function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
   debounceOptions: number | DebounceOptions | undefined;
-  debugMode: boolean;
+  debugMode: boolean | 'verbose';
   equalityFn: EqualityFn<DerivedState>;
   useStableSubscriptions: boolean;
 } {
@@ -396,6 +405,6 @@ function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
     debounceOptions: options.debounce,
     debugMode: (IS_DEV && options.debugMode) ?? false,
     equalityFn: options.equalityFn ?? Object.is,
-    useStableSubscriptions: options.stableSubscriptions ?? false,
+    useStableSubscriptions: options.fastMode ?? false,
   };
 }
