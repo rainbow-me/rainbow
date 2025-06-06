@@ -107,6 +107,9 @@ jobs:
         run: |
           curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.e2e-build-ios.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
+          ls -lh downloaded-artifacts
+
+          # Move the file to workspace root so it's available in next step
           APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
           cp "$APP_ARCHIVE_PATH" "$GITHUB_WORKSPACE/app.tar.gz"
           echo "ipa-path=$GITHUB_WORKSPACE/app.tar.gz" >> $GITHUB_OUTPUT
