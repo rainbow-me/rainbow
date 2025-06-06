@@ -29,6 +29,7 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
 
           const { url } = data;
 
+          console.log('[AddCash]: Received URL from Coinbase', { url });
           analytics.track(analytics.event.f2cProviderFlowStarted, {
             provider: FiatProviderName.Coinbase,
             sessionId,
@@ -38,7 +39,7 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
             provider: FiatProviderName.Coinbase,
           });
 
-          openInBrowser(url, false);
+          openInBrowser(url, false, true);
         } catch (e) {
           logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Coinbase,

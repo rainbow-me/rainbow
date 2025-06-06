@@ -9014,6 +9014,7 @@ __metadata:
     react-native-get-random-values: "npm:1.5.0"
     react-native-haptic-feedback: "npm:2.2.0"
     react-native-image-crop-picker: "npm:0.42.0"
+    react-native-inappbrowser-reborn: "npm:3.7.0"
     react-native-indicators: "npm:0.17.0"
     react-native-ios-context-menu: "npm:1.15.3"
     react-native-keyboard-area: "npm:1.0.6"
@@ -22637,6 +22638,18 @@ __metadata:
   peerDependencies:
     react-native: ">=0.40.0"
   checksum: 10c0/8ebae127cf1701c07df6ad3a4304654da7088704628a475f1c2de4a1b99e0fcc7cefa3c34c19a76542c9311f6eaed04a9e402d34af86bdc4d1099c30c197bb8f
+  languageName: node
+  linkType: hard
+
+"react-native-inappbrowser-reborn@npm:3.7.0":
+  version: 3.7.0
+  resolution: "react-native-inappbrowser-reborn@npm:3.7.0"
+  dependencies:
+    invariant: "npm:^2.2.4"
+    opencollective-postinstall: "npm:^2.0.3"
+  peerDependencies:
+    react-native: ">=0.56"
+  checksum: 10c0/b14d564925eec2c95fc6f8931b68f9ae7c418b5ccad2494748282ee9f7460f7094eec3c6e3a6304062124277624c0f6f647f41a7950ab263b7ebb7c6b0d50d4d
   languageName: node
   linkType: hard
 
