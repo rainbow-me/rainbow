@@ -103,6 +103,7 @@ jobs:
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
       - name: Download and Unpack IPA artifact
+        id: download-artifact
         run: |
             curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.e2e-build-ios.outputs.artifact-id }}/zip"
             unzip artifact.zip -d downloaded-artifacts
@@ -178,6 +179,7 @@ jobs:
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
+          ARTIFACT_PATH_FOR_E2E: ${{ steps.download-artifact.outputs.ipa-path }}
 
       - name: Upload artifacts
         if: ${{ always() }}
