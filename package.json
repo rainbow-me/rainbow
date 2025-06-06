@@ -231,6 +231,7 @@
     "react-native-get-random-values": "1.5.0",
     "react-native-haptic-feedback": "2.2.0",
     "react-native-image-crop-picker": "0.42.0",
+    "react-native-inappbrowser-reborn": "3.7.0",
     "react-native-indicators": "0.17.0",
     "react-native-ios-context-menu": "1.15.3",
     "react-native-keyboard-area": "1.0.6",
@@ -476,7 +477,8 @@
       "viem>ws>utf-8-validate": false,
       "@types/detox>detox": false,
       "react-native-bootsplash>sharp": false,
-      "ethereumjs-util>ethereum-cryptography>keccak": false
+      "ethereumjs-util>ethereum-cryptography>keccak": false,
+      "react-native-inappbrowser-reborn": false
     }
   },
   "lint-staged": {

@@ -39,7 +39,7 @@ export function Ramp({ accountAddress, config }: { accountAddress: string; confi
             provider: FiatProviderName.Ramp,
           });
 
-          openInBrowser(url);
+          openInBrowser(url, false, true);
         } catch (e) {
           logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Ramp,
