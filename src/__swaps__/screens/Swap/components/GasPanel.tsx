@@ -1,8 +1,9 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { LayoutChangeEvent } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ACTION_BUTTON_HEIGHT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -27,12 +28,11 @@ import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
-import { upperFirst } from 'lodash';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { CurrentBaseFeeTypeKey, ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
+import { ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -416,8 +416,25 @@ function saveCustomGasSettings() {
 }
 
 export function GasPanel() {
-  const { configProgress } = useSwapContext();
+  const { configProgress, setGasPanelHeight } = useSwapContext();
   const separator = useForegroundColor('separator');
+  const [measuredHeight, setMeasuredHeight] = useState(0);
+
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const height = event.nativeEvent.layout.height;
+      if (height > 0 && height !== measuredHeight) {
+        setMeasuredHeight(height + ACTION_BUTTON_HEIGHT);
+      }
+    },
+    [measuredHeight]
+  );
+
+  useEffect(() => {
+    if (measuredHeight > 0) {
+      setGasPanelHeight(measuredHeight);
+    }
+  }, [measuredHeight, setGasPanelHeight]);
 
   useAnimatedReaction(
     () => configProgress.value,
@@ -442,14 +459,14 @@ export function GasPanel() {
   });
 
   return (
-    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={[styles, { flex: 1 }]} testID="gas-panel" width="full">
+    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={[styles]} testID="gas-panel" width="full" onLayout={onLayout}>
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           {i18n.t(i18n.l.gas.gas_settings)}
         </Text>
 
-        <Box gap={24} width="full" alignItems="stretch">
-          <Box gap={24} height="104px">
+        <Box gap={24} width="full" alignItems="stretch" style={{ marginBottom: 30 }}>
+          <Box gap={24}>
             <EditableGasSettings />
           </Box>
 

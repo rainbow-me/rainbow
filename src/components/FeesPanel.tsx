@@ -15,10 +15,13 @@ import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
-import { ExplainSheetRouteParams, CurrentBaseFeeTypeKey, RootStackParamList, gasTrendToTrendType } from '@/navigation/types';
+import { CurrentBaseFeeTypeKey, ExplainSheetRouteParams, gasTrendToTrendType, RootStackParamList } from '@/navigation/types';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useNavigation } from '@/navigation';
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
+
+const chainsThatIgnoreThePriorityFee = [ChainId.arbitrum, ChainId.arbitrumNova, ChainId.arbitrumSepolia];
 
 const GAS_FEE_INCREMENT = 3;
 const GAS_FEE_L2_INCREMENT = 0.02;
@@ -48,6 +51,7 @@ type AlertInfo = {
   message: string;
 } | null;
 
+// send sheet fees panel
 export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, validateGasParams, openCustomOptions }: FeesPanelProps) {
   const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, chainId } = useGas();
 
@@ -590,30 +594,32 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
           </Box>
         </Row>
 
-        <Row>
-          <Box>
-            <Inline alignVertical="center" alignHorizontal="justify">
-              <Box>
-                {renderRowLabel(lang.t('gas.miner_tip'), MINER_TIP_TYPE, maxPriorityFeeError, maxPriorityFeeWarning)}
-                {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
-              </Box>
-              <Box marginRight="-5px (Deprecated)">
-                <FeesGweiInput
-                  buttonColor={colorForAsset}
-                  editable
-                  inputRef={minerTipFieldRef}
-                  minusAction={substMinerTip}
-                  onChange={onMinerTipChange}
-                  onPress={handleMinerTipInputGweiPress}
-                  plusAction={addMinerTip}
-                  testID="max-priority-fee-input"
-                  value={maxPriorityFee}
-                  onBlur={() => null}
-                />
-              </Box>
-            </Inline>
-          </Box>
-        </Row>
+        {!chainsThatIgnoreThePriorityFee.includes(chainId) && (
+          <Row>
+            <Box>
+              <Inline alignVertical="center" alignHorizontal="justify">
+                <Box>
+                  {renderRowLabel(lang.t('gas.miner_tip'), MINER_TIP_TYPE, maxPriorityFeeError, maxPriorityFeeWarning)}
+                  {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
+                </Box>
+                <Box marginRight="-5px (Deprecated)">
+                  <FeesGweiInput
+                    buttonColor={colorForAsset}
+                    editable
+                    inputRef={minerTipFieldRef}
+                    minusAction={substMinerTip}
+                    onChange={onMinerTipChange}
+                    onPress={handleMinerTipInputGweiPress}
+                    plusAction={addMinerTip}
+                    testID="max-priority-fee-input"
+                    value={maxPriorityFee}
+                    onBlur={() => null}
+                  />
+                </Box>
+              </Inline>
+            </Box>
+          </Row>
+        )}
 
         <Row>
           <Box paddingTop={{ custom: 14 }}>
