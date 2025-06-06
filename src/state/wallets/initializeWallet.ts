@@ -33,7 +33,13 @@ function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
   }
 }
 
+let runId = 0;
+
 export const initializeWallet = async (props: InitializeWalletParams = {}) => {
+  runId = Math.random();
+  const curRunId = runId;
+  const shouldCancel = () => curRunId === runId;
+
   const {
     seedPhrase,
     color = null,
@@ -68,6 +74,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     // Load the network first
     await store.dispatch(settingsLoadNetwork());
+    if (shouldCancel()) return;
 
     const { isNew, walletAddress } = await walletInit({
       seedPhrase,
@@ -80,6 +87,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       silent,
       userPin,
     });
+    if (shouldCancel()) return;
 
     walletStatus = getWalletStatus(isNew, isImporting);
 
@@ -92,6 +100,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     // walletType maybe undefied after initial wallet creation
     const { walletType, walletAddressHash } = await getWalletContext(walletAddress as Address);
     const [deviceId] = await getOrCreateDeviceId();
+    if (shouldCancel()) return;
 
     Sentry.setUser({
       id: deviceId,
@@ -108,11 +117,13 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       // Run keychain integrity checks right after walletInit
       // Except when switching wallets!
       await runKeychainIntegrityChecks();
+      if (shouldCancel()) return;
     }
 
     if (seedPhrase || isNew) {
       logger.debug('[initializeWallet]: walletsLoadState call #2');
       await loadWallets();
+      if (shouldCancel()) return;
     }
 
     if (isNil(walletAddress)) {
@@ -126,6 +137,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     if (!(isNew || isImporting)) {
       await loadSettingsData();
+      if (shouldCancel()) return;
       logger.debug('[initializeWallet]: loaded global data...');
     }
 
@@ -137,6 +149,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     // Newly created / imported accounts have no data in localstorage
     if (!(isNew || isImporting)) {
       await loadTokensData();
+      if (shouldCancel()) return;
       logger.debug('[initializeWallet]: loaded account data', {
         network,
       });
