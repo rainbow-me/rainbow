@@ -1,4 +1,4 @@
-import React, { ElementRef, forwardRef, ReactNode, useMemo, useEffect } from 'react';
+import React, { ReactNode, useMemo, useEffect, Ref } from 'react';
 import { Text as NativeText, StyleProp, TextStyle } from 'react-native';
 import { SILENCE_EMOJI_WARNINGS } from 'react-native-dotenv';
 import { IS_DEV, IS_IOS } from '@/env';
@@ -35,26 +35,25 @@ export type TextProps = {
   | { containsEmoji?: false; children: ReactNode }
 ) & {
     style?: StyleProp<TextStyle>;
+    ref?: Ref<InstanceType<typeof NativeText>>;
   };
 
-export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(function Text(
-  {
-    align,
-    children,
-    color,
-    containsEmoji: containsEmojiProp = false,
-    ellipsizeMode,
-    numberOfLines,
-    size,
-    tabularNumbers,
-    testID,
-    uppercase,
-    weight,
-    onPress,
-    style,
-  },
-  ref
-) {
+export function Text({
+  align,
+  children,
+  color,
+  containsEmoji: containsEmojiProp = false,
+  ellipsizeMode,
+  numberOfLines,
+  size,
+  tabularNumbers,
+  testID,
+  uppercase,
+  weight,
+  onPress,
+  style,
+  ref,
+}: TextProps) {
   useEffect(() => {
     if (IS_DEV && !SILENCE_EMOJI_WARNINGS) {
       if (!containsEmojiProp && nodeHasEmoji(children)) {
@@ -98,4 +97,4 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(functio
       {lineHeightFixNode}
     </NativeText>
   );
-});
+}

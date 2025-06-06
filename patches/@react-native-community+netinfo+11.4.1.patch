@@ -1,5 +1,5 @@
 diff --git a/node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m b/node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m
-index 84a0b5e..14da168 100644
+index ee759ba..74a3b27 100644
 --- a/node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m
 +++ b/node_modules/@react-native-community/netinfo/ios/RNCNetInfo.m
 @@ -108,16 +108,16 @@ - (void)connectionStateWatcher:(RNCConnectionStateWatcher *)connectionStateWatch

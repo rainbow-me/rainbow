@@ -5,7 +5,7 @@ import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradien
 
 interface GradientTextProps extends LinearGradientProps {
   bleed?: number;
-  children: React.ReactElement;
+  children: React.ReactElement<any>;
 }
 
 const GradientText = memo(function GradientText({
