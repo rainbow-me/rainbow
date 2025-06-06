@@ -5,21 +5,26 @@ source .env
 FLOW=e2e
 ARGS=()
 DEVICE_ID=""
+APP_PATH=""
 
 # Extract the flow flag to allow running only one suite of test and passthrough the rest of the arguments.
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --flow)
-      FLOW="$2"
-      shift
-      ;;
-    --device)
-      DEVICE="$1 $2"
-      shift
-      ;;
-    *)
-      ARGS+=("$1")
-      ;;
+  --flow)
+    FLOW="$2"
+    shift
+    ;;
+  --device)
+    DEVICE="$1 $2"
+    shift
+    ;;
+  --app)
+    APP_PATH="$2"
+    shift
+    ;;
+  *)
+    ARGS+=("$1")
+    ;;
   esac
   shift
 done
@@ -46,7 +51,15 @@ fi
 
 echo "Running on iOS platform"
 
-maestro $DEVICE -p iOS test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
+if [ -n "$APP_PATH" ]; then
+  echo "Using app: $APP_PATH"
+  maestro $DEVICE -p iOS test --app "$APP_PATH" -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
+else
+  echo "No app path provided; skipping --app argument"
+  maestro $DEVICE -p iOS test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
+fi
+
+# maestro $DEVICE -p iOS test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
 
 # Store the exit code
 EXIT_CODE=$?

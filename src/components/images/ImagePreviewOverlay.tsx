@@ -427,7 +427,7 @@ export function ImagePreviewOverlayTarget({
     }
   }, [aspectRatio, width, setAspectRatio, setHeight]);
 
-  const zoomableWrapperRef = useRef<any>();
+  const zoomableWrapperRef = useRef<any>(undefined);
   const hasMounted = useRef<any>(false);
 
   const handleLayout = useCallback(

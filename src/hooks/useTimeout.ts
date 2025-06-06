@@ -27,7 +27,7 @@ export function useTimeoutEffect(
     callback.current = onTimeout;
   }, [onTimeout]);
 
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout>(undefined);
   useEffect(() => {
     if (!enabled) return;
     const startedAt = Date.now();

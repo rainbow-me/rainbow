@@ -1,4 +1,4 @@
-import React, { ElementRef, forwardRef, useMemo } from 'react';
+import React, { ComponentRef, useMemo } from 'react';
 import { StyleProp, TextStyle } from 'react-native';
 import AnimateableText from 'react-native-animateable-text';
 import { DerivedValue, SharedValue, useAnimatedProps } from 'react-native-reanimated';
@@ -51,27 +51,26 @@ export type AnimatedTextProps = {
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
+  ref?: ComponentRef<typeof AnimateableText>;
 };
 
-export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, AnimatedTextProps>(function Text(
-  {
-    align,
-    children,
-    color = 'label',
-    ellipsizeMode,
-    numberOfLines,
-    selectable,
-    size,
-    staticText,
-    tabularNumbers,
-    testID,
-    text,
-    uppercase,
-    weight,
-    style,
-  },
-  ref
-) {
+export function AnimatedText({
+  align,
+  children,
+  color = 'label',
+  ellipsizeMode,
+  numberOfLines,
+  selectable,
+  size,
+  staticText,
+  tabularNumbers,
+  testID,
+  text,
+  uppercase,
+  weight,
+  style,
+  ref,
+}: AnimatedTextProps) {
   const textStyle = useTextStyle({
     align,
     color,
@@ -103,4 +102,4 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
       {lineHeightFixNode}
     </AnimateableText>
   );
-});
+}

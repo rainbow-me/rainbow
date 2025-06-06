@@ -118,18 +118,15 @@ export const LaunchCard = memo(function LaunchCard() {
             <ImageSVG height={21} svg={svgs.stars.three} width={21} x={122} y={64} />
           </Group>
 
-          <Circle color="transparent" cx={DEFAULT_CARD_SIZE / 2} cy={CARD_CONFIG.dimensions.plusButton.y} r={PLUS_BUTTON_SIZE / 2}>
-            <Paint antiAlias dither>
-              <Shadow blur={15} color={CARD_CONFIG.colors.plusButtonDropShadow} dx={0} dy={10} />
-              <Shadow blur={2} color={CARD_CONFIG.colors.plusButtonInnerShadowDark} dx={0} dy={-1.5} inner />
-              <Shadow blur={1.25} color={CARD_CONFIG.colors.plusButtonInnerShadowLight} dx={0} dy={1.5} inner />
-
-              <LinearGradient
-                colors={CARD_CONFIG.gradients.plusButton.colors}
-                end={CARD_CONFIG.gradients.plusButton.end}
-                start={CARD_CONFIG.gradients.plusButton.start}
-              />
-            </Paint>
+          <Circle cx={DEFAULT_CARD_SIZE / 2} cy={CARD_CONFIG.dimensions.plusButton.y} r={PLUS_BUTTON_SIZE / 2}>
+            <Shadow blur={15} color={CARD_CONFIG.colors.plusButtonDropShadow} dx={0} dy={10} />
+            <Shadow blur={2} color={CARD_CONFIG.colors.plusButtonInnerShadowDark} dx={0} dy={-1.5} inner />
+            <Shadow blur={1.25} color={CARD_CONFIG.colors.plusButtonInnerShadowLight} dx={0} dy={1.5} inner />
+            <LinearGradient
+              colors={CARD_CONFIG.gradients.plusButton.colors}
+              end={CARD_CONFIG.gradients.plusButton.end}
+              start={CARD_CONFIG.gradients.plusButton.start}
+            />
           </Circle>
 
           <Circle
