@@ -10,9 +10,8 @@ import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
 import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { addDisplay } from '@/helpers/utilities';
 import WalletTypes from '@/helpers/walletTypes';
-import { useAccountSettings, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -26,7 +25,7 @@ import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { setSelectedWallet, useWallets, useSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
+import { setSelectedWallet, useWallets, updateWallets, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
@@ -79,14 +78,13 @@ export interface AddressItem {
 export default function ChangeWalletSheet() {
   const { params = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHANGE_WALLET_SHEET>>();
 
-  const { onChangeWallet, watchOnly = false, currentAccountAddress, hideReadOnlyWallets = false } = params;
-  const selectedWallet = useSelectedWallet();
+  const { onChangeWallet, watchOnly = false, hideReadOnlyWallets = false } = params;
+  const accountAddress = useAccountAddress();
   const wallets = useWallets();
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { colors, isDarkMode } = useTheme();
   const { updateWebProfile } = useWebData();
-  const { accountAddress } = useAccountSettings();
   const { goBack, navigate } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -98,8 +96,6 @@ export default function ChangeWalletSheet() {
   const featureHintTooltipRef = useRef<TooltipRef>(null);
 
   const [editMode, setEditMode] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
-  const [currentSelectedWallet, setCurrentSelectedWallet] = useState(selectedWallet);
 
   const setPinnedAddresses = usePinnedWalletsStore(state => state.setPinnedAddresses);
 
@@ -144,7 +140,7 @@ export default function ChangeWalletSheet() {
           balance: balanceText,
           isLedger: wallet.type === WalletTypes.bluetooth,
           isReadOnly: wallet.type === WalletTypes.readOnly,
-          isSelected: account.address === currentAddress,
+          isSelected: account.address === accountAddress,
           rowType: RowTypes.ADDRESS,
           walletId: wallet.id,
         };
@@ -161,7 +157,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, currentAddress, hideReadOnlyWallets]);
+  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets]);
 
   // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {
@@ -186,70 +182,18 @@ export default function ChangeWalletSheet() {
     isLoadingTransactionCounts,
   ]);
 
-  const ownedWalletsTotalBalance = useMemo(() => {
-    let isLoadingBalance = false;
-    let hasOwnedWallets = false;
-
-    // We have to explicitly handle the null case because the addDisplay function expects the currency symbol, and we cannot assume the position of the currency symbol
-    const totalBalance: string | null = Object.values(walletsWithBalancesAndNames || {}).reduce(
-      (acc, wallet) => {
-        // only include owned wallet balances
-        if (wallet.type === WalletTypes.readOnly) return acc;
-
-        hasOwnedWallets = true;
-        const visibleAccounts = (wallet.addresses || []).filter(account => account.visible);
-        let walletTotalBalance: string | null = null;
-
-        visibleAccounts.forEach(account => {
-          if (!account.balancesMinusHiddenBalances) {
-            isLoadingBalance = true;
-            return;
-          }
-          if (walletTotalBalance === null) {
-            walletTotalBalance = account.balancesMinusHiddenBalances;
-            return;
-          }
-
-          walletTotalBalance = addDisplay(walletTotalBalance, account.balancesMinusHiddenBalances);
-        });
-
-        if (acc === null) {
-          return walletTotalBalance;
-        }
-        if (walletTotalBalance === null) {
-          return acc;
-        }
-
-        return addDisplay(acc, walletTotalBalance);
-      },
-      null as string | null
-    );
-
-    // If user has no owned wallets, return null so we can conditionally hide the balance
-    if (!hasOwnedWallets) return null;
-
-    if (isLoadingBalance) return i18n.t(i18n.l.wallet.change_wallet.loading_balance);
-
-    if (totalBalance === null) return null;
-
-    return totalBalance;
-  }, [walletsWithBalancesAndNames]);
-
   const onChangeAccount = useCallback(
     async (walletId: string, address: Address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
       const wallet = wallets?.[walletId];
       if (!wallet) return;
       if (watchOnly && onChangeWallet) {
-        setCurrentAddress(address);
-        setCurrentSelectedWallet(wallet);
+        setSelectedWallet(wallet, address);
         onChangeWallet(address, wallet);
         return;
       }
-      if (address === currentAddress) return;
+      if (address === accountAddress) return;
       try {
-        setCurrentAddress(address);
-        setCurrentSelectedWallet(wallet);
         setSelectedWallet(wallet, address);
         remotePromoSheetsStore.setState({ isShown: false });
         initializeWallet({
@@ -266,7 +210,7 @@ export default function ChangeWalletSheet() {
         });
       }
     },
-    [currentAddress, editMode, goBack, onChangeWallet, wallets, watchOnly]
+    [accountAddress, editMode, goBack, onChangeWallet, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(
@@ -287,7 +231,7 @@ export default function ChangeWalletSheet() {
 
       // If there are no visible wallets
       // then delete the wallet
-      const visibleAddresses = ((newWallets as any)[walletId]?.addresses || []).filter((account: any) => account.visible);
+      const visibleAddresses = (newWallets[walletId]?.addresses || []).filter(account => account.visible);
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newWallets[walletId];
@@ -340,11 +284,8 @@ export default function ChangeWalletSheet() {
                   [walletId]: updatedWallet,
                 };
 
-                if (currentSelectedWallet && currentSelectedWallet.id === walletId) {
-                  setSelectedWallet(updatedWallet);
-                }
-
                 updateWallets(updatedWallets);
+                setSelectedWallet(updatedWallet);
                 updateWebProfile(address, name, colors.avatarBackgrounds[color]);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
@@ -360,7 +301,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [wallets, goBack, navigate, currentSelectedWallet, updateWebProfile, colors.avatarBackgrounds]
+    [wallets, goBack, navigate, updateWebProfile, colors.avatarBackgrounds]
   );
 
   const onPressEdit = useCallback(
@@ -429,7 +370,7 @@ export default function ChangeWalletSheet() {
             } else {
               // If we're deleting the selected wallet
               // we need to switch to another one
-              if (wallets && address === currentAddress) {
+              if (wallets && address === accountAddress) {
                 const { wallet: foundWallet, key } =
                   doesWalletsContainAddress({
                     address: address,
@@ -444,7 +385,7 @@ export default function ChangeWalletSheet() {
         }
       );
     },
-    [currentAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
+    [accountAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
   );
 
   const onPressCopyAddress = useCallback((address: string) => {

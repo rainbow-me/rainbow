@@ -99,7 +99,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     setSelectedWallet(wallet, address) {
       setSelectedWalletInKeychain(wallet);
       set({
-        selected: wallet,
+        selected: {
+          ...wallet,
+        },
       });
       if (address) {
         saveAddress(address);
@@ -210,13 +212,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
-        const walletENSInfo = await getWalletENSInfo({ wallets, walletNames });
-
         set({
           selected: selectedWallet,
-          walletNames,
-          wallets,
-          ...walletENSInfo,
+          ...(await getWalletsInfo({ wallets, walletNames })),
         });
 
         return wallets;
@@ -228,7 +226,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     },
 
     createAccount: async ({ id, name, color }) => {
-      const { wallets } = get();
+      const { wallets, walletNames } = get();
       const newWallets = { ...wallets };
 
       let index = 0;
@@ -265,14 +263,17 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
       // Save all the wallets
       saveAllWallets(newWallets);
-
       // Set the address selected (KEYCHAIN)
-      await saveAddress(account.address);
-
+      saveAddress(account.address);
       // Set the wallet selected (KEYCHAIN)
-      setSelectedWallet(newWallets[id]);
+      setSelectedWallet(newWallets[id], account.address);
 
-      set({ selected: newWallets[id], wallets: newWallets });
+      set({
+        selected: newWallets[id],
+        ...(await getWalletsInfo({ wallets: newWallets, walletNames, useCachedENS: true })),
+      });
+
+      setAccountAddress(ensureValidHex(account.address));
 
       return newWallets;
     },
@@ -349,7 +350,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     refreshWalletENSInfo: async () => {
       const { wallets, walletNames } = get();
-      const info = await getWalletENSInfo({ wallets, walletNames });
+      const info = await getWalletsInfo({ wallets, walletNames });
       if (info) {
         set(info);
       }
@@ -487,6 +488,98 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
+type GetENSInfoProps = { wallets: Wallets; walletNames: WalletNames; useCachedENS?: boolean };
+
+async function getWalletsInfo({ wallets, walletNames, useCachedENS }: GetENSInfoProps) {
+  if (!wallets) {
+    throw new Error(`No wallets`);
+  }
+
+  const updatedWalletNames: { [address: string]: string } = {};
+
+  let updatedWallets: {
+    [key: string]: RainbowWallet;
+  } = { ...wallets };
+
+  let promises: Promise<{
+    account: RainbowAccount;
+    ensChanged: boolean;
+    key: string;
+  }>[] = [];
+
+  for (const key in wallets) {
+    const wallet = wallets[key];
+    const innerPromises = wallet?.addresses?.map(async account => {
+      updatedWalletNames[account.address] = account.label;
+
+      if (useCachedENS && account.label && account.avatar) {
+        return {
+          account,
+          ensChanged: false,
+          key,
+        };
+      }
+
+      const ens = await fetchReverseRecordWithRetry(account.address);
+      const currentENSName = walletNames[account.address];
+      if (ens) {
+        updatedWalletNames[account.address] = ens;
+        const isNewEnsName = currentENSName !== ens;
+        const avatar = await fetchENSAvatar(ens);
+        const newImage = avatar?.imageUrl || null;
+        return {
+          account: {
+            ...account,
+            image: newImage,
+            label: isNewEnsName ? ens : account.label,
+          },
+          ensChanged: newImage !== account.image || isNewEnsName,
+          key,
+        };
+      } else if (currentENSName) {
+        // if user had an ENS but now is gone
+        return {
+          account: {
+            ...account,
+            image: account.image?.startsWith('~') || account.image?.startsWith('file') ? account.image : null, // if the user had an ens but the image it was a local image
+            label: '',
+          },
+          ensChanged: true,
+          key,
+        };
+      } else {
+        return {
+          account,
+          ensChanged: false,
+          key,
+        };
+      }
+    });
+    promises = promises.concat(innerPromises);
+  }
+
+  const allAccounts = await Promise.all(promises);
+  for (const { account, key, ensChanged } of allAccounts) {
+    if (!ensChanged) return;
+    const addresses = wallets[key]?.addresses;
+    if (!addresses) return;
+    const index = addresses.findIndex(({ address }) => address === account.address);
+    addresses.splice(index, 1, account);
+    updatedWallets = {
+      ...(updatedWallets ?? wallets),
+      [key]: {
+        ...wallets[key],
+        addresses,
+      },
+    };
+  }
+
+  return {
+    wallets: updatedWallets,
+    walletNames: updatedWalletNames,
+  };
+}
+
 export const useWallets = () => useWalletsStore(state => state.wallets);
 export const useWallet = (id: string) => useWallets()?.[id];
 export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
@@ -524,96 +617,6 @@ export const useAccountProfileInfo = () => {
     };
   }, [colors.avatarBackgrounds, info]);
 };
-
-async function getWalletENSInfo({ wallets, walletNames }: { wallets: Wallets; walletNames: WalletNames }) {
-  if (!wallets) {
-    throw new Error(`No wallets`);
-  }
-
-  const walletKeys = Object.keys(wallets);
-  const updatedWalletNames: { [address: string]: string } = {};
-
-  let updatedWallets:
-    | {
-        [key: string]: RainbowWallet;
-      }
-    | undefined;
-
-  let promises: Promise<{
-    account: RainbowAccount;
-    ensChanged: boolean;
-    key: string;
-  }>[] = [];
-
-  walletKeys.forEach(key => {
-    const wallet = wallets[key];
-    const innerPromises = wallet?.addresses?.map(async account => {
-      const ens = await fetchReverseRecordWithRetry(account.address);
-
-      const currentENSName = walletNames[account.address];
-      if (ens) {
-        updatedWalletNames[account.address] = ens;
-        const isNewEnsName = currentENSName !== ens;
-        const avatar = await fetchENSAvatar(ens);
-        const newImage = avatar?.imageUrl || null;
-        return {
-          account: {
-            ...account,
-            image: newImage,
-            label: isNewEnsName ? ens : account.label,
-          },
-          ensChanged: newImage !== account.image || isNewEnsName,
-          key,
-        };
-      } else if (currentENSName) {
-        // if user had an ENS but now is gone
-        return {
-          account: {
-            ...account,
-            image: account.image?.startsWith('~') || account.image?.startsWith('file') ? account.image : null, // if the user had an ens but the image it was a local image
-            label: '',
-          },
-          ensChanged: true,
-          key,
-        };
-      } else {
-        return {
-          account,
-          ensChanged: false,
-          key,
-        };
-      }
-    });
-
-    promises = promises.concat(innerPromises);
-  });
-
-  const newAccounts = await Promise.all(promises);
-
-  newAccounts.forEach(({ account, key, ensChanged }) => {
-    if (!ensChanged) return;
-    const addresses = wallets[key]?.addresses;
-    if (!addresses) return;
-
-    const index = addresses.findIndex(({ address }) => address === account.address);
-    addresses.splice(index, 1, account);
-
-    updatedWallets = {
-      ...(updatedWallets ?? wallets),
-      [key]: {
-        ...wallets[key],
-        addresses,
-      },
-    };
-  });
-
-  if (updatedWallets) {
-    return {
-      wallets: updatedWallets,
-      walletNames: updatedWalletNames,
-    };
-  }
-}
 
 export const getAccountProfileInfo = (props: { address: string; wallet?: RainbowWallet }) => {
   return getAccountProfileInfoFromState(props, useWalletsStore.getState());
