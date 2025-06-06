@@ -1,12 +1,12 @@
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { RainbowCoinEffect } from '@/components/rainbow-coin-effect/RainbowCoinEffect';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RAINBOW_COIN_EFFECT, useExperimentalFlag } from '@/config';
 import { Stack, Text, TextShadow, Bleed, Box } from '@/design-system';
-import ChartTypes from '@/helpers/chartTypes';
+import chartTypes, { ChartType } from '@/helpers/chartTypes';
 import { useAccountSettings } from '@/hooks';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
@@ -16,16 +16,27 @@ import { ColumnWithMargins } from '../../layout';
 import { ChartPercentChangeLabel, ChartPriceLabel, ChartDateLabel } from './chart-data-labels';
 import { toCompactNotation } from '@/helpers/strings';
 import { supportedNativeCurrencies } from '@/references';
+import { useTheme } from '@/theme';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 20,
-})(({ showChart }) => ({
+})(({ showChart }: { showChart: boolean }) => ({
   ...padding.object(0, 24, showChart ? 36 : 0),
 }));
 
-export default function ChartExpandedStateHeader({
+type ChartExpandedStateHeaderProps = {
+  asset: any;
+  color: string;
+  isPool: boolean;
+  latestChange: SharedValue<string | undefined>;
+  latestPrice: string;
+  showChart: boolean;
+  chartType: ChartType;
+};
+
+export function ChartExpandedStateHeader({
   asset,
   color: givenColors,
   isPool,
@@ -33,7 +44,7 @@ export default function ChartExpandedStateHeader({
   latestPrice = noPriceData,
   showChart,
   chartType,
-}) {
+}: ChartExpandedStateHeaderProps) {
   const shouldUseRainbowCoinEffect = useExperimentalFlag(RAINBOW_COIN_EFFECT);
   const theme = useTheme();
   const color = givenColors || theme.colors.dark;
@@ -71,17 +82,18 @@ export default function ChartExpandedStateHeader({
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
   const chartTimeDefaultValue = useMemo(() => {
-    const invertedChartTypes = Object.entries(ChartTypes).reduce((acc, [key, value]) => {
-      acc[value] = key;
-      return acc;
-    }, {});
+    const invertedChartTypes = Object.entries(chartTypes).reduce(
+      (acc, [key, value]) => {
+        acc[value] = key;
+        return acc;
+      },
+      {} as Record<ChartType, string>
+    );
     const timespan = invertedChartTypes[chartType];
 
     const formattedTimespan = timespan.charAt(0).toUpperCase() + timespan.slice(1);
-    if (chartType === ChartTypes.day) {
+    if (chartType === chartTypes.day) {
       return lang.t('expanded_state.chart.today');
-    } else if (chartType === ChartTypes.max) {
-      return lang.t('expanded_state.chart.all_time');
     } else {
       return lang.t('expanded_state.chart.past_timespan', {
         formattedTimespan,
@@ -92,7 +104,7 @@ export default function ChartExpandedStateHeader({
   }, [data]);
 
   const showPriceChangeStyle = useAnimatedStyle(() => {
-    const showPriceChange = !isNoPriceData && chartDataExists && showChart && !isNaN(latestChange.value);
+    const showPriceChange = !isNoPriceData && chartDataExists && showChart && latestChange.value !== undefined;
     return {
       opacity: withTiming(showPriceChange ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
     };
@@ -124,7 +136,7 @@ export default function ChartExpandedStateHeader({
             {titleOrNoPriceData}
           </Text>
         </TextShadow>
-        <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} isPool={isPool} priceValue={price} />
+        <ChartPriceLabel defaultValue={title} isNoPriceData={isNoPriceData} priceValue={price} />
         <Animated.View style={showPriceChangeStyle}>
           <Bleed top={'6px'}>
             <Box gap={8} flexDirection="row" alignItems="center">
