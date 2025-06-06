@@ -104,19 +104,12 @@ jobs:
     steps:
       - name: Download and Unpack IPA artifact
         id: download-artifact
-        # run: |
-        #     curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.e2e-build-ios.outputs.artifact-id }}/zip"
-        #     unzip artifact.zip -d downloaded-artifacts
-        #     ls -l downloaded-artifacts
-        #     IPA_PATH=$(find downloaded-artifacts -name "*.ipa" -print -quit)
-        #     # echo "ARTIFACT_PATH_FOR_E2E=$IPA_PATH" >> $GITHUB_ENV
-        #     echo "ipa-path=$IPA_PATH" >> $GITHUB_OUTPUT
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.e2e-build-ios.outputs.artifact-id }}/zip"
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build-release.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
+          ls -l downloaded-artifacts
           IPA_PATH=$(find downloaded-artifacts -name "*.ipa" -print -quit)
-          echo "📦 Found IPA at: $IPA_PATH"
-          echo "ipa-path=$IPA_PATH" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_PATH_FOR_E2E=$IPA_PATH" >> $GITHUB_ENV
         shell: bash
 
       - name: Checkout repo
@@ -186,7 +179,7 @@ jobs:
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
-          ARTIFACT_PATH_FOR_E2E: ${{ steps.download-artifact.outputs.ipa-path }}
+          # ARTIFACT_PATH_FOR_E2E: ${{ steps.download-artifact.outputs.ipa-path }}
 
       - name: Upload artifacts
         if: ${{ always() }}
