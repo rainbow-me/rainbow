@@ -8,9 +8,20 @@ export MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true
 
 ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
 
-# Extract .tar.gz and find the .app
+echo "🔍 Checking archive path: $ARTIFACT_PATH_FOR_E2E"
+
+if [[ ! -f "$ARTIFACT_PATH_FOR_E2E" ]]; then
+  echo "❌ Archive not found at $ARTIFACT_PATH_FOR_E2E"
+  echo "📂 Current directory: $(pwd)"
+  echo "📁 Available files:"
+  ls -lh
+  exit 1
+fi
+
+# Extract .tar.gz and locate .app bundle
 APP_UNPACK_DIR=$(mktemp -d)
 tar -xzf "$ARTIFACT_PATH_FOR_E2E" -C "$APP_UNPACK_DIR"
+
 APP_PATH=$(find "$APP_UNPACK_DIR" -name "*.app" -type d | head -n 1)
 
 if [[ -z "$APP_PATH" ]]; then
@@ -18,12 +29,13 @@ if [[ -z "$APP_PATH" ]]; then
   exit 1
 fi
 
-# Install the app
+echo "✅ Found .app at: $APP_PATH"
+
+# Install the app on the simulator
 xcrun simctl install "$DEVICE_UDID" "$APP_PATH"
 
-# Run the tests
-echo "🚀 Running tests..."
+# Run tests with Maestro
 ./scripts/e2e-ios.sh --device "$DEVICE_UDID" --debug-output "$ARTIFACTS_FOLDER" --flatten-debug-output --app "$APP_PATH"
-TEST_STATUS=$?
 
+TEST_STATUS=$?
 exit $TEST_STATUS
