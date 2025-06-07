@@ -1,8 +1,10 @@
 import React, { memo } from 'react';
+import { View } from 'react-native';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import Navigation from '@/navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
+import { CandlestickChart, DEFAULT_CANDLESTICK_CONFIG } from '@/components/candlestick-charts/CandlestickChart';
 import { useAccountProfile, useAccountSettings } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -10,6 +12,7 @@ import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
+import { useExperimentalFlag } from '@/config';
 import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
 
 const ProfileScreenPage = styled(Page)({
@@ -19,9 +22,13 @@ const ProfileScreenPage = styled(Page)({
 
 export default function ProfileScreen() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const enableCandlestickCharts = useExperimentalFlag('Candlestick Charts');
 
   return (
-    <ProfileScreenPage testID="profile-screen">
+    <ProfileScreenPage
+      color={enableCandlestickCharts ? DEFAULT_CANDLESTICK_CONFIG.chart.backgroundColor : undefined}
+      testID="profile-screen"
+    >
       <Navbar
         title="Activity"
         hasStatusBarInset
@@ -36,7 +43,13 @@ export default function ProfileScreen() {
         }
       />
 
-      <ActivityList />
+      {enableCandlestickCharts ? (
+        <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center', paddingBottom: 100 }}>
+          <CandlestickChart />
+        </View>
+      ) : (
+        <ActivityList />
+      )}
       <PendingTransactionWatcher />
     </ProfileScreenPage>
   );
