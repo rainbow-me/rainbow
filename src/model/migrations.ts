@@ -798,9 +798,11 @@ export default async function runMigrations() {
   const v28 = async () => {
     // @ts-expect-error: this has been removed but should still be persisted
     const previousSelected = store.getState()['wallets']?.selected;
+    // @ts-expect-error: this has been removed but should still be persisted
+    const previousAccount = store.getState().settings['accountAddress'] as string | undefined;
     if (previousSelected) {
       await loadWallets();
-      setSelectedWallet(previousSelected);
+      setSelectedWallet(previousSelected, previousAccount);
     }
   };
 
