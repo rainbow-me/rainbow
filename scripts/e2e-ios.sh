@@ -51,15 +51,7 @@ fi
 
 echo "Running on iOS platform"
 
-if [ -n "$APP_PATH" ]; then
-  echo "Using app: $APP_PATH"
-  maestro $DEVICE -p iOS test --app "$APP_PATH" -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
-else
-  echo "No app path provided; skipping --app argument"
-  maestro $DEVICE -p iOS test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
-fi
-
-# maestro $DEVICE -p iOS test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
+maestro $DEVICE -p iOS test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
 
 # Store the exit code
 EXIT_CODE=$?

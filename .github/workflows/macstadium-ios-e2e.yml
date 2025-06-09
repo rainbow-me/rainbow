@@ -88,27 +88,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           configuration: Debug
           comment-bot: false
-  
-  e2e-ios:
-    needs: e2e-build-ios
-    if: github.event.pull_request.draft == false
-    runs-on: ["self-hosted"]
-    concurrency:
-      group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-    permissions:
-      contents: read
-    timeout-minutes: 90
-    env:
-      ARTIFACTS_FOLDER: e2e-artifacts
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
 
       - name: Download and Unpack IPA artifact
         id: download-artifact
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.e2e-build-ios.outputs.artifact-id }}/zip"
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ e2e-build-ios.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
           ls -lh downloaded-artifacts
 
@@ -117,40 +101,6 @@ jobs:
           cp "$APP_ARCHIVE_PATH" "$GITHUB_WORKSPACE/app.tar.gz"
           echo "ipa-path=$GITHUB_WORKSPACE/app.tar.gz" >> $GITHUB_OUTPUT
         shell: bash
-
-      - name: Set up github keys
-        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
-
-      - name: Set sanitized branch name
-        id: sanitize
-        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-            !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Set up ENV vars & scripts
-        env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-        run: |
-          source ~/.zshrc
-          git clone git@github.com:rainbow-me/rainbow-env.git
-          mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          eval $CI_SCRIPTS
-      - name: Checkout Janic branch for now
-        run: cd rainbow-scripts && git checkout @janic/rn79
-      - name: Install dependencies
-        run: |
-          yarn install && yarn setup
 
       - name: Modify env
         run: |
