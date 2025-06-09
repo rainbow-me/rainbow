@@ -16,12 +16,10 @@ import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
 import { CurrentBaseFeeTypeKey, ExplainSheetRouteParams, gasTrendToTrendType, RootStackParamList } from '@/navigation/types';
-import { ChainId } from '@/state/backendNetworks/types';
 import { useNavigation } from '@/navigation';
+import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
-
-const chainsThatIgnoreThePriorityFee = [ChainId.arbitrum, ChainId.arbitrumNova, ChainId.arbitrumSepolia];
 
 const GAS_FEE_INCREMENT = 3;
 const GAS_FEE_L2_INCREMENT = 0.02;
@@ -56,6 +54,8 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, chainId } = useGas();
 
   const { colors } = useTheme();
+
+  const showPriorityFee = useChainSupportsPriorityFee(chainId);
 
   const {
     params: { type, focusTo },
@@ -594,7 +594,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
           </Box>
         </Row>
 
-        {!chainsThatIgnoreThePriorityFee.includes(chainId) && (
+        {showPriorityFee && (
           <Row>
             <Box>
               <Inline alignVertical="center" alignHorizontal="justify">

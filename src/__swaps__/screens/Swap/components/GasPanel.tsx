@@ -16,8 +16,9 @@ import {
   useIsChainEIP1559,
   useMeteorologySuggestion,
   useMeteorologySuggestions,
+  useChainSupportsPriorityFee,
 } from '@/__swaps__/utils/meteorology';
-import { add, greaterThan, multiply, subtract, lessThan, formatNumber } from '@/helpers/utilities';
+import { add, greaterThan, multiply, subtract, lessThan, formatNumber, isZero } from '@/helpers/utilities';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -385,10 +386,10 @@ function MaxTransactionFee() {
   );
 }
 
-const chainsThatIgnoreThePriorityFee = [ChainId.arbitrum, ChainId.arbitrumNova, ChainId.arbitrumSepolia];
 function EditableGasSettings() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const isEIP1559 = useIsChainEIP1559(chainId);
+  const showPriorityFee = useChainSupportsPriorityFee(chainId);
 
   if (!isEIP1559) return <EditGasPrice />;
 
@@ -398,7 +399,7 @@ function EditableGasSettings() {
         <CurrentBaseFee />
       </UnmountWhenGasPanelIsClosed>
       <EditMaxBaseFee />
-      {!chainsThatIgnoreThePriorityFee.includes(chainId) && <EditPriorityFee />}
+      {showPriorityFee && <EditPriorityFee />}
     </>
   );
 }
