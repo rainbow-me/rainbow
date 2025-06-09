@@ -31,14 +31,14 @@ export default function Fallback({
   resetError,
 }: {
   colors: Colors;
-  error: Error;
+  error: unknown;
   componentStack: string;
   resetError: () => void;
 }) {
   const handleRestart = () => {
     logger.error(new RainbowError('[ErrorBoundary]: RainbowAppRestartFromErrorBoundary'), {
       data: {
-        error: error.toString(),
+        error: error instanceof Error ? error.toString() : 'Unknown error',
         componentStack,
       },
     });

@@ -7,11 +7,11 @@ import { analytics } from '@/analytics';
 
 const NoErrorBoundary = ({ children }: { children: React.ReactNode }) => children;
 
-function onReset(error: Error | null) {
-  analytics.track(analytics.event.errorBoundaryReset, { error });
+function onReset(error: unknown, componentStack: string | null | undefined, eventId: string | null) {
+  analytics.track(analytics.event.errorBoundaryReset, { error: error as Error, componentStack, eventId });
 }
-function onError(error: Error | null) {
-  analytics.track(analytics.event.errorBoundary, { error });
+function onError(error: unknown, componentStack: string | undefined, eventId: string) {
+  analytics.track(analytics.event.errorBoundary, { error: error as Error, componentStack, eventId });
 }
 
 const ErrorBoundaryWithSentry = ({ children }: { children: React.ReactNode }) => {

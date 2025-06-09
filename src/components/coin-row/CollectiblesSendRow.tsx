@@ -10,7 +10,7 @@ import { Centered } from '../layout';
 import { TruncatedText } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { AssetType, UniqueAsset } from '@/entities';
+import { UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
 
@@ -92,9 +92,7 @@ const CollectiblesSendRow = React.memo(
   }) => {
     const { colors } = useTheme();
 
-    const isENS = item.type === AssetType.ens;
-
-    const subtitle = useMemo(() => (item.name ? item.name : item.collectionName), [isENS, item.collectionName, item.name]);
+    const subtitle = useMemo(() => (item.name ? item.name : item.collectionName), [item.collectionName, item.name]);
 
     const Wrapper = disablePressAnimation ? TouchableWithoutFeedback : ButtonPressAnimation;
 

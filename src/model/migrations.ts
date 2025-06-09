@@ -30,7 +30,7 @@ import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedC
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import showcaseTokens, { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
@@ -804,6 +804,31 @@ export default async function runMigrations() {
   };
 
   migrations.push(v28);
+
+  // /**
+  //  *************** Migration v29 ******************
+  //  * Migrates current showcase data to full format with network data
+  //  */
+  // const v29 = async () => {
+  //   const { showcaseTokens } = store.getState().showcaseTokens;
+
+  //   /** e.g.
+  //    * {"showcaseTokens":
+  //    * [
+  //    *  "0x06012c8cf97bead5deae237070f9587f8e7a266d_1545043",
+  //    *  "0x69ded26c6efaefa3049dc693606f3bac5daaa4d8_1",
+  //    *  "0xca21d4228cdcc68d4e23807e5e370c07577dd152_12598",
+  //    *  "rainbowqa.eth",
+  //    *  "0x86fa5a5927fbaa82218743607765ec0f63e46bfa_104",
+  //    *  "0xtester.eth",
+  //    *  "0x07651181eec2e978ca46e49b9b7b4fb6ad1e0342_0",
+  //    *  "0x7492e30d60d96c58ed0f0dc2fe536098c620c4c0_12269"
+  //    * ]
+  //    */
+  //   const promises = showcaseTokens.map((token) => {
+  //     const [address, tokenId] = token.split('_');
+  //   });
+  // };
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

@@ -289,9 +289,9 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   const isNFT = asset.type === AssetType.nft;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS ? (asset.uniqueId ? asset.uniqueId?.split(' ')?.[0] : asset.uniqueId) : '';
+  const cleanENSName = isENS ? asset.name : '';
   const ensProfile = useENSProfile(cleanENSName, {
-    enabled: isENS,
+    enabled: isENS && !!cleanENSName.trim(),
   });
   const ensData = ensProfile.data;
 
@@ -356,7 +356,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   }, [colors.whiteLabel, imageColor]);
 
   const handlePressMarketplaceName = useCallback(() => openInBrowser(asset.marketplaceUrl), [asset.marketplaceUrl]);
-  const handlePressParty = useCallback(() => openInBrowser(asset.websiteUrl!), [asset.websiteUrl]);
+  const handlePressParty = useCallback(() => openInBrowser(asset.websiteUrl), [asset.websiteUrl]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -392,15 +392,15 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   const handlePressEdit = useCallback(() => {
     if (isENS) {
       InteractionManager.runAfterInteractions(() => {
-        startRegistration(asset.uniqueId, REGISTRATION_MODES.EDIT);
+        startRegistration(asset.name, REGISTRATION_MODES.EDIT);
         navigate(Routes.REGISTER_ENS_NAVIGATOR, {
-          ensName: asset.uniqueId,
+          ensName: asset.name,
           externalAvatarUrl: asset.images.lowResUrl,
           mode: REGISTRATION_MODES.EDIT,
         });
       });
     }
-  }, [isENS, navigate, startRegistration, asset.uniqueId, asset.images.lowResUrl]);
+  }, [isENS, navigate, startRegistration, asset.name, asset.images.lowResUrl]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -433,6 +433,8 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
     { timeout: 5 * 1000 }
   );
 
+  console.log(asset.images.highResUrl, asset.images.lowResUrl);
+
   return (
     <>
       {IS_IOS && (
@@ -445,10 +447,9 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
               imageUrl={asset.images.highResUrl}
               lowResImageUrl={asset.images.lowResUrl}
               mimeType={asset.images.mimeType}
-              fullUniqueId={asset.uniqueId}
               uniqueId={asset.uniqueId}
               id={asset.uniqueId}
-              address={asset.contractAddress}
+              type={asset.type}
             />
             <BackgroundBlur />
           </BackgroundImage>
@@ -599,7 +600,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                           {isENS && (
                             <ENSBriefTokenInfoRow
                               color={imageColor}
-                              ensName={asset.uniqueId}
+                              ensName={asset.name}
                               expiryDate={ensData?.registration?.expiryDate}
                               externalAvatarUrl={asset.images.lowResUrl}
                               registrationDate={ensData?.registration?.registrationDate}
@@ -645,7 +646,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
                               <ProfileInfoSection
                                 allowEdit={hasEditButton}
                                 coinAddresses={ensData?.coinAddresses}
-                                ensName={asset.uniqueId}
+                                ensName={asset.name}
                                 images={ensData?.images}
                                 isLoading={ensProfile.isLoading}
                                 records={ensData?.records}

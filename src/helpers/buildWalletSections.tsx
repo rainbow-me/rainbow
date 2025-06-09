@@ -64,6 +64,7 @@ export type WalletSectionsState = {
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
   remoteCards: string[];
+  hasMoreCollections: boolean;
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
@@ -84,6 +85,7 @@ const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
+const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
 
 interface BalanceSectionData {
   balanceSection: CellTypes[];
@@ -315,6 +317,7 @@ const briefUniqueTokenDataSelector = createSelector(
     listTypeSelector,
     isReadOnlyWalletSelector,
     isFetchingNftsSelector,
+    hasMoreCollectionsSelector,
   ],
   buildBriefUniqueTokenList
 );

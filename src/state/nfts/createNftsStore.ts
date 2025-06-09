@@ -22,6 +22,15 @@ const STALE_TIME = time.minutes(10);
 
 let paginationPromise: { address: Address | string; promise: Promise<void> } | null = null;
 
+const replaceEthereumWithMainnet = (network: string | undefined) => {
+  if (!network) return undefined;
+
+  if (network === 'ethereum') {
+    return 'mainnet';
+  }
+  return network;
+};
+
 const fetchMultipleCollectionNfts = async (collectionId: string): Promise<NftsQueryData> => {
   const tokens = collectionId === 'showcase' ? store.getState().showcaseTokens.showcaseTokens : store.getState().hiddenTokens.hiddenTokens;
 
@@ -29,7 +38,7 @@ const fetchMultipleCollectionNfts = async (collectionId: string): Promise<NftsQu
     .map(token => parseUniqueId(token))
     .filter(p => p.network && p.contractAddress && p.tokenId)
     .map(p => ({
-      network: p.network as string,
+      network: replaceEthereumWithMainnet(p.network) as string,
       contractAddress: p.contractAddress,
       tokenId: p.tokenId,
     }));
@@ -65,6 +74,10 @@ const fetchMultipleCollectionNfts = async (collectionId: string): Promise<NftsQu
 const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
   try {
     const { walletAddress, collectionId } = params;
+
+    /**
+     * Instead of one collectionId, we should read from openFamilies and fetch for all openFamilies
+     */
 
     if (collectionId) {
       if (collectionId === 'showcase' || collectionId === 'hidden') {

@@ -44,7 +44,6 @@ const UniqueTokenExpandedStateContent = ({
   borderRadius,
   horizontalPadding = 24,
   imageColor,
-  resizeMode = 'cover',
   textColor,
   disablePreview,
   opacity,
@@ -98,10 +97,9 @@ const UniqueTokenExpandedStateContent = ({
             imageUrl={asset.images.highResUrl}
             lowResImageUrl={asset.images.lowResUrl}
             mimeType={asset.images.mimeType}
-            fullUniqueId={asset.uniqueId}
             uniqueId={asset.uniqueId}
             id={asset.uniqueId}
-            address={asset.contractAddress}
+            type={asset.type}
             transformSvgs={false}
           />
         )}

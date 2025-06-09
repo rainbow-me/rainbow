@@ -10,7 +10,6 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { ThemeContextProps, useTheme } from '@/theme';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { UniqueAsset } from '@/entities';
-import { parseUniqueId } from '@/resources/nfts/utils';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = (colors: ThemeContextProps['colors']) => [0, 2, 6, colors.shadow, 0.08];
@@ -56,8 +55,6 @@ const UniqueTokenCard = ({
   usePersistentAspectRatio(item.images.lowResUrl);
   usePersistentDominantColorFromImage(item.images.lowResUrl);
 
-  const { address } = parseContractAddressFromUniqueId(item.uniqueId);
-
   const handlePress = useCallback(() => {
     if (onPress) {
       onPress(item);
@@ -80,15 +77,15 @@ const UniqueTokenCard = ({
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
           backgroundColor={item.backgroundColor || colors.lightestGrey}
-          imageUrl={item.images.lowResUrl || item.images.highResUrl || item.images.animatedUrl}
+          imageUrl={item.images.highResUrl || item.images.animatedUrl}
           isCard
-          fullUniqueId={item.uniqueId}
           id={item.tokenId}
+          type={item.type}
           collectionName={item.collectionName ?? ''}
           name={item.name}
           uniqueId={item.uniqueId}
           mimeType={item.images.mimeType ?? ''}
-          address={address}
+          lowResImageUrl={item.images.lowResUrl}
         />
         {borderEnabled && <InnerBorder opacity={0.04} radius={UniqueTokenCardBorderRadius} width={0.5} />}
       </Content>

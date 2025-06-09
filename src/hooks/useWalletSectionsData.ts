@@ -77,6 +77,7 @@ export default function useWalletSectionsData({
   }, [claimablesData, claimablesEnabled]);
 
   const collections = useNftsStore(state => state.getCollections());
+  const hasMoreCollections = useNftsStore(state => state.hasNextPage());
   const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
@@ -124,10 +125,11 @@ export default function useWalletSectionsData({
       positions,
       claimables,
       remoteCards,
+      hasMoreCollections,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
-    const hasNFTs = (collections?.length || 0) > 0;
+    const hasNFTs = (collections?.length ?? 0) > 0;
 
     return {
       hasNFTs,
@@ -147,6 +149,7 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sortedAssets,
     accountWithBalance?.balancesMinusHiddenBalances,
+    accountWithBalance?.balances,
     isWalletEthZero,
     hiddenTokens,
     isReadOnlyWallet,
@@ -158,5 +161,6 @@ export default function useWalletSectionsData({
     positions,
     claimables,
     remoteCards,
+    hasMoreCollections,
   ]);
 }

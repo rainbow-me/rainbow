@@ -252,7 +252,8 @@ export const buildBriefUniqueTokenList = (
   hiddenTokens: string[] | undefined = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
-  isFetchingNfts = false
+  isFetchingNfts = false,
+  hasMoreCollections = false
 ) => {
   const hiddenUniqueTokensIds: Map<CollectionId, number> = new Map();
   const uniqueTokensInShowcaseIds: Map<CollectionId, number> = new Map();
@@ -374,7 +375,7 @@ export const buildBriefUniqueTokenList = (
     }
   }
 
-  if (hiddenTokens.length > 0) {
+  if (hiddenTokens.length > 0 && !hasMoreCollections) {
     result.push({
       name: i18n.t(i18n.l.button.hidden),
       total: hiddenTokens.length,
