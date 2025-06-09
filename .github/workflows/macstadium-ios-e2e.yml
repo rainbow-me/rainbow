@@ -102,6 +102,9 @@ jobs:
     env:
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Download and Unpack IPA artifact
         id: download-artifact
         run: |
@@ -114,9 +117,6 @@ jobs:
           cp "$APP_ARCHIVE_PATH" "$GITHUB_WORKSPACE/app.tar.gz"
           echo "ipa-path=$GITHUB_WORKSPACE/app.tar.gz" >> $GITHUB_OUTPUT
         shell: bash
-
-      - name: Checkout repo
-        uses: actions/checkout@v4
 
       - name: Set up github keys
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
