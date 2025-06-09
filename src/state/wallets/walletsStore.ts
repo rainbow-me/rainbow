@@ -147,10 +147,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     async loadWallets() {
       try {
         const { accountAddress, walletNames } = get();
+
         let addressFromKeychain: string | null = accountAddress;
         const allWalletsResult = await getAllWallets();
         const wallets = allWalletsResult?.wallets || {};
+
         if (isEmpty(wallets)) return;
+
         const selected = await getSelectedWalletFromKeychain();
 
         // Prevent irrecoverable state (no selected wallet)
@@ -212,9 +215,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
+        const walletInfo = await getWalletsInfo({ wallets, walletNames });
+
         set({
           selected: selectedWallet,
-          ...(await getWalletsInfo({ wallets, walletNames })),
+          ...walletInfo,
         });
 
         return wallets;
@@ -559,10 +564,11 @@ async function getWalletsInfo({ wallets, walletNames, useCachedENS }: GetENSInfo
   }
 
   const allAccounts = await Promise.all(promises);
+
   for (const { account, key, ensChanged } of allAccounts) {
-    if (!ensChanged) return;
+    if (!ensChanged) continue;
     const addresses = wallets[key]?.addresses;
-    if (!addresses) return;
+    if (!addresses) continue;
     const index = addresses.findIndex(({ address }) => address === account.address);
     addresses.splice(index, 1, account);
     updatedWallets = {

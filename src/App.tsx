@@ -40,6 +40,7 @@ import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
+import { loadWallets } from '@/state/wallets/walletsStore';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -163,15 +164,14 @@ function onReportPrepared() {
   PerformanceTracking.finishReport(PerformanceReports.appStartup);
 }
 
-console.log('initialize application1?');
-
 async function initializeApplication() {
-  console.log('initialize application?');
   PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
   await Promise.all([initializeRemoteConfig(), migrate()]);
 
   const isReturningUser = ls.device.get(['isReturningUser']);
   const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
+
+  await loadWallets();
 
   // Initial telemetry; amended with wallet context later in `initializeWallet`
   Sentry.setUser({ id: deviceId });
