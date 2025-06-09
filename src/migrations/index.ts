@@ -124,9 +124,9 @@ export async function runMigrations(migrations: Migration[]) {
 }
 
 function isFullyMigrated(): boolean {
-  // const lastMigrationName = migrations[migrations.length - 1].name;
-  // const migratedAt = storage.get([lastMigrationName]);
-  return false;
+  const lastMigrationName = migrations[migrations.length - 1].name;
+  const migratedAt = storage.get([lastMigrationName]);
+  return Boolean(migratedAt);
 }
 
 /**
