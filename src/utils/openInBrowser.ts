@@ -1,8 +1,8 @@
 import { logger } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { Linking, Platform } from 'react-native';
-import InAppBrowser from 'react-native-inappbrowser-reborn';
+import { Linking } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 
 export const openInBrowser = (url: string, internal = true, SafariContext = false) => {
   if (!url) {
@@ -25,41 +25,22 @@ export const openInBrowser = (url: string, internal = true, SafariContext = fals
   if (SafariContext) {
     const handleOpenInSafariContext = async (url: string) => {
       try {
-        console.log('[openInBrowser]: Opening URL in Safari context', { url });
-        if (await InAppBrowser.isAvailable()) {
-          await InAppBrowser.open(
-            url,
-            Platform.select({
-              ios: {
-                // iOS Properties
-                dismissButtonStyle: 'done',
-                preferredBarTintColor: 'white',
-                preferredControlTintColor: '#007AFF',
-                readerMode: false,
-                animated: true,
-                modalTransitionStyle: 'coverVertical',
-                modalPresentationStyle: 'pageSheet',
-                ephemeralWebSession: true,
-              },
-              android: {
-                // Android Properties
-                showTitle: false,
-                toolbarColor: 'white',
-                secondaryToolbarColor: 'gray',
-                navigationBarColor: 'gray',
-                navigationBarDividerColor: 'white',
-                enableUrlBarHiding: true,
-                enableDefaultShare: true,
-                forceCloseOnRedirection: true,
-              },
-            })
-          );
-        } else {
-          await Linking.openURL(url);
-        }
+        await WebBrowser.openBrowserAsync(url, {
+          createTask: true,
+          // iOS
+          dismissButtonStyle: 'done',
+          controlsColor: '#007AFF',
+          readerMode: false,
+          presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
+          // Android
+          showTitle: false,
+          toolbarColor: 'white',
+          secondaryToolbarColor: 'gray',
+          enableDefaultShareMenuItem: true,
+        });
       } catch (error) {
         // This error is thrown when the user closes the browser, so we can safely ignore it.
-        logger.debug('[AddCash]: InAppBrowser closed by user', { message: (error as Error).message });
+        logger.debug('[AddCash]: Expo WebBrowser closed by user', { message: (error as Error).message });
       }
     };
     return handleOpenInSafariContext(url);
