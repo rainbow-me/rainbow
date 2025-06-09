@@ -1,7 +1,7 @@
 import * as i18n from '@/languages';
 import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 
 import { ACTION_BUTTON_HEIGHT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -416,25 +416,18 @@ function saveCustomGasSettings() {
 }
 
 export function GasPanel() {
-  const { configProgress, setGasPanelHeight } = useSwapContext();
+  const { configProgress, gasPanelHeight } = useSwapContext();
   const separator = useForegroundColor('separator');
-  const [measuredHeight, setMeasuredHeight] = useState(0);
 
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const height = event.nativeEvent.layout.height;
-      if (height > 0 && height !== measuredHeight) {
-        setMeasuredHeight(height + ACTION_BUTTON_HEIGHT);
+      if (height > 0) {
+        gasPanelHeight.value = height + ACTION_BUTTON_HEIGHT;
       }
     },
-    [measuredHeight]
+    [gasPanelHeight]
   );
-
-  useEffect(() => {
-    if (measuredHeight > 0) {
-      setGasPanelHeight(measuredHeight);
-    }
-  }, [measuredHeight, setGasPanelHeight]);
 
   useAnimatedReaction(
     () => configProgress.value,

@@ -144,7 +144,6 @@ interface SwapContextType {
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
   gasPanelHeight: SharedValue<number>;
-  setGasPanelHeight: (height: number) => void;
 }
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
@@ -893,13 +892,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   });
 
-  const setGasPanelHeight = useCallback(
-    (height: number) => {
-      gasPanelHeight.value = height;
-    },
-    [gasPanelHeight]
-  );
-
   return (
     <SwapContext.Provider
       value={{
@@ -946,7 +938,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         hasEnoughFundsForGas,
         gasPanelHeight,
-        setGasPanelHeight,
       }}
     >
       {children}
