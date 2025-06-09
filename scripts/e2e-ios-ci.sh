@@ -34,8 +34,15 @@ echo "✅ Found .app at: $APP_PATH"
 # Install the app on the simulator
 xcrun simctl install "$DEVICE_UDID" "$APP_PATH"
 
+yarn start &
 # Run tests with Maestro
 ./scripts/e2e-ios.sh --device "$DEVICE_UDID" --debug-output "$ARTIFACTS_FOLDER" --flatten-debug-output --app "$APP_PATH"
+
+# Clean up yarn start process
+YARN_START_PID=$(lsof -t -i:8081)
+if [ -n "$YARN_START_PID" ]; then
+  kill $YARN_START_PID
+fi
 
 TEST_STATUS=$?
 exit $TEST_STATUS
