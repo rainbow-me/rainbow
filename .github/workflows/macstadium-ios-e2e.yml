@@ -84,6 +84,7 @@ jobs:
         id: rnef-remote-build-ios
         uses: callstackincubator/ios@v1
         with:
+          scheme: Rainbow
           destination: simulator
           github-token: ${{ secrets.GITHUB_TOKEN }}
           configuration: Debug
