@@ -34,14 +34,31 @@ echo "✅ Found .app at: $APP_PATH"
 # Install the app on the simulator
 xcrun simctl install "$DEVICE_UDID" "$APP_PATH"
 
-yarn start &
+yarn start > /dev/null 2>&1 &
+YARN_START_PID=$!
+
+# Wait for Metro bundler to be ready
+echo "⏳ Waiting for Metro bundler to be ready..."
+for i in {1..30}; do
+  if curl -s http://localhost:8081/status | grep -q "packager-status:running"; then
+    echo "✅ Metro bundler is ready."
+
+    echo "🚀 Triggering JS bundle build..."
+    curl "http://localhost:8081/index.bundle?platform=ios&dev=true" --output /dev/null
+    echo "✅ Bundle build triggered."
+    
+    break
+  fi
+  sleep 2
+  echo "⌛ Still waiting... ($((i * 2))s)"
+done
+
 # Run tests with Maestro
 ./scripts/e2e-ios.sh --device "$DEVICE_UDID" --debug-output "$ARTIFACTS_FOLDER" --flatten-debug-output --app "$APP_PATH"
 
-# Clean up yarn start process
-YARN_START_PID=$(lsof -t -i:8081)
+# Clean up Metro bundler
 if [ -n "$YARN_START_PID" ]; then
-  kill $YARN_START_PID
+  kill $YARN_START_PID || true
 fi
 
 TEST_STATUS=$?
