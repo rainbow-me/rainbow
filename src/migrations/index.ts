@@ -17,6 +17,7 @@ import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinned
 import { migrateRemotePromoSheetsToZustand } from './migrations/migrateRemotePromoSheetsToZustand';
 import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
 import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
+import { migrateWalletStore } from '@/migrations/migrations/migrateWalletStore';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -46,6 +47,7 @@ const migrations: Migration[] = [
   migrateFavoritesV2(),
   migrateFavoritesV3(),
   migrateNotificationSettingsToV3(),
+  migrateWalletStore(),
 ];
 
 /**
@@ -124,9 +126,9 @@ export async function runMigrations(migrations: Migration[]) {
 }
 
 function isFullyMigrated(): boolean {
-  const lastMigrationName = migrations[migrations.length - 1].name;
-  const migratedAt = storage.get([lastMigrationName]);
-  return Boolean(migratedAt);
+  // const lastMigrationName = migrations[migrations.length - 1].name;
+  // const migratedAt = storage.get([lastMigrationName]);
+  return false;
 }
 
 /**

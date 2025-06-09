@@ -22,6 +22,7 @@ export enum MigrationName {
   migrateFavoritesV3 = 'migration_migrateFavoritesV3',
   removeDuplicateRecentSwaps = 'migration_removeDuplicateRecentSwaps',
   migrateNotificationSettingsToVersion3 = 'migration_migrateNotificationSettingsToVersion3',
+  migrateWalletStore = 'migration_migrateWalletStore',
 }
 
 export type Migration = {

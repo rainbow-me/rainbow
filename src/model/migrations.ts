@@ -19,7 +19,7 @@ import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteD
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { getSelectedWallet, getWallets, loadWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
+import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { captureException } from '@sentry/react-native';
@@ -790,29 +790,6 @@ export default async function runMigrations() {
   };
 
   migrations.push(v27);
-
-  /**
-   *************** Migration v28 ******************
-   * Migrate selected wallet from redux to zustand
-   */
-  const v28 = async () => {
-    // @ts-expect-error: this has been removed but should still be persisted
-    const previousSelected = store.getState()['wallets']?.selected;
-    // @ts-expect-error: this has been removed but should still be persisted
-    const previousAccount = store.getState().settings['accountAddress'] as string | undefined;
-
-    console.log('previousSelected', previousSelected);
-    console.log('previousAccount', previousAccount);
-
-    if (previousSelected) {
-      console.log('loading');
-      await loadWallets();
-      console.log('setting');
-      setSelectedWallet(previousSelected, previousAccount);
-    }
-  };
-
-  migrations.push(v28);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

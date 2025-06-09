@@ -163,7 +163,10 @@ function onReportPrepared() {
   PerformanceTracking.finishReport(PerformanceReports.appStartup);
 }
 
+console.log('initialize application1?');
+
 async function initializeApplication() {
+  console.log('initialize application?');
   PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
   await Promise.all([initializeRemoteConfig(), migrate()]);
 
