@@ -9,6 +9,7 @@ export function migrateWalletStore(): Migration {
   return {
     name: MigrationName.migrateWalletStore,
     async migrate() {
+      console.log('MIGEEATW?');
       const previousSelected = await getSelectedWalletFromKeychain();
       const previousAccount = await loadAddress();
 
@@ -26,3 +27,21 @@ export function migrateWalletStore(): Migration {
     },
   };
 }
+
+// async function run() {
+//   const previousSelected = await getSelectedWalletFromKeychain();
+//   const previousAccount = await loadAddress();
+
+//   console.log('previousSelected', previousSelected);
+//   console.log('previousAccount', previousAccount);
+
+//   if (previousSelected) {
+//     await loadWallets();
+//     if (previousAccount) {
+//       setSelectedWallet(previousSelected.wallet, previousAccount);
+//     } else {
+//       setSelectedWallet(previousSelected.wallet);
+//     }
+//   }
+// }
+// run();
