@@ -1,5 +1,5 @@
 import { debounce, identity } from 'lodash';
-import { useStoreWithEqualityFn } from 'zustand/traditional';
+import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 import { StoreApi } from 'zustand/vanilla';
 import { IS_DEV } from '@/env';
 import { pluralize } from '@/worklets/strings';
@@ -16,6 +16,7 @@ import {
   SubscribeArgs,
   UnsubscribeFn,
   WithFlushUpdates,
+  WithInternalControls,
 } from './types';
 
 // ============ Store Creator ================================================== //
@@ -91,11 +92,11 @@ export function createDerivedStore<Derived>(
   return attachStoreHook(derive(deriveFunction, optionsOrEqualityFn));
 }
 
-function attachStoreHook<S>(store: WithFlushUpdates<StoreApi<S>>): DerivedRainbowStore<S> {
+function attachStoreHook<S>(store: WithInternalControls<WithFlushUpdates<StoreApi<S>>>): DerivedRainbowStore<S> {
   function useDerivedStore(): S;
-  function useDerivedStore<T>(selector: Selector<S, T>, equalityFn?: EqualityFn<T>): T;
-  function useDerivedStore<T>(selector: Selector<S, T> = identity, equalityFn: EqualityFn<T> = Object.is): S | T {
-    return useStoreWithEqualityFn(store, selector, equalityFn);
+  function useDerivedStore<T>(selector: (state: S) => T, equalityFn?: EqualityFn<T>): T;
+  function useDerivedStore<T>(selector: (state: S) => T = identity, equalityFn: EqualityFn<T> | undefined = undefined): S | T {
+    return useSyncExternalStoreWithSelector(store.subscribe, store.getSnapshot, undefined, selector, equalityFn);
   }
   return Object.assign(useDerivedStore, store);
 }
@@ -141,7 +142,7 @@ type UninitializedState = typeof UNINITIALIZED;
 function derive<DerivedState>(
   deriveFunction: ($: DeriveGetter) => DerivedState,
   optionsOrEqualityFn: DeriveOptions<DerivedState> = Object.is
-): WithFlushUpdates<StoreApi<DerivedState>> {
+): WithInternalControls<WithFlushUpdates<StoreApi<DerivedState>>> {
   const { debounceOptions, debugMode, equalityFn, useStableSubscriptions } = parseOptions(optionsOrEqualityFn);
 
   // Active subscriptions *to* the derived store
@@ -287,6 +288,18 @@ function derive<DerivedState>(
     }
   }
 
+  function getSnapshot(): DerivedState {
+    if (derivedState === UNINITIALIZED) {
+      // Ensures useSyncExternalStore doesn't trigger redundant derivations
+      watchers.add(dummyWatcher);
+      const state = derive();
+      watchers.delete(dummyWatcher);
+
+      return state;
+    }
+    return derivedState;
+  }
+
   // ============ Public Store Methods ========================================= //
 
   function getState(): DerivedState {
@@ -303,7 +316,7 @@ function derive<DerivedState>(
       watchers.add(listener);
 
       if (watchers.size === 1 && derivedState === UNINITIALIZED) {
-        derive();
+        getState();
       }
 
       return () => {
@@ -319,11 +332,11 @@ function derive<DerivedState>(
 
     // -- Overload #2: (selector, listener, { equalityFn, fireImmediately })
     const [selector, listener, options] = args;
-    const eqFn = options?.equalityFn ?? Object.is;
+    const equalityFn = options?.equalityFn ?? Object.is;
 
     const watcher: Watcher<DerivedState> = {
       currentSlice: undefined,
-      equalityFn: eqFn,
+      equalityFn,
       listener,
       selector,
     };
@@ -333,11 +346,8 @@ function derive<DerivedState>(
     const isDerivedWatcher = options?.isDerivedStore ?? false;
     if (isDerivedWatcher) derivedWatchers += 1;
 
-    if (watchers.size === 1 && derivedState === UNINITIALIZED) {
-      derive();
-    }
-
     const slice = selector(getState());
+
     watcher.currentSlice = slice;
     if (options?.fireImmediately) listener(slice, slice);
 
@@ -373,6 +383,7 @@ function derive<DerivedState>(
   return {
     destroy,
     flushUpdates,
+    getSnapshot,
     getState,
     subscribe,
     // -- Not applicable to derived stores
@@ -386,6 +397,10 @@ function derive<DerivedState>(
 }
 
 // ============ Helpers ======================================================== //
+
+function dummyWatcher(): void {
+  return;
+}
 
 function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
   debounceOptions: number | DebounceOptions | undefined;

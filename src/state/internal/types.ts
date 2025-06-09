@@ -89,6 +89,14 @@ export type WithFlushUpdates<Store extends StoreApi<unknown>> = Store & {
   flushUpdates: () => void;
 };
 
+export type WithInternalControls<Store extends StoreApi<unknown>> = Store & {
+  /**
+   * Provided to `useSyncExternalStoreWithSelector` to ensure it activates the derived
+   * store when it gets the initial state before subscribing to the store.
+   */
+  getSnapshot: () => InferStoreState<Store>;
+};
+
 type ReadOnlyDerivedStore<Store extends BaseRainbowStore<unknown>> = Omit<Store, 'getInitialState' | 'setState'> &
   UseStoreCallSignatures<InferStoreState<Store>> & {
     /**
