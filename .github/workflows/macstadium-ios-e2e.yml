@@ -18,8 +18,6 @@ jobs:
     timeout-minutes: 90
     env:
       ARTIFACTS_FOLDER: e2e-artifacts
-    outputs:
-        artifact-id: ${{ steps.rnef-remote-build-ios.outputs.artifact-id }}
     steps:
       - name: Install jq
         run: |
@@ -93,7 +91,7 @@ jobs:
       - name: Download and Unpack IPA artifact
         id: download-artifact
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ e2e-build-ios.outputs.artifact-id }}/zip"
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ steps.rnef-remote-build-ios.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
           ls -lh downloaded-artifacts
 
