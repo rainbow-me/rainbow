@@ -79,7 +79,7 @@ interface WalletsState {
 
   getAccountProfileInfo: () => AccountProfileInfo;
 
-  refreshWalletENSInfo: () => Promise<void>;
+  refreshWalletInfo: (props?: { skipENS?: boolean }) => Promise<void>;
 
   checkKeychainIntegrity: () => Promise<void>;
 
@@ -353,9 +353,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    refreshWalletENSInfo: async () => {
+    refreshWalletInfo: async props => {
       const { wallets, walletNames } = get();
-      const info = await getWalletsInfo({ wallets, walletNames });
+      const info = await getWalletsInfo({ wallets, walletNames, useCachedENS: props?.skipENS });
       if (info) {
         set(info);
       }
@@ -495,89 +495,62 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
 type GetENSInfoProps = { wallets: Wallets; walletNames: WalletNames; useCachedENS?: boolean };
 
-async function getWalletsInfo({ wallets, walletNames, useCachedENS }: GetENSInfoProps) {
+async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   if (!wallets) {
     throw new Error(`No wallets`);
   }
 
-  const updatedWalletNames: { [address: string]: string } = {};
-
-  let updatedWallets: {
+  const updatedWallets: {
     [key: string]: RainbowWallet;
   } = { ...wallets };
 
   let promises: Promise<{
     account: RainbowAccount;
-    ensChanged: boolean;
     key: string;
   }>[] = [];
 
   for (const key in wallets) {
     const wallet = wallets[key];
-    const innerPromises = wallet?.addresses?.map(async account => {
-      updatedWalletNames[account.address] = account.label;
 
+    const innerPromises = wallet?.addresses?.map(async account => {
       if (useCachedENS && account.label && account.avatar) {
         return {
           account,
-          ensChanged: false,
           key,
         };
       }
 
       const ens = await fetchReverseRecordWithRetry(account.address);
-      const currentENSName = walletNames[account.address];
       if (ens) {
-        updatedWalletNames[account.address] = ens;
-        const isNewEnsName = currentENSName !== ens;
         const avatar = await fetchENSAvatar(ens);
         const newImage = avatar?.imageUrl || null;
         return {
+          key,
           account: {
             ...account,
             image: newImage,
-            label: isNewEnsName ? ens : account.label,
+            // always prefer our label
+            label: account.label || ens,
           },
-          ensChanged: newImage !== account.image || isNewEnsName,
-          key,
-        };
-      } else if (currentENSName) {
-        // if user had an ENS but now is gone
-        return {
-          account: {
-            ...account,
-            image: account.image?.startsWith('~') || account.image?.startsWith('file') ? account.image : null, // if the user had an ens but the image it was a local image
-          },
-          ensChanged: true,
-          key,
-        };
-      } else {
-        return {
-          account,
-          ensChanged: false,
-          key,
         };
       }
+
+      return {
+        account,
+        key,
+      };
     });
+
     promises = promises.concat(innerPromises);
   }
 
   const allAccounts = await Promise.all(promises);
 
-  for (const { account, key, ensChanged } of allAccounts) {
-    if (!ensChanged) continue;
-    const addresses = wallets[key]?.addresses;
-    if (!addresses) continue;
-    const index = addresses.findIndex(({ address }) => address === account.address);
-    addresses.splice(index, 1, account);
-    updatedWallets = {
-      ...(updatedWallets ?? wallets),
-      [key]: {
-        ...wallets[key],
-        addresses,
-      },
-    };
-  }
+  const updatedWalletNames = Object.fromEntries(
+    allAccounts.map(({ account }) => {
+      return [account.address, account.label || account.address];
+    })
+  );
 
   return {
     wallets: updatedWallets,
@@ -676,7 +649,7 @@ export const {
   getIsReadOnlyWallet,
   getWalletWithAccount,
   loadWallets,
-  refreshWalletENSInfo,
+  refreshWalletInfo,
   setAllWalletsWithIdsAsBackedUp,
   setSelectedWallet,
   setWalletBackedUp,

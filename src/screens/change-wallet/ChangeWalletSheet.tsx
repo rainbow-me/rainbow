@@ -25,7 +25,7 @@ import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { setSelectedWallet, useWallets, updateWallets, useAccountAddress } from '@/state/wallets/walletsStore';
+import { refreshWalletInfo, setSelectedWallet, updateWallets, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
@@ -286,6 +286,7 @@ export default function ChangeWalletSheet() {
 
                 updateWallets(updatedWallets);
                 setSelectedWallet(updatedWallet);
+                refreshWalletInfo();
                 updateWebProfile(address, name, colors.avatarBackgrounds[color]);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);

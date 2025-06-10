@@ -190,7 +190,10 @@ export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is 
   if ('signTransaction' in wallet) {
     return wallet as any;
   }
-  console.error(
+  // TODO we had bad types before, but this somehow worked alright i had this
+  // throwing an error but it was hitting in different areas, so want to just
+  // warn here and then follow up with a better fix in our next refactor
+  console.log(
     // @ts-expect-error using property types to log errors better
     `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
   );
@@ -204,10 +207,10 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   if (typeof wallet.getPrivateKey !== 'function') {
     return wallet as any;
   }
-  // TODO we had bad types before, but this somehow worked alright
-  // i had this throwing an error but it was hitting in different areas, so want to just warn here
-  // and then follow up once i track all the places it's erroring at via sentry
-  console.error(
+  // TODO we had bad types before, but this somehow worked alright i had this
+  // throwing an error but it was hitting in different areas, so want to just
+  // warn here and then follow up with a better fix in our next refactor
+  console.log(
     `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
   );
 }
@@ -878,12 +881,6 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
       }
     }
 
-    // if imported and we have only one account, we name the wallet too.
-    let walletName = DEFAULT_WALLET_NAME;
-    if (name) {
-      walletName = name;
-    }
-
     let primary = false;
     // If it's not imported or it's the first one with a seed phrase
     // it's the primary wallet
@@ -903,7 +900,7 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
       color: color || 0,
       id,
       imported: isImported,
-      name: walletName,
+      name: name || DEFAULT_WALLET_NAME,
       primary,
       type,
     };

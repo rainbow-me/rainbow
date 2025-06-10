@@ -7,7 +7,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { usePositionsStore } from '@/state/positions/positions';
-import { getAccountAddress, getWallets, refreshWalletENSInfo } from '@/state/wallets/walletsStore';
+import { getAccountAddress, getWallets, refreshWalletInfo } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
@@ -30,7 +30,7 @@ export const refreshAccountData = async () => {
 
   await Promise.all([
     delay(MIN_REFRESH_DURATION),
-    refreshWalletENSInfo(),
+    refreshWalletInfo(),
     userAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),

@@ -171,8 +171,6 @@ async function initializeApplication() {
   const isReturningUser = ls.device.get(['isReturningUser']);
   const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
 
-  await loadWallets();
-
   // Initial telemetry; amended with wallet context later in `initializeWallet`
   Sentry.setUser({ id: deviceId });
   analytics.setDeviceId(deviceId);

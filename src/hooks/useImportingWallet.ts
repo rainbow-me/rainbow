@@ -75,7 +75,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const startImportProfile = useCallback(
-    (name: any, forceColor: any, address: any = null, avatarUrl: any) => {
+    (name: string, forceColor: any, address: any = null, avatarUrl: any) => {
       const importWallet = (color: number | null, name: string, image?: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
@@ -111,13 +111,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     async ({
       forceColor,
       forceAddress = '',
-      forceEmoji,
       avatarUrl,
       type = 'import',
     }: {
       forceColor?: string | number;
       forceAddress?: string;
-      forceEmoji?: string;
       avatarUrl?: string;
       type?: 'import' | 'watch';
     } = {}) => {
@@ -130,6 +128,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       setBusy(true);
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name: string | null = null;
+
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
@@ -144,7 +143,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             return;
           }
           setResolvedAddress(address);
-          name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          name = input;
+
           const finalAvatarUrl = avatarUrl || (avatar && avatar?.imageUrl);
           setBusy(false);
 
@@ -175,7 +175,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             return;
           }
           setResolvedAddress(address);
-          name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          name = input;
           setBusy(false);
 
           if (type === 'watch') {
@@ -185,8 +185,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             });
           }
 
-          // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
-          startImportProfile(name, guardedForceColor, address);
+          startImportProfile(name, guardedForceColor, address, '');
           analytics.track(analytics.event.showWalletProfileModalForUnstoppableAddress, {
             address,
             input,
@@ -202,7 +201,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           ens = await fetchReverseRecord(input);
           if (ens && ens !== input) {
-            name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+            name = ens;
             if (!avatarUrl && profilesEnabled) {
               const avatar = await fetchENSAvatar(name, { swallowError: true });
               finalAvatarUrl = avatar?.imageUrl;
@@ -225,7 +224,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           });
         }
 
-        startImportProfile(name, guardedForceColor, input, finalAvatarUrl);
+        startImportProfile(name || '', guardedForceColor, input, finalAvatarUrl);
       } else {
         try {
           setTimeout(async () => {
@@ -238,7 +237,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             const ens = await fetchReverseRecord(walletResult.address);
             let finalAvatarUrl: string | null | undefined = avatarUrl;
             if (ens && ens !== input) {
-              name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+              name = ens;
               if (!finalAvatarUrl && profilesEnabled) {
                 const avatar = await fetchENSAvatar(name, {
                   swallowError: true,
@@ -255,7 +254,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               });
             }
 
-            startImportProfile(name, guardedForceColor, walletResult.address, finalAvatarUrl);
+            startImportProfile(name || '', guardedForceColor, walletResult.address, finalAvatarUrl);
             analytics.track(analytics.event.showWalletProfileModalForImportedWallet, {
               address: walletResult.address,
               type: walletResult.type,
@@ -371,7 +370,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     color,
     isWalletEthZero,
     handleSetImporting,
-    initializeWallet,
     isImporting,
     name,
     navigate,

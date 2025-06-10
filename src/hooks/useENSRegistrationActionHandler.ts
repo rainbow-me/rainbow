@@ -8,7 +8,7 @@ import { coverMetadataAtom } from '../components/ens-registration/RegistrationCo
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 
-import { refreshWalletENSInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
@@ -111,7 +111,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
     const updateAvatars = () => {
       if (updateAvatarsOnNextBlock.current) {
-        refreshWalletENSInfo();
+        refreshWalletInfo();
         updateAvatarsOnNextBlock.current = false;
       }
     };
