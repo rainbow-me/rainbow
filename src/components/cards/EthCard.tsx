@@ -103,6 +103,7 @@ export const EthCard = () => {
 
   const { throttledData } = useChartThrottledPoints({
     asset: ethAsset,
+    timespan: 'day',
   });
 
   const CHART_WIDTH = deviceUtils.dimensions.width - 80;
