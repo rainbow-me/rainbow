@@ -38,7 +38,7 @@ let runId = 0;
 export const initializeWallet = async (props: InitializeWalletParams = {}) => {
   runId = Math.random();
   const curRunId = runId;
-  const shouldCancel = () => curRunId === runId;
+  const shouldCancel = () => curRunId !== runId;
 
   const {
     seedPhrase,
