@@ -130,8 +130,6 @@ const ChartPathInner = React.memo(
     ChartPathInner.displayName = 'chartPathInner';
     const interpolatorWorklet = useWorkletValue();
 
-    const translationX = useSharedValue<number | null>(null);
-    const translationY = useSharedValue<number | null>(null);
     const selectedStrokeProgress = useSharedValue(0);
 
     const strokeColorAnimated = useDerivedValue(() => {
@@ -171,16 +169,6 @@ const ChartPathInner = React.memo(
       [originalX, originalY]
     );
 
-    const resetGestureState = useCallback(() => {
-      'worklet';
-      originalX.value = '';
-      originalY.value = '';
-      positionY.value = -1;
-      isActive.value = false;
-      translationX.value = null;
-      translationY.value = null;
-    }, [originalX, originalY, positionY, isActive, translationX, translationY]);
-
     useEffect(() => {
       runOnUI(() => {
         if (currentPath) {
@@ -215,50 +203,50 @@ const ChartPathInner = React.memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPath?.path, previousPath?.path]);
 
-    useAnimatedReaction(
-      () => ({ x: translationX.value, y: translationY.value }),
-      values => {
-        if (!currentPath || !currentPath.parsed || progress.value === 0 || values.x === null || values.y === null) {
+    const updatePosition = useCallback(
+      ({ x, y }: { x: number | null; y: number | null }) => {
+        'worklet';
+        if (!currentPath || !currentPath.parsed || progress.value === 0 || x === null || y === null) {
           return;
         }
 
-        const yForX = getYForX(currentPath.parsed, values.x);
+        const yForX = getYForX(currentPath.parsed, x);
 
         if (yForX !== null) {
           positionY.value = yForX;
         }
 
-        positionX.value = values.x;
+        positionX.value = x;
 
         // refer to this article for more details about this code
         // https://observablehq.com/@d3/multi-line-chart
         const index = least(currentPath.points.length, i => {
-          if (typeof i === 'undefined' || values.x === null) {
+          if (typeof i === 'undefined' || x === null) {
             return 0;
           }
 
-          return Math.abs(currentPath.points[i].x - values.x);
+          return Math.abs(currentPath.points[i].x - x);
         });
 
         const pointX = currentPath.points[index]?.originalX;
 
         let adjustedPointX = pointX;
-        if (currentPath.points[index].x > values.x) {
+        if (currentPath.points[index].x > x) {
           const prevPointOriginalX = currentPath.points[index - 1]?.originalX;
           if (prevPointOriginalX) {
-            const distance = (currentPath.points[index].x - values.x) / (currentPath.points[index].x - currentPath.points[index - 1].x);
+            const distance = (currentPath.points[index].x - x) / (currentPath.points[index].x - currentPath.points[index - 1].x);
             adjustedPointX = prevPointOriginalX * distance + pointX * (1 - distance);
           }
         } else {
           const nextPointOriginalX = currentPath.points[index + 1]?.originalX;
           if (nextPointOriginalX) {
-            const distance = (values.x - currentPath.points[index].x) / (currentPath.points[index + 1].x - currentPath.points[index].x);
+            const distance = (x - currentPath.points[index].x) / (currentPath.points[index + 1].x - currentPath.points[index].x);
             adjustedPointX = nextPointOriginalX * distance + pointX * (1 - distance);
           }
         }
 
         const dataIndex = least(currentPath.data.length, i => {
-          if (typeof i === 'undefined' || values.x === null) {
+          if (typeof i === 'undefined' || x === null) {
             return 0;
           }
 
@@ -267,8 +255,17 @@ const ChartPathInner = React.memo(
 
         setOriginData(currentPath, dataIndex);
       },
-      [currentPath]
+      [currentPath, positionX, positionY, progress, setOriginData]
     );
+
+    const resetGestureState = useCallback(() => {
+      'worklet';
+      originalX.value = '';
+      originalY.value = '';
+      positionY.value = -1;
+      isActive.value = false;
+      updatePosition({ x: null, y: null });
+    }, [originalX, originalY, positionY, isActive, updatePosition]);
 
     const animatedProps = useAnimatedProps(() => {
       if (!currentPath) {
@@ -293,10 +290,8 @@ const ChartPathInner = React.memo(
             isActive.value = true;
             if (hapticsEnabled) triggerHaptics('soft');
           }
-
           state.value = event.state;
-          translationX.value = positionXWithMargin(event.x, hitSlop, width);
-          translationY.value = event.y;
+          updatePosition({ x: positionXWithMargin(event.x, hitSlop, width), y: event.y });
         },
         onCancel: event => {
           state.value = event.state;
@@ -324,7 +319,7 @@ const ChartPathInner = React.memo(
           }
         },
       },
-      [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
+      [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig, updatePosition]
     );
 
     return (

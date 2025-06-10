@@ -80,7 +80,7 @@ const Labels = ({ color, width, isCard }: { color: string; width: number; isCard
           color={colors.alpha(color, 0.8)}
           position={positionMin}
           size={isCard ? '13pt' : undefined}
-          style={{ bottom: isCard ? -24 : -40 }}
+          style={{ bottom: isCard ? -24 : -13 }}
           width={width}
         >
           {toCompactNotation({
@@ -96,7 +96,7 @@ const Labels = ({ color, width, isCard }: { color: string; width: number; isCard
           color={colors.alpha(color, 0.8)}
           position={positionMax}
           size={isCard ? '13pt' : undefined}
-          style={{ top: -20, left: isCard ? 0 : 40 }}
+          style={{ top: -13 }}
           width={width}
         >
           {toCompactNotation({

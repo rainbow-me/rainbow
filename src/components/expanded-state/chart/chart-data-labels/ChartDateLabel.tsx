@@ -17,14 +17,10 @@ const MONTHS = [
   lang.t('expanded_state.chart.date.months.month_11'),
 ];
 
-function formatDatetime(value: string, chartTimeDefaultValue: string) {
+export function formatDatetime(value: number) {
   'worklet';
-  // we have to do it manually due to limitations of reanimated
-  if (value === '') {
-    return chartTimeDefaultValue;
-  }
 
-  const date = new Date(Number(value) * 1000);
+  const date = new Date(value * 1000);
   const now = new Date();
 
   let res = MONTHS[date.getMonth()] + ' ';
@@ -72,7 +68,10 @@ export default function ChartDateLabel({ chartTimeDefaultValue }: { chartTimeDef
   const formatWorklet = useCallback(
     (value: string) => {
       'worklet';
-      return formatDatetime(value, chartTimeDefaultValue);
+      if (value === '') {
+        return chartTimeDefaultValue;
+      }
+      return formatDatetime(Number(value));
     },
     [chartTimeDefaultValue]
   );

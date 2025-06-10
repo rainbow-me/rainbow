@@ -294,3 +294,13 @@ export function toCompactNotation({
     return prefix ? `${prefix}${sign}0.${formattedFraction}` : `${sign}0.${formattedFraction}`;
   }
 }
+
+export function currencyToCompactNotation({ value, currency }: { value: string | number; currency: NativeCurrencyKey }): string {
+  'worklet';
+  return toCompactNotation({
+    value,
+    prefix: supportedNativeCurrencies[currency].symbol,
+    decimalPlaces: supportedNativeCurrencies[currency].decimals,
+    currency,
+  });
+}
