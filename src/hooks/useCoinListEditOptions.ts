@@ -1,15 +1,10 @@
 import { difference } from 'lodash';
 import { useCallback, useMemo, useRef } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
 import EditAction from '@/helpers/EditAction';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-
-const selectedItemsAtom = atom<string[]>({
-  default: [],
-  key: 'selectedItemsAtom',
-});
+import { useCoinListEditStore } from '@/state/coinListEdit/coinListEdit';
 
 export interface BooleanMap {
   [index: string]: boolean;
@@ -20,7 +15,7 @@ const INITIAL_PINNED_COINS: BooleanMap = {};
 export default function useCoinListEditOptions() {
   const { accountAddress } = useAccountSettings();
 
-  const setSelectedItems = useSetRecoilState(selectedItemsAtom);
+  const setSelectedItems = useCoinListEditStore(state => state.setSelectedItems);
 
   const [pinnedCoins = INITIAL_PINNED_COINS, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
 
@@ -87,7 +82,8 @@ export function useCoinListFinishEditingOptions() {
   const hiddenAssets = useUserAssetsStore(state => state.getHiddenAssetsIds());
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
-  const [selectedItems, setSelectedItems] = useRecoilState(selectedItemsAtom);
+  const selectedItems = useCoinListEditStore(state => state.selectedItems);
+  const setSelectedItems = useCoinListEditStore(state => state.setSelectedItems);
   const selectedItemsNonReactive = useRef<string[]>();
   selectedItemsNonReactive.current = selectedItems;
 

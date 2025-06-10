@@ -14,8 +14,7 @@ import { analytics } from '@/analytics';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import * as i18n from '@/languages';
-import { useRecoilValue } from 'recoil';
-import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
+import { useNFTOffersStore } from '@/state/nftOffers/nftOffers';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -77,7 +76,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
   const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
   const surfaceSecondaryElevated = useBackgroundColor('surfaceSecondaryElevated');
 
-  const sortCriterion = useRecoilValue(nftOffersSortAtom);
+  const sortCriterion = useNFTOffersStore(state => state.sortCriterion);
 
   const [timeRemaining, setTimeRemaining] = useState(() =>
     offer.validUntil ? Math.max(offer.validUntil * 1000 - Date.now(), 0) : undefined

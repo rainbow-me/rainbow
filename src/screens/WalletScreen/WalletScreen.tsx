@@ -5,9 +5,8 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useHideSplashScreen, useWalletSectionsData } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useAddressCopiedToastStore } from '@/state/addressCopiedToast/addressCopiedToast';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
@@ -32,7 +31,7 @@ const UtilityComponents = memo(function UtilityComponents() {
 });
 
 const ToastComponent = memo(function ToastComponent() {
-  const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);
+  const isAddressCopiedToastActive = useAddressCopiedToastStore(state => state.isActive);
   return (
     <ToastPositionContainer>
       <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />

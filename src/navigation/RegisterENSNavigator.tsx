@@ -2,15 +2,14 @@ import { useRoute, RouteProp } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
-import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, { ENSAssignRecordsBottomActions } from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import { sharedCoolModalTopOffset } from './config';
-import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box } from '@/design-system';
-import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
+import { REGISTRATION_MODES } from '@/helpers/ens';
+import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 import { useDimensions, useENSRegistration, useENSRegistrationForm, usePrevious } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -51,8 +50,8 @@ export default function RegisterENSNavigator() {
 
   const { height: deviceHeight, isSmallPhone } = useDimensions();
 
-  const setAccentColor = useSetRecoilState(accentColorAtom);
-  const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
+  const setAccentColor = useENSRegistrationStore(state => state.setAccentColor);
+  const setAvatarMetadata = useENSRegistrationStore(state => state.setAvatarMetadata);
 
   const { colors } = useTheme();
 

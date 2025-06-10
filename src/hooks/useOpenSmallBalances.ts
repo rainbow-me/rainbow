@@ -1,19 +1,15 @@
-import { useCallback } from 'react';
-import { atom, useRecoilState } from 'recoil';
-
-const areOpenSmallBalancesAtom = atom({
-  default: false,
-  key: 'areOpenSmallBalances',
-});
+import { useSmallBalancesStore } from '@/state/smallBalances/smallBalances';
 
 export default function useOpenSmallBalances() {
-  const [isSmallBalancesOpen, setIsSmallBalancesOpen] = useRecoilState(areOpenSmallBalancesAtom);
+  const isSmallBalancesOpen = useSmallBalancesStore(state => state.areOpenSmallBalances);
+  const toggleOpenSmallBalances = useSmallBalancesStore(state => state.toggleOpenSmallBalances);
 
-  const toggleOpenSmallBalances = useCallback(() => {
-    setIsSmallBalancesOpen(prev => {
-      return !prev;
-    });
-  }, [setIsSmallBalancesOpen]);
+  // For backward compatibility
+  const setIsSmallBalancesOpen = (value: boolean) => {
+    if (value !== isSmallBalancesOpen) {
+      toggleOpenSmallBalances();
+    }
+  };
 
   return {
     isSmallBalancesOpen,

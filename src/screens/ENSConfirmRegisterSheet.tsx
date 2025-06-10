@@ -4,7 +4,6 @@ import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
-import { useRecoilState, useRecoilValue } from 'recoil';
 import { HoldToAuthorizeButton } from '../components/buttons';
 import {
   CommitContent,
@@ -14,12 +13,12 @@ import {
   WaitCommitmentConfirmationContent,
   WaitENSConfirmationContent,
 } from '../components/ens-registration';
-import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import { accentColorAtom, ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
+import { ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
+import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 import {
   useAccountProfile,
   useDimensions,
@@ -100,8 +99,9 @@ export default function ENSConfirmRegisterSheet() {
   } = useENSModifiedRegistration();
   const { isSmallPhone } = useDimensions();
 
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
-  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
+  const accentColor = useENSRegistrationStore(state => state.accentColor);
+  const setAccentColor = useENSRegistrationStore(state => state.setAccentColor);
+  const avatarMetadata = useENSRegistrationStore(state => state.avatarMetadata);
 
   const avatarImage = avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
   const dominantColor = usePersistentDominantColorFromImage(avatarImage);

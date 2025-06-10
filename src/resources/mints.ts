@@ -6,25 +6,12 @@ import { arcClient } from '@/graphql';
 import { GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { atom, useRecoilState } from 'recoil';
-import { MMKV } from 'react-native-mmkv';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { MintsFilter, useMintsFilterStore } from '@/state/mintsFilter/mintsFilter';
 
-const mmkv = new MMKV();
-
-const MINTS_FILTER_MMKV_KEY = 'mintsFilter';
-
-export enum MintsFilter {
-  All = 'all',
-  Paid = 'paid',
-  Free = 'free',
-}
-
-const mintsFilterAtom = atom<MintsFilter>({
-  default: (mmkv.getString(MINTS_FILTER_MMKV_KEY) as MintsFilter | undefined) ?? MintsFilter.All,
-  key: MINTS_FILTER_MMKV_KEY,
-});
+// Re-export for compatibility
+export { MintsFilter };
 
 export function mintsQueryKey({ address }: { address: string }) {
   return createQueryKey('mints', { address }, { persisterVersion: 1 });
@@ -48,7 +35,8 @@ export function getMintsFilterLabel(filter: MintsFilter) {
  * Hook that returns the current `MintsFilter` and a function to set it.
  */
 export function useMintsFilter() {
-  const [filterState, setFilterState] = useRecoilState(mintsFilterAtom);
+  const filterState = useMintsFilterStore(state => state.filter);
+  const setFilterState = useMintsFilterStore(state => state.setFilter);
 
   const setFilter = useCallback(
     (filter: MintsFilter) => {

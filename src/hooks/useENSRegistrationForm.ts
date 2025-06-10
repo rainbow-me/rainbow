@@ -1,39 +1,9 @@
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
 import { Records } from '@/entities';
 import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
-
-const disabledAtom = atom({
-  default: false,
-  key: 'ensProfileForm.disabled',
-});
-
-const errorsAtom = atom<{ [name: string]: string }>({
-  default: {},
-  key: 'ensProfileForm.errors',
-});
-
-const isValidatingAtom = atom({
-  default: false,
-  key: 'ensProfileForm.isValidating',
-});
-
-const selectedFieldsAtom = atom<TextRecordField[]>({
-  default: [],
-  key: 'ensProfileForm.selectedFields',
-});
-
-const submittingAtom = atom({
-  default: false,
-  key: 'ensProfileForm.submitting',
-});
-
-export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
-  default: {},
-  key: 'ensProfileForm.values',
-});
+import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 
 const defaultInitialRecords = {
   [ENS_RECORDS.name]: '',
@@ -86,11 +56,14 @@ export default function useENSRegistrationForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialRecords, mode]);
 
-  const [errors, setErrors] = useRecoilState(errorsAtom);
-  const [submitting, setSubmitting] = useRecoilState(submittingAtom);
-  const [isValidating, setIsValidating] = useRecoilState(isValidatingAtom);
-
-  const [disabled, setDisabled] = useRecoilState(disabledAtom);
+  const errors = useENSRegistrationStore(state => state.errors);
+  const setErrors = useENSRegistrationStore(state => state.setErrors);
+  const submitting = useENSRegistrationStore(state => state.submitting);
+  const setSubmitting = useENSRegistrationStore(state => state.setSubmitting);
+  const isValidating = useENSRegistrationStore(state => state.isValidating);
+  const setIsValidating = useENSRegistrationStore(state => state.setIsValidating);
+  const disabled = useENSRegistrationStore(state => state.disabled);
+  const setDisabled = useENSRegistrationStore(state => state.setDisabled);
   useEffect(() => {
     // If we are in edit mode, we want to disable the "Review" button
     // when there are no changed records.
@@ -99,7 +72,8 @@ export default function useENSRegistrationForm({
     setDisabled(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
   }, [changedRecords, mode, setDisabled]);
 
-  const [selectedFields, setSelectedFields] = useRecoilState(selectedFieldsAtom);
+  const selectedFields = useENSRegistrationStore(state => state.selectedFields);
+  const setSelectedFields = useENSRegistrationStore(state => state.setSelectedFields);
   useEffect(() => {
     if (!initializeForm) return;
     // If there are existing records in the global state, then we
@@ -118,7 +92,8 @@ export default function useENSRegistrationForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, defaultRecords]);
 
-  const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
+  const valuesMap = useENSRegistrationStore(state => state.values);
+  const setValuesMap = useENSRegistrationStore(state => state.setValues);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
   useEffect(
     () => {
@@ -286,3 +261,8 @@ export default function useENSRegistrationForm({
     values,
   };
 }
+
+// Deprecated - use useENSRegistrationStore instead
+export const valuesAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ensRegistration/ensRegistration
+};

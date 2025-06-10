@@ -1,7 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Image } from 'react-native-image-crop-picker';
-import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import AvatarCoverPhotoMaskSvg from '../../svg/AvatarCoverPhotoMaskSvg';
@@ -13,11 +12,12 @@ import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { IS_TEST } from '@/env';
+import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 
-export const avatarMetadataAtom = atom<Image | undefined>({
-  default: undefined,
-  key: 'ens.avatarMetadata',
-});
+// Deprecated - use useENSRegistrationStore instead
+export const avatarMetadataAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ensRegistration/ensRegistration
+};
 
 const size = 70;
 
@@ -51,7 +51,7 @@ const RegistrationAvatar = ({
   // We want to allow avatar state update when the screen is first focussed.
   useEffect(() => setAvatarUpdateAllowed(true), [setAvatarUpdateAllowed, name]);
 
-  const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
+  const setAvatarMetadata = useENSRegistrationStore(state => state.setAvatarMetadata);
 
   const accentColor = useForegroundColor('accent');
 

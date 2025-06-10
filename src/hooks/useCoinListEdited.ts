@@ -1,12 +1,8 @@
-import { atom, useRecoilState } from 'recoil';
-
-const isCoinListEditedAtom = atom({
-  default: false,
-  key: 'isCoinListEditedAtom',
-});
+import { useCoinListEditStore } from '@/state/coinListEdit/coinListEdit';
 
 export default function useCoinListEdited() {
-  const [isCoinListEdited, setIsCoinListEdited] = useRecoilState(isCoinListEditedAtom);
+  const isCoinListEdited = useCoinListEditStore(state => state.isCoinListEdited);
+  const setIsCoinListEdited = useCoinListEditStore(state => state.setIsCoinListEdited);
 
   return {
     isCoinListEdited,

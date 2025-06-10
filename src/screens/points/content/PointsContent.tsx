@@ -28,8 +28,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { measureText, safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useRecoilState } from 'recoil';
+import { useAddressCopiedToastStore } from '@/state/addressCopiedToast/addressCopiedToast';
 import * as i18n from '@/languages';
 import { isNil } from 'lodash';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
@@ -636,7 +635,8 @@ export function PointsContent() {
     }, [])
   );
 
-  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
+  const isToastActive = useAddressCopiedToastStore(state => state.isActive);
+  const setToastActive = useAddressCopiedToastStore(state => state.setIsActive);
 
   const referralCode = points?.points?.user?.referralCode
     ? points.points.user.referralCode.slice(0, 3) + '-' + points.points.user.referralCode.slice(3, 7)

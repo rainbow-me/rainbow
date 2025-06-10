@@ -4,7 +4,6 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { Signer } from '@ethersproject/abstract-signer';
 import lang from 'i18n-js';
-import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import { add, addBuffer, convertAmountAndPriceToNativeDisplay, divide, fromWei, handleSignificantDecimals, multiply } from './utilities';
 import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
@@ -666,10 +665,10 @@ const formatRentPrice = (rentPrice: BigNumberish, duration: number, nativeCurren
   };
 };
 
-const accentColorAtom = atom({
-  default: colors.purple,
-  key: 'ens.accentColor',
-});
+// Deprecated - use useENSRegistrationStore instead
+const accentColorAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ensRegistration/ensRegistration
+};
 
 export {
   generateSalt,

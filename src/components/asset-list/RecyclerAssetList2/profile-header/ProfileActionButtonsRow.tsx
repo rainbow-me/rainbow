@@ -13,10 +13,9 @@ import { watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
-import { useRecoilState } from 'recoil';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useAddressCopiedToastStore } from '@/state/addressCopiedToast/addressCopiedToast';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 export const ProfileActionButtonsRowHeight = 80;
@@ -201,7 +200,8 @@ function SendButton() {
 }
 
 export function CopyButton() {
-  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
+  const isToastActive = useAddressCopiedToastStore(state => state.isActive);
+  const setToastActive = useAddressCopiedToastStore(state => state.setIsActive);
   const { accountAddress } = useAccountProfile();
   const { isDamaged } = useWallets();
 

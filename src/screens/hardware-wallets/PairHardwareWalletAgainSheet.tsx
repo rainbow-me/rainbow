@@ -11,15 +11,12 @@ import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   HARDWARE_TX_ERROR_KEY,
   HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
-  LedgerIsReadyAtom,
   ledgerStorage,
-  readyForPollingAtom,
-  triggerPollerCleanupAtom,
 } from '@/navigation/HardwareWalletTxNavigator';
+import { useLedgerStore } from '@/state/ledger/ledger';
 import { TryAgainButton } from './components/TryAgainButton';
 import { useMMKVBoolean } from 'react-native-mmkv';
 import { ImageBackground } from 'react-native';
@@ -29,9 +26,10 @@ const INDICATOR_SIZE = 9;
 export const PairHardwareWalletAgainSheet = () => {
   const { isDarkMode } = useTheme();
 
-  const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
-  const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
-  const setTriggerPollerCleanup = useSetRecoilState(triggerPollerCleanupAtom);
+  const isReady = useLedgerStore(state => state.isReady);
+  const setIsReady = useLedgerStore(state => state.setIsReady);
+  const setReadyForPolling = useLedgerStore(state => state.setReadyForPolling);
+  const setTriggerPollerCleanup = useLedgerStore(state => state.setTriggerPollerCleanup);
 
   const [hardwareTXError, setHardwareTXError] = useMMKVBoolean(HARDWARE_TX_ERROR_KEY, ledgerStorage);
 

@@ -10,7 +10,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { Provider as ReduxProvider } from 'react-redux';
-import { RecoilRoot } from 'recoil';
 import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
 import { OfflineToast } from '@/components/toasts';
 import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
@@ -117,25 +116,23 @@ function Root() {
     <PerformanceProfiler useRenderTimeouts={false} onReportPrepared={onReportPrepared}>
       {/* @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>' */}
       <ReduxProvider store={store}>
-        <RecoilRoot>
-          <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-            <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-              <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-                <MainThemeProvider>
-                  <GestureHandlerRootView style={sx.container}>
-                    <RainbowContextWrapper>
-                      <SharedValuesProvider>
-                        <ErrorBoundary>
-                          <App />
-                        </ErrorBoundary>
-                      </SharedValuesProvider>
-                    </RainbowContextWrapper>
-                  </GestureHandlerRootView>
-                </MainThemeProvider>
-              </SafeAreaProvider>
-            </MobileWalletProtocolProvider>
-          </PersistQueryClientProvider>
-        </RecoilRoot>
+        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
+            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+              <MainThemeProvider>
+                <GestureHandlerRootView style={sx.container}>
+                  <RainbowContextWrapper>
+                    <SharedValuesProvider>
+                      <ErrorBoundary>
+                        <App />
+                      </ErrorBoundary>
+                    </SharedValuesProvider>
+                  </RainbowContextWrapper>
+                </GestureHandlerRootView>
+              </MainThemeProvider>
+            </SafeAreaProvider>
+          </MobileWalletProtocolProvider>
+        </PersistQueryClientProvider>
       </ReduxProvider>
     </PerformanceProfiler>
   );

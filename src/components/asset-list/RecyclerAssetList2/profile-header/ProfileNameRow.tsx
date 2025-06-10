@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useRecoilState } from 'recoil';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Icon } from '@/components/icons';
@@ -10,7 +9,7 @@ import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { haptics } from '@/utils';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useAddressCopiedToastStore } from '@/state/addressCopiedToast/addressCopiedToast';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 
@@ -38,7 +37,8 @@ export function ProfileNameRow({
   // Name & press handler
 
   const { navigate } = useNavigation();
-  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
+  const isToastActive = useAddressCopiedToastStore(state => state.isActive);
+  const setToastActive = useAddressCopiedToastStore(state => state.setIsActive);
   const { accountAddress } = useAccountProfile();
 
   const onPressName = () => {

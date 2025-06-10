@@ -7,19 +7,18 @@ import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairH
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { RootStackParamList } from './types';
+import { useLedgerStore } from '@/state/ledger/ledger';
 
 const Swipe = createMaterialTopTabNavigator();
 
-// atoms used for navigator state
-export const LedgerImportDeviceIdAtom = atom({
-  default: '',
-  key: 'ledgerImportDeviceId',
-});
+// Deprecated - use useLedgerStore instead
+export const LedgerImportDeviceIdAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ledger/ledger
+};
 
 export function PairHardwareWalletNavigator() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET>>();
@@ -27,7 +26,8 @@ export function PairHardwareWalletNavigator() {
 
   const [currentRouteName, setCurrentRouteName] = useState<string>(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);
 
-  const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
+  const deviceId = useLedgerStore(state => state.deviceId || '');
+  const setDeviceId = useLedgerStore(state => state.setDeviceId);
 
   // reset navigator state on unmount
   useEffect(() => {

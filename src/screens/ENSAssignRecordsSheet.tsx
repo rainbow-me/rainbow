@@ -6,7 +6,6 @@ import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { EmitterSubscription, Keyboard, LayoutChangeEvent, ScrollView } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { useRecoilState } from 'recoil';
 import { ButtonPressAnimation } from '../components/animations/';
 import TintButton from '../components/buttons/TintButton';
 import { RegistrationAvatar, RegistrationCover, TextRecordsForm } from '../components/ens-registration';
@@ -19,7 +18,8 @@ import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './EN
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '@/handlers/localstorage/ens';
-import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
+import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 import {
   useAccountProfile,
   useDimensions,
@@ -88,7 +88,7 @@ export default function ENSAssignRecordsSheet() {
   });
 
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const accentColor = useENSRegistrationStore(state => state.accentColor);\n  const setAccentColor = useENSRegistrationStore(state => state.setAccentColor);
 
   const avatarImage = avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
   const dominantColor = usePersistentDominantColorFromImage(avatarImage);
@@ -208,7 +208,7 @@ export function ENSAssignRecordsBottomActions({
   const keyboardHeight = useKeyboardHeight();
   const { accountENS } = useAccountProfile();
   const { colors } = useTheme();
-  const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
+  const accentColor = useENSRegistrationStore(state => state.accentColor);\n  const setAccentColor = useENSRegistrationStore(state => state.setAccentColor);
   const { mode, name } = useENSRegistration();
   const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
   const {
