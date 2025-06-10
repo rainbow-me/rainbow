@@ -24,7 +24,7 @@ import store from '@/redux/store';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch } from '@/utils';
-import { address } from '@/utils/abbreviations';
+import { address as addressAbbreviation } from '@/utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { captureMessage } from '@sentry/react-native';
@@ -469,17 +469,15 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       if (!wallets) {
         return;
       }
-      const sortedKeys = Object.keys(wallets).sort();
-      let walletWithAccount: RainbowWallet | undefined;
+
       const lowerCaseAccountAddress = accountAddress.toLowerCase();
-      sortedKeys.forEach(key => {
+      for (const key of Object.keys(wallets).sort()) {
         const wallet = wallets[key];
-        const found = wallet.addresses?.find((account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress);
+        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, lowerCaseAccountAddress));
         if (found) {
-          walletWithAccount = wallet;
+          return wallet;
         }
-      });
-      return walletWithAccount;
+      }
     },
   }),
   {
@@ -602,35 +600,36 @@ export const getAccountProfileInfo = (props: { address: string; wallet?: Rainbow
 
 const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
   const wallet = props.wallet || state.selected;
-  const { accountAddress, walletNames } = state;
+  const { walletNames } = state;
+  const address = props.address || state.accountAddress;
 
-  if (!wallet || !accountAddress || !wallet?.addresses?.length) {
+  if (!wallet) {
     return {
-      accountAddress,
+      accountAddress: address,
       accountColor: 0,
     };
   }
 
-  const accountENS = walletNames?.[accountAddress];
-  const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, accountAddress));
+  const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
 
   if (!selectedAccount) {
     return {
-      accountAddress,
+      accountAddress: address,
       accountColor: 0,
     };
   }
 
   const { label, color, image } = selectedAccount;
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-  const accountName = labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
+  const accountENS = walletNames?.[address];
+  const accountName = labelWithoutEmoji || accountENS || addressAbbreviation(address, 4, 4);
   const emojiAvatar = returnStringFirstEmoji(label);
-  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(accountAddress));
+  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address));
   const accountColor = color;
   const accountImage = image && isValidImagePath(image) ? image : null;
 
   return {
-    accountAddress,
+    accountAddress: address,
     accountColor,
     accountENS,
     accountImage,
