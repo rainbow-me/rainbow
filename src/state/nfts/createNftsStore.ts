@@ -140,6 +140,8 @@ export const createNftsStore = (address: Address | string) =>
     },
 
     (set, get) => ({
+      hasMigratedShowcase: false,
+      hasMigratedHidden: false,
       collections: new Map(),
       nftsByCollection: new Map(),
       fetchedPages: {},
@@ -202,7 +204,8 @@ export const createNftsStore = (address: Address | string) =>
       getCollections: () => {
         const { collections, getData } = get();
         if (!collections.size) {
-          return getData()?.collections ? Array.from(getData()!.collections.values()) : null;
+          const data = getData();
+          return data?.collections ? Array.from(data.collections.values()) : null;
         }
         return Array.from(collections.values());
       },
@@ -267,6 +270,8 @@ export const createNftsStore = (address: Address | string) =>
           partialize: state => ({
             collections: state.collections,
             nftsByCollection: state.nftsByCollection,
+            hasMigratedShowcase: state.hasMigratedShowcase,
+            hasMigratedHidden: state.hasMigratedHidden,
           }),
           storageKey: `nfts_${address}`,
           version: 3,

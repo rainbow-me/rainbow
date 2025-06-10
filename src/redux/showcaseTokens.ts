@@ -152,6 +152,19 @@ export const showcaseTokensUpdateStateFromWeb =
     }
   };
 
+export const setShowcaseTokens = (showcaseTokens: string[]) => (dispatch: Dispatch<ShowcaseTokensUpdateAction>, getState: AppGetState) => {
+  const account = getState().wallets.selected!;
+
+  if (account.type === WalletTypes.readOnly) return;
+
+  const { accountAddress, network } = getState().settings;
+  dispatch({
+    payload: showcaseTokens,
+    type: SHOWCASE_TOKENS_UPDATE,
+  });
+  saveShowcaseTokens(showcaseTokens, accountAddress, network);
+};
+
 /**
  * Adds a token ID to the showcase in state and updates local storage.
  *

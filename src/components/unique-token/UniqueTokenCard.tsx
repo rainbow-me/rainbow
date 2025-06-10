@@ -35,11 +35,6 @@ type UniqueTokenCardProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-function parseContractAddressFromUniqueId(uniqueId: string): { address: string } {
-  const [, address] = uniqueId.split('_');
-  return { address };
-}
-
 const UniqueTokenCard = ({
   borderEnabled = true,
   disabled = false,

@@ -128,6 +128,21 @@ export const hiddenTokensUpdateStateFromWeb =
     }
   };
 
+export const setHiddenTokens = (hiddenTokens: string[]) => (dispatch: Dispatch<HiddenTokensUpdateAction>, getState: AppGetState) => {
+  const account = getState().wallets.selected!;
+
+  if (account.type === WalletTypes.readOnly) return;
+
+  const { accountAddress, network } = getState().settings;
+  dispatch({
+    payload: {
+      hiddenTokens,
+    },
+    type: HIDDEN_TOKENS_UPDATE,
+  });
+  saveHiddenTokens(hiddenTokens, accountAddress, network);
+};
+
 /**
  * Adds a token ID to the hidden in state and updates local storage.
  *

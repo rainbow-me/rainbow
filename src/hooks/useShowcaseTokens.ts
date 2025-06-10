@@ -14,8 +14,6 @@ export default function useShowcaseTokens() {
 
   const showcaseTokens = useSelector((state: AppState) => state.showcaseTokens.showcaseTokens);
 
-  console.log({ showcaseTokens });
-
   const addShowcaseToken = useCallback(
     async (asset: string) => {
       dispatch(rawAddShowcaseToken(asset));

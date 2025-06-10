@@ -8,8 +8,7 @@ export default function useLoadAccountData() {
   const dispatch = useDispatch();
   const loadAccountData = useCallback(async () => {
     logger.debug('[useLoadAccountData]: Load wallet account data');
-    dispatch(showcaseTokensLoadState());
-    dispatch(hiddenTokensLoadState());
+    await Promise.all([dispatch(showcaseTokensLoadState()), dispatch(hiddenTokensLoadState())]);
   }, [dispatch]);
 
   return loadAccountData;

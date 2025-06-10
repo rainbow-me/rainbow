@@ -38,6 +38,8 @@ export interface NftsState {
   nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
   fetchedPages: { [pageKey: string]: number };
   pagination: PaginationInfo | null;
+  hasMigratedShowcase: boolean;
+  hasMigratedHidden: boolean;
   fetchNextPage: () => Promise<void>;
   getCollections: () => Collection[] | null;
   getCollection: (collectionId: CollectionId) => Collection | null;

@@ -35,14 +35,14 @@ export const nftListingQueryKey = ({
   chainId: Omit<ChainId, ChainId.goerli>;
 }) => createQueryKey('nftListing', { contractAddress, tokenId, chainId });
 
-interface NFTData {
+export interface NFTData {
   nfts: UniqueAsset[];
   nftIndexMap: Record<string, number>;
 }
 
 type NFTQueryKey = ReturnType<typeof nftsQueryKey>;
 
-const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) => {
+export const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) => {
   const [{ address, sortBy, sortDirection }] = queryKey;
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
 

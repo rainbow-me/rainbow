@@ -75,7 +75,7 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
         <RemoteSvg
           fallbackIfNonAnimated={!isENS || isCard}
           fallbackUri={svgToPngIfNeeded(imageUrl, true)}
-          lowResFallbackUri={imageUrl}
+          lowResFallbackUri={lowResImageUrl}
           onError={onError}
           style={StyleSheet.absoluteFill}
           uri={imageUrl}

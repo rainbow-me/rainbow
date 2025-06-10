@@ -433,8 +433,6 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
     { timeout: 5 * 1000 }
   );
 
-  console.log(asset.images.highResUrl, asset.images.lowResUrl);
-
   return (
     <>
       {IS_IOS && (
