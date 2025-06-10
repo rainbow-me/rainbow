@@ -547,7 +547,6 @@ async function getWalletsInfo({ wallets, walletNames, useCachedENS }: GetENSInfo
           account: {
             ...account,
             image: account.image?.startsWith('~') || account.image?.startsWith('file') ? account.image : null, // if the user had an ens but the image it was a local image
-            label: '',
           },
           ensChanged: true,
           key,
