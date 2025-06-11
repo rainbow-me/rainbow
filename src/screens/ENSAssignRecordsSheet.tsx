@@ -19,7 +19,7 @@ import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '@/handlers/localstorage/ens';
 import { ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
-import { useENSRegistrationStore, setAccentColor } from '@/state/ensRegistration/ensRegistration';
+import { useENSRegistrationStore, getENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 import {
   useAccountProfile,
   useDimensions,
@@ -97,7 +97,7 @@ export default function ENSAssignRecordsSheet() {
 
   useFocusEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
-      setAccentColor(dominantColor || colors.purple);
+      getENSRegistrationStore().setAccentColor(dominantColor || colors.purple);
     }
   });
 
@@ -228,7 +228,7 @@ export function ENSAssignRecordsBottomActions({
     if (fromRoute) {
       navigate(fromRoute);
     }
-    setAccentColor(colors.purple);
+    getENSRegistrationStore().setAccentColor(colors.purple);
   }, [colors.purple, fromRoute, navigate, setAccentColor]);
 
   const hasBackButton = useMemo(

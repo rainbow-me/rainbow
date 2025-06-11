@@ -12,7 +12,7 @@ import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { IS_TEST } from '@/env';
-import { useENSRegistrationStore, setAvatarMetadata } from '@/state/ensRegistration/ensRegistration';
+import { useENSRegistrationStore, getENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 
 // Deprecated - use useENSRegistrationStore instead
 export const avatarMetadataAtom = {
@@ -56,7 +56,7 @@ const RegistrationAvatar = ({
 
   const onChangeImage = useCallback(
     ({ asset, image }: { asset?: UniqueAsset; image?: Image & { tmpPath?: string } }) => {
-      setAvatarMetadata(image);
+      getENSRegistrationStore().setAvatarMetadata(image);
       setAvatarUrl(image?.tmpPath || asset?.lowResUrl || asset?.image_thumbnail_url || '');
       onChangeAvatarUrl(image?.path || asset?.lowResUrl || asset?.image_thumbnail_url || '');
       if (asset) {
@@ -96,7 +96,7 @@ const RegistrationAvatar = ({
     onRemoveImage: () => {
       onRemoveField({ key: ENS_RECORDS.avatar });
       onChangeAvatarUrl('');
-      setAvatarMetadata(undefined);
+      getENSRegistrationStore().setAvatarMetadata(undefined);
       setDisabled(false);
       setTimeout(() => {
         setAvatarUrl('');

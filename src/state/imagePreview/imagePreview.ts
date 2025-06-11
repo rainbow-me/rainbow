@@ -71,10 +71,4 @@ export const useImagePreviewStore = createRainbowStore<ImagePreviewStoreState>(
   })
 );
 
-// export static functions
-export const {
-  addPreview,
-  removePreview,
-  updatePreview,
-  getPreview,
-} = useImagePreviewStore.getState();
+export const getImagePreviewStore = () => useImagePreviewStore.getState();

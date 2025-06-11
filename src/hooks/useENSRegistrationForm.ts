@@ -5,12 +5,7 @@ import { Records } from '@/entities';
 import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
 import { 
   useENSRegistrationStore, 
-  setErrors as setErrorsAction,
-  setSubmitting as setSubmittingAction,
-  setIsValidating as setIsValidatingAction,
-  setDisabled as setDisabledAction,
-  setSelectedFields as setSelectedFieldsAction,
-  setValues as setValuesAction
+  getENSRegistrationStore
 } from '@/state/ensRegistration/ensRegistration';
 
 const defaultInitialRecords = {
@@ -73,7 +68,7 @@ export default function useENSRegistrationForm({
     // when there are no changed records.
     // Note: We don't want to do this in create mode as we have the "Skip"
     // button.
-    setDisabledAction(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
+    getENSRegistrationStore().setDisabled(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
   }, [changedRecords, mode]);
 
   const selectedFields = useENSRegistrationStore(state => state.selectedFields);
@@ -82,14 +77,14 @@ export default function useENSRegistrationForm({
     // If there are existing records in the global state, then we
     // populate with that.
     if (!isEmpty(defaultRecords)) {
-      setSelectedFieldsAction(
+      getENSRegistrationStore().setSelectedFields(
         Object.values(textRecordFields)
           .map(field => (defaultRecords[field.key] !== undefined ? field : undefined))
           .filter(Boolean) as TextRecordField[]
       );
     } else {
       if (defaultFields) {
-        setSelectedFieldsAction(defaultFields);
+        getENSRegistrationStore().setSelectedFields(defaultFields);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,7 +95,7 @@ export default function useENSRegistrationForm({
   useEffect(
     () => {
       if (!initializeForm) return;
-      setValuesAction(values => ({
+      getENSRegistrationStore().setValues(values => ({
         ...values,
         [name]: defaultRecords,
       }));
@@ -127,13 +122,13 @@ export default function useENSRegistrationForm({
   // Reset errors if changedRecords is reset
   useEffect(() => {
     if (isEmpty(changedRecords)) {
-      setErrorsAction({});
+      getENSRegistrationStore().setErrors({});
     }
   }, [changedRecords, initializeForm]);
 
   const onAddField = useCallback(
     (fieldToAdd: TextRecordField, selectedFields: TextRecordField[]) => {
-      setSelectedFieldsAction(selectedFields);
+      getENSRegistrationStore().setSelectedFields(selectedFields);
       updateRecordByKey(fieldToAdd.key, '');
     },
     [updateRecordByKey]
@@ -142,7 +137,7 @@ export default function useENSRegistrationForm({
   const onRemoveField = useCallback(
     (fieldToRemove: Pick<TextRecordField, 'key'>, selectedFields: TextRecordField[] | undefined = undefined) => {
       if (!isEmpty(errors)) {
-        setErrorsAction(errors => {
+        getENSRegistrationStore().setErrors(errors => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [fieldToRemove.key]: _, ...newErrors } = errors;
 
@@ -150,11 +145,11 @@ export default function useENSRegistrationForm({
         });
       }
       if (selectedFields) {
-        setSelectedFieldsAction(selectedFields);
+        getENSRegistrationStore().setSelectedFields(selectedFields);
       }
       removeRecordByKey(fieldToRemove.key);
 
-      setValuesAction(values => {
+      getENSRegistrationStore().setValues(values => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [fieldToRemove.key as ENS_RECORDS]: _, ...restRecords } = values?.[name] || {};
         return {
@@ -168,7 +163,7 @@ export default function useENSRegistrationForm({
 
   const onBlurField = useCallback(
     ({ key, value }: { key: string; value: string }) => {
-      setValuesAction(values => ({
+      getENSRegistrationStore().setValues(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
@@ -179,23 +174,23 @@ export default function useENSRegistrationForm({
 
   const onChangeField = useCallback(
     ({ key, value }: { key: string; value: string }) => {
-      setIsValidatingAction(true);
+      getENSRegistrationStore().setIsValidating(true);
       const validation = textRecordFields[key as ENS_RECORDS]?.validation;
       if (validation) {
         const { message, validator } = validation;
         const isValid = !value || validator(value);
         isValid
           ? key in errors &&
-            setErrorsAction(errors => {
+            getENSRegistrationStore().setErrors(errors => {
               // omit key from errors
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const { [key]: _, ...newErrors } = errors;
               return newErrors;
             })
-          : setErrorsAction({ ...errors, [key]: message });
+          : getENSRegistrationStore().setErrors({ ...errors, [key]: message });
       }
-      setIsValidatingAction(false);
-      setValuesAction(values => ({
+      getENSRegistrationStore().setIsValidating(false);
+      getENSRegistrationStore().setValues(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
@@ -223,21 +218,21 @@ export default function useENSRegistrationForm({
   }, [mode, isSuccess, isEmptyValues]);
 
   const clearValues = useCallback(() => {
-    setValuesAction({});
+    getENSRegistrationStore().setValues({});
   }, []);
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   const submit = useCallback(
     async (submitFn: () => Promise<void> | void) => {
-      setSubmittingAction(true);
+      getENSRegistrationStore().setSubmitting(true);
       try {
         await submitFn();
         // eslint-disable-next-line no-empty
       } catch (err) {}
 
       setTimeout(() => {
-        setSubmittingAction(false);
+        getENSRegistrationStore().setSubmitting(false);
       }, 100);
     },
     []
@@ -257,7 +252,7 @@ export default function useENSRegistrationForm({
     onChangeField,
     onRemoveField,
     selectedFields,
-    setDisabled: setDisabledAction,
+    setDisabled: getENSRegistrationStore().setDisabled,
     submit,
     submitting,
     values,

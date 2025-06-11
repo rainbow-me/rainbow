@@ -6,7 +6,7 @@ import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useLedgerImport } from '@/hooks/useLedgerImport';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import { useLedgerStore, setDeviceId } from '@/state/ledger/ledger';
+import { useLedgerStore, getLedgerStore } from '@/state/ledger/ledger';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { CancelButton } from './components/CancelButton';
 
@@ -16,7 +16,7 @@ export const PairHardwareWalletSearchSheet = () => {
 
   useLedgerImport({
     successCallback: deviceId => {
-      setDeviceId(deviceId);
+      getLedgerStore().setDeviceId(deviceId);
       setIsConnected(true);
     },
   });

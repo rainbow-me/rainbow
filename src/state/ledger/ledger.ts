@@ -26,10 +26,4 @@ export const useLedgerStore = createRainbowStore<LedgerState>(
   })
 );
 
-// export static functions
-export const {
-  setIsReady,
-  setReadyForPolling,
-  setTriggerPollerCleanup,
-  setDeviceId,
-} = useLedgerStore.getState();
+export const getLedgerStore = () => useLedgerStore.getState();

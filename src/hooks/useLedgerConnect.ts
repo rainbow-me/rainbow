@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { logger, RainbowError } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { useLedgerStore, setTriggerPollerCleanup, setReadyForPolling } from '@/state/ledger/ledger';
+import { useLedgerStore, getLedgerStore } from '@/state/ledger/ledger';
 
 /**
  * React hook used for checking ledger connections and handling connnection error states
@@ -30,12 +30,12 @@ export function useLedgerConnect({
     async (errorType: LEDGER_ERROR_CODES) => {
       if (isReady) return;
       if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
-        setReadyForPolling(false);
+        getLedgerStore().setReadyForPolling(false);
         logger.debug('[useLedgerConnect]: Device Disconnected - Attempting Reconnect', {});
         transport.current = undefined;
         try {
           transport.current = await TransportBLE.open(deviceId);
-          setReadyForPolling(true);
+          getLedgerStore().setReadyForPolling(true);
         } catch (e) {
           logger.error(new RainbowError('[useLedgerConnect]: Reconnect Error'), {
             error: (e as Error).message,
@@ -77,7 +77,7 @@ export function useLedgerConnect({
   useEffect(() => {
     if (readyForPolling && (!timer.current || triggerPollerCleanup)) {
       logger.debug('[useLedgerConnect]: init device polling', {});
-      setTriggerPollerCleanup(false);
+      getLedgerStore().setTriggerPollerCleanup(false);
       timer.current = setInterval(async () => {
         if (transport.current) {
           if (readyForPolling) {

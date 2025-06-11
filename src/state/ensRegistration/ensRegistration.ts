@@ -66,15 +66,4 @@ export const useENSRegistrationStore = createRainbowStore<ENSRegistrationState>(
   })
 );
 
-// export static functions
-export const {
-  setErrors,
-  setSubmitting,
-  setIsValidating,
-  setDisabled,
-  setSelectedFields,
-  setValues,
-  setAccentColor,
-  setAvatarMetadata,
-  setCoverMetadata,
-} = useENSRegistrationStore.getState();
+export const getENSRegistrationStore = () => useENSRegistrationStore.getState();

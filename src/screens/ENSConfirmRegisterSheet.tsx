@@ -18,7 +18,7 @@ import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
-import { useENSRegistrationStore, setAccentColor } from '@/state/ensRegistration/ensRegistration';
+import { useENSRegistrationStore, getENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 import {
   useAccountProfile,
   useDimensions,
@@ -107,7 +107,7 @@ export default function ENSConfirmRegisterSheet() {
 
   useEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
-      setAccentColor(dominantColor || colors.purple);
+      getENSRegistrationStore().setAccentColor(dominantColor || colors.purple);
     }
   }, [avatarImage, dominantColor]);
 

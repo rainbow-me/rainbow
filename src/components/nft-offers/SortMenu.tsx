@@ -7,7 +7,7 @@ import { SortCriterion } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
 import { analytics } from '@/analytics';
-import { useNFTOffersStore, setSortCriterion } from '@/state/nftOffers/nftOffers';
+import { useNFTOffersStore, getNFTOffersStore } from '@/state/nftOffers/nftOffers';
 
 export type SortOption = {
   name: string;
@@ -91,7 +91,7 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: sortCriterion } }: { nativeEvent: { actionKey: SortCriterion } }) => {
     haptics.selection();
-    setSortCriterion(sortCriterion);
+    getNFTOffersStore().setSortCriterion(sortCriterion);
     analytics.track(analytics.event.nftOffersSelectedSortCriterion, {
       sortCriterion: sortCriterion,
     });

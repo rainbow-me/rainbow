@@ -13,7 +13,7 @@ import { logger } from '@/logger';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { MMKV } from 'react-native-mmkv';
 import { RootStackParamList } from './types';
-import { useLedgerStore, setIsReady, setReadyForPolling, setTriggerPollerCleanup } from '@/state/ledger/ledger';
+import { useLedgerStore, getLedgerStore } from '@/state/ledger/ledger';
 
 export const ledgerStorage = new MMKV({
   id: 'ledgerStorage',
@@ -71,8 +71,8 @@ export const HardwareWalletTxNavigator = () => {
   const successCallback = useCallback(() => {
     logger.debug('[HardwareWalletTxNavigator]: submitting tx', {});
     if (!isReady) {
-      setReadyForPolling(false);
-      setIsReady(true);
+      getLedgerStore().setReadyForPolling(false);
+      getLedgerStore().setIsReady(true);
       setHardwareTXError(false);
       submit();
     } else {
@@ -89,10 +89,10 @@ export const HardwareWalletTxNavigator = () => {
 
   // reset state when opening the sheet
   useEffect(() => {
-    setIsReady(false);
-    setReadyForPolling(true);
+    getLedgerStore().setIsReady(false);
+    getLedgerStore().setReadyForPolling(true);
     setHardwareTXError(false);
-    setTriggerPollerCleanup(false);
+    getLedgerStore().setTriggerPollerCleanup(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

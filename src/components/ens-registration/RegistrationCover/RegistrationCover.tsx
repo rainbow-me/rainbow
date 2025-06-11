@@ -13,7 +13,7 @@ import { useENSModifiedRegistration, useENSRegistration, useENSRegistrationForm,
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
-import { useENSRegistrationStore, setCoverMetadata } from '@/state/ensRegistration/ensRegistration';
+import { useENSRegistrationStore, getENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 
 // Deprecated - use useENSRegistrationStore instead
 export const coverMetadataAtom = {
@@ -50,7 +50,7 @@ const RegistrationCover = ({
 
   const onChangeImage = useCallback(
     ({ asset, image }: { asset?: UniqueAsset; image?: Image & { tmpPath?: string } }) => {
-      setCoverMetadata(image);
+      getENSRegistrationStore().setCoverMetadata(image);
       setCoverUrl(image?.tmpPath || asset?.image_url || asset?.lowResUrl || asset?.image_thumbnail_url || '');
 
       if (asset) {
@@ -90,7 +90,7 @@ const RegistrationCover = ({
     onChangeImage: onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: ENS_RECORDS.header });
-      setCoverMetadata(undefined);
+      getENSRegistrationStore().setCoverMetadata(undefined);
       setDisabled(false);
       setTimeout(() => {
         setCoverUrl('');

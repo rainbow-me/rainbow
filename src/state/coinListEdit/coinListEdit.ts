@@ -16,5 +16,4 @@ export const useCoinListEditStore = createRainbowStore<CoinListEditState>(
   })
 );
 
-// export static functions
-export const { setIsCoinListEdited, setSelectedItems } = useCoinListEditStore.getState();
+export const getCoinListEditStore = () => useCoinListEditStore.getState();
