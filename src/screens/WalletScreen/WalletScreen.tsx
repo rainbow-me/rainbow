@@ -21,7 +21,6 @@ import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useNftsStore } from '@/state/nfts/nfts';
-import useMigrateShowcaseAndHidden from '@/hooks/useMigrateShowcaseAndHidden';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -48,7 +47,6 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   useLoadDeferredWalletData();
   useWalletCohort();
   useAppIconIdentify();
-  useMigrateShowcaseAndHidden();
   return null;
 });
 

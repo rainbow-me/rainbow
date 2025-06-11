@@ -59,6 +59,11 @@ export default function useWalletSectionsData({
     })
   );
 
+  console.log({
+    showcaseTokens,
+    hiddenTokens,
+  });
+
   const positions = useMemo(() => {
     if (!positionsEnabled) return null;
     return positionsData;
@@ -79,6 +84,8 @@ export default function useWalletSectionsData({
   const collections = useNftsStore(state => state.getCollections());
   const hasMoreCollections = useNftsStore(state => state.hasNextPage());
   const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
+
+  console.log({ collections });
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -130,6 +137,7 @@ export default function useWalletSectionsData({
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
     const hasNFTs = (collections?.length ?? 0) > 0;
+    console.log({ hasNFTs });
 
     return {
       hasNFTs,

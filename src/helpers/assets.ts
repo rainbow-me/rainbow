@@ -250,8 +250,6 @@ export const buildBriefUniqueTokenList = (
   showcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
-  listType: AssetListType = 'wallet',
-  isReadOnlyWallet = false,
   isFetchingNfts = false,
   hasMoreCollections = false
 ) => {
@@ -320,6 +318,7 @@ export const buildBriefUniqueTokenList = (
         type: CellType.NFT,
         uid: `showcase-${uniqueId}`,
         uniqueId,
+        index,
         collectionId: `${network}_${contractAddress}`,
       });
     }
@@ -346,7 +345,7 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
   }
 
-  if (!filteredCollections?.size) {
+  if (!collections?.length) {
     if (!isFetchingNfts) {
       result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
     } else {
@@ -357,6 +356,10 @@ export const buildBriefUniqueTokenList = (
       const amountInShowcase = uniqueTokensInShowcaseIds.get(id) ?? 0;
       const amountHidden = hiddenUniqueTokensIds.get(id) ?? 0;
       const adjustedTotalCount = Number(totalCount) - amountInShowcase - amountHidden;
+
+      if (adjustedTotalCount === 0) {
+        continue;
+      }
 
       result.push({
         image: imageUrl ?? undefined,

@@ -13,7 +13,7 @@ import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
+import { ethereumUtils, isLowerCaseMatch, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
 import { ContextCircleButton } from '@/components/context-menu';
@@ -194,8 +194,14 @@ const UniqueTokenExpandedStateHeader = ({
   const { width: deviceWidth } = useDimensions();
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
-  const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.uniqueId) as boolean, [hiddenTokens, asset.uniqueId]);
-  const isShowcaseAsset = useMemo(() => showcaseTokens.includes(asset.uniqueId) as boolean, [showcaseTokens, asset.uniqueId]);
+  const isHiddenAsset = useMemo(
+    () => !!hiddenTokens.find(token => isLowerCaseMatch(token, asset.uniqueId)),
+    [hiddenTokens, asset.uniqueId]
+  );
+  const isShowcaseAsset = useMemo(
+    () => !!showcaseTokens.find(token => isLowerCaseMatch(token, asset.uniqueId)),
+    [showcaseTokens, asset.uniqueId]
+  );
   const { goBack } = useNavigation();
 
   const formattedCollectionUrl = useMemo(() => {

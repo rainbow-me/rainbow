@@ -10,6 +10,7 @@ import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
 import { Colors } from '@/styles';
 import { AssetType } from '@/entities';
+import { isLowerCaseMatch } from '@/utils';
 
 function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
   const variants = {
@@ -57,7 +58,7 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const onError = useCallback(() => setErrorLoadingImage(true), [setErrorLoadingImage]);
 
   const isHiddenToken = useMemo(() => {
-    return hiddenTokens.find(token => token === uniqueId);
+    return hiddenTokens.find(token => isLowerCaseMatch(token, uniqueId));
   }, [hiddenTokens, uniqueId]);
 
   const backgroundColor = givenBackgroundColor;

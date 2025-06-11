@@ -57,7 +57,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
-import { magicMemo, safeAreaInsetValues } from '@/utils';
+import { isLowerCaseMatch, magicMemo, safeAreaInsetValues } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import isHttpUrl from '@/helpers/isHttpUrl';
@@ -69,7 +69,6 @@ import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { parseUniqueId } from '@/resources/nfts/utils';
 import { buildUniqueTokenName } from '@/helpers/assets';
 
 const BackgroundBlur = styled(BlurView).attrs({
@@ -334,12 +333,13 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
     });
   }, [asset.chainId, navigate]);
 
-  const { network, contractAddress, tokenId } = parseUniqueId(asset.uniqueId);
-
-  const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.uniqueId), [hiddenTokens, asset.uniqueId]);
+  const isHiddenAsset = useMemo(
+    () => !!hiddenTokens.find(token => isLowerCaseMatch(asset.uniqueId, token)),
+    [hiddenTokens, asset.uniqueId]
+  );
   const isShowcaseAsset = useMemo(() => {
-    return showcaseTokens.includes(asset.uniqueId) || (network && showcaseTokens.includes(`${network}_${contractAddress}_${tokenId}`));
-  }, [showcaseTokens, asset.uniqueId, network, contractAddress, tokenId]);
+    return !!showcaseTokens.find(token => isLowerCaseMatch(asset.uniqueId, token));
+  }, [showcaseTokens, asset.uniqueId]);
 
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
@@ -360,9 +360,9 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
-      removeShowcaseToken(asset.uniqueId);
+      removeShowcaseToken(asset.uniqueId.toLowerCase());
     } else {
-      addShowcaseToken(asset.uniqueId);
+      addShowcaseToken(asset.uniqueId.toLowerCase());
 
       if (isHiddenAsset) {
         removeHiddenToken(asset);

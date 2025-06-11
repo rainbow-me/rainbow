@@ -1,5 +1,4 @@
-import { useCallback, useEffect } from 'react';
-import { useNftsStore } from '@/state/nfts/nfts';
+import { useCallback } from 'react';
 import { queryClient } from '@/react-query';
 import { fetchNFTData, NFTData, nftsQueryKey } from '@/resources/nfts';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
@@ -10,11 +9,12 @@ import { isLowerCaseMatch } from '@/utils';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import useShowcaseTokens from './useShowcaseTokens';
 import useHiddenTokens from './useHiddenTokens';
-import useAccountSettings from './useAccountSettings';
 import { useDispatch } from 'react-redux';
 import { setShowcaseTokens } from '@/redux/showcaseTokens';
 import { setHiddenTokens } from '@/redux/hiddenTokens';
 import useWebData from './useWebData';
+import useWallets from './useWallets';
+import useAccountSettings from './useAccountSettings';
 
 function matchEnsNameToUniqueId(ensName: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
   for (const nft of nfts) {
@@ -39,18 +39,30 @@ function matchContractAndAddressAndTokenId(uniqueId: string, nfts: UniqueAsset[]
   return undefined;
 }
 
+function isDataComplete(tokens: string[]) {
+  for (const token of tokens) {
+    const { network, contractAddress, tokenId } = parseUniqueId(token);
+    if (!network || !contractAddress || !tokenId) return false;
+  }
+  return true;
+}
+
 export default function useMigrateShowcaseAndHidden() {
   const dispatch = useDispatch();
   const { updateWebShowcase, updateWebHidden } = useWebData();
-  const { accountAddress } = useAccountSettings();
+  const { isReadOnlyWallet } = useWallets();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-
-  const hasMigratedShowcase = useNftsStore(state => state.hasMigratedShowcase);
-  const hasMigratedHidden = useNftsStore(state => state.hasMigratedHidden);
+  const { accountAddress } = useAccountSettings();
 
   const migrateShowcaseAndHidden = useCallback(async () => {
     if (!showcaseTokens.length && !hiddenTokens.length) return;
+    const hasMigratedShowcase = isDataComplete(showcaseTokens);
+    const hasMigratedHidden = isDataComplete(hiddenTokens);
+
+    console.log('🔄 [Migration] Starting migration process...');
+    console.log('📊 [Migration] Current tokens:', { hasMigratedHidden, hasMigratedShowcase });
+
     if (hasMigratedShowcase && hasMigratedHidden) return;
 
     const queryKey = nftsQueryKey({
@@ -79,18 +91,16 @@ export default function useMigrateShowcaseAndHidden() {
         if (isENS) {
           const uniqueId = matchEnsNameToUniqueId(token, data.nfts);
           if (!uniqueId) {
-            // effectively, we should remove this token since we can't migrate it
             continue;
           }
-          migratedShowcaseTokens.push(uniqueId);
+          migratedShowcaseTokens.push(uniqueId.toLowerCase());
         } else {
           const uniqueId = matchContractAndAddressAndTokenId(token, data.nfts);
           if (!uniqueId) {
-            // effectively, we should remove this token since we can't migrate it
             continue;
           }
 
-          migratedShowcaseTokens.push(uniqueId);
+          migratedShowcaseTokens.push(uniqueId.toLowerCase());
         }
       }
     }
@@ -104,13 +114,13 @@ export default function useMigrateShowcaseAndHidden() {
             continue;
           }
 
-          migratedHiddenTokens.push(uniqueId);
+          migratedHiddenTokens.push(uniqueId.toLowerCase());
         } else {
           const { network, contractAddress, tokenId } = parseUniqueId(token);
 
           // if we already have everything we need, migrate it directly
           if (network && contractAddress && tokenId) {
-            migratedHiddenTokens.push(token);
+            migratedHiddenTokens.push(token.toLowerCase());
           } else {
             const uniqueId = matchContractAndAddressAndTokenId(token, data.nfts);
             if (!uniqueId) {
@@ -118,23 +128,22 @@ export default function useMigrateShowcaseAndHidden() {
               continue;
             }
 
-            migratedHiddenTokens.push(uniqueId);
+            migratedHiddenTokens.push(uniqueId.toLowerCase());
           }
         }
       }
     }
 
-    await Promise.all([
-      dispatch(setShowcaseTokens(migratedShowcaseTokens)),
-      dispatch(setHiddenTokens(migratedHiddenTokens)),
-      updateWebShowcase(migratedShowcaseTokens),
-      updateWebHidden(migratedHiddenTokens),
-    ]);
+    console.log('🔄 [Migration] Migrating tokens:', { migratedShowcaseTokens, migratedHiddenTokens });
 
-    useNftsStore.setState({ hasMigratedShowcase: true, hasMigratedHidden: true });
-  }, [showcaseTokens, hiddenTokens, hasMigratedShowcase, hasMigratedHidden, accountAddress, dispatch, updateWebShowcase, updateWebHidden]);
+    await Promise.all([dispatch(setShowcaseTokens(migratedShowcaseTokens)), dispatch(setHiddenTokens(migratedHiddenTokens))]);
 
-  useEffect(() => {
-    migrateShowcaseAndHidden();
-  }, [migrateShowcaseAndHidden]);
+    console.log('🔄 [Migration] Migrating tokens to web:', { migratedShowcaseTokens, migratedHiddenTokens });
+    console.log('🔄 [Migration] isReadOnlyWallet:', isReadOnlyWallet);
+    if (!isReadOnlyWallet) {
+      await Promise.all([updateWebShowcase(migratedShowcaseTokens), updateWebHidden(migratedHiddenTokens)]);
+    }
+  }, [showcaseTokens, hiddenTokens, accountAddress, dispatch, isReadOnlyWallet, updateWebShowcase, updateWebHidden]);
+
+  return migrateShowcaseAndHidden;
 }

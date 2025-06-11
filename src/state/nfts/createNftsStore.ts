@@ -31,35 +31,47 @@ const replaceEthereumWithMainnet = (network: string | undefined) => {
   return network;
 };
 
-const fetchMultipleCollectionNfts = async (collectionId: string): Promise<NftsQueryData> => {
-  const tokens = collectionId === 'showcase' ? store.getState().showcaseTokens.showcaseTokens : store.getState().hiddenTokens.hiddenTokens;
+const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string): Promise<NftsQueryData> => {
+  const tokensForCategory =
+    collectionId === 'showcase' ? store.getState().showcaseTokens.showcaseTokens : store.getState().hiddenTokens.hiddenTokens;
 
-  const payloads = tokens
+  const tokens = tokensForCategory
     .map(token => parseUniqueId(token))
     .filter(p => p.network && p.contractAddress && p.tokenId)
-    .map(p => ({
-      network: replaceEthereumWithMainnet(p.network) as string,
-      contractAddress: p.contractAddress,
-      tokenId: p.tokenId,
-    }));
+    .reduce(
+      (acc, curr) => {
+        const network = replaceEthereumWithMainnet(curr.network);
+        if (!network) return acc;
+
+        acc[network] = acc[network] || [];
+        acc[network].push({
+          contractAddress: curr.contractAddress,
+          tokenId: curr.tokenId,
+        });
+        return acc;
+      },
+      {} as Record<string, { contractAddress: string; tokenId: string }[]>
+    );
 
   const chainIds = useBackendNetworksStore.getState().getChainsIdByName();
 
-  const data = await Promise.all(payloads.map(payload => arcClient.getNft(payload)));
+  const response = await arcClient.getNftsMetadata({ tokens, walletAddress });
+
+  if (!response.getNftsMetadata) return EMPTY_RETURN_DATA;
 
   const nftsByCollection = new Map();
 
-  data.forEach(item => {
-    const { network, contractAddress } = parseUniqueId(item.nft.uniqueId);
-    const collectionId = `${network}_${contractAddress}`;
-    const uniqueAsset = parseUniqueAsset(item.nft, chainIds);
+  response.getNftsMetadata.forEach(item => {
+    const { network, contractAddress } = parseUniqueId(item.uniqueId);
+    const collectionId = `${network}_${contractAddress}`.toLowerCase();
+    const uniqueAsset = parseUniqueAsset(item, chainIds);
 
     const existingCollection = nftsByCollection.get(collectionId);
     if (existingCollection) {
-      existingCollection.set(item.nft.uniqueId, uniqueAsset);
+      existingCollection.set(item.uniqueId.toLowerCase(), uniqueAsset);
     } else {
       const newCollection = new Map();
-      newCollection.set(item.nft.uniqueId, uniqueAsset);
+      newCollection.set(item.uniqueId.toLowerCase(), uniqueAsset);
       nftsByCollection.set(collectionId, newCollection);
     }
   });
@@ -81,7 +93,7 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
 
     if (collectionId) {
       if (collectionId === 'showcase' || collectionId === 'hidden') {
-        return fetchMultipleCollectionNfts(collectionId);
+        return fetchMultipleCollectionNfts(collectionId, walletAddress);
       }
       const data = await arcClient.getNftsByCollection({ walletAddress, collectionId });
       if (!data) return EMPTY_RETURN_DATA;
@@ -90,12 +102,12 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
 
       const collectionNfts = new Map();
       data.nftsByCollection.forEach(item => {
-        collectionNfts.set(item.uniqueId, parseUniqueAsset(item, chainIds));
+        collectionNfts.set(item.uniqueId.toLowerCase(), parseUniqueAsset(item, chainIds));
       });
 
       return {
         collections: new Map(),
-        nftsByCollection: new Map([[collectionId, collectionNfts]]),
+        nftsByCollection: new Map([[collectionId.toLowerCase(), collectionNfts]]),
         pagination: null,
       };
     }
@@ -135,6 +147,7 @@ export const createNftsStore = (address: Address | string) =>
         limit: PAGE_SIZE,
         pageKey: null,
       },
+      // keepPreviousData: true,
       debugMode: true,
       staleTime: STALE_TIME,
     },
@@ -212,35 +225,41 @@ export const createNftsStore = (address: Address | string) =>
 
       getCollection: collectionId => {
         const { collections, getData } = get();
+        const normalizedCollectionId = collectionId.toLowerCase();
         if (!collections.size) {
-          return getData()?.collections?.get(collectionId) || null;
+          return getData()?.collections?.get(normalizedCollectionId) || null;
         }
-        return collections.get(collectionId) || null;
+        return collections.get(normalizedCollectionId) || null;
       },
 
       getNftsByCollection: collectionId => {
         const { nftsByCollection, getData } = get();
+        const normalizedCollectionId = collectionId.toLowerCase();
         if (!nftsByCollection.size) {
-          return getData()?.nftsByCollection?.get(collectionId) || null;
+          return getData()?.nftsByCollection?.get(normalizedCollectionId) || null;
         }
-        return nftsByCollection.get(collectionId) || null;
+        return nftsByCollection.get(normalizedCollectionId) || null;
       },
 
       getNftByUniqueId: (collectionId, uniqueId) => {
         const { nftsByCollection, getData } = get();
+        const normalizedCollectionId = collectionId.toLowerCase();
+        const normalizedUniqueId = uniqueId.toLowerCase();
+
         if (!nftsByCollection.size) {
-          return getData()?.nftsByCollection?.get(collectionId)?.get(uniqueId) || null;
+          return getData()?.nftsByCollection?.get(normalizedCollectionId)?.get(normalizedUniqueId) || null;
         }
-        return nftsByCollection.get(collectionId)?.get(uniqueId) || null;
+        return nftsByCollection.get(normalizedCollectionId)?.get(normalizedUniqueId) || null;
       },
 
       getNft: (collectionId, index) => {
         const { nftsByCollection, getData } = get();
+        const normalizedCollectionId = collectionId.toLowerCase();
         if (!nftsByCollection.size) {
-          const nftArray = Array.from(getData()?.nftsByCollection?.get(collectionId)?.values() || []);
+          const nftArray = Array.from(getData()?.nftsByCollection?.get(normalizedCollectionId)?.values() || []);
           return nftArray[index] || null;
         }
-        const nftArray = Array.from(nftsByCollection.get(collectionId)?.values() || []);
+        const nftArray = Array.from(nftsByCollection.get(normalizedCollectionId)?.values() || []);
         return nftArray[index] || null;
       },
 
@@ -292,9 +311,26 @@ function setOrPruneNftsData(
   if (params.collectionId) {
     set(currentState => {
       const { nftsByCollection } = currentState;
+      const mergedNftsByCollection = new Map(nftsByCollection);
+
+      // Deep merge: for each collection in the new data
+      for (const [collectionId, newNftsMap] of data.nftsByCollection) {
+        const normalizedCollectionId = collectionId.toLowerCase();
+        const existingNftsMap = mergedNftsByCollection.get(normalizedCollectionId);
+
+        if (existingNftsMap) {
+          // Merge NFTs within the same collection
+          const mergedNftsMap = new Map([...existingNftsMap, ...newNftsMap]);
+          mergedNftsByCollection.set(normalizedCollectionId, mergedNftsMap);
+        } else {
+          // New collection, just add it
+          mergedNftsByCollection.set(normalizedCollectionId, newNftsMap);
+        }
+      }
+
       return {
         ...currentState,
-        nftsByCollection: new Map([...nftsByCollection, ...data.nftsByCollection]),
+        nftsByCollection: mergedNftsByCollection,
       };
     });
     return;

@@ -81,6 +81,7 @@ const UniqueTokenCard = ({
           uniqueId={item.uniqueId}
           mimeType={item.images.mimeType ?? ''}
           lowResImageUrl={item.images.lowResUrl}
+          transformSvgs={false}
         />
         {borderEnabled && <InnerBorder opacity={0.04} radius={UniqueTokenCardBorderRadius} width={0.5} />}
       </Content>

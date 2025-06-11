@@ -73,7 +73,6 @@ const hiddenAssetsSelector = (state: WalletSectionsState) => state.hiddenAssets;
 const isCoinListEditedSelector = (state: WalletSectionsState) => state.isCoinListEdited;
 const isLoadingUserAssetsSelector = (state: WalletSectionsState) => state.isLoadingUserAssets;
 const isLoadingBalanceSelector = (state: WalletSectionsState) => state.isLoadingBalance;
-const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 const nativeCurrencySelector = (state: WalletSectionsState) => state.nativeCurrency;
 const pinnedCoinsSelector = (state: WalletSectionsState) => state.pinnedCoins;
 const sellingTokensSelector = (state: WalletSectionsState) => state.sellingTokens;
@@ -81,7 +80,6 @@ const showcaseTokensSelector = (state: WalletSectionsState) => state.showcaseTok
 const hiddenTokensSelector = (state: WalletSectionsState) => state.hiddenTokens;
 const collectionsSelector = (state: WalletSectionsState) => state.collections;
 const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingNfts;
-const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
@@ -314,8 +312,6 @@ const briefUniqueTokenDataSelector = createSelector(
     showcaseTokensSelector,
     sellingTokensSelector,
     hiddenTokensSelector,
-    listTypeSelector,
-    isReadOnlyWalletSelector,
     isFetchingNftsSelector,
     hasMoreCollectionsSelector,
   ],

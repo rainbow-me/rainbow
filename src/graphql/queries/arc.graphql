@@ -521,8 +521,8 @@ query getNftsByCollection($walletAddress: String!, $collectionId: String!) {
   }
 }
 
-query getNft($network: String!, $contractAddress: String!, $tokenId: String!) {
-  nft(network: $network, contractAddress: $contractAddress, tokenId: $tokenId) {
+query getNftsMetadata($walletAddress: String!, $tokens: JSON!) {
+  getNftsMetadata(walletAddress: $walletAddress, tokens: $tokens) {
     name
     acquiredAt
     uniqueId
