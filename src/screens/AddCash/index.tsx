@@ -123,7 +123,7 @@ export function AddCashSheet() {
 
             {!isLoading && providers?.length ? (
               <>
-                {providers.map((provider, index) => {
+                {providers.map(provider => {
                   const Comp = providerComponents[provider.id];
                   return (
                     <Box key={provider.id} paddingTop="20px">
@@ -134,7 +134,8 @@ export function AddCashSheet() {
               </>
             ) : (
               <>
-                {Array(4)
+                {/* Loading skeleton length should match the number of onramp options we have available in prod */}
+                {Array(2)
                   .fill(0)
                   .map((_, index) => {
                     const height = 140;
