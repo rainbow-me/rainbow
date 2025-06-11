@@ -174,13 +174,8 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allowedPkeysKeys = wallet?.addresses?.map(account => `${account.address}_${privateKeyKey}`);
 
   allKeys.forEach(item => {
-    // Ignore allWalletsKey
-    if (item.username === allWalletsKey) {
-      return;
-    }
-
-    // Ignore selected wallet
-    if (item.username === selectedWalletKey) {
+    // Ignore keys that are not seed phrases or private keys.
+    if (item.username.indexOf(seedPhraseKey) === -1 && item.username.indexOf(privateKeyKey) === -1) {
       return;
     }
 
