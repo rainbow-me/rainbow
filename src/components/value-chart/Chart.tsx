@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import * as i18n from '@/languages';
 import { useWindowDimensions } from 'react-native';
-import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Text, Box, TextIcon } from '@/design-system';
 import { LineChart } from './LineChart';
 import { ButtonPressAnimation } from '../animations';
@@ -11,7 +11,7 @@ import { colors } from '@/styles';
 import { ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { formatDatetime } from '../expanded-state/chart/chart-data-labels/ChartDateLabel';
 
-// These values must correspond with the expected backend values
+// TODO: These values must correspond with the expected backend values, make sure types are shared
 const LineChartTimespans = {
   hour: 'hour',
   day: 'day',
@@ -121,15 +121,23 @@ export function Chart({ asset, backgroundColor, color }: ChartProps) {
     setChartMode(prev => (prev === 'line' ? 'candlestick' : 'line'));
   }, [selectedTimespan, chartMode]);
 
+  const chartHeaderStyle = useAnimatedStyle(() => {
+    return {
+      opacity: isChartGestureActive.value && chartMode === 'candlestick' ? 0 : 1,
+    };
+  });
+
   return (
     <Box>
       <Box paddingHorizontal={'24px'}>
-        <ChartExpandedStateHeader
-          // TODO: align variable naming
-          percentageChange={priceRelativeChange}
-          price={price}
-          dateTimeLabel={dateTimeLabel}
-        />
+        <Animated.View style={chartHeaderStyle}>
+          <ChartExpandedStateHeader
+            // TODO: align variable naming
+            percentageChange={priceRelativeChange}
+            price={price}
+            dateTimeLabel={dateTimeLabel}
+          />
+        </Animated.View>
       </Box>
       {chartMode === 'line' && (
         <Box paddingVertical={{ custom: CHART_VERTICAL_PADDING }}>
@@ -151,8 +159,12 @@ export function Chart({ asset, backgroundColor, color }: ChartProps) {
         <Box>
           <CandlestickChart
             backgroundColor={backgroundColor}
+            // TODO: should be this, but candlestick chart needs to change how it treats total height
             chartHeight={CHART_HEIGHT + CHART_VERTICAL_PADDING * 2}
+            // chartHeight={CHART_HEIGHT + CHART_VERTICAL_PADDING * 2}
+            // chartHeight={CHART_HEIGHT + CHART_VERTICAL_PADDING}
             showChartControls={false}
+            isChartGestureActive={isChartGestureActive}
           />
         </Box>
       )}
@@ -160,8 +172,10 @@ export function Chart({ asset, backgroundColor, color }: ChartProps) {
         {Object.keys(timespans).map(timespan => (
           <ButtonPressAnimation key={timespan} onPress={() => onPressTimespan(timespan as ChartTimespan)}>
             <Box
-              paddingHorizontal={'12px'}
+              width={44}
               paddingVertical={'12px'}
+              justifyContent="center"
+              alignItems="center"
               borderRadius={20}
               backgroundColor={timespan === selectedTimespan ? colors.alpha(color, 0.06) : 'transparent'}
             >
@@ -172,9 +186,9 @@ export function Chart({ asset, backgroundColor, color }: ChartProps) {
           </ButtonPressAnimation>
         ))}
         <ButtonPressAnimation onPress={onPressChartMode}>
-          <Box>
+          <Box borderRadius={20} justifyContent="center" alignItems="center" width={44} paddingVertical={'12px'}>
             <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
-              {chartMode === 'line' ? '􀋪' : '􀋪'}
+              {chartMode === 'line' ? '􀋪' : '􀋦'}
             </TextIcon>
           </Box>
         </ButtonPressAnimation>
