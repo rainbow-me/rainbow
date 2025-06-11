@@ -22,7 +22,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
   const currentSession = useMemo(() => {
-    if (!hostSessions || !hostSessions.sessions) {
+    if (!hostSessions) {
       return null;
     }
     return hostSessions.sessions?.[hostSessions.activeSessionAddress]
