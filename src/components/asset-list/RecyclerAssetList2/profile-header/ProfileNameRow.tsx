@@ -61,8 +61,6 @@ export function ProfileNameRow({
 
   const name = accountENS ? abbreviateEnsForDisplay(accountENS, 20) : accountName;
 
-  console.log('huh', accountENS, accountName);
-
   // ////////////////////////////////////////////////////
   // Colors
 
