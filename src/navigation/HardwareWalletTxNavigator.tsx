@@ -10,7 +10,6 @@ import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHar
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useCallback, useEffect } from 'react';
-// eslint-disable-next-line no-restricted-imports
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { MMKV } from 'react-native-mmkv';

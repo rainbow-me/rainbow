@@ -17,7 +17,7 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { loadWallets, setAllWalletsWithIdsAsBackedUp, setSelectedWallet, useWalletsStore } from '@/state/wallets/walletsStore';
+import { loadWallets, setAllWalletsWithIdsAsBackedUp, setSelectedWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -188,7 +188,7 @@ export default function RestoreCloudStep() {
           const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
           const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
 
-          if (firstWallet && firstAddress) {
+          if (firstWallet) {
             setSelectedWallet(firstWallet, firstAddress);
             await initializeWallet({
               shouldRunMigrations: false,
@@ -231,7 +231,7 @@ export default function RestoreCloudStep() {
         loadingState: null,
       });
     }
-  }, [password, selectedBackup?.name, dispatch, onRestoreSuccess]);
+  }, [password, selectedBackup?.name, onRestoreSuccess]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

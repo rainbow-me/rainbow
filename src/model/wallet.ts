@@ -1,6 +1,5 @@
 import { EthereumAddress } from '@/entities';
-import { IS_ANDROID } from '@/env';
-import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
+import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
@@ -180,7 +179,7 @@ export const allWalletsVersion = 1.0;
 export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
-const authenticationPrompt = lang.t('wallet.authenticate.please');
+const authenticationPrompt = { title: lang.t('wallet.authenticate.please') };
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
@@ -191,26 +190,29 @@ export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is 
   if ('signTransaction' in wallet) {
     return wallet as any;
   }
-  throw new Error(`Not expected: ReadOnly not Wallet`);
+  // TODO we had bad types before, but this somehow worked alright i had this
+  // throwing an error but it was hitting in different areas, so want to just
+  // warn here and then follow up with a better fix in our next refactor
+  console.log(
+    // @ts-expect-error using property types to log errors better
+    `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
+  );
 }
 
 export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWallet {
   if ('signTransaction' in wallet) {
     throw new Error(`Not expected: Wallet not LibWallet`);
   }
-  if ('getPrivateKey' in wallet) {
+  // @ts-expect-error it's not directly "in" but it exists
+  if (typeof wallet.getPrivateKey !== 'function') {
     return wallet as any;
   }
-  throw new Error(`Not expected: ReadOnly not LibWallet`);
-}
-
-export function isLibWallet(wallet: any): wallet is LibWallet {
-  try {
-    ensureLibWallet(wallet);
-    return true;
-  } catch {
-    return false;
-  }
+  // TODO we had bad types before, but this somehow worked alright i had this
+  // throwing an error but it was hitting in different areas, so want to just
+  // warn here and then follow up with a better fix in our next refactor
+  console.log(
+    `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
+  );
 }
 
 const isHardwareWalletKey = (key: string | null) => {
@@ -252,7 +254,7 @@ export type InitializeWalletParams = CreateWalletParams & {
 };
 
 export const walletInit = async ({
-  seedPhrase = undefined,
+  seedPhrase,
   color = null,
   name = null,
   overwrite = false,
@@ -282,15 +284,20 @@ export const walletInit = async ({
       userPin,
     });
 
-    if (isLibWallet(wallet)) {
-      throw new Error(`Shouldn't ever hit!`);
+    if (wallet && 'address' in wallet) {
+      walletAddress = wallet?.address;
     }
 
-    walletAddress = wallet?.address;
-    return { isNew, walletAddress };
+    // if the user previously imported a wallet with a seed phrase then removed
+    // that wallet, then re-adds but only as a watch we don't have the address
+    // here and returning it will cause a keychain missing private key error, so
+    // instead we fall through
+    if (walletAddress) {
+      return { isNew, walletAddress };
+    }
+  } else {
+    walletAddress = await loadAddress();
   }
-
-  walletAddress = await loadAddress();
 
   if (!walletAddress) {
     const wallet = await createWallet({});
@@ -645,18 +652,20 @@ export const identifyWalletType = (walletSeed: EthereumWalletSeed): EthereumWall
   return EthereumWalletType.seed;
 };
 
-export const createWallet = async ({
-  seed = null,
-  color = null,
-  name = null,
-  isRestoring = false,
-  overwrite = false,
-  checkedWallet = null,
-  image = null,
-  silent = false,
-  clearCallbackOnStartCreation = false,
-  userPin,
-}: CreateWalletParams): Promise<null | EthereumWallet> => {
+export const createWallet = async (props: CreateWalletParams): Promise<null | EthereumWallet> => {
+  const {
+    seed = null,
+    color = null,
+    name = null,
+    isRestoring = false,
+    overwrite = false,
+    checkedWallet = null,
+    image = null,
+    silent = false,
+    clearCallbackOnStartCreation = false,
+    userPin,
+  } = props;
+
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;
@@ -678,9 +687,9 @@ export const createWallet = async ({
     const isHardwareWallet = type === EthereumWalletType.bluetooth;
     let pkey = walletSeed;
     if (!walletResult || !address) return null;
-    ensureLibWallet(walletResult);
     const walletAddress = address;
     if (isHDWallet) {
+      ensureLibWallet(walletResult);
       pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
     } else if (isHardwareWallet) {
       // hardware pkey format is ${bluetooth device id}/${index}
@@ -724,8 +733,7 @@ export const createWallet = async ({
 
     // load this up front and pass to other keychain setters to avoid multiple
     // auth requests
-    const androidEncryptionPin =
-      IS_ANDROID && !(await kc.getSupportedBiometryType()) ? userPin || (await authenticateWithPINAndCreateIfNeeded()) : undefined;
+    const androidEncryptionPin = await maybeAuthenticateWithPINAndCreateIfNeeded(userPin);
 
     await saveSeedPhrase(walletSeed, id, { androidEncryptionPin });
 
@@ -873,12 +881,6 @@ export const createWallet = async ({
       }
     }
 
-    // if imported and we have only one account, we name the wallet too.
-    let walletName = DEFAULT_WALLET_NAME;
-    if (name) {
-      walletName = name;
-    }
-
     let primary = false;
     // If it's not imported or it's the first one with a seed phrase
     // it's the primary wallet
@@ -898,7 +900,7 @@ export const createWallet = async ({
       color: color || 0,
       id,
       imported: isImported,
-      name: walletName,
+      name: name || DEFAULT_WALLET_NAME,
       primary,
       type,
     };
@@ -1036,7 +1038,7 @@ export const getPrivateKey = async (
     const key = `${address}_${privateKeyKey}`;
     const options = { authenticationPrompt };
 
-    const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+    const androidEncryptionPin = await maybeAuthenticateWithPIN();
     const { value: pkey, error } = await kc.getObject<PrivateKeyData>(key, {
       ...options,
       androidEncryptionPin,
@@ -1199,7 +1201,7 @@ export const generateAccount = async (id: RainbowWallet['id'], index: number): P
 
     // load this up front and pass to other keychain setters to avoid multiple
     // auth requests
-    const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+    const androidEncryptionPin = await maybeAuthenticateWithPIN();
 
     if (!seedphrase) {
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
@@ -1371,7 +1373,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
       }
     } else {
       logger.debug('[wallet]: Getting seed directly', {}, DebugContext.wallet);
-      const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+      const androidEncryptionPin = await maybeAuthenticateWithPIN();
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       seedPhrase = seedData?.seedphrase ?? null;
 

@@ -1,5 +1,6 @@
 import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
+import { EqualityFn, Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { UserAssetsStateToPersist } from './persistence';
@@ -31,10 +32,10 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
 }
 
 function useUserAssetsStoreInternal(): QueryEnabledUserAssetsState;
-function useUserAssetsStoreInternal<T>(selector: (state: QueryEnabledUserAssetsState) => T, equalityFn?: (a: T, b: T) => boolean): T;
+function useUserAssetsStoreInternal<T>(selector: Selector<QueryEnabledUserAssetsState, T>, equalityFn?: EqualityFn<T>): T;
 function useUserAssetsStoreInternal<T>(
-  selector?: (state: QueryEnabledUserAssetsState) => T,
-  equalityFn?: (a: T, b: T) => boolean
+  selector?: Selector<QueryEnabledUserAssetsState, T>,
+  equalityFn?: EqualityFn<T>
 ): QueryEnabledUserAssetsState | T {
   const address = useAccountAddress();
   const store = getOrCreateStore(address);

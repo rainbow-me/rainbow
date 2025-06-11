@@ -14,7 +14,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { updateWallets, useWallets } from '@/state/wallets/walletsStore';
+import { updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -35,6 +35,7 @@ import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { analyzeEnvVariables } from '@/utils/analyzeEnvVariables';
 import FastImage from 'react-native-fast-image';
+import { cleanUpWalletKeys } from '@/model/wallet';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -168,6 +169,14 @@ const DevSection = () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
 
+  const clearWallets = async () => {
+    await wipeKeychain();
+    await cleanUpWalletKeys();
+    useWalletsStore.persist.clearStorage();
+    // we need to navigate back to the welcome screen
+    navigate(Routes.WELCOME_SCREEN);
+  };
+
   const wipeKeychainWithAlert = async () => {
     const confirmKeychainAlert = () =>
       new Promise<boolean>(resolve => {
@@ -265,6 +274,13 @@ const DevSection = () => {
               onPress={analyzeEnvVariables}
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_env_variables')} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💳" isEmoji />}
+              onPress={clearWallets}
+              size={52}
+              testID="reset-keychain-section"
+              titleComponent={<MenuItem.Title text="Remove all wallets" />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}

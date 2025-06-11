@@ -1,5 +1,5 @@
 import { IS_ANDROID } from '@/env';
-import { authenticateWithPIN } from '@/handlers/authentication';
+import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import {
   GoogleDriveUserData,
   deleteAllBackups,
@@ -11,8 +11,8 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as keychain from '@/keychain';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
-import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
+import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import lang from 'i18n-js';
 import { useCallback, useEffect, useState } from 'react';
@@ -99,15 +99,11 @@ export default function useManageCloudBackups() {
             async nextButtonIndex => {
               if (nextButtonIndex === 0) {
                 try {
-                  let userPIN: string | undefined;
-                  const hasBiometricsEnabled = await keychain.getSupportedBiometryType();
-                  if (IS_ANDROID && !hasBiometricsEnabled) {
-                    try {
-                      userPIN = (await authenticateWithPIN()) ?? undefined;
-                    } catch (e) {
-                      Alert.alert(i18n.t(i18n.l.back_up.wrong_pin));
-                      return;
-                    }
+                  try {
+                    await maybeAuthenticateWithPIN();
+                  } catch (e) {
+                    Alert.alert(i18n.t(i18n.l.back_up.wrong_pin));
+                    return;
                   }
 
                   // Prompt for authentication before allowing them to delete backups

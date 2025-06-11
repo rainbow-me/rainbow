@@ -89,7 +89,6 @@ export { default as useAdditionalAssetData } from './useAdditionalAssetData';
 export { default as useImportingWallet } from './useImportingWallet';
 export { default as usePersistentAspectRatio } from './usePersistentAspectRatio';
 export { default as useHardwareBack, useHardwareBackOnFocus } from './useHardwareBack';
-export { default as useWalletENSAvatar } from './useWalletENSAvatar';
 export { default as useImagePicker } from './useImagePicker';
 export { default as useLatestCallback } from './useLatestCallback';
 export { default as useHiddenTokens } from './useHiddenTokens';

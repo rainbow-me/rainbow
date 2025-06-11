@@ -31,7 +31,8 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { useWallets, createAccount, getIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { createAccount, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -44,7 +45,6 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -124,8 +124,7 @@ const ViewWalletBackup = () => {
 
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
-  const wallets = useWallets();
-  const wallet = wallets?.[walletId];
+  const wallet = useWallet(walletId);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
   const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;

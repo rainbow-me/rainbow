@@ -1,17 +1,10 @@
-import { fetchReverseRecord } from '@/handlers/ens';
-import WalletTypes from '@/helpers/walletTypes';
-import { logger, RainbowError } from '@/logger';
-import { parseTimestampFromBackupFile } from '@/model/backup';
-import store from '@/redux/store';
-import { lightModeThemeColors } from '@/styles';
-import { captureMessage } from '@sentry/react-native';
-import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty, keys } from 'lodash';
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
-import { getWalletNames, saveWalletNames } from '@/handlers/localstorage/walletNames';
 import { ensureValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
+import { logger, RainbowError } from '@/logger';
+import { parseTimestampFromBackupFile } from '@/model/backup';
 import { hasKey } from '@/model/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
@@ -27,14 +20,20 @@ import {
   setSelectedWalletInKeychain,
 } from '@/model/wallet';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import store from '@/redux/store';
+import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
-import { address } from '@/utils/abbreviations';
+import { isLowerCaseMatch } from '@/utils';
+import { address as addressAbbreviation } from '@/utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
-import { createRainbowStore } from '../internal/createRainbowStore';
-import { Address } from 'viem';
-import { isLowerCaseMatch } from '@/utils';
+import { captureMessage } from '@sentry/react-native';
+import { dequal } from 'dequal';
+import { toChecksumAddress } from 'ethereumjs-util';
+import { isEmpty, keys } from 'lodash';
 import { useMemo } from 'react';
+import { Address } from 'viem';
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface AccountProfileInfo {
   accountAddress: string;
@@ -45,6 +44,9 @@ interface AccountProfileInfo {
   accountSymbol?: string | false;
 }
 
+type WalletNames = { [address: string]: string };
+type Wallets = { [id: string]: RainbowWallet } | null;
+
 interface WalletsState {
   walletReady: boolean;
   setWalletReady: () => void;
@@ -52,12 +54,9 @@ interface WalletsState {
   selected: RainbowWallet | null;
   setSelectedWallet: (wallet: RainbowWallet, address?: string) => void;
 
-  walletNames: { [address: string]: string };
-  updateWalletNames: (names: { [address: string]: string }) => void;
-
-  // walletsAddresses is just a derived value of wallets
-  wallets: { [id: string]: RainbowWallet } | null;
-  updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
+  walletNames: WalletNames;
+  wallets: Wallets;
+  updateWallets: (wallets: { [id: string]: RainbowWallet }) => void;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -75,19 +74,19 @@ interface WalletsState {
 
   clearAllWalletsBackupStatus: () => void;
 
-  accountAddress: Address | null;
-  accountProfileInfo: AccountProfileInfo | null;
+  accountAddress: Address;
   setAccountAddress: (address: Address) => void;
 
-  refreshWalletENSAvatars: () => Promise<void>;
-  refreshWalletNames: () => Promise<void>;
+  getAccountProfileInfo: () => AccountProfileInfo;
+
+  refreshWalletInfo: (props?: { skipENS?: boolean }) => Promise<void>;
+
   checkKeychainIntegrity: () => Promise<void>;
 
   getIsDamagedWallet: () => boolean;
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
-  getAccountProfileInfo: (props: { address: string; wallet?: RainbowWallet }) => AccountProfileInfo;
 }
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
@@ -100,7 +99,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     setSelectedWallet(wallet, address) {
       setSelectedWalletInKeychain(wallet);
       set({
-        selected: wallet,
+        selected: {
+          ...wallet,
+        },
       });
       if (address) {
         saveAddress(address);
@@ -109,18 +110,15 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     },
 
     walletNames: {},
-    updateWalletNames(walletNames) {
-      set({
-        walletNames,
-      });
-    },
 
     wallets: null,
-    walletsAddresses: [],
-    async updateWallets(wallets) {
-      await saveAllWallets(wallets);
+    updateWallets(wallets) {
+      saveAllWallets(wallets);
       set({
-        wallets,
+        // ensure its a new object to break any memoization downstream
+        wallets: {
+          ...wallets,
+        },
       });
     },
 
@@ -129,22 +127,34 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({ walletReady: true });
     },
 
-    accountAddress: null,
-    accountProfileInfo: null,
+    // TODO follow-on and fix this type better - this is matching existing bug from before refactor
+    // see PD-188
+    accountAddress: `0x`,
     setAccountAddress: (accountAddress: Address) => {
       set({
         accountAddress,
-        accountProfileInfo: getAccountProfileInfo({ address: accountAddress }),
       });
+    },
+
+    getAccountProfileInfo: () => {
+      const state = get();
+      const { getWalletWithAccount } = state;
+      const address = state.accountAddress;
+      const wallet = getWalletWithAccount(address);
+      return getAccountProfileInfoFromState({ address, wallet }, state);
     },
 
     async loadWallets() {
       try {
-        const { accountAddress } = get();
+        const { accountAddress, walletNames } = get();
+
         let addressFromKeychain: string | null = accountAddress;
         const allWalletsResult = await getAllWallets();
+
         const wallets = allWalletsResult?.wallets || {};
+
         if (isEmpty(wallets)) return;
+
         const selected = await getSelectedWalletFromKeychain();
 
         // Prevent irrecoverable state (no selected wallet)
@@ -155,7 +165,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           // If not then we should clear it and default to the first one
           const firstWalletKey = Object.keys(wallets)[0];
           selectedWallet = wallets[firstWalletKey];
-          await setSelectedWallet(selectedWallet);
+          setSelectedWallet(selectedWallet);
         }
 
         if (!selectedWallet) {
@@ -201,18 +211,16 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           }
 
           if (!account) return;
-          set({
-            accountAddress: ensureValidHex(account.address),
-          });
-          await saveAddress(account.address);
+          setAccountAddress(ensureValidHex(account.address));
+          saveAddress(account.address);
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
-        const walletNames = await getWalletNames();
+        const walletInfo = await getWalletsInfo({ wallets, walletNames });
+
         set({
           selected: selectedWallet,
-          walletNames,
-          wallets,
+          ...walletInfo,
         });
 
         return wallets;
@@ -224,7 +232,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     },
 
     createAccount: async ({ id, name, color }) => {
-      const { wallets } = get();
+      const { wallets, walletNames } = get();
       const newWallets = { ...wallets };
 
       let index = 0;
@@ -261,17 +269,17 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
       // Save all the wallets
       saveAllWallets(newWallets);
-
       // Set the address selected (KEYCHAIN)
-      await saveAddress(account.address);
-
+      saveAddress(account.address);
       // Set the wallet selected (KEYCHAIN)
-      await setSelectedWallet(newWallets[id]);
+      setSelectedWallet(newWallets[id], account.address);
 
       set({
         selected: newWallets[id],
-        wallets: newWallets,
+        ...(await getWalletsInfo({ wallets: newWallets, walletNames, useCachedENS: true })),
       });
+
+      setAccountAddress(ensureValidHex(account.address));
 
       return newWallets;
     },
@@ -347,119 +355,12 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    refreshWalletENSAvatars: async () => {
+    refreshWalletInfo: async props => {
       const { wallets, walletNames } = get();
-
-      if (!wallets) {
-        throw new Error(`No wallets`);
+      const info = await getWalletsInfo({ wallets, walletNames, useCachedENS: props?.skipENS });
+      if (info) {
+        set(info);
       }
-
-      const walletKeys = Object.keys(wallets);
-
-      let updatedWallets:
-        | {
-            [key: string]: RainbowWallet;
-          }
-        | undefined;
-
-      let promises: Promise<{
-        account: RainbowAccount;
-        ensChanged: boolean;
-        key: string;
-      }>[] = [];
-
-      walletKeys.forEach(key => {
-        const wallet = wallets[key];
-        const innerPromises = wallet?.addresses?.map(async account => {
-          const ens = await fetchReverseRecord(account.address);
-          const currentENSName = walletNames[account.address];
-          if (ens) {
-            const isNewEnsName = currentENSName !== ens;
-            const avatar = await fetchENSAvatar(ens);
-            const newImage = avatar?.imageUrl || null;
-            return {
-              account: {
-                ...account,
-                image: newImage,
-                label: isNewEnsName ? ens : account.label,
-              },
-              ensChanged: newImage !== account.image || isNewEnsName,
-              key,
-            };
-          } else if (currentENSName) {
-            // if user had an ENS but now is gone
-            return {
-              account: {
-                ...account,
-                image: account.image?.startsWith('~') || account.image?.startsWith('file') ? account.image : null, // if the user had an ens but the image it was a local image
-                label: '',
-              },
-              ensChanged: true,
-              key,
-            };
-          } else {
-            return {
-              account,
-              ensChanged: false,
-              key,
-            };
-          }
-        });
-
-        promises = promises.concat(innerPromises);
-      });
-
-      const newAccounts = await Promise.all(promises);
-
-      newAccounts.forEach(({ account, key, ensChanged }) => {
-        if (!ensChanged) return;
-        const addresses = wallets[key]?.addresses;
-        if (!addresses) return;
-
-        const index = addresses.findIndex(({ address }) => address === account.address);
-        addresses.splice(index, 1, account);
-
-        updatedWallets = {
-          ...(updatedWallets ?? wallets),
-          [key]: {
-            ...wallets[key],
-            addresses,
-          },
-        };
-      });
-
-      if (updatedWallets) {
-        set({
-          wallets: updatedWallets,
-        });
-      }
-    },
-
-    refreshWalletNames: async () => {
-      const { wallets } = get();
-      const updatedWalletNames: { [address: string]: string } = {};
-
-      // Fetch ENS names
-      await Promise.all(
-        Object.values(wallets || {}).flatMap(wallet => {
-          const visibleAccounts = (wallet.addresses || []).filter(address => address.visible);
-          return visibleAccounts.map(async account => {
-            try {
-              const ens = await fetchReverseRecordWithRetry(account.address);
-              if (ens && ens !== account.address) {
-                updatedWalletNames[account.address] = ens;
-              }
-              // eslint-disable-next-line no-empty
-            } catch (error) {}
-            return account;
-          });
-        })
-      );
-
-      set({
-        walletNames: updatedWalletNames,
-      });
-      saveWalletNames(updatedWalletNames);
     },
 
     checkKeychainIntegrity: async () => {
@@ -570,57 +471,15 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       if (!wallets) {
         return;
       }
-      const sortedKeys = Object.keys(wallets).sort();
-      let walletWithAccount: RainbowWallet | undefined;
+
       const lowerCaseAccountAddress = accountAddress.toLowerCase();
-      sortedKeys.forEach(key => {
+      for (const key of Object.keys(wallets).sort()) {
         const wallet = wallets[key];
-        const found = wallet.addresses?.find((account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress);
+        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, lowerCaseAccountAddress));
         if (found) {
-          walletWithAccount = wallet;
+          return wallet;
         }
-      });
-      return walletWithAccount;
-    },
-
-    getAccountProfileInfo: props => {
-      const { selected, walletNames, getWalletWithAccount } = get();
-      const accountAddress = props?.address || get().accountAddress;
-      const wallet = props?.wallet || (accountAddress ? getWalletWithAccount(accountAddress) : null) || selected;
-
-      if (!wallet || !accountAddress || !wallet?.addresses?.length) {
-        return {
-          accountAddress,
-          accountColor: 0,
-        };
       }
-
-      const accountENS = walletNames?.[accountAddress];
-      const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, accountAddress));
-
-      if (!selectedAccount) {
-        return {
-          accountAddress,
-          accountColor: 0,
-        };
-      }
-
-      const { label, color, image } = selectedAccount;
-      const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-      const accountName = labelWithoutEmoji || accountENS || address(accountAddress, 4, 4);
-      const emojiAvatar = returnStringFirstEmoji(label);
-      const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(accountAddress));
-      const accountColor = color;
-      const accountImage = image && isValidImagePath(image) ? image : null;
-
-      return {
-        accountAddress,
-        accountColor,
-        accountENS,
-        accountImage,
-        accountName,
-        accountSymbol,
-      };
     },
   }),
   {
@@ -629,21 +488,79 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       selected: state.selected,
       accountAddress: state.accountAddress,
       wallets: state.wallets,
-      accountProfileInfo: state.accountProfileInfo,
       walletNames: state.walletNames,
     }),
   }
 );
 
-const MISSING_ACCOUNT_ADDRESS_ERROR = `Error: useAccountAddress hook must be used after selecting a wallet.`;
+type GetENSInfoProps = { wallets: Wallets; walletNames: WalletNames; useCachedENS?: boolean };
 
-export const getAccountAddress = () => {
-  const address = useWalletsStore.getState().accountAddress;
-  if (!address) {
-    throw new Error(MISSING_ACCOUNT_ADDRESS_ERROR);
+async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
+  if (!wallets) {
+    throw new Error(`No wallets`);
   }
-  return address;
-};
+
+  const updatedWallets: {
+    [key: string]: RainbowWallet;
+  } = { ...wallets };
+
+  let promises: Promise<{
+    account: RainbowAccount;
+    key: string;
+  }>[] = [];
+
+  for (const key in wallets) {
+    const wallet = wallets[key];
+
+    const innerPromises = wallet?.addresses?.map(async account => {
+      if (useCachedENS && account.label && account.avatar) {
+        return {
+          account,
+          key,
+        };
+      }
+
+      const ens = await fetchReverseRecordWithRetry(account.address);
+      if (ens) {
+        const avatar = await fetchENSAvatar(ens);
+        const newImage = avatar?.imageUrl || null;
+        return {
+          key,
+          account: {
+            ...account,
+            image: newImage,
+            // always prefer our label
+            label: account.label || ens,
+          },
+        };
+      }
+
+      return {
+        account,
+        key,
+      };
+    });
+
+    promises = promises.concat(innerPromises);
+  }
+
+  const allAccounts = await Promise.all(promises);
+
+  const updatedWalletNames = Object.fromEntries(
+    allAccounts.map(({ account }) => {
+      return [account.address, removeFirstEmojiFromString(account.label || account.address)];
+    })
+  );
+
+  return {
+    wallets: updatedWallets,
+    walletNames: updatedWalletNames,
+  };
+}
+
+export const useWallets = () => useWalletsStore(state => state.wallets);
+export const useWallet = (id: string) => useWallets()?.[id];
+export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
@@ -684,11 +601,7 @@ export const isImportedWallet = (address: string): boolean => {
 
 export const useAccountProfileInfo = () => {
   const { colors } = useTheme();
-  const info = useWalletsStore(state => state.accountProfileInfo);
-
-  if (!info) {
-    throw new Error(`Error: useAccountProfileInfo hook must be used after selecting a wallet.`);
-  }
+  const info = useWalletsStore(state => state.getAccountProfileInfo(), dequal);
 
   return useMemo(() => {
     return {
@@ -698,19 +611,61 @@ export const useAccountProfileInfo = () => {
   }, [colors.avatarBackgrounds, info]);
 };
 
+export const getAccountProfileInfo = (props: { address: string; wallet?: RainbowWallet }) => {
+  return getAccountProfileInfoFromState(props, useWalletsStore.getState());
+};
+
+const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
+  const wallet = props.wallet || state.selected;
+  const { walletNames } = state;
+  const address = props.address || state.accountAddress;
+
+  if (!wallet || !address) {
+    return {
+      accountAddress: address,
+      accountColor: 0,
+    };
+  }
+
+  const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
+
+  if (!selectedAccount) {
+    return {
+      accountAddress: address,
+      accountColor: 0,
+    };
+  }
+
+  const { label, color, image } = selectedAccount;
+  const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
+  const accountENS = walletNames?.[address] || '';
+  const accountName = labelWithoutEmoji || accountENS || addressAbbreviation(address, 4, 4);
+  const emojiAvatar = returnStringFirstEmoji(label);
+  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address));
+  const accountColor = color;
+  const accountImage = image && isValidImagePath(image) ? image : null;
+
+  return {
+    accountAddress: address,
+    accountColor,
+    accountENS,
+    accountImage,
+    accountName,
+    accountSymbol,
+  };
+};
+
 // export static functions
 export const {
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
   createAccount,
-  getAccountProfileInfo,
   getIsDamagedWallet,
   getIsHardwareWallet,
   getIsReadOnlyWallet,
   getWalletWithAccount,
   loadWallets,
-  refreshWalletENSAvatars,
-  refreshWalletNames,
+  refreshWalletInfo,
   setAllWalletsWithIdsAsBackedUp,
   setSelectedWallet,
   setWalletBackedUp,

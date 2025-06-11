@@ -95,7 +95,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
               </Row>
               {title === i18n.t(i18n.l.account.tab_collectibles) && (
                 <Column align="flex-end" flex={1}>
-                  <ShareCollectiblesButton onPress={() => handleShare(isReadOnlyWallet, accountAddress)} />
+                  <ShareCollectiblesButton onPress={() => handleShare(getIsReadOnlyWallet(), accountAddress)} />
                 </Column>
               )}
               <ContextMenu marginTop={3} {...contextMenuOptions} />

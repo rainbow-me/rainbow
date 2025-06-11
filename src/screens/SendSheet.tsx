@@ -44,14 +44,15 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { Contact } from '@/redux/contacts';
-import store from '@/redux/store';
 import { rainbowTokenList } from '@/references';
+import { interactionsCountQueryKey } from '@/resources/addys/interactions';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { getWallets, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -59,16 +60,17 @@ import { deviceUtils, ethereumUtils, getUniqueTokenType, isLowerCaseMatch, safeA
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 import lang from 'i18n-js';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar, TextInput, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
+import { type Address } from 'viem';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { useIsHardwareWallet, getWallets } from '@/state/wallets/walletsStore';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
@@ -150,6 +152,7 @@ export default function SendSheet() {
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
   const isHardwareWallet = useIsHardwareWallet();
+  const queryClient = useQueryClient();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
     step: REGISTRATION_STEPS.TRANSFER,
@@ -593,6 +596,18 @@ export default function SendSheet() {
               chainId: currentChainId,
               transaction: txDetails as NewTransaction,
             });
+
+            // Invalidate the interactions count query for this recipient. if not done,
+            // the cache time is 15 minutes so the number of interactions will not be updated
+            if (accountAddress && toAddress && nativeCurrency) {
+              queryClient.invalidateQueries(
+                interactionsCountQueryKey({
+                  fromAddress: accountAddress.toLowerCase() as Address,
+                  toAddress: toAddress.toLowerCase() as Address,
+                  currency: nativeCurrency,
+                })
+              );
+            }
           }
         }
       } catch (error) {
@@ -632,6 +647,8 @@ export default function SendSheet() {
       transferENS,
       updateTxFee,
       updateTxFeeForOptimism,
+      queryClient,
+      nativeCurrency,
     ]
   );
 
