@@ -511,8 +511,6 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   for (const key in wallets) {
     const wallet = wallets[key];
 
-    console.log('inspecting', JSON.stringify(wallet, null, 2));
-
     const innerPromises = wallet?.addresses?.map(async account => {
       if (useCachedENS && account.label && account.avatar) {
         return {
@@ -549,7 +547,7 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
 
   const updatedWalletNames = Object.fromEntries(
     allAccounts.map(({ account }) => {
-      return [account.address, account.label || account.address];
+      return [account.address, removeFirstEmojiFromString(account.label || account.address)];
     })
   );
 
@@ -624,7 +622,7 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
 
   const { label, color, image } = selectedAccount;
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-  const accountENS = removeFirstEmojiFromString(walletNames?.[address] || '');
+  const accountENS = walletNames?.[address] || '';
   const accountName = labelWithoutEmoji || accountENS || addressAbbreviation(address, 4, 4);
   const emojiAvatar = returnStringFirstEmoji(label);
   const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address));
