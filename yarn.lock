@@ -8948,6 +8948,7 @@ __metadata:
     expo: "npm:51.0.38"
     expo-image-picker: "npm:15.1.0"
     expo-store-review: "npm:7.0.2"
+    expo-web-browser: "npm:13.0.3"
     fast-text-encoding: "npm:1.0.4"
     figma-squircle: "npm:1.1.0"
     global: "npm:4.4.0"
@@ -14597,6 +14598,15 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10c0/8a2e0622a0876bcdfdedcfda8a518cfa04c568007ff02d89e2409de00df00c8783fdf668aafada67bb1788b88e87113885355c2a0d5d07499d39bec357ca71f3
+  languageName: node
+  linkType: hard
+
+"expo-web-browser@npm:13.0.3":
+  version: 13.0.3
+  resolution: "expo-web-browser@npm:13.0.3"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/b1c28a80c90c2bec8a3b95330d5c7c3d22235492189dab4f27f747c33f492c87c1ced7b19963c8ed8655621ef1d4b3bcd10753aea96b89cb744835ee3319f51c
   languageName: node
   linkType: hard
 
