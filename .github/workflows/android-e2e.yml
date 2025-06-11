@@ -123,6 +123,7 @@ jobs:
         with:
           variant: debug
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          validate-gradle-wrapper: false
 
       - name: Download and Unpack APK artifact
         run: |
