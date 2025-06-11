@@ -6,7 +6,7 @@
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
     "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
-    "android": "react-native run-android",
+    "android": "yarn uninstall:android && react-native run-android",
     "android:apk": "yarn gradle assembleRelease && yarn uninstall:android && yarn android:load-apk",
     "android-all:apk": "yarn gradle assembleRelease && yarn uninstall:android && yarn android-all:load-apk",
     "android:bundle": "./scripts/check-env.sh && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
