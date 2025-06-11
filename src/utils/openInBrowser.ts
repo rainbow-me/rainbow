@@ -4,7 +4,7 @@ import Routes from '@/navigation/routesNames';
 import { Linking } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 
-export const openInBrowser = (url: string, internal = true, SafariContext = false) => {
+export const openInBrowser = (url: string, useDappBrowser = true, useInAppBrowser = false) => {
   if (!url) {
     logger.warn(`[openInBrowser] No url provided, returning early...`);
     return;
@@ -18,20 +18,12 @@ export const openInBrowser = (url: string, internal = true, SafariContext = fals
     });
   }
 
-  if (internal) {
+  if (useDappBrowser) {
     return Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url });
   }
 
-  if (SafariContext) {
-    const handleOpenInSafariContext = async (url: string) => {
-      try {
-        await WebBrowser.openBrowserAsync(url);
-      } catch (error) {
-        // This error is thrown when the user closes the browser, so we can safely ignore it.
-        logger.debug('[AddCash]: Expo WebBrowser closed by user', { message: (error as Error).message });
-      }
-    };
-    return handleOpenInSafariContext(url);
+  if (useInAppBrowser) {
+    return WebBrowser.openBrowserAsync(url);
   }
 
   return Linking.openURL(url);
