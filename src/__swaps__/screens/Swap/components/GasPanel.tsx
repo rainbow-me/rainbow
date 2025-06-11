@@ -453,7 +453,7 @@ export function GasPanel() {
   });
 
   return (
-    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={[styles]} testID="gas-panel" width="full" onLayout={onLayout}>
+    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={styles} testID="gas-panel" width="full" onLayout={onLayout}>
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           {i18n.t(i18n.l.gas.gas_settings)}
