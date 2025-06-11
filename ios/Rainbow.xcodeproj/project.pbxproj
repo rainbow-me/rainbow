@@ -1682,11 +1682,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1738,11 +1734,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
@@ -1792,11 +1784,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
@@ -1845,11 +1833,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Rainbow. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
@@ -1914,10 +1898,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = "Objective-C";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
@@ -1982,10 +1963,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = "Objective-C";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
@@ -2103,10 +2081,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = "Objective-C";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
@@ -2223,10 +2198,7 @@ Upload Debug Symbols to Sentry */ = {
 				INFOPLIST_FILE = Rainbow/Info.plist;
 				INTENTS_CODEGEN_LANGUAGE = "Objective-C";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
@@ -2400,11 +2372,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = PriceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
@@ -2456,11 +2424,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = PriceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
@@ -2509,11 +2473,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = PriceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
@@ -2561,11 +2521,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = PriceWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
@@ -2611,11 +2567,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SelectTokenIntent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
@@ -2665,11 +2617,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SelectTokenIntent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
@@ -2716,11 +2664,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SelectTokenIntent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
@@ -2766,11 +2710,7 @@ Upload Debug Symbols to Sentry */ = {
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = SelectTokenIntent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
