@@ -28,7 +28,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
             address: hostSessions.activeSessionAddress,
             network: hostSessions.sessions[hostSessions.activeSessionAddress],
           }
-        : null,
+        : { address: hostSessions.activeSessionAddress },
     [hostSessions]
   );
 
