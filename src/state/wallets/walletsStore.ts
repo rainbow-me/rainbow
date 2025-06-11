@@ -558,11 +558,10 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   };
 }
 
-const MISSING_ACCOUNT_ADDRESS_ERROR = `Error: useAccountAddress hook must be used after selecting a wallet.`;
 export const useAccountAddress = () => {
   const address = useWalletsStore(state => state.accountAddress);
   if (!address) {
-    throw new Error(MISSING_ACCOUNT_ADDRESS_ERROR);
+    throw new Error(`Error: useAccountAddress hook must be used after selecting a wallet.`);
   }
   return address;
 };
