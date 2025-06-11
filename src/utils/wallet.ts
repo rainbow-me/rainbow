@@ -84,7 +84,7 @@ export const deriveAccountFromWalletInput = async (input: EthereumWalletSeed): P
   if (type === WalletTypes.privateKey) {
     return deriveAccountFromPrivateKey(input);
   } else if (type === WalletTypes.bluetooth) {
-    return deriveAccountFromBluetoothHardwareWallet(input);
+    return await deriveAccountFromBluetoothHardwareWallet(input);
   } else if (type === WalletTypes.readOnly) {
     const ethersWallet = { address: addHexPrefix(input), privateKey: null };
     return {

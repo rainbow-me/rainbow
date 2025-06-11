@@ -11,7 +11,6 @@ import {
   updateWallets,
   useAccountProfileInfo,
   useWallets,
-  useWalletsStore,
   useSelectedWallet,
   useIsReadOnlyWallet,
 } from '@/state/wallets/walletsStore';
@@ -94,7 +93,6 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         },
       };
 
-      const { setSelectedWallet, updateWallets } = useWalletsStore.getState();
       setSelectedWallet(newWallets[selectedWallet.id]);
       updateWallets(newWallets);
     },
@@ -123,32 +121,26 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [navigate]);
 
   const onAvatarWebProfile = useCallback(() => {
-    if (!accountENS) return;
-
-    const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
+    const rainbowURL = buildRainbowUrl(null, accountENS || '', accountAddress);
     if (rainbowURL) {
       openInBrowser(rainbowURL);
     }
   }, [accountAddress, accountENS]);
 
   const onAvatarViewProfile = useCallback(() => {
-    if (!accountENS) return;
-
     analytics.track(analytics.event.viewedEnsProfile, {
       category: 'profiles',
-      ens: accountENS,
+      ens: accountENS || '',
       from: 'Transaction list',
     });
     navigate(Routes.PROFILE_SHEET, {
-      address: accountENS,
+      address: accountENS || '',
       fromRoute: 'ProfileAvatar',
     });
   }, [accountENS, navigate]);
 
   const onAvatarEditProfile = useCallback(() => {
-    if (!accountENS) return;
-
-    startRegistration(accountENS, REGISTRATION_MODES.EDIT);
+    startRegistration(accountENS || '', REGISTRATION_MODES.EDIT);
     navigate(Routes.REGISTER_ENS_NAVIGATOR, {
       ensName: accountENS,
       mode: REGISTRATION_MODES.EDIT,

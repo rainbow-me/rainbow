@@ -1,6 +1,8 @@
+diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
+index 70912a9..006f7d8 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/DataStorePrefsStorage.kt
-@@ -54,6 +54,32 @@ class DataStorePrefsStorage(
+@@ -48,6 +48,32 @@ class DataStorePrefsStorage(
      return ResultSet(cipherStorageName, bytesForUsername, bytesForPassword)
    }
  
@@ -34,33 +36,32 @@
      val keyForUsername = stringPreferencesKey(getKeyForUsername(service))
      val keyForPassword = stringPreferencesKey(getKeyForPassword(service))
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-index 7a2c679..e56c34e 100644
+index 722a5ed..311a2f4 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-@@ -245,6 +245,50 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+@@ -281,6 +281,49 @@ class KeychainModule(reactContext: ReactApplicationContext) :
      }
    }
  
-+  override fun canOverrideExistingModule(): Boolean {
-+    return true;
-+  }
-+
 +  @ReactMethod
 +  fun getAllInternetCredentialsForServer(options: ReadableMap, promise: Promise) {
 +    coroutineScope.launch {
 +      mutex.withLock {
 +        try {
++          val accessControl = getAccessControlOrDefault(options)
++          val usePasscode = getUsePasscode(accessControl) && isPasscodeAvailable
++          val useBiometry =
++            getUseBiometry(accessControl) && (isFingerprintAuthAvailable || isFaceAuthAvailable || isIrisAuthAvailable)
 +          val allCredentials = Arguments.createArray()
-+          val currentCipherStorage = getCipherStorageForCurrentAPILevel(true)
++          val currentCipherStorage = getCipherStorageForCurrentAPILevel(useBiometry, usePasscode)
 +          val allResults = prefsStorage.getAllEncryptedEntries()
 +
 +          for (data in allResults) {
 +            val resultSet = data["resultSet"] as PrefsStorageBase.ResultSet
 +            val service = data["service"] as String
-+            val rules = getSecurityRulesOrDefault(options)
-+            val promptInfo = getPromptInfo(options)
++            val promptInfo = getPromptInfo(options, usePasscode, useBiometry)
 +            val decryptionResult =
-+              decryptCredentials(service, currentCipherStorage, resultSet, rules, promptInfo)
++              decryptCredentials(service, currentCipherStorage, resultSet, promptInfo)
 +
 +            val credentials = Arguments.createMap().apply {
 +              putString("service", service)
@@ -86,8 +87,29 @@ index 7a2c679..e56c34e 100644
 +  }
 +
    @ReactMethod
-   fun setGenericPasswordForOptions(
-     options: ReadableMap?,
+   fun getAllGenericPasswordServices(options: ReadableMap?, promise: Promise) {
+     try {
+@@ -767,19 +810,13 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+           BiometricManager.Authenticators.DEVICE_CREDENTIAL
+ 
+         else ->
+-          null
++          BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+       }
+ 
+       if (allowedAuthenticators != null) {
+         promptInfoBuilder.setAllowedAuthenticators(allowedAuthenticators)
+       }
+ 
+-      if (!usePasscode) {
+-        promptInfoOptionsMap?.getString(AuthPromptOptions.CANCEL)?.let {
+-          promptInfoBuilder.setNegativeButtonText(it)
+-        }
+-      }
+-
+       /* Bypass confirmation to avoid KeyStore unlock timeout being exceeded when using passive biometrics */
+       promptInfoBuilder.setConfirmationRequired(false)
+       return promptInfoBuilder.build()
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
 index d165f3e..91fd8b1 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
@@ -102,11 +124,11 @@ index d165f3e..91fd8b1 100644
  
    fun storeEncryptedEntry(service: String, encryptionResult: EncryptionResult)
 diff --git a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
-index 18e42ab..7bc2d7a 100644
+index 6888ff0..23675f3 100644
 --- a/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/ios/RNKeychainManager/RNKeychainManager.m
-@@ -586,6 +586,86 @@ RCT_EXPORT_METHOD(getInternetCredentialsForServer:(NSString *)server
- 
+@@ -519,6 +519,86 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server withOptions:(NSDiction
+   return resolve([result copy]);
  }
  
 +RCT_EXPORT_METHOD(getAllInternetCredentialsForServer:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
@@ -189,11 +211,11 @@ index 18e42ab..7bc2d7a 100644
 +  });
 +}
 +
- RCT_EXPORT_METHOD(resetInternetCredentialsForOptions:(NSDictionary *)options
+ RCT_EXPORT_METHOD(resetGenericPasswordForOptions:(NSDictionary *)options
                    resolver:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject)
 diff --git a/node_modules/react-native-keychain/lib/commonjs/index.js b/node_modules/react-native-keychain/lib/commonjs/index.js
-index 38a73d5..dfa9875 100644
+index da7ccb9..9ab42d5 100644
 --- a/node_modules/react-native-keychain/lib/commonjs/index.js
 +++ b/node_modules/react-native-keychain/lib/commonjs/index.js
 @@ -12,6 +12,8 @@ var _exportNames = {
@@ -205,7 +227,7 @@ index 38a73d5..dfa9875 100644
    resetInternetCredentials: true,
    getSupportedBiometryType: true,
    requestSharedWebCredentials: true,
-@@ -24,6 +26,8 @@ exports.default = void 0;
+@@ -25,6 +27,8 @@ exports.default = void 0;
  exports.getAllGenericPasswordServices = getAllGenericPasswordServices;
  exports.getGenericPassword = getGenericPassword;
  exports.getInternetCredentials = getInternetCredentials;
@@ -214,8 +236,8 @@ index 38a73d5..dfa9875 100644
  exports.getSecurityLevel = getSecurityLevel;
  exports.getSupportedBiometryType = getSupportedBiometryType;
  exports.hasGenericPassword = hasGenericPassword;
-@@ -215,6 +219,24 @@ function getInternetCredentials(server, options) {
-   return RNKeychainManager.getInternetCredentialsForServer(server, (0, _normalizeOptions.normalizeOptions)(options));
+@@ -212,6 +216,24 @@ function getInternetCredentials(server, options) {
+   return RNKeychainManager.getInternetCredentialsForServer(server, (0, _normalizeOptions.normalizeAuthPrompt)(options));
  }
  
 +/**
@@ -239,9 +261,9 @@ index 38a73d5..dfa9875 100644
  /**
   * Deletes all internet password keychain entries for the given server.
   *
-@@ -356,6 +378,8 @@ var _default = exports.default = {
-   getSupportedBiometryType,
+@@ -370,6 +392,8 @@ var _default = exports.default = {
    setInternetCredentials,
+   isPasscodeAuthAvailable,
    getInternetCredentials,
 +  getAllInternetCredentials,
 +  getAllInternetCredentialsKeys,
@@ -249,11 +271,11 @@ index 38a73d5..dfa9875 100644
    setGenericPassword,
    getGenericPassword,
 diff --git a/node_modules/react-native-keychain/lib/module/index.js b/node_modules/react-native-keychain/lib/module/index.js
-index 9374201..71ba7f2 100644
+index b4f2bb6..b19530c 100644
 --- a/node_modules/react-native-keychain/lib/module/index.js
 +++ b/node_modules/react-native-keychain/lib/module/index.js
-@@ -158,6 +158,24 @@ export function getInternetCredentials(server, options) {
-   return RNKeychainManager.getInternetCredentialsForServer(server, normalizeOptions(options));
+@@ -153,6 +153,24 @@ export function getInternetCredentials(server, options) {
+   return RNKeychainManager.getInternetCredentialsForServer(server, normalizeAuthPrompt(options));
  }
  
 +/**
@@ -278,20 +300,20 @@ index 9374201..71ba7f2 100644
   * Deletes all internet password keychain entries for the given server.
   *
 diff --git a/node_modules/react-native-keychain/lib/typescript/index.d.ts b/node_modules/react-native-keychain/lib/typescript/index.d.ts
-index 43f2e2f..772ee23 100644
+index b868899..74f547b 100644
 --- a/node_modules/react-native-keychain/lib/typescript/index.d.ts
 +++ b/node_modules/react-native-keychain/lib/typescript/index.d.ts
 @@ -1,5 +1,5 @@
- import { ACCESSIBLE, ACCESS_CONTROL, AUTHENTICATION_TYPE, SECURITY_LEVEL, SECURITY_RULES, STORAGE_TYPE, BIOMETRY_TYPE } from './enums';
--import type { Result, UserCredentials, SharedWebCredentials, GetOptions, BaseOptions, SetOptions, AuthenticationTypeOption, AccessControlOption } from './types';
-+import type { Result, UserCredentials, SharedWebCredentials, GetOptions, BaseOptions, SetOptions, AuthenticationTypeOption, AccessControlOption, AllCredentials, AllCredentialsKeys } from './types';
+ import { ACCESSIBLE, ACCESS_CONTROL, AUTHENTICATION_TYPE, SECURITY_LEVEL, STORAGE_TYPE, BIOMETRY_TYPE } from './enums';
+-import type { Result, UserCredentials, SharedWebCredentials, GetOptions, GetAllOptions, BaseOptions, SetOptions, AuthenticationTypeOption, AccessControlOption } from './types';
++import type { Result, UserCredentials, SharedWebCredentials, GetOptions, GetAllOptions, BaseOptions, SetOptions, AuthenticationTypeOption, AccessControlOption, AllCredentials, AllCredentialsKeys } from './types';
  /**
   * Saves the `username` and `password` combination for the given service.
   *
-@@ -122,6 +122,18 @@ export declare function setInternetCredentials(server: string, username: string,
+@@ -135,6 +135,18 @@ export declare function getInternetCredentials(server: string, options?: GetOpti
+  * console.log('Credentials reset for server');
   * ```
   */
- export declare function getInternetCredentials(server: string, options?: GetOptions): Promise<false | UserCredentials>;
 +/**
 + * Fetches all the keychain entries for the app
 + * @param {object} options Keychain options, iOS only
@@ -304,14 +326,14 @@ index 43f2e2f..772ee23 100644
 + * @return {Promise} Resolves to `[username]` when successful
 + */
 +export declare function getAllInternetCredentialsKeys(options?: GetOptions): Promise<false | AllCredentialsKeys>;
+ export declare function resetInternetCredentials(options: BaseOptions): Promise<void>;
  /**
-  * Deletes all internet password keychain entries for the given server.
-  *
+  * Gets the type of biometric authentication supported by the device.
 diff --git a/node_modules/react-native-keychain/lib/typescript/types.d.ts b/node_modules/react-native-keychain/lib/typescript/types.d.ts
-index 565554a..c292223 100644
+index ff6a12e..e826925 100644
 --- a/node_modules/react-native-keychain/lib/typescript/types.d.ts
 +++ b/node_modules/react-native-keychain/lib/typescript/types.d.ts
-@@ -112,6 +112,21 @@ export type UserCredentials = {
+@@ -111,6 +111,21 @@ export type UserCredentials = {
      /** The password associated with the keychain item. */
      password: string;
  } & Result;
@@ -334,7 +356,7 @@ index 565554a..c292223 100644
   * Shared web credentials returned by keychain functions.
   * @platform iOS
 diff --git a/node_modules/react-native-keychain/src/index.ts b/node_modules/react-native-keychain/src/index.ts
-index 7bfe371..782a0b2 100644
+index 1de35da..08eeb88 100644
 --- a/node_modules/react-native-keychain/src/index.ts
 +++ b/node_modules/react-native-keychain/src/index.ts
 @@ -17,6 +17,8 @@ import type {
@@ -344,9 +366,9 @@ index 7bfe371..782a0b2 100644
 +  AllCredentials,
 +  AllCredentialsKeys,
  } from './types';
- import {
-   normalizeOptions,
-@@ -209,6 +211,32 @@ export function getInternetCredentials(
+ import { normalizeAuthPrompt } from './normalizeOptions';
+ 
+@@ -200,6 +202,32 @@ export function getInternetCredentials(
    );
  }
  
@@ -359,7 +381,7 @@ index 7bfe371..782a0b2 100644
 +  options?: GetOptions
 +): Promise<false | AllCredentials> {
 +  return RNKeychainManager.getAllInternetCredentialsForServer(
-+    normalizeOptions(options)
++    normalizeAuthPrompt(options)
 +  );
 +}
 +
@@ -372,29 +394,50 @@ index 7bfe371..782a0b2 100644
 +  options?: GetOptions
 +): Promise<false | AllCredentialsKeys> {
 +  return RNKeychainManager.getAllInternetCredentialsKeys(
-+    normalizeOptions(options)
++    normalizeAuthPrompt(options)
 +  );
 +}
 +
  /**
   * Deletes all internet password keychain entries for the given server.
   *
-@@ -378,6 +406,8 @@ export default {
-   getSupportedBiometryType,
+@@ -384,6 +412,8 @@ export default {
    setInternetCredentials,
+   isPasscodeAuthAvailable,
    getInternetCredentials,
 +  getAllInternetCredentials,
 +  getAllInternetCredentialsKeys,
    resetInternetCredentials,
    setGenericPassword,
    getGenericPassword,
+diff --git a/node_modules/react-native-keychain/src/normalizeOptions.ts b/node_modules/react-native-keychain/src/normalizeOptions.ts
+index e72d2fb..ea4d3c7 100644
+--- a/node_modules/react-native-keychain/src/normalizeOptions.ts
++++ b/node_modules/react-native-keychain/src/normalizeOptions.ts
+@@ -12,10 +12,11 @@ export function normalizeAuthPrompt<T extends SetOptions | GetOptions>(
+ ) {
+   const { authenticationPrompt } = options;
+ 
+-  options.authenticationPrompt = {
+-    ...AUTH_PROMPT_DEFAULTS,
+-    ...authenticationPrompt,
++  return {
++    ...options,
++    authenticationPrompt: {
++      ...AUTH_PROMPT_DEFAULTS,
++      ...authenticationPrompt,
++    },
+   };
+-
+-  return options;
+ }
 diff --git a/node_modules/react-native-keychain/src/types.ts b/node_modules/react-native-keychain/src/types.ts
-index 2c27bb4..f1719e3 100644
+index 00448d3..4a6c58f 100644
 --- a/node_modules/react-native-keychain/src/types.ts
 +++ b/node_modules/react-native-keychain/src/types.ts
-@@ -120,6 +120,20 @@ export type Result = {
-   storage: STORAGE_TYPE;
- };
+@@ -129,6 +129,20 @@ export type UserCredentials = {
+   password: string;
+ } & Result;
  
 +/**
 + * All credentials returned by keychain functions.
@@ -411,5 +454,5 @@ index 2c27bb4..f1719e3 100644
 +};
 +
  /**
-  * User credentials returned by keychain functions.
-  */
+  * Shared web credentials returned by keychain functions.
+  * @platform iOS

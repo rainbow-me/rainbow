@@ -21,16 +21,17 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || RAINBOW_HOME;
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
-  const currentSession = useMemo(
-    () =>
-      hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
-        ? {
-            address: hostSessions.activeSessionAddress,
-            network: hostSessions.sessions[hostSessions.activeSessionAddress],
-          }
-        : null,
-    [hostSessions]
-  );
+  const currentSession = useMemo(() => {
+    if (!hostSessions || !hostSessions.sessions) {
+      return null;
+    }
+    return hostSessions.sessions?.[hostSessions.activeSessionAddress]
+      ? {
+          address: hostSessions.activeSessionAddress,
+          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+        }
+      : { address: hostSessions.activeSessionAddress };
+  }, [hostSessions]);
 
   // listens to the current active tab and sets the account
   useEffect(() => {

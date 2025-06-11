@@ -33,38 +33,48 @@ function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
   }
 }
 
-export const initializeWallet = async ({
-  seedPhrase,
-  color = null,
-  name = null,
-  shouldRunMigrations = false,
-  overwrite = false,
-  checkedWallet = null,
-  switching = false,
-  image,
-  silent = false,
-}: InitializeWalletParams = {}) => {
+let runId = 0;
+
+export const initializeWallet = async (props: InitializeWalletParams = {}) => {
+  runId = Math.random();
+  const curRunId = runId;
+  const shouldCancel = () => curRunId !== runId;
+
+  const {
+    seedPhrase,
+    color = null,
+    name = null,
+    shouldRunMigrations = false,
+    overwrite = false,
+    checkedWallet = null,
+    switching = false,
+    image,
+    silent = false,
+    userPin,
+  } = props;
+
   const network = store.getState().settings.network;
   let walletStatus: WalletStatus = 'unknown';
   try {
     PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
-    logger.debug('[useInitializeWallet]: Start wallet setup');
+    logger.debug('[initializeWallet]: Start wallet setup');
 
     const isImporting = !!seedPhrase;
-    logger.debug(`[useInitializeWallet]: isImporting? ${isImporting}`);
+    logger.debug(`[initializeWallet]: isImporting? ${isImporting}`);
 
     if (shouldRunMigrations && !seedPhrase) {
-      logger.debug('[useInitializeWallet]: shouldRunMigrations && !seedPhrase? => true');
+      logger.debug('[initializeWallet]: shouldRunMigrations && !seedPhrase? => true');
       await loadWallets();
-      logger.debug('[useInitializeWallet]: walletsLoadState call #1');
+      logger.debug('[initializeWallet]: walletsLoadState call #1');
       await runMigrations();
-      logger.debug('[useInitializeWallet]: done with migrations');
+      logger.debug('[initializeWallet]: done with migrations');
     }
 
     setIsSmallBalancesOpen(false);
 
     // Load the network first
     await store.dispatch(settingsLoadNetwork());
+    if (shouldCancel()) return null;
 
     const { isNew, walletAddress } = await walletInit({
       seedPhrase,
@@ -75,11 +85,13 @@ export const initializeWallet = async ({
       network,
       image,
       silent,
+      userPin,
     });
+    if (shouldCancel()) return null;
 
     walletStatus = getWalletStatus(isNew, isImporting);
 
-    logger.debug('[useInitializeWallet]: walletInit returned', {
+    logger.debug('[initializeWallet]: walletInit returned', {
       isNew,
       walletAddress,
     });
@@ -88,6 +100,7 @@ export const initializeWallet = async ({
     // walletType maybe undefied after initial wallet creation
     const { walletType, walletAddressHash } = await getWalletContext(walletAddress as Address);
     const [deviceId] = await getOrCreateDeviceId();
+    if (shouldCancel()) return null;
 
     Sentry.setUser({
       id: deviceId,
@@ -104,15 +117,17 @@ export const initializeWallet = async ({
       // Run keychain integrity checks right after walletInit
       // Except when switching wallets!
       await runKeychainIntegrityChecks();
+      if (shouldCancel()) return null;
     }
 
     if (seedPhrase || isNew) {
-      logger.debug('[useInitializeWallet]: walletsLoadState call #2');
+      logger.debug('[initializeWallet]: walletsLoadState call #2');
       await loadWallets();
+      if (shouldCancel()) return null;
     }
 
     if (isNil(walletAddress)) {
-      logger.debug('[useInitializeWallet]: walletAddress is nil');
+      logger.debug('[initializeWallet]: walletAddress is nil');
       Alert.alert(i18n.t(i18n.l.wallet.import_failed_invalid_private_key));
       if (!isImporting) {
         setWalletReady();
@@ -122,24 +137,26 @@ export const initializeWallet = async ({
 
     if (!(isNew || isImporting)) {
       await loadSettingsData();
-      logger.debug('[useInitializeWallet]: loaded global data...');
+      if (shouldCancel()) return null;
+      logger.debug('[initializeWallet]: loaded global data...');
     }
 
     setAccountAddress(ensureValidHex(walletAddress));
-    logger.debug('[useInitializeWallet]: updated wallet address', {
+    logger.debug('[initializeWallet]: updated wallet address', {
       walletAddress,
     });
 
     // Newly created / imported accounts have no data in localstorage
     if (!(isNew || isImporting)) {
       await loadTokensData();
-      logger.debug('[useInitializeWallet]: loaded account data', {
+      if (shouldCancel()) return null;
+      logger.debug('[initializeWallet]: loaded account data', {
         network,
       });
     }
 
     setWalletReady();
-    logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
+    logger.debug('[initializeWallet]: 💰 Wallet initialized');
 
     PerformanceTracking.finishMeasuring(event.performanceInitializeWallet, {
       walletStatus,
@@ -149,7 +166,8 @@ export const initializeWallet = async ({
   } catch (e) {
     const error = ensureError(e);
     PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
-    logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet', error), {
+    console.log('what was the error', error?.message, error?.stack);
+    logger.error(new RainbowError('[initializeWallet]: Error while initializing wallet', error), {
       walletStatus,
     });
     analytics.track(event.walletInitializationFailed, {
@@ -164,7 +182,7 @@ export const initializeWallet = async ({
     try {
       hideSplashScreen();
     } catch (err) {
-      logger.error(new RainbowError('[useInitializeWallet]: Error while hiding splash screen'), {
+      logger.error(new RainbowError('[initializeWallet]: Error while hiding splash screen'), {
         error: err,
       });
     }

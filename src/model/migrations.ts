@@ -791,20 +791,6 @@ export default async function runMigrations() {
 
   migrations.push(v27);
 
-  /**
-   *************** Migration v28 ******************
-   * Migrate selected wallet from redux to zustand
-   */
-  const v28 = async () => {
-    // @ts-expect-error: this has been removed but should still be persisted
-    const previousSelected = store.getState()['wallets'].selected;
-    if (previousSelected) {
-      setSelectedWallet(previousSelected);
-    }
-  };
-
-  migrations.push(v28);
-
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {

@@ -9,7 +9,6 @@ import { initializeWallet } from '../state/wallets/initializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
-import useWalletENSAvatar from './useWalletENSAvatar';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
@@ -47,7 +46,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const [checkedWallet, setCheckedWallet] = useState<Awaited<ReturnType<typeof deriveAccountFromWalletInput>> | null>(null);
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
   const wasImporting = usePrevious(isImporting);
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const backupProvider = backupsStore(state => state.backupProvider);
@@ -77,7 +75,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const startImportProfile = useCallback(
-    (name: any, forceColor: any, address: any = null, avatarUrl: any) => {
+    (name: string, forceColor: any, address: any = null, avatarUrl: any) => {
       const importWallet = (color: number | null, name: string, image?: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
@@ -113,13 +111,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     async ({
       forceColor,
       forceAddress = '',
-      forceEmoji,
       avatarUrl,
       type = 'import',
     }: {
       forceColor?: string | number;
       forceAddress?: string;
-      forceEmoji?: string;
       avatarUrl?: string;
       type?: 'import' | 'watch';
     } = {}) => {
@@ -132,6 +128,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       setBusy(true);
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name: string | null = null;
+
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
@@ -146,7 +143,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             return;
           }
           setResolvedAddress(address);
-          name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          name = input;
+
           const finalAvatarUrl = avatarUrl || (avatar && avatar?.imageUrl);
           setBusy(false);
 
@@ -177,7 +175,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             return;
           }
           setResolvedAddress(address);
-          name = forceEmoji ? `${forceEmoji} ${input}` : input;
+          name = input;
           setBusy(false);
 
           if (type === 'watch') {
@@ -187,8 +185,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             });
           }
 
-          // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
-          startImportProfile(name, guardedForceColor, address);
+          startImportProfile(name, guardedForceColor, address, '');
           analytics.track(analytics.event.showWalletProfileModalForUnstoppableAddress, {
             address,
             input,
@@ -204,7 +201,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           ens = await fetchReverseRecord(input);
           if (ens && ens !== input) {
-            name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+            name = ens;
             if (!avatarUrl && profilesEnabled) {
               const avatar = await fetchENSAvatar(name, { swallowError: true });
               finalAvatarUrl = avatar?.imageUrl;
@@ -227,7 +224,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           });
         }
 
-        startImportProfile(name, guardedForceColor, input, finalAvatarUrl);
+        startImportProfile(name || '', guardedForceColor, input, finalAvatarUrl);
       } else {
         try {
           setTimeout(async () => {
@@ -240,7 +237,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             const ens = await fetchReverseRecord(walletResult.address);
             let finalAvatarUrl: string | null | undefined = avatarUrl;
             if (ens && ens !== input) {
-              name = forceEmoji ? `${forceEmoji} ${ens}` : ens;
+              name = ens;
               if (!finalAvatarUrl && profilesEnabled) {
                 const avatar = await fetchENSAvatar(name, {
                   swallowError: true,
@@ -257,7 +254,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               });
             }
 
-            startImportProfile(name, guardedForceColor, walletResult.address, finalAvatarUrl);
+            startImportProfile(name || '', guardedForceColor, walletResult.address, finalAvatarUrl);
             analytics.track(analytics.event.showWalletProfileModalForImportedWallet, {
               address: walletResult.address,
               type: walletResult.type,
@@ -300,9 +297,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             seedPhrase: input,
             color,
             name: name ? name : '',
+            checkedWallet,
             image,
-          });
-          initializeWallet({})
+          })
             .then(success => {
               ios && handleSetImporting(false);
               if (success) {
@@ -373,7 +370,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     color,
     isWalletEthZero,
     handleSetImporting,
-    initializeWallet,
     isImporting,
     name,
     navigate,
@@ -384,7 +380,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     selectedWallet?.type,
     wallets,
     wasImporting,
-    updateWalletENSAvatars,
     image,
     dispatch,
     showImportModal,

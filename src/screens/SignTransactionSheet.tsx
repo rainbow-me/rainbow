@@ -732,6 +732,7 @@ export const SignTransactionSheet = () => {
                     weight="bold"
                   />
                   <SheetActionButton
+                    testID="sign-transaction"
                     label={primaryActionButtonLabel}
                     newShadows
                     onPress={submitFn}

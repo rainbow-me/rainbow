@@ -25,10 +25,6 @@ export type AddWalletSheetParams = {
   isFirstWallet: boolean;
 };
 
-type RouteParams = {
-  AddWalletSheetParams: AddWalletSheetParams;
-};
-
 export const AddWalletSheet = () => {
   const {
     params: { isFirstWallet },
