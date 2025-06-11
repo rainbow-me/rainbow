@@ -604,7 +604,7 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
   const { walletNames } = state;
   const address = props.address || state.accountAddress;
 
-  if (!wallet) {
+  if (!wallet || !address) {
     return {
       accountAddress: address,
       accountColor: 0,
