@@ -2,7 +2,7 @@ import { Messenger } from '@/browserMessaging/AppMessenger';
 import { AddEthereumChainProposedChain, RequestArguments, RequestResponse, handleProviderRequest } from '@rainbow-me/provider';
 import * as lang from '@/languages';
 
-import { getProvider } from '@/handlers/web3';
+import { getProviderViem } from '@/handlers/web3';
 import { UserRejectedRequestError } from 'viem';
 import { logger } from '@/logger';
 import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
@@ -344,7 +344,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     checkRateLimit,
     onSwitchEthereumChainNotSupported,
     onSwitchEthereumChainSupported,
-    getProvider,
+    getProvider: getProviderViem,
     getActiveSession,
     getChainNativeCurrency: chainId => useBackendNetworksStore.getState().getChainsNativeAsset()[chainId],
   });
