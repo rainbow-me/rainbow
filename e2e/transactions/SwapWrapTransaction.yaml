@@ -33,44 +33,11 @@ tags:
           id: balance-coin-row-Ethereum
       - tapOn:
           id: swap-action-button
-      - tapOn:
-          id: ETH
-      - tapOn:
-          text: Ethereum
-          index: 1
+      - tapOn: 'ETH 􀆏'
+      - tapOn: 'Ethereum.*'
       - tapOn:
           text: Find a token to buy
       - inputText: WETH
-      - tapOn:
-          text: Wrapped Ether
-
-      # # Open swap screen
-      # - tapOn:
-      #     id: swap-button
-      # - assertVisible:
-      #     id: swap-screen
-      # # Select DAI as output token
-      # - tapOn: 'Find a token to buy'
-      # - inputText: 'DAI'
-      # - tapOn:
-      #     id: token-to-buy-dai-1
-      # - assertVisible: 'DAI.*'
-      # - assertVisible: 'No Balance'
-      # - hideKeyboard
-      # # cant get swap-bottom-action-button to work, but that would be ideal.
-      # - longPressOn:
-      #     point: 63%, 88%
-      # - runFlow: ../utils/MaybeSetupPin.yaml
-      # - tapOn:
-      #     id: tab-bar-icon-ProfileScreen
-
-      # # Test transaction was done
-      # - assertVisible: 'Pending'
-      # - assertVisible: 'Swapping*.'
-
-      # - tapOn: Swapping*.
-      # # also having issues with this test id.
-      # - tapOn:
-      #     id: transaction-details-context-menu-button
-      # - assertVisible: 'Speed Up'
-      # - assertVisible: 'Cancel'
+    # TODO: mock Weth. Dai works bc Favorites are prepopulated with some sort of data?
+    #   - tapOn:
+    #       text: Wrapped Ether
