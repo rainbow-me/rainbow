@@ -25,19 +25,7 @@ export const openInBrowser = (url: string, internal = true, SafariContext = fals
   if (SafariContext) {
     const handleOpenInSafariContext = async (url: string) => {
       try {
-        await WebBrowser.openBrowserAsync(url, {
-          createTask: true,
-          // iOS
-          dismissButtonStyle: 'done',
-          controlsColor: '#007AFF',
-          readerMode: false,
-          presentationStyle: WebBrowser.WebBrowserPresentationStyle.FORM_SHEET,
-          // Android
-          showTitle: false,
-          toolbarColor: 'white',
-          secondaryToolbarColor: 'gray',
-          enableDefaultShareMenuItem: true,
-        });
+        await WebBrowser.openBrowserAsync(url);
       } catch (error) {
         // This error is thrown when the user closes the browser, so we can safely ignore it.
         logger.debug('[AddCash]: Expo WebBrowser closed by user', { message: (error as Error).message });

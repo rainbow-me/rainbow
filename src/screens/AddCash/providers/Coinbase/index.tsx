@@ -29,7 +29,6 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
 
           const { url } = data;
 
-          console.log('[AddCash]: Received URL from Coinbase', { url });
           analytics.track(analytics.event.f2cProviderFlowStarted, {
             provider: FiatProviderName.Coinbase,
             sessionId,

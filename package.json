@@ -477,8 +477,7 @@
       "viem>ws>utf-8-validate": false,
       "@types/detox>detox": false,
       "react-native-bootsplash>sharp": false,
-      "ethereumjs-util>ethereum-cryptography>keccak": false,
-      "react-native-inappbrowser-reborn": false
+      "ethereumjs-util>ethereum-cryptography>keccak": false
     }
   },
   "lint-staged": {
