@@ -8948,7 +8948,7 @@ __metadata:
     expo: "npm:51.0.38"
     expo-image-picker: "npm:15.1.0"
     expo-store-review: "npm:7.0.2"
-    expo-web-browser: "npm:~13.0.3"
+    expo-web-browser: "npm:13.0.3"
     fast-text-encoding: "npm:1.0.4"
     figma-squircle: "npm:1.1.0"
     global: "npm:4.4.0"
@@ -14601,7 +14601,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-web-browser@npm:~13.0.3":
+"expo-web-browser@npm:13.0.3":
   version: 13.0.3
   resolution: "expo-web-browser@npm:13.0.3"
   peerDependencies:
