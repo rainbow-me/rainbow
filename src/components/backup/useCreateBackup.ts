@@ -17,6 +17,7 @@ import { useDispatch } from 'react-redux';
 
 type UseCreateBackupProps = {
   walletId?: string;
+  addToCurrentBackup?: boolean;
 };
 
 type ConfirmBackupProps = {
@@ -87,7 +88,7 @@ export const useCreateBackup = () => {
   );
 
   const onConfirmBackup = useCallback(
-    async ({ password, walletId }: ConfirmBackupProps) => {
+    async ({ password, walletId, addToCurrentBackup = false }: ConfirmBackupProps) => {
       analytics.track(analytics.event.backupConfirmed);
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
@@ -119,6 +120,7 @@ export const useCreateBackup = () => {
         onSuccess,
         password,
         walletId,
+        addToCurrentBackup,
       });
     },
     [walletCloudBackup, onError, wallets, onSuccess, dispatch]
