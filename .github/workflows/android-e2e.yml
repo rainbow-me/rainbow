@@ -149,6 +149,9 @@ jobs:
           arch: ${{ env.ARCH }}
           emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
 
+      - name: Kill adb-server
+        run: 'adb kill-server'
+
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         id: e2e_test
