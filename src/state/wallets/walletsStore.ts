@@ -558,14 +558,7 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   };
 }
 
-export const useWallets = () => useWalletsStore(state => state.wallets);
-export const useWallet = (id: string) => useWallets()?.[id];
-export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
-export const getWallets = () => useWalletsStore.getState().wallets;
-export const getSelectedWallet = () => useWalletsStore.getState().selected;
-export const getWalletReady = () => useWalletsStore.getState().walletReady;
-
-export const useWallets = () => useWalletsStore(state => state.wallets);
+const MISSING_ACCOUNT_ADDRESS_ERROR = `Error: useAccountAddress hook must be used after selecting a wallet.`;
 export const useAccountAddress = () => {
   const address = useWalletsStore(state => state.accountAddress);
   if (!address) {
@@ -573,6 +566,14 @@ export const useAccountAddress = () => {
   }
   return address;
 };
+
+export const useWallets = () => useWalletsStore(state => state.wallets);
+export const useWallet = (id: string) => useWallets()?.[id];
+export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
+export const getWallets = () => useWalletsStore.getState().wallets;
+export const getSelectedWallet = () => useWalletsStore.getState().selected;
+export const getWalletReady = () => useWalletsStore.getState().walletReady;
+
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);
 export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
 export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
