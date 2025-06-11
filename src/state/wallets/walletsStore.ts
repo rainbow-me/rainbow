@@ -510,6 +510,8 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   for (const key in wallets) {
     const wallet = wallets[key];
 
+    console.log('inspecting', JSON.stringify(wallet, null, 2));
+
     const innerPromises = wallet?.addresses?.map(async account => {
       if (useCachedENS && account.label && account.avatar) {
         return {
