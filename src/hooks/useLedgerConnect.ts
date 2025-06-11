@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { logger, RainbowError } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { useLedgerStore } from '@/state/ledger/ledger';
+import { useLedgerStore, setTriggerPollerCleanup, setReadyForPolling } from '@/state/ledger/ledger';
 
 /**
  * React hook used for checking ledger connections and handling connnection error states
@@ -22,8 +22,6 @@ export function useLedgerConnect({
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isReady = useLedgerStore(state => state.isReady);
   const triggerPollerCleanup = useLedgerStore(state => state.triggerPollerCleanup);
-  const setTriggerPollerCleanup = useLedgerStore(state => state.setTriggerPollerCleanup);
-  const setReadyForPolling = useLedgerStore(state => state.setReadyForPolling);
 
   /**
    * Handles local error handling for useLedgerStatusCheck
@@ -49,7 +47,7 @@ export function useLedgerConnect({
         errorCallback?.(errorType);
       }
     },
-    [deviceId, errorCallback, isReady, setReadyForPolling]
+    [deviceId, errorCallback, isReady]
   );
 
   /**
@@ -96,7 +94,7 @@ export function useLedgerConnect({
         }
       }, 3000);
     }
-  }, [deviceId, handleLedgerError, handleLedgerSuccess, readyForPolling, setTriggerPollerCleanup, triggerPollerCleanup]);
+  }, [deviceId, handleLedgerError, handleLedgerSuccess, readyForPolling, triggerPollerCleanup]);
 
   useEffect(() => {
     return () => {

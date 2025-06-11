@@ -18,7 +18,7 @@ import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
-import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
+import { useENSRegistrationStore, setAccentColor } from '@/state/ensRegistration/ensRegistration';
 import {
   useAccountProfile,
   useDimensions,
@@ -100,7 +100,6 @@ export default function ENSConfirmRegisterSheet() {
   const { isSmallPhone } = useDimensions();
 
   const accentColor = useENSRegistrationStore(state => state.accentColor);
-  const setAccentColor = useENSRegistrationStore(state => state.setAccentColor);
   const avatarMetadata = useENSRegistrationStore(state => state.avatarMetadata);
 
   const avatarImage = avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
@@ -110,7 +109,7 @@ export default function ENSConfirmRegisterSheet() {
     if (dominantColor || (!dominantColor && !avatarImage)) {
       setAccentColor(dominantColor || colors.purple);
     }
-  }, [avatarImage, dominantColor, setAccentColor]);
+  }, [avatarImage, dominantColor]);
 
   const [duration, setDuration] = useState(1);
 

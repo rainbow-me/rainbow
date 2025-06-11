@@ -11,3 +11,6 @@ export const useSmallBalancesStore = createRainbowStore<SmallBalancesState>(
     toggleOpenSmallBalances: () => set({ areOpenSmallBalances: !get().areOpenSmallBalances }),
   })
 );
+
+// export static functions
+export const { toggleOpenSmallBalances } = useSmallBalancesStore.getState();

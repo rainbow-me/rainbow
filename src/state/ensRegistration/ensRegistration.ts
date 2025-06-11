@@ -65,3 +65,16 @@ export const useENSRegistrationStore = createRainbowStore<ENSRegistrationState>(
     setCoverMetadata: (metadata: ENSMetadata) => set({ coverMetadata: metadata }),
   })
 );
+
+// export static functions
+export const {
+  setErrors,
+  setSubmitting,
+  setIsValidating,
+  setDisabled,
+  setSelectedFields,
+  setValues,
+  setAccentColor,
+  setAvatarMetadata,
+  setCoverMetadata,
+} = useENSRegistrationStore.getState();

@@ -13,7 +13,7 @@ import { useENSModifiedRegistration, useENSRegistration, useENSRegistrationForm,
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
-import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
+import { useENSRegistrationStore, setCoverMetadata } from '@/state/ensRegistration/ensRegistration';
 
 // Deprecated - use useENSRegistrationStore instead
 export const coverMetadataAtom = {
@@ -48,7 +48,6 @@ const RegistrationCover = ({
 
   const accentColor = useForegroundColor('accent');
 
-  const setCoverMetadata = useENSRegistrationStore(state => state.setCoverMetadata);
   const onChangeImage = useCallback(
     ({ asset, image }: { asset?: UniqueAsset; image?: Image & { tmpPath?: string } }) => {
       setCoverMetadata(image);
@@ -76,7 +75,7 @@ const RegistrationCover = ({
         });
       }
     },
-    [onBlurField, setCoverMetadata]
+    [onBlurField]
   );
   const [isUploading, setIsUploading] = useState(false);
   const [isLoadingImage, setIsLoadingImage] = useState(false);

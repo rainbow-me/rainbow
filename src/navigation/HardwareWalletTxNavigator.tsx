@@ -13,7 +13,7 @@ import { logger } from '@/logger';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { MMKV } from 'react-native-mmkv';
 import { RootStackParamList } from './types';
-import { useLedgerStore } from '@/state/ledger/ledger';
+import { useLedgerStore, setIsReady, setReadyForPolling, setTriggerPollerCleanup } from '@/state/ledger/ledger';
 
 export const ledgerStorage = new MMKV({
   id: 'ledgerStorage',
@@ -52,10 +52,7 @@ export const HardwareWalletTxNavigator = () => {
 
   const deviceId = selectedWallet.deviceId ?? '';
   const isReady = useLedgerStore(state => state.isReady);
-  const setIsReady = useLedgerStore(state => state.setIsReady);
   const readyForPolling = useLedgerStore(state => state.readyForPolling);
-  const setReadyForPolling = useLedgerStore(state => state.setReadyForPolling);
-  const setTriggerPollerCleanup = useLedgerStore(state => state.setTriggerPollerCleanup);
 
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
@@ -81,7 +78,7 @@ export const HardwareWalletTxNavigator = () => {
     } else {
       logger.debug('[HardwareWalletTxNavigator]: already submitted', {});
     }
-  }, [isReady, setIsReady, setReadyForPolling, submit]);
+  }, [isReady, submit]);
 
   useLedgerConnect({
     deviceId,

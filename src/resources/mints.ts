@@ -8,7 +8,7 @@ import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { MintsFilter, useMintsFilterStore } from '@/state/mintsFilter/mintsFilter';
+import { MintsFilter, useMintsFilterStore, setFilter as setFilterAction } from '@/state/mintsFilter/mintsFilter';
 
 // Re-export for compatibility
 export { MintsFilter };
@@ -36,15 +36,13 @@ export function getMintsFilterLabel(filter: MintsFilter) {
  */
 export function useMintsFilter() {
   const filterState = useMintsFilterStore(state => state.filter);
-  const setFilterState = useMintsFilterStore(state => state.setFilter);
 
   const setFilter = useCallback(
     (filter: MintsFilter) => {
       analytics.track(analytics.event.mintsChangedFilter, { filter });
-      setFilterState(filter);
-      mmkv.set(MINTS_FILTER_MMKV_KEY, filter);
+      setFilterAction(filter);
     },
-    [setFilterState]
+    []
   );
 
   return { filter: filterState, setFilter };

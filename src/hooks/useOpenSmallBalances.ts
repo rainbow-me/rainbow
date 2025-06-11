@@ -1,8 +1,7 @@
-import { useSmallBalancesStore } from '@/state/smallBalances/smallBalances';
+import { useSmallBalancesStore, toggleOpenSmallBalances } from '@/state/smallBalances/smallBalances';
 
 export default function useOpenSmallBalances() {
   const isSmallBalancesOpen = useSmallBalancesStore(state => state.areOpenSmallBalances);
-  const toggleOpenSmallBalances = useSmallBalancesStore(state => state.toggleOpenSmallBalances);
 
   // For backward compatibility
   const setIsSmallBalancesOpen = (value: boolean) => {

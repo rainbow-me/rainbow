@@ -12,7 +12,7 @@ import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { IS_TEST } from '@/env';
-import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
+import { useENSRegistrationStore, setAvatarMetadata } from '@/state/ensRegistration/ensRegistration';
 
 // Deprecated - use useENSRegistrationStore instead
 export const avatarMetadataAtom = {
@@ -51,7 +51,6 @@ const RegistrationAvatar = ({
   // We want to allow avatar state update when the screen is first focussed.
   useEffect(() => setAvatarUpdateAllowed(true), [setAvatarUpdateAllowed, name]);
 
-  const setAvatarMetadata = useENSRegistrationStore(state => state.setAvatarMetadata);
 
   const accentColor = useForegroundColor('accent');
 
@@ -82,7 +81,7 @@ const RegistrationAvatar = ({
         });
       }
     },
-    [onBlurField, onChangeAvatarUrl, setAvatarMetadata]
+    [onBlurField, onChangeAvatarUrl]
   );
 
   const { ContextMenu, handleSelectImage, handleSelectNFT } = useSelectImageMenu({

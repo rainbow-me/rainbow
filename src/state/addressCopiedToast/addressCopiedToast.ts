@@ -11,3 +11,6 @@ export const useAddressCopiedToastStore = createRainbowStore<AddressCopiedToastS
     setIsActive: (active: boolean) => set({ isActive: active }),
   })
 );
+
+// export static functions
+export const { setIsActive } = useAddressCopiedToastStore.getState();

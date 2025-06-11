@@ -11,7 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { RootStackParamList } from './types';
-import { useLedgerStore } from '@/state/ledger/ledger';
+import { useLedgerStore, setDeviceId } from '@/state/ledger/ledger';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -27,7 +27,6 @@ export function PairHardwareWalletNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState<string>(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);
 
   const deviceId = useLedgerStore(state => state.deviceId || '');
-  const setDeviceId = useLedgerStore(state => state.setDeviceId);
 
   // reset navigator state on unmount
   useEffect(() => {

@@ -6,13 +6,12 @@ import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useLedgerImport } from '@/hooks/useLedgerImport';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import { useLedgerStore } from '@/state/ledger/ledger';
+import { useLedgerStore, setDeviceId } from '@/state/ledger/ledger';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { CancelButton } from './components/CancelButton';
 
 export const PairHardwareWalletSearchSheet = () => {
   const { navigate, goBack } = useNavigation();
-  const setDeviceId = useLedgerStore(state => state.setDeviceId);
   const [isConnected, setIsConnected] = React.useState(false);
 
   useLedgerImport({

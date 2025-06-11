@@ -21,3 +21,6 @@ export const useMintsFilterStore = createRainbowStore<MintsFilterState>(
     version: 0,
   }
 );
+
+// export static functions
+export const { setFilter } = useMintsFilterStore.getState();

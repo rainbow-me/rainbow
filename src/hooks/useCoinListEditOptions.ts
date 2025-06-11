@@ -4,7 +4,7 @@ import { useMMKVObject } from 'react-native-mmkv';
 import useAccountSettings from './useAccountSettings';
 import EditAction from '@/helpers/EditAction';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useCoinListEditStore } from '@/state/coinListEdit/coinListEdit';
+import { useCoinListEditStore, setSelectedItems as setSelectedItemsAction } from '@/state/coinListEdit/coinListEdit';
 
 export interface BooleanMap {
   [index: string]: boolean;
@@ -14,8 +14,6 @@ const INITIAL_PINNED_COINS: BooleanMap = {};
 
 export default function useCoinListEditOptions() {
   const { accountAddress } = useAccountSettings();
-
-  const setSelectedItems = useCoinListEditStore(state => state.setSelectedItems);
 
   const [pinnedCoins = INITIAL_PINNED_COINS, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
 
@@ -44,27 +42,27 @@ export default function useCoinListEditOptions() {
 
   const pushSelectedCoin = useCallback(
     (item: string) =>
-      setSelectedItems(prev => {
+      setSelectedItemsAction(prev => {
         return prev.filter(i => i !== item).concat(item);
       }),
-    [setSelectedItems]
+    []
   );
 
-  const removeSelectedCoin = useCallback((item: string) => setSelectedItems(prev => prev.filter(i => i !== item)), [setSelectedItems]);
+  const removeSelectedCoin = useCallback((item: string) => setSelectedItemsAction(prev => prev.filter(i => i !== item)), []);
 
   const toggleSelectedCoin = useCallback(
     (item: string) =>
-      setSelectedItems(prev => {
+      setSelectedItemsAction(prev => {
         if (prev.includes(item)) {
           return prev.filter(i => i !== item);
         } else {
           return prev.concat(item);
         }
       }),
-    [setSelectedItems]
+    []
   );
 
-  const clearSelectedCoins = useCallback(() => setSelectedItems([]), [setSelectedItems]);
+  const clearSelectedCoins = useCallback(() => setSelectedItemsAction([]), []);
 
   return {
     addPinnedCoin,
@@ -83,7 +81,6 @@ export function useCoinListFinishEditingOptions() {
   const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
 
   const selectedItems = useCoinListEditStore(state => state.selectedItems);
-  const setSelectedItems = useCoinListEditStore(state => state.setSelectedItems);
   const selectedItemsNonReactive = useRef<string[]>();
   selectedItemsNonReactive.current = selectedItems;
 
@@ -132,8 +129,8 @@ export function useCoinListFinishEditingOptions() {
         }, {} as BooleanMap);
       }
     });
-    setSelectedItems([]);
-  }, [setSelectedItems, setPinnedCoinsObject]);
+    setSelectedItemsAction([]);
+  }, [setPinnedCoinsObject]);
 
   const setHiddenCoins = useCallback(() => {
     if (
@@ -145,8 +142,8 @@ export function useCoinListFinishEditingOptions() {
 
     setHiddenAssets([...(selectedItemsNonReactive.current || [])]);
 
-    setSelectedItems([]);
-  }, [setHiddenAssets, setSelectedItems]);
+    setSelectedItemsAction([]);
+  }, [setHiddenAssets]);
 
   return {
     currentAction,

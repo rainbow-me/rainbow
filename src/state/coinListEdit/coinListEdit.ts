@@ -15,3 +15,6 @@ export const useCoinListEditStore = createRainbowStore<CoinListEditState>(
     setSelectedItems: (items: string[]) => set({ selectedItems: items }),
   })
 );
+
+// export static functions
+export const { setIsCoinListEdited, setSelectedItems } = useCoinListEditStore.getState();
