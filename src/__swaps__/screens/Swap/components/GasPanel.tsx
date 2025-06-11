@@ -18,7 +18,7 @@ import {
   useMeteorologySuggestions,
   useChainSupportsPriorityFee,
 } from '@/__swaps__/utils/meteorology';
-import { add, greaterThan, multiply, subtract, lessThan, formatNumber, isZero } from '@/helpers/utilities';
+import { add, greaterThan, multiply, subtract, lessThan, formatNumber } from '@/helpers/utilities';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -459,7 +459,7 @@ export function GasPanel() {
           {i18n.t(i18n.l.gas.gas_settings)}
         </Text>
 
-        <Box gap={24} width="full" alignItems="stretch" style={{ marginBottom: 30 }}>
+        <Box gap={24} width="full" alignItems="stretch" marginBottom={{ custom: 30 }}>
           <Box gap={24}>
             <EditableGasSettings />
           </Box>
