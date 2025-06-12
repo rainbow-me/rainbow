@@ -13,3 +13,6 @@ export const useSmallBalancesStore = createRainbowStore<SmallBalancesState>(
 );
 
 export const getSmallBalancesStore = () => useSmallBalancesStore.getState();
+
+// Static function exports for legacy compatibility
+export const toggleSmallBalances = () => getSmallBalancesStore().toggleOpenSmallBalances();

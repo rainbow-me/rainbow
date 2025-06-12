@@ -18,3 +18,6 @@ export const useNFTOffersStore = createRainbowStore<NFTOffersState>(
 );
 
 export const getNFTOffersStore = () => useNFTOffersStore.getState();
+
+// Static function exports for legacy compatibility
+export const setNFTOffersSortCriterion = (criterion: SortCriterion) => getNFTOffersStore().setSortCriterion(criterion);

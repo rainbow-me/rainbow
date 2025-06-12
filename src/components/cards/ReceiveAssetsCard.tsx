@@ -13,7 +13,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from './reusables/TintButton';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import * as i18n from '@/languages';
-import { useAddressCopiedToastStore, setIsActive } from '@/state/addressCopiedToast/addressCopiedToast';
+import { useAddressCopiedToastStore, setAddressCopiedToastActive } from '@/state/addressCopiedToast/addressCopiedToast';
 
 export const RECEIVE_CARD_HEIGHT = 174;
 const TRANSLATIONS = i18n.l.cards.receive;
@@ -27,9 +27,9 @@ export const ReceiveAssetsCard = () => {
   const onPressCopy = useCallback(
     (onNewEmoji: () => void) => {
       if (!isToastActive) {
-        setIsActive(true);
+        setAddressCopiedToastActive(true);
         setTimeout(() => {
-          setIsActive(false);
+          setAddressCopiedToastActive(false);
         }, 2000);
       }
       haptics.notificationSuccess();

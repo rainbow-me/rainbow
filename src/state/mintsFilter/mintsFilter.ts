@@ -23,3 +23,6 @@ export const useMintsFilterStore = createRainbowStore<MintsFilterState>(
 );
 
 export const getMintsFilterStore = () => useMintsFilterStore.getState();
+
+// Static function exports for legacy compatibility
+export const setMintsFilter = (filter: MintsFilter) => getMintsFilterStore().setFilter(filter);

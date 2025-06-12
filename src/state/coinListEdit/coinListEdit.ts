@@ -20,7 +20,7 @@ export const getCoinListEditStore = () => useCoinListEditStore.getState();
 
 // Static function exports for legacy compatibility
 export const setIsCoinListEdited = (edited: boolean) => getCoinListEditStore().setIsCoinListEdited(edited);
-export const setSelectedItems = (items: string[] | ((prev: string[]) => string[])) => {
+export const setCoinListSelectedItems = (items: string[] | ((prev: string[]) => string[])) => {
   if (typeof items === 'function') {
     const currentItems = getCoinListEditStore().selectedItems;
     getCoinListEditStore().setSelectedItems(items(currentItems));

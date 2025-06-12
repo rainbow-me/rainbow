@@ -67,3 +67,14 @@ export const useENSRegistrationStore = createRainbowStore<ENSRegistrationState>(
 );
 
 export const getENSRegistrationStore = () => useENSRegistrationStore.getState();
+
+// Static function exports for legacy compatibility
+export const setENSRegistrationErrors = (errors: ENSFormErrors) => getENSRegistrationStore().setErrors(errors);
+export const setENSRegistrationSubmitting = (submitting: boolean) => getENSRegistrationStore().setSubmitting(submitting);
+export const setENSRegistrationValidating = (validating: boolean) => getENSRegistrationStore().setIsValidating(validating);
+export const setENSRegistrationDisabled = (disabled: boolean) => getENSRegistrationStore().setDisabled(disabled);
+export const setENSRegistrationSelectedFields = (fields: string[]) => getENSRegistrationStore().setSelectedFields(fields);
+export const setENSRegistrationValues = (values: ENSFormValues) => getENSRegistrationStore().setValues(values);
+export const setENSRegistrationAccentColor = (color: string) => getENSRegistrationStore().setAccentColor(color);
+export const setENSRegistrationAvatarMetadata = (metadata: ENSMetadata) => getENSRegistrationStore().setAvatarMetadata(metadata);
+export const setENSRegistrationCoverMetadata = (metadata: ENSMetadata) => getENSRegistrationStore().setCoverMetadata(metadata);

@@ -4,7 +4,7 @@ import { useMMKVObject } from 'react-native-mmkv';
 import useAccountSettings from './useAccountSettings';
 import EditAction from '@/helpers/EditAction';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useCoinListEditStore, setSelectedItems as setSelectedItemsAction } from '@/state/coinListEdit/coinListEdit';
+import { useCoinListEditStore, setCoinListSelectedItems as setSelectedItemsAction } from '@/state/coinListEdit/coinListEdit';
 
 export interface BooleanMap {
   [index: string]: boolean;

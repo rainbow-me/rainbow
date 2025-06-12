@@ -15,7 +15,7 @@ import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { useAddressCopiedToastStore, setIsActive } from '@/state/addressCopiedToast/addressCopiedToast';
+import { useAddressCopiedToastStore, setAddressCopiedToastActive } from '@/state/addressCopiedToast/addressCopiedToast';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 export const ProfileActionButtonsRowHeight = 80;
@@ -211,9 +211,9 @@ export function CopyButton() {
     }
 
     if (!isToastActive) {
-      setIsActive(true);
+      setAddressCopiedToastActive(true);
       setTimeout(() => {
-        setIsActive(false);
+        setAddressCopiedToastActive(false);
       }, 2000);
     }
     Clipboard.setString(accountAddress);
