@@ -1,32 +1,4 @@
-import { EthereumAddress } from '@/entities';
-import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
-import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
-import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { createSignature } from '@/helpers/signingWallet';
-import showWalletErrorAlert from '@/helpers/support';
-import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import * as kc from '@/keychain';
-import { logger, RainbowError } from '@/logger';
-import { DebugContext } from '@/logger/debugContext';
-import * as keychain from '@/model/keychain';
-import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
-import {
-  AddressWithRelationship,
-  initializeNotificationSettingsForAddresses,
-  WalletNotificationRelationship,
-} from '@/notifications/settings';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import store from '@/redux/store';
-import { Network } from '@/state/backendNetworks/types';
-import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import { ethereumUtils } from '@/utils';
-import { sanitizeTypedData } from '@/utils/signingUtils';
-import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
 import { TransactionRequest } from '@ethersproject/abstract-provider';
-import { Signer } from '@ethersproject/abstract-signer';
 import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { Provider, StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -38,7 +10,6 @@ import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import { hdkey as EthereumHDKey, default as LibWallet } from 'ethereumjs-wallet';
 import lang from 'i18n-js';
 import { findKey, isEmpty } from 'lodash';
-import { GetOptions, SetOptions } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -50,7 +21,36 @@ import {
   selectedWalletKey,
 } from '../utils/keychainConstants';
 import profileUtils, { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
+import * as keychain from '@/model/keychain';
+import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from './preferences';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { EthereumAddress } from '@/entities';
+import { maybeAuthenticateWithPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
+import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
+import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
+import { createSignature } from '@/helpers/signingWallet';
+import showWalletErrorAlert from '@/helpers/support';
+import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import { updateWebDataEnabled } from '@/redux/showcaseTokens';
+import store from '@/redux/store';
+import { ethereumUtils } from '@/utils';
+import { logger, RainbowError } from '@/logger';
+import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
+import {
+  AddressWithRelationship,
+  initializeNotificationSettingsForAddresses,
+  WalletNotificationRelationship,
+} from '@/notifications/settings';
+import { DebugContext } from '@/logger/debugContext';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { Signer } from '@ethersproject/abstract-signer';
+import { sanitizeTypedData } from '@/utils/signingUtils';
+import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
+import { Network } from '@/state/backendNetworks/types';
+import { GetOptions, SetOptions } from 'react-native-keychain';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -93,17 +93,17 @@ interface TypedData {
 
 export interface ReadOnlyWallet {
   address: EthereumAddress;
-  privateKey: null | string;
+  privateKey: string | null;
 }
 
 export interface EthereumWalletFromSeed {
-  address: EthereumAddress;
   hdnode: null | HDNode;
   isHDWallet: boolean;
-  root: null | EthereumHDKey;
-  type: EthereumWalletType;
   wallet: null | EthereumWallet;
+  type: EthereumWalletType;
   walletType: WalletLibraryType;
+  root: null | EthereumHDKey;
+  address: EthereumAddress;
 }
 
 export type EthereumWallet = Wallet | ReadOnlyWallet | LibWallet;
@@ -190,9 +190,7 @@ export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is 
   if ('signTransaction' in wallet) {
     return wallet as any;
   }
-  // TODO we had bad types before, but this somehow worked alright i had this
-  // throwing an error but it was hitting in different areas, so want to just
-  // warn here and then follow up with a better fix in our next refactor
+  // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
   console.log(
     // @ts-expect-error using property types to log errors better
     `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
@@ -207,9 +205,7 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   if (typeof wallet.getPrivateKey !== 'function') {
     return wallet as any;
   }
-  // TODO we had bad types before, but this somehow worked alright i had this
-  // throwing an error but it was hitting in different areas, so want to just
-  // warn here and then follow up with a better fix in our next refactor
+  // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
   console.log(
     `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
   );
@@ -231,19 +227,6 @@ export const getHdPath = ({ type, index }: { type: WalletLibraryType; index: num
     default:
       return `${DEFAULT_HD_PATH}/${index}`;
   }
-};
-
-type CreateWalletParams = {
-  seed?: null | EthereumSeed;
-  color?: null | number;
-  name?: null | string;
-  isRestoring?: boolean;
-  overwrite?: boolean;
-  checkedWallet?: null | EthereumWalletFromSeed;
-  image?: null | string;
-  silent?: boolean;
-  clearCallbackOnStartCreation?: boolean;
-  userPin?: string;
 };
 
 export type InitializeWalletParams = CreateWalletParams & {
@@ -283,26 +266,16 @@ export const walletInit = async ({
       silent,
       userPin,
     });
-
-    if (wallet && 'address' in wallet) {
-      walletAddress = wallet?.address;
-    }
-
-    // if the user previously imported a wallet with a seed phrase then removed
-    // that wallet, then re-adds but only as a watch we don't have the address
-    // here and returning it will cause a keychain missing private key error, so
-    // instead we fall through
-    if (walletAddress) {
-      return { isNew, walletAddress };
-    }
-  } else {
-    walletAddress = await loadAddress();
+    ensureEthereumWallet(wallet!);
+    walletAddress = wallet?.address;
+    return { isNew, walletAddress };
   }
+
+  walletAddress = await loadAddress();
 
   if (!walletAddress) {
     const wallet = await createWallet({});
-    if (!wallet) throw new Error(`No wallet`);
-    ensureEthereumWallet(wallet);
+    ensureEthereumWallet(wallet!);
     if (!wallet?.address) {
       throw new RainbowError('Error creating wallet address');
     }
@@ -652,20 +625,31 @@ export const identifyWalletType = (walletSeed: EthereumWalletSeed): EthereumWall
   return EthereumWalletType.seed;
 };
 
-export const createWallet = async (props: CreateWalletParams): Promise<null | EthereumWallet> => {
-  const {
-    seed = null,
-    color = null,
-    name = null,
-    isRestoring = false,
-    overwrite = false,
-    checkedWallet = null,
-    image = null,
-    silent = false,
-    clearCallbackOnStartCreation = false,
-    userPin,
-  } = props;
+type CreateWalletParams = {
+  seed?: null | EthereumSeed;
+  color?: null | number;
+  name?: null | string;
+  isRestoring?: boolean;
+  overwrite?: boolean;
+  checkedWallet?: null | EthereumWalletFromSeed;
+  image?: null | string;
+  silent?: boolean;
+  clearCallbackOnStartCreation?: boolean;
+  userPin?: string;
+};
 
+export const createWallet = async ({
+  seed = null,
+  color = null,
+  name = null,
+  isRestoring = false,
+  overwrite = false,
+  checkedWallet = null,
+  image = null,
+  silent = false,
+  clearCallbackOnStartCreation = false,
+  userPin,
+}: CreateWalletParams): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;
@@ -786,7 +770,7 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
       // for each account. If there's history we add it to the wallet.
       // We stop once we 2 accounts with no history
       while (lookup < 2) {
-        let nextWallet: EthereumWallet | null = null;
+        let nextWallet: any = null;
         if (isHardwareWallet) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(seed, index);
           if (!walletObj.wallet) {
@@ -794,8 +778,8 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
           }
           ensureEthereumWallet(walletObj.wallet);
           nextWallet = {
-            address: walletObj.wallet?.address,
-            privateKey: walletObj.wallet?.privateKey,
+            address: walletObj.wallet.address,
+            privateKey: walletObj.wallet.privateKey,
           };
         } else {
           const child = root?.deriveChild(index);
@@ -804,9 +788,6 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
           if (pkey) {
             nextWallet = new Wallet(addHexPrefix(pkey));
           }
-        }
-        if (!nextWallet) {
-          throw new Error(`No wallet (unreachable)`);
         }
 
         let hasTxHistory = false;
@@ -881,6 +862,12 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
       }
     }
 
+    // if imported and we have only one account, we name the wallet too.
+    let walletName = DEFAULT_WALLET_NAME;
+    if (name) {
+      walletName = name;
+    }
+
     let primary = false;
     // If it's not imported or it's the first one with a seed phrase
     // it's the primary wallet
@@ -900,7 +887,7 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
       color: color || 0,
       id,
       imported: isImported,
-      name: name || DEFAULT_WALLET_NAME,
+      name: walletName,
       primary,
       type,
     };
@@ -921,7 +908,7 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
 
     if (!silent) {
       logger.debug('[wallet]: setting selected wallet', {}, DebugContext.wallet);
-      await setSelectedWalletInKeychain(allWallets[id]);
+      await setSelectedWallet(allWallets[id]);
     }
 
     logger.debug('[wallet]: saving all wallets', {}, DebugContext.wallet);
@@ -929,7 +916,7 @@ export const createWallet = async (props: CreateWalletParams): Promise<null | Et
 
     if (walletResult && walletAddress) {
       const walletRes =
-        walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? walletResult : new Wallet(pkey);
+        walletType === WalletLibraryType.ethers || walletType === WalletLibraryType.ledger ? (walletResult as Wallet) : new Wallet(pkey);
 
       return walletRes;
     }
@@ -1139,7 +1126,7 @@ export const getSeedPhrase = async (
   }
 };
 
-export const setSelectedWalletInKeychain = async (wallet: RainbowWallet): Promise<void> => {
+export const setSelectedWallet = async (wallet: RainbowWallet): Promise<void> => {
   const val = {
     version: selectedWalletVersion,
     wallet,
@@ -1148,7 +1135,7 @@ export const setSelectedWalletInKeychain = async (wallet: RainbowWallet): Promis
   return keychain.saveObject(selectedWalletKey, val, keychain.publicAccessControlOptions);
 };
 
-export const getSelectedWalletFromKeychain = async (): Promise<null | RainbowSelectedWalletData> => {
+export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletData> => {
   try {
     const selectedWalletData = await keychain.loadObject(selectedWalletKey);
     if (selectedWalletData) {
@@ -1156,7 +1143,7 @@ export const getSelectedWalletFromKeychain = async (): Promise<null | RainbowSel
     }
     return null;
   } catch (error) {
-    logger.error(new RainbowError('[wallet]: Error in getSelectedWalletFromKeychain'), { error });
+    logger.error(new RainbowError('[wallet]: Error in getSelectedWallet'), { error });
     return null;
   }
 };
@@ -1300,7 +1287,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       logger.debug('[wallet]: new pkey saved', {}, DebugContext.wallet);
     }
 
-    const selectedWalletData = await getSelectedWalletFromKeychain();
+    const selectedWalletData = await getSelectedWallet();
     const wallet: undefined | RainbowWallet = selectedWalletData?.wallet;
     if (!wallet) {
       return null;

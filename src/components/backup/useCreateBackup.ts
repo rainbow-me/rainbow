@@ -32,17 +32,24 @@ export const useCreateBackup = () => {
   const setLoadingStateWithTimeout = useCallback(
     ({ state, outOfSync = false, failInMs = 10_000 }: { state: CloudBackupState; outOfSync?: boolean; failInMs?: number }) => {
       backupsStore.getState().setStatus(state);
+      let outOfSyncTimeout: NodeJS.Timeout | null = null;
       if (outOfSync) {
-        setTimeout(() => {
+        outOfSyncTimeout = setTimeout(() => {
           backupsStore.getState().setStatus(CloudBackupState.Syncing);
         }, 1_000);
       }
-      setTimeout(() => {
+      const endTimeout = setTimeout(() => {
         const currentState = backupsStore.getState().status;
         if (currentState === state) {
           backupsStore.getState().setStatus(CloudBackupState.Ready);
         }
       }, failInMs);
+      return () => {
+        clearTimeout(endTimeout);
+        if (outOfSyncTimeout != null) {
+          clearTimeout(outOfSyncTimeout);
+        }
+      };
     },
     []
   );
@@ -55,11 +62,12 @@ export const useCreateBackup = () => {
       // Reset the storedPassword state for next backup
       backupsStore.getState().setStoredPassword('');
       analytics.track(analytics.event.backupComplete, { category: 'backup', label: cloudPlatform });
-      setLoadingStateWithTimeout({
+      const cancelTimeout = setLoadingStateWithTimeout({
         state: CloudBackupState.Success,
         outOfSync: true,
       });
-      backupsStore.getState().syncAndFetchBackups();
+      await backupsStore.getState().syncAndFetchBackups();
+      cancelTimeout();
     },
     [setLoadingStateWithTimeout]
   );
@@ -102,7 +110,6 @@ export const useCreateBackup = () => {
           password,
           onError,
           onSuccess,
-          dispatch,
         });
         return;
       }

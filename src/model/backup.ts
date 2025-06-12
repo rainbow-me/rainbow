@@ -199,63 +199,27 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   return secrets;
 }
 
+type CreateBackupProps = {
+  now?: number;
+  onError?: (message: string) => void;
+};
+
 export async function backupAllWalletsToCloud({
   wallets,
   password,
   onError,
   onSuccess,
-  dispatch,
-}: {
+}: CreateBackupProps & {
+  onSuccess?: (password: BackupPassword) => void;
   wallets: AllRainbowWallets;
   password: BackupPassword;
-  onError?: (message: string) => void;
-  onSuccess?: (password: BackupPassword) => void;
-  dispatch: AppDispatch;
 }) {
-  let userPIN: string | undefined;
   try {
-    userPIN = await maybeAuthenticateWithPIN();
-  } catch (e) {
-    onError?.(i18n.t(i18n.l.back_up.wrong_pin));
-    return;
-  }
-
-  try {
-    /**
-     * Loop over all keys and decrypt if necessary for android
-     */
-
-    const allKeys = await kc.getAllKeys();
-    if (!allKeys) {
-      onError?.(i18n.t(i18n.l.back_up.errors.no_keys_found));
+    const now = Date.now();
+    const data = await createBackup({ onError, now });
+    if (!data) {
       return;
     }
-
-    const allSecrets = allKeys
-      .filter(key => {
-        return key?.username?.indexOf(seedPhraseKey) !== -1 || key?.username?.indexOf(privateKeyKey) !== -1;
-      })
-      .reduce(
-        (prev, curr) => {
-          return {
-            ...prev,
-            [curr.username]: curr.password,
-          };
-        },
-        {} as { [key: string]: string }
-      );
-
-    const now = Date.now();
-    logger.debug(`[backup]: Creating backup with all wallets to ${cloudPlatform}`, {
-      category: 'backup',
-      time: now,
-      label: cloudPlatform,
-    });
-
-    const data = {
-      createdAt: now,
-      secrets: await decryptAllPinEncryptedSecretsIfNeeded(allSecrets, userPIN),
-    };
 
     const updatedBackupFile = await encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
     const walletIdsToUpdate = Object.keys(wallets);
@@ -263,7 +227,7 @@ export async function backupAllWalletsToCloud({
 
     logger.debug(`[backup]: Successfully backed up all wallets to ${cloudPlatform}`, {
       category: 'backup',
-      time: now,
+      time: Date.now(),
       label: cloudPlatform,
     });
 
@@ -280,6 +244,71 @@ export async function backupAllWalletsToCloud({
       });
     }
   }
+}
+
+export async function createBackup({ onError, now = Date.now() }: CreateBackupProps) {
+  let userPIN: string | undefined;
+  try {
+    userPIN = await maybeAuthenticateWithPIN();
+  } catch (e) {
+    onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+    return;
+  }
+
+  /**
+   * Loop over all keys and decrypt if necessary for android
+   */
+  const allKeys = await kc.getAllKeys();
+  if (!allKeys) {
+    onError?.(i18n.t(i18n.l.back_up.errors.no_keys_found));
+    return;
+  }
+
+  const allSecrets = allKeys
+    .filter(key => {
+      return key?.username?.indexOf(seedPhraseKey) !== -1 || key?.username?.indexOf(privateKeyKey) !== -1;
+    })
+    .reduce(
+      (prev, curr) => {
+        return {
+          ...prev,
+          [curr.username]: curr.password,
+        };
+      },
+      {} as { [key: string]: string }
+    );
+
+  logger.debug(`[backup]: Creating backup with all wallets to ${cloudPlatform}`, {
+    category: 'backup',
+    time: now,
+    label: cloudPlatform,
+  });
+
+  const data = {
+    createdAt: now,
+    secrets: await decryptAllPinEncryptedSecretsIfNeeded(allSecrets, userPIN),
+  };
+
+  return data;
+}
+
+export async function restoreBackup(data: string | { secrets: string }) {
+  const originalData = typeof data === 'string' ? JSON.parse(data) : data;
+
+  // ANDROID ONLY - pin auth if biometrics are disabled
+  let userPIN: string | undefined;
+  try {
+    userPIN = await maybeAuthenticateWithPINAndCreateIfNeeded();
+  } catch (e) {
+    return RestoreCloudBackupResultStates.incorrectPinCode;
+  }
+
+  return await restoreSpecificBackupIntoKeychain(
+    {
+      ...originalData.secrets,
+    },
+    userPIN
+  );
 }
 
 export async function backupWalletToCloud({
@@ -415,19 +444,8 @@ export async function restoreCloudBackup({
       return RestoreCloudBackupResultStates.incorrectPassword;
     }
 
-    const dataToRestore = {
-      ...data.secrets,
-    };
+    const restoredSuccessfully = await restoreBackup(data);
 
-    // ANDROID ONLY - pin auth if biometrics are disabled
-    let userPIN: string | undefined;
-    try {
-      userPIN = await maybeAuthenticateWithPINAndCreateIfNeeded();
-    } catch (e) {
-      return RestoreCloudBackupResultStates.incorrectPinCode;
-    }
-
-    const restoredSuccessfully = await restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
     return restoredSuccessfully ? RestoreCloudBackupResultStates.success : RestoreCloudBackupResultStates.failedWhenRestoring;
   } catch (error) {
     const message = (error as Error).message;

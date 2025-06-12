@@ -7,7 +7,7 @@ import { backupsCard } from '@/components/cards/utils/constants';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -310,6 +310,24 @@ export const WalletsAndBackup = () => {
                 }
               />
             </Menu>
+
+            {IS_DEV && (
+              <Box>
+                <Menu description="Dev Only: Quick Import/Export Backup">
+                  <MenuItem
+                    hasSfSymbol
+                    leftComponent={<MenuItem.TextIcon icon="⚠️" isLink />}
+                    onPress={() => {
+                      navigate(Routes.MODAL_SCREEN, {
+                        type: 'dev_test_backup',
+                      });
+                    }}
+                    size={52}
+                    titleComponent={<MenuItem.Title isLink text="Dev Only: Quick Import/Export Backup" />}
+                  />
+                </Menu>
+              </Box>
+            )}
 
             <Box>
               <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>

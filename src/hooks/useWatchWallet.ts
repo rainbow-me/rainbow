@@ -44,7 +44,7 @@ export default function useWatchWallet({
           switching: true,
         });
       } catch (e) {
-        logger.error(new RainbowError(`[useWatchWallet]: error while switching account`), {
+        logger.error(new RainbowError(`[useWatchWallet]: error while switching account`, e), {
           error: (e as Error)?.message || 'Unknown error',
         });
       }

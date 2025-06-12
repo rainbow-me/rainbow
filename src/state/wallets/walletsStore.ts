@@ -11,13 +11,13 @@ import {
   AllRainbowWallets,
   generateAccount,
   getAllWallets,
-  getSelectedWalletFromKeychain,
+  getSelectedWallet as getSelectedWalletFromKeychain,
   loadAddress,
   RainbowAccount,
   RainbowWallet,
   saveAddress,
   saveAllWallets,
-  setSelectedWalletInKeychain,
+  setSelectedWallet as setSelectedWalletInKeychain,
 } from '@/model/wallet';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import store from '@/redux/store';
@@ -87,6 +87,8 @@ interface WalletsState {
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
+
+  clearWalletState: () => void;
 }
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
@@ -142,6 +144,16 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       const address = state.accountAddress;
       const wallet = getWalletWithAccount(address);
       return getAccountProfileInfoFromState({ address, wallet }, state);
+    },
+
+    clearWalletState() {
+      set({
+        wallets: {},
+        accountAddress: `0x`,
+        walletReady: false,
+        walletNames: {},
+        selected: null,
+      });
     },
 
     async loadWallets() {
@@ -216,7 +228,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
-        const walletInfo = await getWalletsInfo({ wallets, walletNames });
+        const walletInfo = await refreshWalletsInfo({ wallets, walletNames });
 
         set({
           selected: selectedWallet,
@@ -276,7 +288,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
       set({
         selected: newWallets[id],
-        ...(await getWalletsInfo({ wallets: newWallets, walletNames, useCachedENS: true })),
+        ...(await refreshWalletsInfo({ wallets: newWallets, walletNames, useCachedENS: true })),
       });
 
       setAccountAddress(ensureValidHex(account.address));
@@ -357,7 +369,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     refreshWalletInfo: async props => {
       const { wallets, walletNames } = get();
-      const info = await getWalletsInfo({ wallets, walletNames, useCachedENS: props?.skipENS });
+      const info = await refreshWalletsInfo({ wallets, walletNames, useCachedENS: props?.skipENS });
       if (info) {
         set(info);
       }
@@ -495,60 +507,28 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
 type GetENSInfoProps = { wallets: Wallets; walletNames: WalletNames; useCachedENS?: boolean };
 
-async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
+async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   if (!wallets) {
     throw new Error(`No wallets`);
   }
 
-  const updatedWallets: {
-    [key: string]: RainbowWallet;
-  } = { ...wallets };
+  const updatedWallets: Record<string, RainbowWallet> = {};
+  const updatedWalletNames: Record<string, string> = {};
 
-  let promises: Promise<{
-    account: RainbowAccount;
-    key: string;
-  }>[] = [];
+  // this is imperfect still, ideally we remove walletNames entirely as a separate concept
+  await Promise.all(
+    Object.entries(wallets).map(async ([key, wallet]) => {
+      const newAddresses = await Promise.all(
+        wallet.addresses.map(async account => {
+          updatedWalletNames[key] = removeFirstEmojiFromString(account.label || account.address);
+          return refreshAccountInfo(account, useCachedENS);
+        })
+      );
 
-  for (const key in wallets) {
-    const wallet = wallets[key];
-
-    const innerPromises = wallet?.addresses?.map(async account => {
-      if (useCachedENS && account.label && account.avatar) {
-        return {
-          account,
-          key,
-        };
-      }
-
-      const ens = await fetchReverseRecordWithRetry(account.address);
-      if (ens) {
-        const avatar = await fetchENSAvatar(ens);
-        const newImage = avatar?.imageUrl || null;
-        return {
-          key,
-          account: {
-            ...account,
-            image: newImage,
-            // always prefer our label
-            label: account.label || ens,
-          },
-        };
-      }
-
-      return {
-        account,
-        key,
+      updatedWallets[key] = {
+        ...wallet,
+        addresses: newAddresses,
       };
-    });
-
-    promises = promises.concat(innerPromises);
-  }
-
-  const allAccounts = await Promise.all(promises);
-
-  const updatedWalletNames = Object.fromEntries(
-    allAccounts.map(({ account }) => {
-      return [account.address, removeFirstEmojiFromString(account.label || account.address)];
     })
   );
 
@@ -558,13 +538,26 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   };
 }
 
-export const useAccountAddress = () => {
-  const address = useWalletsStore(state => state.accountAddress);
-  if (!address) {
-    throw new Error(`Error: useAccountAddress hook must be used after selecting a wallet.`);
+async function refreshAccountInfo(account: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
+  if (useCachedENS && account.label && account.avatar) {
+    return account;
   }
-  return address;
-};
+
+  const ens = await fetchReverseRecordWithRetry(account.address);
+
+  if (ens) {
+    const avatar = await fetchENSAvatar(ens);
+    const newImage = avatar?.imageUrl || null;
+    return {
+      ...account,
+      image: newImage,
+      // always prefer our label
+      label: account.label || ens,
+    };
+  }
+
+  return account;
+}
 
 export const useWallets = () => useWalletsStore(state => state.wallets);
 export const useWallet = (id: string) => useWallets()?.[id];
@@ -597,6 +590,14 @@ export const isImportedWallet = (address: string): boolean => {
     }
   }
   return false;
+};
+
+export const useAccountAddress = () => {
+  const address = useWalletsStore(state => state.accountAddress);
+  if (!address) {
+    throw new Error(`Error: useAccountAddress hook must be used after selecting a wallet.`);
+  }
+  return address;
 };
 
 export const useAccountProfileInfo = () => {
@@ -657,6 +658,7 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
 
 // export static functions
 export const {
+  clearWalletState,
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
   createAccount,
