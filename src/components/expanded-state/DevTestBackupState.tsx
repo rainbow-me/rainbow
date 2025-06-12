@@ -8,6 +8,7 @@ import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import { navigate, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/Routes';
+import { loadWallets } from '@/state/wallets/walletsStore';
 
 export const DevTestBackupState = () => {
   const { goBack } = useNavigation();
@@ -45,7 +46,10 @@ export const DevTestBackupState = () => {
       <Pressable
         onPress={async () => {
           const backup = await Clipboard.getString();
+          console.log(`got backup`, backup);
           const restored = await restoreBackup(backup);
+          console.log(`restored?`, restored);
+          await loadWallets();
           if (restored) {
             goBack();
           } else {
@@ -71,12 +75,9 @@ export const DevTestBackupState = () => {
 
       <Pressable
         onPress={async () => {
-          Alert.alert(`wiping keychain...`);
           await wipeKeychain();
-          Alert.alert(`wiping storages...`);
           await clearAllStorages();
           // we need to navigate back to the welcome screen
-          Alert.alert(`go home...`);
           goBack();
           setTimeout(() => {
             navigate(Routes.WELCOME_SCREEN);
