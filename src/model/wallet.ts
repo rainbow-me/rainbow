@@ -190,9 +190,7 @@ export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is 
   if ('signTransaction' in wallet) {
     return wallet as any;
   }
-  // TODO we had bad types before, but this somehow worked alright i had this
-  // throwing an error but it was hitting in different areas, so want to just
-  // warn here and then follow up with a better fix in our next refactor
+  // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
   console.log(
     // @ts-expect-error using property types to log errors better
     `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
@@ -207,9 +205,7 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   if (typeof wallet.getPrivateKey !== 'function') {
     return wallet as any;
   }
-  // TODO we had bad types before, but this somehow worked alright i had this
-  // throwing an error but it was hitting in different areas, so want to just
-  // warn here and then follow up with a better fix in our next refactor
+  // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
   console.log(
     `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
   );

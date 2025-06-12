@@ -8,7 +8,9 @@ import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import { navigate, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/Routes';
-import { loadWallets } from '@/state/wallets/walletsStore';
+import { clearWalletState, loadWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 
 export const DevTestBackupState = () => {
   const { goBack } = useNavigation();
@@ -45,15 +47,29 @@ export const DevTestBackupState = () => {
 
       <Pressable
         onPress={async () => {
-          const backup = await Clipboard.getString();
-          console.log(`got backup`, backup);
-          const restored = await restoreBackup(backup);
-          console.log(`restored?`, restored);
-          await loadWallets();
-          if (restored) {
-            goBack();
-          } else {
-            Alert.alert(`invalid backup`);
+          try {
+            const backup = await Clipboard.getString();
+
+            if (!backup) {
+              Alert.alert(`No backup?`);
+              return;
+            }
+
+            walletLoadingStore.setState({
+              loadingState: WalletLoadingStates.IMPORTING_WALLET,
+            });
+            const restored = await restoreBackup(backup);
+
+            if (restored) {
+              await loadWallets();
+              goBack();
+            } else {
+              Alert.alert(`invalid backup`);
+            }
+          } finally {
+            walletLoadingStore.setState({
+              loadingState: null,
+            });
           }
         }}
       >
@@ -77,6 +93,7 @@ export const DevTestBackupState = () => {
         onPress={async () => {
           await wipeKeychain();
           await clearAllStorages();
+          clearWalletState();
           // we need to navigate back to the welcome screen
           goBack();
           setTimeout(() => {

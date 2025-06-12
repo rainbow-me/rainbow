@@ -87,6 +87,8 @@ interface WalletsState {
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
+
+  clearWalletState: () => void;
 }
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
@@ -142,6 +144,16 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       const address = state.accountAddress;
       const wallet = getWalletWithAccount(address);
       return getAccountProfileInfoFromState({ address, wallet }, state);
+    },
+
+    clearWalletState() {
+      set({
+        wallets: {},
+        accountAddress: `0x`,
+        walletReady: false,
+        walletNames: {},
+        selected: null,
+      });
     },
 
     async loadWallets() {
@@ -629,6 +641,7 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
 
 // export static functions
 export const {
+  clearWalletState,
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
   createAccount,
