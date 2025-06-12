@@ -2,14 +2,15 @@ import CopyTooltip from '@/components/copy-tooltip';
 import { Box, Text } from '@/design-system';
 import { createBackup, restoreBackup } from '@/model/backup';
 import React, { useEffect, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
-import { navigate } from '@/navigation/Navigation';
+import { navigate, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/Routes';
 
 export const DevTestBackupState = () => {
+  const { goBack } = useNavigation();
   const [exported, setExported] = useState('test123');
 
   useEffect(() => {
@@ -44,7 +45,12 @@ export const DevTestBackupState = () => {
       <Pressable
         onPress={async () => {
           const backup = await Clipboard.getString();
-          restoreBackup(backup);
+          const restored = await restoreBackup(backup);
+          if (restored) {
+            goBack();
+          } else {
+            Alert.alert(`invalid backup`);
+          }
         }}
       >
         <Box
@@ -56,7 +62,7 @@ export const DevTestBackupState = () => {
           shadow="21px light (Deprecated)"
         >
           <Text color="base" size="15pt">
-            Paste Backup!
+            Restore from Paste!
           </Text>
         </Box>
       </Pressable>
