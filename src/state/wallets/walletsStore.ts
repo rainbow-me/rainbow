@@ -518,9 +518,10 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   await Promise.all(
     Object.entries(wallets).map(async ([key, wallet]) => {
       const newAddresses = await Promise.all(
-        wallet.addresses.map(async account => {
+        wallet.addresses.map(async ogAccount => {
+          const account = await refreshAccountInfo(ogAccount, useCachedENS);
           updatedWalletNames[account.address] = removeFirstEmojiFromString(account.label || account.address);
-          return refreshAccountInfo(account, useCachedENS);
+          return account;
         })
       );
 
