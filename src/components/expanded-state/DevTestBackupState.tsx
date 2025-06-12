@@ -71,10 +71,16 @@ export const DevTestBackupState = () => {
 
       <Pressable
         onPress={async () => {
+          Alert.alert(`wiping keychain...`);
           await wipeKeychain();
+          Alert.alert(`wiping storages...`);
           await clearAllStorages();
           // we need to navigate back to the welcome screen
-          navigate(Routes.WELCOME_SCREEN);
+          Alert.alert(`go home...`);
+          goBack();
+          setTimeout(() => {
+            navigate(Routes.WELCOME_SCREEN);
+          }, 500);
         }}
       >
         <Box
