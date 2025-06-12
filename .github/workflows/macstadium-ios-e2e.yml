@@ -19,18 +19,6 @@ jobs:
     env:
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
-      - name: Install jq
-        run: |
-            mkdir -p $HOME/.local/bin
-            curl -L -o $HOME/.local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64
-            chmod +x $HOME/.local/bin/jq
-            echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: 'Check jq'
-        run: |
-          which jq
-          jq --version
-
       - name: Checkout repo
         uses: actions/checkout@v4
 
