@@ -9,6 +9,7 @@ import {
   getTargetAddress,
   getWrappedAssetAddress,
   getWrappedAssetMethod,
+  prepareFillQuote,
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';

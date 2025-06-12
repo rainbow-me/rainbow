@@ -101,6 +101,7 @@
     "@metamask/eth-sig-util": "7.0.2",
     "@notifee/react-native": "7.8.2",
     "@rainbow-me/provider": "0.1.2",
+    "@rainbow-me/rainbow-delegation": "git+ssh://git@github.com/rainbow-me/rainbow-delegation.git",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.36.0",
     "@rainbow-me/token-launcher": "0.1.0",
@@ -303,7 +304,7 @@
     "use-debounce": "10.0.0",
     "use-deep-compare": "1.3.0",
     "use-memo-one": "1.1.1",
-    "viem": "2.21.54",
+    "viem": "2.31.0",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2",
     "zeego": "1.10.0",
@@ -381,7 +382,11 @@
   "packageManager": "yarn@4.2.2",
   "resolutions": {
     "react-native/react-devtools-core": "4.28.4",
-    "cross-fetch": "3.1.5"
+    "cross-fetch": "3.1.5",
+    "@rainbow-me/rainbow-delegation/viem": "2.31.0",
+    "viem": "2.31.0",
+    "@rainbow-me/provider/viem": "2.31.0",
+    "mipd/viem": "2.31.0"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",

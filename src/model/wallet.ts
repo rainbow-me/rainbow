@@ -48,9 +48,12 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
-import { Network } from '@/state/backendNetworks/types';
+import { Network, ChainId } from '@/state/backendNetworks/types';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { GetOptions, SetOptions } from 'react-native-keychain';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { PublicClient, WalletClient, createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -336,6 +339,76 @@ export const loadWallet = async <S extends Screen>({
   } else if (privateKey) {
     return new Wallet(privateKey, provider);
   }
+  if (ios && showErrorIfNotLoaded) {
+    showWalletErrorAlert();
+  }
+  return null;
+};
+
+export const loadWalletViem = async <S extends Screen>({
+  address,
+  showErrorIfNotLoaded = true,
+  publicClient,
+  timeTracking,
+}: {
+  address?: EthereumAddress;
+  showErrorIfNotLoaded?: boolean;
+  publicClient: PublicClient;
+  timeTracking?: ExecuteFnParamsWithoutFn<S>;
+}): Promise<null | WalletClient> => {
+  const addressToUse = address || (await loadAddress());
+  if (!addressToUse) {
+    return null;
+  }
+
+  // checks if the address is a hardware wallet for proper handling
+  const selectedWallet = getWalletWithAccount(addressToUse);
+  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
+
+  // For now, we'll skip hardware wallet support in viem version
+  // Hardware wallets would need special handling with viem
+  if (isHardwareWallet) {
+    logger.debug('[wallet]: Hardware wallets not yet supported in viem version');
+    return null;
+  }
+
+  let privateKey: Awaited<ReturnType<typeof loadPrivateKey>>;
+  if (timeTracking) {
+    privateKey = await performanceTracking.getState().executeFn({
+      ...timeTracking,
+      fn: loadPrivateKey,
+    })(addressToUse, isHardwareWallet);
+  } else {
+    privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
+  }
+
+  // kc.ErrorType.UserCanceled means the user cancelled, so we don't wanna do anything
+  // kc.ErrorType.NotAuthenticated means the user is not authenticated (maybe removed biometrics).
+  //    In this case we show an alert inside loadPrivateKey
+  if (privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
+    return null;
+  }
+
+  if (privateKey && !isHardwareWalletKey(privateKey)) {
+    // Create viem account from private key
+    const account = privateKeyToAccount(privateKey as `0x${string}`);
+
+    // Get the RPC URL for creating a new transport
+    const chainId = publicClient.chain?.id || ChainId.mainnet;
+    const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
+
+    console.log('public client chain:', publicClient.chain);
+
+    // Create wallet client with the account and a new transport
+    const walletClient = createWalletClient({
+      chain: publicClient.chain,
+      account,
+      transport: http(providerUrl),
+    });
+
+    return walletClient;
+  }
+
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
   }
