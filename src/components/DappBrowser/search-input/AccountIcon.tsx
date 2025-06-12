@@ -15,7 +15,6 @@ import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBO
 export const AccountIcon = React.memo(function AccountIcon() {
   const accountAddress = useAccountAddress();
   const { isDarkMode } = useColorMode();
-  const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
 
   const { activeTabRef } = useBrowserContext();
   const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || RAINBOW_HOME;
@@ -34,17 +33,16 @@ export const AccountIcon = React.memo(function AccountIcon() {
   }, [hostSessions]);
 
   // listens to the current active tab and sets the account
-  useEffect(() => {
+  const currentAddress = (() => {
     if (activeTabHost || isOnHomepage) {
       if (currentSession?.address) {
-        setCurrentAddress(currentSession?.address);
+        return currentSession?.address;
       } else if (hostSessions?.activeSessionAddress) {
-        setCurrentAddress(hostSessions.activeSessionAddress);
-      } else {
-        setCurrentAddress(accountAddress);
+        return hostSessions.activeSessionAddress;
       }
     }
-  }, [accountAddress, activeTabHost, currentSession, hostSessions?.activeSessionAddress, isOnHomepage]);
+    return accountAddress;
+  })();
 
   const accountInfo = useMemo(() => {
     return getAccountProfileInfo({
