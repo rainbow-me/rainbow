@@ -208,7 +208,18 @@ export type InitializeWalletParams = CreateWalletParams & {
   switching?: boolean;
 };
 
-export const walletInit = async ({}: InitializeWalletParams): Promise<WalletInitialized> => {
+export const walletInit = async ({
+  seedPhrase,
+  color = null,
+  name = null,
+  overwrite = false,
+  checkedWallet = null,
+  network,
+  image = null,
+  // Import the wallet "silently" in the background (i.e. no "loading" prompts).
+  silent = false,
+  userPin,
+}: InitializeWalletParams): Promise<WalletInitialized> => {
   let walletAddress = null;
 
   // When the `seedPhrase` is not defined in the args, then
