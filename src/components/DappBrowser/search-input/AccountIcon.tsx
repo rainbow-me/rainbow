@@ -8,47 +8,60 @@ import { useAppSessionsStore } from '@/state/appSessions';
 import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { getAccountProfileInfo, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
+import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress } from '@/state/wallets/walletsStore';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const accountAddress = useAccountAddress();
   const { isDarkMode } = useColorMode();
+  const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
+  const selectedWallet = getWalletWithAccount(currentAddress);
+
+  const accountInfo = useMemo(() => {
+    const profileInfo = getAccountProfileInfo({
+      address: currentAddress,
+      wallet: selectedWallet,
+    });
+    return {
+      ...profileInfo,
+    };
+  }, [currentAddress, selectedWallet]);
+
+  // fix bad state - if no wallet exists, we should revert to the default
+  useEffect(() => {
+    if (currentAddress && !selectedWallet) {
+      setCurrentAddress(accountAddress);
+    }
+  }, [currentAddress, selectedWallet, accountAddress]);
 
   const { activeTabRef } = useBrowserContext();
   const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || RAINBOW_HOME;
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || RAINBOW_HOME) === RAINBOW_HOME);
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
-  const currentSession = useMemo(() => {
-    if (!hostSessions) {
-      return null;
-    }
-    return hostSessions.sessions?.[hostSessions.activeSessionAddress]
-      ? {
-          address: hostSessions.activeSessionAddress,
-          network: hostSessions.sessions[hostSessions.activeSessionAddress],
-        }
-      : null;
-  }, [hostSessions]);
+  const currentSession = useMemo(
+    () =>
+      hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
+        ? {
+            address: hostSessions.activeSessionAddress,
+            network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          }
+        : null,
+    [hostSessions]
+  );
 
   // listens to the current active tab and sets the account
-  const currentAddress = (() => {
+  useEffect(() => {
     if (activeTabHost || isOnHomepage) {
       if (currentSession?.address) {
-        return currentSession?.address;
+        setCurrentAddress(currentSession?.address);
       } else if (hostSessions?.activeSessionAddress) {
-        return hostSessions.activeSessionAddress;
+        setCurrentAddress(hostSessions.activeSessionAddress);
+      } else {
+        setCurrentAddress(accountAddress);
       }
     }
-    return accountAddress;
-  })();
-
-  const accountInfo = useMemo(() => {
-    return getAccountProfileInfo({
-      address: currentAddress,
-    });
-  }, [currentAddress]);
+  }, [accountAddress, activeTabHost, currentSession, hostSessions?.activeSessionAddress, isOnHomepage]);
 
   const handleOnPress = useCallback(() => {
     Navigation.handleAction(Routes.DAPP_BROWSER_CONTROL_PANEL, {
