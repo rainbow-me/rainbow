@@ -366,7 +366,6 @@ const HomePanel = memo(function HomePanel({
   onDisconnect: () => void;
 }) {
   const accountAddress = useAccountAddress();
-  const wallets = useWallets();
 
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
@@ -403,7 +402,7 @@ const HomePanel = memo(function HomePanel({
   }, [allNetworkItems, animatedAccentColor, goToPage, selectedChainId, selectedWallet]);
 
   const runWalletChecksBeforeSwapOrBridge = useCallback(async () => {
-    if (!selectedWallet || !wallets) return false;
+    if (!selectedWallet) return false;
     // check if read only
     const walletInPanel = getWalletWithAccount(selectedWallet.uniqueId);
     if (!walletInPanel) return false;
@@ -424,7 +423,7 @@ const HomePanel = memo(function HomePanel({
       });
     }
     return true;
-  }, [accountAddress, selectedWallet, wallets]);
+  }, [accountAddress, selectedWallet]);
 
   const handleOnPressSwap = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
