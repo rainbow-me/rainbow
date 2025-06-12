@@ -95,7 +95,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
     <Stack>
       <Box alignItems="flex-end" height="40px">
         {(canBeResubmitted || canBeCancelled) && (
-          <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onMenuItemPress}>
+          <ContextMenuButton testID="transaction-details-context-menu-button" menuConfig={menuConfig} onPressMenuItem={onMenuItemPress}>
             <ButtonPressAnimation>
               <Box style={styles.overflowHidden} height={{ custom: SIZE }} width={{ custom: SIZE }} borderRadius={SIZE / 2}>
                 <RadialGradient style={styles.gradient} colors={colors.gradients.lightestGrey} center={[0, SIZE / 2]} radius={SIZE}>

@@ -76,7 +76,7 @@ const saveToCameraRoll = async (url: string): Promise<void> => {
     alertError();
     return;
   }
-  const url2Download = staticImgixClient?.buildURL(url);
+  const url2Download = staticImgixClient?.buildURL(url, { fm: 'png' });
 
   if (Platform.OS === 'android') {
     await downloadImageAndroid(url2Download);
