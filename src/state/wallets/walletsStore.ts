@@ -514,6 +514,7 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   const updatedWallets: Record<string, RainbowWallet> = {};
   const updatedWalletNames: Record<string, string> = {};
 
+  // this is imperfect still, ideally we remove walletNames entirely as a separate concept
   await Promise.all(
     Object.entries(wallets).map(async ([key, wallet]) => {
       const newAddresses = await Promise.all(
