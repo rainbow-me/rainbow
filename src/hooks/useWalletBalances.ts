@@ -33,7 +33,6 @@ export type WalletBalanceResult = {
  * @returns Balances for all wallets
  */
 const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
-  const accountAddress = useAccountAddress();
   const { nativeCurrency } = useAccountSettings();
 
   const allAddresses = useMemo(

@@ -148,16 +148,12 @@ export default function SendContactList({
     );
   }, [accountAddress, currentInput, watchedAccounts]);
 
-  console.log('watchedAccounts', watchedAccounts)
-
   const filteredEnsSuggestions = useMemo(() => {
     const ownedAddresses = filteredAddresses.map(account => account.address);
     const watchedAddresses = filteredWatchedAddresses.map(account => account.address);
     const allAddresses = [...ownedAddresses, ...watchedAddresses];
     return ensSuggestions.filter(account => !allAddresses?.includes(toChecksumAddress(account?.address)));
   }, [filteredAddresses, filteredWatchedAddresses, ensSuggestions]);
-
-  console.log('filteredWatchedAddresses', JSON.stringify(filteredWatchedAddresses, null, 2))
 
   const sections = useMemo(() => {
     const tmp = [];

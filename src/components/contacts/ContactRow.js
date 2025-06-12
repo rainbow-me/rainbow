@@ -73,8 +73,6 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
   const initialENSName = typeof ens === 'string' ? ens : nickname?.includes(ENS_DOMAIN) ? nickname : '';
 
-  console.log('wtf', ens, typeof ens, initialENSName)
-
   const [ensName, setENSName] = useState(initialENSName);
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
