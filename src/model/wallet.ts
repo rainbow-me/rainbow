@@ -96,17 +96,17 @@ interface ReadOnlyWallet {
   privateKey: null;
 }
 
-interface EthereumWalletFromSeed {
+export interface EthereumWalletFromSeed {
   hdnode: null | HDNode;
   isHDWallet: boolean;
   wallet: null | EthereumWallet;
   type: EthereumWalletType;
   walletType: WalletLibraryType;
-  root: EthereumHDKey;
+  root: null | EthereumHDKey;
   address: EthereumAddress;
 }
 
-type EthereumWallet = Wallet | ReadOnlyWallet;
+export type EthereumWallet = Wallet | ReadOnlyWallet | LibWallet;
 
 export interface RainbowAccount {
   index: number;
@@ -183,6 +183,38 @@ const authenticationPrompt = { title: lang.t('wallet.authenticate.please') };
 
 export const createdWithBiometricError = 'createdWithBiometricError';
 
+export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is Wallet {
+  if ('getPrivateKey' in wallet) {
+    throw new Error(`Not expected: LibWallet not Wallet`);
+  }
+  if ('signTransaction' in wallet) {
+    return wallet as any;
+  }
+  // TODO we had bad types before, but this somehow worked alright i had this
+  // throwing an error but it was hitting in different areas, so want to just
+  // warn here and then follow up with a better fix in our next refactor
+  console.log(
+    // @ts-expect-error using property types to log errors better
+    `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
+  );
+}
+
+export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWallet {
+  if ('signTransaction' in wallet) {
+    throw new Error(`Not expected: Wallet not LibWallet`);
+  }
+  // @ts-expect-error it's not directly "in" but it exists
+  if (typeof wallet.getPrivateKey !== 'function') {
+    return wallet as any;
+  }
+  // TODO we had bad types before, but this somehow worked alright i had this
+  // throwing an error but it was hitting in different areas, so want to just
+  // warn here and then follow up with a better fix in our next refactor
+  console.log(
+    `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
+  );
+}
+
 const isHardwareWalletKey = (key: string | null) => {
   const data = key?.split('/');
   if (data && data.length > 1) {
@@ -238,6 +270,7 @@ export const walletInit = async ({
       silent,
       userPin,
     });
+    ensureEthereumWallet(wallet!);
     walletAddress = wallet?.address;
     return { isNew, walletAddress };
   }
@@ -246,6 +279,7 @@ export const walletInit = async ({
 
   if (!walletAddress) {
     const wallet = await createWallet({});
+    ensureEthereumWallet(wallet!);
     if (!wallet?.address) {
       throw new RainbowError('Error creating wallet address');
     }
@@ -643,7 +677,8 @@ export const createWallet = async ({
     if (!walletResult || !address) return null;
     const walletAddress = address;
     if (isHDWallet) {
-      pkey = addHexPrefix((walletResult as LibWallet).getPrivateKey().toString('hex'));
+      ensureLibWallet(walletResult);
+      pkey = addHexPrefix(walletResult.getPrivateKey().toString('hex'));
     } else if (isHardwareWallet) {
       // hardware pkey format is ${bluetooth device id}/${index}
       pkey = `${seed}/0`;
@@ -742,6 +777,10 @@ export const createWallet = async ({
         let nextWallet: any = null;
         if (isHardwareWallet) {
           const walletObj = await deriveAccountFromBluetoothHardwareWallet(seed, index);
+          if (!walletObj.wallet) {
+            throw new Error(`No wallet (unreachable)`);
+          }
+          ensureEthereumWallet(walletObj.wallet);
           nextWallet = {
             address: walletObj.wallet.address,
             privateKey: walletObj.wallet.privateKey,
@@ -1140,7 +1179,7 @@ export function setCallbackAfterObtainingSeedsFromKeychainOrError(callback: () =
   callbackAfterSeeds = callback;
 }
 
-export const generateAccount = async (id: RainbowWallet['id'], index: number): Promise<null | EthereumWallet> => {
+export const generateAccount = async (id: RainbowWallet['id'], index: number): Promise<null | Wallet | ReadOnlyWallet> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(oldSeedPhraseMigratedKey);
     let seedphrase;
@@ -1169,6 +1208,7 @@ export const generateAccount = async (id: RainbowWallet['id'], index: number): P
     }
     const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase, index);
     if (!ethereumJSWallet) return null;
+    ensureLibWallet(ethereumJSWallet);
     const walletAddress = addHexPrefix(toChecksumAddress(ethereumJSWallet.getAddress().toString('hex')));
     const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
 
@@ -1219,6 +1259,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
         {
           const { wallet: ethereumJSWallet } = await deriveAccountFromMnemonic(seedphrase);
           if (!ethereumJSWallet) return null;
+          ensureLibWallet(ethereumJSWallet);
           const walletPkey = addHexPrefix(ethereumJSWallet.getPrivateKey().toString('hex'));
 
           existingAccount = new Wallet(walletPkey);
