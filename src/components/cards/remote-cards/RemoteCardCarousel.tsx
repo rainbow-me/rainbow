@@ -10,7 +10,7 @@ import { useDimensions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import Routes from '@/navigation/routesNames';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { FlashList } from '@shopify/flash-list';
 
 type RenderItemProps = {
@@ -31,7 +31,6 @@ export const RemoteCardCarousel = () => {
   const carouselRef = useRef<FlashList<string>>(null);
   const { name } = useRoute();
   const config = useRemoteConfig();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { width } = useDimensions();
 
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
@@ -43,7 +42,7 @@ export const RemoteCardCarousel = () => {
     return <RemoteCard id={item} gutterSize={gutterSize} carouselRef={carouselRef} />;
   };
 
-  if (isReadOnlyWallet || IS_TEST || !remoteCardsEnabled || !cardIds.length) {
+  if (getIsReadOnlyWallet() || IS_TEST || !remoteCardsEnabled || !cardIds.length) {
     return null;
   }
 

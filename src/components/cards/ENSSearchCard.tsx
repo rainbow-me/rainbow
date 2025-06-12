@@ -10,7 +10,7 @@ import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useNavigation } from '../../navigation/Navigation';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { GenericCard, Gradient } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
 
@@ -30,7 +30,6 @@ const springConfig = {
 export const ENSSearchCard = () => {
   const { pendingRegistrations } = useENSPendingRegistrations();
   const { navigate } = useNavigation();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { name: routeName } = useRoute();
   const cardType = 'square';
 
@@ -48,7 +47,7 @@ export const ENSSearchCard = () => {
   }, [pendingBadgeProgress, pendingRegistrations?.length]);
 
   const handlePress = () => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.cardPressed, {
         cardName: 'ENSSearchCard',
         routeName,

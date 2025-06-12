@@ -12,7 +12,7 @@ import {
   useAccountProfileInfo,
   useWallets,
   useSelectedWallet,
-  useIsReadOnlyWallet,
+  getIsReadOnlyWallet,
 } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch, showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
@@ -39,7 +39,6 @@ type UseOnAvatarPressProps = {
 export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const wallets = useWallets();
   const selectedWallet = useSelectedWallet();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -147,7 +146,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     });
   }, [accountENS, navigate, startRegistration]);
 
-  const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
+  const isReadOnly = getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet;
 
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
   const isZeroETH = isZero(accountAsset?.balance?.amount || 0);
