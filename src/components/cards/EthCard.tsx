@@ -11,7 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { ETH_ADDRESS } from '@/references';
 import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
-import Labels from '../value-chart/ExtremeLabels';
+import { ExtremeLabels } from '../value-chart/ExtremeLabels';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
 import Spinner from '../Spinner';
@@ -244,7 +244,7 @@ export const EthCard = () => {
                   shadowRadius: 4.5,
                 }}
               />
-              <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
+              <ExtremeLabels color={colorForAsset} isCard />
             </ChartPathProvider>
           )}
         </Box>

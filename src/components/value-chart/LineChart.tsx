@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Box, useColorMode } from '@/design-system';
-import Labels from './ExtremeLabels';
+import { ExtremeLabels } from './ExtremeLabels';
 import { ChartDot, ChartPath, ChartPathProvider, useChartData } from '@/react-native-animated-charts/src';
 import { useTheme } from '@/theme';
 import { useChartThrottledPoints } from '@/hooks';
@@ -78,7 +78,7 @@ const Chart = ({ strokeColor, width, height, isChartGestureActive, chartGestureU
 
   return (
     <Box>
-      <Labels color={strokeColor} width={width} isCard={false} />
+      <ExtremeLabels color={strokeColor} isCard={false} />
       <ChartPath
         fill="none"
         hapticsEnabled

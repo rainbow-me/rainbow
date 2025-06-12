@@ -30,8 +30,9 @@ import { ChartData, PathData } from '../../helpers/ChartContext';
 import { requireOnWorklet, useWorkletValue } from '../../helpers/requireOnWorklet';
 import { useChartData } from '../../helpers/useChartData';
 
-export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
-export const FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER = 3;
+// These not being set to 0 makes it harder to reason about the chart height, and I cannot see any difference when they are set to 0. Keeping in place in case it is needed for some reason.
+export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 0; // 22
+export const FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER = 0; // 3
 
 function least(length: number, compare: (value: number) => number) {
   'worklet';

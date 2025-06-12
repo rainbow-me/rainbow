@@ -24,10 +24,10 @@ export const ChartLoadingSpinner = memo(function ChartLoadingSpinner({ color, si
     };
   });
 
+  // TODO: should be fade + scale animation
   return (
-    // TODO: should be fade + scale animation
     <Animated.View entering={FadeIn.duration(140)} exiting={FadeOut.duration(140)}>
-      <ImgixImage source={spinnerImage} size={size} resizeMode={ImgixImage.resizeMode.contain} tintColor={color} style={spinnerStyle} />;
+      <ImgixImage source={spinnerImage} size={size} resizeMode={ImgixImage.resizeMode.contain} tintColor={color} style={spinnerStyle} />
     </Animated.View>
   );
 });
