@@ -30,7 +30,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
           address: hostSessions.activeSessionAddress,
           network: hostSessions.sessions[hostSessions.activeSessionAddress],
         }
-      : { address: hostSessions.activeSessionAddress };
+      : null;
   }, [hostSessions]);
 
   // listens to the current active tab and sets the account
