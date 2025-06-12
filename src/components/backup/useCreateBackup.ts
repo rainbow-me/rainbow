@@ -1,17 +1,19 @@
-import { useCallback } from 'react';
-import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { cloudPlatform } from '@/utils/platform';
+/* eslint-disable no-promise-executor-return */
 import { analytics } from '@/analytics';
-import { useWalletCloudBackup, useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { Navigation } from '@/navigation';
-import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '@/components/alerts';
-import { useDispatch } from 'react-redux';
-import * as i18n from '@/languages';
 import showWalletErrorAlert from '@/helpers/support';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { useWalletCloudBackup } from '@/hooks';
+import * as i18n from '@/languages';
+import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { useWallets } from '@/state/wallets/walletsStore';
+import { cloudPlatform } from '@/utils/platform';
+import { useCallback } from 'react';
+import { InteractionManager } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 type UseCreateBackupProps = {
   walletId?: string;
@@ -25,7 +27,7 @@ export const useCreateBackup = () => {
   const dispatch = useDispatch();
 
   const walletCloudBackup = useWalletCloudBackup();
-  const { wallets } = useWallets();
+  const wallets = useWallets();
 
   const setLoadingStateWithTimeout = useCallback(
     ({ state, outOfSync = false, failInMs = 10_000 }: { state: CloudBackupState; outOfSync?: boolean; failInMs?: number }) => {
@@ -108,7 +110,6 @@ export const useCreateBackup = () => {
           password,
           onError,
           onSuccess,
-          dispatch,
         });
         return;
       }

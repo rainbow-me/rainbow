@@ -1,18 +1,19 @@
-import * as React from 'react';
-import { useRecoilState } from 'recoil';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Icon } from '@/components/icons';
-import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
-import { useAccountProfile, useDimensions } from '@/hooks';
-import { useNavigation } from '@/navigation';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
-import Routes from '@rainbow-me/routes';
 import { FloatingEmojis } from '@/components/floating-emojis';
-import { haptics } from '@/utils';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { Icon } from '@/components/icons';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
+import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { haptics } from '@/utils';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import Routes from '@rainbow-me/routes';
+import Clipboard from '@react-native-clipboard/clipboard';
+import * as React from 'react';
+import { useRecoilState } from 'recoil';
 
 export const ProfileNameRowHeight = 16;
 const CARET_ICON_WIDTH = 22;
@@ -30,7 +31,7 @@ export function ProfileNameRow({
 }) {
   // ////////////////////////////////////////////////////
   // Account
-  const { accountENS, accountName } = useAccountProfile();
+  const { accountENS, accountName } = useAccountProfileInfo();
 
   const onNewEmoji = React.useRef<() => void>();
 
@@ -39,7 +40,7 @@ export function ProfileNameRow({
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const { accountAddress } = useAccountProfile();
+  const accountAddress = useAccountAddress();
 
   const onPressName = () => {
     if (disableOnPress) return;

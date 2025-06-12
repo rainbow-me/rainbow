@@ -1,7 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+import { ExchangeRateBubble } from '@/__swaps__/screens/Swap/components/ExchangeRateBubble';
+import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
+import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
+import { SwapBackground } from '@/__swaps__/screens/Swap/components/SwapBackground';
+import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
+import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAsset';
+import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
+import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
@@ -13,23 +19,17 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { ExchangeRateBubble } from '@/__swaps__/screens/Swap/components/ExchangeRateBubble';
-import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
-import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
-import { SwapBackground } from '@/__swaps__/screens/Swap/components/SwapBackground';
-import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
-import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAsset';
-import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
-import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
-import { SwapAssetType } from '@/__swaps__/types/swap';
-import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { safeAreaInsetValues } from '@/utils';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { StatusBar, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
+import { ReviewButton } from './components/ReviewButton';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { useSwapsSearchStore } from './resources/search/searchV2';
-import { ReviewButton } from './components/ReviewButton';
 
 /** README
  * This screen is largely driven by Reanimated and Gesture Handler, which

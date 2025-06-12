@@ -1,6 +1,6 @@
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { useMMKVString } from 'react-native-mmkv';
-import useAccountSettings from './useAccountSettings';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const getStorageKey = (accountAddress: string) => `nfts-sort-${accountAddress}`;
 
@@ -15,7 +15,7 @@ export const parseNftSort = (s: string | undefined) => {
 export type NftSort = `${NftCollectionSortCriterion}|${SortDirection}`;
 
 export function useNftSort() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const [nftSortData, setNftSortData] = useMMKVString(getStorageKey(accountAddress));
   const [sortBy, sortDirection] = parseNftSort(nftSortData);
 

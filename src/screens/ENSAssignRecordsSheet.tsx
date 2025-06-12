@@ -1,3 +1,24 @@
+import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '@/handlers/localstorage/ens';
+import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
+import {
+  useDimensions,
+  useENSModifiedRegistration,
+  useENSRecords,
+  useENSRegistration,
+  useENSRegistrationCosts,
+  useENSRegistrationForm,
+  useENSRegistrationStepHandler,
+  useENSSearch,
+  useKeyboardHeight,
+  useWalletSectionsData,
+} from '@/hooks';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { ENSRoutes } from '@/navigation/RegisterENSNavigator';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
@@ -16,27 +37,6 @@ import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
-import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '@/handlers/localstorage/ens';
-import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
-import {
-  useAccountProfile,
-  useDimensions,
-  useENSModifiedRegistration,
-  useENSRecords,
-  useENSRegistration,
-  useENSRegistrationCosts,
-  useENSRegistrationForm,
-  useENSRegistrationStepHandler,
-  useENSSearch,
-  useKeyboardHeight,
-  useWalletSectionsData,
-} from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { ENSRoutes } from '@/navigation/RegisterENSNavigator';
-import { RootStackParamList } from '@/navigation/types';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
@@ -206,7 +206,7 @@ export function ENSAssignRecordsBottomActions({
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const { accountENS } = useAccountProfile();
+  const { accountENS } = useAccountProfileInfo();
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();

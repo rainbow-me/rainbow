@@ -7,7 +7,8 @@ import { avatarMetadataAtom } from '../components/ens-registration/RegistrationA
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
-import { useAccountSettings, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
+
+import { refreshWalletInfo, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
@@ -27,6 +28,7 @@ import { noop } from 'lodash';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { IS_IOS } from '@/env';
+import useENSRegistration from '@/hooks/useENSRegistration';
 
 // Generic type for action functions
 type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;
@@ -92,12 +94,11 @@ const formatENSActionParams = (registrationParameters: RegistrationParameters): 
 };
 
 const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step, sendReverseRecord = false, yearsDuration = 1 }) => {
-  const { accountAddress } = useAccountSettings();
-  const { registrationParameters } = useENSRegistration();
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
-  const { updateWalletENSAvatars } = useWalletENSAvatar();
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useIsHardwareWallet();
+  const accountAddress = useAccountAddress();
+  const { registrationParameters } = useENSRegistration();
 
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
   const coverMetadata = useRecoilValue(coverMetadataAtom);
@@ -110,7 +111,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
     const updateAvatars = () => {
       if (updateAvatarsOnNextBlock.current) {
-        updateWalletENSAvatars();
+        refreshWalletInfo();
         updateAvatarsOnNextBlock.current = false;
       }
     };
@@ -122,7 +123,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     return () => {
       provider?.off('block', updateAvatars);
     };
-  }, [updateWalletENSAvatars]);
+  }, []);
 
   // actions
   const commitAction: ActionTypes[typeof REGISTRATION_STEPS.COMMIT] = useCallback(

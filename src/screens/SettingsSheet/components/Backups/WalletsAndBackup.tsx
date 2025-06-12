@@ -1,44 +1,44 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
+import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
+import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
+import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
+import { backupsCard } from '@/components/cards/utils/constants';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Box, Inline, Stack, Text } from '@/design-system';
+import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import { useENSAvatar, useManageCloudBackups } from '@/hooks';
+import * as i18n from '@/languages';
+import { RainbowError, logger } from '@/logger';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { RainbowAccount, createWallet } from '@/model/wallet';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { CloudBackupState, backupsStore } from '@/state/backups/backups';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { loadWallets, useWallets } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
+import { abbreviations, deviceUtils } from '@/utils';
 import { cloudPlatform } from '@/utils/platform';
+import { addressHashedEmoji } from '@/utils/profileUtils';
+import { useRoute } from '@react-navigation/native';
+import { format } from 'date-fns';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { FlatList, ScrollView } from 'react-native';
+import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
+import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
-import MenuItem from '../MenuItem';
-import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
-import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
-import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { useENSAvatar, useInitializeWallet, useManageCloudBackups, useWallets } from '@/hooks';
-import { Navigation, useNavigation } from '@/navigation';
-import { abbreviations, deviceUtils } from '@/utils';
-import { addressHashedEmoji } from '@/utils/profileUtils';
-import * as i18n from '@/languages';
 import MenuHeader, { StatusType } from '../MenuHeader';
-import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
-import { Inline, Text, Box, Stack } from '@/design-system';
-import { ContactAvatar } from '@/components/contacts';
-import { useTheme } from '@/theme';
-import Routes from '@/navigation/routesNames';
-import { backupsCard } from '@/components/cards/utils/constants';
-import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
-import { RainbowAccount, createWallet } from '@/model/wallet';
-import { useDispatch } from 'react-redux';
-import { walletsLoadState } from '@/redux/wallets';
-import { RainbowError, logger } from '@/logger';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { useCreateBackup } from '@/components/backup/useCreateBackup';
+import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { format } from 'date-fns';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
-import { FlatList, ScrollView } from 'react-native';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { useRoute } from '@react-navigation/native';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -99,8 +99,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
 
 export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
-  const { wallets } = useWallets();
-  const dispatch = useDispatch();
+  const wallets = useWallets();
   const { name: routeName } = useRoute();
 
   const scrollviewRef = useRef<ScrollView>(null);
@@ -111,8 +110,6 @@ export const WalletsAndBackup = () => {
   const backups = backupsStore(state => state.backups);
   const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
 
-  const initializeWallet = useInitializeWallet();
-
   const { manageCloudBackups } = useManageCloudBackups();
 
   const walletTypeCount: WalletCountPerType = {
@@ -120,7 +117,7 @@ export const WalletsAndBackup = () => {
     privateKey: 0,
   };
 
-  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(wallets, backups), [wallets, backups]);
+  const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(backups), [backups]);
 
   const visibleWallets = useVisibleWallets({ wallets, walletTypeCount });
 
@@ -151,7 +148,7 @@ export const WalletsAndBackup = () => {
         // need to check if we have any wallets to back up first.
         if (IS_ANDROID) {
           const currentBackups = backupsStore.getState().backups;
-          if (checkLocalWalletsForBackupStatus(wallets, currentBackups).allBackedUp) {
+          if (checkLocalWalletsForBackupStatus(currentBackups).allBackedUp) {
             return;
           }
         }
@@ -159,7 +156,7 @@ export const WalletsAndBackup = () => {
       },
       logout: true,
     });
-  }, [createBackup, wallets]);
+  }, [createBackup]);
 
   const onViewCloudBackups = useCallback(async () => {
     navigate(Routes.VIEW_CLOUD_BACKUPS, {
@@ -185,9 +182,7 @@ export const WalletsAndBackup = () => {
             clearCallbackOnStartCreation: true,
           });
 
-          await dispatch(walletsLoadState());
-
-          // @ts-expect-error - no params
+          await loadWallets();
           await initializeWallet();
         } catch (err) {
           logger.error(new RainbowError(`[WalletsAndBackup]: Failed to create new secret phrase`), {
@@ -206,7 +201,7 @@ export const WalletsAndBackup = () => {
         }
       },
     });
-  }, [dispatch, initializeWallet, navigate, walletTypeCount.phrase, backupProvider]);
+  }, [navigate, walletTypeCount.phrase, backupProvider]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
@@ -315,6 +310,24 @@ export const WalletsAndBackup = () => {
                 }
               />
             </Menu>
+
+            {IS_DEV && (
+              <Box>
+                <Menu description="Dev Only: Quick Import/Export Backup">
+                  <MenuItem
+                    hasSfSymbol
+                    leftComponent={<MenuItem.TextIcon icon="⚠️" isLink />}
+                    onPress={() => {
+                      navigate(Routes.MODAL_SCREEN, {
+                        type: 'dev_test_backup',
+                      });
+                    }}
+                    size={52}
+                    titleComponent={<MenuItem.Title isLink text="Dev Only: Quick Import/Export Backup" />}
+                  />
+                </Menu>
+              </Box>
+            )}
 
             <Box>
               <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
@@ -697,7 +710,6 @@ export const WalletsAndBackup = () => {
     enableCloudBackups,
     sortedWallets,
     onCreateNewSecretPhrase,
-    navigate,
     onNavigateToWalletView,
     allBackedUp,
     mostRecentBackup,
