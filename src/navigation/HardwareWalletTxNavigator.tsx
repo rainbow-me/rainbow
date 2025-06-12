@@ -11,9 +11,9 @@ import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
 import { logger } from '@/logger';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
 import { RootStackParamList } from './types';
+import { useLedgerStore, getLedgerStore } from '@/state/ledger/ledger';
 
 export const ledgerStorage = new MMKV({
   id: 'ledgerStorage',
@@ -30,20 +30,16 @@ const Swipe = createMaterialTopTabNavigator();
 
 export const HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT = 534;
 
-// atoms used for navigator state
-export const LedgerIsReadyAtom = atom({
-  default: false,
-  key: 'ledgerIsReady',
-});
-export const readyForPollingAtom = atom({
-  default: true,
-  key: 'readyForPolling',
-});
-
-export const triggerPollerCleanupAtom = atom({
-  default: false,
-  key: 'triggerPollerCleanup',
-});
+// Deprecated - use useLedgerStore instead
+export const LedgerIsReadyAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ledger/ledger
+};
+export const readyForPollingAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ledger/ledger
+};
+export const triggerPollerCleanupAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ledger/ledger
+};
 
 export const HardwareWalletTxNavigator = () => {
   const { width, height } = useDimensions();
@@ -55,9 +51,8 @@ export const HardwareWalletTxNavigator = () => {
   const { navigate } = useNavigation();
 
   const deviceId = selectedWallet.deviceId ?? '';
-  const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
-  const [readyForPolling, setReadyForPolling] = useRecoilState(readyForPollingAtom);
-  const setTriggerPollerCleanup = useSetRecoilState(triggerPollerCleanupAtom);
+  const isReady = useLedgerStore(state => state.isReady);
+  const readyForPolling = useLedgerStore(state => state.readyForPolling);
 
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
@@ -76,14 +71,14 @@ export const HardwareWalletTxNavigator = () => {
   const successCallback = useCallback(() => {
     logger.debug('[HardwareWalletTxNavigator]: submitting tx', {});
     if (!isReady) {
-      setReadyForPolling(false);
-      setIsReady(true);
+      getLedgerStore().setReadyForPolling(false);
+      getLedgerStore().setIsReady(true);
       setHardwareTXError(false);
       submit();
     } else {
       logger.debug('[HardwareWalletTxNavigator]: already submitted', {});
     }
-  }, [isReady, setIsReady, setReadyForPolling, submit]);
+  }, [isReady, submit]);
 
   useLedgerConnect({
     deviceId,
@@ -94,10 +89,10 @@ export const HardwareWalletTxNavigator = () => {
 
   // reset state when opening the sheet
   useEffect(() => {
-    setIsReady(false);
-    setReadyForPolling(true);
+    getLedgerStore().setIsReady(false);
+    getLedgerStore().setReadyForPolling(true);
     setHardwareTXError(false);
-    setTriggerPollerCleanup(false);
+    getLedgerStore().setTriggerPollerCleanup(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

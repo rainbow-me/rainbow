@@ -4,7 +4,6 @@ import { GenericCard } from './GenericCard';
 import { useAccountProfile, useClipboard } from '@/hooks';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '@/components/floating-emojis';
-import { useRecoilState } from 'recoil';
 import { haptics } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -14,7 +13,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from './reusables/TintButton';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import * as i18n from '@/languages';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useAddressCopiedToastStore, setAddressCopiedToastActive } from '@/state/addressCopiedToast/addressCopiedToast';
 
 export const RECEIVE_CARD_HEIGHT = 174;
 const TRANSLATIONS = i18n.l.cards.receive;
@@ -23,21 +22,21 @@ export const ReceiveAssetsCard = () => {
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
-  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
+  const isToastActive = useAddressCopiedToastStore(state => state.isActive);
 
   const onPressCopy = useCallback(
     (onNewEmoji: () => void) => {
       if (!isToastActive) {
-        setToastActive(true);
+        setAddressCopiedToastActive(true);
         setTimeout(() => {
-          setToastActive(false);
+          setAddressCopiedToastActive(false);
         }, 2000);
       }
       haptics.notificationSuccess();
       onNewEmoji();
       setClipboard(accountAddress);
     },
-    [accountAddress, isToastActive, setClipboard, setToastActive]
+    [accountAddress, isToastActive, setClipboard]
   );
 
   const onPressQRCode = () => {

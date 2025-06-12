@@ -1,12 +1,11 @@
 import { analytics } from '@/analytics';
-import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
 import { NFT_OFFERS, useExperimentalFlag } from '@/config';
 import { arcClient } from '@/graphql';
 import { GetNftOffersQuery, NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
 import { QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useNFTOffersStore } from '@/state/nftOffers/nftOffers';
 
 export type NFTOffersArgs = {
   walletAddress: string;
@@ -69,7 +68,7 @@ export async function fetchNftOffers({ walletAddress, sortBy = SortCriterion.Top
  */
 export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
-  const sortCriterion = useRecoilValue(nftOffersSortAtom);
+  const sortCriterion = useNFTOffersStore(state => state.sortCriterion);
   const queryKey = nftOffersQueryKey({
     walletAddress,
   });

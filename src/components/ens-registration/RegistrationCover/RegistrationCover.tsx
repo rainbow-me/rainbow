@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
-import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
@@ -14,11 +13,12 @@ import { useENSModifiedRegistration, useENSRegistration, useENSRegistrationForm,
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
+import { useENSRegistrationStore, getENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 
-export const coverMetadataAtom = atom<Image | undefined>({
-  default: undefined,
-  key: 'ens.coverMetadata',
-});
+// Deprecated - use useENSRegistrationStore instead
+export const coverMetadataAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ensRegistration/ensRegistration
+};
 
 const RegistrationCover = ({
   hasSeenExplainSheet,
@@ -48,10 +48,9 @@ const RegistrationCover = ({
 
   const accentColor = useForegroundColor('accent');
 
-  const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
   const onChangeImage = useCallback(
     ({ asset, image }: { asset?: UniqueAsset; image?: Image & { tmpPath?: string } }) => {
-      setCoverMetadata(image);
+      getENSRegistrationStore().setCoverMetadata(image);
       setCoverUrl(image?.tmpPath || asset?.image_url || asset?.lowResUrl || asset?.image_thumbnail_url || '');
 
       if (asset) {
@@ -76,7 +75,7 @@ const RegistrationCover = ({
         });
       }
     },
-    [onBlurField, setCoverMetadata]
+    [onBlurField]
   );
   const [isUploading, setIsUploading] = useState(false);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
@@ -91,7 +90,7 @@ const RegistrationCover = ({
     onChangeImage: onChangeImage,
     onRemoveImage: () => {
       onRemoveField({ key: ENS_RECORDS.header });
-      setCoverMetadata(undefined);
+      getENSRegistrationStore().setCoverMetadata(undefined);
       setDisabled(false);
       setTimeout(() => {
         setCoverUrl('');

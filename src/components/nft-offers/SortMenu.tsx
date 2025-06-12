@@ -7,10 +7,7 @@ import { SortCriterion } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
 import { analytics } from '@/analytics';
-import { atom, useRecoilState } from 'recoil';
-import { MMKV } from 'react-native-mmkv';
-
-const mmkv = new MMKV();
+import { useNFTOffersStore, getNFTOffersStore } from '@/state/nftOffers/nftOffers';
 
 export type SortOption = {
   name: string;
@@ -36,12 +33,11 @@ export const SortOptions: { [key: string]: SortOption } = {
   },
 } as const;
 
-const MMKV_KEY = 'nftOffersSort';
+// Deprecated - use useNFTOffersStore instead
+export const nftOffersSortAtom = {
+  // This is a compatibility shim - the actual store is in @/state/nftOffers/nftOffers
+};
 
-export const nftOffersSortAtom = atom<SortCriterion>({
-  default: (mmkv.getString(MMKV_KEY) as SortCriterion | undefined) ?? SortOptions.Highest.criterion,
-  key: 'nftOffersSort',
-});
 
 const getSortOptionFromCriterion = (criterion: SortCriterion) => {
   switch (criterion) {
@@ -57,7 +53,7 @@ const getSortOptionFromCriterion = (criterion: SortCriterion) => {
 };
 
 export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
-  const [sortCriterion, setSortCriterion] = useRecoilState(nftOffersSortAtom);
+  const sortCriterion = useNFTOffersStore(state => state.sortCriterion);
   const sortOption = getSortOptionFromCriterion(sortCriterion);
 
   const menuConfig = {
@@ -95,8 +91,7 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: sortCriterion } }: { nativeEvent: { actionKey: SortCriterion } }) => {
     haptics.selection();
-    setSortCriterion(sortCriterion);
-    mmkv.set(MMKV_KEY, sortCriterion);
+    getNFTOffersStore().setSortCriterion(sortCriterion);
     analytics.track(analytics.event.nftOffersSelectedSortCriterion, {
       sortCriterion: sortCriterion,
     });

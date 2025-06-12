@@ -2,9 +2,7 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef } from 'react';
 import { Image } from 'react-native-image-crop-picker';
-import { useRecoilValue } from 'recoil';
-import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
-import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
+import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 import { useAccountSettings, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
@@ -99,8 +97,8 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const { isHardwareWallet } = useWallets();
 
-  const avatarMetadata = useRecoilValue(avatarMetadataAtom);
-  const coverMetadata = useRecoilValue(coverMetadataAtom);
+  const avatarMetadata = useENSRegistrationStore(state => state.avatarMetadata);
+  const coverMetadata = useENSRegistrationStore(state => state.coverMetadata);
 
   const duration = yearsDuration * timeUnits.secs.year;
 

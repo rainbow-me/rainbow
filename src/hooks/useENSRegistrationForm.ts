@@ -1,39 +1,12 @@
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
 import { Records } from '@/entities';
 import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
-
-const disabledAtom = atom({
-  default: false,
-  key: 'ensProfileForm.disabled',
-});
-
-const errorsAtom = atom<{ [name: string]: string }>({
-  default: {},
-  key: 'ensProfileForm.errors',
-});
-
-const isValidatingAtom = atom({
-  default: false,
-  key: 'ensProfileForm.isValidating',
-});
-
-const selectedFieldsAtom = atom<TextRecordField[]>({
-  default: [],
-  key: 'ensProfileForm.selectedFields',
-});
-
-const submittingAtom = atom({
-  default: false,
-  key: 'ensProfileForm.submitting',
-});
-
-export const valuesAtom = atom<{ [name: string]: Partial<Records> }>({
-  default: {},
-  key: 'ensProfileForm.values',
-});
+import { 
+  useENSRegistrationStore, 
+  getENSRegistrationStore
+} from '@/state/ensRegistration/ensRegistration';
 
 const defaultInitialRecords = {
   [ENS_RECORDS.name]: '',
@@ -86,44 +59,43 @@ export default function useENSRegistrationForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialRecords, mode]);
 
-  const [errors, setErrors] = useRecoilState(errorsAtom);
-  const [submitting, setSubmitting] = useRecoilState(submittingAtom);
-  const [isValidating, setIsValidating] = useRecoilState(isValidatingAtom);
-
-  const [disabled, setDisabled] = useRecoilState(disabledAtom);
+  const errors = useENSRegistrationStore(state => state.errors);
+  const submitting = useENSRegistrationStore(state => state.submitting);
+  const isValidating = useENSRegistrationStore(state => state.isValidating);
+  const disabled = useENSRegistrationStore(state => state.disabled);
   useEffect(() => {
     // If we are in edit mode, we want to disable the "Review" button
     // when there are no changed records.
     // Note: We don't want to do this in create mode as we have the "Skip"
     // button.
-    setDisabled(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
-  }, [changedRecords, mode, setDisabled]);
+    getENSRegistrationStore().setDisabled(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
+  }, [changedRecords, mode]);
 
-  const [selectedFields, setSelectedFields] = useRecoilState(selectedFieldsAtom);
+  const selectedFields = useENSRegistrationStore(state => state.selectedFields);
   useEffect(() => {
     if (!initializeForm) return;
     // If there are existing records in the global state, then we
     // populate with that.
     if (!isEmpty(defaultRecords)) {
-      setSelectedFields(
+      getENSRegistrationStore().setSelectedFields(
         Object.values(textRecordFields)
           .map(field => (defaultRecords[field.key] !== undefined ? field : undefined))
           .filter(Boolean) as TextRecordField[]
       );
     } else {
       if (defaultFields) {
-        setSelectedFields(defaultFields);
+        getENSRegistrationStore().setSelectedFields(defaultFields);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, defaultRecords]);
 
-  const [valuesMap, setValuesMap] = useRecoilState(valuesAtom);
+  const valuesMap = useENSRegistrationStore(state => state.values);
   const values = useMemo(() => valuesMap[name] || {}, [name, valuesMap]);
   useEffect(
     () => {
       if (!initializeForm) return;
-      setValuesMap(values => ({
+      getENSRegistrationStore().setValues(values => ({
         ...values,
         [name]: defaultRecords,
       }));
@@ -150,22 +122,22 @@ export default function useENSRegistrationForm({
   // Reset errors if changedRecords is reset
   useEffect(() => {
     if (isEmpty(changedRecords)) {
-      setErrors({});
+      getENSRegistrationStore().setErrors({});
     }
-  }, [changedRecords, initializeForm, setErrors]);
+  }, [changedRecords, initializeForm]);
 
   const onAddField = useCallback(
     (fieldToAdd: TextRecordField, selectedFields: TextRecordField[]) => {
-      setSelectedFields(selectedFields);
+      getENSRegistrationStore().setSelectedFields(selectedFields);
       updateRecordByKey(fieldToAdd.key, '');
     },
-    [setSelectedFields, updateRecordByKey]
+    [updateRecordByKey]
   );
 
   const onRemoveField = useCallback(
     (fieldToRemove: Pick<TextRecordField, 'key'>, selectedFields: TextRecordField[] | undefined = undefined) => {
       if (!isEmpty(errors)) {
-        setErrors(errors => {
+        getENSRegistrationStore().setErrors(errors => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [fieldToRemove.key]: _, ...newErrors } = errors;
 
@@ -173,11 +145,11 @@ export default function useENSRegistrationForm({
         });
       }
       if (selectedFields) {
-        setSelectedFields(selectedFields);
+        getENSRegistrationStore().setSelectedFields(selectedFields);
       }
       removeRecordByKey(fieldToRemove.key);
 
-      setValuesMap(values => {
+      getENSRegistrationStore().setValues(values => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [fieldToRemove.key as ENS_RECORDS]: _, ...restRecords } = values?.[name] || {};
         return {
@@ -186,45 +158,45 @@ export default function useENSRegistrationForm({
         };
       });
     },
-    [errors, name, removeRecordByKey, setErrors, setSelectedFields, setValuesMap]
+    [errors, name, removeRecordByKey]
   );
 
   const onBlurField = useCallback(
     ({ key, value }: { key: string; value: string }) => {
-      setValuesMap(values => ({
+      getENSRegistrationStore().setValues(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
       updateRecordByKey(key, value);
     },
-    [name, setValuesMap, updateRecordByKey]
+    [name, updateRecordByKey]
   );
 
   const onChangeField = useCallback(
     ({ key, value }: { key: string; value: string }) => {
-      setIsValidating(true);
+      getENSRegistrationStore().setIsValidating(true);
       const validation = textRecordFields[key as ENS_RECORDS]?.validation;
       if (validation) {
         const { message, validator } = validation;
         const isValid = !value || validator(value);
         isValid
           ? key in errors &&
-            setErrors(errors => {
+            getENSRegistrationStore().setErrors(errors => {
               // omit key from errors
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const { [key]: _, ...newErrors } = errors;
               return newErrors;
             })
-          : setErrors({ ...errors, [key]: message });
+          : getENSRegistrationStore().setErrors({ ...errors, [key]: message });
       }
-      setIsValidating(false);
-      setValuesMap(values => ({
+      getENSRegistrationStore().setIsValidating(false);
+      getENSRegistrationStore().setValues(values => ({
         ...values,
         [name]: { ...values?.[name], [key]: value },
       }));
       updateRecordByKey(key, value);
     },
-    [errors, name, setErrors, setIsValidating, setValuesMap, updateRecordByKey]
+    [errors, name, updateRecordByKey]
   );
 
   const blurFields = useCallback(() => {
@@ -246,24 +218,24 @@ export default function useENSRegistrationForm({
   }, [mode, isSuccess, isEmptyValues]);
 
   const clearValues = useCallback(() => {
-    setValuesMap({});
-  }, [setValuesMap]);
+    getENSRegistrationStore().setValues({});
+  }, []);
 
   const empty = useMemo(() => !Object.values(values).some(Boolean), [values]);
 
   const submit = useCallback(
     async (submitFn: () => Promise<void> | void) => {
-      setSubmitting(true);
+      getENSRegistrationStore().setSubmitting(true);
       try {
         await submitFn();
         // eslint-disable-next-line no-empty
       } catch (err) {}
 
       setTimeout(() => {
-        setSubmitting(false);
+        getENSRegistrationStore().setSubmitting(false);
       }, 100);
     },
-    [setSubmitting]
+    []
   );
 
   return {
@@ -280,9 +252,14 @@ export default function useENSRegistrationForm({
     onChangeField,
     onRemoveField,
     selectedFields,
-    setDisabled,
+    setDisabled: getENSRegistrationStore().setDisabled,
     submit,
     submitting,
     values,
   };
 }
+
+// Deprecated - use useENSRegistrationStore instead
+export const valuesAtom = {
+  // This is a compatibility shim - the actual store is in @/state/ensRegistration/ensRegistration
+};

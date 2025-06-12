@@ -1,11 +1,11 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
-import { useRecoilState } from 'recoil';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SlackSheet } from '../components/sheet';
 import { AccentColorProvider, Box, Inline } from '@/design-system';
-import { accentColorAtom, textRecordFields } from '@/helpers/ens';
+import { textRecordFields } from '@/helpers/ens';
+import { useENSRegistrationStore } from '@/state/ensRegistration/ensRegistration';
 import { useENSRegistrationForm } from '@/hooks';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
@@ -24,7 +24,7 @@ export const getENSAdditionalRecordsSheetHeight = () => {
 
 export default function ENSAdditionalRecordsSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_CONFIRM_REGISTER_SHEET>>();
-  const [accentColor] = useRecoilState(accentColorAtom);
+  const accentColor = useENSRegistrationStore(state => state.accentColor);
   const { selectedFields, onAddField, onRemoveField } = useENSRegistrationForm();
   const { height: deviceHeight } = useWindowDimensions();
 

@@ -2,8 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { logger, RainbowError } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { LedgerIsReadyAtom, readyForPollingAtom, triggerPollerCleanupAtom } from '@/navigation/HardwareWalletTxNavigator';
+import { useLedgerStore, getLedgerStore } from '@/state/ledger/ledger';
 
 /**
  * React hook used for checking ledger connections and handling connnection error states
@@ -21,9 +20,8 @@ export function useLedgerConnect({
 }) {
   const transport = useRef<TransportBLE | undefined>();
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const isReady = useRecoilValue(LedgerIsReadyAtom);
-  const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(triggerPollerCleanupAtom);
-  const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
+  const isReady = useLedgerStore(state => state.isReady);
+  const triggerPollerCleanup = useLedgerStore(state => state.triggerPollerCleanup);
 
   /**
    * Handles local error handling for useLedgerStatusCheck
@@ -32,12 +30,12 @@ export function useLedgerConnect({
     async (errorType: LEDGER_ERROR_CODES) => {
       if (isReady) return;
       if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
-        setReadyForPolling(false);
+        getLedgerStore().setReadyForPolling(false);
         logger.debug('[useLedgerConnect]: Device Disconnected - Attempting Reconnect', {});
         transport.current = undefined;
         try {
           transport.current = await TransportBLE.open(deviceId);
-          setReadyForPolling(true);
+          getLedgerStore().setReadyForPolling(true);
         } catch (e) {
           logger.error(new RainbowError('[useLedgerConnect]: Reconnect Error'), {
             error: (e as Error).message,
@@ -49,7 +47,7 @@ export function useLedgerConnect({
         errorCallback?.(errorType);
       }
     },
-    [deviceId, errorCallback, isReady, setReadyForPolling]
+    [deviceId, errorCallback, isReady]
   );
 
   /**
@@ -79,7 +77,7 @@ export function useLedgerConnect({
   useEffect(() => {
     if (readyForPolling && (!timer.current || triggerPollerCleanup)) {
       logger.debug('[useLedgerConnect]: init device polling', {});
-      setTriggerPollerCleanup(false);
+      getLedgerStore().setTriggerPollerCleanup(false);
       timer.current = setInterval(async () => {
         if (transport.current) {
           if (readyForPolling) {
@@ -96,7 +94,7 @@ export function useLedgerConnect({
         }
       }, 3000);
     }
-  }, [deviceId, handleLedgerError, handleLedgerSuccess, readyForPolling, setTriggerPollerCleanup, triggerPollerCleanup]);
+  }, [deviceId, handleLedgerError, handleLedgerSuccess, readyForPolling, triggerPollerCleanup]);
 
   useEffect(() => {
     return () => {

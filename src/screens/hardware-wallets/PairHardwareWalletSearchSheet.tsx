@@ -3,22 +3,20 @@ import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { useSetRecoilState } from 'recoil';
 import { useLedgerImport } from '@/hooks/useLedgerImport';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { useLedgerStore, getLedgerStore } from '@/state/ledger/ledger';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { CancelButton } from './components/CancelButton';
 
 export const PairHardwareWalletSearchSheet = () => {
   const { navigate, goBack } = useNavigation();
-  const setDeviceId = useSetRecoilState(LedgerImportDeviceIdAtom);
   const [isConnected, setIsConnected] = React.useState(false);
 
   useLedgerImport({
     successCallback: deviceId => {
-      setDeviceId(deviceId);
+      getLedgerStore().setDeviceId(deviceId);
       setIsConnected(true);
     },
   });

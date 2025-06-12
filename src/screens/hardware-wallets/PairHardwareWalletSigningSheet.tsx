@@ -7,9 +7,8 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { useDimensions, useImportingWallet } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
-import { useRecoilValue } from 'recoil';
 import { RainbowError, logger } from '@/logger';
-import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
+import { useLedgerStore } from '@/state/ledger/ledger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -81,7 +80,7 @@ export function PairHardwareWalletSigningSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET>>();
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
-  const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
+  const deviceId = useLedgerStore(state => state.deviceId || '');
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({ showImportModal: true });
 
   const items: ItemDetails[] = [

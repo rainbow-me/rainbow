@@ -22,8 +22,7 @@ import MenuHeader from '../MenuHeader';
 import { Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import WalletTypes from '@/helpers/walletTypes';
-import { useRecoilState } from 'recoil';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useAddressCopiedToastStore } from '@/state/addressCopiedToast/addressCopiedToast';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
@@ -138,7 +137,8 @@ const ViewWalletBackup = () => {
   });
 
   const { navigate } = useNavigation();
-  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
+  const isToastActive = useAddressCopiedToastStore(state => state.isActive);
+  const setToastActive = useAddressCopiedToastStore(state => state.setIsActive);
 
   const backupWalletsToCloud = useCallback(async () => {
     executeFnIfCloudBackupAvailable({
