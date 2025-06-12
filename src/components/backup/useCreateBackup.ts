@@ -102,7 +102,6 @@ export const useCreateBackup = () => {
           password,
           onError,
           onSuccess,
-          dispatch,
         });
         return;
       }
