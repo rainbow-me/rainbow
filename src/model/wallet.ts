@@ -91,7 +91,7 @@ interface TypedData {
   message: object;
 }
 
-interface ReadOnlyWallet {
+export interface ReadOnlyWallet {
   address: EthereumAddress;
   privateKey: null;
 }
