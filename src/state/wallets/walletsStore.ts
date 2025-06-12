@@ -11,13 +11,13 @@ import {
   AllRainbowWallets,
   generateAccount,
   getAllWallets,
-  getSelectedWalletFromKeychain,
+  getSelectedWallet as getSelectedWalletFromKeychain,
   loadAddress,
   RainbowAccount,
   RainbowWallet,
   saveAddress,
   saveAllWallets,
-  setSelectedWalletInKeychain,
+  setSelectedWallet as setSelectedWalletInKeychain,
 } from '@/model/wallet';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import store from '@/redux/store';
@@ -146,7 +146,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     async loadWallets() {
       try {
-        console.log('load wallets');
         const { accountAddress, walletNames } = get();
 
         let addressFromKeychain: string | null = accountAddress;
@@ -551,8 +550,6 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
       return [account.address, removeFirstEmojiFromString(account.label || account.address)];
     })
   );
-
-  console.log('how', updatedWalletNames);
 
   return {
     wallets: updatedWallets,

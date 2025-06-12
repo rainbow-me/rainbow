@@ -205,7 +205,7 @@ export default function ChangeWalletSheet() {
           goBack();
         }
       } catch (e) {
-        logger.error(new RainbowError('[ChangeWalletSheet]: Error while switching account'), {
+        logger.error(new RainbowError('[ChangeWalletSheet]: Error while switching account', e), {
           error: e,
         });
       }
