@@ -216,7 +216,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
-        const walletInfo = await getWalletsInfo({ wallets, walletNames });
+        const walletInfo = await refreshWalletsInfo({ wallets, walletNames });
 
         set({
           selected: selectedWallet,
@@ -276,7 +276,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
       set({
         selected: newWallets[id],
-        ...(await getWalletsInfo({ wallets: newWallets, walletNames, useCachedENS: true })),
+        ...(await refreshWalletsInfo({ wallets: newWallets, walletNames, useCachedENS: true })),
       });
 
       setAccountAddress(ensureValidHex(account.address));
@@ -356,7 +356,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     refreshWalletInfo: async props => {
       const { wallets, walletNames } = get();
-      const info = await getWalletsInfo({ wallets, walletNames, useCachedENS: props?.skipENS });
+      const info = await refreshWalletsInfo({ wallets, walletNames, useCachedENS: props?.skipENS });
       if (info) {
         set(info);
       }
@@ -494,7 +494,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
 type GetENSInfoProps = { wallets: Wallets; walletNames: WalletNames; useCachedENS?: boolean };
 
-async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
+async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   if (!wallets) {
     throw new Error(`No wallets`);
   }
