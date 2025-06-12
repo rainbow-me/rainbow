@@ -499,55 +499,22 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
     throw new Error(`No wallets`);
   }
 
-  const updatedWallets: {
-    [key: string]: RainbowWallet;
-  } = { ...wallets };
+  const updatedWallets: Record<string, RainbowWallet> = {};
+  const updatedWalletNames: Record<string, string> = {};
 
-  let promises: Promise<{
-    account: RainbowAccount;
-    key: string;
-  }>[] = [];
+  await Promise.all(
+    Object.entries(wallets).map(async ([key, wallet]) => {
+      const newAddresses = await Promise.all(
+        wallet.addresses.map(async account => {
+          updatedWalletNames[key] = removeFirstEmojiFromString(account.label || account.address);
+          return refreshAccountInfo(account, useCachedENS);
+        })
+      );
 
-  for (const key in wallets) {
-    const wallet = wallets[key];
-
-    const innerPromises = wallet?.addresses?.map(async account => {
-      if (useCachedENS && account.label && account.avatar) {
-        return {
-          account,
-          key,
-        };
-      }
-
-      const ens = await fetchReverseRecordWithRetry(account.address);
-      if (ens) {
-        const avatar = await fetchENSAvatar(ens);
-        const newImage = avatar?.imageUrl || null;
-        return {
-          key,
-          account: {
-            ...account,
-            image: newImage,
-            // always prefer our label
-            label: account.label || ens,
-          },
-        };
-      }
-
-      return {
-        account,
-        key,
+      updatedWallets[key] = {
+        ...wallet,
+        addresses: newAddresses,
       };
-    });
-
-    promises = promises.concat(innerPromises);
-  }
-
-  const allAccounts = await Promise.all(promises);
-
-  const updatedWalletNames = Object.fromEntries(
-    allAccounts.map(({ account }) => {
-      return [account.address, removeFirstEmojiFromString(account.label || account.address)];
     })
   );
 
@@ -555,6 +522,27 @@ async function getWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
     wallets: updatedWallets,
     walletNames: updatedWalletNames,
   };
+}
+
+async function refreshAccountInfo(account: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
+  if (useCachedENS && account.label && account.avatar) {
+    return account;
+  }
+
+  const ens = await fetchReverseRecordWithRetry(account.address);
+
+  if (ens) {
+    const avatar = await fetchENSAvatar(ens);
+    const newImage = avatar?.imageUrl || null;
+    return {
+      ...account,
+      image: newImage,
+      // always prefer our label
+      label: account.label || ens,
+    };
+  }
+
+  return account;
 }
 
 export const useWallets = () => useWalletsStore(state => state.wallets);
