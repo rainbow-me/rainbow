@@ -201,18 +201,14 @@ export const getHdPath = ({ type, index }: { type: WalletLibraryType; index: num
   }
 };
 
-export const walletInit = async (
-  seedPhrase = undefined,
-  color = null,
-  name: string | null = null,
-  overwrite = false,
-  checkedWallet = null,
-  network: string,
-  image = null,
-  // Import the wallet "silently" in the background (i.e. no "loading" prompts).
-  silent = false,
-  userPin?: string
-): Promise<WalletInitialized> => {
+export type InitializeWalletParams = CreateWalletParams & {
+  network?: string;
+  seedPhrase?: string;
+  shouldRunMigrations?: boolean;
+  switching?: boolean;
+};
+
+export const walletInit = async ({}: InitializeWalletParams): Promise<WalletInitialized> => {
   let walletAddress = null;
 
   // When the `seedPhrase` is not defined in the args, then
