@@ -114,9 +114,6 @@ jobs:
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
 
-      # - name: Build the app in Release mode
-      #   run: ./scripts/e2e-android-build.sh
-
       - name: RNEF Remote Build - Android
         id: rnef-remote-build-android
         uses: callstackincubator/android@v1
@@ -149,9 +146,6 @@ jobs:
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
           arch: ${{ env.ARCH }}
           emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
-
-      # - name: Kill adb-server
-      #   run: 'adb kill-server'
 
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
