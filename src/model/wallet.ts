@@ -93,7 +93,7 @@ interface TypedData {
 
 export interface ReadOnlyWallet {
   address: EthereumAddress;
-  privateKey: null;
+  privateKey: string | null;
 }
 
 export interface EthereumWalletFromSeed {
