@@ -43,6 +43,7 @@ export const KING_OF_THE_HILL_TAB = 'King of the Hill Tab';
 export const RAINBOW_TOASTS = 'Rainbow Toasts';
 export const PERPS = 'Perps';
 export const DEFI_POSITIONS_THRESHOLD_FILTER = 'DeFi Minimum Value Filter';
+export const ATOMIC_SWAPS = 'Atomic Swaps';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -94,6 +95,7 @@ const config = {
   [RAINBOW_TOASTS]: { settings: true, value: false },
   [PERPS]: { settings: true, value: false },
   [DEFI_POSITIONS_THRESHOLD_FILTER]: { settings: true, value: true },
+  [ATOMIC_SWAPS]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
