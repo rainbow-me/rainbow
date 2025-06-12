@@ -27,6 +27,7 @@ import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { createPublicClient, http, PublicClient } from 'viem';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -34,6 +35,7 @@ export enum TokenStandard {
 }
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
+export const chainsViemProviders = new Map<ChainId, PublicClient>();
 
 export const chainsBatchProviders = new Map<ChainId, JsonRpcBatchProvider>();
 
@@ -127,6 +129,30 @@ export const getBatchedProvider = ({ chainId = ChainId.mainnet }: { chainId?: nu
   const provider = new JsonRpcBatchProvider(providerUrl, chainId);
   chainsBatchProviders.set(chainId, provider);
 
+  return provider;
+};
+
+export const getProviderViem = ({ chainId = ChainId.mainnet }: { chainId?: number }): PublicClient => {
+  if (useConnectedToAnvilStore.getState().connectedToAnvil) {
+    const provider = createPublicClient({
+      transport: http(chainAnvil.rpcUrls.default.http[0]),
+    });
+    chainsViemProviders.set(chainId, provider);
+    return provider;
+  }
+
+  const cachedProvider = chainsViemProviders.get(chainId);
+  const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
+
+  if (cachedProvider) {
+    return cachedProvider;
+  }
+
+  const provider = createPublicClient({
+    transport: http(providerUrl),
+  });
+
+  chainsViemProviders.set(chainId, provider);
   return provider;
 };
 
