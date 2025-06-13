@@ -824,8 +824,8 @@ export type EventProperties = {
     usdValue: string;
   };
 
-  [event.errorBoundary]: { error: Error | null };
-  [event.errorBoundaryReset]: { error: Error | null };
+  [event.errorBoundary]: { error: unknown; componentStack: string | undefined; eventId: string };
+  [event.errorBoundaryReset]: { error: unknown; componentStack: string | null | undefined; eventId: string };
 
   [event.tokenDetailsErc20]: {
     token: {

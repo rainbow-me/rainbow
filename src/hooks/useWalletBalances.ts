@@ -1,9 +1,15 @@
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
-import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
-import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useWalletAddresses } from '@/state/wallets/walletsStore';
+
+const QUERY_CONFIG = {
+  staleTime: 60_000, // 1 minute
+  cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+  refetchInterval: 120_000, // 2 minutes
+};
 
 export type WalletBalance = {
   assetBalanceAmount: string;

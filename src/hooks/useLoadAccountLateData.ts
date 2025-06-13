@@ -4,12 +4,20 @@ import { hiddenTokensUpdateStateFromWeb } from '@/redux/hiddenTokens';
 import { showcaseTokensUpdateStateFromWeb } from '@/redux/showcaseTokens';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+<<<<<<< HEAD
 import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+=======
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+>>>>>>> origin/develop
 import { promiseUtils } from '../utils';
 import { prefetchAccountENSDomains } from './useAccountENSDomains';
 
 export default function useLoadAccountLateData() {
   const accountAddress = useAccountAddress();
+<<<<<<< HEAD
+=======
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+>>>>>>> origin/develop
   const dispatch = useDispatch();
 
   const loadAccountLateData = useCallback(async () => {

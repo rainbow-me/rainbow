@@ -4,7 +4,11 @@ import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import showWalletErrorAlert from '@/helpers/support';
+<<<<<<< HEAD
 import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
+=======
+import { useIsDamagedWallet } from '@/state/wallets/walletsStore';
+>>>>>>> origin/develop
 
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
@@ -16,6 +20,10 @@ type BuyActionButtonProps = SheetActionButtonProps;
 function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) {
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
+<<<<<<< HEAD
+=======
+  const isDamaged = useIsDamagedWallet();
+>>>>>>> origin/develop
   const { name: routeName } = useRoute();
 
   const handlePress = useCallback(() => {

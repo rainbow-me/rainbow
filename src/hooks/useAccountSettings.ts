@@ -36,7 +36,11 @@ export default function useAccountSettings() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const testnetsEnabled = useConnectedToAnvilStore(state => state.connectedToAnvil);
   const accountAddress = useWalletsStore(({ accountAddress }) => {
+<<<<<<< HEAD
     return (accountAddress?.length ? accountAddress : FALLBACK_ADDRESS ?? accountAddress) as Address;
+=======
+    return (accountAddress.length ? accountAddress : FALLBACK_ADDRESS ?? accountAddress) as Address;
+>>>>>>> origin/develop
   });
 
   const settingsData = useSelector(({ settings: { appIcon, chainId, network } }: AppState) => ({

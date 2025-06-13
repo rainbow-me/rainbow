@@ -12,7 +12,11 @@ import {
   useAccountProfileInfo,
   useWallets,
   useSelectedWallet,
+<<<<<<< HEAD
   getIsReadOnlyWallet,
+=======
+  useIsReadOnlyWallet,
+>>>>>>> origin/develop
 } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch, showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
@@ -39,6 +43,10 @@ type UseOnAvatarPressProps = {
 export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const wallets = useWallets();
   const selectedWallet = useSelectedWallet();
+<<<<<<< HEAD
+=======
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+>>>>>>> origin/develop
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);

@@ -343,7 +343,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({
         wallets: newWallets,
       });
-
       if (selected?.id === walletId) {
         set({
           selected: newWallets[walletId],
@@ -519,9 +518,10 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   await Promise.all(
     Object.entries(wallets).map(async ([key, wallet]) => {
       const newAddresses = await Promise.all(
-        wallet.addresses.map(async account => {
+        wallet.addresses.map(async ogAccount => {
+          const account = await refreshAccountInfo(ogAccount, useCachedENS);
           updatedWalletNames[account.address] = removeFirstEmojiFromString(account.label || account.address);
-          return refreshAccountInfo(account, useCachedENS);
+          return account;
         })
       );
 
@@ -566,18 +566,11 @@ export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
 
+export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);
 export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
 export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
-
-export function getWalletAddresses(wallets: { [key: string]: RainbowWallet }) {
-  return Object.values(wallets).flatMap(wallet => (wallet.addresses || []).map(account => ensureValidHex(account.address)));
-}
-
-export const useWalletAddresses = () => {
-  const wallets = useWalletsStore(state => state.wallets);
-  return useMemo(() => (wallets ? getWalletAddresses(wallets) : []), [wallets]);
-};
+export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamagedWallet());
 
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
@@ -590,14 +583,6 @@ export const isImportedWallet = (address: string): boolean => {
     }
   }
   return false;
-};
-
-export const useAccountAddress = () => {
-  const address = useWalletsStore(state => state.accountAddress);
-  if (!address) {
-    throw new Error(`Error: useAccountAddress hook must be used after selecting a wallet.`);
-  }
-  return address;
 };
 
 export const useAccountProfileInfo = () => {
