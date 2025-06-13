@@ -11,7 +11,7 @@ export type NftParams = {
   walletAddress: Address | string;
   limit: number;
   pageKey: string | null;
-  collectionId?: CollectionId;
+  openCollections?: CollectionId[];
 };
 
 export type PaginationInfo = {
@@ -36,7 +36,9 @@ export type Collection = {
 export interface NftsState {
   collections: Map<CollectionId, Collection>;
   nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
+  openCollections: Set<CollectionId>;
   fetchedPages: { [pageKey: string]: number };
+  fetchedCollections: { [collectionId: string]: number };
   pagination: PaginationInfo | null;
   hasMigratedShowcase: boolean;
   hasMigratedHidden: boolean;
