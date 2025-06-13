@@ -3,10 +3,11 @@ import { runOnJS, useAnimatedReaction, useSharedValue, withSpring } from 'react-
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { deepEqual } from '@/worklets/comparisons';
+import { generateUniqueId } from '@/worklets/strings';
 import { useBrowserContext, useBrowserTabBarContext } from './BrowserContext';
 import { RAINBOW_HOME } from './constants';
 import { BrowserWorkletsContextType, ScreenshotType, TabOperation, TabViewGestureStates } from './types';
-import { generateUniqueIdWorklet, normalizeUrlWorklet } from './utils';
+import { normalizeUrlWorklet } from './utils';
 
 export const BrowserWorkletsContext = createContext<BrowserWorkletsContextType | undefined>(undefined);
 
@@ -38,7 +39,7 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
 
   const goToPage = useBrowserStore(state => state.goToPage);
   const setActiveTabIndex = useBrowserStore(state => state.setActiveTabIndex);
-  const silentlySetPersistedTabUrls = useBrowserStore(state => state.silentlySetPersistedTabUrls);
+  const setPersistedTabUrls = useBrowserStore(state => state.setPersistedTabUrls);
 
   const requestTabOperationsWorklet = useCallback(
     (operations: TabOperation | TabOperation[]) => {
@@ -104,7 +105,7 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
     ({ newTabId, newTabUrl }: { newTabId?: string; newTabUrl?: string } = {}) => {
       'worklet';
       if (newTabUrl || tabViewVisible.value || currentlyOpenTabIds.value.length === 0) {
-        const tabId = newTabId || generateUniqueIdWorklet();
+        const tabId = newTabId || generateUniqueId();
 
         currentlyOpenTabIds.modify(value => {
           value.push(tabId);
@@ -280,7 +281,7 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
           return urls;
         });
         // Ensures the most up-to-date tab URLs are persisted without triggering any side effects
-        runOnJS(silentlySetPersistedTabUrls)(animatedTabUrls.value);
+        runOnJS(setPersistedTabUrls)(animatedTabUrls.value);
       }
     },
     []

@@ -15,6 +15,58 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.67] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.67)
+
+### Added
+
+- Add tracking of how often "Insufficient ETH" error message is returned (#6590)
+- Prince of hill (#6575)
+- New Maestro E2E CI pipeline (#6478)
+- Wire up market stats on the expanded state for Rainbow-created tokens (#6597)
+- Add tracking for wallet screen pull to refresh (#6608)
+- Add clearKeychain for Maestro tests (#6600)
+- Implement subscript notation for charts with more than 8 magnitude decimals (#6558)
+- Add Token Creator to Expanded State (#6612)
+
+### Changed
+
+- Remove app store review pre-prompt & ask more often (#6569)
+- Changed the RainbowError constructor to be slightly different than the normal Error constructor (#6557)
+- RecyclerListView cleanup (#6521)
+- Adjust query store's internal set usage to cover all enabled changes (#6591)
+- Changed height of pkey box (#6585)
+- Convert Navigation Stack + ExplainSheet to Typescript (#6566)
+- Update the Readme to specify the version of Node required (#6601)
+- Update AndroidManifest.xml (#6598)
+- Bump react-native-keychain from 8.0.0 -> 10.0.0 (#6592)
+- Boot time improvements, lazy tab loading (#6583)
+- Eliminate unnecessary steps from the workflow. (#6617)
+- Make sure e2e doesn't run on draft and run unit test on Blacksmith.sh (#6629)
+- Bitrise cleanup (#6628)
+- Update king of the hill types (#6634)
+- Remove duplicated NFT data & fix SVG NFTs (#6619)
+
+### Fixed
+
+- Fix sourcemaps and debug files for Sentry Expo (#6568)
+- Fix walletconnect error sheet overflow (#6577)
+- Fix wallet screen layout shift (#6584)
+- Fixed object selectors that don't use shallowEqual (#6593)
+- Account for '1 hour' in formatDate (#6595)
+- Fix airdrop recipient input logic (#6599)
+- Fix e2e tests (#6602)
+- Fixed a runnable call crash when rainbow enters the background while trying to dismiss the splash screen (#6603)
+- Fix error when creating wallet (#6610)
+- Fix MarketStatsCard hooks error (#6611)
+- Fix crash when entering into restore sheet (#6609)
+- Fix LP Fees shown currency amount (#6605)
+- Fix profile sheet infinite importing portal (#6616)
+- Fix lint error (#6620)
+- Fix e2e ios tests (#6613)
+- Fix keychain biometric prompts on Android (#6631)
+- Update Fastfile match action flag from force to readonly to fix builds (#6655)
+- Use system PIN prompt when possible on Android (#6645)
+
 ## [1.9.66] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.66)
 
 ### Added

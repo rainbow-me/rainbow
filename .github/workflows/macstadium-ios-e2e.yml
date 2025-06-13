@@ -7,7 +7,7 @@ on:
 
 jobs:
   # iOS build and e2e tests
-  e2e-ios:
+  e2e-build-ios:
     if: github.event.pull_request.draft == false
     runs-on: ["self-hosted"]
     concurrency:
@@ -39,7 +39,7 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
             !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Set up ENV vars & scripts
@@ -50,34 +50,46 @@ jobs:
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS
-
-      - run: cd rainbow-scripts && git checkout @janic/rn79
-
+      - name: Checkout Janic branch for now
+        run: cd rainbow-scripts && git checkout @janic/rn79
       - name: Install dependencies
         run: |
           yarn install && yarn setup
 
-      - name: Version debug
+      - name: Modify env
         run: |
-          npx react-native info
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
-      - name: Install pods
-        run: |
-          rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
-          yarn install-bundle && yarn install-pods
-
-      - uses: irgaly/xcode-cache@v1
+      - name: RNEF Remote Build - iOS simulator
+        id: rnef-remote-build-ios
+        uses: callstackincubator/ios@v1
         with:
-          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
-          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+          scheme: Rainbow
+          destination: simulator
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration: Debug
+          comment-bot: false
+
+      - name: Download and Unpack IPA artifact
+        id: download-artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ steps.rnef-remote-build-ios.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          ls -lh downloaded-artifacts
+
+          # Move the file to workspace root so it's available in next step
+          APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
+          cp "$APP_ARCHIVE_PATH" "$GITHUB_WORKSPACE/app.tar.gz"
+          echo "ipa-path=$GITHUB_WORKSPACE/app.tar.gz" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Modify env
+        run: |
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
       - name: Install Maestro
         run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
-      - name: Modify env and build app in release mode
-        run: |
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-          ./scripts/e2e-ios-build.sh
       - uses: futureware-tech/simulator-action@v4
         id: simulator
         with:
@@ -101,6 +113,7 @@ jobs:
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
+          ARTIFACT_PATH_FOR_E2E: ${{ steps.download-artifact.outputs.ipa-path }}
 
       - name: Upload artifacts
         if: ${{ always() }}

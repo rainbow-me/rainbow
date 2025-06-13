@@ -57,7 +57,7 @@ target 'Rainbow' do
     end
   end
   # Pods for Rainbow
-  config = use_native_modules!
+  config = use_native_modules!(['npx', 'rnef', 'config', '-p', 'ios'])
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -90,8 +90,6 @@ target 'Rainbow' do
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
   pod 'TOCropViewController', '~> 2.7.4'
-
-  use_native_modules!
 
   post_install do |installer|
     react_native_post_install(

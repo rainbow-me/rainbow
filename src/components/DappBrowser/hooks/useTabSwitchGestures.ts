@@ -4,6 +4,7 @@ import { Easing, interpolate, runOnJS, useSharedValue, withSpring, withTiming } 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { clamp } from '@/__swaps__/utils/swaps';
+import { generateUniqueId } from '@/worklets/strings';
 import { useBrowserContext } from '../BrowserContext';
 import {
   MULTI_TAB_SCALE,
@@ -15,7 +16,6 @@ import {
 } from '../Dimensions';
 import { RAINBOW_HOME } from '../constants';
 import { TabViewGestureStates } from '../types';
-import { generateUniqueIdWorklet } from '../utils';
 
 export const HIDE_SURROUNDING_TABS_X_OFFSET = 100;
 export const TAB_VIEW_GESTURE_HOLD_THRESHOLD_MS = 500;
@@ -143,7 +143,7 @@ export const useTabSwitchGestures = () => {
             // Create a new tab if needed and register a pending switch to the next tab
             if (isLastTab) {
               currentlyOpenTabIds.modify(value => {
-                newTabId = generateUniqueIdWorklet();
+                newTabId = generateUniqueId();
                 value.push(newTabId);
                 return value;
               });

@@ -70,6 +70,9 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Contact } from '@/redux/contacts';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import store from '@/redux/store';
+import { useQueryClient } from '@tanstack/react-query';
+import { interactionsCountQueryKey } from '@/resources/addys/interactions';
+import { type Address } from 'viem';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -150,6 +153,7 @@ export default function SendSheet() {
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
   const { isHardwareWallet } = useWallets();
+  const queryClient = useQueryClient();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
     step: REGISTRATION_STEPS.TRANSFER,
@@ -593,6 +597,18 @@ export default function SendSheet() {
               chainId: currentChainId,
               transaction: txDetails as NewTransaction,
             });
+
+            // Invalidate the interactions count query for this recipient. if not done,
+            // the cache time is 15 minutes so the number of interactions will not be updated
+            if (accountAddress && toAddress && nativeCurrency) {
+              queryClient.invalidateQueries(
+                interactionsCountQueryKey({
+                  fromAddress: accountAddress.toLowerCase() as Address,
+                  toAddress: toAddress.toLowerCase() as Address,
+                  currency: nativeCurrency,
+                })
+              );
+            }
           }
         }
       } catch (error) {
@@ -632,6 +648,8 @@ export default function SendSheet() {
       transferENS,
       updateTxFee,
       updateTxFeeForOptimism,
+      queryClient,
+      nativeCurrency,
     ]
   );
 

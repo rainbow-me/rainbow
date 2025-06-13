@@ -71,6 +71,7 @@ react {
 	    // codegenDir = file("../node_modules/@react-native/codegen")
 	    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
 	    // cliFile = file("../node_modules/react-native/cli.js")
+      cliFile = file("../../node_modules/@rnef/cli/dist/src/bin.js")
 
 	    /* Variants */
 	    //   The list of variants to that are debuggable. For those we're going to
@@ -160,8 +161,8 @@ android {
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 263
-        versionName "1.9.67"
+        versionCode 264
+        versionName "1.9.68"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true

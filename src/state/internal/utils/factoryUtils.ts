@@ -64,7 +64,7 @@ export function createStoreFactoryUtils<
 
       /* ────────── Listener-only overload ────────── */
       if (args.length === 1) {
-        const [listener] = args;
+        const listener = args[0];
         const prev = oldStore.getState();
         const next = newStore.getState();
 

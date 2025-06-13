@@ -1,6 +1,6 @@
 import { Share } from 'react-native';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
-import { RainbowError, logger } from '@/logger';
+import { RainbowError, ensureError, logger } from '@/logger';
 import { HTTP, HTTPS, RAINBOW_HOME, APP_STORE_URL_PREFIXES } from './constants';
 
 // ---------------------------------------------------------------------------- //
@@ -88,13 +88,6 @@ export const formatUrl = (url: string, formatSearches = true, prettifyUrl = true
   return formattedValue;
 };
 
-export function generateUniqueIdWorklet(): string {
-  'worklet';
-  const timestamp = Date.now().toString(36);
-  const randomString = Math.random().toString(36).slice(2, 7);
-  return `${timestamp}${randomString}`;
-}
-
 export const getNameFromFormattedUrl = (formattedUrl: string, needsFormatting?: boolean): string => {
   const url = needsFormatting ? formatUrl(formattedUrl, false, true, true) : formattedUrl;
   const parts = url.split('.');
@@ -112,10 +105,9 @@ export const getNameFromFormattedUrl = (formattedUrl: string, needsFormatting?: 
 export async function handleShareUrl(url: string): Promise<void> {
   try {
     await Share.share({ message: url });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
+  } catch (e) {
     logger.error(new RainbowError('[DappBrowser]: Error sharing browser URL'), {
-      message: e.message,
+      error: ensureError(e),
       url,
     });
   }

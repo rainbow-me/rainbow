@@ -5,21 +5,26 @@ source .env
 FLOW=e2e
 ARGS=()
 DEVICE_ID=""
+APP_PATH=""
 
 # Extract the flow flag to allow running only one suite of test and passthrough the rest of the arguments.
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --flow)
-      FLOW="$2"
-      shift
-      ;;
-    --device)
-      DEVICE="$1 $2"
-      shift
-      ;;
-    *)
-      ARGS+=("$1")
-      ;;
+  --flow)
+    FLOW="$2"
+    shift
+    ;;
+  --device)
+    DEVICE="$1 $2"
+    shift
+    ;;
+  --app)
+    APP_PATH="$2"
+    shift
+    ;;
+  *)
+    ARGS+=("$1")
+    ;;
   esac
   shift
 done

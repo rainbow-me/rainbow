@@ -11,11 +11,12 @@ import { BrowserHistoryStore } from '@/state/browserHistory';
 import { BrowserState, useBrowserStore } from '@/state/browser/browserStore';
 import { getDappHostname } from '@/utils/connectedApps';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { generateUniqueId } from '@/worklets/strings';
 import { useBrowserContext } from '../BrowserContext';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { handleProviderRequestApp } from '../handleProviderRequest';
 import { TabId } from '../types';
-import { generateUniqueIdWorklet, isValidAppStoreUrl } from '../utils';
+import { isValidAppStoreUrl } from '../utils';
 
 interface UseWebViewHandlersParams {
   addRecent: BrowserHistoryStore['addRecent'];
@@ -195,7 +196,7 @@ export function useWebViewHandlers({
     const currentUrl = useBrowserStore.getState().getTabUrl(tabId);
     if (currentUrl) useBrowserStore.getState().goToPage(currentUrl, tabId);
 
-    setRenderKey(`${tabId}-${generateUniqueIdWorklet()}`);
+    setRenderKey(`${tabId}-${generateUniqueId()}`);
   }, [setRenderKey, tabId]);
 
   return {

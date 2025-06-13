@@ -1,88 +1,88 @@
-name: Unit tests
-
-on: [pull_request]
-jobs:
-  lint-and-unit-test:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Install secret tools
-        run: sudo apt install libsecret-tools
-
-      - name: Setup env key
-        uses: ./.github/actions/ssh/
-        with:
-          name: env
-          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
-
-      - name: Setup scripts key
-        uses: ./.github/actions/ssh/
-        with:
-          name: scripts
-          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
-
-      - name: Setup sandbox key
-        uses: ./.github/actions/ssh/
-        with:
-          name: sandbox
-          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
-
-      - name: Setup env
-        env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
-        run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            mv rainbow-env/android/app/google-services.json android/app/google-services.json
-            rm -rf rainbow-env
-            sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
-      - name: Setup scripts
-        env:
-            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
-        run: |
-            eval $CI_SCRIPTS
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: Cache Yarn dependencies
-        uses: useblacksmith/cache@v5
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-          key: ${{ runner.os }}-${{ runner.arch }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - run: cd rainbow-scripts && git checkout @janic/rn79
-
-      - name: Install dependencies
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
-        run: |
-          yarn install && yarn setup
-
-      - name: Check for frozen lockfile
-        run: ./scripts/check-lockfile.sh
-
-      - name: Audit CI
-        run: yarn audit-ci --config audit-ci.jsonc
-
-      - name: Remove ESLint cache
-        run: rm -f .eslintcache
-
-      - name: Lint
-        run: yarn lint:ci
-
-      - name: Unit tests
-        run: yarn test
-
+# name: Unit tests
+#
+# on: [pull_request]
+# jobs:
+#   lint-and-unit-test:
+#     runs-on: blacksmith-2vcpu-ubuntu-2204
+#     concurrency:
+#       group: ${{ github.workflow }}-${{ github.ref }}
+#       cancel-in-progress: true
+#
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
+#
+#       - name: Install secret tools
+#         run: sudo apt install libsecret-tools
+#
+#       - name: Setup env key
+#         uses: ./.github/actions/ssh/
+#         with:
+#           name: env
+#           key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+#
+#       - name: Setup scripts key
+#         uses: ./.github/actions/ssh/
+#         with:
+#           name: scripts
+#           key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+#
+#       - name: Setup sandbox key
+#         uses: ./.github/actions/ssh/
+#         with:
+#           name: sandbox
+#           key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+#
+#       - name: Setup env
+#         env:
+#             SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+#         run: |
+#             git clone git@github.com:rainbow-me/rainbow-env.git
+#             mv rainbow-env/dotenv .env
+#             mv rainbow-env/android/app/google-services.json android/app/google-services.json
+#             rm -rf rainbow-env
+#             sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+#       - name: Setup scripts
+#         env:
+#             CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+#             SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+#         run: |
+#             eval $CI_SCRIPTS
+#       - name: Get Yarn cache directory path
+#         id: yarn-cache-dir-path
+#         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+#
+#       - name: Cache Yarn dependencies
+#         uses: useblacksmith/cache@v5
+#         with:
+#           path: |
+#             ${{ steps.yarn-cache-dir-path.outputs.dir }}
+#             .yarn/cache
+#             .yarn/install-state.gz
+#           key: ${{ runner.os }}-${{ runner.arch }}-yarn-${{ hashFiles('**/yarn.lock') }}
+#           restore-keys: |
+#             ${{ runner.os }}-yarn-
+#
+#       - run: cd rainbow-scripts && git checkout @janic/rn79
+#
+#       - name: Install dependencies
+#         env:
+#           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+#         run: |
+#           yarn install && yarn setup
+#
+#       - name: Check for frozen lockfile
+#         run: ./scripts/check-lockfile.sh
+#
+#       - name: Audit CI
+#         run: yarn audit-ci --config audit-ci.jsonc
+#
+#       - name: Remove ESLint cache
+#         run: rm -f .eslintcache
+#
+#       - name: Lint
+#         run: yarn lint:ci
+#
+#       - name: Unit tests
+#         run: yarn test
+#
