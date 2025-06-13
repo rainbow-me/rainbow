@@ -11,6 +11,7 @@ import { Collection, CollectionId } from '@/state/nfts/types';
 import { isLowerCaseMatch } from '@/utils';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { isDataComplete } from '@/hooks/useMigrateShowcaseAndHidden';
 
 const COINS_TO_SHOW = 5;
 
@@ -257,39 +258,46 @@ export const buildBriefUniqueTokenList = (
   const uniqueTokensInShowcaseIds: Map<CollectionId, number> = new Map();
   const filteredCollections: Map<CollectionId, Collection> = new Map(collections?.map(c => [c.id.toLowerCase(), c]));
 
-  for (const token of showcaseTokens) {
-    const { contractAddress } = parseUniqueId(token);
-    const matchedCollection = collections?.find(c => {
-      const { contractAddress: collectionContractAddress } = parseUniqueId(c.id);
-      return isLowerCaseMatch(collectionContractAddress, contractAddress);
-    });
+  const includeShowcase = isDataComplete(showcaseTokens);
+  const includeHidden = isDataComplete(hiddenTokens);
 
-    if (matchedCollection) {
-      const lowerCaseId = matchedCollection.id.toLowerCase();
-      uniqueTokensInShowcaseIds.set(lowerCaseId, (uniqueTokensInShowcaseIds.get(lowerCaseId) ?? 0) + 1);
-      // remove the collection from the filtered collections map if needed
-      const totalCount = filteredCollections.get(lowerCaseId)?.totalCount;
-      if (totalCount && Number(totalCount) === 1) {
-        filteredCollections.delete(lowerCaseId);
+  if (includeShowcase) {
+    for (const token of showcaseTokens) {
+      const { contractAddress } = parseUniqueId(token);
+      const matchedCollection = collections?.find(c => {
+        const { contractAddress: collectionContractAddress } = parseUniqueId(c.id);
+        return isLowerCaseMatch(collectionContractAddress, contractAddress);
+      });
+
+      if (matchedCollection) {
+        const lowerCaseId = matchedCollection.id.toLowerCase();
+        uniqueTokensInShowcaseIds.set(lowerCaseId, (uniqueTokensInShowcaseIds.get(lowerCaseId) ?? 0) + 1);
+        // remove the collection from the filtered collections map if needed
+        const totalCount = filteredCollections.get(lowerCaseId)?.totalCount;
+        if (totalCount && Number(totalCount) === 1) {
+          filteredCollections.delete(lowerCaseId);
+        }
       }
     }
   }
 
-  for (const token of hiddenTokens) {
-    const { contractAddress } = parseUniqueId(token);
-    const matchedCollection = collections?.find(c => {
-      const { contractAddress: collectionContractAddress } = parseUniqueId(c.id);
-      return isLowerCaseMatch(collectionContractAddress, contractAddress);
-    });
+  if (includeHidden) {
+    for (const token of hiddenTokens) {
+      const { contractAddress } = parseUniqueId(token);
+      const matchedCollection = collections?.find(c => {
+        const { contractAddress: collectionContractAddress } = parseUniqueId(c.id);
+        return isLowerCaseMatch(collectionContractAddress, contractAddress);
+      });
 
-    if (matchedCollection) {
-      const lowerCaseId = matchedCollection.id.toLowerCase();
+      if (matchedCollection) {
+        const lowerCaseId = matchedCollection.id.toLowerCase();
 
-      hiddenUniqueTokensIds.set(lowerCaseId, (hiddenUniqueTokensIds.get(lowerCaseId) ?? 0) + 1);
-      // remove the collection from the filtered collections map if needed
-      const totalCount = filteredCollections.get(lowerCaseId)?.totalCount;
-      if (totalCount && Number(totalCount) === 1) {
-        filteredCollections.delete(lowerCaseId);
+        hiddenUniqueTokensIds.set(lowerCaseId, (hiddenUniqueTokensIds.get(lowerCaseId) ?? 0) + 1);
+        // remove the collection from the filtered collections map if needed
+        const totalCount = filteredCollections.get(lowerCaseId)?.totalCount;
+        if (totalCount && Number(totalCount) === 1) {
+          filteredCollections.delete(lowerCaseId);
+        }
       }
     }
   }
@@ -302,7 +310,7 @@ export const buildBriefUniqueTokenList = (
     { type: CellType.NFTS_HEADER_SPACE_AFTER, uid: 'nfts-header-space-after' },
   ];
 
-  if (showcaseTokens.length > 0) {
+  if (includeShowcase && showcaseTokens.length > 0) {
     result.push({
       name: i18n.t(i18n.l.account.tab_showcase),
       total: showcaseTokens.length,
@@ -378,7 +386,7 @@ export const buildBriefUniqueTokenList = (
     }
   }
 
-  if (hiddenTokens.length > 0 && !hasMoreCollections) {
+  if (includeHidden && hiddenTokens.length > 0 && !hasMoreCollections) {
     result.push({
       name: i18n.t(i18n.l.button.hidden),
       total: hiddenTokens.length,

@@ -15,6 +15,7 @@ import { setHiddenTokens } from '@/redux/hiddenTokens';
 import useWebData from './useWebData';
 import useWallets from './useWallets';
 import useAccountSettings from './useAccountSettings';
+import { logger } from '@/logger';
 
 function matchEnsNameToUniqueId(ensName: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
   for (const nft of nfts) {
@@ -27,19 +28,19 @@ function matchEnsNameToUniqueId(ensName: string, nfts: UniqueAsset[]): UniqueAss
   return undefined;
 }
 
-function matchContractAndAddressAndTokenId(uniqueId: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
+function matchContractAndAddress(uniqueId: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
   const { contractAddress, tokenId } = parseUniqueId(uniqueId);
 
   for (const nft of nfts) {
-    if (!isLowerCaseMatch(nft.contractAddress, contractAddress) || !isLowerCaseMatch(nft.tokenId, tokenId)) continue;
+    if (!isLowerCaseMatch(nft.contractAddress, contractAddress)) continue;
 
-    return nft.uniqueId;
+    return `${nft.network}_${contractAddress}_${Number(tokenId)}`;
   }
 
   return undefined;
 }
 
-function isDataComplete(tokens: string[]) {
+export function isDataComplete(tokens: string[]) {
   for (const token of tokens) {
     const { network, contractAddress, tokenId } = parseUniqueId(token);
     if (!network || !contractAddress || !tokenId) return false;
@@ -56,14 +57,20 @@ export default function useMigrateShowcaseAndHidden() {
   const { accountAddress } = useAccountSettings();
 
   const migrateShowcaseAndHidden = useCallback(async () => {
-    if (!showcaseTokens.length && !hiddenTokens.length) return;
+    if (isReadOnlyWallet || (!showcaseTokens.length && !hiddenTokens.length)) {
+      logger.debug('🔄 [Migration] Skipping showcase and hidden migration process...');
+      return;
+    }
+
     const hasMigratedShowcase = isDataComplete(showcaseTokens);
     const hasMigratedHidden = isDataComplete(hiddenTokens);
 
-    console.log('🔄 [Migration] Starting migration process...');
-    console.log('📊 [Migration] Current tokens:', { hasMigratedHidden, hasMigratedShowcase });
+    if (hasMigratedShowcase && hasMigratedHidden) {
+      logger.debug('🔄 [Migration] Showcase and hidden tokens have already been migrated...');
+      return;
+    }
 
-    if (hasMigratedShowcase && hasMigratedHidden) return;
+    logger.debug('🔄 [Migration] Starting showcase and hidden migration process...');
 
     const queryKey = nftsQueryKey({
       address: accountAddress,
@@ -72,6 +79,7 @@ export default function useMigrateShowcaseAndHidden() {
     });
 
     let data = queryClient.getQueryData<NFTData>(queryKey);
+    logger.debug(`🔄 [Migration] Has cached query data: ${!!data}`);
     if (!data) {
       data = await fetchNFTData({
         queryKey,
@@ -79,70 +87,89 @@ export default function useMigrateShowcaseAndHidden() {
       });
     }
 
-    if (!data) return;
+    logger.debug(`🔄 [Migration] Query data has NFTs: ${data.nfts.length}`);
+    if (!data?.nfts?.length) return;
 
     const migratedShowcaseTokens: string[] = [];
     const migratedHiddenTokens: string[] = [];
 
     if (!hasMigratedShowcase) {
+      logger.debug('🔄 [Migration] Migrating showcase tokens...');
       // handle ENS name / <contractAddress>_<tokenId> --> <network>_<contractAddress>_<tokenId>
       for (const token of showcaseTokens) {
         const isENS = isENSAddressFormat(token);
         if (isENS) {
+          logger.debug(`🔄 [Migration] Migrating ENS name: ${token}`);
           const uniqueId = matchEnsNameToUniqueId(token, data.nfts);
           if (!uniqueId) {
-            continue;
-          }
-          migratedShowcaseTokens.push(uniqueId.toLowerCase());
-        } else {
-          const uniqueId = matchContractAndAddressAndTokenId(token, data.nfts);
-          if (!uniqueId) {
+            logger.debug(`🔄 [Migration] No match found for ENS name: ${token}`);
             continue;
           }
 
+          logger.debug(`🔄 [Migration] Migrating ENS name to uniqueId: ${uniqueId}`);
+          migratedShowcaseTokens.push(uniqueId.toLowerCase());
+        } else {
+          logger.debug(`🔄 [Migration] Migrating contractAddress and tokenId: ${token}`);
+          const uniqueId = matchContractAndAddress(token, data.nfts);
+          if (!uniqueId) {
+            logger.debug(`🔄 [Migration] No match found for token: ${token}`);
+            continue;
+          }
+
+          logger.debug(`🔄 [Migration] Migrating token ${token} to uniqueId: ${uniqueId}`);
           migratedShowcaseTokens.push(uniqueId.toLowerCase());
         }
       }
     }
 
     if (!hasMigratedHidden) {
+      logger.debug('🔄 [Migration] Migrating hidden tokens...');
       for (const token of hiddenTokens) {
         if (isENSAddressFormat(token)) {
+          logger.debug(`🔄 [Migration] Migrating ENS name: ${token}`);
           const uniqueId = matchEnsNameToUniqueId(token, data.nfts);
           if (!uniqueId) {
-            // effectively, we should remove this token since we can't migrate it
+            logger.debug(`🔄 [Migration] No match found for ENS name: ${token}`);
             continue;
           }
 
+          logger.debug(`🔄 [Migration] Migrating ENS name to uniqueId: ${uniqueId}`);
           migratedHiddenTokens.push(uniqueId.toLowerCase());
         } else {
+          logger.debug(`🔄 [Migration] Migrating contractAddress and tokenId: ${token}`);
           const { network, contractAddress, tokenId } = parseUniqueId(token);
 
-          // if we already have everything we need, migrate it directly
           if (network && contractAddress && tokenId) {
+            logger.debug(`🔄 [Migration] Migrating token ${token} to uniqueId: ${token}`);
             migratedHiddenTokens.push(token.toLowerCase());
           } else {
-            const uniqueId = matchContractAndAddressAndTokenId(token, data.nfts);
+            const uniqueId = matchContractAndAddress(token, data.nfts);
             if (!uniqueId) {
-              // effectively, we should remove this token since we can't migrate it
+              logger.debug(`🔄 [Migration] No match found for token: ${token}`);
               continue;
             }
 
+            logger.debug(`🔄 [Migration] Migrating token ${token} to uniqueId: ${uniqueId}`);
             migratedHiddenTokens.push(uniqueId.toLowerCase());
           }
         }
       }
     }
 
-    console.log('🔄 [Migration] Migrating tokens:', { migratedShowcaseTokens, migratedHiddenTokens });
+    console.log('🔄 [Migration] Total migrated tokens:', {
+      previousShowcaseTokens: showcaseTokens.length,
+      previousHiddenTokens: hiddenTokens.length,
+      migratedShowcaseTokens: migratedShowcaseTokens.length,
+      migratedHiddenTokens: migratedHiddenTokens.length,
+    });
 
-    await Promise.all([dispatch(setShowcaseTokens(migratedShowcaseTokens)), dispatch(setHiddenTokens(migratedHiddenTokens))]);
-
-    console.log('🔄 [Migration] Migrating tokens to web:', { migratedShowcaseTokens, migratedHiddenTokens });
-    console.log('🔄 [Migration] isReadOnlyWallet:', isReadOnlyWallet);
-    if (!isReadOnlyWallet) {
-      await Promise.all([updateWebShowcase(migratedShowcaseTokens), updateWebHidden(migratedHiddenTokens)]);
-    }
+    // update the web data and the local state data
+    await Promise.all([
+      dispatch(setShowcaseTokens(migratedShowcaseTokens)),
+      dispatch(setHiddenTokens(migratedHiddenTokens)),
+      updateWebShowcase(migratedShowcaseTokens),
+      updateWebHidden(migratedHiddenTokens),
+    ]);
   }, [showcaseTokens, hiddenTokens, accountAddress, dispatch, isReadOnlyWallet, updateWebShowcase, updateWebHidden]);
 
   return migrateShowcaseAndHidden;

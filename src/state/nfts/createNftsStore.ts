@@ -29,7 +29,7 @@ export const STALE_TIME = time.minutes(10);
 
 let paginationPromise: { address: Address | string; promise: Promise<void> } | null = null;
 
-const replaceEthereumWithMainnet = (network: string | undefined) => {
+export const replaceEthereumWithMainnet = (network: string | undefined) => {
   if (!network) return undefined;
 
   if (network === 'ethereum') {
@@ -140,6 +140,8 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
         }
       }
 
+      console.log(nftsByCollection);
+
       return {
         collections: new Map(),
         nftsByCollection,
@@ -190,8 +192,6 @@ export const createNftsStore = (address: Address | string) =>
     },
 
     (set, get) => ({
-      hasMigratedShowcase: false,
-      hasMigratedHidden: false,
       collections: new Map(),
       openCollections: new Set(),
       nftsByCollection: new Map(),
@@ -327,8 +327,6 @@ export const createNftsStore = (address: Address | string) =>
           partialize: state => ({
             collections: state.collections,
             nftsByCollection: state.nftsByCollection,
-            hasMigratedShowcase: state.hasMigratedShowcase,
-            hasMigratedHidden: state.hasMigratedHidden,
             fetchedCollections: state.fetchedCollections,
             openCollections: state.openCollections,
           }),
