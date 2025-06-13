@@ -22,16 +22,8 @@ import * as i18n from '@/languages';
 import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
-import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import React, {
-  LayoutChangeEvent,
-  Pressable,
-  StyleSheet,
-  View,
-  KeyboardAvoidingView as RNKeyboardAvoidingView,
-  TextInput,
-  ScrollView,
-} from 'react-native';
+import { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Pressable, StyleSheet, View, TextInput, ScrollView } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -41,12 +33,9 @@ import Animated, {
   Easing,
   FadeIn,
   FadeOutUp,
-  interpolate,
-  LinearTransition,
   runOnJS,
   SharedValue,
   useAnimatedReaction,
-  useAnimatedScrollHandler,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -887,7 +876,7 @@ type NetworkSearchGridProps = {
   onSelectNetwork: (chainId: ChainId) => void;
 };
 
-function NetworkSearchGrid({ selected, chains, onSelectNetwork }: NetworkSearchGridProps) {
+const NetworkSearchGrid = memo(function NetworkSearchGrid({ selected, chains, onSelectNetwork }: NetworkSearchGridProps) {
   const searchQuery = networkSwitcherStore(state => state.searchQuery);
   const pinnedNetworks = networkSwitcherStore.getState().pinnedNetworks;
 
@@ -944,7 +933,7 @@ function NetworkSearchGrid({ selected, chains, onSelectNetwork }: NetworkSearchG
       </Box>
     </KeyboardAwareScrollView>
   );
-}
+});
 
 type SheetProps = PropsWithChildren<Pick<NetworkSwitcherProps, 'onClose'>> & {
   expanded: SharedValue<boolean>;
@@ -1023,7 +1012,7 @@ export function NetworkSelector() {
   const selectedNetwork = useSharedValue(typeof selected === 'number' ? selected : selected?.value);
   const isSearchFocused = useSharedValue(false);
   const [isSearching, setIsSearching] = useState(false);
-  const searchBarRef = useRef<TextInput>(null);
+  const searchBarInputRef = useRef<TextInput>(null);
 
   const chains = useMemo(() => {
     const allSupportedChains = useBackendNetworksStore.getState().getSupportedChains();
@@ -1055,8 +1044,8 @@ export function NetworkSelector() {
   const onPressHeaderActionButton = useCallback(() => {
     if (isSearching) {
       setIsSearching(false);
-      searchBarRef.current?.blur();
-      searchBarRef.current?.clear();
+      searchBarInputRef.current?.blur();
+      searchBarInputRef.current?.clear();
       networkSwitcherStore.setState({ searchQuery: '' });
     } else {
       editing.value = !editing.value;
@@ -1074,8 +1063,8 @@ export function NetworkSelector() {
 
   const onCloseSheet = useCallback(() => {
     onClose?.();
-    searchBarRef.current?.blur();
-    searchBarRef.current?.clear();
+    searchBarInputRef.current?.blur();
+    searchBarInputRef.current?.clear();
     networkSwitcherStore.setState({ searchQuery: '' });
   }, [onClose]);
 
@@ -1115,7 +1104,7 @@ export function NetworkSelector() {
       {isSearching && <NetworkSearchGrid selected={selectedNetwork} chains={chains} onSelectNetwork={onSelectNetwork} />}
       <Animated.View style={[sx.searchBar, searchBarStyle]}>
         <KeyboardStickyView offset={{ opened: PANEL_BOTTOM_OFFSET, closed: 0 }}>
-          <SearchBar onFocus={onFocusSearchBar} onBlur={onBlurSearchBar} ref={searchBarRef} />
+          <SearchBar onFocus={onFocusSearchBar} onBlur={onBlurSearchBar} inputRef={searchBarInputRef} />
         </KeyboardStickyView>
       </Animated.View>
     </Sheet>
