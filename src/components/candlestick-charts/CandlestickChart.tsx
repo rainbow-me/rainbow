@@ -95,6 +95,11 @@ export type CandlestickConfig = {
   };
 
   chart: {
+    /**
+     * Gap between the chart and the active candle card, in pixels.
+     * @default 16
+     */
+    activeCandleCardGap: number;
     backgroundColor: string;
     /**
      * Vertical padding percentage to apply to the candle region, from 0 to 1.
@@ -102,11 +107,6 @@ export type CandlestickConfig = {
      */
     candlesPaddingRatioVertical: number;
     panGestureDeceleration: number;
-    /**
-     * Gap between the chart and the active candle card, in pixels.
-     * @default 16
-     */
-    activeCandleCardGap: number;
     /**
      * Gap between the chart and the x-axis labels, in pixels.
      * @default 10
@@ -1831,7 +1831,7 @@ export const CandlestickChart = memo(function CandlestickChart({
       <Animated.View style={[activeCandleCardStyle, { marginBottom: config.chart.activeCandleCardGap }]}>
         <ActiveCandleCard activeCandle={activeCandle} config={config} />
       </Animated.View>
-      <View style={{ height: chartHeight, backgroundColor, width: chartWidth }}>
+      <View style={{ height: chartHeight + chartBottomPadding, backgroundColor, width: chartWidth }}>
         {chartCanvas}
 
         {showChartControls && (

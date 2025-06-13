@@ -78,7 +78,8 @@ const ChartTimespanLabels: Record<ChartTimespan, { short: string; long: string }
   },
 };
 
-const CHART_HEIGHT = 250;
+// const CHART_HEIGHT = 250;
+const TOTAL_CHART_HEIGHT = 300;
 const CHART_VERTICAL_PADDING = 30;
 
 export const NoChartData = ({ height }: { height: number }) => {
@@ -163,74 +164,76 @@ export const Chart = memo(function Chart({ asset, backgroundColor, color }: Char
           <ChartExpandedStateHeader priceRelativeChange={priceRelativeChange} price={price} displayDate={displayDate} />
         </Animated.View>
       </Box>
-      {chartType === ChartTypes.LINE && (
-        <Box paddingVertical={{ custom: CHART_VERTICAL_PADDING }}>
-          <LineChart
-            strokeColor={color}
-            backgroundColor={color}
-            width={screenWidth}
-            height={CHART_HEIGHT}
-            asset={asset}
-            timespan={selectedTimespan as LineChartTimespan}
-            chartGestureUnixTimestamp={chartGestureUnixTimestamp}
-            price={chartGesturePrice}
-            priceRelativeChange={priceRelativeChange}
-            isChartGestureActive={isChartGestureActive}
-          />
-        </Box>
-      )}
-      {chartType === ChartTypes.CANDLESTICK && (
-        <Box height={CHART_HEIGHT + CHART_VERTICAL_PADDING * 2}>
-          <CandlestickChart
-            backgroundColor={backgroundColor}
-            // TODO: check back on this once merged with Christian's changes
-            chartHeight={CHART_HEIGHT + CHART_VERTICAL_PADDING}
-            config={{
-              // chart: {
-              //   activeCandleCardGap: 16,
-              // },
-              activeCandleCard: {
-                style: {
-                  backgroundColor: accentColors.opacity6,
-                  paddingHorizontal: 16,
-                  alignSelf: 'center',
-                  borderRadius: 20,
-                  borderWidth: 1,
-                  borderColor: accentColors.opacity10,
-                  width: screenWidth - 48,
+      <Box gap={20}>
+        {chartType === ChartTypes.LINE && (
+          <Box justifyContent="center" height={TOTAL_CHART_HEIGHT}>
+            <LineChart
+              strokeColor={color}
+              backgroundColor={color}
+              width={screenWidth}
+              height={TOTAL_CHART_HEIGHT - CHART_VERTICAL_PADDING * 2}
+              asset={asset}
+              timespan={selectedTimespan as LineChartTimespan}
+              chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+              price={chartGesturePrice}
+              priceRelativeChange={priceRelativeChange}
+              isChartGestureActive={isChartGestureActive}
+            />
+          </Box>
+        )}
+        {chartType === ChartTypes.CANDLESTICK && (
+          <Box height={TOTAL_CHART_HEIGHT}>
+            <CandlestickChart
+              backgroundColor={backgroundColor}
+              // TODO: check back on this once merged with Christian's changes
+              chartHeight={TOTAL_CHART_HEIGHT - 13 - 10 - 16}
+              config={{
+                chart: {
+                  activeCandleCardGap: 16,
                 },
-                height: 75,
-              },
-            }}
-            isChartGestureActive={isChartGestureActive}
-            showChartControls={false}
-          />
-        </Box>
-      )}
-      <Box height={34} width={'full'} flexDirection="row" justifyContent="center" alignItems="center" gap={12}>
-        {Object.keys(timespans).map(timespan => (
-          <ButtonPressAnimation key={timespan} onPress={() => onPressTimespan(timespan as ChartTimespan)}>
-            <Box
-              width={44}
-              paddingVertical={'12px'}
-              justifyContent="center"
-              alignItems="center"
-              borderRadius={20}
-              backgroundColor={timespan === selectedTimespan ? colors.alpha(color, 0.06) : 'transparent'}
-            >
-              <Text color={timespan === selectedTimespan ? { custom: color } : 'labelQuaternary'} uppercase size="15pt" weight="heavy">
-                {ChartTimespanLabels[timespan as ChartTimespan].short}
-              </Text>
+                activeCandleCard: {
+                  style: {
+                    backgroundColor: accentColors.opacity6,
+                    paddingHorizontal: 16,
+                    alignSelf: 'center',
+                    borderRadius: 20,
+                    borderWidth: 1,
+                    borderColor: accentColors.opacity10,
+                    width: screenWidth - 48,
+                  },
+                  height: 75,
+                },
+              }}
+              isChartGestureActive={isChartGestureActive}
+              showChartControls={false}
+            />
+          </Box>
+        )}
+        <Box height={34} width={'full'} flexDirection="row" justifyContent="center" alignItems="center" gap={12}>
+          {Object.keys(timespans).map(timespan => (
+            <ButtonPressAnimation key={timespan} onPress={() => onPressTimespan(timespan as ChartTimespan)}>
+              <Box
+                width={44}
+                paddingVertical={'12px'}
+                justifyContent="center"
+                alignItems="center"
+                borderRadius={20}
+                backgroundColor={timespan === selectedTimespan ? colors.alpha(color, 0.06) : 'transparent'}
+              >
+                <Text color={timespan === selectedTimespan ? { custom: color } : 'labelQuaternary'} uppercase size="15pt" weight="heavy">
+                  {ChartTimespanLabels[timespan as ChartTimespan].short}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          ))}
+          <ButtonPressAnimation onPress={onPresschartType}>
+            <Box borderRadius={20} justifyContent="center" alignItems="center" width={44} paddingVertical={'12px'}>
+              <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
+                {chartType === ChartTypes.LINE ? '􀋪' : '􀋦'}
+              </TextIcon>
             </Box>
           </ButtonPressAnimation>
-        ))}
-        <ButtonPressAnimation onPress={onPresschartType}>
-          <Box borderRadius={20} justifyContent="center" alignItems="center" width={44} paddingVertical={'12px'}>
-            <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
-              {chartType === ChartTypes.LINE ? '􀋪' : '􀋦'}
-            </TextIcon>
-          </Box>
-        </ButtonPressAnimation>
+        </Box>
       </Box>
     </Box>
   );
