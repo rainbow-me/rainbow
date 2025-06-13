@@ -6,11 +6,12 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
+import { backupsStore } from '@/state/backups/backups';
 import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { values } from 'lodash';
 import { useCallback } from 'react';
-import { backupWalletToCloud } from '../model/backup';
+import { addWalletToCloudBackup, backupWalletToCloud } from '../model/backup';
 import { cloudPlatform } from '../utils/platform';
 
 export function getUserError(e: Error) {
@@ -44,6 +45,7 @@ export default function useWalletCloudBackup() {
       onSuccess,
       password,
       walletId,
+      addToCurrentBackup,
     }: {
       handleNoLatestBackup?: () => void;
       handlePasswordNotFound?: () => void;
@@ -51,6 +53,7 @@ export default function useWalletCloudBackup() {
       onSuccess?: (password: string) => void;
       password: string;
       walletId: string;
+      addToCurrentBackup: boolean;
     }): Promise<boolean> => {
       if (IS_ANDROID) {
         try {
@@ -122,12 +125,25 @@ export default function useWalletCloudBackup() {
       let updatedBackupFile = null;
 
       try {
-        logger.debug(`[useWalletCloudBackup]: backing up to ${cloudPlatform}: ${(wallets || {})[walletId]}`);
-        updatedBackupFile = await backupWalletToCloud({
-          password,
-          wallet: (wallets || {})[walletId],
-          userPIN,
-        });
+        const currentBackup = backupsStore.getState().backups.files.at(0);
+        if (addToCurrentBackup && currentBackup != null) {
+          logger.debug(`[useWalletCloudBackup]: adding to existing backup to ${cloudPlatform} ${currentBackup.name}`, {
+            wallet: (wallets || {})[walletId],
+          });
+          updatedBackupFile = await addWalletToCloudBackup({
+            filename: currentBackup.name,
+            password,
+            wallet: (wallets || {})[walletId],
+            userPIN,
+          });
+        } else {
+          logger.debug(`[useWalletCloudBackup]: creating new backup to ${cloudPlatform}`, { wallet: (wallets || {})[walletId] });
+          updatedBackupFile = await backupWalletToCloud({
+            password,
+            wallet: (wallets || {})[walletId],
+            userPIN,
+          });
+        }
       } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
