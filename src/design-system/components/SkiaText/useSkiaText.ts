@@ -72,8 +72,6 @@ export function useSkiaText({
       const fontInfo = typeHierarchy.text[size];
       paragraphBuilder.reset();
 
-      if (foregroundPaint) foregroundPaint.setColor(skiaColor);
-
       const buildSegment = (segment: TextSegment) => {
         const segmentStyle = getTextStyle({
           color,
@@ -86,7 +84,7 @@ export function useSkiaText({
           weightOverride: segment.weight,
         });
 
-        if (segment.foregroundPaint) segment.foregroundPaint.setColor(segmentStyle.color);
+        if (segment.foregroundPaint && segment.color) segment.foregroundPaint.setColor(segmentStyle.color);
         if (shadows || segment.shadows) segmentStyle.shadows = segment.shadows;
         if (segment.opacity !== undefined && segment.color) {
           segmentStyle.color = Skia.Color(opacityWorklet(segment.color, segment.opacity));

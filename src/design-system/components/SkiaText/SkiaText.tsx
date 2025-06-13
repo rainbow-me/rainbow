@@ -149,13 +149,11 @@ export const SkiaText = ({
     }
 
     // Simple text case - just one segment with the entire text
-    return [
-      {
-        color,
-        text: isSharedValue ? children : childOrChildrenArray.map(child => String(child)).join(''),
-        weight,
-      },
-    ];
+    return {
+      color,
+      text: isSharedValue ? children : childOrChildrenArray.map(child => String(child)).join(''),
+      weight,
+    };
   }, [children, color, getSegmentColor, weight]);
 
   const paragraph = useDerivedValue(() => {
