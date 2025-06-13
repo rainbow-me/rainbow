@@ -1,23 +1,23 @@
-import Clipboard from '@react-native-clipboard/clipboard';
+import { ButtonPressAnimation } from '@/components/animations';
+import { CopyFloatingEmojis } from '@/components/floating-emojis';
+import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
 import * as lang from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useAccountAddress, useIsDamagedWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { watchingAlert } from '@/utils';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { analytics } from '@/analytics';
+import { enableActionsOnReadOnlyWallet } from '@/config';
+import showWalletErrorAlert from '@/helpers/support';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
-import { CopyFloatingEmojis } from '@/components/floating-emojis';
-import { enableActionsOnReadOnlyWallet } from '@/config';
-import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import { useAccountProfile, useWallets } from '@/hooks';
-import Navigation from '@/navigation/Navigation';
-import { watchingAlert } from '@/utils';
-import Routes from '@rainbow-me/routes';
-import showWalletErrorAlert from '@/helpers/support';
-import { analytics } from '@/analytics';
 import { useRecoilState } from 'recoil';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -139,7 +139,7 @@ function ActionButton({
 }
 
 function BuyButton() {
-  const { isDamaged } = useWallets();
+  const isDamaged = useIsDamagedWallet();
 
   const handlePress = React.useCallback(() => {
     if (isDamaged) {
@@ -162,7 +162,7 @@ function BuyButton() {
 }
 
 function SwapButton() {
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
@@ -181,7 +181,7 @@ function SwapButton() {
 }
 
 function SendButton() {
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
@@ -202,8 +202,8 @@ function SendButton() {
 
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const { accountAddress } = useAccountProfile();
-  const { isDamaged } = useWallets();
+  const accountAddress = useAccountAddress();
+  const isDamaged = useIsDamagedWallet();
 
   const handlePressCopy = React.useCallback(() => {
     if (isDamaged) {

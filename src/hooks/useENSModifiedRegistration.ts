@@ -1,13 +1,14 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useAccountSettings, useENSAvatar, useENSCover, useENSRecords, useENSRegistration, usePrevious } from '.';
+import { useENSAvatar, useENSCover, useENSRecords, useENSRegistration, usePrevious } from '.';
 import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const getImageUrl = (
   key: 'avatar' | 'header',
@@ -54,7 +55,7 @@ export default function useENSModifiedRegistration({
 } = {}) {
   const dispatch = useDispatch();
   const { records, initialRecords, name, mode } = useENSRegistration();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const {
     data: { nfts: uniqueTokens },

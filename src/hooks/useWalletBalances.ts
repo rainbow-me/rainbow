@@ -4,6 +4,7 @@ import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
 import { useAddysSummary } from '@/resources/summary/summary';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const QUERY_CONFIG = {
   staleTime: 60_000, // 1 minute

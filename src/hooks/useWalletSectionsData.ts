@@ -5,7 +5,6 @@ import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
 import useShowcaseTokens from './useShowcaseTokens';
-import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -19,6 +18,7 @@ import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewT
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '../state/wallets/walletsStore';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -34,8 +34,10 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
-  const { selectedWallet, isReadOnlyWallet } = useWallets();
+  const { language, network, nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
+  const selectedWallet = useSelectedWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled');
@@ -83,6 +85,7 @@ export default function useWalletSectionsData({
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const accountWithBalance = useMemo(() => {
+    if (!selectedWallet) return null;
     return walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
       address => address.address.toLowerCase() === accountAddress.toLowerCase()
     );

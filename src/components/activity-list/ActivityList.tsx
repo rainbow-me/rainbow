@@ -15,6 +15,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { useAccountSettings, useAccountTransactions } from '@/hooks';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -85,7 +86,8 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 }
 
 const ActivityList = () => {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const { nativeCurrency } = useAccountSettings();
 
   const { setScrollToTopRef } = useSectionListScrollToTopContext<TransactionItemForSectionList, TransactionSections>();
   const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();

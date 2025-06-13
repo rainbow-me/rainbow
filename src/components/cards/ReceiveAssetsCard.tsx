@@ -1,26 +1,27 @@
-import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
-import React, { useCallback } from 'react';
-import { GenericCard } from './GenericCard';
-import { useAccountProfile, useClipboard } from '@/hooks';
-import { ButtonPressAnimation } from '../animations';
+import { analytics } from '@/analytics';
 import { FloatingEmojis } from '@/components/floating-emojis';
-import { useRecoilState } from 'recoil';
-import { haptics } from '@/utils';
+import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
+import { useClipboard } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
-import { IconOrb } from './reusables/IconOrb';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { TintButton } from './reusables/TintButton';
-import Skeleton, { FakeText } from '../skeleton/Skeleton';
-import * as i18n from '@/languages';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { haptics } from '@/utils';
+import React, { useCallback } from 'react';
+import { useRecoilState } from 'recoil';
+import { ButtonPressAnimation } from '../animations';
+import Skeleton, { FakeText } from '../skeleton/Skeleton';
+import { GenericCard } from './GenericCard';
+import { IconOrb } from './reusables/IconOrb';
+import { TintButton } from './reusables/TintButton';
 
 export const RECEIVE_CARD_HEIGHT = 174;
 const TRANSLATIONS = i18n.l.cards.receive;
 
 export const ReceiveAssetsCard = () => {
-  const { accountAddress } = useAccountProfile();
+  const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);

@@ -74,7 +74,6 @@ import {
   checkIdentifierSheetConfig,
   recieveModalSheetConfig,
   expandedAssetSheetV2Config,
-  networkSelectorConfig,
   tokenLauncherConfig,
   kingOfTheHillExplainSheetConfig,
 } from './config';
@@ -115,7 +114,7 @@ import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
-import { NetworkSelector } from '@/screens/NetworkSelector';
+import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 
 const Stack = createStackNavigator();
@@ -278,7 +277,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
-      <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...networkSelectorConfig} />
+      <NativeStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} {...panelConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />

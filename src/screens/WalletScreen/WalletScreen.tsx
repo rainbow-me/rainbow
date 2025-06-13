@@ -3,7 +3,7 @@ import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useHideSplashScreen, useWalletSectionsData } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +21,7 @@ import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -53,7 +54,6 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
 function WalletScreen() {
   const { network: currentNetwork, accountAddress } = useAccountSettings();
   const insets = useSafeAreaInsets();
-  const hideSplashScreen = useHideSplashScreen();
   const fetchNextPage = useNftsStore(state => state.fetchNextPage);
 
   const {
@@ -80,7 +80,7 @@ function WalletScreen() {
         useNavigationStore.setState({ isWalletScreenMounted: true });
       });
     });
-  }, [hideSplashScreen]);
+  }, []);
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">

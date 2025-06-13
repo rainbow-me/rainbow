@@ -1,4 +1,3 @@
-import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import {
   SCRUBBER_WIDTH,
   SLIDER_ROUND_THRESHOLD_END,
@@ -7,14 +6,9 @@ import {
   snappySpringConfig,
 } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { RequestNewQuoteParams, InputKeys, InputMethods, InputValues } from '@/__swaps__/types/swap';
+import { InputKeys, InputMethods, InputValues, RequestNewQuoteParams } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
-import {
-  convertAmountToNativeDisplayWorklet,
-  convertRawAmountToDecimalFormat,
-  handleSignificantDecimalsWorklet,
-} from '@/helpers/utilities';
 import {
   addCommasToNumber,
   addSymbolToNativeDisplayWorklet,
@@ -26,18 +20,24 @@ import {
 import { analytics } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { NativeCurrencyKey } from '@/entities';
+import {
+  convertAmountToNativeDisplayWorklet,
+  convertRawAmountToDecimalFormat,
+  handleSignificantDecimalsWorklet,
+} from '@/helpers/utilities';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { logger } from '@/logger';
-import store from '@/redux/store';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { CrosschainQuote, Quote, QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
-import { NavigationSteps } from './useSwapNavigation';
-import { analyticsTrackQuoteFailed } from './analyticsTrackQuoteFailed';
 import { SwapsParams } from '../navigateToSwaps';
+import { analyticsTrackQuoteFailed } from './analyticsTrackQuoteFailed';
+import { NavigationSteps } from './useSwapNavigation';
 
 function applyInitialInputValues({
   inputAsset,
@@ -379,8 +379,10 @@ export function useSwapInputsController({
     const maxAdjustedInputAmount =
       (isSwappingMaxBalance && internalSelectedInputAsset.value?.maxSwappableAmount) || inputValues.value.inputAmount;
 
+    const currentAddress = getAccountAddress();
+
     const params = buildQuoteParams({
-      currentAddress: store.getState().settings.accountAddress,
+      currentAddress,
       inputAmount: maxAdjustedInputAmount,
       inputAsset: internalSelectedInputAsset.value,
       lastTypedInput: lastTypedInputParam,

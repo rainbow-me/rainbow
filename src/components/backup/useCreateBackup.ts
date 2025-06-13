@@ -1,20 +1,23 @@
-import { useCallback } from 'react';
-import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
-import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { cloudPlatform } from '@/utils/platform';
+/* eslint-disable no-promise-executor-return */
 import { analytics } from '@/analytics';
-import { useWalletCloudBackup, useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { Navigation } from '@/navigation';
-import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '@/components/alerts';
-import { useDispatch } from 'react-redux';
-import * as i18n from '@/languages';
 import showWalletErrorAlert from '@/helpers/support';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { useWalletCloudBackup } from '@/hooks';
+import * as i18n from '@/languages';
+import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { backupsStore, CloudBackupState } from '@/state/backups/backups';
+import { useWallets } from '@/state/wallets/walletsStore';
+import { cloudPlatform } from '@/utils/platform';
+import { useCallback } from 'react';
+import { InteractionManager } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 type UseCreateBackupProps = {
   walletId?: string;
+  addToCurrentBackup?: boolean;
 };
 
 type ConfirmBackupProps = {
@@ -25,22 +28,29 @@ export const useCreateBackup = () => {
   const dispatch = useDispatch();
 
   const walletCloudBackup = useWalletCloudBackup();
-  const { wallets } = useWallets();
+  const wallets = useWallets();
 
   const setLoadingStateWithTimeout = useCallback(
     ({ state, outOfSync = false, failInMs = 10_000 }: { state: CloudBackupState; outOfSync?: boolean; failInMs?: number }) => {
       backupsStore.getState().setStatus(state);
+      let outOfSyncTimeout: NodeJS.Timeout | null = null;
       if (outOfSync) {
-        setTimeout(() => {
+        outOfSyncTimeout = setTimeout(() => {
           backupsStore.getState().setStatus(CloudBackupState.Syncing);
         }, 1_000);
       }
-      setTimeout(() => {
+      const endTimeout = setTimeout(() => {
         const currentState = backupsStore.getState().status;
         if (currentState === state) {
           backupsStore.getState().setStatus(CloudBackupState.Ready);
         }
       }, failInMs);
+      return () => {
+        clearTimeout(endTimeout);
+        if (outOfSyncTimeout != null) {
+          clearTimeout(outOfSyncTimeout);
+        }
+      };
     },
     []
   );
@@ -53,11 +63,12 @@ export const useCreateBackup = () => {
       // Reset the storedPassword state for next backup
       backupsStore.getState().setStoredPassword('');
       analytics.track(analytics.event.backupComplete, { category: 'backup', label: cloudPlatform });
-      setLoadingStateWithTimeout({
+      const cancelTimeout = setLoadingStateWithTimeout({
         state: CloudBackupState.Success,
         outOfSync: true,
       });
-      backupsStore.getState().syncAndFetchBackups();
+      await backupsStore.getState().syncAndFetchBackups();
+      cancelTimeout();
     },
     [setLoadingStateWithTimeout]
   );
@@ -77,7 +88,7 @@ export const useCreateBackup = () => {
   );
 
   const onConfirmBackup = useCallback(
-    async ({ password, walletId }: ConfirmBackupProps) => {
+    async ({ password, walletId, addToCurrentBackup = false }: ConfirmBackupProps) => {
       analytics.track(analytics.event.backupConfirmed);
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
@@ -100,7 +111,6 @@ export const useCreateBackup = () => {
           password,
           onError,
           onSuccess,
-          dispatch,
         });
         return;
       }
@@ -110,6 +120,7 @@ export const useCreateBackup = () => {
         onSuccess,
         password,
         walletId,
+        addToCurrentBackup,
       });
     },
     [walletCloudBackup, onError, wallets, onSuccess, dispatch]

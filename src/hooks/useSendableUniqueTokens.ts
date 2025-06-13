@@ -1,10 +1,10 @@
 import { groupBy } from 'lodash';
-import { useAccountSettings } from '.';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useMemo } from 'react';
 
-export default function useSendableUniqueTokens() {
-  const { accountAddress } = useAccountSettings();
+export default function useUniqueTokens() {
+  const accountAddress = useAccountAddress();
   const {
     data: { nfts: uniqueTokens },
     isLoading: isFetchingNfts,
