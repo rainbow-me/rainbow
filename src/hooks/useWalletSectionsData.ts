@@ -13,12 +13,11 @@ import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
-import { useNftSort } from './useNFTsSortBy';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '../state/wallets/walletsStore';
 
 export interface WalletSectionsResult {
@@ -35,7 +34,6 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { nftSort, nftSortDirection } = useNftSort();
   const { language, network, nativeCurrency } = useAccountSettings();
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -80,17 +78,9 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
-  const {
-    data: { nfts: uniqueTokens },
-    isLoading: isFetchingNfts,
-  } = useLegacyNFTs({
-    address: accountAddress,
-    sortBy: nftSort,
-    sortDirection: nftSortDirection,
-    config: {
-      enabled: !!accountAddress,
-    },
-  });
+  const collections = useNftsStore(state => state.getCollections());
+  const hasMoreCollections = useNftsStore(state => state.hasNextPage());
+  const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -132,17 +122,17 @@ export default function useWalletSectionsData({
       isReadOnlyWallet,
       listType: type,
       showcaseTokens,
-      uniqueTokens,
+      collections,
       isFetchingNfts,
       experimentalConfig,
       positions,
       claimables,
-      nftSort,
       remoteCards,
+      hasMoreCollections,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
-    const hasNFTs = uniqueTokens.length > 0;
+    const hasNFTs = (collections?.length ?? 0) > 0;
 
     return {
       hasNFTs,
@@ -162,17 +152,18 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sortedAssets,
     accountWithBalance?.balancesMinusHiddenBalances,
+    accountWithBalance?.balances,
     isWalletEthZero,
     hiddenTokens,
     isReadOnlyWallet,
     type,
     showcaseTokens,
-    uniqueTokens,
+    collections,
     isFetchingNfts,
     experimentalConfig,
     positions,
     claimables,
-    nftSort,
     remoteCards,
+    hasMoreCollections,
   ]);
 }

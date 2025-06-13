@@ -791,6 +791,23 @@ export default async function runMigrations() {
 
   migrations.push(v27);
 
+  /**
+   *************** Migration v28 ******************
+   * Delete nfts-sort-${address} from MMKV as it's no longer used
+   */
+  const v28 = async () => {
+    const wallets = getWallets();
+    if (!wallets) return;
+
+    for (const wallet of Object.values(wallets)) {
+      for (const { address } of (wallet as RainbowWallet).addresses || []) {
+        mmkv.delete(`nfts-sort-${address}`);
+      }
+    }
+  };
+
+  migrations.push(v28);
+
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {

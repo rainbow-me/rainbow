@@ -7,8 +7,11 @@ import { useDispatch } from 'react-redux';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { promiseUtils } from '../utils';
 import { prefetchAccountENSDomains } from './useAccountENSDomains';
+import useMigrateShowcaseAndHidden from './useMigrateShowcaseAndHidden';
 
 export default function useLoadAccountLateData() {
+  const migrateShowcaseAndHidden = useMigrateShowcaseAndHidden();
+
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const dispatch = useDispatch();
@@ -33,8 +36,10 @@ export default function useLoadAccountLateData() {
     }
 
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: ThunkDispatch<{ read... Remove this comment to see the full error message
-    return promiseUtils.PromiseAllWithFails(promises);
-  }, [accountAddress, dispatch, isReadOnlyWallet]);
+    await promiseUtils.PromiseAllWithFails(promises);
+
+    await migrateShowcaseAndHidden();
+  }, [accountAddress, dispatch, isReadOnlyWallet, migrateShowcaseAndHidden]);
 
   return loadAccountLateData;
 }

@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import { useTheme } from '../../theme/ThemeContext';
+import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
@@ -61,6 +61,7 @@ const SendAssetFormField = (
 ) => {
   const { isTinyPhone, isSmallPhone, width } = useDimensions();
   const { colors } = useTheme();
+
   const handlePressMax = useCallback(
     e => {
       analytics.track(analytics.event.sendMaxPressed);
@@ -76,7 +77,12 @@ const SendAssetFormField = (
       onPress={() => !android && ref?.current.focus()}
       width={width}
     >
-      <GradientBackground colorForAsset={colorForAsset} isSmallPhone={android || isSmallPhone} isTinyPhone={isTinyPhone} width={width} />
+      <GradientBackground
+        colorForAsset={colorForAsset || colors.dark}
+        isSmallPhone={android || isSmallPhone}
+        isTinyPhone={isTinyPhone}
+        width={width}
+      />
       <RowWithMargins align="center" flex={1} justify="space-between" margin={12} {...props}>
         <BubbleField
           autoFocus={autoFocus}

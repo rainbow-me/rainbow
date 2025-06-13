@@ -1007,7 +1007,7 @@ export type EventProperties = {
   [event.toggledAnNFTAsHidden]: {
     isHidden: boolean;
     collectionContractAddress?: string | null;
-    collectionName?: string;
+    collectionName?: string | null;
   };
   [event.viewedEnsProfile]: {
     category: string;

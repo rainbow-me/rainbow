@@ -10,8 +10,8 @@ import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import { getENSData, getNameFromLabelhash, saveENSData } from './localstorage/ens';
-import { estimateGasWithPadding, getProvider, TokenStandard } from './web3';
-import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
+import { estimateGasWithPadding, getProvider } from './web3';
+import { AssetType, ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
 import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
@@ -25,6 +25,8 @@ import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
+import { Address } from 'viem';
+import { NftTokenType } from '@/graphql/__generated__/arc';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -43,74 +45,42 @@ const buildEnsToken = ({
   tokenId: string;
   name: string;
   imageUrl: string;
-}) => {
+}): UniqueAsset => {
   const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
     originalUrl: imageUrl_,
     previewUrl: undefined,
     mimeType: MimeType.SVG,
   });
+
   return {
-    acquisition_date: undefined,
-    chainId: ChainId.mainnet,
-    animation_url: null,
-    asset_contract: {
-      address: contractAddress,
-      name: 'ENS',
-      nft_version: '3.0',
-      schema_name: TokenStandard.ERC721,
-      symbol: 'ENS',
-      total_supply: null,
-    },
-    background: null,
-    collection: {
-      description:
-        'Ethereum Name Service (ENS) domains are secure domain names for the decentralized world. ENS domains provide a way for users to map human readable names to blockchain and non-blockchain resources, like Ethereum addresses, IPFS hashes, or website URLs. ENS domains can be bought and sold on secondary markets.',
-      discord_url: null,
-      external_url: 'https://ens.domains',
-      featured_image_url:
-        'https://lh3.googleusercontent.com/BBj09xD7R4bBtg1lgnAAS9_TfoYXKwMtudlk-0fVljlURaK7BWcARCpkM-1LGNGTAcsGO6V1TgrtmQFvCo8uVYW_QEfASK-9j6Nr=s300',
-      hidden: false,
-      image_url:
-        'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
-      name: 'ENS: Ethereum Name Service',
-      short_description: null,
-      slug: 'ens',
-      twitter_username: 'ensdomains',
-    },
-    currentPrice: null,
-    description: `\`${name}\`, an ENS name.`,
-    external_link: `https://app.ens.domains/search/${name}`,
-    familyImage:
-      'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
-    familyName: 'ENS',
-    fullUniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}`,
-    id: tokenId,
-    image_original_url: imageUrl,
-    image_thumbnail_url: lowResUrl,
-    image_url: imageUrl,
-    isSendable: true,
-    last_sale: null,
-    lastPrice: null,
-    lastPriceUsd: null,
-    lastSale: undefined,
-    lastSalePaymentToken: null,
-    lowResUrl,
-    marketplaceCollectionUrl: `https://opensea.io/collection/ens?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW`,
-    marketplaceId: 'opensea',
-    marketplaceName: 'OpenSea',
     name,
+    description: `\`${name}\`, an ENS name.`,
+    collectionDescription:
+      'Ethereum Name Service (ENS) domains are secure domain names for the decentralized world. ENS domains provide a way for users to map human readable names to blockchain and non-blockchain resources, like Ethereum addresses, IPFS hashes, or website URLs. ENS domains can be bought and sold on secondary markets.',
+    type: AssetType.ens,
     network: Network.mainnet,
-    permalink: '',
-    sell_orders: [],
+    chainId: ChainId.mainnet,
+    contractAddress: contractAddress as Address,
+    backgroundColor: undefined,
+    images: {
+      mimeType: MimeType.SVG,
+      highResUrl: imageUrl,
+      lowResUrl,
+    },
+    tokenId,
+    standard: NftTokenType.Erc721,
+    isSendable: true,
+    uniqueId: `${Network.mainnet}_${contractAddress}_${tokenId}` as UniqueAsset['uniqueId'],
+    collectionUrl: 'https://ens.domains',
+    collectionImageUrl:
+      'https://lh3.googleusercontent.com/0cOqWoYA7xL9CkUjGlxsjreSYBdrUBE0c6EO1COG4XE8UeP-Z30ckqUNiL872zHQHQU5MUNMNhfDpyXIP17hRSC5HQ=s60',
+    collectionName: 'ENS: Ethereum Name Service',
+    marketplaceName: 'OpenSea',
+    marketplaceUrl: 'https://opensea.io/collection/ens?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW',
+    twitterUrl: 'https://x.com/ensdomains',
+    websiteUrl: 'https://ens.domains',
     traits: [],
-    type: 'nft',
-    uniqueId: name,
-    urlSuffixForAsset: `${contractAddress}/${tokenId}`,
-    // hacky shit
-    video_url: null,
-    audio_url: null,
-    model_url: null,
-  } as UniqueAsset;
+  };
 };
 
 export const fetchMetadata = async ({

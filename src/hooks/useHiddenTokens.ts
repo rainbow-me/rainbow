@@ -19,12 +19,12 @@ export default function useHiddenTokens() {
 
   const addHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
-      dispatch(rawAddHiddenToken(asset.fullUniqueId));
-      !isReadOnlyWallet && updateWebHidden([...hiddenTokens, asset.fullUniqueId]);
+      dispatch(rawAddHiddenToken(asset.uniqueId.toLowerCase()));
+      !isReadOnlyWallet && updateWebHidden([...hiddenTokens, asset.uniqueId.toLowerCase()]);
 
       analytics.track(analytics.event.toggledAnNFTAsHidden, {
-        collectionContractAddress: asset.asset_contract.address || null,
-        collectionName: asset.collection.name,
+        collectionContractAddress: asset.contractAddress,
+        collectionName: asset.collectionName,
         isHidden: true,
       });
     },
@@ -33,12 +33,12 @@ export default function useHiddenTokens() {
 
   const removeHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
-      dispatch(rawRemoveHiddenToken(asset.fullUniqueId));
-      !isReadOnlyWallet && updateWebHidden(hiddenTokens.filter(id => id !== asset.fullUniqueId));
+      dispatch(rawRemoveHiddenToken(asset.uniqueId.toLowerCase()));
+      !isReadOnlyWallet && updateWebHidden(hiddenTokens.filter(id => id !== asset.uniqueId.toLowerCase()));
 
       analytics.track(analytics.event.toggledAnNFTAsHidden, {
-        collectionContractAddress: asset.asset_contract.address || null,
-        collectionName: asset.collection.name,
+        collectionContractAddress: asset.contractAddress,
+        collectionName: asset.collectionName,
         isHidden: false,
       });
     },

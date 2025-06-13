@@ -12,6 +12,8 @@ import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { Address } from 'viem';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
@@ -35,6 +37,7 @@ export const refreshAccountData = async () => {
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
     useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
+    useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) }),
   ]);
 };
 
