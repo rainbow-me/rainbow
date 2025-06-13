@@ -1,66 +1,49 @@
 import { Box, Column, Columns, Inline, Stack, Text, globalColors } from '@/design-system';
-import React, { useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useTheme } from '@/theme';
 
 import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
 import { RequestVendorLogoIcon } from '../coin-icon';
-import { EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
-import { RainbowBorrow, RainbowClaimable, RainbowDeposit, RainbowPosition, RainbowStake } from '@/resources/defi/types';
-import { Network } from '@/state/backendNetworks/types';
+import { PositionAsset, RainbowBorrow, RainbowClaimable, RainbowDeposit, RainbowPosition, RainbowStake } from '@/resources/defi/types';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { useAccountSettings } from '@/hooks';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { AddressOrEth } from '@/__swaps__/types/assets';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 type PositionCardProps = {
   position: RainbowPosition;
 };
 
-type CoinStackToken = {
-  address: EthereumAddress;
-  network: Network;
-  symbol: string;
-};
-
-function CoinIconForStack({ token }: { token: CoinStackToken }) {
-  const { nativeCurrency } = useAccountSettings();
-  const chainId = useBackendNetworksStore.getState().getChainsIdByName()[token.network];
-  const { data: externalAsset } = useExternalToken({ address: token.address as AddressOrEth, chainId, currency: nativeCurrency });
-
+const CoinIconForStack = memo(function CoinIconForStack({ token }: { token: PositionAsset }) {
   return (
     <RainbowCoinIcon
       size={16}
-      icon={externalAsset?.icon_url}
-      chainId={chainId}
+      icon={token.icon_url}
+      chainId={token.chain_id}
       symbol={token.symbol}
-      color={externalAsset?.colors?.primary || externalAsset?.colors?.fallback || undefined}
+      color={token.colors?.primary ?? token.colors?.fallback ?? undefined}
       showBadge={false}
     />
   );
-}
-function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
-  const { colors } = useTheme();
+});
 
+const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: PositionAsset[] }) {
   return (
     <Box flexDirection="row" alignItems="center">
       {tokens.map((token, index) => {
         return (
           <Box
-            key={`availableNetwork-${token.address}`}
+            key={`availableNetwork-${token.asset_code}`}
             marginTop={{ custom: -2 }}
             marginLeft={{ custom: index > 0 ? -8 : 0 }}
             style={{
               position: 'relative',
               zIndex: tokens.length + index,
               borderRadius: 30,
-              borderColor: colors.transparent,
+              borderColor: 'transparent',
               borderWidth: 2,
             }}
           >
@@ -70,7 +53,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
       })}
     </Box>
   );
-}
+});
 
 export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
@@ -84,40 +67,24 @@ export const PositionCard = ({ position }: PositionCardProps) => {
     navigate(Routes.POSITION_SHEET, { position });
   }, [navigate, position]);
 
-  const depositTokens: CoinStackToken[] = useMemo(() => {
-    const tokens: CoinStackToken[] = [];
+  const depositTokens: PositionAsset[] = useMemo(() => {
+    const tokens: PositionAsset[] = [];
     position.deposits.forEach((deposit: RainbowDeposit) => {
       deposit.underlying.forEach(({ asset }) => {
-        tokens.push({
-          address: asset.asset_code,
-          network: asset.network,
-          symbol: asset.symbol,
-        });
+        tokens.push(asset);
       });
     });
     position.stakes.forEach((stake: RainbowStake) => {
       stake.underlying.forEach(({ asset }) => {
-        tokens.push({
-          address: asset.asset_code,
-          network: asset.network,
-          symbol: asset.symbol,
-        });
+        tokens.push(asset);
       });
     });
     position.claimables.forEach((claimable: RainbowClaimable) => {
-      tokens.push({
-        address: claimable.asset.asset_code,
-        network: claimable.asset.network,
-        symbol: claimable.asset.symbol,
-      });
+      tokens.push(claimable.asset);
     });
     position.borrows.forEach((borrow: RainbowBorrow) => {
       borrow.underlying.forEach(({ asset }) => {
-        tokens.push({
-          address: asset.asset_code,
-          network: asset.network,
-          symbol: asset.symbol,
-        });
+        tokens.push(asset);
       });
     });
 
