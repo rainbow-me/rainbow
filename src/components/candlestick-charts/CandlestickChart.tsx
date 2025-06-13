@@ -14,8 +14,8 @@ import {
   StrokeJoin,
   createPicture,
 } from '@shopify/react-native-skia';
-import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { FontVariant, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -32,7 +32,7 @@ import Animated, {
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { AnimatedText, Bleed, Inline, SkiaText, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Inline, SkiaText, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { NativeCurrencyKey } from '@/entities';
@@ -49,6 +49,7 @@ import { EmaIndicator, IndicatorBuilder, IndicatorKey } from './classes/Indicato
 import { TimeFormatter } from './classes/TimeFormatter';
 import { MOCK_CANDLE_DATA, generateMockCandleData } from './mockData';
 import { Bar } from './types';
+import { toFixedWorklet } from '@/safe-math/SafeMath';
 
 export type CandlestickChartProps = {
   backgroundColor?: string;
@@ -62,10 +63,8 @@ export type CandlestickChartProps = {
 
 export type CandlestickConfig = {
   activeCandleCard: {
-    backgroundColor: string;
-    borderRadius: number;
     height: number;
-    width: number;
+    style: StyleProp<ViewStyle>;
   };
 
   animation: {
@@ -94,6 +93,11 @@ export type CandlestickConfig = {
      */
     candlesPaddingRatioVertical: number;
     panGestureDeceleration: number;
+    /**
+     * Gap between the chart and the active candle card, in pixels.
+     * @default 16
+     */
+    activeCandleCardGap: number;
     /**
      * Gap between the chart and the x-axis labels, in pixels.
      * @default 10
@@ -151,10 +155,13 @@ export type CandlestickConfig = {
 
 export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
   activeCandleCard: {
-    backgroundColor: '#141619',
-    borderRadius: 20,
     height: 75,
-    width: 300,
+    style: {
+      backgroundColor: '#141619',
+      borderRadius: 20,
+      height: 75,
+      width: 350,
+    },
   },
 
   animation: {
@@ -172,6 +179,7 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
   },
 
   chart: {
+    activeCandleCardGap: 16,
     backgroundColor: '#141619',
     candlesPaddingRatioVertical: 0.1,
     panGestureDeceleration: 0.9975,
@@ -1290,6 +1298,210 @@ function useCandlestickChart({
   };
 }
 
+const ActiveCandleCard = memo(function ActiveCandleCard({
+  activeCandle,
+  config,
+}: {
+  activeCandle: SharedValue<Bar | undefined>;
+  config: CandlestickConfig;
+}) {
+  const { currency } = getNativeCurrency();
+  const separatorTertiary = useForegroundColor('separatorTertiary');
+  const green = useForegroundColor('green');
+  const red = useForegroundColor('red');
+  const labelSecondary = useForegroundColor('labelSecondary');
+
+  const selectCandleLabel = useCallback(
+    (candle: SharedValue<Bar | undefined>, field: keyof Bar) => {
+      'worklet';
+      if (!candle.value) return '';
+      return formatPrice(candle.value[field], currency);
+    },
+    [currency]
+  );
+
+  const styles = {
+    row: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    column: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      flexShrink: 0,
+    },
+    label: {
+      minWidth: 36,
+    },
+    price: {
+      fontVariant: ['tabular-nums'] as FontVariant[],
+      textAlign: 'right',
+    },
+    priceChangeContainer: {
+      borderWidth: 1,
+      paddingVertical: 5,
+      borderRadius: 8,
+      paddingHorizontal: 4.5,
+    },
+    priceAndChangeContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    separator: {
+      height: 1,
+      width: '100%',
+      backgroundColor: separatorTertiary,
+    },
+  } as const;
+
+  const priceChange = useDerivedValue(() => {
+    'worklet';
+    const candle = activeCandle.value;
+    if (!candle) return 0;
+    return ((candle.c - candle.o) / candle.o) * 100;
+  });
+
+  const priceChangeText = useDerivedValue(() => {
+    const value = priceChange.value;
+    const directionString = value > 0 ? '↑' : value < 0 ? '↓' : '';
+    const formattedPercentageChange = toFixedWorklet(Math.abs(value), 2);
+
+    return `${directionString}${formattedPercentageChange}%`;
+  });
+
+  const priceChangeColor = useDerivedValue(() => {
+    return priceChange.value === 0 ? labelSecondary : priceChange.value > 0 ? green : red;
+  });
+
+  const priceChangeTextStyle = useAnimatedStyle(() => {
+    return {
+      color: priceChangeColor.value,
+    };
+  });
+
+  const priceChangeContainerStyle = useAnimatedStyle(() => {
+    return {
+      borderColor: priceChangeColor.value,
+    };
+  });
+
+  return (
+    <View
+      style={[
+        config.activeCandleCard.style,
+        {
+          height: config.activeCandleCard.height,
+        },
+      ]}
+    >
+      <View style={{ flex: 1 }}>
+        <View style={styles.row}>
+          <View style={styles.column}>
+            <Text color="labelQuaternary" size="13pt" weight="bold" style={styles.label}>
+              {'Open'}
+            </Text>
+            <AnimatedText
+              selector={candle => {
+                'worklet';
+                return selectCandleLabel(candle, 'o');
+              }}
+              color="labelSecondary"
+              size="13pt"
+              weight="bold"
+              style={styles.price}
+            >
+              {activeCandle}
+            </AnimatedText>
+          </View>
+
+          <View style={styles.column}>
+            <Text color="labelQuaternary" size="13pt" weight="bold" style={styles.label}>
+              {'Close'}
+            </Text>
+            <View style={styles.priceAndChangeContainer}>
+              <AnimatedText
+                selector={candle => {
+                  'worklet';
+                  return selectCandleLabel(candle, 'c');
+                }}
+                color="labelSecondary"
+                size="13pt"
+                weight="bold"
+                style={styles.price}
+              >
+                {activeCandle}
+              </AnimatedText>
+              <Animated.View style={[priceChangeContainerStyle, styles.priceChangeContainer]}>
+                <AnimatedText size="13pt" weight="bold" style={[styles.price, priceChangeTextStyle]}>
+                  {priceChangeText}
+                </AnimatedText>
+              </Animated.View>
+            </View>
+          </View>
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.row}>
+          <View style={styles.column}>
+            <Text color="labelQuaternary" size="13pt" weight="bold" style={styles.label}>
+              {'Low'}
+            </Text>
+            <AnimatedText
+              selector={candle => {
+                'worklet';
+                return selectCandleLabel(candle, 'l');
+              }}
+              color="labelSecondary"
+              size="13pt"
+              weight="bold"
+              style={styles.price}
+            >
+              {activeCandle}
+            </AnimatedText>
+          </View>
+
+          <View style={styles.column}>
+            <Text color="labelQuaternary" size="13pt" weight="bold" style={styles.label}>
+              {'High'}
+            </Text>
+            <View style={styles.priceAndChangeContainer}>
+              <AnimatedText
+                selector={candle => {
+                  'worklet';
+                  return selectCandleLabel(candle, 'h');
+                }}
+                color="labelSecondary"
+                size="13pt"
+                weight="bold"
+                style={styles.price}
+              >
+                {activeCandle}
+              </AnimatedText>
+              <Animated.View
+                style={[
+                  priceChangeContainerStyle,
+                  styles.priceChangeContainer,
+                  {
+                    // This is a hack to ensure the close and high labels are left aligned identically
+                    opacity: 0,
+                  },
+                ]}
+              >
+                <AnimatedText size="13pt" weight="bold" style={[styles.price, priceChangeTextStyle]}>
+                  {priceChangeText}
+                </AnimatedText>
+              </Animated.View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+});
+
 export const CandlestickChart = memo(function CandlestickChart({
   backgroundColor,
   candles = MOCK_CANDLE_DATA,
@@ -1383,40 +1595,22 @@ export const CandlestickChart = memo(function CandlestickChart({
 
   const chartGestures = Gesture.Race(panGesture, pinchGesture, crosshairGesture);
 
-  const chartHeaderStyle = useAnimatedStyle(() => {
+  const activeCandleCardStyle = useAnimatedStyle(() => {
     return {
       opacity: isChartGestureActive.value ? 1 : 0,
     };
   });
 
-  // const activeCandleLabel = useDerivedValue(() => {
-  //   if (!activeCandle.value) return '';
-  //   activeCandle.value.o
-  //   // return formatPrice(activeCandle.value.c, nativeCurrency.decimals);
-  // });
-
   return (
     <View
       style={{
-        height: chartHeight + config.activeCandleCard.height,
+        height: chartHeight + config.activeCandleCard.height + config.chart.activeCandleCardGap,
         width: chartWidth,
         marginTop: -config.activeCandleCard.height,
       }}
     >
-      <Animated.View
-        style={[
-          chartHeaderStyle,
-          {
-            alignSelf: 'center',
-            height: config.activeCandleCard.height,
-            width: config.activeCandleCard.width,
-            backgroundColor: config.activeCandleCard.backgroundColor,
-          },
-        ]}
-      >
-        <AnimatedText selector={candle => String(candle.value?.c)} color="labelSecondary" size="13pt" weight="bold">
-          {activeCandle}
-        </AnimatedText>
+      <Animated.View style={[activeCandleCardStyle, { marginBottom: config.chart.activeCandleCardGap }]}>
+        <ActiveCandleCard activeCandle={activeCandle} config={config} />
       </Animated.View>
       <View style={{ height: chartHeight, backgroundColor, width: chartWidth }}>
         <GestureDetector gesture={chartGestures}>

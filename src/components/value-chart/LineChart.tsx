@@ -67,7 +67,6 @@ const Chart = ({ strokeColor, width, height, isChartGestureActive, chartGestureU
     [data.points]
   );
 
-  // TODO: should this just be added to the above reaction?
   useAnimatedReaction(
     () => isActive.value,
     isActive => {

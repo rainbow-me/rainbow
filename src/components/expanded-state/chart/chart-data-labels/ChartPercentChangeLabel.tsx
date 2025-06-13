@@ -13,7 +13,7 @@ type ChartPercentChangeLabelProps = {
   percentageChange: SharedValue<number | undefined>;
 };
 
-export default memo(function ChartPercentChangeLabel({ percentageChange }: ChartPercentChangeLabelProps) {
+export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({ percentageChange }: ChartPercentChangeLabelProps) {
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
   const labelSecondary = useForegroundColor('labelSecondary');
