@@ -3,7 +3,9 @@ import {
   BlendColor,
   Blur,
   Circle,
+  Fill,
   Group,
+  Color,
   Image,
   LinearGradient,
   Paint,
@@ -176,9 +178,7 @@ export const AirdropsCard = memo(function AirdropsCard() {
             r={COIN_ICON_SIZE / 2}
             transform={enterAnimationTransform}
           >
-            <Paint antiAlias blendMode="overlay" dither>
-              <Shadow blur={15} color={CARD_CONFIG.colors.coinIconDropShadow} dx={0} dy={10} shadowOnly />
-            </Paint>
+            <Shadow blur={15} color={CARD_CONFIG.colors.coinIconDropShadow} dx={0} dy={10} />
           </Circle>
 
           {/* Coin icon image */}
@@ -194,31 +194,23 @@ export const AirdropsCard = memo(function AirdropsCard() {
           />
 
           {/* Coin icon inner shadows */}
-          <Circle
-            color="transparent"
-            cx={DEFAULT_CARD_SIZE / 2}
-            cy={COIN_ICON_TOP_INSET}
-            r={COIN_ICON_SIZE / 2}
-            transform={enterAnimationTransform}
-          >
-            <Paint antiAlias dither>
-              <Shadow blur={2} color={CARD_CONFIG.colors.black30} dx={0} dy={-1.5} inner shadowOnly />
-              <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
-            </Paint>
+          <Circle cx={DEFAULT_CARD_SIZE / 2} cy={COIN_ICON_TOP_INSET} r={COIN_ICON_SIZE / 2} transform={enterAnimationTransform}>
+            <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
+          </Circle>
+          <Circle cx={DEFAULT_CARD_SIZE / 2} cy={COIN_ICON_TOP_INSET} r={COIN_ICON_SIZE / 2} transform={enterAnimationTransform}>
+            <Shadow blur={2} color={CARD_CONFIG.colors.black30} dx={0} dy={-1.5} inner shadowOnly />
           </Circle>
 
           {/* Number of airdrops bubble */}
           <Group transform={badgeOffset}>
-            <RoundedRect blendMode="softLight" color={CARD_CONFIG.colors.white80} rect={badgeRect}>
-              <BackdropBlur blur={20} />
-            </RoundedRect>
-
             <RoundedRect color={CARD_CONFIG.colors.white15} rect={badgeRect}>
-              <Shadow blur={6} color={globalColors.grey100} dx={0} dy={8} shadowOnly />
-              <Paint antiAlias dither>
-                <Shadow blur={4} color={CARD_CONFIG.colors.white60} dx={0} dy={3} inner shadowOnly />
-                <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
-              </Paint>
+              <Shadow blur={6} color={globalColors.grey100} dx={0} dy={8} />
+            </RoundedRect>
+            <RoundedRect rect={badgeRect}>
+              <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
+            </RoundedRect>
+            <RoundedRect rect={badgeRect}>
+              <Shadow blur={4} color={CARD_CONFIG.colors.white60} dx={0} dy={3} inner shadowOnly />
             </RoundedRect>
 
             <SkiaText

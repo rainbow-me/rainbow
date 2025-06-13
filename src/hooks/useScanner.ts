@@ -23,7 +23,7 @@ import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const { navigate, goBack } = useNavigation();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const enabledVar = useRef<boolean>();
+  const enabledVar = useRef<boolean>(undefined);
 
   const enableScanning = useCallback(() => {
     logger.debug('[useScanner]: 📠✅  Enabling QR Code Scanner');

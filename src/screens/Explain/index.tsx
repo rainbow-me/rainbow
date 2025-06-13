@@ -108,7 +108,7 @@ const scrollviewStyles = StyleSheet.create({
  * TODO eventually this should be sticky to the bottom of the sheet to match
  * designs.
  */
-export function Footer({ children }: { children: React.ReactNode | React.ReactNodeArray }) {
+export function Footer({ children }: { children: React.ReactNode }) {
   return (
     <Box paddingTop="12px">
       <Stack space="16px">{children}</Stack>

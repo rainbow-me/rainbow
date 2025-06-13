@@ -358,8 +358,8 @@ export function ENSAssignRecordsBottomActions({
 
 function HideKeyboardButton({ color }: { color: string }) {
   const show = useSharedValue(false);
-  const keyboardHideListener = useRef<EmitterSubscription>();
-  const keyboardShowListener = useRef<EmitterSubscription>();
+  const keyboardHideListener = useRef<EmitterSubscription>(undefined);
+  const keyboardShowListener = useRef<EmitterSubscription>(undefined);
 
   useEffect(() => {
     const handleShowKeyboard = () => (show.value = true);

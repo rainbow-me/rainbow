@@ -10,7 +10,7 @@ jobs:
     runs-on: ["self-hosted"]
     timeout-minutes: 75
     if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     permissions:
@@ -50,6 +50,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - run: cd rainbow-scripts && git checkout @janic/rn79
+
       - name: Install dependencies
         run: |
           yarn install && yarn setup
@@ -67,11 +69,11 @@ jobs:
         with:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
-        
-        # TOPHAT iOS SIM   
+
+        # TOPHAT iOS SIM
       - name: Build the app in release mode for simulator
         run: |
-          sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
+          sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e
           sed -i '' 's/match AppStore/match AdHoc/g' "ios/Rainbow.xcodeproj/project.pbxproj"
 
           xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
@@ -81,14 +83,14 @@ jobs:
         run: |
           cp ~/appstore/AuthKey_63N65C2G2S.p8 ios/fastlane/AuthKey_63N65C2G2S.p8
 
-        # TOPHAT iOS DEVICE  
+        # TOPHAT iOS DEVICE
       - name: Build the app in release mode for iOS devices
-        env: 
+        env:
           FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: |
-            cd ios && gem update fastlane && bundle exec fastlane ios build_device
+          gem update fastlane && cd ios && bundle exec fastlane ios build_device
       - name: Upload builds to AWS S3
         env:
           AWS_BUCKET: rainbow-app-team-production
@@ -101,7 +103,7 @@ jobs:
             aws s3 cp "${APP_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
             IPA_FILE=./ios/build/Rainbow.ipa
             aws s3 cp "${IPA_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
-            
+
       - name: Post comment to PR
         if: github.event_name == 'pull_request'
         env:
@@ -113,6 +115,6 @@ jobs:
           curl -s -H "Authorization: token $TOPHAT_GITHUB_TOKEN" -X POST \
           -d "{\"body\":\"$COMMENT\"}" \
           "${{ github.event.pull_request.comments_url }}"
-          
-          
-       
+
+
+
