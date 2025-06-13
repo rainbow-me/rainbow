@@ -64,7 +64,7 @@ export default function QRScannerScreen() {
   const { onScan } = useScanner(hasPermission, hideCamera);
 
   const codeScanner = useCodeScanner({
-    codeTypes: ['qr', 'ean-13'],
+    codeTypes: ['qr'],
     onCodeScanned: codes => {
       if (codes[0].value) {
         onScan({ data: codes[0].value });
