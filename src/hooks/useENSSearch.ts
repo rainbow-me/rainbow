@@ -7,6 +7,7 @@ import { ENS_DOMAIN, formatRentPrice, getAvailable, getENSRegistrarControllerCon
 import { timeUnits } from '@/references';
 import { ethereumUtils, validateENS } from '@/utils';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const formatTime = (timestamp: string, abbreviated = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
@@ -27,6 +28,7 @@ export default function useENSSearch({ yearsDuration = 1, name: inputName }: { y
   }, [contract, setContract]);
 
   const name = inputName.replace(ENS_DOMAIN, '');
+  const accountAddress = useAccountAddress();
   const { nativeCurrency } = useAccountSettings();
 
   const { commitTransactionHash, confirmedRegistrationTransaction, pendingRegistrationTransaction } = useENSLocalTransactions({

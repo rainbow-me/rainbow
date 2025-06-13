@@ -5,7 +5,6 @@ import { Page } from '../components/layout';
 import Navigation from '@/navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CandlestickChart, DEFAULT_CANDLESTICK_CONFIG } from '@/components/candlestick-charts/CandlestickChart';
-import { useAccountProfile, useAccountSettings } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -14,6 +13,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { useExperimentalFlag } from '@/config';
 import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -21,7 +21,7 @@ const ProfileScreenPage = styled(Page)({
 });
 
 export default function ProfileScreen() {
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
   const enableCandlestickCharts = useExperimentalFlag('Candlestick Charts');
 
   return (
@@ -60,7 +60,7 @@ function onChangeWallet(): void {
 }
 
 const PendingTransactionWatcher = memo(function PendingTransactionWatcher() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   usePendingTransactionWatcher({ address: accountAddress });
   return null;
 });

@@ -1,17 +1,17 @@
-import React, { useCallback, useMemo } from 'react';
 import { Box } from '@/design-system';
-import { ClaimPanel } from '../../shared/components/ClaimPanel';
-import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
-import { ClaimCustomization } from './ClaimCustomization';
-import { ClaimButton } from '../../shared/components/ClaimButton';
-import { GasDetails } from './GasDetails';
-import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
-import { useWallets } from '@/hooks';
-import { watchingAlert } from '@/utils';
 import { ClaimableType } from '@/resources/addys/claimables/types';
+import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { watchingAlert } from '@/utils';
+import React, { useCallback, useMemo } from 'react';
+import { ClaimButton } from '../../shared/components/ClaimButton';
+import { ClaimPanel } from '../../shared/components/ClaimPanel';
+import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
 import { ClaimValueMultipleDisplay } from '../../shared/components/ClaimValueMultipleDisplay';
+import { useTransactionClaimableContext } from '../context/TransactionClaimableContext';
+import { ClaimCustomization } from './ClaimCustomization';
+import { GasDetails } from './GasDetails';
 
 export function TransactionClaimableFlow() {
   const {
@@ -26,7 +26,7 @@ export function TransactionClaimableFlow() {
     requiresSwap,
   } = useTransactionClaimableContext();
   const { goBack } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const type = claimable.type.replaceAll('_', '-');
 

@@ -1,11 +1,11 @@
-import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
-import { deviceUtils, watchingAlert } from '@/utils';
-import React from 'react';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
-import { debounce } from 'lodash';
-import { useWallets } from '@/hooks';
 import { enableActionsOnReadOnlyWallet } from '@/config';
+import { AccentColorProvider, Box, Inline, Text, TextShadow } from '@/design-system';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { deviceUtils, watchingAlert } from '@/utils';
+import { debounce } from 'lodash';
+import React from 'react';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 
@@ -26,7 +26,7 @@ export function ClaimButton({
   biometricIcon: boolean;
   label: string;
 }) {
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
 
   if (enableHoldToPress) {
     return (

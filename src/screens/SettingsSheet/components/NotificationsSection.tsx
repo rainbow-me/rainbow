@@ -1,40 +1,41 @@
+import { POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
+import { Box } from '@/design-system';
+import { IS_TEST } from '@/env';
+import { isTestnetChain } from '@/handlers/web3';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import WalletTypes from '@/helpers/walletTypes';
+import { useAccountSettings, useAppState } from '@/hooks';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { RainbowAccount } from '@/model/wallet';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
+import {
+  useAllNotificationSettingsFromStorage,
+  useWalletGroupNotificationSettings,
+  WalletNotificationRelationship,
+  WalletNotificationSettings,
+} from '@/notifications/settings';
+import { GlobalNotificationTopic } from '@/notifications/settings/constants';
+import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
+import { getNotificationSettingsForWalletWithAddress, setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
+import { GlobalNotificationTopics, GlobalNotificationTopicType } from '@/notifications/settings/types';
+import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
+import { abbreviations, deviceUtils } from '@/utils';
+import profileUtils from '@/utils/profileUtils';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { useFocusEffect } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Linking, Switch } from 'react-native';
+import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { ContactAvatar } from '../../../components/contacts';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { checkNotifications, RESULTS } from 'react-native-permissions';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import WalletTypes from '@/helpers/walletTypes';
-import { useAccountSettings, useAppState, useWallets } from '@/hooks';
-import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
-import profileUtils from '@/utils/profileUtils';
-import { abbreviations, deviceUtils } from '@/utils';
-import { Box } from '@/design-system';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { RainbowAccount } from '@/model/wallet';
-import { isTestnetChain } from '@/handlers/web3';
-import { useFocusEffect } from '@react-navigation/native';
-import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
-import { useNetInfo } from '@react-native-community/netinfo';
-import {
-  WalletNotificationRelationship,
-  useAllNotificationSettingsFromStorage,
-  useWalletGroupNotificationSettings,
-  WalletNotificationSettings,
-} from '@/notifications/settings';
-import { getNotificationSettingsForWalletWithAddress, setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
-import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
-import { GlobalNotificationTopicType, GlobalNotificationTopics } from '@/notifications/settings/types';
-import { GlobalNotificationTopic } from '@/notifications/settings/constants';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
-import { IS_TEST } from '@/env';
 
 type WalletRowProps = {
   ens: string;
@@ -158,7 +159,8 @@ const NotificationsSection = () => {
   const { navigate } = useNavigation();
   const { chainId } = useAccountSettings();
   const isTestnet = isTestnetChain({ chainId });
-  const { wallets, walletNames } = useWallets();
+  const wallets = useWallets();
+  const walletNames = useWalletsStore(state => state.walletNames);
   const { isConnected } = useNetInfo();
   const { points_enabled, points_notifications_toggle } = useRemoteConfig();
   const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;

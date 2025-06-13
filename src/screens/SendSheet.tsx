@@ -1,18 +1,9 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
-import { isEmpty, isEqual, isString } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, StatusBar, TextInput, View } from 'react-native';
-import { useDebounce } from 'use-debounce';
-import { GasSpeedButton } from '../components/gas';
-import { Column } from '../components/layout';
-import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
-import { SheetActionButton } from '../components/sheet';
-import { getDefaultCheckboxes } from './SendConfirmationSheet';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
+import { NoResults } from '@/components/list';
+import { NoResultsType } from '@/components/list/NoResults';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
@@ -24,6 +15,9 @@ import {
   NewTransactionNonNullable,
   resolveNameOrAddress,
 } from '@/handlers/web3';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { REGISTRATION_STEPS } from '@/helpers/ens';
+import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import {
   prefetchENSAvatar,
@@ -40,36 +34,44 @@ import {
   useSendableUniqueTokens,
   useSendSheetInputRefs,
   useUserAccounts,
-  useWallets,
 } from '@/hooks';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { logger, RainbowError } from '@/logger';
 import { loadWallet, sendTransaction } from '@/model/wallet';
+import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useNavigation } from '@/navigation/Navigation';
-import { parseGasParamsForTransaction } from '@/parsers';
-import { rainbowTokenList } from '@/references';
 import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { Contact } from '@/redux/contacts';
+import { rainbowTokenList } from '@/references';
+import { interactionsCountQueryKey } from '@/resources/addys/interactions';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { getNextNonce } from '@/state/nonces';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { getWallets, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
-import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
-import { deviceUtils, ethereumUtils, getUniqueTokenType, isLowerCaseMatch, safeAreaInsetValues } from '@/utils';
-import { logger, RainbowError } from '@/logger';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { NoResults } from '@/components/list';
-import { NoResultsType } from '@/components/list/NoResults';
-import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
-import { Wallet } from '@ethersproject/wallet';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { getNextNonce } from '@/state/nonces';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { REGISTRATION_STEPS } from '@/helpers/ens';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { RootStackParamList } from '@/navigation/types';
 import { ThemeContextProps, useTheme } from '@/theme';
+import { deviceUtils, ethereumUtils, getUniqueTokenType, isLowerCaseMatch, safeAreaInsetValues } from '@/utils';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Contact } from '@/redux/contacts';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import store from '@/redux/store';
+import { Wallet } from '@ethersproject/wallet';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
+import lang from 'i18n-js';
+import { isEmpty, isEqual, isString } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, Keyboard, StatusBar, TextInput, View } from 'react-native';
+import { useDebounce } from 'use-debounce';
+import { type Address } from 'viem';
+import { GasSpeedButton } from '../components/gas';
+import { Column } from '../components/layout';
+import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
+import { SheetActionButton } from '../components/sheet';
+import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -96,7 +98,7 @@ const SheetContainer = styled(Column).attrs({
 });
 
 const validateRecipient = (toAddress?: string, tokenAddress?: string) => {
-  const { wallets } = store.getState().wallets;
+  const wallets = getWallets();
   // check for if the recipient is in a damaged wallet state and prevent
   if (wallets) {
     const internalWallet = Object.values(wallets).find(wallet =>
@@ -149,7 +151,8 @@ export default function SendSheet() {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useIsHardwareWallet();
+  const queryClient = useQueryClient();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
     step: REGISTRATION_STEPS.TRANSFER,
@@ -593,6 +596,18 @@ export default function SendSheet() {
               chainId: currentChainId,
               transaction: txDetails as NewTransaction,
             });
+
+            // Invalidate the interactions count query for this recipient. if not done,
+            // the cache time is 15 minutes so the number of interactions will not be updated
+            if (accountAddress && toAddress && nativeCurrency) {
+              queryClient.invalidateQueries(
+                interactionsCountQueryKey({
+                  fromAddress: accountAddress.toLowerCase() as Address,
+                  toAddress: toAddress.toLowerCase() as Address,
+                  currency: nativeCurrency,
+                })
+              );
+            }
           }
         }
       } catch (error) {
@@ -632,6 +647,8 @@ export default function SendSheet() {
       transferENS,
       updateTxFee,
       updateTxFeeForOptimism,
+      queryClient,
+      nativeCurrency,
     ]
   );
 

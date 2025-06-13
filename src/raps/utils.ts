@@ -106,7 +106,6 @@ const getClosestGasEstimate = async (estimationFn: (gasEstimate: number) => Prom
   // guess is typically middle of array
   let guessIndex = Math.floor((end - start) / 2);
   while (end > start) {
-    // eslint-disable-next-line no-await-in-loop
     const gasEstimationSucceded = await estimationFn(gasEstimates[guessIndex]);
     if (gasEstimationSucceded) {
       if (!lowestSuccessfulGuess || guessIndex < lowestSuccessfulGuess) {

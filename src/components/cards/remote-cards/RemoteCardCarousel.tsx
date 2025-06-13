@@ -1,17 +1,17 @@
+import { IS_TEST } from '@/env';
+import { useRoute } from '@react-navigation/native';
 import React, { useRef } from 'react';
 import { CarouselCard } from '../CarouselCard';
-import { useRoute } from '@react-navigation/native';
-import { IS_TEST } from '@/env';
 
 import { RemoteCard } from '@/components/cards/remote-cards';
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
-import { useDimensions, useWallets } from '@/hooks';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { FlashList } from '@shopify/flash-list';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import Routes from '@/navigation/routesNames';
 import { Separator, useColorMode } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { useDimensions } from '@/hooks';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import Routes from '@/navigation/routesNames';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { FlashList } from '@shopify/flash-list';
 
 type RenderItemProps = {
   item: string;
@@ -31,7 +31,7 @@ export const RemoteCardCarousel = () => {
   const carouselRef = useRef<FlashList<string>>(null);
   const { name } = useRoute();
   const config = useRemoteConfig();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { width } = useDimensions();
 
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;

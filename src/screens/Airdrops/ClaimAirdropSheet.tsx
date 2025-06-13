@@ -1,13 +1,9 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { Blur, Canvas, Fill, Image, Shadow, Paint, useImage, Circle, point, Group } from '@shopify/react-native-skia';
-import c from 'chroma-js';
-import React, { memo, useState, useCallback, useMemo, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { Address } from 'viem';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
+import { PANEL_WIDTH, Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SheetHandleFixedToTop } from '@/components/sheet';
@@ -32,7 +28,7 @@ import { fetchReverseRecord } from '@/handlers/ens';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { containsEmoji } from '@/helpers/strings';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
-import { useCleanup, useWallets } from '@/hooks';
+import { useCleanup } from '@/hooks';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
@@ -42,15 +38,20 @@ import { RootStackParamList } from '@/navigation/types';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { darkModeThemeColors } from '@/styles/colors';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { safeAreaInsetValues, time, watchingAlert } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { getCirclePath } from '@/worklets/skia';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { Blur, Canvas, Circle, Fill, Group, Image, Paint, Shadow, point, useImage } from '@shopify/react-native-skia';
+import c from 'chroma-js';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import { Address } from 'viem';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { AirdropGasInfo, ClaimStatus, useClaimAirdrop } from './useClaimAirdrop';
 import { GasInfo } from './utils';
 
@@ -301,7 +302,7 @@ const PanelFooter = ({
   highContrastColor: string;
 }) => {
   const { goBack } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
 
   const claimAirdrop = useCallback(() => {

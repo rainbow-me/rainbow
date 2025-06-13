@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
 import walletTypes from '@/helpers/walletTypes';
-import { useWallets } from '@/hooks';
 import { analytics } from '@/analytics';
 import { isEmpty } from 'lodash';
 import { InteractionManager } from 'react-native';
+import { useWallets } from '@/state/wallets/walletsStore';
 
 export const useWalletCohort = () => {
-  const { wallets } = useWallets();
+  const wallets = useWallets();
   const alreadyIdentified = useRef(false);
 
   useEffect(() => {

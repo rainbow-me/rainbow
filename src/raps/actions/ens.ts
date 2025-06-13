@@ -1,28 +1,29 @@
-import { Signer } from '@ethersproject/abstract-signer';
-import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
 import { analytics } from '@/analytics';
 import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
+import { IS_TEST } from '@/env';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '@/helpers/ens';
 import * as i18n from '@/languages';
-import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
-import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { parseGasParamAmounts } from '@/parsers';
-import { addNewTransaction } from '@/state/pendingTransactions';
+import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
+import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
+import store from '@/redux/store';
 import { ChainId, Network } from '@/state/backendNetworks/types';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { Signer } from '@ethersproject/abstract-signer';
+import { Logger } from '@ethersproject/logger';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
 import {
+  createCommitENSRap,
   createRegisterENSRap,
   createRenewENSRap,
-  createCommitENSRap,
   createSetNameENSRap,
   createSetRecordsENSRap,
   createTransferENSRap,
 } from '../registerENS';
-import { Logger } from '@ethersproject/logger';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { IS_TEST } from '@/env';
 
 export interface ENSRapActionResponse {
   baseNonce?: number | null;
@@ -307,7 +308,7 @@ const ensAction = async (
 ): Promise<number | undefined> => {
   logger.debug(`[raps/ens]: [${actionName}] base nonce ${baseNonce} index: ${index}`);
   const { dispatch } = store;
-  const { accountAddress: ownerAddress } = store.getState().settings;
+  const ownerAddress = getAccountAddress();
 
   const { name, duration, rentPrice, records, salt, toAddress, mode } = parameters;
 

@@ -1,6 +1,6 @@
 import '@/languages';
 import * as Sentry from '@sentry/react-native';
-import React, { useCallback, useEffect, useState, memo } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
@@ -40,6 +40,7 @@ import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
+import { loadWallets } from '@/state/wallets/walletsStore';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -170,7 +171,7 @@ async function initializeApplication() {
   const isReturningUser = ls.device.get(['isReturningUser']);
   const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
 
-  // Initial telemetry; amended with wallet context later in `useInitializeWallet`
+  // Initial telemetry; amended with wallet context later in `initializeWallet`
   Sentry.setUser({ id: deviceId });
   analytics.setDeviceId(deviceId);
   analytics.identify();

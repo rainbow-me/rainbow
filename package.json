@@ -171,6 +171,7 @@
     "expo": "51.0.38",
     "expo-image-picker": "15.1.0",
     "expo-store-review": "7.0.2",
+    "expo-web-browser": "13.0.3",
     "fast-text-encoding": "1.0.4",
     "figma-squircle": "1.1.0",
     "global": "4.4.0",
