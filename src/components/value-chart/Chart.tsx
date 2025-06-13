@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import * as i18n from '@/languages';
 import { useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { Text, Box, TextIcon } from '@/design-system';
+import { Text, Box, TextIcon, useColorMode } from '@/design-system';
 import { LineChart } from './LineChart';
 import { ButtonPressAnimation } from '../animations';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
@@ -104,6 +104,7 @@ type ChartProps = {
 export const Chart = memo(function Chart({ asset, backgroundColor, color }: ChartProps) {
   // TODO: lift this up so that chart does not re-render when other context values change
   const { accentColors } = useExpandedAssetSheetContext();
+  const { isDarkMode } = useColorMode();
   const priceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
   const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
   const chartGestureUnixTimestamp = useSharedValue<number>(0);
@@ -185,7 +186,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, color }: Char
           <Box height={TOTAL_CHART_HEIGHT}>
             <CandlestickChart
               backgroundColor={backgroundColor}
-              // TODO: check back on this once merged with Christian's changes
+              // xAxisLabelsHeight - xAxisGap - activeCandleCardGap
               chartHeight={TOTAL_CHART_HEIGHT - 13 - 10 - 16}
               config={{
                 chart: {
@@ -203,6 +204,9 @@ export const Chart = memo(function Chart({ asset, backgroundColor, color }: Char
                   },
                   height: 75,
                 },
+                crosshair: isDarkMode ? undefined : { dotColor: accentColors.color, lineColor: accentColors.color },
+                grid: { color: accentColors.opacity12 },
+                volume: { color: accentColors.opacity24 },
               }}
               isChartGestureActive={isChartGestureActive}
               showChartControls={false}
