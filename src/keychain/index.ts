@@ -231,7 +231,16 @@ export async function set(key: string, value: string, options: KeychainOptions<S
     }
   }
 
-  await setInternetCredentials(key, key, String(value), options);
+  try {
+    await setInternetCredentials(key, key, String(value), options);
+  } catch (e: any) {
+    logger.error(new RainbowError(`[keychain]: setInternetCredentials() failed`, e), {
+      key,
+      accessControl: options.accessControl,
+      storage: options.storage,
+    });
+    throw e;
+  }
 }
 
 /**
