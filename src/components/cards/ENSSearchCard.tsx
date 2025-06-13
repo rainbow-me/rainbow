@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useNavigation } from '../../navigation/Navigation';
+import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useENSPendingRegistrations, useWallets } from '@/hooks';
+import { useENSPendingRegistrations } from '@/hooks';
+import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
+import { useRoute } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { useNavigation } from '../../navigation/Navigation';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { GenericCard, Gradient } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
-import * as i18n from '@/languages';
-import { analytics } from '@/analytics';
-import { useRoute } from '@react-navigation/native';
 
 const TRANSLATIONS = i18n.l.cards.ens_search;
 const GRADIENT: Gradient = {
@@ -29,7 +30,7 @@ const springConfig = {
 export const ENSSearchCard = () => {
   const { pendingRegistrations } = useENSPendingRegistrations();
   const { navigate } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { name: routeName } = useRoute();
   const cardType = 'square';
 

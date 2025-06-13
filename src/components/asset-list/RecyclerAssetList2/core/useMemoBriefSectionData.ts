@@ -2,10 +2,11 @@ import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { AssetListType } from '..';
 import { CellType, CellTypes, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
-import { useCoinListEdited, useExternalWalletSectionsData, useOpenFamilies, useOpenSmallBalances, useWalletSectionsData } from '@/hooks';
+import { useCoinListEdited, useExternalWalletSectionsData, useOpenFamilies, useWalletSectionsData } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 
 const FILTER_TYPES = {
   'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER],

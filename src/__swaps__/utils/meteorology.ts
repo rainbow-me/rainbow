@@ -2,7 +2,7 @@ import { NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { abs, lessThan, subtract } from '@/helpers/utilities';
+import { abs, lessThan, subtract, isZero } from '@/helpers/utilities';
 import { gweiToWei } from '@/parsers';
 import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useCallback } from 'react';
@@ -253,6 +253,18 @@ export const useIsChainEIP1559 = (chainId: ChainId) => {
   const { data } = useMeteorology({ chainId }, { select: selectIsEIP1559 });
   if (data === undefined) return true;
   return data;
+};
+
+export const useChainSupportsPriorityFee = (chainId: ChainId) => {
+  const isEIP1559 = useIsChainEIP1559(chainId);
+  const { data: suggestions } = useMeteorologySuggestions({ chainId, enabled: isEIP1559 });
+
+  // Default to true to avoid hiding the fee input while data is loading.
+  if (suggestions === undefined) {
+    return true;
+  }
+
+  return suggestions.normal.isEIP1559 && !isZero(suggestions.normal.maxPriorityFee);
 };
 
 export const getCachedGasSuggestions = (chainId: ChainId) => {

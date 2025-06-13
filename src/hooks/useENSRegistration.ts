@@ -1,13 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAccountSettings } from '.';
 import { Records } from '@/entities';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export default function useENSRegistration() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const registrationParameters = useSelector(({ ensRegistration }: AppState) => {
     return {

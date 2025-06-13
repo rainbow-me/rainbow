@@ -1,7 +1,8 @@
 import { MutableRefObject, useRef } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type NotUndefined = {} | null;
+const UNINITIALIZED = Symbol();
+
+type UninitializedRef = typeof UNINITIALIZED;
 
 /**
  * ### `useLazyRef`
@@ -13,8 +14,8 @@ type NotUndefined = {} | null;
  *
  * @returns A stable, pre-initialized `MutableRefObject<T>`.
  */
-export function useLazyRef<T extends NotUndefined>(initializer: () => T): MutableRefObject<T> {
-  const ref = useRef<T | undefined>(undefined);
-  if (ref.current === undefined) ref.current = initializer();
+export function useLazyRef<T>(initializer: () => T): MutableRefObject<T> {
+  const ref = useRef<T | UninitializedRef>(UNINITIALIZED);
+  if (ref.current === UNINITIALIZED) ref.current = initializer();
   return ref as MutableRefObject<T>;
 }

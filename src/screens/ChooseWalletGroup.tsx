@@ -1,32 +1,28 @@
-import React from 'react';
-import { Box, Separator, Text, useForegroundColor } from '@/design-system';
-import { View, Text as NativeText, ViewStyle } from 'react-native';
-import chroma from 'chroma-js';
-import { useInitializeWallet, useWallets } from '@/hooks';
-import { useDispatch } from 'react-redux';
-import Routes from '@/navigation/routesNames';
-import { useNavigation } from '../navigation/Navigation';
-import WalletTypes from '@/helpers/walletTypes';
-import { logger, RainbowError } from '@/logger';
-import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
-import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
-import { ButtonPressAnimation } from '@/components/animations';
-import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
-import { ImgixImage } from '@/components/images';
-import { useTheme } from '@/theme';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { profileUtils } from '@/utils';
-import * as i18n from '@/languages';
-import showWalletErrorAlert from '@/helpers/support';
-import { ScrollView } from 'react-native-gesture-handler';
 import CreateNewWalletGroupIcon from '@/assets/CreateNewWalletGroup.png';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ImgixImage } from '@/components/images';
+import { Box, Separator, Text, useForegroundColor } from '@/design-system';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import showWalletErrorAlert from '@/helpers/support';
+import WalletTypes from '@/helpers/walletTypes';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
+import Routes from '@/navigation/routesNames';
+import { createAccount, loadWallets, useWallets } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
+import { profileUtils } from '@/utils';
+import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
+import chroma from 'chroma-js';
+import React from 'react';
+import { Text as NativeText, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation } from '../navigation/Navigation';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const blue = useForegroundColor('blue');
-
   const { navigate } = useNavigation();
-  const dispatch = useDispatch();
-  const initializeWallet = useInitializeWallet();
 
   const onNewWalletGroup = () => {
     navigate(Routes.MODAL_SCREEN, {
@@ -35,8 +31,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
       onCloseModal: async ({ name }) => {
         try {
           await createWallet({ name });
-          await dispatch(walletsLoadState());
-          // @ts-expect-error - needs refactor to object params
+          await loadWallets();
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (error) {
@@ -103,12 +98,8 @@ function AccountAvatar({ account, size }: { account: RainbowAccount; size: numbe
 
 function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
   const separatorSecondary = useForegroundColor('separatorSecondary');
-
   const accounts = wallet.addresses;
-
   const { navigate } = useNavigation();
-  const dispatch = useDispatch();
-  const initializeWallet = useInitializeWallet();
 
   const onAddToGroup = () => {
     navigate(Routes.MODAL_SCREEN, {
@@ -118,8 +109,11 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
       onCloseModal: async ({ name, color }) => {
         try {
           if (wallet.damaged) throw new Error('Wallet is damaged');
-          await dispatch(createAccountForWallet(wallet.id, color, name));
-          // @ts-expect-error - needs refactor to object params
+          createAccount({
+            id: wallet.id,
+            color,
+            name,
+          });
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (e) {
@@ -174,7 +168,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
 
 export function ChooseWalletGroup() {
   const { goBack } = useNavigation();
-  const { wallets } = useWallets();
+  const wallets = useWallets();
 
   const groups = Object.values(wallets || {}).filter(wallet => wallet.type === WalletTypes.mnemonic);
 

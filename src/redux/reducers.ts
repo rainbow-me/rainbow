@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 
-import appState from './appState';
 import charts from './charts';
 import contacts from './contacts';
 
@@ -13,10 +12,8 @@ import keyboardHeight from './keyboardHeight';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
 import transactionSignatures from './transactionSignatures';
-import wallets from './wallets';
 
 export default combineReducers({
-  appState,
   charts,
   contacts,
   editOptions,
@@ -28,5 +25,4 @@ export default combineReducers({
   settings,
   showcaseTokens,
   transactionSignatures,
-  wallets,
 });

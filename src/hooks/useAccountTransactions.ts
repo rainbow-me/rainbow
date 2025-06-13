@@ -10,11 +10,13 @@ import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const { getPendingTransactionsInReverseOrder } = pendingTransactionsStore.getState();
   const pendingTransactionsMostRecentFirst = getPendingTransactionsInReverseOrder(accountAddress);

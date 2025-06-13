@@ -2,11 +2,11 @@ import {
   BlendMode,
   Canvas2 as Canvas,
   ClipOp,
-  Group,
   PaintStyle,
   Picture,
   SkCanvas,
   SkColor,
+  SkPaint,
   SkParagraph,
   SkPicture,
   Skia,
@@ -14,7 +14,9 @@ import {
   StrokeJoin,
   createPicture,
 } from '@shopify/react-native-skia';
-import React, { memo, useCallback } from 'react';
+import { dequal } from 'dequal';
+import { cloneDeep, merge } from 'lodash';
+import React, { memo, useEffect, useMemo, useRef, useCallback } from 'react';
 import { FontVariant, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
 import Animated, {
@@ -22,6 +24,7 @@ import Animated, {
   SharedValue,
   WithSpringConfig,
   executeOnUIRuntimeSync,
+  runOnUI,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -37,26 +40,31 @@ import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { NativeCurrencyKey } from '@/entities';
 import { convertAmountToNativeDisplayWorklet as formatPrice } from '@/helpers/utilities';
+import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
-import { useRunOnce } from '@/hooks/useRunOnce';
+import { useStableValue } from '@/hooks/useStableValue';
 import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { clamp, opacity } from '@/__swaps__/utils/swaps';
+import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Animator } from './classes/Animator';
 import { EmaIndicator, IndicatorBuilder, IndicatorKey } from './classes/IndicatorBuilder';
 import { TimeFormatter } from './classes/TimeFormatter';
-import { MOCK_CANDLE_DATA, generateMockCandleData } from './mockData';
+import { generateMockCandleData } from './mockData';
 import { Bar } from './types';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
+
+type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
 
 export type CandlestickChartProps = {
   backgroundColor?: string;
   candles?: Bar[];
   chartHeight?: number;
   chartWidth?: number;
-  config?: Partial<Omit<CandlestickConfig, 'chartBackgroundColor'>>;
+  config?: DeepPartial<Omit<CandlestickConfig, 'chart'> & { chart: Omit<CandlestickConfig['chart'], 'backgroundColor'> }>;
   showChartControls?: boolean;
   isChartGestureActive: SharedValue<boolean>;
 };
@@ -68,6 +76,7 @@ export type CandlestickConfig = {
   };
 
   animation: {
+    enableCrosshairPulse: boolean;
     springConfig: WithSpringConfig;
   };
 
@@ -104,6 +113,11 @@ export type CandlestickConfig = {
      */
     xAxisGap: number;
     /**
+     * Height of the x-axis labels, in pixels.
+     * @default 13
+     */
+    xAxisHeight: number;
+    /**
      * Horizontal inset to apply to the x-axis, in pixels.
      * @default 16
      */
@@ -121,8 +135,10 @@ export type CandlestickConfig = {
   };
 
   crosshair: {
+    dotColor: string;
     dotSize: number;
     dotStrokeWidth: number;
+    lineColor: string;
     strokeWidth: number;
     yOffset: number;
   };
@@ -139,12 +155,12 @@ export type CandlestickConfig = {
 
   priceBubble: {
     height: number;
+    hidden: boolean;
     paddingHorizontal: number;
   };
 
   volume: {
-    gradientBottomColor: string;
-    gradientTopColor: string;
+    color: string;
     /**
      * Max percentage of chart height that the volume bars should occupy, from 0 to 1.
      * @default 0.175
@@ -165,11 +181,12 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
   },
 
   animation: {
+    enableCrosshairPulse: false,
     springConfig: { mass: 0.1, stiffness: 50, damping: 50 },
   },
 
   candles: {
-    initialWidth: 7,
+    initialWidth: 9,
     maxBorderRadius: 6,
     maxWidth: 20,
     minWidth: 2,
@@ -184,16 +201,19 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
     candlesPaddingRatioVertical: 0.1,
     panGestureDeceleration: 0.9975,
     xAxisGap: 10,
+    xAxisHeight: 13,
     xAxisInset: 16,
     yAxisPaddingLeft: 12,
     yAxisPaddingRight: 8,
   },
 
   crosshair: {
+    dotColor: globalColors.white100,
+    lineColor: globalColors.white100,
     dotSize: 3,
     dotStrokeWidth: 5 / 3,
     strokeWidth: 2,
-    yOffset: -112,
+    yOffset: -72,
   },
 
   grid: {
@@ -208,12 +228,12 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
 
   priceBubble: {
     height: 18,
+    hidden: true,
     paddingHorizontal: 5,
   },
 
   volume: {
-    gradientBottomColor: '#141619',
-    gradientTopColor: '#2B2D2F',
+    color: '#2B2D2F',
     heightFactor: 0.175,
   },
 };
@@ -301,6 +321,7 @@ class CandlestickChartManager {
   private chartHeight: number;
   private chartWidth: number;
   private config: CandlestickConfig;
+  private isDarkMode: boolean;
   private nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
   private volumeBarColor: SkColor;
   private yAxisWidth: number;
@@ -331,8 +352,11 @@ class CandlestickChartManager {
 
   private colors = {
     black: Skia.Color('#000000'),
+    crosshairDot: Skia.Color('#FFFFFF'),
+    crosshairLine: Skia.Color('#FFFFFF'),
     crosshairPriceBubble: Skia.Color(getColorForTheme('fill', 'light')),
     labelSecondary: Skia.Color(getColorForTheme('labelSecondary', 'light')),
+    labelQuinary: Skia.Color(getColorForTheme('labelQuinary', 'light')),
     green: Skia.Color('#00CC4B'),
     red: Skia.Color('#FA5343'),
     transparent: Skia.Color('transparent'),
@@ -415,8 +439,9 @@ class CandlestickChartManager {
     this.chartHeight = chartHeight;
     this.chartWidth = chartWidth;
     this.config = config;
+    this.isDarkMode = isDarkMode;
     this.nativeCurrency = nativeCurrency;
-    this.volumeBarColor = Skia.Color(config.volume.gradientTopColor);
+    this.volumeBarColor = Skia.Color(config.volume.color);
 
     // ========== Shared Values ==========
     this.activeCandle = activeCandle;
@@ -433,9 +458,13 @@ class CandlestickChartManager {
     this.xAxisLabels = xAxisLabels;
 
     // ========== Colors ==========
+    this.colors.crosshairDot = Skia.Color(this.config.crosshair.dotColor);
+    this.colors.crosshairLine = Skia.Color(this.config.crosshair.lineColor);
+
     if (isDarkMode) {
       this.colors.crosshairPriceBubble = Skia.Color(getColorForTheme('fill', 'dark'));
       this.colors.labelSecondary = Skia.Color(getColorForTheme('labelSecondary', 'dark'));
+      this.colors.labelQuinary = Skia.Color(getColorForTheme('labelQuinary', 'dark'));
     }
 
     // ========== Paint Setup ==========
@@ -478,9 +507,15 @@ class CandlestickChartManager {
     const crosshairPathEffect = Skia.PathEffect.MakeDash([0, 5], 5);
     this.paints.crosshairLine.setPathEffect(crosshairPathEffect);
     crosshairPathEffect.dispose();
-    this.paints.crosshairLine.setColor(this.colors.white);
+    this.paints.crosshairLine.setColor(this.colors.crosshairLine);
     this.paints.crosshairLine.setAlphaf(0.6);
+
     this.paints.crosshairDot.setAntiAlias(true);
+    if (!isDarkMode) {
+      const color = opacityWorklet(this.config.crosshair.dotColor, 0.64);
+      const shadowColor = Skia.Color(color);
+      this.paints.crosshairDot.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null));
+    }
 
     this.paints.grid.setColor(Skia.Color(this.config.grid.color));
     this.paints.grid.setStrokeWidth(this.config.grid.strokeWidth);
@@ -696,7 +731,13 @@ class CandlestickChartManager {
       canvas.drawLine(0, y, chartWidth, y, this.paints.grid);
 
       const formattedPrice = formatPrice(this.getPriceAtYPosition(y), this.nativeCurrency.currency);
-      const paragraph = buildParagraph({ foregroundPaint: this.paints.text, text: formattedPrice });
+
+      const paragraph = buildParagraph({
+        color: this.colors.labelQuinary,
+        foregroundPaint: this.paints.text,
+        text: formattedPrice,
+      });
+
       if (paragraph) {
         paragraph.layout(chartWidth);
         if (!labelHeight) labelHeight = paragraph.getLineMetrics()[0].height;
@@ -763,7 +804,7 @@ class CandlestickChartManager {
       const cornerRadius = Math.min(this.config.candles.maxBorderRadius, candleWidth / 3);
       canvas.drawRRect({ rect: { height, width: candleWidth, x, y: top }, rx: cornerRadius, ry: cornerRadius }, bodyPaint);
 
-      if (candleWidth < strokeWidth * 4) return;
+      if (!this.isDarkMode || candleWidth < strokeWidth * 4) return;
       canvas.drawRRect(
         {
           rect: { height: height - strokeWidth, width: candleWidth - strokeWidth, x: x + strokeWidth / 2, y: top + strokeWidth / 2 },
@@ -871,6 +912,7 @@ class CandlestickChartManager {
 
     const candleWidth = this.candleWidth;
     const config = this.config;
+    const isDarkMode = this.isDarkMode;
     const stride = this.getStride(candleWidth);
 
     const nearestCandleIndex = Math.round((cx - this.offset.value - candleWidth / 2) / stride);
@@ -881,17 +923,25 @@ class CandlestickChartManager {
     canvas.drawLine(0, yWithOffset, this.chartWidth, yWithOffset, this.paints.crosshairLine);
     canvas.drawLine(snappedX, 0 + verticalInset, snappedX, this.chartHeight - verticalInset, this.paints.crosshairLine);
 
-    this.paints.crosshairDot.setColor(this.colors.black);
-    this.paints.crosshairDot.setBlendMode(BlendMode.Overlay);
-    canvas.drawCircle(snappedX, yWithOffset, config.crosshair.dotSize + config.crosshair.dotStrokeWidth, this.paints.crosshairDot);
-    this.paints.crosshairDot.setBlendMode(BlendMode.Src);
-    this.paints.crosshairDot.setColor(this.colors.white);
+    this.paints.crosshairDot.setBlendMode(isDarkMode ? BlendMode.Overlay : BlendMode.SrcOver);
+    this.paints.crosshairDot.setColor(isDarkMode ? this.colors.black : this.colors.crosshairDot);
+    if (!isDarkMode) this.paints.crosshairDot.setAlphaf(0.08);
+
+    canvas.drawCircle(
+      snappedX,
+      yWithOffset,
+      config.crosshair.dotSize + config.crosshair.dotStrokeWidth / (isDarkMode ? 1 : 0.2),
+      this.paints.crosshairDot
+    );
+
+    if (isDarkMode) this.paints.crosshairDot.setBlendMode(BlendMode.SrcOver);
+    this.paints.crosshairDot.setColor(isDarkMode ? this.colors.crosshairDot : this.colors.white);
     canvas.drawCircle(snappedX, yWithOffset, config.crosshair.dotSize, this.paints.crosshairDot);
 
     const newActiveCandle = this.candles[nearestCandleIndex];
     const priceAtYPosition = this.getPriceAtYPosition(yWithOffset);
 
-    if (newActiveCandle) {
+    if (newActiveCandle && !this.config.priceBubble.hidden) {
       this.drawTextBubble({
         canvas,
         centerY: yWithOffset,
@@ -1000,11 +1050,13 @@ class CandlestickChartManager {
     canvas.drawRRect(bubbleRect, this.paints.topShadow);
     canvas.drawRRect(bubbleRect, this.paints.candleBody);
 
-    bubbleRect.rect.height -= this.config.candles.strokeWidth;
-    bubbleRect.rect.width -= this.config.candles.strokeWidth;
-    bubbleRect.rect.x += this.config.candles.strokeWidth / 2;
-    bubbleRect.rect.y += this.config.candles.strokeWidth / 2;
-    canvas.drawRRect(bubbleRect, this.paints.candleStroke);
+    if (this.isDarkMode) {
+      bubbleRect.rect.height -= this.config.candles.strokeWidth;
+      bubbleRect.rect.width -= this.config.candles.strokeWidth;
+      bubbleRect.rect.x += this.config.candles.strokeWidth / 2;
+      bubbleRect.rect.y += this.config.candles.strokeWidth / 2;
+      canvas.drawRRect(bubbleRect, this.paints.candleStroke);
+    }
 
     this.paints.candleBody.setAlphaf(1);
     this.paints.candleStroke.setColor(this.candleStrokeColor);
@@ -1054,6 +1106,65 @@ class CandlestickChartManager {
     this.rebuildChart(false, true);
   }
 
+  public setColorMode(
+    colorMode: 'dark' | 'light',
+    backgroundColor: string | undefined,
+    providedConfig: CandlestickChartProps['config']
+  ): void {
+    const isDarkMode = colorMode === 'dark';
+    this.isDarkMode = isDarkMode;
+    this.colors.crosshairPriceBubble = Skia.Color(getColorForTheme('fill', colorMode));
+    this.colors.labelSecondary = Skia.Color(getColorForTheme('labelSecondary', colorMode));
+    this.colors.labelQuinary = Skia.Color(getColorForTheme('labelQuinary', colorMode));
+
+    if (backgroundColor) {
+      this.backgroundColor = Skia.Color(backgroundColor);
+      this.paints.bottomShadow.setColor(this.backgroundColor);
+      this.paints.bottomShadow.setAlphaf(0.48);
+      this.paints.bottomShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 4, 5, 5, this.backgroundColor, null));
+      this.paints.topShadow.setColor(this.backgroundColor);
+      this.paints.topShadow.setAlphaf(0.48);
+      this.paints.topShadow.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, -4, 5, 5, this.backgroundColor, null));
+    }
+
+    if (providedConfig?.crosshair?.dotColor) {
+      this.colors.crosshairDot = Skia.Color(providedConfig.crosshair.dotColor);
+
+      if (!isDarkMode) {
+        const color = opacityWorklet(providedConfig.crosshair.dotColor, 0.64);
+        const shadowColor = Skia.Color(color);
+        this.paints.crosshairDot.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null));
+      }
+    } else {
+      this.colors.crosshairDot = Skia.Color(this.config.crosshair.dotColor);
+    }
+
+    if (isDarkMode) this.paints.crosshairDot.setImageFilter(null);
+
+    if (providedConfig?.crosshair?.lineColor) {
+      this.colors.crosshairLine = Skia.Color(providedConfig.crosshair.lineColor);
+    } else {
+      this.colors.crosshairLine = Skia.Color(this.config.crosshair.lineColor);
+    }
+
+    this.paints.crosshairLine.setColor(this.colors.crosshairLine);
+    this.paints.crosshairLine.setAlphaf(0.6);
+
+    if (providedConfig?.grid?.color) {
+      this.paints.grid.setColor(Skia.Color(providedConfig.grid.color));
+    } else {
+      this.paints.grid.setColor(Skia.Color(this.config.grid.color));
+    }
+
+    if (providedConfig?.volume?.color) {
+      this.volumeBarColor = Skia.Color(providedConfig.volume.color);
+    } else {
+      this.volumeBarColor = Skia.Color(this.config.volume.color);
+    }
+
+    this.rebuildChart(false, true);
+  }
+
   // ============ Indicator Toggles ============================================ //
 
   public showIndicator(type: IndicatorKey) {
@@ -1087,13 +1198,15 @@ class CandlestickChartManager {
 
   public onLongPressStart(x: number, y: number): void {
     triggerHaptics('soft');
-    requestAnimationFrame(() => {
-      this.chartScale.value = withTiming(0.9875, TIMING_CONFIGS.buttonPressConfig, isFinished => {
-        if (!isFinished) return;
-        triggerHaptics('soft');
-        this.chartScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
+    if (this.config.animation.enableCrosshairPulse) {
+      requestAnimationFrame(() => {
+        this.chartScale.value = withTiming(0.9925, TIMING_CONFIGS.buttonPressConfig, isFinished => {
+          if (!isFinished) return;
+          triggerHaptics('soft');
+          this.chartScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
+        });
       });
-    });
+    }
     this.buildCrosshairPicture(x, y, true);
   }
 
@@ -1175,30 +1288,37 @@ function useCandlestickChart({
   isDarkMode,
   providedConfig,
 }: {
-  backgroundColor: string | undefined;
+  backgroundColor: string;
   candles: Bar[];
   chartHeight: number;
   chartWidth: number;
   isChartGestureActive: SharedValue<boolean>;
   isDarkMode: boolean;
-  providedConfig: Partial<CandlestickConfig> | undefined;
+  providedConfig: CandlestickChartProps['config'];
 }) {
-  const { config, initialPicture, xAxisWidth } = buildChartConfig({
-    backgroundColor,
-    chartHeight,
-    chartWidth,
-    providedConfig,
-  });
+  const { config, initialPicture, xAxisWidth } = useStableValue(() =>
+    buildChartConfig({
+      backgroundColor,
+      chartHeight,
+      chartWidth,
+      providedConfig,
+    })
+  );
 
   const buildParagraph = useSkiaText({
     align: 'left',
-    color: getColorForTheme('labelQuinary', 'dark'),
+    color: 'labelQuinary',
     size: '11pt',
     weight: 'bold',
   });
 
+  const xAxisLabelPaint = useStableValue(() => {
+    const paint = Skia.Paint();
+    paint.setColor(Skia.Color(getColorForTheme('labelQuinary', isDarkMode ? 'dark' : 'light')));
+    return paint;
+  });
+
   const activeCandle = useSharedValue<Bar | undefined>(undefined);
-  const chartManager = useSharedValue<CandlestickChartManager | undefined>(undefined);
   const chartMaxY = useSharedValue(0);
   const chartMinY = useSharedValue(0);
   const chartScale = useSharedValue(1);
@@ -1211,31 +1331,29 @@ function useCandlestickChart({
   const crosshairPicture = useSharedValue(initialPicture);
   const indicatorPicture = useSharedValue(initialPicture);
 
-  useRunOnce(() => {
-    const nativeCurrency = getNativeCurrency();
-    executeOnUIRuntimeSync(() => {
-      chartManager.value = new CandlestickChartManager({
-        activeCandle,
-        buildParagraph,
-        candles,
-        chartHeight,
-        chartMaxY,
-        chartMinY,
-        chartPicture,
-        chartScale,
-        chartWidth,
-        chartXOffset,
-        config,
-        crosshairPicture,
-        indicatorPicture,
-        isChartGestureActive,
-        isDarkMode,
-        isDecelerating,
-        maxDisplayedVolume,
-        nativeCurrency,
-        xAxisLabels,
-      });
-    })();
+  const chartManager = useWorkletClass(getNativeCurrency, nativeCurrency => {
+    'worklet';
+    return new CandlestickChartManager({
+      activeCandle,
+      buildParagraph,
+      candles,
+      chartHeight,
+      chartMaxY,
+      chartMinY,
+      chartPicture,
+      chartScale,
+      chartWidth,
+      chartXOffset,
+      config,
+      crosshairPicture,
+      indicatorPicture,
+      isChartGestureActive,
+      isDarkMode,
+      isDecelerating,
+      maxDisplayedVolume,
+      nativeCurrency,
+      xAxisLabels,
+    });
   });
 
   // -- TODO: Enable once the backend API is up
@@ -1254,7 +1372,7 @@ function useCandlestickChart({
     () => isDecelerating.value,
     (current, previous) => {
       if (!current && previous) {
-        const minOffset = chartManager.value?.getMinOffset();
+        const minOffset = chartManager.value?.getMinOffset?.();
         if (chartXOffset.value === 0 || chartXOffset.value === minOffset) {
           triggerHaptics('soft');
         }
@@ -1273,29 +1391,82 @@ function useCandlestickChart({
     []
   );
 
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    handleThemeChange({ backgroundColor, chartManager, isDarkMode, providedConfig, xAxisLabelPaint, xAxisLabels });
+  }, [backgroundColor, chartManager, isDarkMode, providedConfig, xAxisLabelPaint, xAxisLabels]);
+
   useCleanup(() => {
     initialPicture.dispose();
+    xAxisLabelPaint.dispose();
     executeOnUIRuntimeSync(() => {
-      chartManager.value?.dispose();
+      chartManager.value?.dispose?.();
       chartManager.value = undefined;
     })();
   });
 
-  return {
-    activeCandle,
-    chartManager,
-    chartTransform,
-    chartXOffset,
-    config,
-    isDecelerating,
-    pictures: {
-      chart: chartPicture,
-      crosshair: crosshairPicture,
-      indicator: indicatorPicture,
-    },
-    xAxisLabels,
-    xAxisWidth,
-  };
+  return useMemo(
+    () => ({
+      activeCandle,
+      chartManager,
+      chartTransform,
+      chartXOffset,
+      config,
+      isDecelerating,
+      pictures: {
+        chart: chartPicture,
+        crosshair: crosshairPicture,
+        indicator: indicatorPicture,
+      },
+      xAxisLabelPaint,
+      xAxisLabels,
+      xAxisWidth,
+    }),
+    [
+      activeCandle,
+      chartManager,
+      chartPicture,
+      chartTransform,
+      chartXOffset,
+      config,
+      crosshairPicture,
+      indicatorPicture,
+      isDecelerating,
+      xAxisLabelPaint,
+      xAxisLabels,
+      xAxisWidth,
+    ]
+  );
+}
+
+function handleThemeChange({
+  backgroundColor,
+  chartManager,
+  isDarkMode,
+  providedConfig,
+  xAxisLabelPaint,
+  xAxisLabels,
+}: {
+  backgroundColor: string;
+  chartManager: SharedValue<CandlestickChartManager | undefined>;
+  isDarkMode: boolean;
+  providedConfig: CandlestickChartProps['config'];
+  xAxisLabelPaint: SkPaint;
+  xAxisLabels: SharedValue<string[]>;
+}): void {
+  runOnUI(() => {
+    xAxisLabelPaint.setColor(Skia.Color(getColorForTheme('labelQuinary', isDarkMode ? 'dark' : 'light')));
+    xAxisLabels.modify(labels => {
+      labels[0] = `${labels[0]}\u200B`;
+      labels[1] = `\u200B${labels[1]}`;
+      return labels;
+    });
+    chartManager.value?.setColorMode?.(isDarkMode ? 'dark' : 'light', backgroundColor, providedConfig);
+  })();
 }
 
 const ActiveCandleCard = memo(function ActiveCandleCard({
@@ -1503,8 +1674,8 @@ const ActiveCandleCard = memo(function ActiveCandleCard({
 });
 
 export const CandlestickChart = memo(function CandlestickChart({
-  backgroundColor,
-  candles = MOCK_CANDLE_DATA,
+  backgroundColor = DEFAULT_CANDLESTICK_CONFIG.chart.backgroundColor,
+  candles = generateMockCandleData(),
   chartHeight = 480,
   chartWidth = DEVICE_WIDTH,
   config: providedConfig,
@@ -1514,7 +1685,7 @@ export const CandlestickChart = memo(function CandlestickChart({
   const { isDarkMode } = useColorMode();
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
-  const { activeCandle, chartManager, chartTransform, chartXOffset, config, isDecelerating, pictures, xAxisLabels, xAxisWidth } =
+  const { activeCandle, chartManager, chartXOffset, config, isDecelerating, pictures, xAxisLabelPaint, xAxisLabels, xAxisWidth } =
     useCandlestickChart({
       backgroundColor,
       candles,
@@ -1573,27 +1744,75 @@ export const CandlestickChart = memo(function CandlestickChart({
     chartManager.value.setCandles(newCandles);
   }
 
-  const pinchGesture = Gesture.Pinch()
-    .onStart(e => chartManager.value?.onPinchStart(e.focalX))
-    .onUpdate(e => chartManager.value?.onPinchUpdate(e.scale));
+  const chartGestures = useMemo(() => {
+    const pinchGesture = Gesture.Pinch()
+      .onStart(e => chartManager.value?.onPinchStart?.(e.focalX))
+      .onUpdate(e => chartManager.value?.onPinchUpdate?.(e.scale));
 
-  const panGesture = Gesture.Pan()
-    .minDistance(0)
-    .maxPointers(1)
-    .onStart(() => chartManager.value?.onPanStart())
-    .onChange(e => chartManager.value?.onPanChange(e.changeX))
-    .onEnd(e => chartManager.value?.onPanEnd(e.velocityX));
+    const panGesture = Gesture.Pan()
+      .activeOffsetX([-4, 4])
+      .failOffsetY([-12, 12])
+      .maxPointers(1)
+      .onStart(() => chartManager.value?.onPanStart?.())
+      .onChange(e => chartManager.value?.onPanChange?.(e.changeX))
+      .onEnd(e => chartManager.value?.onPanEnd?.(e.velocityX));
 
-  const crosshairGesture = Gesture.LongPress()
-    .maxDistance(10000)
-    .minDuration(160)
-    .numberOfPointers(1)
-    .shouldCancelWhenOutside(true)
-    .onStart(e => chartManager.value?.onLongPressStart(e.x, e.y))
-    .onTouchesMove(e => chartManager.value?.onLongPressMove(e.allTouches[0].x, e.allTouches[0].y, e.state))
-    .onFinalize(e => chartManager.value?.onLongPressEnd(e.x, e.y, e.state));
+    const crosshairGesture = Gesture.LongPress()
+      .maxDistance(10000)
+      .minDuration(160)
+      .numberOfPointers(1)
+      .shouldCancelWhenOutside(true)
+      .onStart(e => chartManager.value?.onLongPressStart?.(e.x, e.y))
+      .onTouchesMove(e => chartManager.value?.onLongPressMove?.(e.allTouches[0].x, e.allTouches[0].y, e.state))
+      .onFinalize(e => chartManager.value?.onLongPressEnd?.(e.x, e.y, e.state));
 
-  const chartGestures = Gesture.Race(panGesture, pinchGesture, crosshairGesture);
+    return Gesture.Race(panGesture, pinchGesture, crosshairGesture);
+  }, [chartManager]);
+
+  const xAxisLabelsRow = useMemo(() => {
+    return (
+      <>
+        <SkiaText
+          foregroundPaint={xAxisLabelPaint}
+          size="11pt"
+          weight="bold"
+          width={xAxisWidth / 2}
+          x={config.chart.xAxisInset}
+          y={chartHeight + config.chart.xAxisGap}
+        >
+          {leftXAxisLabel}
+        </SkiaText>
+
+        <SkiaText
+          align="right"
+          foregroundPaint={xAxisLabelPaint}
+          size="11pt"
+          weight="bold"
+          width={xAxisWidth / 2}
+          x={chartWidth - config.chart.xAxisInset - xAxisWidth / 2}
+          y={chartHeight + config.chart.xAxisGap}
+        >
+          {rightXAxisLabel}
+        </SkiaText>
+      </>
+    );
+  }, [chartHeight, chartWidth, config, leftXAxisLabel, rightXAxisLabel, xAxisLabelPaint, xAxisWidth]);
+
+  const chartCanvas = useMemo(
+    () => (
+      <GestureDetector gesture={chartGestures}>
+        <Canvas style={styles.canvas}>
+          <Picture picture={pictures.chart} />
+          <Picture picture={pictures.indicator} />
+          <Picture picture={pictures.crosshair} />
+          {xAxisLabelsRow}
+        </Canvas>
+      </GestureDetector>
+    ),
+    [chartGestures, pictures, xAxisLabelsRow]
+  );
+
+  const chartBottomPadding = config.chart.xAxisHeight + config.chart.xAxisGap + (showChartControls ? 56 : 0);
 
   const activeCandleCardStyle = useAnimatedStyle(() => {
     return {
@@ -1604,7 +1823,7 @@ export const CandlestickChart = memo(function CandlestickChart({
   return (
     <View
       style={{
-        height: chartHeight + config.activeCandleCard.height + config.chart.activeCandleCardGap,
+        height: chartHeight + config.activeCandleCard.height + config.chart.activeCandleCardGap + chartBottomPadding,
         width: chartWidth,
         marginTop: -config.activeCandleCard.height,
       }}
@@ -1613,38 +1832,7 @@ export const CandlestickChart = memo(function CandlestickChart({
         <ActiveCandleCard activeCandle={activeCandle} config={config} />
       </Animated.View>
       <View style={{ height: chartHeight, backgroundColor, width: chartWidth }}>
-        <GestureDetector gesture={chartGestures}>
-          <Canvas style={styles.canvas}>
-            <Group origin={{ x: chartWidth / 2, y: chartHeight / 2 }} transform={chartTransform}>
-              <Picture picture={pictures.chart} />
-              <Picture picture={pictures.indicator} />
-              <Picture picture={pictures.crosshair} />
-            </Group>
-
-            <SkiaText
-              color="labelQuinary"
-              size="11pt"
-              weight="bold"
-              width={xAxisWidth / 2}
-              x={config.chart.xAxisInset}
-              y={chartHeight + config.chart.xAxisGap}
-            >
-              {leftXAxisLabel}
-            </SkiaText>
-
-            <SkiaText
-              align="right"
-              color="labelQuinary"
-              size="11pt"
-              weight="bold"
-              width={xAxisWidth / 2}
-              x={chartWidth - config.chart.xAxisInset - xAxisWidth / 2}
-              y={chartHeight + config.chart.xAxisGap}
-            >
-              {rightXAxisLabel}
-            </SkiaText>
-          </Canvas>
-        </GestureDetector>
+        {chartCanvas}
 
         {showChartControls && (
           <Inline alignHorizontal="center" alignVertical="center" horizontalSpace={{ custom: 13 }}>
@@ -1670,29 +1858,37 @@ export const CandlestickChart = memo(function CandlestickChart({
 
         <EasingGradient
           easing={Easing.in(Easing.sin)}
-          endColor={config.chart.backgroundColor}
-          startColor={config.chart.backgroundColor}
+          endColor={backgroundColor}
+          startColor={backgroundColor}
           steps={8}
-          style={[styles.bottomFade, { height: Math.round(config.volume.heightFactor * chartHeight * 0.5) }]}
+          style={[styles.bottomFade, { bottom: chartBottomPadding, height: Math.round(config.volume.heightFactor * chartHeight * 0.5) }]}
         />
 
-        <Animated.View style={[styles.leftFadeContainer, leftFadeStyle]}>
+        <Animated.View style={[styles.leftFadeContainer, { bottom: chartBottomPadding }, leftFadeStyle]}>
           <EasingGradient
             easing={Easing.in(Easing.sin)}
-            endColor={config.chart.backgroundColor}
+            endColor={backgroundColor}
             endPosition="left"
-            startColor={config.chart.backgroundColor}
+            startColor={backgroundColor}
             startPosition="right"
             steps={8}
-            style={styles.leftFade}
+            style={[styles.bottomFade, { height: Math.round(config.volume.heightFactor * chartHeight * 0.5) }]}
           />
         </Animated.View>
 
-        <View style={[styles.bottomGridLine, { backgroundColor: isDarkMode ? opacity(separatorTertiary, 0.06) : separatorTertiary }]} />
+        <View
+          style={[
+            styles.bottomGridLine,
+            {
+              backgroundColor: (isDarkMode && providedConfig?.grid?.color) || opacity(separatorTertiary, isDarkMode ? 0.06 : 0.03),
+              bottom: chartBottomPadding,
+            },
+          ]}
+        />
       </View>
     </View>
   );
-});
+}, dequal);
 
 const styles = StyleSheet.create({
   bottomFade: {
@@ -1733,7 +1929,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   leftFadeContainer: {
-    bottom: 76,
+    bottom: 0,
     pointerEvents: 'none',
     position: 'absolute',
     top: 0,
@@ -1747,17 +1943,20 @@ function buildChartConfig({
   chartWidth,
   providedConfig,
 }: {
-  backgroundColor: string | undefined;
+  backgroundColor: string;
   chartHeight: number;
   chartWidth: number;
-  providedConfig: Partial<CandlestickConfig> | undefined;
+  providedConfig: CandlestickChartProps['config'];
 }): {
   config: CandlestickConfig;
   initialPicture: SkPicture;
   xAxisWidth: number;
 } {
-  const mergedConfig = providedConfig ? { ...DEFAULT_CANDLESTICK_CONFIG, ...providedConfig } : DEFAULT_CANDLESTICK_CONFIG;
-  if (backgroundColor) mergedConfig.chart.backgroundColor = backgroundColor;
+  let mergedConfig = cloneDeep(DEFAULT_CANDLESTICK_CONFIG);
+
+  if (providedConfig) mergedConfig = merge(mergedConfig, providedConfig);
+  mergedConfig.chart.backgroundColor = backgroundColor;
+
   const xAxisWidth = chartWidth - mergedConfig.chart.xAxisInset * 2;
 
   return {

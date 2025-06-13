@@ -1,28 +1,36 @@
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import useAccountProfile from './useAccountProfile';
-import useAccountSettings from './useAccountSettings';
-import { useWallets, useWebData } from './index';
-import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
+import {
+  setSelectedWallet,
+  updateWallets,
+  useAccountProfileInfo,
+  useAccountAddress,
+  useWallets,
+  useSelectedWallet,
+} from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
+import { useCallback } from 'react';
+import { useWebData } from './index';
+import { isLowerCaseMatch } from '../utils';
 
 export default function useUpdateEmoji() {
-  const { accountColor, accountName } = useAccountProfile();
-  const { wallets, selectedWallet } = useWallets();
+  const { accountColor, accountName } = useAccountProfileInfo();
+  const wallets = useWallets();
+  const selectedWallet = useSelectedWallet();
   const { updateWebProfile, getWebProfile } = useWebData();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { colors } = useTheme();
-  const dispatch = useDispatch();
+
   const saveInfo = useCallback(
     async (name: string, color: number) => {
+      if (!selectedWallet) return;
+
       const walletId = selectedWallet.id;
       const newWallets = {
         ...wallets,
         [walletId]: {
           ...wallets![walletId],
           addresses: wallets![walletId].addresses.map(singleAddress =>
-            singleAddress.address.toLowerCase() === accountAddress.toLowerCase()
+            isLowerCaseMatch(singleAddress.address, accountAddress)
               ? {
                   ...singleAddress,
                   ...(name && { label: name }),
@@ -36,22 +44,27 @@ export default function useUpdateEmoji() {
         },
       };
 
-      await dispatch(walletsSetSelected(newWallets[walletId]));
-      await dispatch(walletsUpdate(newWallets));
-      updateWebProfile(accountAddress, name, (color !== undefined && colors.avatarBackgrounds[color]) || accountColor);
+      setSelectedWallet(newWallets[walletId]);
+      updateWallets(newWallets);
+      const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
+      if (nextColor) {
+        updateWebProfile(accountAddress, name, nextColor);
+      }
     },
-    [accountAddress, accountColor, colors.avatarBackgrounds, dispatch, selectedWallet.id, updateWebProfile, wallets]
+    [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile, wallets]
   );
 
   const setNextEmoji = useCallback(() => {
+    if (!selectedWallet || !wallets) return;
+
     const walletId = selectedWallet.id;
     const { label } =
-      wallets![walletId].addresses.find(({ address }: { address: string }) => address.toLowerCase() === accountAddress.toLowerCase()) || {};
+      wallets[walletId].addresses.find(({ address }: { address: string }) => address.toLowerCase() === accountAddress.toLowerCase()) || {};
     const maybeEmoji = label?.split(' ')[0] ?? '';
     const { emoji, colorIndex } = getNextEmojiWithColor(maybeEmoji);
     const name = `${emoji} ${accountName}`;
     saveInfo(name, colorIndex);
-  }, [accountAddress, accountName, saveInfo, selectedWallet.id, wallets]);
+  }, [accountAddress, accountName, saveInfo, selectedWallet, wallets]);
 
   return {
     getWebProfile,

@@ -50,6 +50,8 @@ PODS:
     - Yoga
   - ExpoStoreReview (7.0.2):
     - ExpoModulesCore
+  - ExpoWebBrowser (13.0.3):
+    - ExpoModulesCore
   - FasterImage (1.6.2):
     - FasterImage/Nuke (= 1.6.2)
     - FasterImage/NukeUI (= 1.6.2)
@@ -1766,7 +1768,7 @@ PODS:
   - RNInputMask (4.1.0)
   - RNKeyboard (1.0.6):
     - React
-  - RNKeychain (9.2.3):
+  - RNKeychain (10.0.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2009,6 +2011,7 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoStoreReview (from `../node_modules/expo-store-review/ios`)
+  - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - "FasterImage (from `../node_modules/@candlefinance/faster-image`)"
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - Firebase
@@ -2220,6 +2223,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-modules-core"
   ExpoStoreReview:
     :path: "../node_modules/expo-store-review/ios"
+  ExpoWebBrowser:
+    :path: "../node_modules/expo-web-browser/ios"
   FasterImage:
     :path: "../node_modules/@candlefinance/faster-image"
   FBLazyVector:
@@ -2501,6 +2506,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoModulesCore: 831ece8311a489418746925820bbffdda587d6f4
   ExpoStoreReview: 15f9a636b62ff00bb21cbe9a9fe22f0239da4481
+  ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
   FasterImage: af05a76f042ca3654c962b658fdb01cb4d31caee
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   Firebase: 26b040b20866a55f55eb3611b9fcf3ae64816b86
@@ -2632,7 +2638,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: 64b6bec9ec185ee59b71a93d7058816bd0e1916e
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
-  RNKeychain: be16fc831763d50c1adcd58b30f656a33a614bc0
+  RNKeychain: 6593d66437101b730f9b394e773b4778ce1eef93
   RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05

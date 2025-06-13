@@ -1,8 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAccountSettings, useWallets } from '@/hooks';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
@@ -13,13 +10,30 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
+import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress } from '@/state/wallets/walletsStore';
 
 export const AccountIcon = React.memo(function AccountIcon() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { isDarkMode } = useColorMode();
-  const { wallets, walletNames } = useWallets();
-
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
+  const selectedWallet = getWalletWithAccount(currentAddress);
+
+  const accountInfo = useMemo(() => {
+    const profileInfo = getAccountProfileInfo({
+      address: currentAddress,
+      wallet: selectedWallet,
+    });
+    return {
+      ...profileInfo,
+    };
+  }, [currentAddress, selectedWallet]);
+
+  // fix bad state - if no wallet exists, we should revert to the default
+  useEffect(() => {
+    if (currentAddress && !selectedWallet) {
+      setCurrentAddress(accountAddress);
+    }
+  }, [currentAddress, selectedWallet, accountAddress]);
 
   const { activeTabRef } = useBrowserContext();
   const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || RAINBOW_HOME;
@@ -48,14 +62,6 @@ export const AccountIcon = React.memo(function AccountIcon() {
       }
     }
   }, [accountAddress, activeTabHost, currentSession, hostSessions?.activeSessionAddress, isOnHomepage]);
-
-  const accountInfo = useMemo(() => {
-    const selectedWallet = findWalletWithAccount(wallets || {}, currentAddress);
-    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, currentAddress);
-    return {
-      ...profileInfo,
-    };
-  }, [wallets, currentAddress, walletNames]);
 
   const handleOnPress = useCallback(() => {
     Navigation.handleAction(Routes.DAPP_BROWSER_CONTROL_PANEL, {

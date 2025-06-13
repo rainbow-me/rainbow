@@ -97,7 +97,7 @@ export async function fetchUserAssets(
     }
     return null;
   } catch (error) {
-    logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets'), {
+    logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets', error), {
       message: error instanceof Error ? error.message : String(error),
     });
     return null;
@@ -180,7 +180,7 @@ async function fetchUserAssetsForChain(params: {
       return null;
     }
   } catch (error) {
-    logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssetsForChain 🔴]: Failed to fetch user assets for chainId'), {
+    logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssetsForChain 🔴]: Failed to fetch user assets for chainId', error), {
       message: error instanceof Error ? error.message : String(error),
     });
     return null;

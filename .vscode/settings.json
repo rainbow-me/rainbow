@@ -1,4 +1,6 @@
 {
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifier": "non-relative",
   "i18n-ally.localesPaths": [
     "src/languages",
     "ios/Pods/Flipper-Folly/folly/lang",
