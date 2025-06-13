@@ -131,11 +131,11 @@ export const hiddenTokensUpdateStateFromWeb =
   };
 
 export const setHiddenTokens = (hiddenTokens: string[]) => (dispatch: Dispatch<HiddenTokensUpdateAction>, getState: AppGetState) => {
-  const account = getState().wallets.selected!;
+  if (getIsReadOnlyWallet()) return;
 
-  if (account.type === WalletTypes.readOnly) return;
+  const accountAddress = getAccountAddress();
+  const { network } = getState().settings;
 
-  const { accountAddress, network } = getState().settings;
   dispatch({
     payload: {
       hiddenTokens,

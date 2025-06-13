@@ -1,15 +1,15 @@
-import { useSelector } from 'react-redux';
 import { Address } from 'viem';
-import reduxStore, { AppState } from '@/redux/store';
+import reduxStore from '@/redux/store';
 import { createStoreFactoryUtils } from '@/state/internal/utils/factoryUtils';
 import { createNftsStore } from './createNftsStore';
 import { nftsStoreManager } from './nftsStoreManager';
 import { QueryEnabledNftsState, NftsRouter, NftsStoreType, NftsState } from './types';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<NftsStoreType, Partial<NftsState>>(getOrCreateStore);
 
 function getOrCreateStore(address?: Address | string): NftsStoreType {
-  const rawAddress = address?.length ? address : reduxStore.getState().settings.accountAddress;
+  const rawAddress = address?.length ? address : getAccountAddress();
   const { address: cachedAddress, cachedStore } = nftsStoreManager.getState();
 
   /**
@@ -34,7 +34,7 @@ function useNftsStoreInternal<T>(
   selector?: (state: QueryEnabledNftsState) => T,
   equalityFn?: (a: T, b: T) => boolean
 ): QueryEnabledNftsState | T {
-  const address = useSelector((state: AppState) => state.settings.accountAddress);
+  const address = useAccountAddress();
   const store = getOrCreateStore(address);
   return selector ? store(selector, equalityFn) : store();
 }

@@ -156,11 +156,11 @@ export const showcaseTokensUpdateStateFromWeb =
   };
 
 export const setShowcaseTokens = (showcaseTokens: string[]) => (dispatch: Dispatch<ShowcaseTokensUpdateAction>, getState: AppGetState) => {
-  const account = getState().wallets.selected!;
+  if (getIsReadOnlyWallet()) return;
 
-  if (account.type === WalletTypes.readOnly) return;
+  const accountAddress = getAccountAddress();
+  const { network } = getState().settings;
 
-  const { accountAddress, network } = getState().settings;
   dispatch({
     payload: showcaseTokens,
     type: SHOWCASE_TOKENS_UPDATE,

@@ -13,9 +13,9 @@ import { useDispatch } from 'react-redux';
 import { setShowcaseTokens } from '@/redux/showcaseTokens';
 import { setHiddenTokens } from '@/redux/hiddenTokens';
 import useWebData from './useWebData';
-import useWallets from './useWallets';
 import useAccountSettings from './useAccountSettings';
 import { logger } from '@/logger';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 
 function matchEnsNameToUniqueId(ensName: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
   for (const nft of nfts) {
@@ -51,7 +51,7 @@ export function isDataComplete(tokens: string[]) {
 export default function useMigrateShowcaseAndHidden() {
   const dispatch = useDispatch();
   const { updateWebShowcase, updateWebHidden } = useWebData();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const { accountAddress } = useAccountSettings();
