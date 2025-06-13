@@ -23,20 +23,7 @@ import rowRenderer from './RowRenderer';
 import { CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-<<<<<<< HEAD
 import { useAccountAddress } from '../../../../state/wallets/walletsStore';
-=======
-import { NativeCurrencyKey, UniqueAsset } from '@/entities';
-import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
-import { useAccountSettings, useCoinListEdited, useCoinListEditOptions } from '@/hooks';
-import { useNavigation } from '@/navigation';
-import { useTheme } from '@/theme';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { UniqueId } from '@/__swaps__/types/assets';
-import { deviceUtils } from '@/utils';
->>>>>>> adb950338 (Update to react-native 0.79)
 
 const dimensions = {
   height: deviceUtils.dimensions.height,
