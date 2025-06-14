@@ -65,7 +65,7 @@
   "dependencies": {
     "@bankify/react-native-animate-number": "0.2.1",
     "@bradgarropy/use-countdown": "1.4.1",
-    "@candlefinance/faster-image": "1.6.2",
+    "@candlefinance/faster-image": "1.7.2",
     "@capsizecss/core": "3.0.0",
     "@coinbase/mobile-wallet-protocol-host": "0.1.7",
     "@ensdomains/address-encoder": "0.2.16",
@@ -226,7 +226,7 @@
     "react-native-dotenv": "2.4.2",
     "react-native-edge-to-edge": "1.4.3",
     "react-native-extra-dimensions-android": "1.2.2",
-    "react-native-fast-image": "8.5.11",
+    "react-native-fast-image": "8.6.3",
     "react-native-fs": "2.16.6",
     "react-native-gesture-handler": "2.21.2",
     "react-native-get-random-values": "1.5.0",
