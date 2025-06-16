@@ -576,6 +576,11 @@ export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsRea
 export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
 export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamagedWallet());
 
+export const useWalletAddresses = () => {
+  const wallets = useWallets();
+  return useMemo(() => getWalletAddresses(wallets || {}), [wallets]);
+};
+
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
   if (!wallets) {
