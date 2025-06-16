@@ -1,9 +1,9 @@
-import { AllRainbowWallets } from '@/model/wallet';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
+import { useWallets } from '@/state/wallets/walletsStore';
 import { useMemo } from 'react';
 import { Address } from 'viem';
-import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export type WalletBalance = {
   assetBalanceAmount: string;
@@ -25,16 +25,17 @@ export type WalletBalanceResult = {
  * @param wallets - All Rainbow wallets
  * @returns Balances for all wallets
  */
-const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
-  const allAddresses = useMemo(
-    () => Object.values(wallets).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address)),
-    [wallets]
-  );
+const useWalletBalances = (): WalletBalanceResult => {
+  const wallets = useWallets();
 
   const nativeCurrency = userAssetsStoreManager().currency;
   const [summaryData, { isInitialLoading: isLoading }] = useWalletSummary();
 
   const balances = useMemo(() => {
+    const allAddresses = Object.values(wallets || {}).flatMap(wallet =>
+      (wallet.addresses || []).map(account => account.address as Address)
+    );
+
     const result: Record<Address, WalletBalance> = {};
 
     if (isLoading) return result;
@@ -58,7 +59,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     }
 
     return result;
-  }, [isLoading, allAddresses, summaryData?.addresses, nativeCurrency]);
+  }, [isLoading, wallets, summaryData?.addresses, nativeCurrency]);
 
   return {
     balances,
