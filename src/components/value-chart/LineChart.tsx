@@ -6,9 +6,9 @@ import { useTheme } from '@/theme';
 import { useChartThrottledPoints } from '@/hooks';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { ChartLoadingSpinner } from './ChartLoadingSpinner';
 import { LineChartTimespan, NoChartData } from './Chart';
 import { SharedValue, useAnimatedReaction } from 'react-native-reanimated';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 
 const CHART_DOT_SIZE = 10;
 
@@ -138,7 +138,8 @@ export function LineChart({
     return getSolidColorEquivalent({ foreground: strokeColor, background: backgroundColor, opacity: 0.7 });
   }, [strokeColor, backgroundColor]);
 
-  const shouldShowLoadingSpinner = useDelayedMount({ delay: 500, skipDelayedMount: !fetchingCharts });
+  const canShowLoadingSpinner = useDelayedMount({ delay: 500, skipDelayedMount: !fetchingCharts });
+  const shouldShowLoadingSpinner = canShowLoadingSpinner && fetchingCharts;
 
   return (
     <ChartPathProvider data={throttledData} color={strokeColor} selectedColor={selectedColor} height={height} width={width} endPadding={32}>
@@ -154,7 +155,7 @@ export function LineChart({
         />
       )}
       {!shouldShowChart && <NoChartData height={height} />}
-      {shouldShowLoadingSpinner && fetchingCharts && <ChartLoadingSpinner color={strokeColor} size={30} />}
+      {shouldShowLoadingSpinner && <AnimatedSpinner color={strokeColor} isLoading size={30} />}
     </ChartPathProvider>
   );
 }

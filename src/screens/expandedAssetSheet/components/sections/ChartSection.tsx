@@ -7,7 +7,7 @@ export const ChartSection = memo(function ChartSection() {
   const { basicAsset: asset, accentColors } = useExpandedAssetSheetContext();
   return (
     <Bleed horizontal="24px">
-      <Chart asset={asset} backgroundColor={accentColors.background} color={accentColors.color} />
+      <Chart asset={asset} backgroundColor={accentColors.background} accentColors={accentColors} />
     </Bleed>
   );
 });

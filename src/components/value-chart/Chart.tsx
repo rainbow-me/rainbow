@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from '../animations';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { CandlestickChart } from '../candlestick-charts/CandlestickChart';
 import { colors } from '@/styles';
-import { ExpandedSheetAsset, useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { formatTimestamp } from '@/worklets/dates';
 import { useCandlestickStore } from '../candlestick-charts/candlestickStore';
 
@@ -78,7 +78,6 @@ const ChartTimespanLabels: Record<ChartTimespan, { short: string; long: string }
   },
 };
 
-// const CHART_HEIGHT = 250;
 const TOTAL_CHART_HEIGHT = 300;
 const CHART_VERTICAL_PADDING = 30;
 
@@ -98,12 +97,10 @@ export const NoChartData = ({ height }: { height: number }) => {
 type ChartProps = {
   asset: ExpandedSheetAsset;
   backgroundColor: string;
-  color: string;
+  accentColors: AssetAccentColors;
 };
 
-export const Chart = memo(function Chart({ asset, backgroundColor, color }: ChartProps) {
-  // TODO: lift this up so that chart does not re-render when other context values change
-  const { accentColors } = useExpandedAssetSheetContext();
+export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
   const { isDarkMode } = useColorMode();
   const priceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
   const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
@@ -160,17 +157,15 @@ export const Chart = memo(function Chart({ asset, backgroundColor, color }: Char
 
   return (
     <Box>
-      <Box paddingHorizontal={'24px'}>
-        <Animated.View style={chartHeaderStyle}>
-          <ChartExpandedStateHeader priceRelativeChange={priceRelativeChange} price={price} displayDate={displayDate} />
-        </Animated.View>
+      <Box as={Animated.View} style={chartHeaderStyle} paddingHorizontal={'24px'}>
+        <ChartExpandedStateHeader priceRelativeChange={priceRelativeChange} price={price} displayDate={displayDate} />
       </Box>
       <Box gap={20}>
         {chartType === ChartTypes.LINE && (
-          <Box justifyContent="center" height={TOTAL_CHART_HEIGHT}>
+          <Box alignItems="center" justifyContent="center" height={TOTAL_CHART_HEIGHT}>
             <LineChart
-              strokeColor={color}
-              backgroundColor={color}
+              strokeColor={accentColors.color}
+              backgroundColor={accentColors.background}
               width={screenWidth}
               height={TOTAL_CHART_HEIGHT - CHART_VERTICAL_PADDING * 2}
               asset={asset}
@@ -222,9 +217,14 @@ export const Chart = memo(function Chart({ asset, backgroundColor, color }: Char
                 justifyContent="center"
                 alignItems="center"
                 borderRadius={20}
-                backgroundColor={timespan === selectedTimespan ? colors.alpha(color, 0.06) : 'transparent'}
+                backgroundColor={timespan === selectedTimespan ? colors.alpha(accentColors.color, 0.06) : 'transparent'}
               >
-                <Text color={timespan === selectedTimespan ? { custom: color } : 'labelQuaternary'} uppercase size="15pt" weight="heavy">
+                <Text
+                  color={timespan === selectedTimespan ? { custom: accentColors.color } : 'labelQuaternary'}
+                  uppercase
+                  size="15pt"
+                  weight="heavy"
+                >
                   {ChartTimespanLabels[timespan as ChartTimespan].short}
                 </Text>
               </Box>
