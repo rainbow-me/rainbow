@@ -1,5 +1,4 @@
 import { Address } from 'viem';
-import reduxStore from '@/redux/store';
 import { createStoreFactoryUtils } from '@/state/internal/utils/factoryUtils';
 import { createNftsStore } from './createNftsStore';
 import { nftsStoreManager } from './nftsStoreManager';

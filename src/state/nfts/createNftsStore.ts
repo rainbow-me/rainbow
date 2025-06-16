@@ -140,8 +140,6 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
         }
       }
 
-      console.log(nftsByCollection);
-
       return {
         collections: new Map(),
         nftsByCollection,

@@ -6,11 +6,12 @@ import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
-import { usePersistentAspectRatio, useUniqueToken } from '@/hooks';
+import { usePersistentAspectRatio, useAnimationType } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { UniqueAsset } from '@/entities';
 import { DerivedValue, SharedValue } from 'react-native-reanimated';
+import { IS_IOS } from '@/env';
 
 const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));
 
@@ -51,15 +52,15 @@ const UniqueTokenExpandedStateContent = ({
   onContentFocus,
   onContentBlur,
 }: UniqueTokenExpandedStateContentProps) => {
-  const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
+  const animationType = useAnimationType(asset);
 
-  const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
+  const supportsAnythingExceptImageAnd3d = animationType === 'video' || animationType === 'audio';
 
   const aspectRatio = usePersistentAspectRatio(asset.images.lowResUrl);
-  const aspectRatioWithFallback = supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
+  const aspectRatioWithFallback = animationType === '3d' || animationType === 'audio' ? 0.88 : aspectRatio.result || 1;
 
   // default to showing a loading spinner for 3D/video assets
-  const [loading, setLoading] = React.useState(supports3d || supportsVideo);
+  const [loading, setLoading] = React.useState(animationType === '3d' || animationType === 'video');
 
   const fallbackUrl = asset.images.highResUrl || asset.images.lowResUrl || '';
 
@@ -69,7 +70,7 @@ const UniqueTokenExpandedStateContent = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
-      disableAnimations={disablePreview || (ios ? supportsVideo : supportsAnythingExceptImageAnd3d)}
+      disableAnimations={disablePreview || (IS_IOS ? animationType === 'video' : supportsAnythingExceptImageAnd3d)}
       horizontalPadding={horizontalPadding}
       onZoomIn={onContentFocus}
       onZoomOut={onContentBlur}
@@ -77,7 +78,7 @@ const UniqueTokenExpandedStateContent = ({
       yDisplacement={yPosition}
     >
       <View style={StyleSheet.absoluteFill}>
-        {supportsVideo ? (
+        {animationType === 'video' ? (
           <SimpleVideo
             loading={loading}
             posterUri={fallbackUrl}
@@ -85,9 +86,9 @@ const UniqueTokenExpandedStateContent = ({
             style={StyleSheet.absoluteFill}
             uri={asset.images.animatedUrl || ''}
           />
-        ) : supports3d ? (
+        ) : animationType === '3d' ? (
           <ModelView fallbackUri={fallbackUrl} loading={loading} setLoading={setLoading} uri={asset.images.animatedUrl || ''} />
-        ) : supportsAudio ? (
+        ) : animationType === 'audio' ? (
           <AudioPlayer fontColor={textColor} imageColor={imageColor} uri={fallbackUrl} />
         ) : (
           <UniqueTokenImage

@@ -499,8 +499,9 @@ query getNftsByCollection($walletAddress: String!, $collectionId: String!) {
     images {
       highResUrl
       lowResUrl
-      animatedUrl
       mimeType
+      animatedUrl
+      animatedMimeType
     }
     type
     backgroundColor

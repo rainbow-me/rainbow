@@ -441,8 +441,8 @@ export const legacyBuildBriefUniqueTokenList = (
     }
 
     if (listType === 'select-nft') {
-      const imageFormat = token.images.animatedUrl;
-      if (!imageFormat && token.type === AssetType.nft) {
+      const notAnimated = !token.images.animatedUrl;
+      if (notAnimated && token.type === AssetType.nft) {
         filteredUniqueTokens.push(token);
       }
     } else {
