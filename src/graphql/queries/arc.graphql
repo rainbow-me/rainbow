@@ -534,8 +534,9 @@ query getNftsMetadata($walletAddress: String!, $tokens: JSON!) {
     images {
       highResUrl
       lowResUrl
-      animatedUrl
       mimeType
+      animatedUrl
+      animatedMimeType
     }
     type
     backgroundColor

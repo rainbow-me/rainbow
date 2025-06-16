@@ -92,6 +92,8 @@ export function parseUniqueAsset(
       highResUrl: imageUrl,
       lowResUrl: lowResUrl,
       mimeType: nft.images.mimeType,
+      animatedUrl: nft.images.animatedUrl,
+      animatedMimeType: nft.images.animatedMimeType,
     },
     uniqueId: nft.uniqueId as `${Network}_${Address}_${number}`,
     tokenId,
