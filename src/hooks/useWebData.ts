@@ -8,8 +8,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
-import { useTheme } from '@/theme';
-import { getWalletWithAccount, useAccountProfileInfo, useWallets } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -30,7 +29,6 @@ const wipeNotEmoji = (text: string) => {
 export default function useWebData() {
   const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
-  const wallets = useWallets();
 
   const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
     ({ hiddenTokens: { hiddenTokens }, showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
@@ -40,11 +38,10 @@ export default function useWebData() {
     })
   );
 
-  const { colors } = useTheme();
   const { accountSymbol, accountColorHex } = useAccountProfileInfo();
 
   const initWebData = useCallback(
-    async (showcaseTokens: any) => {
+    async (showcaseTokens: string[]) => {
       await setPreference(PreferenceActionType.init, 'showcase', accountAddress, showcaseTokens);
 
       await setPreference(PreferenceActionType.init, 'hidden', accountAddress, hiddenTokens);
@@ -56,7 +53,7 @@ export default function useWebData() {
 
       dispatch(updateWebDataEnabled(true, accountAddress));
     },
-    [accountAddress, accountColorHex, accountSymbol, colors.avatarBackgrounds, dispatch, hiddenTokens]
+    [accountAddress, accountColorHex, accountSymbol, dispatch, hiddenTokens]
   );
 
   const wipeWebData = useCallback(async () => {
@@ -77,7 +74,7 @@ export default function useWebData() {
       };
       await setPreference(PreferenceActionType.update, 'profile', address, data);
     },
-    [accountColorHex, accountSymbol, wallets, webDataEnabled]
+    [accountColorHex, accountSymbol, webDataEnabled]
   );
 
   const getWebProfile = useCallback(async (address: string) => {

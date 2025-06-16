@@ -23,8 +23,9 @@ export interface UniqueAsset {
   images: {
     highResUrl?: string | null;
     lowResUrl?: string | null;
-    animatedUrl?: string | null;
     mimeType?: string | null;
+    animatedUrl?: string | null;
+    animatedMimeType?: string | null;
   };
   type: AssetType;
   collectionName?: string | null;

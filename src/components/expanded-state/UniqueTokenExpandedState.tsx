@@ -98,12 +98,14 @@ const Spacer = styled(View)({
 
 const TextButton = ({
   onPress,
+  disabled,
   children,
   align,
   size = '16px / 22px (Deprecated)',
   weight = 'heavy',
 }: {
   onPress: () => void;
+  disabled?: boolean;
   children: ReactNode;
   align?: TextProps['align'];
   size?: TextProps['size'];
@@ -113,7 +115,7 @@ const TextButton = ({
 
   return (
     <Bleed space={hitSlop}>
-      <ButtonPressAnimation onPress={onPress} scaleTo={0.88}>
+      <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={0.88}>
         <Inset space={hitSlop}>
           <Text align={align} color="accent" size={size} weight={weight}>
             {children}
@@ -300,7 +302,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   }, [ensData?.records]);
 
   const { addShowcaseToken, removeShowcaseToken, showcaseTokens } = useShowcaseTokens();
-  const { hiddenTokens, removeHiddenToken } = useHiddenTokens();
+  const { removeHiddenToken, hiddenTokens } = useHiddenTokens();
 
   const [contentFocused, handleContentFocus, handleContentBlur] = useBooleanState();
   const animationProgress = useSharedValue(0);
@@ -352,15 +354,15 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
-      removeShowcaseToken(asset.uniqueId.toLowerCase());
+      removeShowcaseToken(asset.uniqueId);
     } else {
-      addShowcaseToken(asset.uniqueId.toLowerCase());
+      addShowcaseToken(asset.uniqueId);
 
       if (isHiddenAsset) {
         removeHiddenToken(asset);
       }
     }
-  }, [addShowcaseToken, isHiddenAsset, isShowcaseAsset, removeHiddenToken, removeShowcaseToken, asset]);
+  }, [isShowcaseAsset, removeShowcaseToken, asset, addShowcaseToken, isHiddenAsset, removeHiddenToken]);
 
   const handlePressShare = useCallback(() => {
     const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.marketplaceUrl;

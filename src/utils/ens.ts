@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import uts46 from 'idna-uts46-hx';
 import { UniqueAsset } from '@/entities';
+import { isLowerCaseMatch } from '@/utils';
 
 const supportedTLDs = ['eth'];
 
@@ -23,7 +24,7 @@ export function getENSNFTAvatarUrl(uniqueTokens: UniqueAsset[], avatar?: string)
     if (isNFTAvatar) {
       const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
       const uniqueToken = uniqueTokens.find(
-        token => token.contractAddress?.toLowerCase() === contractAddress.toLowerCase() && token.tokenId === tokenId
+        token => isLowerCaseMatch(token.contractAddress, contractAddress) && isLowerCaseMatch(token.tokenId, tokenId)
       );
       if (uniqueToken?.images?.highResUrl) {
         avatarUrl = uniqueToken?.images?.highResUrl;

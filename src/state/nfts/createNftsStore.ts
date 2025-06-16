@@ -20,6 +20,44 @@ export const mergeMaps = (map1: Map<string, Collection>, map2: Map<string, Colle
   );
 };
 
+// Helper function to get collection IDs from showcase tokens
+export const getShowcaseCollectionIds = (): Set<string> => {
+  const showcaseTokens = store.getState().showcaseTokens.showcaseTokens;
+  const collectionIds = new Set<string>();
+
+  showcaseTokens.forEach(token => {
+    const parsed = parseUniqueId(token);
+    if (parsed.network && parsed.contractAddress) {
+      const network = replaceEthereumWithMainnet(parsed.network);
+      if (network) {
+        const collectionId = `${network}_${parsed.contractAddress}`.toLowerCase();
+        collectionIds.add(collectionId);
+      }
+    }
+  });
+
+  return collectionIds;
+};
+
+// Helper function to get collection IDs from hidden tokens
+export const getHiddenCollectionIds = (): Set<string> => {
+  const hiddenTokens = store.getState().hiddenTokens.hiddenTokens;
+  const collectionIds = new Set<string>();
+
+  hiddenTokens.forEach(token => {
+    const parsed = parseUniqueId(token);
+    if (parsed.network && parsed.contractAddress) {
+      const network = replaceEthereumWithMainnet(parsed.network);
+      if (network) {
+        const collectionId = `${network}_${parsed.contractAddress}`.toLowerCase();
+        collectionIds.add(collectionId);
+      }
+    }
+  });
+
+  return collectionIds;
+};
+
 const EMPTY_RETURN_DATA: NftsQueryData = {
   collections: new Map(),
   nftsByCollection: new Map(),
@@ -140,8 +178,6 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
         }
       }
 
-      console.log(nftsByCollection);
-
       return {
         collections: new Map(),
         nftsByCollection,
@@ -186,7 +222,6 @@ export const createNftsStore = (address: Address | string) =>
         pageKey: null,
         openCollections: [],
       },
-      keepPreviousData: true,
       debugMode: IS_DEV,
       staleTime: STALE_TIME,
     },
@@ -349,10 +384,31 @@ function setOrPruneNftsData(
       const mergedNftsByCollection = new Map(nftsByCollection);
       const updatedFetchedCollections = { ...fetchedCollections };
 
+      // Get showcase and hidden collection IDs for proper detection
+      const showcaseCollectionIds = getShowcaseCollectionIds();
+      const hiddenCollectionIds = getHiddenCollectionIds();
+      const isShowcaseOpen = params.openCollections?.includes('showcase') ?? false;
+      const isHiddenOpen = params.openCollections?.includes('hidden') ?? false;
+
       // Deep merge: for each collection in the new data
       for (const [collectionId, newNftsMap] of data.nftsByCollection) {
         const normalizedId = collectionId.toLowerCase();
-        if (params.openCollections?.includes(normalizedId)) {
+
+        // Determine if this collection should be kept
+        let shouldKeepCollection = false;
+
+        if (showcaseCollectionIds.has(normalizedId)) {
+          // This is a showcase collection - keep if showcase is open (NEVER prune showcase)
+          shouldKeepCollection = isShowcaseOpen;
+        } else if (hiddenCollectionIds.has(normalizedId)) {
+          // This is a hidden collection - keep if hidden is open
+          shouldKeepCollection = isHiddenOpen;
+        } else {
+          // This is a regular collection - keep if it's in openCollections
+          shouldKeepCollection = params.openCollections?.includes(normalizedId) ?? false;
+        }
+
+        if (shouldKeepCollection) {
           const existingNftsMap = mergedNftsByCollection.get(normalizedId);
           if (existingNftsMap) {
             // Create a new Map to maintain immutability for UI stability
@@ -376,7 +432,7 @@ function setOrPruneNftsData(
           // Update fetch time for this collection
           updatedFetchedCollections[normalizedId] = now;
         } else {
-          // If the collection is not open, we need to prune the data
+          // Collection should be pruned
           mergedNftsByCollection.delete(normalizedId);
           delete updatedFetchedCollections[normalizedId];
         }

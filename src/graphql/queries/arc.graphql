@@ -499,8 +499,9 @@ query getNftsByCollection($walletAddress: String!, $collectionId: String!) {
     images {
       highResUrl
       lowResUrl
-      animatedUrl
       mimeType
+      animatedUrl
+      animatedMimeType
     }
     type
     backgroundColor
@@ -533,8 +534,9 @@ query getNftsMetadata($walletAddress: String!, $tokens: JSON!) {
     images {
       highResUrl
       lowResUrl
-      animatedUrl
       mimeType
+      animatedUrl
+      animatedMimeType
     }
     type
     backgroundColor

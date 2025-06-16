@@ -1,7 +1,5 @@
 import { logger } from '@/logger';
 import { ensRegistrationsLoadState } from '@/redux/ensRegistration';
-import { hiddenTokensUpdateStateFromWeb } from '@/redux/hiddenTokens';
-import { showcaseTokensUpdateStateFromWeb } from '@/redux/showcaseTokens';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
@@ -21,18 +19,12 @@ export default function useLoadAccountLateData() {
 
     const promises = [];
 
-    // showcase & hidden tokens from firebase
-    const p1 = dispatch(showcaseTokensUpdateStateFromWeb());
-    const p2 = dispatch(hiddenTokensUpdateStateFromWeb());
-
-    promises.push(p1, p2);
-
     if (!isReadOnlyWallet) {
       // ENS registration info
-      const p3 = dispatch(ensRegistrationsLoadState());
-      const p4 = prefetchAccountENSDomains({ accountAddress });
+      const p1 = dispatch(ensRegistrationsLoadState());
+      const p2 = prefetchAccountENSDomains({ accountAddress });
 
-      promises.push(p3, p4);
+      promises.push(p1, p2);
     }
 
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '((dispatch: ThunkDispatch<{ read... Remove this comment to see the full error message

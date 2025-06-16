@@ -761,10 +761,9 @@ export default function SendSheet() {
       });
       return;
     }
-    const isENS = selected?.type === AssetType.ens;
     const checkboxes = getDefaultCheckboxes({
       ensProfile,
-      isENS: true,
+      isENS,
       chainId,
       toAddress: recipient,
     });
@@ -784,12 +783,13 @@ export default function SendSheet() {
     });
   }, [
     buttonDisabled,
+    selected,
     recipient,
     isUniqueAsset,
-    selected,
     assetInputRef,
     nativeCurrencyInputRef,
     ensProfile,
+    isENS,
     chainId,
     navigate,
     amountDetails,

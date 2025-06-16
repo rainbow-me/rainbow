@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { TokenFamilyHeader } from '../../token-family';
 import { useLatestCallback, useOpenFamilies } from '@/hooks';
 import { ThemeContextProps } from '@/theme';
@@ -18,7 +18,6 @@ type Props = {
 export default React.memo(function WrappedTokenFamilyHeader({ name, total, image, theme, testID, uid }: Props) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
-  const openCollections = useNftsStore(state => state.openCollections);
 
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
@@ -30,6 +29,8 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
 
     const normalizedCollectionId = uid.toLowerCase();
 
+    const { openCollections } = useNftsStore.getState();
+
     if (!isFamilyOpen && !openCollections.has(normalizedCollectionId)) {
       openCollections.add(normalizedCollectionId);
     } else if (isFamilyOpen && openCollections.has(normalizedCollectionId)) {
@@ -40,9 +41,12 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
       openCollections,
     });
 
-    useNftsStore.getState().fetch({
-      openCollections: Array.from(openCollections),
-    });
+    useNftsStore.getState().fetch(
+      {
+        openCollections: Array.from(openCollections),
+      },
+      { force: true }
+    );
   });
 
   if (!nftsEnabled) return null;

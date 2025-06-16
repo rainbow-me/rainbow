@@ -113,8 +113,6 @@ export async function setPreference<K extends keyof Omit<PreferencesDataMap, 'ad
       success: data?.success,
     });
 
-    console.log(data);
-
     if (!data?.success) {
       throw new Error('Failed to set preference');
     }
@@ -124,7 +122,6 @@ export async function setPreference<K extends keyof Omit<PreferencesDataMap, 'ad
     logger.warn(`[preferences]: Preferences API failed to set preference`, {
       preferenceKey: key,
     });
-    console.log(e);
     return false;
   }
 }

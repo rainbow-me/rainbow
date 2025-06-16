@@ -2,9 +2,7 @@ import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
-import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
-import useShowcaseTokens from './useShowcaseTokens';
 import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -19,6 +17,8 @@ import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '../state/wallets/walletsStore';
+import useFetchShowcaseTokens from '@/hooks/useFetchShowcaseTokens';
+import useFetchHiddenTokens from '@/hooks/useFetchHiddenTokens';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -38,8 +38,8 @@ export default function useWalletSectionsData({
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const selectedWallet = useSelectedWallet();
-  const { showcaseTokens } = useShowcaseTokens();
-  const { hiddenTokens } = useHiddenTokens();
+  const { data: showcaseTokens = [] } = useFetchShowcaseTokens({ address: accountAddress });
+  const { data: hiddenTokens = [] } = useFetchHiddenTokens({ address: accountAddress });
   const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();

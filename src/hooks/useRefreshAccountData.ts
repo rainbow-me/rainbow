@@ -14,6 +14,8 @@ import { useCallback, useState } from 'react';
 import { Address } from 'viem';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
+import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
@@ -28,6 +30,8 @@ export const refreshAccountData = async () => {
   queryClient.invalidateQueries([
     addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }),
     createQueryKey('nfts', { address: accountAddress }),
+    showcaseTokensQueryKey({ address: accountAddress }),
+    hiddenTokensQueryKey({ address: accountAddress }),
   ]);
 
   await Promise.all([

@@ -6,7 +6,7 @@ import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
-import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
+import { getENSNFTAvatarUrl, isENSNFTRecord, isLowerCaseMatch, parseENSNFTRecord } from '@/utils';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
@@ -28,7 +28,9 @@ const getImageUrl = (
     const isNFT = isENSNFTRecord(recordValue);
     if (isNFT) {
       const { contractAddress, tokenId } = parseENSNFTRecord(records?.[key] || '');
-      const uniqueToken = uniqueTokens.find(token => token.contractAddress === contractAddress && token.tokenId === tokenId);
+      const uniqueToken = uniqueTokens.find(
+        token => isLowerCaseMatch(token.contractAddress, contractAddress) && isLowerCaseMatch(token.tokenId, tokenId)
+      );
       if (uniqueToken?.images.highResUrl) {
         imageUrl = svgToPngIfNeeded(uniqueToken.images.highResUrl, false);
       } else if (uniqueToken?.images.lowResUrl) {
