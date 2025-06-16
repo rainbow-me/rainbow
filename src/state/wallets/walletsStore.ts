@@ -100,14 +100,22 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     selected: null,
     setSelectedWallet(wallet, address) {
       setSelectedWalletInKeychain(wallet);
-      set({
-        selected: {
-          ...wallet,
-        },
-      });
+
+      // ensure not memoized
+      const selected = {
+        ...wallet,
+      };
+
       if (address) {
         saveAddress(address);
-        setAccountAddress(ensureValidHex(address));
+        set({
+          accountAddress: ensureValidHex(address),
+          selected,
+        });
+      } else {
+        set({
+          selected,
+        });
       }
     },
 
@@ -158,11 +166,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     async loadWallets() {
       try {
-        const { accountAddress, walletNames, walletReady } = get();
-
-        if (walletReady) {
-          return;
-        }
+        const { accountAddress, walletNames } = get();
 
         let addressFromKeychain: string | null = accountAddress;
         const allWalletsResult = await getAllWallets();
@@ -232,7 +236,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
-        const walletInfo = await refreshWalletsInfo({ wallets, walletNames });
+        const walletInfo = await refreshWalletsInfo({ wallets, walletNames, useCachedENS: true });
 
         set({
           selected: selectedWallet,
