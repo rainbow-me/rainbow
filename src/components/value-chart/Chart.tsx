@@ -11,6 +11,7 @@ import { colors } from '@/styles';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { formatTimestamp } from '@/worklets/dates';
 import { useCandlestickStore } from '../candlestick-charts/candlestickStore';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 
 const translations = {
   noChartData: i18n.t(i18n.l.expanded_state.chart.no_chart_data),
@@ -102,14 +103,31 @@ type ChartProps = {
 
 export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
   const { isDarkMode } = useColorMode();
-  const priceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
+  // const priceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
   const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
+  const chartGesturePriceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
   const chartGestureUnixTimestamp = useSharedValue<number>(0);
   const isChartGestureActive = useSharedValue(false);
   const { width: screenWidth } = useWindowDimensions();
 
+  const liveTokenPrice = useLiveTokenSharedValue({
+    tokenId: asset.uniqueId,
+    // TODO:
+    initialValueLastUpdated: 0,
+    initialValue: asset.price.value?.toString() ?? '0',
+    selector: state => state.price,
+  });
+
+  const liveTokenPercentageChange = useLiveTokenSharedValue({
+    tokenId: asset.uniqueId,
+    // TODO:
+    initialValueLastUpdated: 0,
+    initialValue: asset.price.relativeChange24h?.toString() ?? '0',
+    selector: state => state.change24hPct,
+  });
+
   const chartType = useCandlestickStore(state => state.chartType);
-  const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>('hour');
+  const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>('day');
 
   const selectedTimespanLabel = useMemo(() => {
     return i18n.t(i18n.l.expanded_state.chart.past_timespan, {
@@ -122,7 +140,17 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   });
 
   const price = useDerivedValue(() => {
-    return isChartGestureActive.value ? chartGesturePrice.value : asset.price.value ?? undefined;
+    if (isChartGestureActive.value && chartType === ChartTypes.LINE) {
+      return chartGesturePrice.value;
+    }
+    return liveTokenPrice.value ?? asset.price.value ?? undefined;
+  });
+
+  const priceRelativeChange = useDerivedValue(() => {
+    if (isChartGestureActive.value && chartType === ChartTypes.LINE) {
+      return chartGesturePriceRelativeChange.value;
+    }
+    return liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
   });
 
   const timespans = useMemo(() => {
@@ -158,7 +186,13 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   return (
     <Box>
       <Box as={Animated.View} style={chartHeaderStyle} paddingHorizontal={'24px'}>
-        <ChartExpandedStateHeader priceRelativeChange={priceRelativeChange} price={price} displayDate={displayDate} />
+        <ChartExpandedStateHeader
+          priceRelativeChange={priceRelativeChange}
+          price={price}
+          displayDate={displayDate}
+          isChartGestureActive={isChartGestureActive}
+          backgroundColor={backgroundColor}
+        />
       </Box>
       <Box gap={20}>
         {chartType === ChartTypes.LINE && (
@@ -172,7 +206,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
               timespan={selectedTimespan as LineChartTimespan}
               chartGestureUnixTimestamp={chartGestureUnixTimestamp}
               price={chartGesturePrice}
-              priceRelativeChange={priceRelativeChange}
+              priceRelativeChange={chartGesturePriceRelativeChange}
               isChartGestureActive={isChartGestureActive}
             />
           </Box>

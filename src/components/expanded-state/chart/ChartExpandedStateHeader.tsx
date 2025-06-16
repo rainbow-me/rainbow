@@ -6,12 +6,16 @@ import { ChartPriceLabel } from '@/components/expanded-state/chart/chart-data-la
 import { View } from 'react-native';
 
 type ChartExpandedStateHeaderProps = {
+  backgroundColor: string;
+  isChartGestureActive: SharedValue<boolean>;
   displayDate: SharedValue<string>;
-  priceRelativeChange: SharedValue<number | undefined>;
-  price: SharedValue<number | undefined>;
+  priceRelativeChange: SharedValue<string | number | undefined>;
+  price: SharedValue<string | number | undefined>;
 };
 
 export const ChartExpandedStateHeader = memo(function ChartExpandedStateHeader({
+  backgroundColor,
+  isChartGestureActive,
   displayDate,
   priceRelativeChange,
   price,
@@ -19,10 +23,14 @@ export const ChartExpandedStateHeader = memo(function ChartExpandedStateHeader({
   return (
     <View testID={'expanded-state-header'}>
       <Stack space={'20px'}>
-        <ChartPriceLabel price={price} />
+        <ChartPriceLabel price={price} backgroundColor={backgroundColor} isChartGestureActive={isChartGestureActive} />
         <Bleed top={'6px'}>
           <Box gap={8} flexDirection="row" alignItems="center">
-            <ChartPercentChangeLabel percentageChange={priceRelativeChange} />
+            <ChartPercentChangeLabel
+              backgroundColor={backgroundColor}
+              isChartGestureActive={isChartGestureActive}
+              percentageChange={priceRelativeChange}
+            />
             <AnimatedText size="20pt" weight="bold" color="labelQuaternary" tabularNumbers numberOfLines={1}>
               {displayDate}
             </AnimatedText>

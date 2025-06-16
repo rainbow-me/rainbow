@@ -4,23 +4,35 @@ import { AnimatedText, Box, TextShadow, useColorMode, useForegroundColor } from 
 import { IS_ANDROID } from '@/env';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useTheme } from '@/theme';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
-import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';
 
 type ChartPercentChangeLabelProps = {
-  percentageChange: SharedValue<number | undefined>;
+  backgroundColor: string;
+  isChartGestureActive: SharedValue<boolean>;
+  percentageChange: SharedValue<number | string | undefined>;
 };
 
-export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({ percentageChange }: ChartPercentChangeLabelProps) {
+export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({
+  backgroundColor,
+  isChartGestureActive,
+  percentageChange,
+}: ChartPercentChangeLabelProps) {
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
-  const { accentColors } = useExpandedAssetSheetContext();
   const labelSecondary = useForegroundColor('labelSecondary');
   const percentageChangeDirectionRotation = useSharedValue(0);
+
+  const sign = useDerivedValue(() => {
+    const value = percentageChange.value;
+    if (value === undefined) {
+      return null;
+    }
+    return greaterThanWorklet(value, 0) ? '+' : lessThanWorklet(value, 0) ? '-' : '';
+  });
 
   const percentageChangeText = useDerivedValue(() => {
     const value = percentageChange.value;
@@ -28,14 +40,11 @@ export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({ p
       // important that string is not empty so that when actual value fills it does not cause a vertical layout shift
       return ' ';
     }
-    return `${toFixedWorklet(Math.abs(value), 2)}%`;
+    return `${toFixedWorklet(Math.abs(Number(value)), 2)}%`;
   });
 
   const percentageChangeDirectionStyle = useAnimatedStyle(() => {
-    const value = percentageChange.value ?? 0;
-    const isPositive = value > 0;
-    const isNegative = value < 0;
-    const color = isPositive ? colors.green : isNegative ? colors.red : labelSecondary;
+    const color = sign.value === '+' ? colors.green : sign.value === '-' ? colors.red : labelSecondary;
 
     return {
       color,
@@ -44,20 +53,20 @@ export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({ p
   });
 
   useAnimatedReaction(
-    () => percentageChange.value,
-    value => {
-      if (value === undefined) {
-        return;
-      }
-      percentageChangeDirectionRotation.value = withTiming(value > 0 ? 0 : 180, TIMING_CONFIGS.slowFadeConfig);
+    () => sign.value,
+    sign => {
+      percentageChangeDirectionRotation.value = withTiming(sign === '+' ? 0 : 180, TIMING_CONFIGS.slowFadeConfig);
     }
   );
 
   const textStyle = useAnimatedStyle(() => {
-    const value = percentageChange.value;
-    const isPositive = value !== undefined && value > 0;
-    const isNegative = value !== undefined && value < 0;
-    const color = value !== undefined ? (isPositive ? colors.green : isNegative ? colors.red : labelSecondary) : 'transparent';
+    if (sign.value === null) {
+      return {
+        color: 'transparent',
+        textShadowColor: 'transparent',
+      };
+    }
+    const color = sign.value === '+' ? colors.green : sign.value === '-' ? colors.red : labelSecondary;
 
     return {
       color,
@@ -73,14 +82,13 @@ export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({ p
       </AnimatedText>
       <AnimatedNumber
         value={percentageChangeText}
-        easingMaskColor={accentColors.background}
+        easingMaskColor={backgroundColor}
         style={textStyle}
         align="left"
         size="20pt"
         weight="heavy"
         tabularNumbers
-        // TODO:
-        disabled={false}
+        disabled={isChartGestureActive}
         color={'label'}
       />
     </Box>
