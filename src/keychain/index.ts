@@ -279,7 +279,6 @@ export async function has(key: string): Promise<boolean> {
  */
 export async function remove(key: string) {
   logger.debug(`[keychain]: remove`, { key }, logger.DebugContext.keychain);
-
   cache.delete(key);
   await resetInternetCredentials({ server: key });
 }

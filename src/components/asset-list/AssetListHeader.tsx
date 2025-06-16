@@ -1,4 +1,15 @@
+import { IS_TEST } from '@/env';
+import { useDimensions } from '@/hooks';
+import * as lang from '@/languages';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { fonts, position } from '@/styles';
+import { useTheme } from '@/theme';
 import React, { ComponentProps, useCallback, useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
@@ -8,16 +19,6 @@ import { ListHeader, ListHeaderHeight } from '../list';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { H1, TruncatedText } from '../text';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
-import { useAccountProfile, useDimensions } from '@/hooks';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { fonts, position } from '@/styles';
-import { useTheme } from '@/theme';
-import * as lang from '@/languages';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { IS_TEST } from '@/env';
-import { View } from 'react-native';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -118,7 +119,7 @@ type AssetListHeaderProps = {
 
 const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalValue, isSticky = true, ...props }: AssetListHeaderProps) => {
   const { width: deviceWidth } = useDimensions();
-  const { accountName } = useAccountProfile();
+  const { accountName } = useAccountProfileInfo();
   const { navigate } = useNavigation();
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
 
@@ -152,7 +153,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
         totalValue={totalValue}
         {...props}
       >
-        {!title && (
+        {!title && !!accountName && (
           <WalletSelectButtonWrapper>
             <WalletSelectButton
               accountName={accountName}

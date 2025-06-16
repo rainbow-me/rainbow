@@ -36,7 +36,7 @@ export const useKingOfTheHillStore = createQueryStore<KingOfTheHill | null, King
       }
     },
     cacheTime: time.hours(1),
-    keepPreviousData: true,
+    keepPreviousData: false,
     params: {
       currency: $ => $(userAssetsStoreManager).currency,
     },

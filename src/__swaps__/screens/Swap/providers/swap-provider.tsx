@@ -143,6 +143,7 @@ interface SwapContextType {
   confirmButtonIconStyle: StyleProp<TextStyle>;
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
+  gasPanelHeight: SharedValue<number>;
 }
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
@@ -198,6 +199,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
 
   const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
+  const gasPanelHeight = useSharedValue(0);
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
   const selectedOutputChainId = useSharedValue<ChainId>(initialValues.inputAsset?.chainId || ChainId.mainnet);
   const slippage = useSharedValue(initialValues.slippage);
@@ -491,6 +493,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     SwapWarning,
     configProgress,
     degenMode,
+    gasPanelHeight,
     inputProgress,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
@@ -934,6 +937,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         confirmButtonIconStyle,
 
         hasEnoughFundsForGas,
+        gasPanelHeight,
       }}
     >
       {children}

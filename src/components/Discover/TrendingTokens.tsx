@@ -613,7 +613,7 @@ function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<Chain
 
   const navigateToNetworkSelector = useCallback(() => {
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
-      selected: selectedChainId,
+      selected: selectedChainId.value ?? chainId,
       setSelected,
       allowedNetworks: category === 'Rainbow' ? tokenLauncherNetworks : undefined,
     });

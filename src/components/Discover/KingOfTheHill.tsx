@@ -94,16 +94,15 @@ function SyncStoreEnabled() {
 export function KingOfTheHill() {
   const kingOfTheHill = useKingOfTheHillStore(store => store.getData(), isEqual);
 
-  if (!kingOfTheHill) {
-    return <Skeleton width={'100%'} height={84 + 26 + 6} />;
-  }
-
   return (
     <>
-      <Box gap={6}>
-        {kingOfTheHill.lastWinner && <LastWinnerSection lastWinner={kingOfTheHill.lastWinner} />}
-        <KingOfTheHillCard king={kingOfTheHill.current} />
-      </Box>
+      {!kingOfTheHill && <Skeleton width={'100%'} height={84 + 26 + 6} />}
+      {kingOfTheHill && (
+        <Box gap={6}>
+          {kingOfTheHill.lastWinner && <LastWinnerSection lastWinner={kingOfTheHill.lastWinner} />}
+          <KingOfTheHillCard king={kingOfTheHill.current} />
+        </Box>
+      )}
       <SyncStoreEnabled />
     </>
   );

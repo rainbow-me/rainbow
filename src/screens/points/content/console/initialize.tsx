@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import { Paragraph } from '../../components/Paragraph';
-import { Line } from '../../components/Line';
-import { AnimatedText } from '../../components/AnimatedText';
-import { RainbowPointsFlowSteps, rainbowText, textColors } from '../../constants';
-import * as i18n from '@/languages';
-import { useAccountProfile } from '@/hooks';
-import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
-import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
-import { NeonButton } from '../../components/NeonButton';
 import { Bleed, Box, Stack } from '@/design-system';
+import * as i18n from '@/languages';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
+import React, { useState } from 'react';
+import { AnimatedText } from '../../components/AnimatedText';
+import { Line } from '../../components/Line';
 import { LineBreak } from '../../components/LineBreak';
+import { NeonButton } from '../../components/NeonButton';
+import { Paragraph } from '../../components/Paragraph';
+import { RainbowPointsFlowSteps, rainbowText, textColors } from '../../constants';
+import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 
 export const Initialize = () => {
   const [showSignInButton, setShowSignInButton] = useState(false);
   const { profile, setStep, setAnimationKey, signIn } = usePointsProfileContext();
-  const { accountENS, accountAddress } = useAccountProfile();
+  const { accountENS, accountAddress } = useAccountProfileInfo();
 
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
 

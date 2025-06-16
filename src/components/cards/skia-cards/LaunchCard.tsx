@@ -1,16 +1,15 @@
+import { opacity } from '@/__swaps__/utils/swaps';
 import { BlendColor, Circle, Group, ImageSVG, LinearGradient, Mask, Paint, Rect, Shadow, vec } from '@shopify/react-native-skia';
 import React, { memo, useState } from 'react';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { SkiaText, SkiaTextChild } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
-import walletTypes from '@/helpers/walletTypes';
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
-import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import store from '@/redux/store';
-import { opacity } from '@/__swaps__/utils/swaps';
 import { watchingAlert } from '@/utils';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import Navigation from '@/navigation/Navigation';
 import { DEFAULT_CARD_SIZE, SkiaCard, SkiaCardProps } from './SkiaCard';
 import { plusButtonSvg, stars } from './cardSvgs';
 
@@ -62,12 +61,8 @@ const CARD_PROPS: Partial<SkiaCardProps> = {
   },
 };
 
-function isCurrentWalletReadOnly(): boolean {
-  return store.getState().wallets.selected?.type === walletTypes.readOnly;
-}
-
 function navigateToTokenLauncher(): void {
-  if (!enableActionsOnReadOnlyWallet && isCurrentWalletReadOnly()) {
+  if (!enableActionsOnReadOnlyWallet && getIsReadOnlyWallet()) {
     return watchingAlert();
   }
   Navigation.handleAction(Routes.TOKEN_LAUNCHER_SCREEN);

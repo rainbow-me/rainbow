@@ -1,30 +1,31 @@
-import { Box, Inline, Stack, Text, AccentColorProvider, Bleed } from '@/design-system';
-import { useTheme } from '@/theme';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { GenericCard } from './GenericCard';
-import { ButtonPressAnimation } from '../animations';
-import { useAccountSettings, useChartThrottledPoints, useColorForAsset, useWallets } from '@/hooks';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { deviceUtils } from '@/utils';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import { ETH_ADDRESS } from '@/references';
-import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
-import Labels from '../value-chart/ExtremeLabels';
-import showWalletErrorAlert from '@/helpers/support';
-import { IS_IOS } from '@/env';
-import Spinner from '../Spinner';
-import Skeleton, { FakeText } from '../skeleton/Skeleton';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import assetTypes from '@/entities/assetTypes';
-import { Network, ChainId } from '@/state/backendNetworks/types';
+import { IS_IOS } from '@/env';
+import showWalletErrorAlert from '@/helpers/support';
+import { useAccountSettings, useChartThrottledPoints, useColorForAsset } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
+import { ETH_ADDRESS } from '@/references';
+import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+import { useIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
+import { deviceUtils } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Spinner from '../Spinner';
+import { ButtonPressAnimation } from '../animations';
+import Skeleton, { FakeText } from '../skeleton/Skeleton';
+import Labels from '../value-chart/ExtremeLabels';
+import { GenericCard } from './GenericCard';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -32,7 +33,7 @@ export const EthCard = () => {
   const { nativeCurrency } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
-  const { isDamaged } = useWallets();
+  const isDamaged = useIsDamagedWallet();
   const { data: externalEthAsset } = useExternalToken({
     address: ETH_ADDRESS,
     chainId: ChainId.mainnet,

@@ -1,12 +1,11 @@
-import { BackupFile, CloudBackups } from '@/model/backup';
-import { createRainbowStore } from '../internal/createRainbowStore';
 import { IS_ANDROID } from '@/env';
 import { fetchAllBackups, getGoogleAccountUserData, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
-import { RainbowError, logger } from '@/logger';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { RainbowError, logger } from '@/logger';
+import { BackupFile, CloudBackups } from '@/model/backup';
 import { getMostRecentCloudBackup, hasManuallyBackedUpWallet } from '@/screens/SettingsSheet/utils';
 import { Mutex } from 'async-mutex';
-import store from '@/redux/store';
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 const mutex = new Mutex();
 
@@ -138,15 +137,13 @@ export const backupsStore = createRainbowStore<BackupsStore>(
 
           set({ backups });
 
-          const { wallets } = store.getState().wallets;
-
           // if the user has any cloud backups, set the provider to cloud
           if (backups.files.length > 0) {
             set({
               backupProvider: walletBackupTypes.cloud,
               mostRecentBackup: getMostRecentCloudBackup(backups.files),
             });
-          } else if (hasManuallyBackedUpWallet(wallets)) {
+          } else if (hasManuallyBackedUpWallet()) {
             set({ backupProvider: walletBackupTypes.manual });
           } else {
             set({ backupProvider: undefined });

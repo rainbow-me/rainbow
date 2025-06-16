@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { InteractionManager } from 'react-native';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

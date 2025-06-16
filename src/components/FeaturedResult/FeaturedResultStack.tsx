@@ -6,6 +6,7 @@ import { getFeaturedResultsById } from '@/resources/featuredResults/_selectors/g
 import { useSharedValue } from 'react-native-reanimated';
 import { FeaturedResultCard } from '@/components/FeaturedResult/FeaturedResultCard';
 import { FeaturedResult } from '@/graphql/__generated__/arc';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export type FeaturedResultStackProps = {
   onNavigate: (url: string) => void;
@@ -14,7 +15,8 @@ export type FeaturedResultStackProps = {
 };
 
 export const FeaturedResultStack = ({ onNavigate, placementId, children }: FeaturedResultStackProps) => {
-  const { accountAddress, language } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const { language } = useAccountSettings();
   const currentIndex = useSharedValue(0);
 
   // @ts-expect-error - language is type string instead of typeof keyof Language

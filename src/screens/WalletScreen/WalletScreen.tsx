@@ -3,7 +3,7 @@ import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useHideSplashScreen, useWalletSectionsData } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,8 +22,9 @@ import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { addSubscribedTokens, removeSubscribedTokens } from '@/state/liveTokens/liveTokensStore';
-import { useRoute } from '@react-navigation/native';
 import { debounce } from 'lodash';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { useRoute } from '@react-navigation/native';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -60,7 +61,6 @@ function extractTokenRowIds(items: CellTypes[]) {
 function WalletScreen() {
   const { network: currentNetwork, accountAddress } = useAccountSettings();
   const insets = useSafeAreaInsets();
-  const hideSplashScreen = useHideSplashScreen();
   const route = useRoute();
 
   const {
@@ -87,7 +87,7 @@ function WalletScreen() {
         useNavigationStore.setState({ isWalletScreenMounted: true });
       });
     });
-  }, [hideSplashScreen]);
+  }, []);
 
   // We cannot rely on `onMomentumScrollEnd` because it's not called when the user scrolls directly rather than swiping
   const debouncedAddSubscribedTokensRef = useRef(

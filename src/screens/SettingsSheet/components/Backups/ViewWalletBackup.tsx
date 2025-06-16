@@ -1,50 +1,50 @@
 /* eslint-disable no-nested-ternary */
-import { RouteProp, useRoute } from '@react-navigation/native';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ContextCircleButton } from '@/components/context-menu';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { cloudPlatform } from '@/utils/platform';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { address as formatAddress } from '@/utils/abbreviations';
+import { cloudPlatform } from '@/utils/platform';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
-import * as i18n from '@/languages';
-import React, { useCallback, useMemo, useRef } from 'react';
-import Menu from '../Menu';
-import MenuContainer from '../MenuContainer';
-import MenuItem from '../MenuItem';
-import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
-import BackupWarningIcon from '@/assets/BackupWarning.png';
+import { analytics } from '@/analytics';
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
+import BackupWarningIcon from '@/assets/BackupWarning.png';
+import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
-import { useENSAvatar, useInitializeWallet, useWallets } from '@/hooks';
-import { abbreviations } from '@/utils';
-import { addressHashedEmoji } from '@/utils/profileUtils';
-import MenuHeader from '../MenuHeader';
-import { Box, Stack } from '@/design-system';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Box, Stack } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import showWalletErrorAlert from '@/helpers/support';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes from '@/helpers/walletTypes';
-import { useRecoilState } from 'recoil';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useENSAvatar } from '@/hooks';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { executeFnIfCloudBackupAvailable } from '@/model/backup';
+import { RainbowAccount } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { analytics } from '@/analytics';
-import { InteractionManager } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { createAccountForWallet } from '@/redux/wallets';
-import { logger, RainbowError } from '@/logger';
-import { RainbowAccount } from '@/model/wallet';
-import showWalletErrorAlert from '@/helpers/support';
-import { IS_IOS } from '@/env';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { BackUpMenuItem } from './BackUpMenuButton';
-import { format } from 'date-fns';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useCreateBackup } from '@/components/backup/useCreateBackup';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { isWalletBackedUpForCurrentAccount } from '../../utils';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { useIsDamagedWallet, createAccount, useWallet } from '@/state/wallets/walletsStore';
+import { abbreviations } from '@/utils';
+import { addressHashedEmoji } from '@/utils/profileUtils';
+import { format } from 'date-fns';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { InteractionManager } from 'react-native';
+import { useRecoilState } from 'recoil';
+import { isWalletBackedUpForCurrentAccount } from '../../utils';
+import Menu from '../Menu';
+import MenuContainer from '../MenuContainer';
+import MenuHeader from '../MenuHeader';
+import MenuItem from '../MenuItem';
+import { BackUpMenuItem } from './BackUpMenuButton';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -118,16 +118,14 @@ const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, typeof Routes.VIEW_WALLET_BACKUP>>();
 
   const createBackup = useCreateBackup();
-  const status = backupsStore(state => state.status);
   const backupProvider = backupsStore(state => state.backupProvider);
   const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
+  const status = backupsStore(state => state.status);
 
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
-  const { isDamaged, wallets } = useWallets();
-  const wallet = wallets?.[walletId];
-  const dispatch = useDispatch();
-  const initializeWallet = useInitializeWallet();
+  const isDamaged = useIsDamagedWallet();
+  const wallet = useWallet(walletId);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
   const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;
@@ -192,8 +190,11 @@ const ViewWalletBackup = () => {
               try {
                 // If we found it and it's not damaged use it to create the new account
                 if (wallet && !wallet.damaged) {
-                  await dispatch(createAccountForWallet(wallet.id, color, name));
-                  // @ts-expect-error - no params
+                  await createAccount({
+                    id: wallet.id,
+                    color,
+                    name,
+                  });
                   await initializeWallet();
                 }
               } catch (e) {
@@ -225,7 +226,7 @@ const ViewWalletBackup = () => {
         error: e,
       });
     }
-  }, [creatingWallet, dispatch, isDamaged, navigate, initializeWallet, wallet]);
+  }, [creatingWallet, isDamaged, navigate, wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {

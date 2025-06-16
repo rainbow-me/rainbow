@@ -49,7 +49,7 @@ export default function WalletProfileState({
     onCloseModal({
       color: typeof nameColor === 'string' ? profileUtils.colorHexToIndex(nameColor) : nameColor,
       image: profileImage,
-      name: nameEmoji ? `${nameEmoji} ${value}` : value,
+      name: value,
     });
     const callback = async () => {
       goBack();
@@ -63,7 +63,7 @@ export default function WalletProfileState({
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
     }
-  }, [actionType, nameColor, goBack, isNewProfile, nameEmoji, navigate, onCloseModal, profileImage, value, isFromSettings]);
+  }, [actionType, nameColor, goBack, isNewProfile, navigate, onCloseModal, profileImage, value, isFromSettings]);
 
   useEffect(() => {
     const getProfile = async () => {
