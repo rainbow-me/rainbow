@@ -7,7 +7,6 @@ import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { gasUnits } from '@/references/gasUnits';
-import { IS_TEST } from '@/env';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -32,12 +31,6 @@ type EstimateSwapGasLimitQueryKey = ReturnType<typeof estimateSwapGasLimitQueryK
 async function estimateSwapGasLimitQueryFunction({
   queryKey: [{ chainId, quote, assetToSell }],
 }: QueryFunctionArgs<typeof estimateSwapGasLimitQueryKey>) {
-  // if (IS_TEST) {
-  //   return {
-  //     gasLimit: '250000',
-  //     chainId,
-  //   };
-  // }
   if (!chainId) throw 'chainId is required';
   if (!quote || 'error' in quote || !assetToSell) {
     return {

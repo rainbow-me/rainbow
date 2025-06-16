@@ -318,17 +318,6 @@ export const getCachedGasSuggestions = (chainId: ChainId) => {
   return selectGasSuggestions(data);
 };
 
-// export const getCachedGasSuggestions = (chainId: ChainId) => {
-//   const data = getMeteorologyCachedData(chainId);
-//   if (!data) {
-//     if (IS_TEST) {
-//       return selectGasSuggestions(defaultTestMeteorologyData);
-//     }
-//     return undefined;
-//   }
-//   return selectGasSuggestions(data);
-// };
-
 export const getSelectedSpeedSuggestion = (chainId: ChainId) => {
   const suggestions = getCachedGasSuggestions(chainId);
   const speed = getSelectedGasSpeed(chainId);
