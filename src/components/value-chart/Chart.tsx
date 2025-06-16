@@ -1,258 +1,244 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import * as i18n from '@/languages';
-import { Dimensions, View } from 'react-native';
-import Animated, {
-  cancelAnimation,
-  Easing,
-  SharedValue,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
-import Spinner from '../../assets/chartSpinner.png';
-import { nativeStackConfig } from '../../navigation/nativeStackConfig';
-import { ChartExpandedStateHeader } from '../expanded-state/chart/ChartExpandedStateHeader';
-import { Column } from '../layout';
-import { Text, Box, Bleed, TextIcon, useColorMode } from '@/design-system';
-import Labels from './ExtremeLabels';
-import TimespanSelector from './TimespanSelector';
-import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
-import ChartTypes, { ChartType } from '@/helpers/chartTypes';
-import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import { IS_IOS } from '@/env';
-import { useTheme } from '@/theme';
+import { useWindowDimensions } from 'react-native';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { Text, Box, TextIcon, useColorMode } from '@/design-system';
+import { LineChart } from './LineChart';
+import { ButtonPressAnimation } from '../animations';
+import { ChartExpandedStateHeader } from '../expanded-state/chart';
+import { CandlestickChart } from '../candlestick-charts/CandlestickChart';
+import { colors } from '@/styles';
+import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { formatTimestamp } from '@/worklets/dates';
+import { useCandlestickStore } from '../candlestick-charts/candlestickStore';
 
-export const { width: WIDTH } = Dimensions.get('window');
-
-const ChartTimespans = [
-  ChartTypes.hour,
-  ChartTypes.day,
-  ChartTypes.week,
-  ChartTypes.month,
-  ChartTypes.year,
-  // ChartTypes.max, todo restore after receiving proper data from zerion
-];
-
-const ChartContainer = styled(View)({
-  marginVertical: ({ showChart }: { showChart: boolean }) => (showChart ? 17 : 0),
-});
-
-const CHART_DOT_SIZE = 10;
-
-const ChartSpinner = styled(ImgixImage).attrs(({ color }: { color: string }) => ({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: Spinner,
-  tintColor: color,
-  size: 30,
-}))({
-  height: 28,
-  width: 28,
-});
-
-const Container = styled(Column)({
-  paddingBottom: 32,
-  paddingTop: IS_IOS ? 0 : 4,
-  width: '100%',
-});
-
-const HEIGHT = 146.5;
-
-const Overlay = styled(Animated.View).attrs({
-  pointerEvents: 'none',
-})({
-  ...position.coverAsObject,
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const rotationConfig = {
-  duration: 500,
-  easing: Easing.linear,
+const translations = {
+  noChartData: i18n.t(i18n.l.expanded_state.chart.no_chart_data),
 };
 
-const timingConfig = {
-  duration: 300,
+// TODO: These values must correspond with the expected backend values, make sure types are shared
+const LineChartTimespans = {
+  hour: 'hour',
+  day: 'day',
+  week: 'week',
+  month: 'month',
+  year: 'year',
+} as const;
+const CandlestickChartTimespans = {
+  minute: 'minute',
+  fiveMinute: 'fiveMinute',
+  hour: 'hour',
+  fourHour: 'fourHour',
+  day: 'day',
+} as const;
+
+export const ChartTypes = {
+  CANDLESTICK: 'candlestick',
+  LINE: 'line',
+} as const;
+
+export type ChartType = (typeof ChartTypes)[keyof typeof ChartTypes];
+
+export type LineChartTimespan = keyof typeof LineChartTimespans;
+export type CandlestickChartTimespan = keyof typeof CandlestickChartTimespans;
+export type ChartTimespan = LineChartTimespan | CandlestickChartTimespan;
+
+const ChartTimespanLabels: Record<ChartTimespan, { short: string; long: string }> = {
+  minute: {
+    short: '1m',
+    long: '1m',
+  },
+  fiveMinute: {
+    short: '5m',
+    long: '5m',
+  },
+  hour: {
+    short: '1H',
+    long: 'Hour',
+  },
+  fourHour: {
+    short: '4h',
+    long: '4h',
+  },
+  day: {
+    short: '1d',
+    long: 'Day',
+  },
+  week: {
+    short: '1w',
+    long: 'Week',
+  },
+  month: {
+    short: '1m',
+    long: 'Month',
+  },
+  year: {
+    short: '1y',
+    long: 'Year',
+  },
 };
 
-function useShowLoadingState(isFetching: boolean) {
-  const [isShow, setIsShow] = useState(false);
-  const timeout = useRef<NodeJS.Timeout | undefined>(undefined);
-  useEffect(() => {
-    if (isFetching) {
-      timeout.current = setTimeout(() => setIsShow(isFetching), 500);
-    } else {
-      if (timeout.current) {
-        clearTimeout(timeout.current);
-        timeout.current = undefined;
-      }
-      setIsShow(isFetching);
-    }
-  }, [isFetching]);
-  return isShow;
-}
+const TOTAL_CHART_HEIGHT = 300;
+const CHART_VERTICAL_PADDING = 30;
 
-const longPressGestureHandlerProps = {
-  minDurationMs: 60,
+export const NoChartData = ({ height }: { height: number }) => {
+  return (
+    <Box height={height} alignItems="center" justifyContent="center" flexDirection="row" gap={8}>
+      <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
+        {'􀋪'}
+      </TextIcon>
+      <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
+        {translations.noChartData}
+      </Text>
+    </Box>
+  );
 };
 
 type ChartProps = {
-  chartType: ChartType;
-  fetchingCharts: boolean;
-  isPool: boolean;
-  latestChange: SharedValue<string | undefined>;
-  updateChartType: (chartType: ChartType) => void;
-  showChart: boolean;
-  throttledData: any;
-  latestPrice: number;
-  asset: any;
+  asset: ExpandedSheetAsset;
+  backgroundColor: string;
+  accentColors: AssetAccentColors;
 };
 
-export default function Chart({
-  chartType,
-  fetchingCharts,
-  isPool,
-  latestChange,
-  updateChartType,
-  showChart,
-  throttledData,
-  latestPrice,
-  asset,
-}: ChartProps) {
-  const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [chartType]);
-
-  const { progress, color } = useChartData();
-  const spinnerRotation = useSharedValue(0);
-  const spinnerScale = useSharedValue(0);
-
+export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
   const { isDarkMode } = useColorMode();
-  const { colors } = useTheme();
+  const priceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
+  const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
+  const chartGestureUnixTimestamp = useSharedValue<number>(0);
+  const isChartGestureActive = useSharedValue(false);
+  const { width: screenWidth } = useWindowDimensions();
 
-  const { setOptions } = useNavigation();
-  useEffect(
-    () =>
-      setOptions({
-        onWillDismiss: () => {
-          cancelAnimation(progress);
-          cancelAnimation(spinnerRotation);
-          cancelAnimation(spinnerScale);
-          nativeStackConfig.screenOptions.onWillDismiss();
-        },
-      }),
-    [setOptions, progress, spinnerRotation, spinnerScale]
-  );
+  const chartType = useCandlestickStore(state => state.chartType);
+  const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>('hour');
 
-  const showLoadingState = useShowLoadingState(fetchingCharts);
+  const selectedTimespanLabel = useMemo(() => {
+    return i18n.t(i18n.l.expanded_state.chart.past_timespan, {
+      formattedTimespan: ChartTimespanLabels[selectedTimespan].long,
+    });
+  }, [selectedTimespan]);
 
-  const spinnerTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
-  useEffect(() => {
-    if (showLoadingState) {
-      if (spinnerTimeout.current) {
-        clearTimeout(spinnerTimeout.current);
-        spinnerTimeout.current = undefined;
-      }
-      spinnerRotation.value = 0;
-      spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
-      spinnerScale.value = withTiming(1, timingConfig);
-    } else {
-      spinnerScale.value = withTiming(0, timingConfig);
-      spinnerTimeout.current = setTimeout(() => (spinnerRotation.value = 0), timingConfig.duration);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showLoadingState]);
-
-  const overlayStyle = useAnimatedStyle(() => {
-    return {
-      opacity: spinnerScale.value,
-    };
+  const displayDate = useDerivedValue(() => {
+    return isChartGestureActive.value ? formatTimestamp(chartGestureUnixTimestamp.value) : selectedTimespanLabel;
   });
 
-  const spinnerStyle = useAnimatedStyle(() => {
+  const price = useDerivedValue(() => {
+    return isChartGestureActive.value ? chartGesturePrice.value : asset.price.value ?? undefined;
+  });
+
+  const timespans = useMemo(() => {
+    if (chartType === ChartTypes.LINE) {
+      return LineChartTimespans;
+    } else {
+      return CandlestickChartTimespans;
+    }
+  }, [chartType]);
+
+  const onPressTimespan = useCallback((timespan: ChartTimespan) => {
+    setSelectedTimespan(timespan);
+  }, []);
+
+  const onPresschartType = useCallback(() => {
+    const selectedTimespanIndex = Object.keys(chartType === ChartTypes.LINE ? LineChartTimespans : CandlestickChartTimespans).indexOf(
+      selectedTimespan
+    );
+    const newchartTypeEquivalentTimespan = Object.keys(chartType === ChartTypes.LINE ? CandlestickChartTimespans : LineChartTimespans)[
+      selectedTimespanIndex
+    ];
+
+    setSelectedTimespan(newchartTypeEquivalentTimespan as ChartTimespan);
+    useCandlestickStore.getState().toggleChartType();
+  }, [selectedTimespan, chartType]);
+
+  const chartHeaderStyle = useAnimatedStyle(() => {
     return {
-      opacity: spinnerScale.value,
-      transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
+      opacity: isChartGestureActive.value && chartType === ChartTypes.CANDLESTICK ? 0 : 1,
     };
   });
 
   return (
-    <Container>
-      <ChartExpandedStateHeader
-        asset={asset}
-        chartType={chartType}
-        color={color}
-        isPool={isPool}
-        latestChange={latestChange}
-        latestPrice={latestPrice.toString()}
-        showChart={showChart}
-      />
-      <ChartContainer showChart={showChart}>
-        {showChart && (
-          <>
-            <Labels color={color} width={WIDTH} isCard={false} />
-            <ChartPath
-              fill="none"
-              gestureEnabled={!fetchingCharts && !!throttledData}
-              hapticsEnabled
-              height={HEIGHT}
-              hitSlop={30}
-              longPressGestureHandlerProps={longPressGestureHandlerProps}
-              selectedStrokeWidth={3}
-              stroke={color}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={3.5}
-              width={WIDTH}
+    <Box>
+      <Box as={Animated.View} style={chartHeaderStyle} paddingHorizontal={'24px'}>
+        <ChartExpandedStateHeader priceRelativeChange={priceRelativeChange} price={price} displayDate={displayDate} />
+      </Box>
+      <Box gap={20}>
+        {chartType === ChartTypes.LINE && (
+          <Box alignItems="center" justifyContent="center" height={TOTAL_CHART_HEIGHT}>
+            <LineChart
+              strokeColor={accentColors.color}
+              backgroundColor={accentColors.background}
+              width={screenWidth}
+              height={TOTAL_CHART_HEIGHT - CHART_VERTICAL_PADDING * 2}
+              asset={asset}
+              timespan={selectedTimespan as LineChartTimespan}
+              chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+              price={chartGesturePrice}
+              priceRelativeChange={priceRelativeChange}
+              isChartGestureActive={isChartGestureActive}
             />
-            <ChartDot
-              size={CHART_DOT_SIZE}
-              color={color}
-              dotStyle={{
-                shadowColor: isDarkMode ? colors.shadow : color,
-                shadowOffset: { height: 3, width: 0 },
-                shadowOpacity: 0.6,
-                shadowRadius: 4.5,
+          </Box>
+        )}
+        {chartType === ChartTypes.CANDLESTICK && (
+          <Box height={TOTAL_CHART_HEIGHT}>
+            <CandlestickChart
+              backgroundColor={backgroundColor}
+              // xAxisLabelsHeight - xAxisGap - activeCandleCardGap
+              chartHeight={TOTAL_CHART_HEIGHT - 13 - 10 - 16}
+              config={{
+                chart: {
+                  activeCandleCardGap: 16,
+                },
+                activeCandleCard: {
+                  style: {
+                    backgroundColor: accentColors.opacity6,
+                    paddingHorizontal: 16,
+                    alignSelf: 'center',
+                    borderRadius: 20,
+                    borderWidth: 1,
+                    borderColor: accentColors.opacity10,
+                    width: screenWidth - 48,
+                  },
+                  height: 75,
+                },
+                crosshair: isDarkMode ? undefined : { dotColor: accentColors.color, lineColor: accentColors.color },
+                grid: { color: accentColors.opacity12 },
+                volume: { color: accentColors.opacity24 },
               }}
+              isChartGestureActive={isChartGestureActive}
+              showChartControls={false}
             />
-            <Overlay style={overlayStyle}>
-              <Animated.View style={spinnerStyle}>
-                <ChartSpinner color={color} />
-              </Animated.View>
-            </Overlay>
-          </>
+          </Box>
         )}
-        {!showChart && (
-          <Bleed bottom="24px">
-            <Box
-              height={HEIGHT + 48}
-              alignItems="center"
-              flexDirection="row"
-              gap={8}
-              justifyContent="center"
-              paddingBottom="32px"
-              style={{ opacity: 0.8 }}
-            >
+        <Box height={34} width={'full'} flexDirection="row" justifyContent="center" alignItems="center" gap={12}>
+          {Object.keys(timespans).map(timespan => (
+            <ButtonPressAnimation key={timespan} onPress={() => onPressTimespan(timespan as ChartTimespan)}>
+              <Box
+                width={44}
+                paddingVertical={'12px'}
+                justifyContent="center"
+                alignItems="center"
+                borderRadius={20}
+                backgroundColor={timespan === selectedTimespan ? colors.alpha(accentColors.color, 0.06) : 'transparent'}
+              >
+                <Text
+                  color={timespan === selectedTimespan ? { custom: accentColors.color } : 'labelQuaternary'}
+                  uppercase
+                  size="15pt"
+                  weight="heavy"
+                >
+                  {ChartTimespanLabels[timespan as ChartTimespan].short}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          ))}
+          <ButtonPressAnimation onPress={onPresschartType}>
+            <Box borderRadius={20} justifyContent="center" alignItems="center" width={44} paddingVertical={'12px'}>
               <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
-                􀋪
+                {chartType === ChartTypes.LINE ? '􀋪' : '􀋦'}
               </TextIcon>
-              <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-                {i18n.t(i18n.l.expanded_state.chart.no_chart_data)}
-              </Text>
             </Box>
-          </Bleed>
-        )}
-      </ChartContainer>
-      {showChart ? (
-        <TimespanSelector
-          color={color}
-          defaultIndex={timespanIndex}
-          key={`ts_${chartType}`}
-          reloadChart={updateChartType}
-          timespans={ChartTimespans}
-        />
-      ) : null}
-    </Container>
+          </ButtonPressAnimation>
+        </Box>
+      </Box>
+    </Box>
   );
-}
+});

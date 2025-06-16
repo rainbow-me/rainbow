@@ -295,7 +295,7 @@ export function toCompactNotation({
   }
 }
 
-export function currencyToCompactNotation({ value, currency }: { value: string; currency: NativeCurrencyKey }): string {
+export function currencyToCompactNotation({ value, currency }: { value: string | number; currency: NativeCurrencyKey }): string {
   'worklet';
   return toCompactNotation({
     value,

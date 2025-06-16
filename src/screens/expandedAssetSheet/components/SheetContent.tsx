@@ -5,6 +5,7 @@ import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSect
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Placement } from './sections/BuySection';
+import { NameAndLogoSection } from './sections/NameAndLogoSection';
 
 export function SheetContent() {
   const { colorMode } = useColorMode();
@@ -21,19 +22,24 @@ export function SheetContent() {
           paddingBottom={{ custom: SHEET_FOOTER_HEIGHT + safeAreaInsets.bottom }}
           paddingHorizontal="24px"
         >
-          <ChartSection />
-          <Box gap={28}>
-            <BalanceSection />
-            <BuySection placement={Placement.AFTER_BALANCE} />
-            <ClaimSection />
-            <MarketStatsSection />
-            <BuySection placement={Placement.AFTER_MARKET_STATS} />
-            {/* BACKLOGGED */}
-            {/* {isOwnedAsset && (
+          <Box gap={32}>
+            <Box gap={20}>
+              <NameAndLogoSection />
+              <ChartSection />
+            </Box>
+            <Box gap={28}>
+              <BalanceSection />
+              <BuySection placement={Placement.AFTER_BALANCE} />
+              <ClaimSection />
+              <MarketStatsSection />
+              <BuySection placement={Placement.AFTER_MARKET_STATS} />
+              {/* BACKLOGGED */}
+              {/* {isOwnedAsset && (
               <CollapsibleSection content={<BridgeSection />} icon="􁾫" id={SectionId.BRIDGE} primaryText="Bridge" secondaryText={'to'} />
             )} */}
-            <HistorySection />
-            <AboutSection />
+              <HistorySection />
+              <AboutSection />
+            </Box>
           </Box>
         </Box>
       </ColorModeProvider>

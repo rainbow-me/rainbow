@@ -1,4 +1,2 @@
-export { default as ChartChangeDirectionArrow } from './ChartChangeDirectionArrow';
-export { default as ChartDateLabel } from './ChartDateLabel';
-export { default as ChartPercentChangeLabel } from './ChartPercentChangeLabel';
+export { ChartPercentChangeLabel } from './ChartPercentChangeLabel';
 export { ChartPriceLabel } from './ChartPriceLabel';
