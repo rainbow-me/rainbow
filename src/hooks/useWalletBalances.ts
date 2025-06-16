@@ -1,7 +1,7 @@
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
-import { useWallets } from '@/state/wallets/walletsStore';
+import { getWalletAddresses, useWallets } from '@/state/wallets/walletsStore';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 
@@ -32,9 +32,7 @@ const useWalletBalances = (): WalletBalanceResult => {
   const [summaryData, { isInitialLoading: isLoading }] = useWalletSummary();
 
   const balances = useMemo(() => {
-    const allAddresses = Object.values(wallets || {}).flatMap(wallet =>
-      (wallet.addresses || []).map(account => account.address as Address)
-    );
+    const allAddresses = getWalletAddresses(wallets || {});
 
     const result: Record<Address, WalletBalance> = {};
 

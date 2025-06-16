@@ -45,7 +45,7 @@ interface AccountProfileInfo {
 }
 
 type WalletNames = { [address: string]: string };
-type Wallets = { [id: string]: RainbowWallet } | null;
+type Wallets = { [id: string]: RainbowWallet };
 
 interface WalletsState {
   walletReady: boolean;
@@ -55,7 +55,7 @@ interface WalletsState {
   setSelectedWallet: (wallet: RainbowWallet, address?: string) => void;
 
   walletNames: WalletNames;
-  wallets: Wallets;
+  wallets: Wallets | null;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => void;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
@@ -504,7 +504,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
-type GetENSInfoProps = { wallets: Wallets; walletNames: WalletNames; useCachedENS?: boolean };
+type GetENSInfoProps = { wallets: Wallets | null; walletNames: WalletNames; useCachedENS?: boolean };
 
 async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   if (!wallets) {
@@ -565,6 +565,10 @@ export const getAccountAddress = () => useWalletsStore.getState().accountAddress
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
+
+export const getWalletAddresses = (wallets: Wallets) => {
+  return Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address));
+};
 
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);
