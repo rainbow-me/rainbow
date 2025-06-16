@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Box, useColorMode } from '@/design-system';
 import { ExtremeLabels } from './ExtremeLabels';
 import { ChartDot, ChartPath, ChartPathProvider, useChartData } from '@/react-native-animated-charts/src';
@@ -26,7 +26,15 @@ type ChartProps = {
   priceRelativeChange: SharedValue<number | undefined>;
 };
 
-const Chart = ({ strokeColor, width, height, isChartGestureActive, chartGestureUnixTimestamp, price, priceRelativeChange }: ChartProps) => {
+const Chart = memo(function Chart({
+  strokeColor,
+  width,
+  height,
+  isChartGestureActive,
+  chartGestureUnixTimestamp,
+  price,
+  priceRelativeChange,
+}: ChartProps) {
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
   const { isActive, originalX, originalY, data } = useChartData();
@@ -103,7 +111,7 @@ const Chart = ({ strokeColor, width, height, isChartGestureActive, chartGestureU
       />
     </Box>
   );
-};
+});
 
 type LineChartProps = {
   strokeColor: string;
@@ -118,7 +126,7 @@ type LineChartProps = {
   priceRelativeChange: SharedValue<number | undefined>;
 };
 
-export function LineChart({
+export const LineChart = memo(function LineChart({
   strokeColor,
   backgroundColor,
   width,
@@ -158,4 +166,4 @@ export function LineChart({
       {shouldShowLoadingSpinner && <AnimatedSpinner color={strokeColor} isLoading size={30} />}
     </ChartPathProvider>
   );
-}
+});
