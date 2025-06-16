@@ -31,12 +31,8 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-<<<<<<< HEAD
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { createAccount, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
-=======
-import { useIsDamagedWallet, createAccount, useWallet } from '@/state/wallets/walletsStore';
->>>>>>> origin/develop
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -49,10 +45,6 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-<<<<<<< HEAD
-=======
-import { initializeWallet } from '@/state/wallets/initializeWallet';
->>>>>>> origin/develop
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -131,11 +123,7 @@ const ViewWalletBackup = () => {
   const status = backupsStore(state => state.status);
 
   const { walletId, title: incomingTitle } = params;
-  const creatingWallet = useRef<boolean>();
-<<<<<<< HEAD
-=======
-  const isDamaged = useIsDamagedWallet();
->>>>>>> origin/develop
+  const creatingWallet = useRef<boolean>(false);
   const wallet = useWallet(walletId);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
@@ -237,11 +225,7 @@ const ViewWalletBackup = () => {
         error: e,
       });
     }
-<<<<<<< HEAD
   }, [creatingWallet, navigate, wallet]);
-=======
-  }, [creatingWallet, isDamaged, navigate, wallet]);
->>>>>>> origin/develop
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {

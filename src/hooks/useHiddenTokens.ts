@@ -4,20 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
 import { addHiddenToken as rawAddHiddenToken, removeHiddenToken as rawRemoveHiddenToken } from '../redux/hiddenTokens';
-<<<<<<< HEAD
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-=======
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
->>>>>>> origin/develop
 import useWebData from './useWebData';
 
 export default function useHiddenTokens() {
   const dispatch = useDispatch();
   const { updateWebHidden } = useWebData();
-<<<<<<< HEAD
-=======
-  const isReadOnlyWallet = useIsReadOnlyWallet();
->>>>>>> origin/develop
 
   const hiddenTokens: string[] = useSelector(
     // @ts-expect-error

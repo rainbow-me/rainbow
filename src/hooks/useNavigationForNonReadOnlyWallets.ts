@@ -1,21 +1,13 @@
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 
-<<<<<<< HEAD
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-=======
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
->>>>>>> origin/develop
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 
 export default function useNavigationForNonReadOnlyWallets() {
   const { goBack, navigate } = useNavigation();
-<<<<<<< HEAD
-=======
-  const isReadOnlyWallet = useIsReadOnlyWallet();
->>>>>>> origin/develop
 
   return useCallback(
     (routeName: string, params?: any) => {

@@ -61,7 +61,7 @@ import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
-import { getAccountProfileInfo, getWalletWithAccount, useWallets } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
@@ -83,7 +83,8 @@ export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: Si
 export const SignTransactionSheet = () => {
   const { goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST>>();
   const wallets = useWallets();
