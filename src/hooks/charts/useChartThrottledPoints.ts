@@ -1,7 +1,7 @@
 import { debounce } from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
-import { useAccountSettings, useChartDataLabels } from '@/hooks';
+import { useAccountSettings } from '@/hooks';
 import { ChartData, ChartTime, usePriceChart } from './useChartInfo';
 
 const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, data: ChartData[]) => {
@@ -46,12 +46,6 @@ export default function useChartThrottledPoints({
     setThrottledPoints((prev: any) => traverseData(prev, chart));
   }, [chart]);
 
-  const initialChartDataLabels = useChartDataLabels({
-    asset,
-    chartType: timespan,
-    points: throttledPoints.points ?? [],
-  });
-
   // Only show the chart if we have chart data, or if chart data is still loading
   const shouldShowChart = useMemo(() => {
     const hasMinimumChartPoints = throttledPoints?.points.length > 5;
@@ -79,7 +73,6 @@ export default function useChartThrottledPoints({
   return {
     chart,
     fetchingCharts,
-    initialChartDataLabels,
     shouldShowChart,
     throttledData,
   };
