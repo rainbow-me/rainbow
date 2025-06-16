@@ -420,7 +420,7 @@ export const SendConfirmationSheet = () => {
 
   const imageUrl = useMemo(() => {
     if (assetIsUniqueAsset(asset)) {
-      return svgToPngIfNeeded(asset.images.highResUrl || asset.images.lowResUrl, true);
+      return svgToPngIfNeeded(asset.images.lowResUrl || asset.images.highResUrl, true);
     }
     return undefined;
   }, [asset]);
