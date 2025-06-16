@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
 import { getHiddenTokens } from '@/handlers/localstorage/accountLocal';
 import { getPreference } from '@/model/preferences';
+import { time } from '@/utils';
 
 export const hiddenTokensQueryKey = ({ address }: { address?: string }) => ['hidden-tokens', address];
 
@@ -22,6 +23,8 @@ export default function useFetchHiddenTokens({ address }: { address?: string }) 
     },
     {
       enabled: Boolean(address),
+      cacheTime: time.hours(1),
+      staleTime: time.minutes(10),
     }
   );
 }

@@ -7,15 +7,15 @@ import { UniqueAsset } from '@/entities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { isLowerCaseMatch } from '@/utils';
 import { parseUniqueId } from '@/resources/nfts/utils';
-import useShowcaseTokens from './useShowcaseTokens';
-import useHiddenTokens from './useHiddenTokens';
-import { useDispatch } from 'react-redux';
-import { setShowcaseTokens } from '@/redux/showcaseTokens';
-import { setHiddenTokens } from '@/redux/hiddenTokens';
 import useWebData from './useWebData';
 import useAccountSettings from './useAccountSettings';
 import { logger } from '@/logger';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import useOpenFamilies from '@/hooks/useOpenFamilies';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
+import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
+import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 
 function matchEnsNameToUniqueId(ensName: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
   for (const nft of nfts) {
@@ -49,12 +49,12 @@ export function isDataComplete(tokens: string[]) {
 }
 
 export default function useMigrateShowcaseAndHidden() {
-  const dispatch = useDispatch();
   const { updateWebShowcase, updateWebHidden } = useWebData();
+  const { updateOpenFamilies } = useOpenFamilies();
   const isReadOnlyWallet = useIsReadOnlyWallet();
+  const { accountAddress } = useAccountSettings();
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const { accountAddress } = useAccountSettings();
 
   const migrateShowcaseAndHidden = useCallback(async () => {
     if (isReadOnlyWallet || (!showcaseTokens.length && !hiddenTokens.length)) {
@@ -71,6 +71,7 @@ export default function useMigrateShowcaseAndHidden() {
     }
 
     logger.debug('🔄 [Migration] Starting showcase and hidden migration process...');
+    updateOpenFamilies({ Showcase: false });
 
     const queryKey = nftsQueryKey({
       address: accountAddress,
@@ -156,21 +157,15 @@ export default function useMigrateShowcaseAndHidden() {
       }
     }
 
-    console.log('🔄 [Migration] Total migrated tokens:', {
-      previousShowcaseTokens: showcaseTokens.length,
-      previousHiddenTokens: hiddenTokens.length,
-      migratedShowcaseTokens: migratedShowcaseTokens.length,
-      migratedHiddenTokens: migratedHiddenTokens.length,
-    });
-
-    // update the web data and the local state data
     await Promise.all([
-      dispatch(setShowcaseTokens(migratedShowcaseTokens)),
-      dispatch(setHiddenTokens(migratedHiddenTokens)),
       updateWebShowcase(migratedShowcaseTokens),
       updateWebHidden(migratedHiddenTokens),
-    ]);
-  }, [showcaseTokens, hiddenTokens, accountAddress, dispatch, isReadOnlyWallet, updateWebShowcase, updateWebHidden]);
+      queryClient.invalidateQueries({ queryKey: showcaseTokensQueryKey({ address: accountAddress }) }),
+      queryClient.invalidateQueries({ queryKey: hiddenTokensQueryKey({ address: accountAddress }) }),
+    ]).finally(() => {
+      updateOpenFamilies({ Showcase: true });
+    });
+  }, [isReadOnlyWallet, showcaseTokens, hiddenTokens, updateOpenFamilies, accountAddress, updateWebShowcase, updateWebHidden]);
 
   return migrateShowcaseAndHidden;
 }

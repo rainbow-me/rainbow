@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
 import { getShowcaseTokens } from '@/handlers/localstorage/accountLocal';
 import { getPreference } from '@/model/preferences';
+import { time } from '@/utils';
 
 export const showcaseTokensQueryKey = ({ address }: { address?: string }) => ['showcase-tokens', address];
 
@@ -23,6 +24,8 @@ export default function useFetchShowcaseTokens({ address }: { address?: string }
     },
     {
       enabled: Boolean(address),
+      cacheTime: time.hours(1),
+      staleTime: time.minutes(10),
     }
   );
 }

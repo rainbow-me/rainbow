@@ -41,9 +41,12 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
       openCollections,
     });
 
-    useNftsStore.getState().fetch({
-      openCollections: Array.from(openCollections),
-    });
+    useNftsStore.getState().fetch(
+      {
+        openCollections: Array.from(openCollections),
+      },
+      { force: true }
+    );
   });
 
   if (!nftsEnabled) return null;

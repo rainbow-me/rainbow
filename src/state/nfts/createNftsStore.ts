@@ -222,7 +222,6 @@ export const createNftsStore = (address: Address | string) =>
         pageKey: null,
         openCollections: [],
       },
-      keepPreviousData: true,
       debugMode: IS_DEV,
       staleTime: STALE_TIME,
     },
