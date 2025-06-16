@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { TokenFamilyHeader } from '../../token-family';
 import { useLatestCallback, useOpenFamilies } from '@/hooks';
 import { ThemeContextProps } from '@/theme';
