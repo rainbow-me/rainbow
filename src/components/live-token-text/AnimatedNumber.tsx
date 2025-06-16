@@ -5,7 +5,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  FadeIn,
   ExitAnimationsValues,
   runOnUI,
   LayoutAnimationsValues,
@@ -13,7 +12,6 @@ import Animated, {
   measure,
   interpolate,
   WithTimingConfig,
-  FadeOut,
   SharedValue,
   useAnimatedReaction,
   runOnJS,
@@ -86,6 +84,7 @@ interface DigitProps {
   numeralWidthsRef: MutableRefObject<number[]>;
   isInitialRenderRef: MutableRefObject<boolean>;
   enteringAnimation: EntryOrExitLayoutType | undefined;
+  exitingAnimation: EntryOrExitLayoutType | undefined;
   disabled: SharedValue<boolean>;
 }
 
@@ -118,6 +117,7 @@ const Digit = function Digit({
   numeralWidthsRef,
   isInitialRenderRef,
   enteringAnimation,
+  exitingAnimation,
   disabled,
 }: DigitProps) {
   const value = parseInt(part.value);
@@ -146,7 +146,11 @@ const Digit = function Digit({
     [disabled, value]
   );
 
-  // TODO: This breaks the container layout transition
+  /**
+   * TODO: this breaks the container layout transition completely, do not know why.
+   * Even using a RNAnimated.View with the same width as the digitWidth does not work and breaks in the same way
+   * This prevents us from having non tabular numbers
+   */
 
   // const targetWidth = numeralWidthsRef.current[value];
   // if (isDigitInitialRenderRef.current && !isInitialRenderRef.current) {
@@ -166,50 +170,18 @@ const Digit = function Digit({
   //     }
   //   })();
   // }
-  //   }
 
-  const exitingAnimation = useCallback(
-    (values: ExitAnimationsValues) => {
-      'worklet';
-      const translateX = values.currentOriginX + previousWidthDelta.value;
-      // spin towards the further of 0 or 9
-      // const targetOriginY = value < 5 ? -9 * digitHeight : 0;
-      const targetOriginY = 0;
-
-      const initialValues = {
-        opacity: 1,
-        originY: values.currentOriginY,
-        originX: 0,
-      };
-      const animations = {
-        opacity: withTiming(0, timingConfig),
-        originY: withTiming(targetOriginY, timingConfig),
-        originX: translateX,
-      };
-      return {
-        initialValues,
-        animations,
-      };
-    },
-    [timingConfig]
-  );
+  // const containerAnimatedStyle = useAnimatedStyle(() => {
+  //   return {
+  //     width: currentDigitWidth.value,
+  //   };
+  // });
 
   const numeralsAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
     };
   });
-
-  /**
-   * TODO: this breaks the container layout transition completely, do not know why.
-   * Even using a RNAnimated.View with the same width as the digitWidth does not work and breaks in the same way
-   * This prevents us from having non tabular numbers
-   */
-  // const containerAnimatedStyle = useAnimatedStyle(() => {
-  //   return {
-  //     width: currentDigitWidth.value,
-  //   };
-  // });
 
   const containerStyle: ViewStyle = useMemo(() => {
     return {
@@ -253,6 +225,44 @@ const NumberParts = function NumberParts({
   disabled,
   digitContainerStyle,
 }: NumberPartsProps) {
+  const digitExitingAnimation = useCallback(
+    ({ currentOriginX, currentOriginY }: ExitAnimationsValues) => {
+      'worklet';
+      const translateX = currentOriginX + previousWidthDelta.value;
+      const targetOriginY = -9 * digitHeight;
+
+      return {
+        initialValues: {
+          opacity: 1,
+          originY: currentOriginY,
+          originX: 0,
+        },
+        animations: {
+          opacity: withTiming(0, timingConfig),
+          originY: withTiming(targetOriginY, timingConfig),
+          originX: translateX,
+        },
+      };
+    },
+    [timingConfig, digitHeight, previousWidthDelta]
+  );
+  const characterExitingAnimation = useCallback(
+    ({ currentOriginX }: ExitAnimationsValues) => {
+      'worklet';
+      return {
+        initialValues: {
+          opacity: 1,
+          originX: 0,
+        },
+        animations: {
+          opacity: withTiming(0, timingConfig),
+          originX: currentOriginX + previousWidthDelta.value,
+        },
+      };
+    },
+    [timingConfig, previousWidthDelta]
+  );
+
   return parts.map(part => {
     if (part.type === 'integer') {
       return (
@@ -266,18 +276,13 @@ const NumberParts = function NumberParts({
           numeralWidthsRef={numeralWidthsRef}
           isInitialRenderRef={isInitialRenderRef}
           enteringAnimation={characterEnteringAnimation}
+          exitingAnimation={digitExitingAnimation}
           disabled={disabled}
         />
       );
     } else {
       return (
-        <Animated.View
-          key={part.key}
-          style={digitContainerStyle}
-          entering={characterEnteringAnimation}
-          // TODO: convert to custom to disable for disabled state
-          exiting={FadeOut.duration(timingConfig.duration)}
-        >
+        <Animated.View key={part.key} style={digitContainerStyle} entering={characterEnteringAnimation} exiting={characterExitingAnimation}>
           <Animated.Text style={textStyle}>{part.value}</Animated.Text>
         </Animated.View>
       );
@@ -585,8 +590,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
 
   const maskElementStyle = {
     height: digitHeight,
-    // arbitrary color
-    backgroundColor: 'red',
+    backgroundColor: 'red', // arbitrary color
   };
 
   const edgeGradientSizes = useMemo(() => {
