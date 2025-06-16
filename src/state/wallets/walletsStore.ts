@@ -158,7 +158,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     async loadWallets() {
       try {
-        const { accountAddress, walletNames } = get();
+        const { accountAddress, walletNames, walletReady } = get();
+
+        if (walletReady) {
+          return;
+        }
 
         let addressFromKeychain: string | null = accountAddress;
         const allWalletsResult = await getAllWallets();
