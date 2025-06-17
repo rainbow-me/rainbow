@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { FasterImageView } from '@candlefinance/faster-image';
 import { BlurView } from 'react-native-blur-view';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
