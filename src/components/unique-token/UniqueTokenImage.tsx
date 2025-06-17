@@ -73,8 +73,6 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const shouldShowRegularImage = hasImage && !isSVG && !errorLoadingImage;
   const shouldShowTextFallback = (!shouldShowSvg && !shouldShowRegularImage) || (isHiddenToken && isCard);
 
-  console.log('shouldShowRegularImage', shouldShowRegularImage, imageUrl);
-
   return (
     <Centered backgroundColor={backgroundColor} style={StyleSheet.absoluteFill}>
       {shouldShowSvg && (
@@ -89,7 +87,7 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       )}
       {shouldShowRegularImage && (
         <>
-          <RainbowImage onError={onError} onLoad={onLoad} source={{ url: imageUrl }} containerStyle={StyleSheet.absoluteFill} />
+          <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} containerStyle={StyleSheet.absoluteFill} />
           {!isLoaded && lowResImageUrl && <RainbowImage source={{ url: lowResImageUrl }} containerStyle={StyleSheet.absoluteFill} />}
         </>
       )}

@@ -1,23 +1,35 @@
-import { FasterImageView, prefetch, type FasterImageProps } from '@candlefinance/faster-image';
+import { FasterImageView, ImageOptions, type FasterImageProps } from '@candlefinance/faster-image';
 import React from 'react';
-import { Image, View, ViewStyle } from 'react-native';
+import { Image, RegisteredStyle, View, ViewStyle } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { coerceToArray } from '../helpers/coerceToArray';
 import { withStaticProperties } from '../helpers/withStaticProperties';
 import { memoFn } from '../utils/memoFn';
+
+export type RainbowImagePriority = 'low' | 'normal' | 'high' | 'veryHigh' | undefined;
+
+export type RainbowImageSource = ImageOptions;
+
+export type RainbowImageProps = {
+  source: FasterImageProps['source'];
+  onError?: FasterImageProps['onError'];
+  onSuccess?: FasterImageProps['onSuccess'];
+  style?: FasterImageProps['style'];
+  containerStyle?: ViewStyle | RegisteredStyle<ViewStyle>;
+};
 
 /**
  * Image component that tries to be fast
  *
  * @param props - source URL and other image properties
  */
-const RainbowImageInternal = ({ containerStyle, ...props }: FasterImageProps & { containerStyle?: ViewStyle }) => {
+const RainbowImageInternal = ({ containerStyle, ...props }: RainbowImageProps) => {
   const imageElement = (() => {
     const extension = getImageType(props.source.url);
     const handler = getHandlerFromType(extension);
 
     if (handler === 'faster-image') {
-      return <FasterImageView {...props} style={[{ flex: 1 }, ...coerceToArray(props.style)]} />;
+      return <FasterImageView {...props} style={[{ flex: 1 }, ...coerceToArray(props.style || [])]} />;
     }
 
     if (handler === 'fast-image') {
@@ -26,7 +38,8 @@ const RainbowImageInternal = ({ containerStyle, ...props }: FasterImageProps & {
           source={{
             uri: props.source.url,
             headers: props.source.headers,
-            priority: props.source.priority === 'veryLow' ? 'low' : props.source.priority === 'veryHigh' ? 'high' : props.source.priority,
+            // for next version of react native faster image
+            // priority: props.source.priority === 'veryLow' ? 'low' : props.source.priority === 'veryHigh' ? 'high' : props.source.priority,
           }}
           // @ts-expect-error fast-image defines a custom style that's a superset and a bit odd, but this should work
           style={[{ flex: 1 }, ...coerceToArray(props.style)]}
@@ -78,7 +91,8 @@ export const RainbowImage = withStaticProperties(RainbowImageInternal, {
       const handler = getHandlerFromType(getImageType(source));
       switch (handler) {
         case 'faster-image': {
-          prefetch([source]);
+          // 1.7 has prefetch
+          // prefetch([source]);
           break;
         }
         case 'fast-image': {
@@ -132,3 +146,5 @@ const getImageType = memoFn((path: string): DetectedImageExtension => {
     return 'unknown';
   }
 });
+
+export default RainbowImage;

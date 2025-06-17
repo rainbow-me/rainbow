@@ -13,7 +13,7 @@ export const withStaticProperties = <A extends Function, B extends Record<string
   // add new things
   Object.assign(component, staticProps);
   // @ts-expect-error its ok to attach symbol to function
-  next[Decorated] = true;
+  component[Decorated] = true;
 
   return component as Combined<A, B>;
 };
