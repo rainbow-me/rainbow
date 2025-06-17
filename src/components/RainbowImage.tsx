@@ -146,5 +146,3 @@ const getImageType = memoFn((path: string): DetectedImageExtension => {
     return 'unknown';
   }
 });
-
-export default RainbowImage;
