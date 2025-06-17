@@ -1,94 +1,61 @@
-import { useEffect, useMemo, useState } from 'react';
-import useAccountSettings from './useAccountSettings';
 import { add, convertAmountToNativeDisplay, multiply, subtract } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { shallowEqual, deepEqual } from '@/worklets/comparisons';
 
-export type WalletBalance = {
-  assetBalanceAmount: string;
-  assetBalanceDisplay: string;
-  positionsBalanceAmount: string;
-  positionsBalanceDisplay: string;
-  totalBalanceAmount: string;
-  totalBalanceDisplay: string;
-};
+export const useLiveWalletBalance = createDerivedStore(
+  $ => {
+    const liveTokens = $(useLiveTokensStore, state => state.tokens);
+    const initialBalance = $(useUserAssetsStore, state => state.getTotalBalance());
+    const userAssets = $(useUserAssetsStore, state => state.userAssets);
 
-/**
- * Hook to calculate the live wallet balance
- * @param address - The address to calculate the balance for
- * @returns The live wallet balance
- */
-export const useLiveWalletBalance = (address: string) => {
-  const { nativeCurrency } = useAccountSettings();
-  const [liveAssetBalance, setLiveAssetBalance] = useState('0');
+    const params = $(userAssetsStoreManager, state => ({ address: state.address, currency: state.currency }), shallowEqual);
+    const claimablesBalance = $(useClaimablesStore, state => state.getData(params)?.totalValueAmount || '0');
+    const positionsBalance = $(usePositionsStore, state => state.getData(params)?.totals.total.amount || '0');
 
-  const initialBalance = useUserAssetsStore(state => state.getTotalBalance());
-  const userAssets = useUserAssetsStore(state => state.userAssets);
-  const liveTokens = useLiveTokensStore(state => state.tokens);
-  const isLoading = initialBalance === undefined;
-
-  useEffect(() => {
-    if (!initialBalance) return;
     let valueDifference = '0';
     if (liveTokens) {
       for (const [tokenId, token] of Object.entries(liveTokens)) {
         const userAsset = userAssets.get(tokenId);
         if (userAsset) {
-          // override the token price with the live token price
+          // override the asset’s price with the live token price
           const liveAssetBalance = multiply(token.price, userAsset.balance.amount);
           const assetBalanceDifference = subtract(liveAssetBalance, userAsset.native.balance.amount);
           valueDifference = add(valueDifference, assetBalanceDifference);
         }
       }
     }
-    const newLiveAssetBalance = add(initialBalance, valueDifference);
-    if (newLiveAssetBalance !== liveAssetBalance) {
-      setLiveAssetBalance(newLiveAssetBalance);
-    }
-  }, [liveTokens, userAssets, initialBalance, liveAssetBalance]);
 
-  // The positions & claimables tokens do not use the live token store in the UI yet, so we do not override their individual prices.
-  const positionsBalance = usePositionsStore(
-    state =>
-      state.getData({
-        address: address,
-        currency: nativeCurrency,
-      })?.totals.total.amount || '0'
-  );
-  const claimablesBalance = useClaimablesStore(
-    state =>
-      state.getData({
-        address: address,
-        currency: nativeCurrency,
-      })?.totalValueAmount || '0'
-  );
+    const liveAssetBalance = initialBalance ? add(initialBalance, valueDifference) : '0';
+    const totalBalanceAmount = add(liveAssetBalance, add(positionsBalance, claimablesBalance));
 
-  const balances = useMemo(() => {
-    const totalAccountBalance = add(liveAssetBalance, add(positionsBalance, claimablesBalance));
-    return {
+    const balances = {
       assetsBalance: {
         amount: liveAssetBalance,
-        display: convertAmountToNativeDisplay(liveAssetBalance, nativeCurrency),
+        display: convertAmountToNativeDisplay(liveAssetBalance, params.currency),
       },
       positionsBalance: {
         amount: positionsBalance,
-        display: convertAmountToNativeDisplay(positionsBalance, nativeCurrency),
+        display: convertAmountToNativeDisplay(positionsBalance, params.currency),
       },
       claimablesBalance: {
         amount: claimablesBalance,
-        display: convertAmountToNativeDisplay(claimablesBalance, nativeCurrency),
+        display: convertAmountToNativeDisplay(claimablesBalance, params.currency),
       },
       totalBalance: {
-        amount: totalAccountBalance,
-        display: convertAmountToNativeDisplay(totalAccountBalance, nativeCurrency),
+        amount: totalBalanceAmount,
+        display: convertAmountToNativeDisplay(totalBalanceAmount, params.currency),
       },
     };
-  }, [nativeCurrency, liveAssetBalance, positionsBalance, claimablesBalance]);
 
-  return {
-    balances,
-    isLoading,
-  };
-};
+    const isLoading = initialBalance === undefined;
+
+    return { balances, isLoading };
+  },
+
+  { debounce: 300, equalityFn: deepEqual }
+);
