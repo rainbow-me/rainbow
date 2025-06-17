@@ -1,11 +1,10 @@
 import { NativeCurrencyKey } from '@/entities';
-import { Address } from 'viem';
 import { getAddysHttpClient } from '@/resources/addys/client';
-import { createQueryStore } from '../internal/createQueryStore';
-import { time } from '@/utils';
-import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import isEqual from 'react-fast-compare';
+import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
+import { time } from '@/utils';
+import { Address } from 'viem';
+import { createQueryStore } from '../internal/createQueryStore';
 
 export type WalletSummaryArgs = {
   addresses: Address[];
@@ -28,11 +27,7 @@ async function fetchWalletSummary(
 }
 
 export const useWalletSummary = () => {
-  return useWalletSummaryQueryStore(
-    state => [state.getData()?.data, state.getStatus()] as const,
-    // compare status first as its cheaper:
-    (a, b) => isEqual(a[1], b[1]) && isEqual(a[0], b[0])
-  );
+  return useWalletSummaryQueryStore(state => state.getData()?.data);
 };
 
 export const getWalletSummary = () => {

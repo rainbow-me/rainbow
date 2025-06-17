@@ -13,25 +13,25 @@ export type WalletTransactionCountsResult = {
  * @returns Number of transactions originating from Rainbow for each wallet
  */
 export const useWalletTransactionCounts = (): WalletTransactionCountsResult => {
-  const [summaryData, { isInitialLoading: isLoading }] = useWalletSummary();
+  const summaryData = useWalletSummary();
   const allAddresses = useWalletAddresses();
 
   const transactionCounts = useMemo(() => {
     const result: Record<Address, number> = {};
 
-    if (isLoading) return result;
+    if (!summaryData) return result;
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const transactionCount = summaryData?.addresses?.[lowerCaseAddress]?.meta.rainbow?.transactions || 0;
+      const transactionCount = summaryData.addresses?.[lowerCaseAddress]?.meta.rainbow?.transactions || 0;
       result[lowerCaseAddress] = transactionCount;
     }
 
     return result;
-  }, [isLoading, allAddresses, summaryData?.addresses]);
+  }, [summaryData, allAddresses]);
 
   return {
     transactionCounts,
-    isLoading,
+    isLoading: !summaryData,
   };
 };
