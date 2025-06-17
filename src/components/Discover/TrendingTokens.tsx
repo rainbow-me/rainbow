@@ -504,7 +504,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                     // TODO: not yet added to the token data by backend
                     initialValueLastUpdated={0}
                     initialValue={marketCap}
-                    selector={token => formatNumber(token.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' })}
+                    selector={token => formatNumber(token.market.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' })}
                     color="labelTertiary"
                     numberOfLines={1}
                     size="11pt"
@@ -521,7 +521,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   // TODO: not yet added to the token data by backend
                   initialValueLastUpdated={0}
                   initialValue={formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}
-                  selector={token => `${formatNumber(token.change24hPct, { decimals: 2, useOrderSuffix: true })}%`}
+                  selector={token => `${formatNumber(token.change.change24hPct, { decimals: 2, useOrderSuffix: true })}%`}
                   color="label"
                   numberOfLines={1}
                   size="15pt"
@@ -538,7 +538,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   // TODO: not yet added to the token data by backend
                   initialValueLastUpdated={0}
                   initialValue={formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}
-                  selector={token => `${formatNumber(token.change1hPct, { decimals: 2, useOrderSuffix: true })}%`}
+                  selector={token => `${formatNumber(token.change.change1hPct, { decimals: 2, useOrderSuffix: true })}%`}
                   color="label"
                   size="11pt"
                   weight="bold"

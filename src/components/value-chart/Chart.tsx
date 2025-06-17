@@ -12,6 +12,7 @@ import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSh
 import { formatTimestamp } from '@/worklets/dates';
 import { useCandlestickStore } from '../candlestick-charts/candlestickStore';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
 
 const translations = {
   noChartData: i18n.t(i18n.l.expanded_state.chart.no_chart_data),
@@ -109,6 +110,8 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   const chartGestureUnixTimestamp = useSharedValue<number>(0);
   const isChartGestureActive = useSharedValue(false);
   const { width: screenWidth } = useWindowDimensions();
+  const chartType = useCandlestickStore(state => state.chartType);
+  const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>('day');
 
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId: asset.uniqueId,
@@ -118,16 +121,29 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
     selector: state => state.price,
   });
 
+  const liveTokenPercentageChangeSelector = useCallback(
+    ({ change }: TokenData) => {
+      if (selectedTimespan === 'day') {
+        return change.change24hPct;
+      } else if (selectedTimespan === 'fourHour') {
+        return change.change4hPct;
+      } else if (selectedTimespan === 'fiveMinute') {
+        return change.change5mPct;
+      } else if (selectedTimespan === 'hour') {
+        return change.change1hPct;
+      }
+      return '0';
+    },
+    [selectedTimespan]
+  );
+
   const liveTokenPercentageChange = useLiveTokenSharedValue({
     tokenId: asset.uniqueId,
     // TODO:
     initialValueLastUpdated: 0,
     initialValue: asset.price.relativeChange24h?.toString() ?? '0',
-    selector: state => state.change24hPct,
+    selector: liveTokenPercentageChangeSelector,
   });
-
-  const chartType = useCandlestickStore(state => state.chartType);
-  const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>('day');
 
   const selectedTimespanLabel = useMemo(() => {
     return i18n.t(i18n.l.expanded_state.chart.past_timespan, {
@@ -150,6 +166,12 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
     if (isChartGestureActive.value && chartType === ChartTypes.LINE) {
       return chartGesturePriceRelativeChange.value;
     }
+
+    // Not all timespans are available in the live token data, and the chart must be responsible for updating this value
+    if (selectedTimespan === 'minute' || selectedTimespan === 'month' || selectedTimespan === 'year' || selectedTimespan === 'week') {
+      return chartGesturePriceRelativeChange.value;
+    }
+
     return liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
   });
 

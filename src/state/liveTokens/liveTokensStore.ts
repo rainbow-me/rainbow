@@ -6,17 +6,46 @@ import { useUserAssetsStore } from '../assets/userAssets';
 // route -> token id -> subscription count
 type TokenSubscriptionCountByRoute = Record<string, Record<string, number>>;
 
+// export interface TokenData {
+//   price: string;
+//   change24hPct: string;
+//   change1hPct: string;
+//   volume24h: string;
+//   marketCap: string;
+//   updatedAt: string;
+//   valuation: {
+//     allowed: boolean;
+//     reason: string;
+//   };
+// }
+
 export interface TokenData {
   price: string;
-  change24hPct: string;
-  change1hPct: string;
-  volume24h: string;
-  marketCap: string;
-  updatedAt: string;
+  change: {
+    change5mPct: string;
+    change1hPct: string;
+    change4hPct: string;
+    change12hPct: string;
+    change24hPct: string;
+  };
+  // TODO: this not yet explicitly supported, definition might change
+  market: {
+    marketCap: string;
+    volume: {
+      '24h': string;
+    };
+  };
   valuation: {
     allowed: boolean;
     reason: string;
   };
+  reliability: {
+    metadata: {
+      liquidityCap: string;
+    };
+    status: string;
+  };
+  updateTime: string;
 }
 
 export interface LiveTokensData {
@@ -51,7 +80,37 @@ const initialState: State = {
   tokens: {},
 };
 
-// let fetchCount = 0;
+// example response:
+// {
+//   "metadata": {
+//     "currency": "USD",
+//     "requestId": "req_1234567890abcdef",
+//     "requestTime": "2025-06-12T14:30:00.123Z",
+//     "responseTime": "2025-06-12T14:30:01.456Z",
+//     "success": true,
+//     "version": "v1.2.3"
+//   },
+//   "result": {
+//     "eth:1": {
+//       "change": {
+//         "change12hPct": "-1.67",
+//         "change1hPct": "-0.85",
+//         "change24hPct": "3.45",
+//         "change4hPct": "2.34",
+//         "change5mPct": "0.12"
+//       },
+//       "price": "67234.52",
+//       "reliability": {
+//         "metadata": {
+//           "liquidityCap": "50000000.00"
+//         },
+//         "status": "PRICE_RELIABILITY_STATUS_TRUSTED"
+//       },
+//       "updateTime": "2025-06-12T14:29:45.789Z"
+//     }
+//   }
+// }
+
 const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTokensParams): Promise<LiveTokensData | null> => {
   const tokenIdsArray = Object.keys(subscribedTokensByRoute[activeRoute] || {});
 
@@ -59,30 +118,47 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTok
     return null;
   }
 
-  // fetchCount += 1;
-  // console.log(`[liveTokensStore] Fetching tokens data: ${fetchCount}`);
-  // console.log('[liveTokensStore] fetching tokens ', tokenIdsArray);
-
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
 
-  // TODO: get real data shape from backend
   const tokens: LiveTokensData = {};
   const currency = 'USD';
 
   tokenIdsArray.forEach(id => {
     const basePrice = parseInt(id.substring(2, 5), 16) / 10 || 10;
     const fluctuation = (Math.random() - 0.1) * 0.5;
+    const price = (basePrice + fluctuation * 1000).toFixed(2);
+    const change24hPct = ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 50)).toFixed(2);
+    const change1hPct = (fluctuation * 100).toFixed(2);
+    const change12hPct = ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 40)).toFixed(2);
+    const change4hPct = ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 30)).toFixed(2);
+    const change5mPct = ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 20)).toFixed(2);
+
     tokens[id] = {
-      price: (basePrice + fluctuation * 1000).toFixed(2),
-      change24hPct: ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 50)).toFixed(2),
-      change1hPct: (fluctuation * 100).toFixed(2),
-      volume24h: (basePrice * 1000 + fluctuation * 1000).toFixed(2),
-      marketCap: (basePrice * 1000000 + fluctuation * 1000000).toFixed(2),
-      updatedAt: new Date().toISOString(),
+      price,
+      change: {
+        change24hPct,
+        change1hPct,
+        change12hPct,
+        change4hPct,
+        change5mPct,
+      },
+      market: {
+        marketCap: (basePrice * 1000000 + fluctuation * 1000000).toFixed(2),
+        volume: {
+          '24h': (basePrice * 1000 + fluctuation * 1000).toFixed(2),
+        },
+      },
+      updateTime: new Date().toISOString(),
       valuation: {
         allowed: true,
         reason: '',
+      },
+      reliability: {
+        metadata: {
+          liquidityCap: '50000000.00',
+        },
+        status: 'PRICE_RELIABILITY_STATUS_TRUSTED',
       },
     };
   });

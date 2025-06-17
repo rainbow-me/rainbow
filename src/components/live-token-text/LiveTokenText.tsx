@@ -35,7 +35,7 @@ export function useLiveTokenSharedValue({
 
       const newValue = selector(token);
 
-      if (toUnixTime(token.updatedAt) > initialValueLastUpdated && newValue !== prevValue.current) {
+      if (toUnixTime(token.updateTime) > initialValueLastUpdated && newValue !== prevValue.current) {
         liveValue.value = newValue;
         prevValue.current = newValue;
       }
@@ -77,7 +77,7 @@ export function useLiveTokenValue({
 
       const newValue = selector(token);
 
-      if (toUnixTime(token.updatedAt) > initialValueLastUpdated && newValue !== prevLiveValue.current) {
+      if (toUnixTime(token.updateTime) > initialValueLastUpdated && newValue !== prevLiveValue.current) {
         setLiveValue(newValue);
         prevLiveValue.current = newValue;
       }

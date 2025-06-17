@@ -94,7 +94,7 @@ const MemoizedBalanceCoinRow = React.memo(
     );
 
     const tokenPriceChangeSelector = useCallback((token: TokenData) => {
-      return `${formatPercentageString(token.change24hPct)}%`;
+      return `${formatPercentageString(token.change.change24hPct)}%`;
     }, []);
 
     const livePriceChange = useLiveTokenValue({

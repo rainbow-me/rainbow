@@ -3,7 +3,6 @@ import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, useBackgroundColor } from '@/design-system';
 import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
 import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
-import useAccountSettings from '@/hooks/useAccountSettings';
 
 export const ProfileBalanceRowHeight = 24;
 const placeholderHeight = ProfileBalanceRowHeight;
@@ -11,8 +10,7 @@ const placeholderWidth = 200;
 
 export function ProfileBalanceRow() {
   const backgroundColor = useBackgroundColor('surfacePrimary');
-  const { accountAddress } = useAccountSettings();
-  const { balances, isLoading } = useLiveWalletBalance(accountAddress);
+  const { balances, isLoading } = useLiveWalletBalance();
   const totalBalance = balances.totalBalance.display;
 
   return (
