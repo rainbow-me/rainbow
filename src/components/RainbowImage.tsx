@@ -17,6 +17,9 @@ export type RainbowImageProps = {
 /**
  * Image component that tries to be fast
  *
+ * faster-image takes a more limited set of style props, so adding a containerStyle
+ * that makes them appear more consistently and easier to control.
+ *
  * @param props - source URL and other image properties
  */
 const RainbowImageInternal = ({ containerStyle, ...props }: RainbowImageProps) => {
