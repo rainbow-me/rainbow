@@ -1,4 +1,3 @@
-import { useInitializeWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { RootStackParamList } from '@/navigation/types';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -7,6 +6,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { useEffect, useRef } from 'react';
 import { InteractionManager } from 'react-native';
 import Routes from '@/navigation/routesNames';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 enum WalletLoadingStates {
   IDLE = 0,
@@ -18,15 +18,16 @@ export const useInitializeWalletAndSetParams = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_SCREEN>>();
   const { setParams } = useNavigation<typeof Routes.WALLET_SCREEN>();
 
-  const initializeWallet = useInitializeWallet();
-
   const walletState = useRef(WalletLoadingStates.IDLE);
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
       walletState.current = WalletLoadingStates.INITIALIZING;
-      // @ts-expect-error messed up initializeWallet types
-      await initializeWallet(null, null, null, !params?.emptyWallet);
+
+      await initializeWallet({
+        isRestoring: !params?.emptyWallet,
+      });
+
       walletState.current = WalletLoadingStates.INITIALIZED;
       setParams({ emptyWallet: false });
 
@@ -45,5 +46,5 @@ export const useInitializeWalletAndSetParams = () => {
       // We run the migrations only once on app launch
       initializeAndSetParams();
     }
-  }, [initializeWallet, params, setParams]);
+  }, [params, setParams]);
 };

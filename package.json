@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.67-1",
+  "version": "1.9.69-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -121,7 +121,7 @@
     "@reown/walletkit": "1.1.2",
     "@reservoir0x/reservoir-sdk": "2.3.0",
     "@rudderstack/rudder-sdk-react-native": "2.0.0",
-    "@sentry/react-native": "5.35.0",
+    "@sentry/react-native": "6.15.1",
     "@shopify/flash-list": "1.7.2",
     "@shopify/react-native-performance": "4.1.2",
     "@shopify/react-native-skia": "1.9.0",
@@ -171,6 +171,7 @@
     "expo": "51.0.38",
     "expo-image-picker": "15.1.0",
     "expo-store-review": "7.0.2",
+    "expo-web-browser": "13.0.3",
     "fast-text-encoding": "1.0.4",
     "figma-squircle": "1.1.0",
     "global": "4.4.0",
@@ -235,7 +236,7 @@
     "react-native-ios-context-menu": "1.15.3",
     "react-native-keyboard-area": "1.0.6",
     "react-native-keyboard-controller": "1.16.7",
-    "react-native-keychain": "9.2.3",
+    "react-native-keychain": "10.0.0",
     "react-native-level-fs": "3.0.1",
     "react-native-linear-gradient": "2.8.3",
     "react-native-mail": "4.1.0",

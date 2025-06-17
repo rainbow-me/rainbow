@@ -31,6 +31,12 @@ module.exports = {
     {
       files: ['*.yml', '*.yaml'],
       parser: 'yaml-eslint-parser',
+      rules: {
+        // currently we use single quotes for yaml files
+        'yml/quotes': ['warn', { prefer: 'single', avoidEscape: false }],
+        // we also put scalars in quotes
+        'yml/plain-scalar': 'off',
+      },
     },
   ],
   rules: {
@@ -47,6 +53,7 @@ module.exports = {
     ],
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
+    'no-await-in-loop': 'off',
     'no-nested-ternary': 'off',
     'react-hooks/exhaustive-deps': [
       'warn',

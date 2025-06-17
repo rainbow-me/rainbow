@@ -133,7 +133,7 @@ export default function FeesGweiInput({
 
   return (
     <Box>
-      <Inline alignVertical="center" space="6px">
+      <Box gap={6} alignItems="center" flexDirection="row">
         <GweiStepButton
           buttonColor={buttonColor}
           onLongPress={onMinusLongPress}
@@ -163,7 +163,7 @@ export default function FeesGweiInput({
           shouldLongPressHoldPress
           type={PLUS_ACTION_TYPE}
         />
-      </Inline>
+      </Box>
     </Box>
   );
 }

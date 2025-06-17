@@ -184,6 +184,13 @@ export class RainbowError extends Error {
     super(message, options);
     this.name = this.constructor.name;
   }
+
+  toString() {
+    if (this.cause) {
+      return `${super.toString()} ↠ ${this.cause.toString()}`;
+    }
+    return super.toString();
+  }
 }
 
 export function ensureError(error: unknown): Error {

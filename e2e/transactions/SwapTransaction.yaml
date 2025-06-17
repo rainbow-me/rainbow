@@ -34,5 +34,26 @@ tags:
           id: token-to-buy-dai-1
       - assertVisible: 'DAI.*'
       - assertVisible: 'No Balance'
-      # Add swap execution and validation.
-      # Currenlty on detox we don't do either.
+      - hideKeyboard
+
+      # TODO: Currently iOS gets stuck on 'Fetching' for the swap-bottom-action-button.
+      # Android works fine.
+      - runFlow:
+          when:
+            platform: Android
+          commands:
+            - longPressOn:
+                id: swap-bottom-action-button
+            - runFlow: ../utils/MaybeSetupPin.yaml
+            - tapOn:
+                id: tab-bar-icon-ProfileScreen
+
+            # Test transaction was done
+            - assertVisible: 'Pending'
+            - assertVisible: 'Swapping*.'
+
+            - tapOn: Swapping*.
+            - tapOn:
+                id: transaction-details-context-menu-button
+            - assertVisible: 'Speed Up'
+            - assertVisible: 'Cancel'

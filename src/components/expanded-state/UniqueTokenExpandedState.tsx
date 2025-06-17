@@ -1,27 +1,5 @@
-import { useFocusEffect } from '@react-navigation/native';
-import c from 'chroma-js';
-import lang from 'i18n-js';
-import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Share, View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
-import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import URL from 'url-parse';
-import useWallets from '../../hooks/useWallets';
-import L2Disclaimer from '../L2Disclaimer';
-import Link from '../Link';
-import { ButtonPressAnimation } from '../animations';
-import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
-import ImgixImage from '../images/ImgixImage';
-import { SendActionButton, SheetActionButton, SheetHandle, SlackSheet } from '../sheet';
-import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
-import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import ConfigurationSection from './ens/ConfigurationSection';
-import ProfileInfoSection from './ens/ProfileInfoSection';
-import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
-import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
-import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
+import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import partyLogo from '../../assets/partyLogo.png';
 import {
   AccentColorProvider,
   Bleed,
@@ -44,8 +22,9 @@ import { UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { buildUniqueTokenName } from '@/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
+import isHttpUrl from '@/helpers/isHttpUrl';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import {
-  useAccountProfile,
   useBooleanState,
   useCollectible,
   useDimensions,
@@ -54,22 +33,42 @@ import {
   useHiddenTokens,
   useShowcaseTokens,
 } from '@/hooks';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { getUniqueTokenType, magicMemo, safeAreaInsetValues } from '@/utils';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
-import isHttpUrl from '@/helpers/isHttpUrl';
-import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useTimeoutEffect } from '@/hooks/useTimeout';
-import { analytics } from '@/analytics';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { useFocusEffect } from '@react-navigation/native';
+import c from 'chroma-js';
+import lang from 'i18n-js';
+import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import { InteractionManager, Share, View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import URL from 'url-parse';
+import partyLogo from '../../assets/partyLogo.png';
+import L2Disclaimer from '../L2Disclaimer';
+import Link from '../Link';
+import { ButtonPressAnimation } from '../animations';
+import ImagePreviewOverlay from '../images/ImagePreviewOverlay';
+import ImgixImage from '../images/ImgixImage';
+import { SendActionButton, SheetActionButton, SheetHandle, SlackSheet } from '../sheet';
+import { Toast, ToastPositionContainer, ToggleStateToast } from '../toasts';
+import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
+import ConfigurationSection from './ens/ConfigurationSection';
+import ProfileInfoSection from './ens/ProfileInfoSection';
+import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
+import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
+import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -225,11 +224,11 @@ const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
 };
 
 const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenExpandedStateProps) => {
-  const { accountAddress } = useAccountProfile();
+  const accountAddress = useAccountAddress();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const collectible = useCollectible(passedAsset?.uniqueId);
   const asset = external ? passedAsset : collectible;
   const {

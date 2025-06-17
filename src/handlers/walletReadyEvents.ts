@@ -1,26 +1,24 @@
-import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
-import { getKeychainIntegrityState } from './localstorage/globalSettings';
 import { runLocalCampaignChecks } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { EthereumAddress } from '@/entities';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import WalletTypes from '@/helpers/walletTypes';
-import { featureUnlockChecks } from '@/featuresToUnlock';
-import { AllRainbowWallets, RainbowAccount } from '@/model/wallet';
-import { Navigation } from '@/navigation';
-
-import store from '@/redux/store';
-import { checkKeychainIntegrity } from '@/redux/wallets';
-import Routes from '@/navigation/routesNames';
-import { logger } from '@/logger';
 import { IS_TEST } from '@/env';
-import { backupsStore, CloudBackupState, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
+import { featureUnlockChecks } from '@/featuresToUnlock';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletTypes from '@/helpers/walletTypes';
+import { logger } from '@/logger';
+import { RainbowAccount } from '@/model/wallet';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { checkKeychainIntegrity, getSelectedWallet, getWallets } from '@/state/wallets/walletsStore';
+import { backupsStore, LoadingStates, oneWeekInMs } from '@/state/backups/backups';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
+import { getKeychainIntegrityState } from './localstorage/globalSettings';
 
 export const runKeychainIntegrityChecks = async () => {
   const keychainIntegrityState = await getKeychainIntegrityState();
   if (!keychainIntegrityState) {
-    await store.dispatch(checkKeychainIntegrity());
+    await checkKeychainIntegrity();
   }
 };
 
@@ -60,7 +58,7 @@ const promptForBackupOnceReadyOrNotAvailable = async (): Promise<boolean> => {
 };
 
 export const runWalletBackupStatusChecks = async (): Promise<boolean> => {
-  const { selected } = store.getState().wallets;
+  const selected = getSelectedWallet();
   if (!selected || IS_TEST) return false;
 
   if (
@@ -77,11 +75,7 @@ export const runWalletBackupStatusChecks = async (): Promise<boolean> => {
 };
 
 export const runFeatureUnlockChecks = async (): Promise<boolean> => {
-  const {
-    wallets,
-  }: {
-    wallets: AllRainbowWallets | null;
-  } = store.getState().wallets;
+  const wallets = getWallets();
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
   if (!wallets) return false;

@@ -53,8 +53,8 @@
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustPan">
         <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
-            <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
         </intent-filter>
         <!-- Branch URI Scheme -->
         <intent-filter android:autoVerify="true">
@@ -63,13 +63,51 @@
           <category android:name="android.intent.category.BROWSABLE" />
           <data android:scheme="https" />
           <data android:host="rnbwapp.com" />
-          <data android:host="rainbow-web.vercel.app" />
-          <data android:host="rainbow.me" />
           <data android:host="rnbw.app" />
           <data android:host="rainbowdotme.app.link" />
           <data android:host="rnbwappdotcom.app.link" />
           <data android:host="rainbowdotme-alternate.app.link" />
           <data android:host="rnbwappdotcom-alternate.app.link" />
+        </intent-filter>
+        <!-- Rainbow.me URI Scheme -->
+        <intent-filter android:autoVerify="true">
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="https" android:host="rainbow.me" />
+          <!-- ENS Profiles -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPrefix="/0x" />
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPattern="/.*\\.eth" />
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPattern="/.*\\.xyz" />
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPattern="/.*\\.crypto" />
+          <!-- /token?addr=… -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPattern="/token\\?addr=.*" />
+          <!-- /token/<network>/<address> -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPattern="/token/.+/.+" />
+          <!-- WalletConnect redirect: /wc?uri=… -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPattern="/wc\\?uri=.*" />
+          <!-- Plaid OAuth redirect -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPrefix="/plaid/" />
+          <!-- Fiat-on-ramp redirect -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPrefix="/f2c/" />
+          <!-- POAP sheet -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPrefix="/poap/" />
+          <!-- Points referral link: /points?ref=XXXXXX  (exactly six chars) -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathAdvancedPattern="/points\\?ref=[A-Za-z0-9]{6}" />
+          <!-- Points claim link: /points/claim?code=… -->
+          <data android:scheme="https" android:host="rainbow.me"
+                android:pathPattern="/points/claim\\?code=.*" />
         </intent-filter>
         <intent-filter>
           <data android:scheme="ethereum" />

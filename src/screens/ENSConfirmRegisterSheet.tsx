@@ -1,3 +1,27 @@
+import { ImgixImage } from '@/components/images';
+import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { accentColorAtom, ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
+import {
+  useDimensions,
+  useENSModifiedRegistration,
+  useENSRegistration,
+  useENSRegistrationActionHandler,
+  useENSRegistrationCosts,
+  useENSRegistrationForm,
+  useENSRegistrationStepHandler,
+  useENSSearch,
+} from '@/hooks';
+import { ActionTypes } from '@/hooks/useENSRegistrationActionHandler';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { ReviewPromptAction } from '@/storage/schema';
+import { colors } from '@/styles';
+import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
@@ -17,30 +41,6 @@ import {
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
-import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import { accentColorAtom, ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
-import {
-  useAccountProfile,
-  useDimensions,
-  useENSModifiedRegistration,
-  useENSRegistration,
-  useENSRegistrationActionHandler,
-  useENSRegistrationCosts,
-  useENSRegistrationForm,
-  useENSRegistrationStepHandler,
-  useENSSearch,
-} from '@/hooks';
-import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { colors } from '@/styles';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { ReviewPromptAction } from '@/storage/schema';
-import { ActionTypes } from '@/hooks/useENSRegistrationActionHandler';
-import { ChainId } from '@/state/backendNetworks/types';
-import { RootStackParamList } from '@/navigation/types';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -117,7 +117,7 @@ export default function ENSConfirmRegisterSheet() {
   const { navigate, goBack } = useNavigation();
 
   const { blurFields, values } = useENSRegistrationForm();
-  const accountProfile = useAccountProfile();
+  const accountProfile = useAccountProfileInfo();
 
   const avatarUrl = initialAvatarUrl || values.avatar;
 

@@ -28,6 +28,7 @@ import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } f
 import { ethUnits, timeUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',
@@ -54,7 +55,8 @@ export default function useENSRegistrationCosts({
   step: keyof typeof REGISTRATION_STEPS;
   yearsDuration: number;
 }) {
-  const { nativeCurrency, accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const { nativeCurrency } = useAccountSettings();
   const { registrationParameters, mode } = useENSRegistration();
   const duration = yearsDuration * timeUnits.secs.year;
   const name = inputName.replace(ENS_DOMAIN, '');

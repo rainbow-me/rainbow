@@ -1,33 +1,21 @@
-import React, { useCallback, useMemo } from 'react';
-import { AnimatePresence, MotiView } from 'moti';
-import * as i18n from '@/languages';
-import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { Transaction } from '@ethersproject/transactions';
-
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { GasSpeedButton } from '@/components/gas';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { NewTransaction, TransactionStatus } from '@/entities';
+import { IS_IOS } from '@/env';
+import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
+import { getProvider } from '@/handlers/web3';
+import { delay } from '@/helpers/utilities';
+import { useAccountSettings, useGas } from '@/hooks';
+import * as i18n from '@/languages';
+import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
-
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
 import { deviceUtils, ethereumUtils } from '@/utils';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
-import { ChainId, Network } from '@/state/backendNetworks/types';
-import { delay } from '@/helpers/utilities';
-
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { useAccountSettings, useGas, useSwitchWallet, useWallets } from '@/hooks';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ContactAvatar } from '@/components/contacts';
-import { IS_IOS } from '@/env';
-import { getProvider } from '@/handlers/web3';
-import { GasSpeedButton } from '@/components/gas';
-import { RainbowError, logger } from '@/logger';
 import {
   PERSONAL_SIGN,
   SEND_TRANSACTION,
@@ -36,40 +24,61 @@ import {
   isMessageDisplayType,
   isPersonalSign,
 } from '@/utils/signingMethods';
+import { Transaction } from '@ethersproject/transactions';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { AnimatePresence, MotiView } from 'moti';
+import React, { useCallback, useMemo } from 'react';
+import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
 import { analytics } from '@/analytics';
-import { maybeSignUri } from '@/handlers/imgix';
-import { isAddress } from '@ethersproject/address';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import { RequestData } from '@/walletConnect/types';
-import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
-import { useSimulation } from '@/resources/transactions/transactionSimulation';
-import { TransactionSimulationCard } from '@/components/Transactions/TransactionSimulationCard';
 import { TransactionDetailsCard } from '@/components/Transactions/TransactionDetailsCard';
-import { TransactionMessageCard } from '@/components/Transactions/TransactionMessageCard';
 import { VerifiedBadge } from '@/components/Transactions/TransactionIcons';
+import { TransactionMessageCard } from '@/components/Transactions/TransactionMessageCard';
+import { TransactionSimulationCard } from '@/components/Transactions/TransactionSimulationCard';
 import {
-  SCREEN_FOR_REQUEST_SOURCE,
   EXPANDED_CARD_BOTTOM_INSET,
   GAS_BUTTON_SPACE,
-  motiTimingConfig,
   SCREEN_BOTTOM_INSET,
+  SCREEN_FOR_REQUEST_SOURCE,
   infoForEventType,
+  motiTimingConfig,
 } from '@/components/Transactions/constants';
+import { maybeSignUri } from '@/handlers/imgix';
+import { buildTransaction } from '@/helpers/buildTransaction';
 import { useCalculateGasLimit } from '@/hooks/useCalculateGasLimit';
-import { useTransactionSetup } from '@/hooks/useTransactionSetup';
+import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
 import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
-import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
-import { toChecksumAddress } from 'ethereumjs-util';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { buildTransaction } from '@/helpers/buildTransaction';
-import { RootStackParamList } from '@/navigation/types';
+import { useTransactionSetup } from '@/hooks/useTransactionSetup';
 import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { useSimulation } from '@/resources/transactions/transactionSimulation';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { getAccountProfileInfo, getWalletWithAccount, useWallets } from '@/state/wallets/walletsStore';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
+import { RequestData } from '@/walletConnect/types';
+import { isAddress } from '@ethersproject/address';
+import { toChecksumAddress } from 'ethereumjs-util';
+import { switchWallet } from '@/state/wallets/switchWallet';
+
+type SignTransactionSheetParams = {
+  transactionDetails: RequestData;
+  onSuccess: (hash: string) => void;
+  onCancel: (error?: Error) => void;
+  onCloseScreen: (canceled: boolean) => void;
+  chainId: ChainId;
+  address: string;
+  source: RequestSource;
+};
+
+export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
 
 export const SignTransactionSheet = () => {
   const { goBack } = useNavigation();
@@ -77,8 +86,7 @@ export const SignTransactionSheet = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST>>();
-  const { wallets, walletNames } = useWallets();
-  const { switchToWalletWithAddress } = useSwitchWallet();
+  const wallets = useWallets();
   const {
     transactionDetails,
     onSuccess: onSuccessCallback,
@@ -203,14 +211,14 @@ export const SignTransactionSheet = () => {
     !!(simulationResult?.simulationData && itemCount === 0) && simulationResult?.simulationScanResult === TransactionScanResultType.Ok;
 
   const accountInfo = useMemo(() => {
-    const selectedWallet = wallets ? findWalletWithAccount(wallets, addressToUse) : undefined;
-    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, addressToUse);
+    const selectedWallet = wallets ? getWalletWithAccount(addressToUse) : undefined;
+    const profileInfo = getAccountProfileInfo({ wallet: selectedWallet, address: addressToUse });
     return {
       ...profileInfo,
       address: addressToUse,
       isHardwareWallet: !!selectedWallet?.deviceId,
     };
-  }, [wallets, addressToUse, walletNames]);
+  }, [wallets, addressToUse]);
 
   const closeScreen = useCallback(
     (canceled: boolean) =>
@@ -379,7 +387,7 @@ export const SignTransactionSheet = () => {
       InteractionManager.runAfterInteractions(async () => {
         if (!txSavedInCurrentWallet && !!txDetails) {
           if (txDetails?.from) {
-            await switchToWalletWithAddress(txDetails?.from as string);
+            await switchWallet(txDetails?.from);
           }
 
           addNewTransaction({
@@ -419,7 +427,6 @@ export const SignTransactionSheet = () => {
     nativeAsset,
     gasLimit,
     onSuccessCallback,
-    switchToWalletWithAddress,
     formattedDappUrl,
     onCancel,
   ]);
@@ -725,6 +732,7 @@ export const SignTransactionSheet = () => {
                     weight="bold"
                   />
                   <SheetActionButton
+                    testID="sign-transaction"
                     label={primaryActionButtonLabel}
                     newShadows
                     onPress={submitFn}

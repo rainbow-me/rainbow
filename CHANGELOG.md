@@ -15,6 +15,93 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.68] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.68)
+
+### Added
+
+- E2E Send Transactions (#6623)
+- Add useListen, new query store options (#6625)
+- yaml linting on commit (#6648)
+- E2E Send NFT flow (#6646)
+- Add createDerivedStore (#6652)
+
+### Changed
+
+- E2E EditContact flow (#6624)
+- E2E retry wrap (#6638)
+- E2E Update blacksmith runner to 2404 (#6643)
+- E2E tests for import secret and basic settings flows (#6614)
+- E2E Enhance Anvil E2E Transaction Handling & Display (#6654)
+- Improve RainbowError toString to show cause toString (#6658)
+- Bump iOS and Android to v1.9.68 (#6661)
+- E2E Add timeout to android e2e tests (#6668)
+
+### Fixed
+
+- Cannot Copy Message Details Fix (#6644)
+- E2E fix hanging tests (#6650)
+- Don't run sentry gradle plugin for debug builds (#6621)
+- Invalidate interactionsCountQueryKey cache on send (#6665)
+- Codified android app link intent filter matching (#6596)
+- Fixed layout for swaps gas menu / remove the priority fee for L2s that don't use it (#6667)
+- Make the fiat onboarding links open in a safari web view context (#6662)
+- KOT small loading logic fix (#6674)
+- Fix yarn android launching the activity (#6678)
+- Fix backup stuck in syncing state (#6681)
+- Fix saving SVG NFTs (#6677)
+
+## [1.9.67] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.67)
+
+### Added
+
+- Add tracking of how often "Insufficient ETH" error message is returned (#6590)
+- Prince of hill (#6575)
+- New Maestro E2E CI pipeline (#6478)
+- Wire up market stats on the expanded state for Rainbow-created tokens (#6597)
+- Add tracking for wallet screen pull to refresh (#6608)
+- Add clearKeychain for Maestro tests (#6600)
+- Implement subscript notation for charts with more than 8 magnitude decimals (#6558)
+- Add Token Creator to Expanded State (#6612)
+
+### Changed
+
+- Remove app store review pre-prompt & ask more often (#6569)
+- Changed the RainbowError constructor to be slightly different than the normal Error constructor (#6557)
+- RecyclerListView cleanup (#6521)
+- Adjust query store's internal set usage to cover all enabled changes (#6591)
+- Changed height of pkey box (#6585)
+- Convert Navigation Stack + ExplainSheet to Typescript (#6566)
+- Update the Readme to specify the version of Node required (#6601)
+- Update AndroidManifest.xml (#6598)
+- Bump react-native-keychain from 8.0.0 -> 10.0.0 (#6592)
+- Boot time improvements, lazy tab loading (#6583)
+- Eliminate unnecessary steps from the workflow. (#6617)
+- Make sure e2e doesn't run on draft and run unit test on Blacksmith.sh (#6629)
+- Bitrise cleanup (#6628)
+- Update king of the hill types (#6634)
+- Remove duplicated NFT data & fix SVG NFTs (#6619)
+
+### Fixed
+
+- Fix sourcemaps and debug files for Sentry Expo (#6568)
+- Fix walletconnect error sheet overflow (#6577)
+- Fix wallet screen layout shift (#6584)
+- Fixed object selectors that don't use shallowEqual (#6593)
+- Account for '1 hour' in formatDate (#6595)
+- Fix airdrop recipient input logic (#6599)
+- Fix e2e tests (#6602)
+- Fixed a runnable call crash when rainbow enters the background while trying to dismiss the splash screen (#6603)
+- Fix error when creating wallet (#6610)
+- Fix MarketStatsCard hooks error (#6611)
+- Fix crash when entering into restore sheet (#6609)
+- Fix LP Fees shown currency amount (#6605)
+- Fix profile sheet infinite importing portal (#6616)
+- Fix lint error (#6620)
+- Fix e2e ios tests (#6613)
+- Fix keychain biometric prompts on Android (#6631)
+- Update Fastfile match action flag from force to readonly to fix builds (#6655)
+- Use system PIN prompt when possible on Android (#6645)
+
 ## [1.9.66] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.66)
 
 ### Added

@@ -1,20 +1,18 @@
+import { analytics } from '@/analytics';
+import { IS_ANDROID } from '@/env';
+import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
+import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { backupsStore } from '@/state/backups/backups';
+import { setWalletBackedUp, useWallets } from '@/state/wallets/walletsStore';
+import { openInBrowser } from '@/utils/openInBrowser';
 import { values } from 'lodash';
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { backupWalletToCloud } from '../model/backup';
-import { setWalletBackedUp } from '../redux/wallets';
+import { addWalletToCloudBackup, backupWalletToCloud } from '../model/backup';
 import { cloudPlatform } from '../utils/platform';
-import useWallets from './useWallets';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { analytics } from '@/analytics';
-import { CLOUD_BACKUP_ERRORS, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { logger, RainbowError } from '@/logger';
-import { getSupportedBiometryType } from '@/keychain';
-import { IS_ANDROID } from '@/env';
-import { authenticateWithPIN } from '@/handlers/authentication';
-import * as i18n from '@/languages';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 export function getUserError(e: Error) {
   switch (e.message) {
@@ -29,6 +27,8 @@ export function getUserError(e: Error) {
       return i18n.t(i18n.l.back_up.errors.cant_get_encrypted_data);
     case CLOUD_BACKUP_ERRORS.MISSING_PIN:
       return i18n.t(i18n.l.back_up.errors.missing_pin);
+    case CLOUD_BACKUP_ERRORS.WRONG_PIN:
+      return i18n.t(i18n.l.back_up.wrong_pin);
     default:
       return i18n.t(i18n.l.back_up.errors.generic, {
         errorCodes: values(CLOUD_BACKUP_ERRORS).indexOf(e.message),
@@ -37,8 +37,7 @@ export function getUserError(e: Error) {
 }
 
 export default function useWalletCloudBackup() {
-  const dispatch = useDispatch();
-  const { wallets } = useWallets();
+  const wallets = useWallets();
 
   const walletCloudBackup = useCallback(
     async ({
@@ -46,6 +45,7 @@ export default function useWalletCloudBackup() {
       onSuccess,
       password,
       walletId,
+      addToCurrentBackup,
     }: {
       handleNoLatestBackup?: () => void;
       handlePasswordNotFound?: () => void;
@@ -53,6 +53,7 @@ export default function useWalletCloudBackup() {
       onSuccess?: (password: string) => void;
       password: string;
       walletId: string;
+      addToCurrentBackup: boolean;
     }): Promise<boolean> => {
       if (IS_ANDROID) {
         try {
@@ -111,14 +112,11 @@ export default function useWalletCloudBackup() {
 
       // For Android devices without biometrics enabled, we need to ask for PIN
       let userPIN: string | undefined;
-      const hasBiometricsEnabled = await getSupportedBiometryType();
-      if (IS_ANDROID && !hasBiometricsEnabled) {
-        try {
-          userPIN = (await authenticateWithPIN()) ?? undefined;
-        } catch (e) {
-          onError?.(i18n.t(i18n.l.back_up.wrong_pin));
-          return false;
-        }
+      try {
+        userPIN = await maybeAuthenticateWithPIN();
+      } catch (e) {
+        onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+        return false;
       }
 
       // We have the password and we need to add it to an existing backup
@@ -127,12 +125,25 @@ export default function useWalletCloudBackup() {
       let updatedBackupFile = null;
 
       try {
-        logger.debug(`[useWalletCloudBackup]: backing up to ${cloudPlatform}: ${(wallets || {})[walletId]}`);
-        updatedBackupFile = await backupWalletToCloud({
-          password,
-          wallet: (wallets || {})[walletId],
-          userPIN,
-        });
+        const currentBackup = backupsStore.getState().backups.files.at(0);
+        if (addToCurrentBackup && currentBackup != null) {
+          logger.debug(`[useWalletCloudBackup]: adding to existing backup to ${cloudPlatform} ${currentBackup.name}`, {
+            wallet: (wallets || {})[walletId],
+          });
+          updatedBackupFile = await addWalletToCloudBackup({
+            filename: currentBackup.name,
+            password,
+            wallet: (wallets || {})[walletId],
+            userPIN,
+          });
+        } else {
+          logger.debug(`[useWalletCloudBackup]: creating new backup to ${cloudPlatform}`, { wallet: (wallets || {})[walletId] });
+          updatedBackupFile = await backupWalletToCloud({
+            password,
+            wallet: (wallets || {})[walletId],
+            userPIN,
+          });
+        }
       } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
@@ -150,7 +161,7 @@ export default function useWalletCloudBackup() {
 
       try {
         logger.debug('[useWalletCloudBackup]: backup completed!');
-        await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
+        setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile);
         logger.debug('[useWalletCloudBackup]: backup saved everywhere!');
         !!onSuccess && onSuccess(password);
         return true;
@@ -166,7 +177,7 @@ export default function useWalletCloudBackup() {
 
       return false;
     },
-    [dispatch, wallets]
+    [wallets]
   );
 
   return walletCloudBackup;
