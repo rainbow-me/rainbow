@@ -1,3 +1,14 @@
+/**
+ * Helper for easily adding static properties onto functions
+ *
+ * eg:
+ *
+ * export const DecoratedComponent = styled(Component, {
+ *   helperFunction() {}
+ * })
+ *
+ */
+
 const Decorated = Symbol();
 
 type Combined<A, B> = A & B;
