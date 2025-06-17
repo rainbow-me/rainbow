@@ -1,14 +1,13 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
 import useAccountSettings from './useAccountSettings';
 import { containsEmoji } from '@/helpers/strings';
 import WalletTypes from '@/helpers/walletTypes';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { getWalletWithAccount, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -26,46 +25,37 @@ const wipeNotEmoji = (text: string) => {
   return containsEmoji(text) ? text : null;
 };
 
-export default function useWebData() {
+export default function useWebData(address?: string) {
   const { accountAddress } = useAccountSettings();
-  const dispatch = useDispatch();
 
-  const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
-    ({ hiddenTokens: { hiddenTokens }, showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
-      hiddenTokens,
-      showcaseTokens,
-      webDataEnabled,
-    })
-  );
+  const addressToUse = address ?? accountAddress;
+
+  const { showcaseTokens } = useShowcaseTokens(addressToUse);
+  const { hiddenTokens } = useHiddenTokens(addressToUse);
 
   const { accountSymbol, accountColorHex } = useAccountProfileInfo();
 
   const initWebData = useCallback(
     async (showcaseTokens: string[]) => {
-      await setPreference(PreferenceActionType.init, 'showcase', accountAddress, showcaseTokens);
+      await setPreference(PreferenceActionType.init, 'showcase', addressToUse, showcaseTokens);
 
-      await setPreference(PreferenceActionType.init, 'hidden', accountAddress, hiddenTokens);
+      await setPreference(PreferenceActionType.init, 'hidden', addressToUse, hiddenTokens);
 
-      await setPreference(PreferenceActionType.init, 'profile', accountAddress, {
+      await setPreference(PreferenceActionType.init, 'profile', addressToUse, {
         accountColor: accountColorHex,
         accountSymbol: wipeNotEmoji(accountSymbol as string),
       });
-
-      dispatch(updateWebDataEnabled(true, accountAddress));
     },
-    [accountAddress, accountColorHex, accountSymbol, dispatch, hiddenTokens]
+    [addressToUse, accountColorHex, accountSymbol, hiddenTokens]
   );
 
   const wipeWebData = useCallback(async () => {
-    if (!webDataEnabled) return;
-    await setPreference(PreferenceActionType.wipe, 'showcase', accountAddress);
-    await setPreference(PreferenceActionType.wipe, 'profile', accountAddress);
-    dispatch(updateWebDataEnabled(false, accountAddress));
-  }, [accountAddress, dispatch, webDataEnabled]);
+    await setPreference(PreferenceActionType.wipe, 'showcase', addressToUse);
+    await setPreference(PreferenceActionType.wipe, 'profile', addressToUse);
+  }, [addressToUse]);
 
   const updateWebProfile = useCallback(
     async (address: string, name: string, color: string) => {
-      if (!webDataEnabled) return;
       const wallet = getWalletWithAccount(address);
       if (!wallet || wallet.type === WalletTypes.readOnly) return;
       const data = {
@@ -74,7 +64,7 @@ export default function useWebData() {
       };
       await setPreference(PreferenceActionType.update, 'profile', address, data);
     },
-    [accountColorHex, accountSymbol, webDataEnabled]
+    [accountColorHex, accountSymbol]
   );
 
   const getWebProfile = useCallback(async (address: string) => {
@@ -84,65 +74,59 @@ export default function useWebData() {
   }, []);
 
   const updateWebShowcase = useCallback(
-    async (assetIds: string[]) => {
+    async (address: string, assetIds: string[]) => {
       // uniqueId[]
-      if (!webDataEnabled) return;
-      const response = await getPreference('showcase', accountAddress);
+      const response = await getPreference('showcase', address);
       if (!response || !response.showcase.ids.length) {
         await initWebData(assetIds);
         logger.debug('[useWebData]: showcase initialized!');
         return;
       }
 
-      setPreference(PreferenceActionType.update, 'showcase', accountAddress, assetIds);
+      setPreference(PreferenceActionType.update, 'showcase', address, assetIds);
     },
-    [accountAddress, initWebData, webDataEnabled]
+    [initWebData]
   );
 
-  const updateWebHidden = useCallback(
-    async (assetIds: string[]) => {
-      // fullUniqueId[]
-      const response = await getPreference('hidden', accountAddress);
-      if (!response || !response.hidden.ids.length) {
-        await setPreference(PreferenceActionType.init, 'hidden', accountAddress, assetIds);
-        logger.debug('[useWebData]: hidden initialized!');
-        return;
-      }
+  const updateWebHidden = useCallback(async (address: string, assetIds: string[]) => {
+    // fullUniqueId[]
+    const response = await getPreference('hidden', address);
+    if (!response || !response.hidden.ids.length) {
+      await setPreference(PreferenceActionType.init, 'hidden', address, assetIds);
+      logger.debug('[useWebData]: hidden initialized!');
+      return;
+    }
 
-      setPreference(PreferenceActionType.update, 'hidden', accountAddress, assetIds);
-    },
-    [accountAddress]
-  );
+    setPreference(PreferenceActionType.update, 'hidden', address, assetIds);
+  }, []);
 
   const initializeShowcaseIfNeeded = useCallback(async () => {
     try {
       // If local showcase is not empty
       if (showcaseTokens?.length > 0) {
-        // If webdata is enabled
-        if (webDataEnabled) {
-          const response = await getPreference('showcase', accountAddress);
-          if (!response || !response.showcase.ids.length) {
-            await initWebData(showcaseTokens);
-            logger.debug('[useWebData]: showcase initialized!');
-            return;
-          }
-
-          logger.debug('[useWebData]: showcase already initialized. skipping');
+        const response = await getPreference('showcase', addressToUse);
+        if (!response || !response.showcase.ids.length) {
+          await initWebData(showcaseTokens);
+          logger.debug('[useWebData]: showcase initialized!');
+          return;
         }
+
+        logger.debug('[useWebData]: showcase already initialized. skipping');
       }
     } catch (e) {
       logger.error(new RainbowError(`[useWebData]: error while trying to initialize showcase: ${e}`));
     }
-  }, [accountAddress, initWebData, showcaseTokens, webDataEnabled]);
+  }, [addressToUse, initWebData, showcaseTokens]);
 
   return {
+    showcaseTokens,
+    hiddenTokens,
     getWebProfile,
     initializeShowcaseIfNeeded,
     initWebData,
     updateWebHidden,
     updateWebProfile,
     updateWebShowcase,
-    webDataEnabled,
     wipeWebData,
   };
 }

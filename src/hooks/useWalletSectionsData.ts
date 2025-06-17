@@ -16,9 +16,8 @@ import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewT
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '../state/wallets/walletsStore';
-import useFetchShowcaseTokens from '@/hooks/useFetchShowcaseTokens';
-import useFetchHiddenTokens from '@/hooks/useFetchHiddenTokens';
+import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -38,8 +37,8 @@ export default function useWalletSectionsData({
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const selectedWallet = useSelectedWallet();
-  const { data: showcaseTokens = [] } = useFetchShowcaseTokens({ address: accountAddress });
-  const { data: hiddenTokens = [] } = useFetchHiddenTokens({ address: accountAddress });
+  const { showcaseTokens } = useShowcaseTokens();
+  const { hiddenTokens } = useHiddenTokens();
   const remoteConfig = useRemoteConfig('claimables', 'remote_cards_enabled');
   const experimentalConfig = useExperimentalConfig();
   const isWalletEthZero = useIsWalletEthZero();

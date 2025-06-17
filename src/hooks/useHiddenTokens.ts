@@ -3,17 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
 import { useIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
-import useWebData from './useWebData';
 import useFetchHiddenTokens, { hiddenTokensQueryKey } from './useFetchHiddenTokens';
-import { saveHiddenTokens } from '@/handlers/localstorage/accountLocal';
-import useAccountSettings from './useAccountSettings';
+import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
+import { logger } from '@/logger';
 
 export default function useHiddenTokens(address?: string) {
   const queryClient = useQueryClient();
-  const { updateWebHidden } = useWebData();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const accountAddress = useAccountAddress();
-  const { network } = useAccountSettings();
 
   const addressToUse = address || accountAddress;
 
@@ -23,14 +20,21 @@ export default function useHiddenTokens(address?: string) {
     mutationFn: async (asset: UniqueAsset) => {
       const lowercasedUniqueId = asset.uniqueId.toLowerCase();
       const newHiddenTokens = [...hiddenTokens, lowercasedUniqueId];
-      saveHiddenTokens(newHiddenTokens, addressToUse, network);
-      !isReadOnlyWallet && updateWebHidden(newHiddenTokens);
-
-      analytics.track(analytics.event.toggledAnNFTAsHidden, {
-        collectionContractAddress: asset.contractAddress,
-        collectionName: asset.collectionName,
-        isHidden: true,
-      });
+      if (!isReadOnlyWallet) {
+        const response = await getPreference('hidden', addressToUse);
+        if (!response || !response.hidden.ids.length) {
+          logger.debug('[useHiddenTokens] Initializing hidden tokens');
+          await setPreference(PreferenceActionType.init, 'hidden', addressToUse, newHiddenTokens);
+        } else {
+          logger.debug(`[useHiddenTokens] Adding hidden token ${lowercasedUniqueId} to hidden tokens`);
+          await setPreference(PreferenceActionType.update, 'hidden', addressToUse, newHiddenTokens);
+        }
+        analytics.track(analytics.event.toggledAnNFTAsHidden, {
+          collectionContractAddress: asset.contractAddress,
+          collectionName: asset.collectionName,
+          isHidden: true,
+        });
+      }
 
       return newHiddenTokens;
     },
@@ -55,14 +59,21 @@ export default function useHiddenTokens(address?: string) {
     mutationFn: async (asset: UniqueAsset) => {
       const lowercasedUniqueId = asset.uniqueId.toLowerCase();
       const newHiddenTokens = hiddenTokens.filter(id => id !== lowercasedUniqueId);
-      saveHiddenTokens(newHiddenTokens, addressToUse, network);
-      !isReadOnlyWallet && updateWebHidden(newHiddenTokens);
-
-      analytics.track(analytics.event.toggledAnNFTAsHidden, {
-        collectionContractAddress: asset.contractAddress,
-        collectionName: asset.collectionName,
-        isHidden: false,
-      });
+      if (!isReadOnlyWallet) {
+        const response = await getPreference('hidden', addressToUse);
+        if (!response || !response.hidden.ids.length) {
+          logger.debug('[useHiddenTokens] Initializing hidden tokens');
+          await setPreference(PreferenceActionType.init, 'hidden', addressToUse, newHiddenTokens);
+        } else {
+          logger.debug(`[useHiddenTokens] Removing hidden token ${lowercasedUniqueId} from hidden tokens`);
+          await setPreference(PreferenceActionType.update, 'hidden', addressToUse, newHiddenTokens);
+        }
+        analytics.track(analytics.event.toggledAnNFTAsHidden, {
+          collectionContractAddress: asset.contractAddress,
+          collectionName: asset.collectionName,
+          isHidden: false,
+        });
+      }
 
       return newHiddenTokens;
     },

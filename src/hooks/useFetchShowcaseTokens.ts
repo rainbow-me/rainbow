@@ -1,31 +1,39 @@
 import { useQuery } from '@tanstack/react-query';
-import useAccountSettings from './useAccountSettings';
-import { getShowcaseTokens } from '@/handlers/localstorage/accountLocal';
 import { getPreference } from '@/model/preferences';
 import { time } from '@/utils';
+import { queryClient } from '@/react-query';
 
-export const showcaseTokensQueryKey = ({ address }: { address?: string }) => ['showcase-tokens', address];
+export const showcaseTokensQueryKey = ({ address, network }: { address?: string; network?: string }) => [
+  'showcase-tokens',
+  address,
+  network,
+];
 
-export default function useFetchShowcaseTokens({ address }: { address?: string }) {
-  const { network } = useAccountSettings();
+const STABLE_ARRAY: string[] = [];
 
-  return useQuery<string[]>(
-    showcaseTokensQueryKey({ address }),
-    async () => {
-      if (!address) return [];
+async function getShowcase(address: string) {
+  if (!address) return STABLE_ARRAY;
 
-      let showcaseTokens = await getShowcaseTokens(address, network);
-      const showcaseTokensFromCloud = await getPreference('showcase', address);
-      if (showcaseTokensFromCloud?.showcase?.ids && showcaseTokensFromCloud?.showcase?.ids.length > 0) {
-        showcaseTokens = showcaseTokensFromCloud.showcase.ids;
-      }
+  const previousData = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address }));
+  const showcaseTokens = await getPreference('showcase', address);
+  if (showcaseTokens?.showcase?.ids && showcaseTokens?.showcase?.ids.length > 0) {
+    return showcaseTokens.showcase.ids;
+  }
 
-      return showcaseTokens;
-    },
-    {
-      enabled: Boolean(address),
-      cacheTime: time.hours(1),
-      staleTime: time.minutes(10),
-    }
-  );
+  return previousData ?? STABLE_ARRAY;
+}
+
+export async function fetchShowcaseTokens({ address }: { address: string }) {
+  return queryClient.fetchQuery({
+    queryKey: showcaseTokensQueryKey({ address }),
+    queryFn: () => getShowcase(address),
+  });
+}
+
+export default function useFetchShowcaseTokens({ address }: { address: string }) {
+  return useQuery<string[]>(showcaseTokensQueryKey({ address }), () => getShowcase(address), {
+    enabled: Boolean(address),
+    cacheTime: time.infinity,
+    staleTime: time.minutes(10),
+  });
 }

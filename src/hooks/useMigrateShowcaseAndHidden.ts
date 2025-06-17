@@ -12,8 +12,6 @@ import useAccountSettings from './useAccountSettings';
 import { logger } from '@/logger';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import useOpenFamilies from '@/hooks/useOpenFamilies';
-import useShowcaseTokens from '@/hooks/useShowcaseTokens';
-import useHiddenTokens from '@/hooks/useHiddenTokens';
 import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 
@@ -49,12 +47,10 @@ export function isDataComplete(tokens: string[]) {
 }
 
 export default function useMigrateShowcaseAndHidden() {
-  const { updateWebShowcase, updateWebHidden } = useWebData();
+  const { updateWebShowcase, updateWebHidden, showcaseTokens, hiddenTokens } = useWebData();
   const { updateOpenFamilies } = useOpenFamilies();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const { accountAddress } = useAccountSettings();
-  const { showcaseTokens } = useShowcaseTokens();
-  const { hiddenTokens } = useHiddenTokens();
 
   const migrateShowcaseAndHidden = useCallback(async () => {
     if (isReadOnlyWallet || (!showcaseTokens.length && !hiddenTokens.length)) {
@@ -158,8 +154,8 @@ export default function useMigrateShowcaseAndHidden() {
     }
 
     await Promise.all([
-      updateWebShowcase(migratedShowcaseTokens),
-      updateWebHidden(migratedHiddenTokens),
+      updateWebShowcase(accountAddress, migratedShowcaseTokens),
+      updateWebHidden(accountAddress, migratedHiddenTokens),
       queryClient.invalidateQueries({ queryKey: showcaseTokensQueryKey({ address: accountAddress }) }),
       queryClient.invalidateQueries({ queryKey: hiddenTokensQueryKey({ address: accountAddress }) }),
     ]).finally(() => {

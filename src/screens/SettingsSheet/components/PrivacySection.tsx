@@ -1,6 +1,6 @@
 import { analytics } from '@/analytics';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { useShowcaseTokens, useWebData } from '@/hooks';
+import { useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -16,12 +16,10 @@ import MenuItem from './MenuItem';
 const TRANSLATIONS = i18n.l.settings.privacy_section;
 
 const PrivacySection = () => {
-  const { showcaseTokens } = useShowcaseTokens();
-  const { webDataEnabled, initWebData, wipeWebData } = useWebData();
+  const { initWebData, wipeWebData, showcaseTokens } = useWebData();
   const { navigate } = useNavigation();
   const { accountENS } = useAccountProfileInfo();
 
-  const [publicShowCase, togglePublicShowcase] = useReducer(publicShowCase => !publicShowCase, webDataEnabled);
   const [analyticsEnabled, toggleAnalytics] = useReducer(
     analyticsEnabled => {
       if (analyticsEnabled) {
@@ -46,13 +44,12 @@ const PrivacySection = () => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const toggleWebData = useCallback(() => {
-    if (publicShowCase) {
+    if (showcaseTokens.length > 0) {
       wipeWebData();
     } else {
       initWebData(showcaseTokens);
     }
-    togglePublicShowcase();
-  }, [initWebData, publicShowCase, showcaseTokens, wipeWebData]);
+  }, [initWebData, showcaseTokens, wipeWebData]);
 
   return (
     <MenuContainer>
@@ -71,7 +68,7 @@ const PrivacySection = () => {
           disabled
           hasSfSymbol
           leftComponent={<MenuItem.TextIcon icon="􀏅" isLink />}
-          rightComponent={<Switch onValueChange={toggleWebData} value={publicShowCase} />}
+          rightComponent={<Switch onValueChange={toggleWebData} value={showcaseTokens.length > 0} />}
           size={52}
           testID="public-showcase"
           titleComponent={<MenuItem.Title text={i18n.t(TRANSLATIONS.public_showcase)} />}

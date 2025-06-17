@@ -6,8 +6,10 @@ import { time } from '@/utils';
 import { NftsState, NftParams, NftsQueryData, PaginationInfo, Collection } from './types';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
-import store from '@/redux/store';
 import { IS_DEV } from '@/env';
+import { queryClient } from '@/react-query';
+import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 
 export const PAGE_SIZE = 12;
 
@@ -20,40 +22,42 @@ export const mergeMaps = (map1: Map<string, Collection>, map2: Map<string, Colle
   );
 };
 
-// Helper function to get collection IDs from showcase tokens
-export const getShowcaseCollectionIds = (): Set<string> => {
-  const showcaseTokens = store.getState().showcaseTokens.showcaseTokens;
+export const getShowcaseCollectionIds = (address?: string): Set<string> => {
+  const showcaseTokens = queryClient.getQueryData<string[] | undefined>(showcaseTokensQueryKey({ address })) || [];
   const collectionIds = new Set<string>();
 
-  showcaseTokens.forEach(token => {
-    const parsed = parseUniqueId(token);
-    if (parsed.network && parsed.contractAddress) {
-      const network = replaceEthereumWithMainnet(parsed.network);
-      if (network) {
-        const collectionId = `${network}_${parsed.contractAddress}`.toLowerCase();
-        collectionIds.add(collectionId);
+  if (showcaseTokens && Array.isArray(showcaseTokens)) {
+    showcaseTokens.forEach((token: string) => {
+      const parsed = parseUniqueId(token);
+      if (parsed.network && parsed.contractAddress) {
+        const network = replaceEthereumWithMainnet(parsed.network);
+        if (network) {
+          const collectionId = `${network}_${parsed.contractAddress}`.toLowerCase();
+          collectionIds.add(collectionId);
+        }
       }
-    }
-  });
+    });
+  }
 
   return collectionIds;
 };
 
-// Helper function to get collection IDs from hidden tokens
-export const getHiddenCollectionIds = (): Set<string> => {
-  const hiddenTokens = store.getState().hiddenTokens.hiddenTokens;
+export const getHiddenCollectionIds = (address?: string): Set<string> => {
+  const hiddenTokens = queryClient.getQueryData<string[] | undefined>(hiddenTokensQueryKey({ address })) || [];
   const collectionIds = new Set<string>();
 
-  hiddenTokens.forEach(token => {
-    const parsed = parseUniqueId(token);
-    if (parsed.network && parsed.contractAddress) {
-      const network = replaceEthereumWithMainnet(parsed.network);
-      if (network) {
-        const collectionId = `${network}_${parsed.contractAddress}`.toLowerCase();
-        collectionIds.add(collectionId);
+  if (hiddenTokens && Array.isArray(hiddenTokens)) {
+    hiddenTokens.forEach((token: string) => {
+      const parsed = parseUniqueId(token);
+      if (parsed.network && parsed.contractAddress) {
+        const network = replaceEthereumWithMainnet(parsed.network);
+        if (network) {
+          const collectionId = `${network}_${parsed.contractAddress}`.toLowerCase();
+          collectionIds.add(collectionId);
+        }
       }
-    }
-  });
+    });
+  }
 
   return collectionIds;
 };
@@ -77,11 +81,14 @@ export const replaceEthereumWithMainnet = (network: string | undefined) => {
 };
 
 const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string): Promise<NftsQueryData> => {
-  const tokensForCategory =
-    collectionId === 'showcase' ? store.getState().showcaseTokens.showcaseTokens : store.getState().hiddenTokens.hiddenTokens;
+  // Get tokens from React Query cache
+  const showcaseTokens = queryClient.getQueryData(showcaseTokensQueryKey({ address: walletAddress })) as string[] | undefined;
+  const hiddenTokens = queryClient.getQueryData(hiddenTokensQueryKey({ address: walletAddress })) as string[] | undefined;
+
+  const tokensForCategory = collectionId === 'showcase' ? showcaseTokens || [] : hiddenTokens || [];
 
   const tokens = tokensForCategory
-    .map(token => parseUniqueId(token))
+    .map((token: string) => parseUniqueId(token))
     .filter(p => p.network && p.contractAddress && p.tokenId)
     .reduce(
       (acc, curr) => {
@@ -385,8 +392,8 @@ function setOrPruneNftsData(
       const updatedFetchedCollections = { ...fetchedCollections };
 
       // Get showcase and hidden collection IDs for proper detection
-      const showcaseCollectionIds = getShowcaseCollectionIds();
-      const hiddenCollectionIds = getHiddenCollectionIds();
+      const showcaseCollectionIds = getShowcaseCollectionIds(params.walletAddress);
+      const hiddenCollectionIds = getHiddenCollectionIds(params.walletAddress);
       const isShowcaseOpen = params.openCollections?.includes('showcase') ?? false;
       const isHiddenOpen = params.openCollections?.includes('hidden') ?? false;
 
