@@ -6,12 +6,8 @@ import { coerceToArray } from '../helpers/coerceToArray';
 import { withStaticProperties } from '../helpers/withStaticProperties';
 import { memoFn } from '../utils/memoFn';
 
-export type RainbowImagePriority = 'low' | 'normal' | 'high' | 'veryHigh' | undefined;
-
-export type RainbowImageSource = ImageOptions;
-
 export type RainbowImageProps = {
-  source: FasterImageProps['source'];
+  source: ImageOptions;
   onError?: FasterImageProps['onError'];
   onSuccess?: FasterImageProps['onSuccess'];
   style?: FasterImageProps['style'];
