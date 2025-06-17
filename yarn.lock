@@ -5245,17 +5245,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/rainbow-delegation@git+ssh://git@github.com/rainbow-me/rainbow-delegation.git":
-  version: 1.0.0
-  resolution: "@rainbow-me/rainbow-delegation@git+ssh://git@github.com/rainbow-me/rainbow-delegation.git#commit=02cb10cae564a3e77ef262fbdf501677ccd37ca2"
-  dependencies:
-    "@wagmi/chains": "npm:^1.8.0"
-  peerDependencies:
-    viem: ^2.30.5
-  checksum: 10c0/d3ccbec13febb16a4e107a4f28766668ea2e3167081e4c1b5b63b166ed58733f15de5c9242466b4d551ae3074f31fd7718d0f072d89be887a10e4a58ef46e410
-  languageName: node
-  linkType: hard
-
 "@rainbow-me/react-native-animated-number@npm:0.0.2":
   version: 0.0.2
   resolution: "@rainbow-me/react-native-animated-number@npm:0.0.2"
@@ -7978,7 +7967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/chains@npm:1.8.0, @wagmi/chains@npm:^1.8.0":
+"@wagmi/chains@npm:1.8.0":
   version: 1.8.0
   resolution: "@wagmi/chains@npm:1.8.0"
   peerDependencies:
@@ -8798,7 +8787,6 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.1.2"
-    "@rainbow-me/rainbow-delegation": "git+ssh://git@github.com/rainbow-me/rainbow-delegation.git"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.36.0"
     "@rainbow-me/token-launcher": "npm:0.1.0"

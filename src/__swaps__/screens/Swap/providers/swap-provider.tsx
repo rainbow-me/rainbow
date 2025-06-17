@@ -48,16 +48,7 @@ import { RapSwapActionParameters } from '@/raps/references';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getNextNonce } from '@/state/nonces';
-import {
-  CrosschainQuote,
-  ETH_ADDRESS,
-  getTargetAddress,
-  isAllowedTargetContract,
-  prepareFillQuote,
-  Quote,
-  QuoteError,
-  SwapType,
-} from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError, SwapType } from '@rainbow-me/swaps';
 import { IS_IOS } from '@/env';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
@@ -69,14 +60,12 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getSwapsNavigationParams } from '../navigateToSwaps';
 import showWalletErrorAlert from '@/helpers/support';
-import { getRemoteConfig } from '@/model/remoteConfig';
+import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
-import { getCanDelegate } from '@rainbow-me/rainbow-delegation';
-import { assetNeedsUnlocking } from '@/raps/actions';
 import { useWallets } from '@/hooks';
-import { encodeFunctionData, Address, erc20Abi, WalletClient, PublicClient, Chain, parseAbi, Authorization, parseTransaction } from 'viem';
-import { ethers, Signer } from 'ethers';
+import { getShouldDelegate, walletExecuteWithDelegate } from '@/delegateActions';
+import { ATOMIC_SWAPS, useExperimentalFlag } from '@/config';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -257,22 +246,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     slippage,
   });
 
-  const { degenMode } = SwapSettings;
+  const atomicSwapsEnabled = useExperimentalFlag(ATOMIC_SWAPS);
+  const config = useRemoteConfig();
 
-  const getShouldDelegate = async (
-    type: 'swap' | 'crosschainSwap',
-    parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>
-  ) => {
-    const canDelegate = getCanDelegate(parameters.chainId);
-    const needsUnlocking = await assetNeedsUnlocking({
-      owner: parameters.quote.from as `0x${string}`,
-      amount: parameters.quote.sellAmount.toString(),
-      assetToUnlock: parameters.assetToSell,
-      spender: parameters.quote.from as `0x${string}`,
-      chainId: parameters.chainId,
-    });
-    return canDelegate && needsUnlocking && !isHardwareWallet;
-  };
+  const { degenMode } = SwapSettings;
 
   const getNonceAndPerformSwap = async ({
     type,
@@ -283,7 +260,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   }) => {
     try {
       const degenMode = swapsStore.getState().degenMode;
-      const shouldDelegate = await getShouldDelegate(type, parameters);
+      const shouldDelegate =
+        (atomicSwapsEnabled || config.atomic_swaps_enabled) &&
+        (await getShouldDelegate(parameters.chainId, parameters.quote as Quote | CrosschainQuote, parameters.assetToSell));
       const selectedGas = getSelectedGas(parameters.chainId);
 
       const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
@@ -291,23 +270,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const nonce = await getNextNonce({ address: parameters.quote.from, chainId });
 
       const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
-
-      const provider = getProvider({ chainId: parameters.chainId });
-      const wallet = await performanceTracking.getState().executeFn({
-        fn: loadWallet,
-        screen: Screens.SWAPS,
-        operation: TimeToSignOperation.KeychainRead,
-        metadata: { degenMode },
-      })({
-        address: parameters.quote.from,
-        showErrorIfNotLoaded: false,
-        provider,
-        timeTracking: {
-          screen: Screens.SWAPS,
-          operation: TimeToSignOperation.Authentication,
-          metadata: { degenMode },
-        },
-      });
 
       if (!selectedGas) {
         isSwapping.value = false;
@@ -341,37 +303,19 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
             metadata: { degenMode },
           },
         });
-
         if (!walletViem) {
           isSwapping.value = false;
           triggerHaptics('notificationError');
           showWalletErrorAlert();
           return;
         }
-
-        console.log('walletViem', walletViem);
-
-        // Debug the account type
-        console.log('=== ACCOUNT DEBUG ===');
-        console.log('walletViem.account:', walletViem?.account);
-        console.log('account type:', walletViem?.account?.type);
-        console.log('account source:', walletViem?.account?.source);
-        console.log('account address:', walletViem?.account?.address);
-        console.log('has signMessage:', typeof walletViem?.account?.signMessage);
-        console.log('has signTransaction:', typeof walletViem?.account?.signTransaction);
-        console.log('has signTypedData:', typeof walletViem?.account?.signTypedData);
-        console.log('chain info:', publicClient?.chain);
-        console.log('walletClient chain:', walletViem?.chain);
-        console.log('=== END ACCOUNT DEBUG ===');
-
-        walletExecuteWithDelegate({
-          walletViem,
-          walletEthers: wallet as Signer,
+        const { error } = await walletExecuteWithDelegate({
+          walletClient: walletViem,
           publicClient,
           type,
-          parameters,
+          parameters: { ...parameters, gasParams },
         });
-        return;
+        errorMessage = error;
       } else {
         const provider = getProvider({ chainId: parameters.chainId });
         const wallet = await performanceTracking.getState().executeFn({
@@ -389,14 +333,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
             metadata: { degenMode },
           },
         });
-
         if (!wallet) {
           isSwapping.value = false;
           triggerHaptics('notificationError');
           showWalletErrorAlert();
           return;
         }
-
         const { errorMessage: errorMessageFromWallet } = await performanceTracking.getState().executeFn({
           fn: walletExecuteRap,
           screen: Screens.SWAPS,
@@ -482,92 +424,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     // reset the last navigated trending token after a swap has taken place
     swapsStore.setState({ lastNavigatedTrendingToken: undefined });
-  };
-
-  const walletExecuteWithDelegate = async ({
-    walletViem,
-    walletEthers,
-    publicClient,
-    type,
-    parameters,
-  }: {
-    walletViem: WalletClient;
-    walletEthers: Signer;
-    publicClient: PublicClient;
-    type: 'swap' | 'crosschainSwap';
-    parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
-  }) => {
-    try {
-      console.log('wallet execute with delegate 0');
-      if (!walletViem) {
-        isSwapping.value = false;
-        triggerHaptics('notificationError');
-        showWalletErrorAlert();
-        return;
-      }
-      const { sellAmount, quote, chainId, assetToSell, assetToBuy } = parameters;
-      const targetAddress = getTargetAddress(quote);
-      console.log('wallet execute with delegate 2');
-      if (!targetAddress) {
-        throw new Error('Target address not found');
-      }
-      console.log('wallet execute with delegate 3');
-      const isAllowedTarget = isAllowedTargetContract(targetAddress, chainId as number);
-      if (!isAllowedTarget) {
-        throw new Error('Target address not allowed');
-      }
-      console.log('wallet execute with delegate 4');
-      // approve
-      const assetToUnlock = assetToSell;
-      const assetToUnlockAddress = assetToUnlock.address;
-      console.log('wallet execute with delegate 5');
-      if (assetToUnlockAddress === ETH_ADDRESS) {
-        throw new Error('Native ETH cannot be unlocked');
-      }
-      console.log('wallet execute with delegate 6');
-      const MAX_UINT = 2n ** 256n - 1n;
-      console.log('wallet execute with delegate 7');
-      const approveCalldata = encodeFunctionData({
-        abi: erc20Abi,
-        functionName: 'approve',
-        args: [quote.allowanceTarget as Address, MAX_UINT],
-      });
-      console.log('wallet execute with delegate 8');
-      if (type === 'swap') {
-        console.log('wallet execute with delegate 9');
-        const swapCalldata = await prepareFillQuote(quote, {}, walletEthers, false, chainId, 'native-app');
-
-        console.log('wallet execute with delegate 9.5 - swapCalldata type check:', {
-          swapCalldata,
-          hasTo: 'to' in swapCalldata,
-          hasValue: 'value' in swapCalldata,
-          hasData: 'data' in swapCalldata,
-          toType: typeof swapCalldata.to,
-          to: swapCalldata.to,
-        });
-
-        // Convert swapCalldata to proper BatchCall format
-        const swapCall: BatchCall = {
-          to: swapCalldata.to as `0x${string}`,
-          value: 0n,
-          data: swapCalldata.data as `0x${string}`,
-        };
-
-        const tx = await executeBatchedTransaction({
-          walletClient: walletViem,
-          publicClient: publicClient,
-          calls: [{ data: approveCalldata, to: assetToUnlockAddress as `0x${string}`, value: 0n }, swapCall],
-          revertOnFailure: false,
-        });
-
-        console.log('approveCalldata', approveCalldata);
-        console.log('swapCalldata', swapCalldata);
-      } else if (type === 'crosschainSwap') {
-        console.log('wallet execute with delegate 10');
-      }
-    } catch (error) {
-      console.log('error', error);
-    }
   };
 
   const executeSwap = performanceTracking.getState().executeFn({
@@ -1201,365 +1057,6 @@ export const useSwapContext = () => {
     throw new Error('useSwapContext must be used within a SwapProvider');
   }
   return context;
-};
-
-import { mainnet, polygon, base, optimism, bsc, sepolia } from '@wagmi/chains';
-
-// Export supported chains for easy access
-export const SUPPORTED_CHAINS = {
-  mainnet,
-  polygon,
-  base,
-  optimism,
-  bsc,
-  sepolia,
-} as const;
-
-// Create a lookup map for chain ID to chain object
-const CHAIN_LOOKUP: Record<number, Chain> = {
-  [mainnet.id]: mainnet,
-  [polygon.id]: polygon,
-  [base.id]: base,
-  [optimism.id]: optimism,
-  [bsc.id]: bsc,
-  [sepolia.id]: sepolia,
-};
-
-// Constants for delegation addresses across different chains
-export const DELEGATION_ADDRESSES: Record<number, string> = {
-  [mainnet.id]: '0x000000009B1D0aF20D8C6d0A44e162d11F9b8f00',
-  [polygon.id]: '0x000000009B1D0aF20D8C6d0A44e162d11F9b8f00',
-  [base.id]: '0x000000009B1D0aF20D8C6d0A44e162d11F9b8f00',
-  [optimism.id]: '0x000000009B1D0aF20D8C6d0A44e162d11F9b8f00',
-  [bsc.id]: '0x000000009B1D0aF20D8C6d0A44e162d11F9b8f00',
-  [sepolia.id]: '0x000000009B1D0aF20D8C6d0A44e162d11F9b8f00',
-  [11155420]: '0x000000009B1D0aF20D8C6d0A44e162d11F9b8f00',
-};
-
-// Helper to get all supported chain IDs
-export const getSupportedChainIds = (): number[] => {
-  return Object.keys(DELEGATION_ADDRESSES).map(Number);
-};
-
-// Helper to get chain info by ID
-export const getChainInfo = (chainId: number): Chain | null => {
-  return CHAIN_LOOKUP[chainId] || null;
-};
-
-// Helper to get chain name by ID
-export const getChainName = (chainId: number): string => {
-  const chain = getChainInfo(chainId);
-  return chain?.name || `Chain ${chainId}`;
-};
-
-// Minimal delegation ABI for executing batched calls
-export const minimalDelegationExecAbi = parseAbi([
-  'function execute(((address to,uint256 value,bytes data)[] calls,bool revertOnFailure) batched) returns(bytes[])',
-]);
-
-// Types
-export interface BatchCall {
-  to: Address;
-  value: bigint;
-  data: `0x${string}`;
-}
-
-export interface BatchExecutionResult {
-  txHash?: `0x${string}`;
-  txHashes?: `0x${string}`[];
-  isDelegated: boolean;
-  authorizationUsed?: boolean;
-}
-
-export interface ExecuteBatchedTransactionParams {
-  calls: BatchCall[];
-  walletClient: WalletClient;
-  publicClient: PublicClient;
-  revertOnFailure?: boolean;
-}
-
-// /**
-//  * Check if delegation is supported on the given chain
-//  */
-// export const getCanDelegate = (chainId: number): boolean => {
-//   // Validate input is a valid number
-//   if (typeof chainId !== 'number' || isNaN(chainId) || !Number.isInteger(chainId)) {
-//     return false;
-//   }
-
-//   return DELEGATION_ADDRESSES[chainId] !== undefined;
-// };
-
-/**
- * Check if delegation is supported on the given chain (with detailed info)
- */
-export const getCanDelegateWithInfo = (
-  chainId: number
-): {
-  canDelegate: boolean;
-  chainName: string;
-  delegationAddress?: string;
-} => {
-  const canDelegate = getCanDelegate(chainId);
-  const chainName = getChainName(chainId);
-  const delegationAddress = canDelegate ? DELEGATION_ADDRESSES[chainId] : undefined;
-
-  return { canDelegate, chainName, delegationAddress };
-};
-
-/**
- * Check if an address is currently delegated using EIP-7702
- */
-export const getIsDelegated = async ({
-  address,
-  chainId,
-  publicClient,
-}: {
-  address: Address;
-  chainId: number;
-  publicClient: PublicClient;
-}): Promise<boolean> => {
-  const code = await publicClient.getCode({ address: address });
-  const delegationAddress = DELEGATION_ADDRESSES[chainId];
-  if (!delegationAddress) return false;
-
-  const indicator = `0xef0100${delegationAddress.slice(2).toLowerCase()}`;
-  return code?.toLowerCase() === indicator;
-};
-
-/**
- * Wait for transaction receipts from a batch execution result
- *
- * @param result - The result from executeBatchedTransaction
- * @param publicClient - Public client for reading transaction receipts
- * @returns Promise with receipt(s) for the executed transaction(s)
- */
-export const waitForBatchReceipts = async (
-  result: BatchExecutionResult,
-  publicClient: PublicClient
-): Promise<{
-  receipt?: any;
-  receipts?: any[];
-}> => {
-  if (result.txHash) {
-    // Single delegated transaction
-    const receipt = await publicClient.waitForTransactionReceipt({
-      hash: result.txHash,
-    });
-    return { receipt };
-  } else if (result.txHashes) {
-    // Multiple sequential transactions
-    const receipts = await Promise.all(result.txHashes.map(hash => publicClient.waitForTransactionReceipt({ hash })));
-    return { receipts };
-  }
-
-  throw new Error('No transaction hashes found in result');
-};
-
-/**
- * Execute batched transactions with optional EIP-7702 delegation
- *
- * @param params - Configuration object containing calls, clients, and options
- * @returns Transaction result with delegation status information
- */
-export const executeBatchedTransaction = async ({
-  calls,
-  walletClient,
-  publicClient,
-  revertOnFailure = true,
-}: ExecuteBatchedTransactionParams): Promise<BatchExecutionResult> => {
-  console.log('🚀 [RAINBOW-DELEGATION] Starting executeBatchedTransaction');
-  console.log('📊 [RAINBOW-DELEGATION] Input parameters:', {
-    callsCount: calls?.length,
-    revertOnFailure,
-    hasWalletClient: !!walletClient,
-    hasPublicClient: !!publicClient,
-    walletClientChain: walletClient?.chain?.id,
-    calls: calls?.map(call => ({
-      to: call.to,
-      value: call.value.toString(),
-      dataLength: call.data?.length || 0,
-    })),
-  });
-
-  if (!walletClient.account) {
-    console.log('❌ [RAINBOW-DELEGATION] No wallet account found');
-    throw new Error('Wallet client must have an account');
-  }
-
-  if (!calls || calls.length === 0) {
-    console.log('❌ [RAINBOW-DELEGATION] No calls provided');
-    throw new Error('At least one call must be provided');
-  }
-
-  const userAddress = walletClient.account.address;
-  console.log('👤 [RAINBOW-DELEGATION] User address:', userAddress);
-  console.log('🔧 [RAINBOW-DELEGATION] Account details:', {
-    type: walletClient.account.type,
-    source: walletClient.account.source,
-    address: walletClient.account.address,
-    hasSignMessage: typeof walletClient.account.signMessage,
-    hasSignTransaction: typeof walletClient.account.signTransaction,
-    hasSignTypedData: typeof walletClient.account.signTypedData,
-    hasSignAuthorization: typeof walletClient.signAuthorization,
-  });
-
-  const chainId = await publicClient.getChainId();
-  console.log('🔗 [RAINBOW-DELEGATION] Chain ID from publicClient:', chainId);
-
-  const chainName = getChainName(chainId);
-  console.log('🏷️ [RAINBOW-DELEGATION] Chain name:', chainName);
-
-  const chain = walletClient.chain;
-  console.log('⛓️ [RAINBOW-DELEGATION] WalletClient chain:', {
-    id: chain?.id,
-    name: chain?.name,
-    testnet: chain?.testnet,
-  });
-
-  const canDelegate = getCanDelegate(chainId);
-  console.log('✅ [RAINBOW-DELEGATION] Can delegate on this chain:', canDelegate);
-  console.log('📍 [RAINBOW-DELEGATION] Delegation address:', DELEGATION_ADDRESSES[chainId]);
-
-  if (!canDelegate) {
-    console.log('🔄 [RAINBOW-DELEGATION] Delegation not supported, executing calls sequentially');
-    // If delegation is not supported, execute calls sequentially
-    const txHashes: `0x${string}`[] = [];
-
-    for (const call of calls) {
-      console.log('📤 [RAINBOW-DELEGATION] Sending sequential transaction:', {
-        to: call.to,
-        value: call.value.toString(),
-        dataLength: call.data.length,
-      });
-
-      const txHash = await walletClient.sendTransaction({
-        account: walletClient.account,
-        chain,
-        to: call.to,
-        value: call.value,
-        data: call.data,
-      });
-      console.log('✅ [RAINBOW-DELEGATION] Sequential tx hash:', txHash);
-      txHashes.push(txHash);
-    }
-
-    console.log('🎉 [RAINBOW-DELEGATION] All sequential transactions sent successfully');
-    return {
-      txHashes,
-      isDelegated: false,
-    };
-  }
-
-  console.log('🔍 [RAINBOW-DELEGATION] Checking if address is already delegated...');
-  // Check if the address is already delegated
-  const isDelegated = await getIsDelegated({
-    address: userAddress,
-    chainId,
-    publicClient,
-  });
-  console.log('🎯 [RAINBOW-DELEGATION] Is already delegated:', isDelegated);
-
-  const delegationAddress = DELEGATION_ADDRESSES[chainId] as Address;
-  console.log('🏠 [RAINBOW-DELEGATION] Using delegation address:', delegationAddress);
-
-  // Prepare the batched execution calldata
-  console.log('📦 [RAINBOW-DELEGATION] Encoding batched execution calldata...');
-  const delegateCalldata = encodeFunctionData({
-    abi: minimalDelegationExecAbi,
-    functionName: 'execute',
-    args: [{ calls, revertOnFailure }],
-  });
-
-  console.log('📝 [RAINBOW-DELEGATION] Delegate calldata:', {
-    length: delegateCalldata.length,
-    preview: delegateCalldata.slice(0, 42) + '...',
-  });
-
-  let auth: Authorization | undefined;
-
-  if (!isDelegated) {
-    console.log('🔐 [RAINBOW-DELEGATION] Need to sign authorization (not delegated yet)');
-    try {
-      // Sign authorization if not already delegated
-      auth = await walletClient.signAuthorization({
-        account: walletClient.account,
-        contractAddress: delegationAddress,
-        executor: 'self',
-      });
-    } catch (error) {
-      console.log('❌ [RAINBOW-DELEGATION] Failed to sign authorization:', error);
-      console.log('🔍 [RAINBOW-DELEGATION] Authorization error details:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      });
-      throw new Error(`Failed to sign authorization for ${chainName} (chain ${chainId}): ${error}`);
-    }
-  } else {
-    console.log('✅ [RAINBOW-DELEGATION] Address already delegated, no authorization needed');
-  }
-
-  try {
-    const txRequest = await walletClient.prepareTransactionRequest({
-      to: walletClient.account.address,
-      data: delegateCalldata,
-      authorizationList: auth ? [auth] : [],
-      type: 'eip7702',
-      chain: chain,
-    });
-
-    const bigIntReplacer = (key: string, value: any) => {
-      if (typeof value === 'bigint') {
-        // Return hex string that can be directly used in RPC calls
-        return '0x' + value.toString(16);
-      }
-      return value;
-    };
-
-    console.log('raw txRequest: ', JSON.stringify(txRequest, bigIntReplacer, 2));
-
-    // 3. Sign & decode with ethers
-    const signed = await walletClient.signTransaction(txRequest);
-    console.log('signed:', JSON.stringify(signed, bigIntReplacer, 2));
-    const parsed = parseTransaction(signed);
-    console.log('parsed:', JSON.stringify(parsed, bigIntReplacer, 2));
-
-    const gasLimit = await publicClient.estimateGas({
-      account: walletClient.account,
-      to: userAddress,
-      data: delegateCalldata,
-      ...(auth ? { authorizationList: [auth] } : {}),
-    });
-
-    // Send the transaction
-    // const txHash = await walletClient.sendTransaction({
-    //   account: walletClient.account,
-    //   chain,
-    //   to: userAddress,
-    //   data: delegateCalldata,
-    //   gasLimit: gasLimit,
-    //   accessList: [],
-    //   ...(auth ? { authorizationList: [auth] } : {}),
-    // });
-
-    return {
-      txHash: '',
-      isDelegated,
-      authorizationUsed: !isDelegated,
-    };
-  } catch (error) {
-    console.log('❌ [RAINBOW-DELEGATION] Failed to execute batched transaction:', error);
-    console.log('🔍 [RAINBOW-DELEGATION] Transaction error details:', {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      chainId,
-      chainName,
-      userAddress,
-      delegationAddress,
-      hasAuth: !!auth,
-    });
-    throw new Error(`Failed to execute batched transaction on ${chainName} (chain ${chainId}): ${error}`);
-  }
 };
 
 export { NavigationSteps };

@@ -101,7 +101,6 @@
     "@metamask/eth-sig-util": "7.0.2",
     "@notifee/react-native": "7.8.2",
     "@rainbow-me/provider": "0.1.2",
-    "@rainbow-me/rainbow-delegation": "git+ssh://git@github.com/rainbow-me/rainbow-delegation.git",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.36.0",
     "@rainbow-me/token-launcher": "0.1.0",

@@ -397,8 +397,6 @@ export const loadWalletViem = async <S extends Screen>({
     const chainId = publicClient.chain?.id || ChainId.mainnet;
     const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
 
-    console.log('public client chain:', publicClient.chain);
-
     // Create wallet client with the account and a new transport
     const walletClient = createWalletClient({
       chain: publicClient.chain,
