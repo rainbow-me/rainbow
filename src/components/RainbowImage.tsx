@@ -119,12 +119,12 @@ const getHandlerFromType = (extension: DetectedImageExtension): ImageHandler => 
 };
 
 const getImageType = memoFn((path: string): DetectedImageExtension => {
-  if (path.includes('imgix.net')) {
-    const [type = 'png'] = path.match(/fm=[a-z]+/) || [];
-    return fastImageExtension[type as FastImageExtensions] || 'unknown';
-  }
   try {
     const url = new URL(path);
+    if (url.host.includes('imgix.net')) {
+      const [type = 'png'] = path.match(/fm=[a-z]+/) || [];
+      return fastImageExtension[type as FastImageExtensions] || 'unknown';
+    }
     const pathname = url.pathname;
     const extension = pathname.split('.').pop()?.toLowerCase() || '';
     return fastImageExtension[extension as FastImageExtensions] || 'unknown';
