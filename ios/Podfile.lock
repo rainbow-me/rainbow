@@ -1853,7 +1853,7 @@ PODS:
     - React
   - react-native-version-number (0.3.6):
     - React
-  - react-native-video (6.13.0):
+  - react-native-video (6.15.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1868,7 +1868,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - react-native-video/Video (= 6.13.0)
+    - react-native-video/Video (= 6.15.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1878,7 +1878,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-video/Video (6.13.0):
+  - react-native-video/Video (6.15.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2633,7 +2633,7 @@ PODS:
     - CocoaAsyncSocket
     - React
   - TOCropViewController (2.7.4)
-  - ToolTipMenu (5.2.1):
+  - ToolTipMenu (5.2.2):
     - React
   - TurboHaptics (1.0.5):
     - DoubleConversion
@@ -3319,7 +3319,7 @@ SPEC CHECKSUMS:
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
   react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
-  react-native-video: 44253ad8f35d5f1ff1f69e15da07701b9437d2d4
+  react-native-video: 6fa10431df5753a4f40ff054898a3634f7123c5e
   react-native-view-shot: 2e5535ddb51e7b54fbe710e65733bb8bedfedabb
   react-native-webview: 1b5778b306d4ed09d13829a6e7a6550e3c1a644a
   react-native-widgetkit: 9138fc58146c4f39771516ea9ef0e2d6fb20a9cd
@@ -3397,7 +3397,7 @@ SPEC CHECKSUMS:
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TcpSockets: 6f304a519884e6e8b1336c64e362c4ad10acd63d
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
-  ToolTipMenu: 490f8094d1bc7387bfb2e5ceb5027cc21f5b7bf3
+  ToolTipMenu: 02818a3d81f91817bbe4f5993997c70909e1bb27
   TurboHaptics: 47cb208cdb63c2fcd2b85b5823912b91ed087b07
   VisionCamera: 7aaae584148bbc250e81b5662e45a7f25c18be2e
   Yoga: c758bfb934100bb4bf9cbaccb52557cee35e8bdf

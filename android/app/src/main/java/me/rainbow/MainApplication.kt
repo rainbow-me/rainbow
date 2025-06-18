@@ -46,9 +46,7 @@ class MainApplication : Application(), ReactApplication {
             return packages
         }
 
-        override fun getJSMainModuleName(): String {
-            return ".expo/.virtual-metro-entry"
-        }
+        override fun getJSMainModuleName(): String = "index"
 
         override val isNewArchEnabled: Boolean
             get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED

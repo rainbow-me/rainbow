@@ -9627,7 +9627,7 @@ __metadata:
     react-native-udp: "npm:2.7.0"
     react-native-url-polyfill: "npm:2.0.0"
     react-native-version-number: "npm:0.3.6"
-    react-native-video: "npm:6.13.0"
+    react-native-video: "npm:6.15.0"
     react-native-view-shot: "npm:4.0.2"
     react-native-vision-camera: "npm:4.6.4"
     react-native-webview: "npm:13.13.5"
@@ -23923,13 +23923,13 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"react-native-video@npm:6.13.0":
-  version: 6.13.0
-  resolution: "react-native-video@npm:6.13.0"
+"react-native-video@npm:6.15.0":
+  version: 6.15.0
+  resolution: "react-native-video@npm:6.15.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/99fa383a2423adddd6de1584cf98e1f3c4e5ddc9fbe35e4f3e96b1fa0e8b4a4ba57ea26a2572bbffcfc0634bc81f58e5ac035c25f617b6cfb23bee2f71c26782
+  checksum: 10c0/4615358dbff75745a613c1b316ce2155574d49f3d21da2c792dd4ffc8f9d6aaeeb08d07b77a031ae00293bee7095e7ccf9e5e5ee5299e167a9fce13fffb330e8
   languageName: node
   linkType: hard
 
