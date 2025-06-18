@@ -80,8 +80,10 @@ const ActivityList = () => {
   // Flatten sections into a single data array for LegendList
   const flatData = useMemo(() => {
     const items: (TransactionItemForSectionList | { type: 'section-header'; section: TransactionSections })[] = [];
+
+    console.log('make sections', sections.length);
+
     sections.forEach(section => {
-      console.log('PUSH', JSON.stringify(section, null, 2));
       if (section.data.length > 0) {
         items.push({ type: 'section-header', section });
         items.push(...section.data);
