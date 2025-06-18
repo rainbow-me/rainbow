@@ -87,8 +87,8 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       )}
       {shouldShowRegularImage && (
         <>
-          <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} containerStyle={StyleSheet.absoluteFill} />
-          {!isLoaded && lowResImageUrl && <RainbowImage source={{ url: lowResImageUrl }} containerStyle={StyleSheet.absoluteFill} />}
+          <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />
+          {!isLoaded && lowResImageUrl && <RainbowImage source={{ url: lowResImageUrl }} style={StyleSheet.absoluteFillObject} />}
         </>
       )}
       {isHiddenToken && isCard && <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}

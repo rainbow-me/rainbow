@@ -1,8 +1,7 @@
 import { FasterImageView, ImageOptions, type FasterImageProps } from '@candlefinance/faster-image';
 import React from 'react';
-import { Image, RegisteredStyle, View, ViewStyle } from 'react-native';
+import { Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { coerceToArray } from '../helpers/coerceToArray';
 import { withStaticProperties } from '../helpers/withStaticProperties';
 import { memoFn } from '../utils/memoFn';
 
@@ -11,7 +10,6 @@ export type RainbowImageProps = {
   onError?: FasterImageProps['onError'];
   onSuccess?: FasterImageProps['onSuccess'];
   style?: FasterImageProps['style'];
-  containerStyle?: ViewStyle | RegisteredStyle<ViewStyle>;
 };
 
 /**
@@ -22,66 +20,70 @@ export type RainbowImageProps = {
  *
  * @param props - source URL and other image properties
  */
-const RainbowImageInternal = ({ containerStyle, ...props }: RainbowImageProps) => {
-  const imageElement = (() => {
-    const extension = getImageType(props.source.url);
-    const handler = getHandlerFromType(extension);
+const RainbowImageInternal = ({ style, source, onError, onSuccess }: RainbowImageProps) => {
+  const extension = getImageType(source.url);
+  const handler = getHandlerFromType(extension);
 
-    if (handler === 'faster-image') {
-      return <FasterImageView {...props} style={[{ flex: 1 }, ...coerceToArray(props.style || [])]} />;
-    }
-
-    if (handler === 'fast-image') {
-      return (
-        <FastImage
-          source={{
-            uri: props.source.url,
-            headers: props.source.headers,
-            // for next version of react native faster image
-            // priority: props.source.priority === 'veryLow' ? 'low' : props.source.priority === 'veryHigh' ? 'high' : props.source.priority,
-          }}
-          // @ts-expect-error fast-image defines a custom style that's a superset and a bit odd, but this should work
-          style={[{ flex: 1 }, ...coerceToArray(props.style)]}
-          onError={() => {
-            props.onError?.({ nativeEvent: { error: 'Error loading image' } });
-          }}
-          onLoad={e => {
-            props.onSuccess?.({
-              nativeEvent: {
-                width: e.nativeEvent.width,
-                height: e.nativeEvent.height,
-                source: props.source.url,
-              },
-            });
-          }}
-        />
-      );
-    }
-
-    // slowest but supports svg, data:, etc
+  if (handler === 'faster-image') {
     return (
-      <Image
-        style={props.style}
-        source={{ uri: props.source.url }}
-        onError={props.onError}
-        onLoad={e =>
-          props.onSuccess?.({
-            nativeEvent: {
-              width: e.nativeEvent.source.width,
-              height: e.nativeEvent.source.height,
-              source: props.source.url,
-            },
-          })
-        }
+      <FasterImageView
+        onError={onError}
+        onSuccess={onSuccess}
+        source={{
+          // aligns default resizeMode to match fast-image and RN Image
+          resizeMode: 'cover',
+          ...source,
+        }}
+        style={style || []}
       />
     );
-  })();
-
-  if (containerStyle) {
-    return <View style={containerStyle}>{imageElement}</View>;
   }
 
-  return imageElement;
+  if (handler === 'fast-image') {
+    return (
+      <FastImage
+        source={{
+          uri: source.url,
+          headers: source.headers,
+          // for next version of react native faster image
+          // priority: source.priority === 'veryLow' ? 'low' : source.priority === 'veryHigh' ? 'high' : source.priority,
+        }}
+        // @ts-expect-error so fast-image defines their own weird ImageStyle, it's mostly a subset and should be fine
+        // we should replace fast-image with something like expo-image as it's no longer maintained and that will fix this
+        style={style}
+        onError={() => {
+          onError?.({ nativeEvent: { error: 'Error loading image' } });
+        }}
+        onLoad={e => {
+          onSuccess?.({
+            nativeEvent: {
+              width: e.nativeEvent.width,
+              height: e.nativeEvent.height,
+              source: source.url,
+            },
+          });
+        }}
+      />
+    );
+  }
+
+  // slowest but supports svg, data:, etc
+  return (
+    <Image
+      style={style}
+      source={{ uri: source.url }}
+      onError={onError}
+      onLoad={e =>
+        onSuccess?.({
+          nativeEvent: {
+            width: e.nativeEvent.source.width,
+            height: e.nativeEvent.source.height,
+            source: source.url,
+          },
+        })
+      }
+    />
+  );
 };
 
 export const RainbowImage = withStaticProperties(RainbowImageInternal, {
