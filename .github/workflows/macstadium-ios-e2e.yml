@@ -50,6 +50,10 @@ jobs:
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS
+
+      - name: Checkout prebuild fix branch
+        run: cd rainbow-scripts && git checkout eq/fix-prebuild-grep-check
+
       - name: Install dependencies
         run: |
           yarn install && yarn setup:ci
@@ -57,9 +61,6 @@ jobs:
       - name: Version debug
         run: |
           npx react-native info
-
-      - name: Checkout prebuild fix branch
-        run: cd rainbow-scripts && git checkout eq/fix-prebuild-grep-check
 
       - name: Install pods
         run: |
