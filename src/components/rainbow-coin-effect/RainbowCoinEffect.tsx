@@ -159,9 +159,7 @@ export const RainbowCoinEffect = memo(function RainbowCoinEffect({
 
           <Circle clip={circlePath} color={color} cx={canvasCenter} cy={canvasCenter} r={innerRadius - (isDarkMode ? 0 : 1)} />
 
-          <Image clip={circlePath} fit="cover" image={image} opacity={imageOpacity} rect={imageRect}>
-            <Fill clip={imageRect} color={color} />
-          </Image>
+          <Image clip={circlePath} fit="cover" image={image} opacity={imageOpacity} rect={imageRect} />
 
           <Circle clip={circlePath} color="transparent" cx={canvasCenter} cy={canvasCenter} r={innerRadius - (isDarkMode ? 0 : 1)}>
             <Paint antiAlias blendMode="plus" clip={circlePath} dither>
