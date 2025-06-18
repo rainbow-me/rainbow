@@ -145,6 +145,7 @@ const ActivityList = () => {
       maintainVisibleContentPosition
       removeClippedSubviews
       drawDistance={PANEL_HEIGHT / 2}
+      estimatedItemSize={60}
     />
   );
 };
