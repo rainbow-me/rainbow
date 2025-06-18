@@ -58,6 +58,9 @@ jobs:
         run: |
           npx react-native info
 
+      - name: Checkout prebuild fix branch
+        run: cd rainbow-scripts && git checkout eq/fix-prebuild-grep-check
+
       - name: Install pods
         run: |
           rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
