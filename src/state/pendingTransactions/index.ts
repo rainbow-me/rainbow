@@ -1,9 +1,8 @@
-import { RainbowTransaction, NewTransaction } from '@/entities/transactions';
-import { createStore } from '../internal/createStore';
-import create from 'zustand';
+import { NewTransaction, RainbowTransaction } from '@/entities/transactions';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
-import { nonceStore } from '../nonces';
 import { ChainId } from '@/state/backendNetworks/types';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { nonceStore } from '../nonces';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
@@ -13,7 +12,7 @@ export interface PendingTransactionsState {
   clearPendingTransactions: () => void;
 }
 
-export const pendingTransactionsStore = createStore<PendingTransactionsState>(
+export const usePendingTransactionsStore = createRainbowStore<PendingTransactionsState>(
   (set, get) => ({
     pendingTransactions: {},
     getPendingTransactionsInReverseOrder: address => {
@@ -61,14 +60,13 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
     },
   }),
   {
-    persist: {
-      name: 'pendingTransactions',
-      version: 1,
-    },
+    storageKey: 'pendingTransactions',
   }
 );
 
-export const usePendingTransactionsStore = create(pendingTransactionsStore);
+// export static functions
+export const { addPendingTransaction, clearPendingTransactions, getPendingTransactionsInReverseOrder, setPendingTransactions } =
+  usePendingTransactionsStore.getState();
 
 export const addNewTransaction = ({
   address,
@@ -79,7 +77,6 @@ export const addNewTransaction = ({
   chainId: ChainId;
   transaction: NewTransaction;
 }) => {
-  const { addPendingTransaction } = pendingTransactionsStore.getState();
   const { getNonce, setNonce } = nonceStore.getState();
   const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   addPendingTransaction({ address, pendingTransaction: parsedTransaction });
