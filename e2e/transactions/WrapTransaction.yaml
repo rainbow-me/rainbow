@@ -1,0 +1,94 @@
+# This flow covers:
+# [x] ETH wrap to WETH
+# [x] Flip button
+# [x] Slippage settings
+# [x] Preferred network
+# [x] Home screen balance updates
+
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- retry:
+    maxRetries: 3
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
+
+      # Send ETH to test wallet
+      - tapOn:
+          id: fund-test-wallet-button
+
+      # Connect to Anvil (test network)
+      - tapOn:
+          id: dev-button-anvil
+
+      # Open swap screen
+      - tapOn:
+          id: swap-button
+      - assertVisible:
+          id: swap-screen
+      # Select WETH as output token
+      - tapOn: 'Find a token to buy'
+      - inputText: 'Wrapped'
+      - tapOn:
+          id: token-to-buy-wrapped-ether-1
+      - assertVisible: 'WETH.*'
+      - assertVisible: 'No Balance'
+
+      # Test flip button
+      - assertVisible: '1 ETH 􀄭 1 WETH'
+      - tapOn:
+          id: flip-button
+      - assertVisible: '1 WETH 􀄭 1 ETH'
+      - tapOn:
+          id: flip-button
+      - assertVisible: '1 ETH 􀄭 1 WETH'
+
+      # Navigate to swap settings
+      - tapOn:
+          id: swap-settings-button
+      - assertVisible: 'Degen Mode Skip the review step to swap faster'
+
+      # Interact with slippage settings
+      - assertVisible: 'Max Slippage'
+      - assertVisible: '1.0'
+      - tapOn:
+          id: slippage-increment-button
+          repeat: 3
+          delay: 500
+      - assertVisible: '2.5'
+      - tapOn:
+          id: slippage-decrement-button
+          repeat: 3
+          delay: 500
+      - assertVisible: '1.0'
+
+      # Check preferred network settings
+      - tapOn:
+          id: network-selector-button
+      - assertVisible: 'Preferred Network'
+      - tapOn: 'Berachain'
+      - assertVisible: 'Berachain.*'
+      - tapOn:
+          id: swap-bottom-action-button
+
+      - hideKeyboard
+      - longPressOn:
+          id: swap-bottom-action-button
+      - runFlow: ../utils/MaybeSetupPin.yaml
+
+      # Update balances
+      - retry:
+          maxRetries: 3
+          commands:
+            - extendedWaitUntil:
+                visible:
+                  id: balance-coin-row-Wrapped Ether
+                timeout: 30000
