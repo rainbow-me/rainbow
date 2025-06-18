@@ -19,12 +19,12 @@ function SectionListScrollToTopProvider<ItemT, SectionT>({ children }: ScrollToT
   const [scrollToTopRef, setScrollToTopRef] = useState<SectionList<ItemT, SectionT> | null>(null);
 
   const scrollToTop = () => {
-    if (!scrollToTopRef?.props.sections.length) return;
-    scrollToTopRef?.scrollToLocation({
-      animated: true,
-      itemIndex: 0,
-      sectionIndex: 0,
-    });
+    // if (!scrollToTopRef?.props.sections.length) return;
+    // scrollToTopRef?.scrollToLocation({
+    //   animated: true,
+    //   itemIndex: 0,
+    //   sectionIndex: 0,
+    // });
   };
 
   return (

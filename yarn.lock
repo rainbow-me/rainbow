@@ -4252,13 +4252,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@legendapp/list@npm:1.0.0-beta.15":
-  version: 1.0.0-beta.15
-  resolution: "@legendapp/list@npm:1.0.0-beta.15"
+"@legendapp/list@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@legendapp/list@npm:1.1.0"
+  dependencies:
+    use-sync-external-store: "npm:^1.5.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/bf81af96488828f79cac366cca1b6c0fa0437dc8f2c0b29b4c3e8d4960007b72d84c7e1d2d6372e9b5ab657d15d07ec1aa7cb83006ec3e33f7a5736e38bd44a6
+  checksum: 10c0/dcb6ae5199b5e65d9674e0a773d5b4f61492da32e4aca749ca4b96392dac3cbc35318c5f43b6ce9efa4a6b0cab94df010aea0bcaab529678718c22e2e448baa6
   languageName: node
   linkType: hard
 
@@ -8774,7 +8776,7 @@ __metadata:
     "@lavamoat/preinstall-always-fail": "npm:2.0.0"
     "@ledgerhq/hw-app-eth": "npm:6.39.0"
     "@ledgerhq/react-native-hw-transport-ble": "npm:6.33.4"
-    "@legendapp/list": "npm:1.0.0-beta.15"
+    "@legendapp/list": "npm:1.1.0"
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.1.2"
@@ -27093,6 +27095,15 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 10c0/23b1597c10adf15b26ade9e8c318d8cc0abc9ec0ab5fc7ca7338da92e89c2536abd150a5891bf076836c352fdfa104fc7231fb48f806fd9960e0cbe03601abaf
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "use-sync-external-store@npm:1.5.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/1b8663515c0be34fa653feb724fdcce3984037c78dd4a18f68b2c8be55cc1a1084c578d5b75f158d41b5ddffc2bf5600766d1af3c19c8e329bb20af2ec6f52f4
   languageName: node
   linkType: hard
 

@@ -1,17 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
-import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { LegendList } from '@legendapp/list';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
-import { CoinRowHeight } from '../coin-row/CoinRow';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import styled from '@/styled-thing';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { useTheme } from '@/theme';
 import { useSectionListScrollToTopContext } from '@/navigation/SectionListScrollToTopContext';
-import { safeAreaInsetValues } from '@/utils';
 import { useAccountSettings, useAccountTransactions } from '@/hooks';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
@@ -23,14 +21,6 @@ const sx = StyleSheet.create({
   },
 });
 
-const ActivityListHeaderHeight = 42;
-const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 7;
-
-const getItemLayout = sectionListGetItemLayout({
-  getItemHeight: () => CoinRowHeight + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
-  getSectionHeaderHeight: () => ActivityListHeaderHeight,
-});
-
 const keyExtractor = (data: TransactionSections['data'][number]) => {
   if ('hash' in data) {
     return (data.hash || data.timestamp ? data.timestamp?.toString() : performance.now().toString()) ?? performance.now().toString();
@@ -38,14 +28,6 @@ const keyExtractor = (data: TransactionSections['data'][number]) => {
   return (
     (data.displayDetails?.timestampInMs ? data.displayDetails.timestampInMs.toString() : performance.now().toString()) ??
     performance.now().toString()
-  );
-};
-
-const renderSectionHeader = ({ section, colors }: { section: TransactionSections; colors: ThemeContextProps['colors'] }) => {
-  return (
-    <View style={[sx.sectionHeader, { backgroundColor: colors.white }]}>
-      <ActivityListHeader {...section} />
-    </View>
   );
 };
 
@@ -94,21 +76,62 @@ const ActivityList = () => {
   const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
 
   const { colors } = useTheme();
-  const renderSectionHeaderWithTheme = useCallback(
-    ({ section }: { section: TransactionSections }) => renderSectionHeader({ colors, section }),
+
+  // Flatten sections into a single data array for LegendList
+  const flatData = useMemo(() => {
+    const items: (TransactionItemForSectionList | { type: 'section-header'; section: TransactionSections })[] = [];
+    sections.forEach(section => {
+      console.log('PUSH', JSON.stringify(section, null, 2));
+      if (section.data.length > 0) {
+        items.push({ type: 'section-header', section });
+        items.push(...section.data);
+      }
+    });
+    return items;
+  }, [sections]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: (typeof flatData)[0] }) => {
+      console.log('render', item);
+      if ('type' in item && item.type === 'section-header') {
+        const sectionItem = item as { type: 'section-header'; section: TransactionSections };
+        return (
+          <View style={[sx.sectionHeader, { backgroundColor: colors.white }]}>
+            <ActivityListHeader title={sectionItem.section.title} />
+          </View>
+        );
+      }
+      // Render transaction item - you'll need to replace this with your actual transaction item renderer
+      return (
+        <View style={{ height: 60 }}>
+          <Text>Transaction Item</Text>
+        </View>
+      );
+    },
     [colors]
   );
 
-  const handleScrollToTopRef = (ref: SectionList<TransactionItemForSectionList, TransactionSections> | null) => {
+  const keyExtractorFlat = useCallback((item: (typeof flatData)[0], index: number) => {
+    if ('type' in item && item.type === 'section-header') {
+      const sectionItem = item as { type: 'section-header'; section: TransactionSections };
+      return `section-${sectionItem.section.title}-${index}`;
+    }
+    return keyExtractor(item as TransactionSections['data'][number]);
+  }, []);
+
+  const handleScrollToTopRef = useCallback((ref: any) => {
     if (!ref) return;
     setScrollToTopRef(ref);
-  };
+  }, []);
+
+  console.log('flatData', JSON.stringify(flatData, null, 2));
 
   return (
-    <SectionList<TransactionItemForSectionList, TransactionSections>
-      ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
+    <LegendList
+      data={flatData}
+      renderItem={renderItem}
+      keyExtractor={keyExtractorFlat}
       ref={handleScrollToTopRef}
-      alwaysBounceVertical={false}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
       extraData={{
         hasPendingTransaction: pendingTransactions.length > 0,
@@ -117,16 +140,13 @@ const ActivityList = () => {
       }}
       testID={'wallet-activity-list'}
       ListEmptyComponent={<ActivityListEmptyState />}
-      // @ts-expect-error - mismatch between react-native-section-list-get-item-layout and SectionList
-      getItemLayout={getItemLayout}
-      initialNumToRender={12}
-      keyExtractor={keyExtractor}
-      removeClippedSubviews
-      renderSectionHeader={renderSectionHeaderWithTheme}
-      scrollIndicatorInsets={{
-        bottom: safeAreaInsetValues.bottom + 14,
+      ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
+      // recycleItems
+      // maintainVisibleContentPosition
+      style={{
+        flex: 1,
+        backgroundColor: 'red',
       }}
-      sections={sections}
     />
   );
 };
