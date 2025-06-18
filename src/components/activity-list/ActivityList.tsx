@@ -14,6 +14,12 @@ import { useAccountSettings, useAccountTransactions } from '@/hooks';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { FastTransactionCoinRow } from '@/components/coin-row';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
+import { safeAreaInsetValues } from '@/utils';
+
+const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -21,14 +27,15 @@ const sx = StyleSheet.create({
   },
 });
 
-const keyExtractor = (data: TransactionSections['data'][number]) => {
-  if ('hash' in data) {
-    return (data.hash || data.timestamp ? data.timestamp?.toString() : performance.now().toString()) ?? performance.now().toString();
+const keyExtractor = (data: ListItems, _index: number) => {
+  if (data.type === 'header') {
+    return data.value.title;
   }
-  return (
-    (data.displayDetails?.timestampInMs ? data.displayDetails.timestampInMs.toString() : performance.now().toString()) ??
-    performance.now().toString()
-  );
+  const { value } = data;
+  if ('requestId' in value) {
+    return `${value.requestId}`;
+  }
+  return value.hash;
 };
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
@@ -67,6 +74,8 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
   );
 }
 
+type ListItems = { type: 'item'; value: TransactionItemForSectionList } | { type: 'header'; value: TransactionSections };
+
 const ActivityList = () => {
   const accountAddress = useAccountAddress();
   const { nativeCurrency } = useAccountSettings();
@@ -75,64 +84,53 @@ const ActivityList = () => {
   const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
   const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
 
-  const { colors } = useTheme();
+  const theme = useTheme();
 
   // Flatten sections into a single data array for LegendList
   const flatData = useMemo(() => {
-    const items: (TransactionItemForSectionList | { type: 'section-header'; section: TransactionSections })[] = [];
+    const items: ListItems[] = [];
 
     console.log('make sections', sections.length);
 
     sections.forEach(section => {
       if (section.data.length > 0) {
-        items.push({ type: 'section-header', section });
-        items.push(...section.data);
+        items.push({ type: 'header', value: section });
+        for (const item of section.data) {
+          items.push({
+            type: 'item',
+            value: item,
+          });
+        }
       }
     });
     return items;
   }, [sections]);
 
   const renderItem = useCallback(
-    ({ item }: { item: (typeof flatData)[0] }) => {
-      console.log('render', item);
-      if ('type' in item && item.type === 'section-header') {
-        const sectionItem = item as { type: 'section-header'; section: TransactionSections };
+    ({ item }: { item: ListItems }) => {
+      if ('type' in item && item.type === 'header') {
         return (
-          <View style={[sx.sectionHeader, { backgroundColor: colors.white }]}>
-            <ActivityListHeader title={sectionItem.section.title} />
+          <View style={[sx.sectionHeader, { backgroundColor: theme.colors.white }]}>
+            <ActivityListHeader title={item.value.title} />
           </View>
         );
       }
-      // Render transaction item - you'll need to replace this with your actual transaction item renderer
-      return (
-        <View style={{ height: 60 }}>
-          <Text>Transaction Item</Text>
-        </View>
-      );
-    },
-    [colors]
-  );
 
-  const keyExtractorFlat = useCallback((item: (typeof flatData)[0], index: number) => {
-    if ('type' in item && item.type === 'section-header') {
-      const sectionItem = item as { type: 'section-header'; section: TransactionSections };
-      return `section-${sectionItem.section.title}-${index}`;
-    }
-    return keyExtractor(item as TransactionSections['data'][number]);
-  }, []);
+      return <FastTransactionCoinRow item={item.value as any} theme={theme} nativeCurrency={nativeCurrency} />;
+    },
+    [theme]
+  );
 
   const handleScrollToTopRef = useCallback((ref: any) => {
     if (!ref) return;
     setScrollToTopRef(ref);
   }, []);
 
-  console.log('flatData', JSON.stringify(flatData, null, 2));
-
   return (
     <LegendList
       data={flatData}
       renderItem={renderItem}
-      keyExtractor={keyExtractorFlat}
+      keyExtractor={keyExtractor}
       ref={handleScrollToTopRef}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
       extraData={{
@@ -143,12 +141,10 @@ const ActivityList = () => {
       testID={'wallet-activity-list'}
       ListEmptyComponent={<ActivityListEmptyState />}
       ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
-      // recycleItems
-      // maintainVisibleContentPosition
-      style={{
-        flex: 1,
-        backgroundColor: 'red',
-      }}
+      recycleItems
+      maintainVisibleContentPosition
+      removeClippedSubviews
+      drawDistance={PANEL_HEIGHT / 2}
     />
   );
 };
