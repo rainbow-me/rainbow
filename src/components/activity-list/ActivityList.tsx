@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SectionList, StyleSheet, View } from 'react-native';
-import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
+import { StyleSheet, View } from 'react-native';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
@@ -16,6 +15,7 @@ import { useAccountSettings, useAccountTransactions } from '@/hooks';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import SectionList from '@/components/section-list/SectionList';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -23,13 +23,7 @@ const sx = StyleSheet.create({
   },
 });
 
-const ActivityListHeaderHeight = 42;
 const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 7;
-
-const getItemLayout = sectionListGetItemLayout({
-  getItemHeight: () => CoinRowHeight + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
-  getSectionHeaderHeight: () => ActivityListHeaderHeight,
-});
 
 const keyExtractor = (data: TransactionSections['data'][number]) => {
   if ('hash' in data) {
@@ -99,16 +93,23 @@ const ActivityList = () => {
     [colors]
   );
 
-  const handleScrollToTopRef = (ref: SectionList<TransactionItemForSectionList, TransactionSections> | null) => {
+  // Dev debugging
+  console.log('render activity list', sections);
+
+  useEffect(() => {
+    console.log('sections', sections.length);
+  }, [sections]);
+
+  const setRef = useCallback((ref: any) => {
     if (!ref) return;
+    console.log('set ref', ref);
     setScrollToTopRef(ref);
-  };
+  }, []);
 
   return (
     <SectionList<TransactionItemForSectionList, TransactionSections>
       ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
-      ref={handleScrollToTopRef}
-      alwaysBounceVertical={false}
+      ref={setRef}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
       extraData={{
         hasPendingTransaction: pendingTransactions.length > 0,
@@ -117,12 +118,10 @@ const ActivityList = () => {
       }}
       testID={'wallet-activity-list'}
       ListEmptyComponent={<ActivityListEmptyState />}
-      // @ts-expect-error - mismatch between react-native-section-list-get-item-layout and SectionList
-      getItemLayout={getItemLayout}
-      initialNumToRender={12}
       keyExtractor={keyExtractor}
       removeClippedSubviews
       renderSectionHeader={renderSectionHeaderWithTheme}
+      estimatedItemSize={CoinRowHeight + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2}
       scrollIndicatorInsets={{
         bottom: safeAreaInsetValues.bottom + 14,
       }}
