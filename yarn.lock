@@ -9604,7 +9604,7 @@ __metadata:
     react-native-quick-md5: "npm:3.0.6"
     react-native-radial-gradient: "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c"
     react-native-randombytes: "npm:3.5.3"
-    react-native-reanimated: "npm:3.17.5"
+    react-native-reanimated: "npm:3.18.0"
     react-native-redash: "npm:16.3.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:5.4.0"
@@ -23654,9 +23654,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.17.5":
-  version: 3.17.5
-  resolution: "react-native-reanimated@npm:3.17.5"
+"react-native-reanimated@npm:3.18.0":
+  version: 3.18.0
+  resolution: "react-native-reanimated@npm:3.18.0"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -23674,7 +23674,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10c0/22788541546cf3e818f0ad9fc9fb1cb53fd7b398d5f49078cd6adf8064957663d97de4e60de9e7894a359d2379685a9dd5d69183c3e13b5e4e78f2d49333921a
+  checksum: 10c0/7420f410a76b2a46f1a0a7df41f8b2508aade8de26fd00eb7305bf25b3ab27e7c06f52ec76d221d8c7317ca3e2bdf842c51216f2adba7fbb60ce321c171d1437
   languageName: node
   linkType: hard
 
