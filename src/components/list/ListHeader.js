@@ -58,7 +58,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
   const { initializeShowcaseIfNeeded } = useWebData();
 
   const handleShare = useCallback(() => {
-    const isReadOnly = getIsReadOnlyWallet()
+    const isReadOnly = getIsReadOnlyWallet();
     if (!isReadOnly) {
       initializeShowcaseIfNeeded();
     }
