@@ -19,7 +19,7 @@ export const refreshAccountData = async () => {
 
   // These queries can take too long to fetch, so we do not wait for them
   refetchWalletSummary();
-  queryClient.invalidateQueries([createQueryKey('nfts', { address: accountAddress })]);
+  queryClient.invalidateQueries(createQueryKey('nfts', { address: accountAddress }));
 
   await Promise.all([
     delay(MIN_REFRESH_DURATION),
