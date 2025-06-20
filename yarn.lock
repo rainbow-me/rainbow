@@ -7967,7 +7967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/chains@npm:1.8.0":
+"@wagmi/chains@npm:1.8.0, @wagmi/chains@npm:^1.8.0":
   version: 1.8.0
   resolution: "@wagmi/chains@npm:1.8.0"
   peerDependencies:
@@ -8929,6 +8929,7 @@ __metadata:
     qrcode: "npm:1.4.4"
     qs: "npm:6.9.7"
     querystring-es3: "npm:0.2.1"
+    rainbow-delegation: "file:vendor/rainbow-delegation-v1.0.0.tgz"
     react: "npm:18.2.0"
     react-coin-icon: "rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b"
     react-fast-compare: "npm:3.2.2"
@@ -22141,6 +22142,17 @@ __metadata:
   version: 1.1.2
   resolution: "radix3@npm:1.1.2"
   checksum: 10c0/d4a295547f71af079868d2c2ed3814a9296ee026c5488212d58c106e6b4797c6eaec1259b46c9728913622f2240c9a944bfc8e2b3b5f6e4a5045338b1609f1e4
+  languageName: node
+  linkType: hard
+
+"rainbow-delegation@file:vendor/rainbow-delegation-v1.0.0.tgz::locator=Rainbow%40workspace%3A.":
+  version: 1.0.0
+  resolution: "rainbow-delegation@file:vendor/rainbow-delegation-v1.0.0.tgz#vendor/rainbow-delegation-v1.0.0.tgz::hash=4b542d&locator=Rainbow%40workspace%3A."
+  dependencies:
+    "@wagmi/chains": "npm:^1.8.0"
+  peerDependencies:
+    viem: ^2.30.5
+  checksum: 10c0/3c4891b0030a5728b41d9389d7eade52e77f7e9217f97bc57f0a4f201990692fcf038423080c4ad08dad7043b3f52842553be93c6869b1f631c99c18936dbc15
   languageName: node
   linkType: hard
 

@@ -7,7 +7,7 @@ import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { gasUnits } from '@/references/gasUnits';
-import { estimateDelegatedApproveAndSwapGasLimit, getShouldDelegate, useShouldDelegate } from '@/delegateActions';
+import { estimateDelegatedApproveAndSwapGasLimit, getShouldDelegate } from '@/delegateActions';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -79,7 +79,6 @@ export function useSwapEstimatedGasLimit(
   { chainId, quote, assetToSell }: EstimateSwapGasLimitArgs,
   config: QueryConfigWithSelect<EstimateSwapGasLimitResult, Error, EstimateSwapGasLimitResult, EstimateSwapGasLimitQueryKey> = {}
 ) {
-  const shouldDelegate = useShouldDelegate(chainId || ChainId.mainnet, quote as Quote | CrosschainQuote, assetToSell);
   const placeholderData = chainId && { chainId, gasLimit: gasUnits.basic_swap[chainId] };
   const { data } = useQuery(
     estimateSwapGasLimitQueryKey({

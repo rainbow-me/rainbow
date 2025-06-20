@@ -260,9 +260,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   }) => {
     try {
       const degenMode = swapsStore.getState().degenMode;
-      const shouldDelegate =
-        (atomicSwapsEnabled || config.atomic_swaps_enabled) &&
-        (await getShouldDelegate(parameters.chainId, parameters.quote as Quote | CrosschainQuote, parameters.assetToSell));
+      // const shouldDelegate =
+      //   (atomicSwapsEnabled || config.atomic_swaps_enabled) &&
+      //   (await getShouldDelegate(parameters.chainId, parameters.quote as Quote | CrosschainQuote, parameters.assetToSell));
+      const shouldDelegate = await getShouldDelegate(
+        parameters.chainId,
+        parameters.quote as Quote | CrosschainQuote,
+        parameters.assetToSell
+      );
       const selectedGas = getSelectedGas(parameters.chainId);
 
       const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
