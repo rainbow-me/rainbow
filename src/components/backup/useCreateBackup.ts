@@ -87,7 +87,7 @@ export const useCreateBackup = () => {
   );
 
   const onConfirmBackup = useCallback(
-    async ({ password, walletId, addToCurrentBackup = false }: ConfirmBackupProps) => {
+    async ({ password, walletId, userPIN, addToCurrentBackup = false }: ConfirmBackupProps) => {
       analytics.track(analytics.event.backupConfirmed);
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
@@ -110,6 +110,7 @@ export const useCreateBackup = () => {
           password,
           onError,
           onSuccess,
+          userPIN,
         });
         return;
       }
