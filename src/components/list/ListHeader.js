@@ -58,12 +58,13 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
   const { initializeShowcaseIfNeeded } = useWebData();
 
   const handleShare = useCallback(() => {
-    if (!getIsReadOnlyWallet()) {
+    const isReadOnly = getIsReadOnlyWallet()
+    if (!isReadOnly) {
       initializeShowcaseIfNeeded();
     }
     const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountENS || accountAddress}`;
     const shareOptions = {
-      message: getIsReadOnlyWallet()
+      message: isReadOnly
         ? lang.t('list.share.check_out_this_wallet', { showcaseUrl })
         : lang.t('list.share.check_out_my_wallet', { showcaseUrl }),
     };
