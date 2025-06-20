@@ -7,6 +7,7 @@ import { Block, JsonRpcBatchProvider, StaticJsonRpcProvider, TransactionRequest 
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
+import { createPublicClient, http, PublicClient, Address } from 'viem';
 import { AssetType, NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
@@ -27,7 +28,7 @@ import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { Address } from 'viem';
+import { mainnet, polygon, optimism, arbitrum, base, zora, bsc, avalanche } from '@wagmi/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -37,6 +38,8 @@ export enum TokenStandard {
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 
 export const chainsBatchProviders = new Map<ChainId, JsonRpcBatchProvider>();
+
+export const chainsViemProviders = new Map<ChainId, PublicClient>();
 
 /**
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
@@ -149,6 +152,55 @@ export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number })
   const provider = new StaticJsonRpcProvider(providerUrl, chainId);
   chainsProviders.set(chainId, provider);
 
+  return provider;
+};
+
+// Map ChainId to viem chain objects
+const getViemChain = (chainId: number) => {
+  switch (chainId) {
+    case ChainId.mainnet:
+      return mainnet;
+    case ChainId.polygon:
+      return polygon;
+    case ChainId.optimism:
+      return optimism;
+    case ChainId.arbitrum:
+      return arbitrum;
+    case ChainId.base:
+      return base;
+    case ChainId.zora:
+      return zora;
+    case ChainId.bsc:
+      return bsc;
+    case ChainId.avalanche:
+      return avalanche;
+    default:
+      return mainnet; // fallback
+  }
+};
+
+export const getProviderViem = ({ chainId = ChainId.mainnet }: { chainId?: number }): PublicClient => {
+  if (useConnectedToAnvilStore.getState().connectedToAnvil) {
+    const provider = createPublicClient({
+      transport: http(chainAnvil.rpcUrls.default.http[0]),
+    });
+    chainsViemProviders.set(chainId, provider);
+    return provider;
+  }
+
+  const cachedProvider = chainsViemProviders.get(chainId);
+  const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
+
+  if (cachedProvider) {
+    return cachedProvider;
+  }
+
+  const provider = createPublicClient({
+    chain: getViemChain(chainId),
+    transport: http(providerUrl),
+  });
+
+  chainsViemProviders.set(chainId, provider);
   return provider;
 };
 

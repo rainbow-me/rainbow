@@ -28,7 +28,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { LaunchTokenResponse, TokenLauncherSDKError, TokenLauncherErrorCode } from '@rainbow-me/token-launcher';
+import { LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
