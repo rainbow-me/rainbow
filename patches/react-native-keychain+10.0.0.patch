@@ -36,7 +36,7 @@ index 70912a9..006f7d8 100644
      val keyForUsername = stringPreferencesKey(getKeyForUsername(service))
      val keyForPassword = stringPreferencesKey(getKeyForPassword(service))
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
-index 722a5ed..311a2f4 100644
+index 722a5ed..473c51d 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.kt
 @@ -281,6 +281,49 @@ class KeychainModule(reactContext: ReactApplicationContext) :
@@ -89,27 +89,27 @@ index 722a5ed..311a2f4 100644
    @ReactMethod
    fun getAllGenericPasswordServices(options: ReadableMap?, promise: Promise) {
      try {
-@@ -767,19 +810,13 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+@@ -766,15 +809,14 @@ class KeychainModule(reactContext: ReactApplicationContext) :
+         usePasscode ->
            BiometricManager.Authenticators.DEVICE_CREDENTIAL
  
-         else ->
+-        else ->
 -          null
+-      }
++        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
 +          BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
-       }
  
++        else -> null
++      }
        if (allowedAuthenticators != null) {
          promptInfoBuilder.setAllowedAuthenticators(allowedAuthenticators)
-       }
- 
--      if (!usePasscode) {
--        promptInfoOptionsMap?.getString(AuthPromptOptions.CANCEL)?.let {
--          promptInfoBuilder.setNegativeButtonText(it)
--        }
 -      }
 -
-       /* Bypass confirmation to avoid KeyStore unlock timeout being exceeded when using passive biometrics */
-       promptInfoBuilder.setConfirmationRequired(false)
-       return promptInfoBuilder.build()
+-      if (!usePasscode) {
++      } else {
+         promptInfoOptionsMap?.getString(AuthPromptOptions.CANCEL)?.let {
+           promptInfoBuilder.setNegativeButtonText(it)
+         }
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
 index d165f3e..91fd8b1 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorageBase.kt
