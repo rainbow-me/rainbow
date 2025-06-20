@@ -1,1 +1,1 @@
-export { default as ChartExpandedStateHeader } from './ChartExpandedStateHeader';
+export { ChartExpandedStateHeader } from './ChartExpandedStateHeader';

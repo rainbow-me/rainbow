@@ -239,7 +239,7 @@ export const AirdropsCard = memo(function AirdropsCard() {
           <SkiaText
             align="center"
             color={CARD_CONFIG.colors.whiteTextColor}
-            onLayout={setBadgePosition}
+            onLayoutWorklet={setBadgePosition}
             size="22pt"
             weight="heavy"
             width={DEFAULT_CARD_SIZE}

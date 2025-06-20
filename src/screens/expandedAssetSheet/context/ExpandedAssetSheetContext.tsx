@@ -42,7 +42,7 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.ABOUT]: true,
 };
 
-interface AccentColors {
+export interface AssetAccentColors {
   opacity100: string;
   opacity56: string;
   opacity24: string;
@@ -78,7 +78,7 @@ export type BasicAsset = Pick<
 export type ExpandedSheetAsset = BasicAsset | (BasicAsset & FormattedExternalAsset);
 
 type ExpandedAssetSheetContextType = {
-  accentColors: AccentColors;
+  accentColors: AssetAccentColors;
   basicAsset: ExpandedSheetAsset;
   accountAsset: ParsedAddressAsset | undefined;
   assetMetadata: TokenMetadata | null | undefined;
@@ -232,7 +232,7 @@ export function ExpandedAssetSheetContextProvider({
 
   const isRainbowToken = superMetadata?.rainbow ?? false;
 
-  const accentColors: AccentColors = useMemo(() => {
+  const accentColors: AssetAccentColors = useMemo(() => {
     const background = isDarkMode
       ? chroma(
           chroma(assetColor)
