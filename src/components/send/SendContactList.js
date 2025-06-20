@@ -129,13 +129,13 @@ export default function SendContactList({
   const filteredAddresses = useMemo(() => {
     return sortBy(
       filterList(
-        userAccounts.filter(account => account.visible && account.address.toLowerCase() !== accountAddress.toLowerCase()),
+        userAccounts.filter(account => account.visible),
         currentInput,
         ['label']
       ),
       ['index']
     );
-  }, [accountAddress, currentInput, userAccounts]);
+  }, [currentInput, userAccounts]);
 
   const filteredWatchedAddresses = useMemo(() => {
     return sortBy(

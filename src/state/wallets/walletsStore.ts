@@ -528,7 +528,7 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
       const newAddresses = await Promise.all(
         wallet.addresses.map(async ogAccount => {
           const account = await refreshAccountInfo(ogAccount, useCachedENS);
-          updatedWalletNames[account.address] = removeFirstEmojiFromString(account.label || account.address);
+          updatedWalletNames[account.address] = account.label;
           return account;
         })
       );
@@ -547,8 +547,13 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
 }
 
 async function refreshAccountInfo(account: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
+  const label = removeFirstEmojiFromString(account.label || addressAbbreviation(account.address, 4, 4));
+
   if (useCachedENS && account.label && account.avatar) {
-    return account;
+    return {
+      ...account,
+      label,
+    };
   }
 
   const ens = await fetchReverseRecordWithRetry(account.address);
@@ -560,7 +565,7 @@ async function refreshAccountInfo(account: RainbowAccount, useCachedENS = false)
       ...account,
       image: newImage,
       // always prefer our label
-      label: account.label || ens,
+      label: account.label ? label : ens,
     };
   }
 
