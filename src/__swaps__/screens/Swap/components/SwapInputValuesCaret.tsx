@@ -63,15 +63,18 @@ export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretT
       : withTiming(0, caretConfig);
   });
 
-  const caretStyle = useAnimatedStyle(() => {
-    const isZero =
+  const isZero = useDerivedValue(() => {
+    return (
       (inputMethod.value !== 'slider' && inputValues.value[inputCaretType] === 0) ||
-      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0))
+    );
+  });
 
+  const caretStyle = useAnimatedStyle(() => {
     return {
       display: shouldShow.value ? 'flex' : 'none',
       opacity: blinkAnimation.value,
-      position: isZero ? 'absolute' : 'relative',
+      position: isZero.value ? 'absolute' : 'relative',
     };
   });
 
