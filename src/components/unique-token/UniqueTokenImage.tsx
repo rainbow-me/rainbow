@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
@@ -11,6 +11,7 @@ import { useHiddenTokens } from '@/hooks';
 import { Colors } from '@/styles';
 import { AssetType } from '@/entities';
 import { isLowerCaseMatch } from '@/utils';
+import { RainbowImage } from '../RainbowImage';
 
 function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
   const variants = {
@@ -84,8 +85,8 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       )}
       {shouldShowRegularImage && (
         <>
-          <Image onError={onError} onLoad={onLoad} source={{ uri: imageUrl }} style={StyleSheet.absoluteFill} />
-          {!isLoaded && lowResImageUrl && <Image source={{ uri: lowResImageUrl }} style={StyleSheet.absoluteFill} />}
+          <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />
+          {!isLoaded && lowResImageUrl && <RainbowImage source={{ url: lowResImageUrl }} style={StyleSheet.absoluteFillObject} />}
         </>
       )}
       {isHiddenToken && isCard && <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}

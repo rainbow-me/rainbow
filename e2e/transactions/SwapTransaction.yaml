@@ -36,18 +36,18 @@ tags:
       - assertVisible: 'No Balance'
       - hideKeyboard
 
-      # TODO: Currently iOS gets stuck on 'Fetching' for the swap-bottom-action-button.
-      # Android works fine.
+      - longPressOn:
+          id: swap-bottom-action-button
+      - runFlow: ../utils/MaybeSetupPin.yaml
+      - tapOn:
+          id: tab-bar-icon-ProfileScreen
+
+      # ios view hierarchy takes too long to load, so some of the elements are loaded
+      # at signifigantly differnt times than expected... this works fine on Android.
       - runFlow:
           when:
             platform: Android
           commands:
-            - longPressOn:
-                id: swap-bottom-action-button
-            - runFlow: ../utils/MaybeSetupPin.yaml
-            - tapOn:
-                id: tab-bar-icon-ProfileScreen
-
             # Test transaction was done
             - assertVisible: 'Pending'
             - assertVisible: 'Swapping*.'
