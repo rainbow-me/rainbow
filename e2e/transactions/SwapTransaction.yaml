@@ -43,7 +43,7 @@ tags:
           id: tab-bar-icon-ProfileScreen
 
       # ios view hierarchy takes too long to load, so some of the elements are loaded
-      # at signifigantly differnt times than expected... this works fine on Android.
+      # at significantly different times than expected... this works fine on Android.
       - runFlow:
           when:
             platform: Android
