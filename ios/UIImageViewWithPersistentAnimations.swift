@@ -43,7 +43,7 @@ class UIImageViewWithPersistentAnimations : UIImageView {
     @objc func didBecomeActive() {
         self.restoreAnimations(withKeys: Array(self.persistentAnimations.keys))
         self.persistentAnimations.removeAll()
-        if self.persistentSpeed == 1.0 { //if layer was plaiyng before backgorund, resume it
+        if self.persistentSpeed == 1.0 { //if layer was playing before background, resume it
             self.layer.resume()
         }
     }
