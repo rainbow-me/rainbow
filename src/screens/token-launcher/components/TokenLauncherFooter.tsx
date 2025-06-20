@@ -11,7 +11,7 @@ import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { BiometryTypes } from '@/helpers';
 import showWalletErrorAlert from '@/helpers/support';
-import { useAccountSettings, useBiometryType } from '@/hooks';
+import { useBiometryType } from '@/hooks';
 import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -19,7 +19,7 @@ import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { Wallet } from '@ethersproject/wallet';
 import React, { useCallback, useState } from 'react';
@@ -52,7 +52,7 @@ function HoldToCreateButton() {
   const chainId = useTokenLauncherStore(state => state.chainId);
   const isHardwareWallet = useIsHardwareWallet();
   const biometryType = useBiometryType();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { transactionOptions } = useTokenLaunchGasOptions({
     chainId,
     gasSpeed,

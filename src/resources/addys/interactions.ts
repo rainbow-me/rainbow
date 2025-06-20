@@ -7,6 +7,7 @@ import { getAddysHttpClient } from './client';
 import useAccountSettings from '@/hooks/useAccountSettings';
 import { Address } from 'viem';
 import { time } from '@/utils';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 // ///////////////////////////////////////////////
 // Types
@@ -154,7 +155,8 @@ export function useInteractionsCount(
   { fromAddress: inputFromAddress, toAddress, chainId }: Omit<InteractionsCountArgs, 'currency'>,
   config: QueryConfigWithSelect<InteractionsCountResult, Error, SelectedInteractionsCount, InteractionsCountQueryKey> = {}
 ) {
-  const { accountAddress, nativeCurrency: currency } = useAccountSettings();
+  const { nativeCurrency: currency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const fromAddress = (inputFromAddress || accountAddress)?.toLowerCase() as Address;
 
   return useQuery(

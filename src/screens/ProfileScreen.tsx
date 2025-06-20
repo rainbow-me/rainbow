@@ -3,7 +3,6 @@ import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import Navigation from '@/navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useAccountSettings } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -11,7 +10,7 @@ import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -48,7 +47,7 @@ function onChangeWallet(): void {
 }
 
 const PendingTransactionWatcher = memo(function PendingTransactionWatcher() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   usePendingTransactionWatcher({ address: accountAddress });
   return null;
 });
