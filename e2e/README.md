@@ -66,7 +66,7 @@ Maestro waits for the app to be settled before moving on to the next actions. If
 
 #### Flaky check
 
-Flakyness will happen sometimes, it can be mitigated by having Maestro retry certain commands. See https://docs.maestro.dev/api-reference/commands/retry for more info.
+Flakiness will happen sometimes, it can be mitigated by having Maestro retry certain commands. See https://docs.maestro.dev/api-reference/commands/retry for more info.
 
 ```yaml
 - retry:
