@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.69] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.69)
+
+### Changed
+
+- Bump iOS and Android to v1.9.69 (#6691)
+
+### Fixed
+
+- Revert Fix yarn android launching the activity (#6697)
+
 ## [1.9.68] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.68)
 
 ### Added
