@@ -24,7 +24,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
-import Labels from '../value-chart/ExtremeLabels';
+import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { GenericCard } from './GenericCard';
 
 export const ETH_CARD_HEIGHT = 284.3;
@@ -104,6 +104,7 @@ export const EthCard = () => {
 
   const { throttledData } = useChartThrottledPoints({
     asset: ethAsset,
+    timespan: 'day',
   });
 
   const CHART_WIDTH = deviceUtils.dimensions.width - 80;
@@ -244,7 +245,7 @@ export const EthCard = () => {
                   shadowRadius: 4.5,
                 }}
               />
-              <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
+              <ExtremeLabels color={colorForAsset} isCard />
             </ChartPathProvider>
           )}
         </Box>

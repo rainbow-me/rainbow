@@ -10,7 +10,7 @@ import { deviceUtils } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FasterImageView } from '@candlefinance/faster-image';
 import React, { memo, useMemo } from 'react';
-import { ExtendedState } from './core/RawRecyclerList';
+import { Navigation } from '@/navigation';
 
 const RAINBOW_ICON_URL = 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png';
 const avgCharWidth = 7;
@@ -81,15 +81,7 @@ const NativeCurrencyDisplay = memo(function NativeCurrencyDisplay({ assets }: { 
   );
 });
 
-export const Claimable = React.memo(function Claimable({
-  claimable,
-  extendedState,
-}: {
-  claimable: ClaimableType;
-  extendedState: ExtendedState;
-}) {
-  const { navigate } = extendedState;
-
+export const Claimable = React.memo(function Claimable({ claimable }: { claimable: ClaimableType }) {
   const isETHRewards = isRainbowEthRewards(claimable.uniqueId);
 
   return (
@@ -108,9 +100,9 @@ export const Claimable = React.memo(function Claimable({
             })),
             usdValue: claimable?.totalCurrencyValue.amount,
           });
-          navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
+          Navigation.handleAction(Routes.CLAIM_CLAIMABLE_PANEL, { claimable });
         } else {
-          navigate(Routes.CLAIM_REWARDS_PANEL);
+          Navigation.handleAction(Routes.CLAIM_REWARDS_PANEL);
         }
       }}
       scaleTo={0.96}
