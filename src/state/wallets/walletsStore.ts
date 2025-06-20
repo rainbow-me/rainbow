@@ -550,6 +550,10 @@ async function refreshAccountInfo(account: RainbowAccount, useCachedENS = false)
   const label = removeFirstEmojiFromString(account.label || addressAbbreviation(account.address, 4, 4));
 
   if (useCachedENS && account.label && account.avatar) {
+    if (account.label === label) {
+      return account;
+    }
+
     return {
       ...account,
       label,
