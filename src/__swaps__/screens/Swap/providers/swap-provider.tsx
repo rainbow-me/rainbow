@@ -63,7 +63,7 @@ import showWalletErrorAlert from '@/helpers/support';
 import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
-import { useWallets } from '@/hooks';
+import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { getShouldDelegate, walletExecuteWithDelegate } from '@/delegateActions';
 import { ATOMIC_SWAPS, useExperimentalFlag } from '@/config';
 
@@ -177,7 +177,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     initialValues: getSwapsNavigationParams(),
     nativeChainAssets: useBackendNetworksStore.getState().getChainsNativeAsset(),
   }));
-  const { isHardwareWallet } = useWallets();
+  const isHardwareWallet = useIsHardwareWallet();
 
   const inputSearchRef = useAnimatedRef<TextInput>();
   const outputSearchRef = useAnimatedRef<TextInput>();
