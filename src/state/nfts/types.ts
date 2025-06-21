@@ -40,16 +40,16 @@ export interface NftsState {
   fetchedPages: { [pageKey: string]: number };
   fetchedCollections: { [collectionId: string]: number };
   pagination: PaginationInfo | null;
-  fetchNextPage: () => Promise<void>;
-  getCollections: () => Collection[] | null;
-  getCollection: (collectionId: CollectionId) => Collection | null;
+  fetchNextNftCollectionPage: () => Promise<void>;
+  getNftCollections: () => Collection[] | null;
+  getNftCollection: (collectionId: CollectionId) => Collection | null;
   getNftsByCollection: (collectionId: CollectionId) => Map<UniqueId, UniqueAsset> | null;
   getNftByUniqueId: (collectionId: CollectionId, uniqueId: UniqueId) => UniqueAsset | null;
   getNft: (collectionId: CollectionId, index: number) => UniqueAsset | null;
-  getPaginationInfo: () => PaginationInfo | null;
-  hasNextPage: () => boolean;
-  getCurrentPageKey: () => string | null;
-  getNextPageKey: () => string | null;
+  getNftPaginationInfo: () => PaginationInfo | null;
+  hasNextNftCollectionPage: () => boolean;
+  getCurrentNftCollectionPageKey: () => string | null;
+  getNextNftCollectionPageKey: () => string | null;
 }
 
 export type NftsStoreType = OptionallyPersistedRainbowStore<QueryStoreState<NftsQueryData, NftParams, NftsState>, Partial<NftsState>>;

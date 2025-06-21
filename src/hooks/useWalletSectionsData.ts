@@ -77,8 +77,8 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
-  const collections = useNftsStore(state => state.getCollections());
-  const hasMoreCollections = useNftsStore(state => state.hasNextPage());
+  const collections = useNftsStore(state => state.getNftCollections());
+  const hasMoreCollections = useNftsStore(state => state.hasNextNftCollectionPage());
   const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();

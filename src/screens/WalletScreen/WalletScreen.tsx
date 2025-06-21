@@ -54,7 +54,6 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
 function WalletScreen() {
   const { network: currentNetwork, accountAddress } = useAccountSettings();
   const insets = useSafeAreaInsets();
-  const fetchNextPage = useNftsStore(state => state.fetchNextPage);
 
   const {
     isWalletEthZero,
@@ -90,7 +89,7 @@ function WalletScreen() {
           disableRefreshControl={disableRefreshControl}
           isWalletEthZero={isWalletEthZero}
           network={currentNetwork}
-          onEndReached={fetchNextPage}
+          onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
           walletBriefSectionsData={walletBriefSectionsData}
         />
         <ToastComponent />

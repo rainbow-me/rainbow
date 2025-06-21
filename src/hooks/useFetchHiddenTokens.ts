@@ -7,7 +7,7 @@ export const hiddenTokensQueryKey = ({ address }: { address?: string }) => ['hid
 
 const STABLE_ARRAY: string[] = [];
 
-async function getHidden(address: string) {
+export async function getHidden(address: string) {
   if (!address) return STABLE_ARRAY;
 
   const previousData = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address }));

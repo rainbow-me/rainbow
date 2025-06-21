@@ -11,15 +11,15 @@ export const showcaseTokensQueryKey = ({ address, network }: { address?: string;
 
 const STABLE_ARRAY: string[] = [];
 
-async function getShowcase(address: string) {
+export async function getShowcase(address: string) {
   if (!address) return STABLE_ARRAY;
 
-  const previousData = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address }));
   const showcaseTokens = await getPreference('showcase', address);
   if (showcaseTokens?.showcase?.ids && showcaseTokens?.showcase?.ids.length > 0) {
     return showcaseTokens.showcase.ids;
   }
 
+  const previousData = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address }));
   return previousData ?? STABLE_ARRAY;
 }
 
