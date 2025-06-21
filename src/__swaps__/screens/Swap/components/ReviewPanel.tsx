@@ -176,7 +176,7 @@ export const SlippageRow = () => {
 
         <Box alignItems="center" flexDirection="row">
           <Bleed horizontal="12px" vertical="8px">
-            <GestureHandlerButton onPressWorklet={handleDecrementSlippage}>
+            <GestureHandlerButton onPressWorklet={handleDecrementSlippage} testID="slippage-decrement-button">
               <Box paddingHorizontal="12px" paddingVertical="8px">
                 <Box
                   style={{
@@ -215,7 +215,7 @@ export const SlippageRow = () => {
           </Box>
 
           <Bleed horizontal="12px" vertical="8px">
-            <GestureHandlerButton onPressWorklet={handleIncrementSlippage}>
+            <GestureHandlerButton onPressWorklet={handleIncrementSlippage} testID="slippage-increment-button">
               <Box paddingHorizontal="12px" paddingVertical="8px">
                 <Box
                   style={{

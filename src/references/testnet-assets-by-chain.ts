@@ -37,8 +37,10 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
       quantity: '0',
     },
   },
+  // Mainnet Assets
   [ChainId.mainnet]: {
-    eth_1: {
+    // Mainnet ETH
+    'eth_1': {
       asset: {
         asset_code: 'eth',
         mainnet_address: 'eth',
@@ -60,6 +62,58 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
           value: 2590.2,
         },
         symbol: 'ETH',
+      },
+      quantity: '0',
+    },
+    // Mainnet DAI
+    '0x6b175474e89094c44da98b954eedeac495271d0f_1': {
+      asset: {
+        asset_code: '0x6b175474e89094c44da98b954eedeac495271d0f',
+        mainnet_address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+        colors: {
+          fallback: '#FCE57F',
+          primary: '#F5AC37',
+        },
+        decimals: 18,
+        icon_url: 'https://s3.amazonaws.com/icons.assets/DAI.png',
+        name: 'Dai',
+        network: ChainName.mainnet,
+        implementations: {},
+        bridging: {
+          bridgeable: true,
+          networks: {},
+        },
+        price: {
+          relative_change_24h: 0,
+          value: 1,
+        },
+        symbol: 'DAI',
+      },
+      quantity: '0',
+    },
+    // Mainnet WETH
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_1': {
+      asset: {
+        asset_code: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+        mainnet_address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+        colors: {
+          fallback: '#E8EAF5',
+          primary: '#808088',
+        },
+        decimals: 18,
+        icon_url: 'https://s3.amazonaws.com/icons.assets/ETH.png',
+        name: 'Wrapped Ether',
+        network: ChainName.mainnet,
+        implementations: {},
+        bridging: {
+          bridgeable: true,
+          networks: {},
+        },
+        price: {
+          relative_change_24h: -4.586615622469276,
+          value: 2590.2,
+        },
+        symbol: 'WETH',
       },
       quantity: '0',
     },

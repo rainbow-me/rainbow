@@ -189,7 +189,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
           onPressMenuItem={handlePressMenuItem}
           useActionSheetFallback={false}
         >
-          <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }}>
+          <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }} testID="gas-speed-pager-button">
             {children}
           </ButtonPressAnimation>
         </ContextMenuButton>

@@ -13,10 +13,13 @@ import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
 import { promiseUtils, time } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
+import { IS_TEST } from '@/env';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
 
-const DEFAULT_FAVORITES = [DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS];
+const base_favorites = [DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS];
+// This makes WETH easier to find in e2e tests
+const DEFAULT_FAVORITES = IS_TEST ? [...base_favorites, WETH_ADDRESS] : base_favorites;
 
 interface FavoritesState {
   favorites: Record<UniqueId, RainbowToken> | undefined;
@@ -97,8 +100,14 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
 /**
  * Gets persisted favorites data and refreshes metadata, initializing with defaults if none exist.
  */
-async function getFavorites() {
-  const favorites = useFavoritesStore.getState().favorites || queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey);
+export async function getFavorites() {
+  let favorites = useFavoritesStore.getState().favorites || queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey);
+
+  const wethUniqueId = getUniqueId(WETH_ADDRESS, ChainId.mainnet);
+  // If we're in test mode and the stored favorites don't include WETH, we should re-initialize.
+  if (IS_TEST && favorites && !favorites[wethUniqueId]) {
+    favorites = undefined;
+  }
 
   // If favorites haven't ever been set, initialize with defaults
   if (!favorites) {

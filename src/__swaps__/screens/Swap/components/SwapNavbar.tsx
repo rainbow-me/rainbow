@@ -71,6 +71,7 @@ function SwapSettings() {
               borderColor: isDarkMode ? separatorTertiary : opacity(separatorTertiary, 0.01),
             },
           ]}
+          testID="swap-settings-button"
         >
           <IconContainer opacity={0.8} size={34}>
             <Bleed space={isDarkMode ? '12px' : undefined}>

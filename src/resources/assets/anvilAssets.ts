@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
 import { keyBy, mapValues } from 'lodash';
 import { getProvider } from '@/handlers/web3';
-import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS } from '@/references';
+import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, erc20ABI } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';
@@ -10,29 +10,58 @@ import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 import { ChainId, ChainName, Network } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-
-const MAINNET_BALANCE_CHECKER = '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 
 const fetchAnvilBalancesWithBalanceChecker = async (
   tokens: string[],
-  address: string
+  address: string,
+  chainId: ChainId
 ): Promise<{ [tokenAddress: string]: string } | null> => {
-  const provider = getProvider({ chainId: ChainId.mainnet });
-  const balanceCheckerContract = new Contract(MAINNET_BALANCE_CHECKER, balanceCheckerContractAbi, provider);
+  const provider = getProvider({ chainId });
+  const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
+
+  if (!connectedToAnvil) {
+    const MAINNET_BALANCE_CHECKER = '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b';
+    const balanceCheckerContract = new Contract(MAINNET_BALANCE_CHECKER, balanceCheckerContractAbi, provider);
+
+    try {
+      const values = await balanceCheckerContract.balances([address], tokens);
+      const balances: {
+        [tokenAddress: string]: string;
+      } = {};
+      tokens.forEach((tokenAddr, tokenIdx) => {
+        const balance = values[tokenIdx];
+        const assetCode = tokenAddr === AddressZero ? ETH_ADDRESS : tokenAddr;
+        balances[assetCode] = balance.toString();
+      });
+      return balances;
+    } catch (e) {
+      logger.error(new RainbowError(`[anvilAssets]: Error fetching balances from balanceCheckerContract: ${e}`));
+      return null;
+    }
+  }
 
   try {
-    const values = await balanceCheckerContract.balances([address], tokens);
-    const balances: {
-      [tokenAddress: string]: string;
-    } = {};
+    const balances: { [tokenAddress: string]: string } = {};
+    const balancePromises = tokens.map(tokenAddr => {
+      if (tokenAddr === AddressZero) {
+        // This is for ETH
+        return provider.getBalance(address);
+      } else {
+        const tokenContract = new Contract(tokenAddr, erc20ABI, provider);
+        return tokenContract.balanceOf(address);
+      }
+    });
+
+    const results = await Promise.all(balancePromises);
     tokens.forEach((tokenAddr, tokenIdx) => {
-      const balance = values[tokenIdx];
+      const balance = results[tokenIdx];
       const assetCode = tokenAddr === AddressZero ? ETH_ADDRESS : tokenAddr;
       balances[assetCode] = balance.toString();
     });
     return balances;
   } catch (e) {
-    logger.error(new RainbowError(`[anvilAssets]: Error fetching balances from balanceCheckerContract: ${e}`));
+    logger.error(new RainbowError(`[anvilAssets]: Error fetching balances from Anvil node: ${e}`));
     return null;
   }
 };
@@ -53,7 +82,7 @@ export const fetchAnvilBalances = async (accountAddress: string, chainId: ChainI
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
   );
-  const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress);
+  const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
   if (!balances) return {};
 
   const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
@@ -88,7 +117,7 @@ export const fetchAnvilBalancesByChainId = async (
     asset.asset_code === ETH_ADDRESS ? AddressZero : asset.asset_code.toLowerCase()
   );
 
-  const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress);
+  const balances = await fetchAnvilBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
   if (!balances)
     return {
       assets: {},

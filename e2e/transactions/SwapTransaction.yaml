@@ -1,3 +1,10 @@
+# This flow covers:
+# [x] Swap ETH to ERC20 (DAI)
+# [x] Degen Mode toggle
+# [x] Review panel
+# [x] Gas speed settings
+# [x] Activity Screen updates
+
 appId: ${APP_ID}
 tags:
   - wallet
@@ -34,8 +41,38 @@ tags:
           id: token-to-buy-dai-1
       - assertVisible: 'DAI.*'
       - assertVisible: 'No Balance'
-      - hideKeyboard
 
+      # Navigate to swap settings
+      - tapOn:
+          id: swap-settings-button
+      - assertVisible: 'Degen Mode Skip the review step to swap faster'
+
+      # Toggle Degen Mode off and on and back off
+      - tapOn: 'Degen Mode.*'
+      - assertNotVisible: 'Max Slippage'
+      - tapOn: 'Degen Mode.*'
+      - assertVisible: 'Max Slippage'
+      - tapOn: 'Degen Mode.*'
+      - assertNotVisible: 'Max Slippage'
+      # Close settings
+      - tapOn:
+          id: swap-bottom-action-button
+      # Go to review
+      - tapOn:
+          id: swap-bottom-action-button
+      - assertVisible:
+          id: review-panel
+      - assertVisible: 'Minimum Received'
+      - assertVisible: 'Included Rainbow Fee'
+      - assertVisible: '.*Est. Network Fee.*'
+      - tapOn:
+          id: gas-speed-pager
+      - assertVisible: '.*Custom.*'
+      - assertVisible: '.*Normal.*'
+      - assertVisible: '.*Fast.*'
+      - tapOn: '.*Urgent.*'
+
+      # Execute Swap
       - longPressOn:
           id: swap-bottom-action-button
       - runFlow: ../utils/MaybeSetupPin.yaml
