@@ -33,7 +33,7 @@ export function ProfileNameRow({
   // Account
   const { accountENS, accountName } = useAccountProfileInfo();
 
-  const onNewEmoji = React.useRef<() => void>();
+  const onNewEmoji = React.useRef<() => void>(undefined);
 
   // ////////////////////////////////////////////////////
   // Name & press handler

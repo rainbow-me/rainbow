@@ -58,14 +58,7 @@ function UnmountWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildre
 
 function PressableLabel({ onPress, children }: PropsWithChildren<{ onPress: VoidFunction }>) {
   return (
-    <Box
-      as={ButtonPressAnimation}
-      paddingVertical="8px"
-      marginVertical="-8px"
-      onPress={onPress}
-      backgroundColor="accent"
-      style={{ maxWidth: 175 }}
-    >
+    <Box as={ButtonPressAnimation} paddingVertical="8px" marginVertical="-8px" onPress={onPress} style={{ maxWidth: 175 }}>
       <Inline horizontalSpace="4px" alignVertical="center">
         <Text color="labelTertiary" size="15pt" weight="semibold" numberOfLines={2}>
           {`${children} `}

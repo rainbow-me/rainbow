@@ -12,7 +12,7 @@ const renderIcon = icon => (isString(icon) ? <Icon name={icon} style={position.s
 
 const rowStyle = padding.object(0, 18, 2, 19);
 
-const ListItem = ({ activeOpacity, children, justify, icon, iconMargin, label, scaleTo = 0.975, testID, disabled, ...props }) => {
+const ListItem = ({ activeOpacity = 0.3, children, justify, icon, iconMargin = 9, label, scaleTo = 0.975, testID, disabled, ...props }) => {
   const onPress = useCallback(() => {
     if (props.onPress) {
       props.onPress(props.value);
@@ -43,10 +43,5 @@ const ListItem = ({ activeOpacity, children, justify, icon, iconMargin, label, s
 };
 
 ListItem.height = ListItemHeight;
-
-ListItem.defaultProps = {
-  activeOpacity: 0.3,
-  iconMargin: 9,
-};
 
 export default ListItem;

@@ -77,7 +77,7 @@ export function CarouselCard<T>({
       )}
       {/* FlashList vertical visible overflow does not work due to a bug,
       so we need to manually add vertical padding to the recycled component.
-      The vertical bleed here is to accommodate the vertical padding w/o affecting the layout. 
+      The vertical bleed here is to accommodate the vertical padding w/o affecting the layout.
       See https://github.com/Shopify/flash-list/issues/723*/}
       <Bleed horizontal="20px" vertical={{ custom: carouselItem.verticalOverflow ?? 0 }}>
         <Box height={{ custom: actualItemHeight }}>
@@ -156,7 +156,7 @@ const RefreshButton = ({ refresh, isRefreshing, dataUpdatedAt }: RefreshButtonPr
   const { colorMode } = useColorMode();
 
   const [canRefresh, setCanRefresh] = useState(dataUpdatedAt < Date.now() - 30_000);
-  const interval = useRef<ReturnType<typeof setTimeout>>();
+  const interval = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     const checkRefresh = () => {

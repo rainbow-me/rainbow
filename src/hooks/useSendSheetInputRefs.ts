@@ -3,7 +3,7 @@ import { TextInput } from 'react-native';
 import useMagicAutofocus from './useMagicAutofocus';
 
 export default function useSendSheetInputRefs() {
-  const assetInputRef = useRef<TextInput>();
+  const assetInputRef = useRef<TextInput>(undefined);
   const nativeCurrencyInputRef = useRef<TextInput | null>(null);
 
   const { handleFocus, lastFocusedInputHandle, setLastFocusedInputHandle } = useMagicAutofocus(nativeCurrencyInputRef, undefined, true);
