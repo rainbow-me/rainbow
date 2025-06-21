@@ -1,7 +1,7 @@
 import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
-import { UniqueAsset } from '@/entities';
+import { AssetType, UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -85,7 +85,9 @@ export async function fetchSimpleHashNFTListing(
  */
 export async function refreshNFTContractMetadata(nft: UniqueAsset) {
   return;
-  const simplehashNetwork = useBackendNetworksStore.getState().getChainsSimplehashNetwork()[nft.isPoap ? ChainId.gnosis : nft.chainId];
+  const simplehashNetwork = useBackendNetworksStore.getState().getChainsSimplehashNetwork()[
+    nft.type === AssetType.poap ? ChainId.gnosis : nft.chainId
+  ];
 
   if (!simplehashNetwork) {
     logger.warn(`[simplehash]: no SimpleHash for chainId: ${nft.chainId}`);
@@ -94,7 +96,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
 
   try {
     await nftApi.post(
-      `/nfts/refresh/${simplehashNetwork}/${nft.asset_contract.address}`,
+      `/nfts/refresh/${simplehashNetwork}/${nft.contractAddress}`,
       {},
       {
         headers: {
@@ -106,13 +108,13 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
     );
   } catch {
     logger.warn(
-      `[simplehash]: failed to refresh metadata for NFT contract ${nft.asset_contract.address}, falling back to refreshing NFT #${nft.id}`
+      `[simplehash]: failed to refresh metadata for NFT contract ${nft.contractAddress}, falling back to refreshing NFT #${nft.tokenId}`
     );
     try {
       // If the collection has > 20k NFTs, the above request will fail.
       // In that case, we need to refresh the given NFT individually.
       await nftApi.post(
-        `/nfts/refresh/${simplehashNetwork}/${nft.asset_contract.address}/${nft.id}`,
+        `/nfts/refresh/${simplehashNetwork}/${nft.contractAddress}/${nft.tokenId}`,
         {},
         {
           headers: {
@@ -125,7 +127,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
     } catch {
       logger.error(
         new RainbowError(
-          `[simplehash]: failed to refresh metadata for NFT #${nft.id} after failing to refresh metadata for NFT contract ${nft.asset_contract.address}`
+          `[simplehash]: failed to refresh metadata for NFT #${nft.tokenId} after failing to refresh metadata for NFT contract ${nft.contractAddress}`
         )
       );
     }
@@ -138,7 +140,9 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
  */
 export async function reportNFT(nft: UniqueAsset) {
   return;
-  const simplehashNetwork = useBackendNetworksStore.getState().getChainsSimplehashNetwork()[nft.isPoap ? ChainId.gnosis : nft.chainId];
+  const simplehashNetwork = useBackendNetworksStore.getState().getChainsSimplehashNetwork()[
+    nft.type === AssetType.poap ? ChainId.gnosis : nft.chainId
+  ];
 
   if (!simplehashNetwork) {
     logger.warn(`[simplehash]: no SimpleHash for chainId: ${nft.chainId}`);
@@ -149,9 +153,9 @@ export async function reportNFT(nft: UniqueAsset) {
     await nftApi.post(
       '/nfts/report/spam',
       {
-        contract_address: nft.asset_contract.address,
+        contract_address: nft.contractAddress,
         chain_id: simplehashNetwork,
-        token_id: nft.id,
+        token_id: nft.tokenId,
         event_type: 'mark_as_spam',
       },
       {
@@ -163,6 +167,6 @@ export async function reportNFT(nft: UniqueAsset) {
       }
     );
   } catch {
-    logger.error(new RainbowError(`[simplehash]: failed to report NFT ${nft.asset_contract.address} #${nft.id} as spam to SimpleHash`));
+    logger.error(new RainbowError(`[simplehash]: failed to report NFT ${nft.contractAddress} #${nft.tokenId} as spam to SimpleHash`));
   }
 }

@@ -2,33 +2,27 @@ import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@/entities';
+import { useCollectible } from '@/hooks';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
-import { useNftsStore } from '@/state/nfts/nfts';
 
-export default React.memo(function WrappedNFT({
+export default React.memo(function LegacyWrappedNFT({
   onPress,
-  collectionId,
-  placement,
-  index,
   uniqueId,
+  placement,
+  externalAddress,
 }: {
   onPress?: (asset: UniqueAsset) => void;
-  collectionId: string;
+  uniqueId: string;
   placement: 'left' | 'right';
-  index: number;
-  uniqueId?: string;
+  externalAddress?: string;
 }) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const asset = uniqueId
-    ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      useNftsStore(state => state.getNftByUniqueId(collectionId, uniqueId))
-    : // eslint-disable-next-line react-hooks/rules-of-hooks
-      useNftsStore(state => state.getNft(collectionId, index));
+  const asset = useCollectible(uniqueId, externalAddress);
 
   const handleItemPress = useCallback(
     (asset: UniqueAsset) =>
@@ -36,6 +30,7 @@ export default React.memo(function WrappedNFT({
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
+        external: !!externalAddress || false,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,
@@ -55,7 +50,7 @@ export default React.memo(function WrappedNFT({
           paddingRight: '19px (Deprecated)',
         };
 
-  if (!nftsEnabled || !asset) return null;
+  if (!nftsEnabled) return null;
 
   return (
     <Box flexGrow={1} justifyContent="center" testID={`wrapped-nft-${asset.name}`} {...placementProps}>

@@ -14,7 +14,6 @@ import { InitializeWalletParams, walletInit } from '../../model/wallet';
 import { settingsLoadNetwork } from '../../redux/settings';
 import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
-import { loadTokensData } from '@/state/tokens/loadTokensData';
 import { loadSettingsData } from '../settings/loadSettingsData';
 import { PerformanceTracking } from '../../performance/tracking';
 import { ensureValidHex } from '../../handlers/web3';
@@ -145,15 +144,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     logger.debug('[initializeWallet]: updated wallet address', {
       walletAddress,
     });
-
-    // Newly created / imported accounts have no data in localstorage
-    if (!(isNew || isImporting)) {
-      await loadTokensData();
-      if (shouldCancel()) return null;
-      logger.debug('[initializeWallet]: loaded account data', {
-        network,
-      });
-    }
 
     setWalletReady();
     logger.debug('[initializeWallet]: 💰 Wallet initialized');

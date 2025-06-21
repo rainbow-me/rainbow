@@ -321,7 +321,7 @@ export function setUserAssets({
   const smallBalanceThreshold = supportedNativeCurrencies[userAssetsStoreManager.getState().currency].userAssetsSmallThreshold;
   const filteredAllIdsArray = allIds.filter(id => {
     const asset = newUserAssetsMap.get(id);
-    return asset && (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
+    return asset && +asset.native?.balance?.amount > smallBalanceThreshold;
   });
 
   // Build search cache
@@ -454,7 +454,7 @@ export function getFilteredUserAssetIds({
     const filteredIds = Array.from(
       selectUserAssetIds(
         asset =>
-          (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
+          +asset.native?.balance?.amount > smallBalanceThreshold &&
           (!chainIdFilter || asset.chainId === chainIdFilter) &&
           (!searchRegex ||
             searchRegex.test(asset.name) ||

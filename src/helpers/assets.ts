@@ -1,15 +1,17 @@
-import lang from 'i18n-js';
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { supportedNativeCurrencies } from '@/references';
-import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
 import * as i18n from '@/languages';
-import { NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { AssetType, NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
+import { Collection, CollectionId } from '@/state/nfts/types';
+import { isLowerCaseMatch } from '@/utils';
+import { parseUniqueId } from '@/resources/nfts/utils';
+import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { isDataComplete } from '@/hooks/useMigrateShowcaseAndHidden';
 
 const COINS_TO_SHOW = 5;
 
@@ -245,67 +247,89 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
 };
 
 export const buildBriefUniqueTokenList = (
-  uniqueTokens: UniqueAsset[],
-  selectedShowcaseTokens: string[] | undefined = [],
+  collections: Collection[] | null,
+  showcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
-  listType: AssetListType = 'wallet',
-  isReadOnlyWallet = false,
-  nftSort = NftCollectionSortCriterion.MostRecent,
-  isFetchingNfts = false
+  isFetchingNfts = false,
+  hasMoreCollections = false
 ) => {
-  const hiddenUniqueTokensIds: string[] = [];
-  const uniqueTokensInShowcaseIds: string[] = [];
-  const filteredUniqueTokens: UniqueAsset[] = [];
+  const hiddenUniqueTokensIds: Map<CollectionId, number> = new Map();
+  const uniqueTokensInShowcaseIds: Map<CollectionId, number> = new Map();
+  const filteredCollections: Map<CollectionId, Collection> = new Map(collections?.map(c => [c.id.toLowerCase(), c]));
 
-  for (const token of uniqueTokens) {
-    if (hiddenTokens.includes(token.fullUniqueId)) {
-      hiddenUniqueTokensIds.push(token.uniqueId);
-      continue;
-    }
+  const includeShowcase = isDataComplete(showcaseTokens);
+  const includeHidden = isDataComplete(hiddenTokens);
 
-    if (selectedShowcaseTokens.includes(token.uniqueId)) {
-      uniqueTokensInShowcaseIds.push(token.uniqueId);
-    }
+  if (includeShowcase) {
+    for (const token of showcaseTokens) {
+      const { contractAddress } = parseUniqueId(token);
+      const matchedCollection = collections?.find(c => {
+        const { contractAddress: collectionContractAddress } = parseUniqueId(c.id);
+        return isLowerCaseMatch(collectionContractAddress, contractAddress);
+      });
 
-    if (listType === 'select-nft') {
-      const format = getUniqueTokenFormat(token);
-      const type = getUniqueTokenType(token);
-      if (format === 'image' && type === 'NFT') {
-        filteredUniqueTokens.push(token);
+      if (matchedCollection) {
+        const lowerCaseId = matchedCollection.id.toLowerCase();
+        uniqueTokensInShowcaseIds.set(lowerCaseId, (uniqueTokensInShowcaseIds.get(lowerCaseId) ?? 0) + 1);
+        // remove the collection from the filtered collections map if needed
+        const totalCount = filteredCollections.get(lowerCaseId)?.totalCount;
+        if (totalCount && Number(totalCount) === 1) {
+          filteredCollections.delete(lowerCaseId);
+        }
       }
-    } else {
-      filteredUniqueTokens.push(token);
     }
   }
 
-  const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.familyName);
+  if (includeHidden) {
+    for (const token of hiddenTokens) {
+      const { contractAddress } = parseUniqueId(token);
+      const matchedCollection = collections?.find(c => {
+        const { contractAddress: collectionContractAddress } = parseUniqueId(c.id);
+        return isLowerCaseMatch(collectionContractAddress, contractAddress);
+      });
+
+      if (matchedCollection) {
+        const lowerCaseId = matchedCollection.id.toLowerCase();
+
+        hiddenUniqueTokensIds.set(lowerCaseId, (hiddenUniqueTokensIds.get(lowerCaseId) ?? 0) + 1);
+        // remove the collection from the filtered collections map if needed
+        const totalCount = filteredCollections.get(lowerCaseId)?.totalCount;
+        if (totalCount && Number(totalCount) === 1) {
+          filteredCollections.delete(lowerCaseId);
+        }
+      }
+    }
+  }
 
   const result: CellTypes[] = [
     {
       type: CellType.NFTS_HEADER,
-      nftSort,
-      uid: `nft-headers-${nftSort}`,
+      uid: `nft-headers`,
     },
     { type: CellType.NFTS_HEADER_SPACE_AFTER, uid: 'nfts-header-space-after' },
   ];
-  if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
+
+  if (includeShowcase && showcaseTokens.length > 0) {
     result.push({
       name: i18n.t(i18n.l.account.tab_showcase),
-      total: uniqueTokensInShowcaseIds.length,
+      total: showcaseTokens.length,
       type: CellType.FAMILY_HEADER,
       uid: 'showcase',
     });
-    for (let index = 0; index < uniqueTokensInShowcaseIds.length; index++) {
-      const uniqueId = uniqueTokensInShowcaseIds[index];
+    for (let index = 0; index < showcaseTokens.length; index++) {
+      const uniqueId = showcaseTokens[index];
+
+      const { network, contractAddress } = parseUniqueId(uniqueId);
+
       result.push({
-        index,
         type: CellType.NFT,
         uid: `showcase-${uniqueId}`,
         uniqueId,
+        index,
+        collectionId: `${network}_${contractAddress}`,
       });
     }
-
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
   }
 
@@ -329,6 +353,153 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
   }
 
+  if (!collections?.length) {
+    if (!isFetchingNfts) {
+      result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
+    } else {
+      result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading` });
+    }
+  } else {
+    for (const [id, { name, imageUrl, totalCount }] of filteredCollections) {
+      const amountInShowcase = uniqueTokensInShowcaseIds.get(id) ?? 0;
+      const amountHidden = hiddenUniqueTokensIds.get(id) ?? 0;
+      const adjustedTotalCount = Number(totalCount) - amountInShowcase - amountHidden;
+
+      if (adjustedTotalCount === 0) {
+        continue;
+      }
+
+      result.push({
+        image: imageUrl ?? undefined,
+        name,
+        total: adjustedTotalCount,
+        type: CellType.FAMILY_HEADER,
+        uid: id,
+      });
+
+      for (let index = 0; index < Number(adjustedTotalCount); index++) {
+        const uniqueId = `${id}_${index}`;
+        result.push({ index, type: CellType.NFT, uid: uniqueId, collectionId: id });
+      }
+
+      result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${id}-space-after` });
+    }
+  }
+
+  if (includeHidden && hiddenTokens.length > 0 && !hasMoreCollections) {
+    result.push({
+      name: i18n.t(i18n.l.button.hidden),
+      total: hiddenTokens.length,
+      type: CellType.FAMILY_HEADER,
+      uid: 'hidden',
+    });
+    for (let index = 0; index < hiddenTokens.length; index++) {
+      const uniqueId = hiddenTokens[index];
+      const { network, contractAddress } = parseUniqueId(uniqueId);
+
+      result.push({
+        index,
+        type: CellType.NFT,
+        uid: `hidden-${uniqueId}`,
+        uniqueId,
+        collectionId: `${network}_${contractAddress}`,
+      });
+    }
+    result.push({ type: CellType.NFT_SPACE_AFTER, uid: `hidden-space-after` });
+  }
+
+  return result;
+};
+
+export const legacyBuildBriefUniqueTokenList = (
+  uniqueTokens: UniqueAsset[],
+  selectedShowcaseTokens: string[] | undefined = [],
+  sellingTokens: UniqueAsset[] | undefined = [],
+  hiddenTokens: string[] | undefined = [],
+  listType: AssetListType = 'wallet',
+  isReadOnlyWallet = false,
+  nftSort = NftCollectionSortCriterion.MostRecent,
+  isFetchingNfts = false
+) => {
+  const hiddenUniqueTokensIds: string[] = [];
+  const uniqueTokensInShowcaseIds: string[] = [];
+  const filteredUniqueTokens: UniqueAsset[] = [];
+
+  for (const token of uniqueTokens) {
+    if (hiddenTokens.includes(token.uniqueId)) {
+      hiddenUniqueTokensIds.push(token.uniqueId);
+      continue;
+    }
+
+    const { network, contractAddress, tokenId } = parseUniqueId(token.uniqueId);
+
+    if (
+      selectedShowcaseTokens.includes(`${contractAddress}_${tokenId}`) ||
+      (network && selectedShowcaseTokens.includes(`${network}_${contractAddress}_${tokenId}`))
+    ) {
+      uniqueTokensInShowcaseIds.push(token.uniqueId);
+    }
+
+    if (listType === 'select-nft') {
+      const notAnimated = !token.images.animatedUrl;
+      if (notAnimated && token.type === AssetType.nft) {
+        filteredUniqueTokens.push(token);
+      }
+    } else {
+      filteredUniqueTokens.push(token);
+    }
+  }
+
+  const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.collectionName);
+
+  const result: CellTypes[] = [
+    {
+      type: CellType.NFTS_HEADER,
+      nftSort,
+      uid: `nft-headers-${nftSort}`,
+    },
+    { type: CellType.NFTS_HEADER_SPACE_AFTER, uid: 'nfts-header-space-after' },
+  ];
+  if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
+    result.push({
+      name: i18n.t(i18n.l.account.tab_showcase),
+      total: uniqueTokensInShowcaseIds.length,
+      type: CellType.LEGACY_FAMILY_HEADER,
+      uid: 'showcase',
+    });
+    for (let index = 0; index < uniqueTokensInShowcaseIds.length; index++) {
+      const uniqueId = uniqueTokensInShowcaseIds[index];
+      result.push({
+        index,
+        type: CellType.LEGACY_NFT,
+        uid: `showcase-${uniqueId}`,
+        uniqueId,
+      });
+    }
+
+    result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
+  }
+
+  // i18n all names
+  if (sellingTokens.length > 0) {
+    result.push({
+      name: i18n.t(i18n.l.nfts.selling),
+      total: sellingTokens.length,
+      type: CellType.LEGACY_FAMILY_HEADER,
+      uid: 'selling',
+    });
+    for (let index = 0; index < sellingTokens.length; index++) {
+      const uniqueId = sellingTokens[index].uniqueId;
+      result.push({
+        index,
+        type: CellType.LEGACY_NFT,
+        uid: `selling-${uniqueId}`,
+        uniqueId,
+      });
+    }
+    result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
+  }
+
   if (!Object.keys(assetsByName).length) {
     if (!isFetchingNfts) {
       result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
@@ -338,16 +509,16 @@ export const buildBriefUniqueTokenList = (
   } else {
     for (const family of Object.keys(assetsByName)) {
       result.push({
-        image: assetsByName[family][0].familyImage ?? undefined,
+        image: assetsByName[family][0].images.lowResUrl ?? assetsByName[family][0].images.highResUrl ?? undefined,
         name: family,
         total: assetsByName[family].length,
-        type: CellType.FAMILY_HEADER,
+        type: CellType.LEGACY_FAMILY_HEADER,
         uid: family,
       });
       const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
       for (let index = 0; index < tokens.length; index++) {
         const uniqueId = tokens[index];
-        result.push({ index, type: CellType.NFT, uid: uniqueId, uniqueId });
+        result.push({ index, type: CellType.LEGACY_NFT, uid: uniqueId, uniqueId });
       }
 
       result.push({ type: CellType.NFT_SPACE_AFTER, uid: `${family}-space-after` });
@@ -356,16 +527,16 @@ export const buildBriefUniqueTokenList = (
 
   if (hiddenUniqueTokensIds?.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
-      name: lang.t('button.hidden'),
+      name: i18n.t(i18n.l.button.hidden),
       total: hiddenUniqueTokensIds.length,
-      type: CellType.FAMILY_HEADER,
+      type: CellType.LEGACY_FAMILY_HEADER,
       uid: 'hidden',
     });
     for (let index = 0; index < hiddenUniqueTokensIds.length; index++) {
       const uniqueId = hiddenUniqueTokensIds[index];
       result.push({
         index,
-        type: CellType.NFT,
+        type: CellType.LEGACY_NFT,
         uid: `hidden-${uniqueId}`,
         uniqueId,
       });
@@ -378,17 +549,18 @@ export const buildBriefUniqueTokenList = (
 };
 
 export const buildUniqueTokenName = ({
-  collection,
-  id,
+  collectionName,
+  tokenId,
   name,
   uniqueId,
 }: {
-  collection: { name: string };
-  id: string;
+  collectionName: string;
+  tokenId: string;
   name: string;
   uniqueId: string;
 }) => {
   if (name) return name;
-  if (id) return `${collection?.name} #${id}`;
-  return uniqueId;
+  if (collectionName) return `${collectionName} #${tokenId}`;
+  const { contractAddress, tokenId: uniqueTokenId } = parseUniqueId(uniqueId);
+  return `${contractAddress}_${uniqueTokenId}`;
 };

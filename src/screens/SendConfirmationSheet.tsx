@@ -4,7 +4,7 @@ import { ShimmerAnimation } from '@/components/animations';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import { UniqueAsset } from '@/entities';
+import { AssetType } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import {
   estimateENSReclaimGasLimit,
@@ -30,7 +30,7 @@ import { performanceTracking, Screens, TimeToSignOperation } from '@/state/perfo
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
+import { promiseUtils } from '@/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
@@ -56,7 +56,7 @@ import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
 
@@ -180,7 +180,8 @@ const ChevronDown = () => {
 export const SendConfirmationSheet = () => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
   const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -220,8 +221,7 @@ export const SendConfirmationSheet = () => {
     return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
-  const uniqueTokenType = getUniqueTokenType(asset as UniqueAsset);
-  const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
+  const isENS = asset.type === AssetType.ens && profilesEnabled;
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, chainId, toAddress }));
 
@@ -421,10 +421,10 @@ export const SendConfirmationSheet = () => {
 
   const imageUrl = useMemo(() => {
     if (assetIsUniqueAsset(asset)) {
-      return svgToPngIfNeeded(asset.image_thumbnail_url || asset.image_url, true);
+      return svgToPngIfNeeded(asset.images.lowResUrl || asset.images.highResUrl, true);
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const contentHeight = getSheetHeight({
     checkboxes,
@@ -440,14 +440,14 @@ export const SendConfirmationSheet = () => {
       return `${amountDetails.assetAmount} ${asset.symbol}`;
     }
     return '';
-  }, [asset, isNft, amountDetails]);
+  }, [asset, amountDetails]);
 
   const assetSymbolForDisclaimer = useMemo(() => {
     if (assetIsParsedAddressAsset(asset)) {
       return asset.symbol;
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const getMessage = () => {
     let message;
@@ -493,7 +493,7 @@ export const SendConfirmationSheet = () => {
                   {assetIsUniqueAsset(asset) ? (
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
-                      backgroundColor={asset.background || theme.colors.lightestGrey}
+                      backgroundColor={asset.backgroundColor || theme.colors.lightestGrey}
                       borderRadius={10}
                       chainId={asset?.chainId}
                       imageUrl={imageUrl}

@@ -20,6 +20,7 @@ import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { useNftsStore } from '@/state/nfts/nfts';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
@@ -90,6 +91,7 @@ function WalletScreen() {
           disableRefreshControl={disableRefreshControl}
           isWalletEthZero={isWalletEthZero}
           network={currentNetwork}
+          onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
           walletBriefSectionsData={walletBriefSectionsData}
         />
         <ToastComponent />

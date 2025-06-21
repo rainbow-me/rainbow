@@ -9,7 +9,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils/time';
 
 const NFTS_STALE_TIME = time.minutes(10);
-const NFTS_CACHE_TIME = time.hours(1);
+const NFTS_CACHE_TIME = time.minutes(10);
 
 export const nftsQueryKey = ({
   address,
@@ -19,7 +19,7 @@ export const nftsQueryKey = ({
   address: string;
   sortBy: NftCollectionSortCriterion;
   sortDirection: SortDirection;
-}) => createQueryKey('nfts', { address, sortBy, sortDirection }, { persisterVersion: 2 });
+}) => createQueryKey('nfts', { address, sortBy, sortDirection }, { persisterVersion: 3 });
 
 export const invalidateAddressNftsQueries = (address: string) => {
   queryClient.invalidateQueries(createQueryKey('nfts', { address }));
@@ -35,14 +35,14 @@ export const nftListingQueryKey = ({
   chainId: Omit<ChainId, ChainId.goerli>;
 }) => createQueryKey('nftListing', { contractAddress, tokenId, chainId });
 
-interface NFTData {
+export interface NFTData {
   nfts: UniqueAsset[];
   nftIndexMap: Record<string, number>;
 }
 
 type NFTQueryKey = ReturnType<typeof nftsQueryKey>;
 
-const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) => {
+export const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) => {
   const [{ address, sortBy, sortDirection }] = queryKey;
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
 

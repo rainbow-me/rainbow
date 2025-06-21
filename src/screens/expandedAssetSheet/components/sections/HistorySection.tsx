@@ -30,6 +30,7 @@ import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/Safe
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const l = i18n.l.expanded_state.sections.history;
 
@@ -418,7 +419,8 @@ const HistoryContent = memo(function HistoryContent({
 });
 
 export const HistorySection = memo(function HistorySection() {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { basicAsset: asset } = useExpandedAssetSheetContext();
 
   const { data: tokenInteractions = [], isLoading: isLoadingTokenInteractions } = useTokenInteractions({

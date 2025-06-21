@@ -5,12 +5,12 @@ import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
-import { Text as LegacyText } from '../text';
-import { useColorMode } from '@/design-system';
+import { useColorMode, Text } from '@/design-system';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { Colors } from '@/styles';
+import { AssetType } from '@/entities';
+import { isLowerCaseMatch } from '@/utils';
 import { RainbowImage } from '../RainbowImage';
 
 function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
@@ -24,13 +24,12 @@ function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
 type UniqueTokenImageProps = {
   backgroundColor: string;
   imageUrl: string | null | undefined;
-  fullUniqueId: string;
   id: string;
   collectionName: string;
   name: string;
+  type: AssetType;
   uniqueId: string;
   lowResImageUrl?: string | null | undefined;
-  address?: string | null;
   mimeType: string | null | undefined;
   isCard?: boolean;
   transformSvgs?: boolean;
@@ -42,10 +41,9 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   lowResImageUrl,
   collectionName,
   name,
+  type,
   uniqueId,
-  fullUniqueId,
   id,
-  address,
   isCard = false,
   mimeType,
   transformSvgs = true,
@@ -61,11 +59,11 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const onError = useCallback(() => setErrorLoadingImage(true), [setErrorLoadingImage]);
 
   const isHiddenToken = useMemo(() => {
-    return hiddenTokens.find(token => token === fullUniqueId);
-  }, [hiddenTokens, fullUniqueId]);
+    return hiddenTokens.find(token => isLowerCaseMatch(token, uniqueId));
+  }, [hiddenTokens, uniqueId]);
 
   const backgroundColor = givenBackgroundColor;
-  const isENS = address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS;
+  const isENS = type === AssetType.ens;
   const isSVG = mimeType === 'image/svg+xml';
   const hasImage = imageUrl !== null && imageUrl !== undefined;
 
@@ -79,7 +77,7 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
         <RemoteSvg
           fallbackIfNonAnimated={!isENS || isCard}
           fallbackUri={svgToPngIfNeeded(imageUrl, true)}
-          lowResFallbackUri={imageUrl}
+          lowResFallbackUri={lowResImageUrl}
           onError={onError}
           style={StyleSheet.absoluteFill}
           uri={imageUrl}
@@ -93,14 +91,14 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
       )}
       {isHiddenToken && isCard && <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
       {shouldShowTextFallback && (
-        <LegacyText align="center" color={getFallbackTextColor(backgroundColor, isDarkMode, colors)} lineHeight="looser" size="smedium">
+        <Text color={{ custom: getFallbackTextColor(backgroundColor, isDarkMode, colors) }} size="15pt" align="center" containsEmoji>
           {buildUniqueTokenName({
-            collection: { name: collectionName },
-            id,
+            collectionName,
+            tokenId: id,
             name,
             uniqueId,
           })}
-        </LegacyText>
+        </Text>
       )}
     </Centered>
   );
