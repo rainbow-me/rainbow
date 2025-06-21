@@ -177,6 +177,8 @@ export const AirdropsCard = memo(function AirdropsCard() {
             cy={COIN_ICON_TOP_INSET}
             r={COIN_ICON_SIZE / 2}
             transform={enterAnimationTransform}
+            antiAlias
+            dither
           >
             <Shadow blur={15} color={CARD_CONFIG.colors.coinIconDropShadow} dx={0} dy={10} />
           </Circle>
@@ -194,11 +196,15 @@ export const AirdropsCard = memo(function AirdropsCard() {
           />
 
           {/* Coin icon inner shadows */}
-          <Circle cx={DEFAULT_CARD_SIZE / 2} cy={COIN_ICON_TOP_INSET} r={COIN_ICON_SIZE / 2} transform={enterAnimationTransform}>
+          <Circle
+            cx={DEFAULT_CARD_SIZE / 2}
+            cy={COIN_ICON_TOP_INSET}
+            r={COIN_ICON_SIZE / 2}
+            transform={enterAnimationTransform}
+            antiAlias
+            dither
+          >
             <Shadow blur={1.25} color={CARD_CONFIG.colors.white80} dx={0} dy={1.5} inner shadowOnly />
-          </Circle>
-          <Circle cx={DEFAULT_CARD_SIZE / 2} cy={COIN_ICON_TOP_INSET} r={COIN_ICON_SIZE / 2} transform={enterAnimationTransform}>
-            <Shadow blur={2} color={CARD_CONFIG.colors.black30} dx={0} dy={-1.5} inner shadowOnly />
           </Circle>
 
           {/* Number of airdrops bubble */}
