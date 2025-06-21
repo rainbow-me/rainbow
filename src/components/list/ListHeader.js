@@ -2,7 +2,7 @@ import Divider from '@/components/Divider';
 import { useDimensions, useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import lang from 'i18n-js';
@@ -52,23 +52,23 @@ const StickyBackgroundBlocker = styled.View({
 export default function ListHeader({ children, contextMenuOptions, isCoinListEdited, showDivider = true, title, totalValue }) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
   const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
   const { initializeShowcaseIfNeeded } = useWebData();
 
   const handleShare = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    const isReadOnly = getIsReadOnlyWallet();
+    if (!isReadOnly) {
       initializeShowcaseIfNeeded();
     }
     const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountENS || accountAddress}`;
     const shareOptions = {
-      message: isReadOnlyWallet
+      message: isReadOnly
         ? lang.t('list.share.check_out_this_wallet', { showcaseUrl })
         : lang.t('list.share.check_out_my_wallet', { showcaseUrl }),
     };
     Share.share(shareOptions);
-  }, [accountAddress, accountENS, initializeShowcaseIfNeeded, isReadOnlyWallet]);
+  }, [accountAddress, accountENS, initializeShowcaseIfNeeded]);
 
   return (
     <Fragment>
@@ -83,7 +83,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
             </Row>
             {title === i18n.t(i18n.l.account.tab_collectibles) && (
               <Column align="flex-end" flex={1}>
-                <ShareCollectiblesButton onPress={() => handleShare(isReadOnlyWallet, accountAddress)} />
+                <ShareCollectiblesButton onPress={() => handleShare(getIsReadOnlyWallet(), accountAddress)} />
               </Column>
             )}
             <ContextMenu marginTop={3} {...contextMenuOptions} />

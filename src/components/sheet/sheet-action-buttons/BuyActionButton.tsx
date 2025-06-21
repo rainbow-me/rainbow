@@ -4,7 +4,7 @@ import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
 import showWalletErrorAlert from '@/helpers/support';
-import { useIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
@@ -16,11 +16,10 @@ type BuyActionButtonProps = SheetActionButtonProps;
 function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) {
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
-  const isDamaged = useIsDamagedWallet();
   const { name: routeName } = useRoute();
 
   const handlePress = useCallback(() => {
-    if (isDamaged) {
+    if (getIsDamagedWallet()) {
       showWalletErrorAlert();
       return;
     }
@@ -31,7 +30,7 @@ function BuyActionButton({ color: givenColor, ...props }: BuyActionButtonProps) 
       componentName: 'BuyActionButton',
       routeName,
     });
-  }, [isDamaged, navigate, routeName]);
+  }, [navigate, routeName]);
 
   return (
     <SheetActionButton

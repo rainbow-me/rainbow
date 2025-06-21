@@ -8,9 +8,8 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { isLowerCaseMatch } from '@/utils';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import useWebData from './useWebData';
-import useAccountSettings from './useAccountSettings';
 import { logger } from '@/logger';
-import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import useOpenFamilies from '@/hooks/useOpenFamilies';
 import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
@@ -50,7 +49,7 @@ export default function useMigrateShowcaseAndHidden() {
   const { updateWebShowcase, updateWebHidden, showcaseTokens, hiddenTokens } = useWebData();
   const { updateOpenFamilies } = useOpenFamilies();
   const isReadOnlyWallet = useIsReadOnlyWallet();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const migrateShowcaseAndHidden = useCallback(async () => {
     if (isReadOnlyWallet || (!showcaseTokens.length && !hiddenTokens.length)) {

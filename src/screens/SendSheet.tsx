@@ -53,7 +53,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { getWallets, useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -151,7 +151,8 @@ export default function SendSheet() {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
+  const { nativeCurrency, chainId } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
   const queryClient = useQueryClient();
 

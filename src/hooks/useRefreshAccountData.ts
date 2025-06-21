@@ -1,17 +1,15 @@
 import { analytics } from '@/analytics';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
-import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { usePositionsStore } from '@/state/positions/positions';
-import { getAccountAddress, getWallets, refreshWalletInfo } from '@/state/wallets/walletsStore';
+import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
+import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
-import { Address } from 'viem';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
@@ -21,18 +19,13 @@ import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 const MIN_REFRESH_DURATION = 1_250;
 
 export const refreshAccountData = async () => {
-  const nativeCurrency = userAssetsStoreManager.getState().currency;
   const accountAddress = getAccountAddress();
-  const wallets = getWallets();
-  const allAddresses = Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address));
 
   // These queries can take too long to fetch, so we do not wait for them
-  queryClient.invalidateQueries([
-    addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }),
-    createQueryKey('nfts', { address: accountAddress }),
-    showcaseTokensQueryKey({ address: accountAddress }),
-    hiddenTokensQueryKey({ address: accountAddress }),
-  ]);
+  refetchWalletSummary();
+  queryClient.invalidateQueries(createQueryKey('nfts', { address: accountAddress }));
+  queryClient.invalidateQueries(showcaseTokensQueryKey({ address: accountAddress }));
+  queryClient.invalidateQueries(hiddenTokensQueryKey({ address: accountAddress }));
 
   await Promise.all([
     delay(MIN_REFRESH_DURATION),

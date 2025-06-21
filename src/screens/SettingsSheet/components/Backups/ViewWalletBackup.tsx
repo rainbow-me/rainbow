@@ -31,7 +31,8 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { useIsDamagedWallet, createAccount, useWallet } from '@/state/wallets/walletsStore';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { createAccount, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -44,7 +45,6 @@ import MenuContainer from '../MenuContainer';
 import MenuHeader from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -123,8 +123,7 @@ const ViewWalletBackup = () => {
   const status = backupsStore(state => state.status);
 
   const { walletId, title: incomingTitle } = params;
-  const creatingWallet = useRef<boolean>();
-  const isDamaged = useIsDamagedWallet();
+  const creatingWallet = useRef<boolean>(false);
   const wallet = useWallet(walletId);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
@@ -201,7 +200,7 @@ const ViewWalletBackup = () => {
                 logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
                   error: e,
                 });
-                if (isDamaged) {
+                if (getIsDamagedWallet()) {
                   setTimeout(() => {
                     showWalletErrorAlert();
                   }, 1000);
@@ -226,7 +225,7 @@ const ViewWalletBackup = () => {
         error: e,
       });
     }
-  }, [creatingWallet, isDamaged, navigate, wallet]);
+  }, [creatingWallet, navigate, wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {

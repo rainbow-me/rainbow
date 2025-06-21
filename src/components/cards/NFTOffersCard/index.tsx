@@ -14,7 +14,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -32,6 +32,7 @@ import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
 import { ScrollView } from 'react-native';
 import { DiscoverSeparator } from '@/components/Discover/DiscoverSeparator';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const CARD_HEIGHT = 250;
 const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;
@@ -43,7 +44,7 @@ export const NFTOffersCard = () => {
   const borderColor = useForegroundColor('separator');
   const buttonColor = useForegroundColor('fillSecondary');
   const { width: deviceWidth } = useDimensions();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { colors } = useTheme();
   const {
     data: { nftOffers },

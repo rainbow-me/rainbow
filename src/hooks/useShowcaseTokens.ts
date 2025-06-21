@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import useOpenFamilies from './useOpenFamilies';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useFetchShowcaseTokens, { showcaseTokensQueryKey } from './useFetchShowcaseTokens';
@@ -10,8 +10,6 @@ import { isLowerCaseMatch } from '@/utils';
 export default function useShowcaseTokens(address?: string) {
   const queryClient = useQueryClient();
   const accountAddress = useAccountAddress();
-
-  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { updateOpenFamilies } = useOpenFamilies();
 
   const addressToUse = address || accountAddress;
@@ -20,8 +18,11 @@ export default function useShowcaseTokens(address?: string) {
 
   const addShowcaseTokenMutation = useMutation({
     mutationFn: async (asset: string) => {
+      const isReadOnlyWallet = getIsReadOnlyWallet();
+      if (isReadOnlyWallet) return showcaseTokens;
+
       const lowercasedUniqueId = asset.toLowerCase();
-      logger.debug('[useShowcaseTokens] Adding showcase token:', {
+      logger.debug('[useShowcaseTokens] Adding showcase token', {
         asset: lowercasedUniqueId,
         addressToUse,
         isReadOnlyWallet,
@@ -31,15 +32,13 @@ export default function useShowcaseTokens(address?: string) {
       const newShowcaseTokens = [...showcaseTokens, lowercasedUniqueId];
       logger.debug(`[useShowcaseTokens] New showcase tokens: ${newShowcaseTokens}`);
 
-      if (!isReadOnlyWallet) {
-        const response = await getPreference('showcase', addressToUse);
-        if (!response || !response.showcase.ids.length) {
-          logger.debug('[useShowcaseTokens] Initializing showcase');
-          await setPreference(PreferenceActionType.init, 'showcase', addressToUse, newShowcaseTokens);
-        } else {
-          logger.debug(`[useShowcaseTokens] Adding showcase token ${lowercasedUniqueId} to showcase`);
-          await setPreference(PreferenceActionType.update, 'showcase', addressToUse, newShowcaseTokens);
-        }
+      const response = await getPreference('showcase', addressToUse);
+      if (!response || !response.showcase.ids.length) {
+        logger.debug('[useShowcaseTokens] Initializing showcase');
+        await setPreference(PreferenceActionType.init, 'showcase', addressToUse, newShowcaseTokens);
+      } else {
+        logger.debug(`[useShowcaseTokens] Adding showcase token ${lowercasedUniqueId} to showcase`);
+        await setPreference(PreferenceActionType.update, 'showcase', addressToUse, newShowcaseTokens);
       }
 
       return newShowcaseTokens;
@@ -61,21 +60,32 @@ export default function useShowcaseTokens(address?: string) {
 
   const removeShowcaseTokenMutation = useMutation({
     mutationFn: async (asset: string) => {
+      const isReadOnlyWallet = getIsReadOnlyWallet();
+      if (isReadOnlyWallet) return showcaseTokens;
+
       const lowercasedUniqueId = asset.toLowerCase();
+      logger.debug('[useShowcaseTokens] Removing showcase token', {
+        asset: lowercasedUniqueId,
+        addressToUse,
+        isReadOnlyWallet,
+        currentShowcaseTokens: showcaseTokens,
+      });
+
       const newShowcaseTokens = showcaseTokens.filter(id => {
         if (isLowerCaseMatch(id, lowercasedUniqueId)) return false;
         return true;
       });
-      if (!isReadOnlyWallet) {
-        const response = await getPreference('showcase', addressToUse);
-        if (!response || !response.showcase.ids.length) {
-          logger.debug('[useShowcaseTokens] Initializing showcase');
-          await setPreference(PreferenceActionType.init, 'showcase', addressToUse, newShowcaseTokens);
-        } else {
-          logger.debug('[useShowcaseTokens] Updating showcase');
-          await setPreference(PreferenceActionType.update, 'showcase', addressToUse, newShowcaseTokens);
-        }
+      logger.debug(`[useShowcaseTokens] New showcase tokens: ${newShowcaseTokens}`);
+
+      const response = await getPreference('showcase', addressToUse);
+      if (!response || !response.showcase.ids.length) {
+        logger.debug('[useShowcaseTokens] Initializing showcase');
+        await setPreference(PreferenceActionType.init, 'showcase', addressToUse, newShowcaseTokens);
+      } else {
+        logger.debug('[useShowcaseTokens] Updating showcase');
+        await setPreference(PreferenceActionType.update, 'showcase', addressToUse, newShowcaseTokens);
       }
+
       return newShowcaseTokens;
     },
     onMutate: async (asset: string) => {

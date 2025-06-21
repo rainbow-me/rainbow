@@ -43,7 +43,7 @@ interface AccountProfileInfo {
 }
 
 type WalletNames = { [address: string]: string };
-type Wallets = { [id: string]: RainbowWallet } | null;
+type Wallets = { [id: string]: RainbowWallet };
 
 interface WalletsState {
   walletReady: boolean;
@@ -53,7 +53,7 @@ interface WalletsState {
   setSelectedWallet: (wallet: RainbowWallet, address?: string) => void;
 
   walletNames: WalletNames;
-  wallets: Wallets;
+  wallets: Wallets | null;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => void;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
@@ -81,7 +81,7 @@ interface WalletsState {
 
   checkKeychainIntegrity: () => Promise<void>;
 
-  getIsDamaged: () => boolean;
+  getIsDamagedWallet: () => boolean;
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
@@ -91,21 +91,29 @@ interface WalletsState {
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
   (set, get) => ({
-    getIsDamaged: () => !!get().selected?.damaged,
+    getIsDamagedWallet: () => !!get().selected?.damaged,
     getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
     selected: null,
     setSelectedWallet(wallet, address) {
       setSelectedWalletInKeychain(wallet);
-      set({
-        selected: {
-          ...wallet,
-        },
-      });
+
+      // ensure not memoized
+      const selected = {
+        ...wallet,
+      };
+
       if (address) {
         saveAddress(address);
-        setAccountAddress(ensureValidHex(address));
+        set({
+          accountAddress: ensureValidHex(address),
+          selected,
+        });
+      } else {
+        set({
+          selected,
+        });
       }
     },
 
@@ -226,7 +234,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
-        const walletInfo = await refreshWalletsInfo({ wallets, walletNames });
+        const walletInfo = await refreshWalletsInfo({ wallets, walletNames, useCachedENS: true });
 
         set({
           selected: selectedWallet,
@@ -500,7 +508,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
-type GetENSInfoProps = { wallets: Wallets; walletNames: WalletNames; useCachedENS?: boolean };
+type GetENSInfoProps = { wallets: Wallets | null; walletNames: WalletNames; useCachedENS?: boolean };
 
 async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   if (!wallets) {
@@ -516,7 +524,7 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
       const newAddresses = await Promise.all(
         wallet.addresses.map(async ogAccount => {
           const account = await refreshAccountInfo(ogAccount, useCachedENS);
-          updatedWalletNames[account.address] = removeFirstEmojiFromString(account.label || account.address);
+          updatedWalletNames[account.address] = account.label;
           return account;
         })
       );
@@ -535,8 +543,17 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
 }
 
 async function refreshAccountInfo(account: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
+  const label = removeFirstEmojiFromString(account.label || addressAbbreviation(account.address, 4, 4));
+
   if (useCachedENS && account.label && account.avatar) {
-    return account;
+    if (account.label === label) {
+      return account;
+    }
+
+    return {
+      ...account,
+      label,
+    };
   }
 
   const ens = await fetchReverseRecordWithRetry(account.address);
@@ -548,7 +565,7 @@ async function refreshAccountInfo(account: RainbowAccount, useCachedENS = false)
       ...account,
       image: newImage,
       // always prefer our label
-      label: account.label || ens,
+      label: account.label ? label : ens,
     };
   }
 
@@ -562,11 +579,20 @@ export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
 
+export const getWalletAddresses = (wallets: Wallets) => {
+  return Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address));
+};
+
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
 export const useSelectedWallet = () => useWalletsStore(state => state.selected);
 export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
 export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
-export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamaged());
+export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamagedWallet());
+
+export const useWalletAddresses = () => {
+  const wallets = useWallets();
+  return useMemo(() => getWalletAddresses(wallets || {}), [wallets]);
+};
 
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
@@ -643,7 +669,7 @@ export const {
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
   createAccount,
-  getIsDamaged,
+  getIsDamagedWallet,
   getIsHardwareWallet,
   getIsReadOnlyWallet,
   getWalletWithAccount,

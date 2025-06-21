@@ -14,7 +14,7 @@ import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-
 import { ETH_ADDRESS } from '@/references';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/state/backendNetworks/types';
-import { useIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -32,7 +32,6 @@ export const EthCard = () => {
   const { nativeCurrency } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
-  const isDamaged = useIsDamagedWallet();
   const { data: externalEthAsset } = useExternalToken({
     address: ETH_ADDRESS,
     chainId: ChainId.mainnet,
@@ -59,7 +58,7 @@ export const EthCard = () => {
         e.stopPropagation();
       }
 
-      if (isDamaged) {
+      if (getIsDamagedWallet()) {
         showWalletErrorAlert();
         return;
       }
@@ -71,7 +70,7 @@ export const EthCard = () => {
         routeName,
       });
     },
-    [isDamaged, navigate, routeName]
+    [navigate, routeName]
   );
 
   const handleAssetPress = useCallback(() => {
