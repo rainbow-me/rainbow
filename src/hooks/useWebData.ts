@@ -1,11 +1,10 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
-import useAccountSettings from './useAccountSettings';
 import { containsEmoji } from '@/helpers/strings';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
-import { getWalletWithAccount, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 
@@ -26,7 +25,7 @@ const wipeNotEmoji = (text: string) => {
 };
 
 export default function useWebData(address?: string) {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const addressToUse = address ?? accountAddress;
 

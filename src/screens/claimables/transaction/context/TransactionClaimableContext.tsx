@@ -42,6 +42,7 @@ import showWalletErrorAlert from '@/helpers/support';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 enum ErrorMessages {
   SWAP_ERROR = 'Failed to swap claimed asset due to swap action error',
@@ -103,7 +104,8 @@ export function TransactionClaimableContextProvider({
   claimable: TransactionClaimable;
   children: React.ReactNode;
 }) {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('notReady');
   const [quoteState, setQuoteState] = useState<QuoteState>({

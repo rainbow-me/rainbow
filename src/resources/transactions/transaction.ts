@@ -20,6 +20,7 @@ import { createPublicClient, http, Hash, PublicClient, TransactionReceipt } from
 import { foundry } from 'viem/chains';
 import { Platform } from 'react-native';
 import { IS_TEST } from '@/env';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
 
@@ -173,7 +174,8 @@ export const transactionFetchQuery = async ({
 }) => queryClient.fetchQuery(transactionQueryKey({ address, currency, chainId, hash, originalType }), fetchTransaction);
 
 export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs) {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,
