@@ -17,7 +17,7 @@ It's a part of the [Rainbow.me project](https://rainbow.me/).
 
 ## Installation
 
-1. Install [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/next/installation) in the newest version.
+1. Install [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/2.x/fundamentals/installation) in the newest version.
 2.
 
 ```bash
@@ -136,9 +136,9 @@ This component is used for showing the path itself.
 | `selectedOpacity`                    | `number`  | `0.7`                                                                 | Target opacity of the path while touching the chart.                                                                                                                                                                     |
 | `hitSlop`                            | `number`  | `0`                                                                   | While scrubbing the chart touching edges of the screen you may want make points on the edges more accessible. With `hitSlop` it's possible to access points on edges doubling the speed of scrubbing beyond this margin. |
 | `hapticsEnabled`                     | `boolean` | `false`                                                               | On pressing in/out on the chart it might be expected to make haptic feedback. It will happen with `hapticsEnabled` set to `true`.                                                                                        |
-| `springConfig`                       | object    | `{damping: 15, mass: 1, stiffness: 600}`                              | Object [defining the spring animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). This spring is used for a dot's scale.                                                                  |
-| `timingFeedbackConfig`               | object    | `{duration: 80}`                                                      | Object [defining the timing animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). `timingFeedbackConfig` is used for a path's opacity and width.                                          |
-| `timingAnimationConfig`              | object    | `{duration: 300}`                                                     | Object [defining the timing animation](https://docs.swmansion.com/react-native-reanimated/docs/next/animations). `timingAnimationConfig` is used for the transition between chart's data.                                |
+| `springConfig`                       | object    | `{damping: 15, mass: 1, stiffness: 600}`                              | Object [defining the spring animation](https://docs.swmansion.com/react-native-reanimated/docs/2.x/fundamentals/animations/). This spring is used for a dot's scale.                                                                  |
+| `timingFeedbackConfig`               | object    | `{duration: 80}`                                                      | Object [defining the timing animation](https://docs.swmansion.com/react-native-reanimated/docs/2.x/fundamentals/animations/). `timingFeedbackConfig` is used for a path's opacity and width.                                          |
+| `timingAnimationConfig`              | object    | `{duration: 300}`                                                     | Object [defining the timing animation](https://docs.swmansion.com/react-native-reanimated/docs/2.x/fundamentals/animations/). `timingAnimationConfig` is used for the transition between chart's data.                                |
 | ...rest                              | `object`  | `{}`                                                                  | Props applied to SVG [Path](https://github.com/react-native-community/react-native-svg#path).                                                                                                                            |
 
 ### `ChartDot`
