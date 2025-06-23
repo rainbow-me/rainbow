@@ -237,8 +237,6 @@ export type InitializeWalletParams = CreateWalletParams & {
 };
 
 export const walletInit = async (props: InitializeWalletParams): Promise<WalletInitialized> => {
-  console.log('init', props);
-
   const {
     seedPhrase,
     color = null,
