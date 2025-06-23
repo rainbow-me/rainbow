@@ -173,6 +173,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           // @ts-expect-error this migrates from the old wallet store which had the state here
           store.getState().settings['accountAddress'];
 
+        console.log('loading', accountAddress, store.getState().settings);
+
         const allWalletsResult = await getAllWallets();
 
         const wallets = allWalletsResult?.wallets || {};
@@ -180,6 +182,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         if (isEmpty(wallets)) return;
 
         const selected = await getSelectedWalletFromKeychain();
+
+        console.log('loaded selected', JSON.stringify(selected, null, 2));
 
         // Prevent irrecoverable state (no selected wallet)
         let selectedWallet = selected?.wallet;
