@@ -74,9 +74,7 @@ function WalletScreen() {
   const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
 
   const handleWalletScreenMount = useCallback(() => {
-    loadWallets().then(() => {
-      hideSplashScreen();
-    });
+    hideSplashScreen();
     requestIdleCallback(() => {
       InteractionManager.runAfterInteractions(() => {
         useNavigationStore.setState({ isWalletScreenMounted: true });
