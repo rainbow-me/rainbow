@@ -7,12 +7,13 @@ import { UniqueAsset } from '@/entities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { isLowerCaseMatch } from '@/utils';
 import { parseUniqueId } from '@/resources/nfts/utils';
-import useWebData from './useWebData';
 import { logger } from '@/logger';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import useOpenFamilies from '@/hooks/useOpenFamilies';
 import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+import { useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import { updateWebShowcase, updateWebHidden } from '@/helpers/webData';
 
 function matchEnsNameToUniqueId(ensName: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
   for (const nft of nfts) {
@@ -38,6 +39,8 @@ function matchContractAndAddress(uniqueId: string, nfts: UniqueAsset[]): UniqueA
 }
 
 export function isDataComplete(tokens: string[]) {
+  if (!tokens.length) return true;
+
   for (const token of tokens) {
     const { network, contractAddress, tokenId } = parseUniqueId(token);
     if (!network || !contractAddress || !tokenId) return false;
@@ -46,7 +49,8 @@ export function isDataComplete(tokens: string[]) {
 }
 
 export default function useMigrateShowcaseAndHidden() {
-  const { updateWebShowcase, updateWebHidden, showcaseTokens, hiddenTokens } = useWebData();
+  const { showcaseTokens } = useShowcaseTokens();
+  const { hiddenTokens } = useHiddenTokens();
   const { updateOpenFamilies } = useOpenFamilies();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const accountAddress = useAccountAddress();
@@ -160,7 +164,7 @@ export default function useMigrateShowcaseAndHidden() {
     ]).finally(() => {
       updateOpenFamilies({ Showcase: true });
     });
-  }, [isReadOnlyWallet, showcaseTokens, hiddenTokens, updateOpenFamilies, accountAddress, updateWebShowcase, updateWebHidden]);
+  }, [isReadOnlyWallet, showcaseTokens, hiddenTokens, updateOpenFamilies, accountAddress]);
 
   return migrateShowcaseAndHidden;
 }

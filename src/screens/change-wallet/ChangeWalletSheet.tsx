@@ -11,7 +11,7 @@ import { EthereumAddress } from '@/entities';
 import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useWalletsWithBalancesAndNames } from '@/hooks';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -36,6 +36,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Address } from 'viem';
+import { updateWebProfile } from '@/helpers/webData';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
@@ -84,7 +85,6 @@ export default function ChangeWalletSheet() {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { colors, isDarkMode } = useTheme();
-  const { updateWebProfile } = useWebData();
   const { goBack, navigate } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -287,7 +287,7 @@ export default function ChangeWalletSheet() {
                 updateWallets(updatedWallets);
                 setSelectedWallet(updatedWallet);
                 refreshWalletInfo();
-                updateWebProfile(address, name, colors.avatarBackgrounds[color]);
+                await updateWebProfile(address, name, colors.avatarBackgrounds[color], null);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }
@@ -302,7 +302,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [wallets, goBack, navigate, updateWebProfile, colors.avatarBackgrounds]
+    [wallets, goBack, navigate, colors.avatarBackgrounds]
   );
 
   const onPressEdit = useCallback(

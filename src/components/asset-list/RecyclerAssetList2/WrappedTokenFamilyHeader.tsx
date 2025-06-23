@@ -5,6 +5,7 @@ import { ThemeContextProps } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { InteractionManager } from 'react-native';
 
 type Props = {
   name: string;
@@ -27,26 +28,26 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
       [name]: !isFamilyOpen,
     });
 
-    const normalizedCollectionId = uid.toLowerCase();
+    requestIdleCallback(() => {
+      InteractionManager.runAfterInteractions(() => {
+        const normalizedCollectionId = uid.toLowerCase();
+        const { openCollections } = useNftsStore.getState();
 
-    const { openCollections } = useNftsStore.getState();
+        if (!isFamilyOpen && !openCollections.has(normalizedCollectionId)) {
+          openCollections.add(normalizedCollectionId);
+        } else if (isFamilyOpen && openCollections.has(normalizedCollectionId)) {
+          openCollections.delete(normalizedCollectionId);
+        }
 
-    if (!isFamilyOpen && !openCollections.has(normalizedCollectionId)) {
-      openCollections.add(normalizedCollectionId);
-    } else if (isFamilyOpen && openCollections.has(normalizedCollectionId)) {
-      openCollections.delete(normalizedCollectionId);
-    }
+        useNftsStore.setState({
+          openCollections,
+        });
 
-    useNftsStore.setState({
-      openCollections,
+        useNftsStore.getState().fetch({
+          openCollections: Array.from(openCollections),
+        });
+      });
     });
-
-    useNftsStore.getState().fetch(
-      {
-        openCollections: Array.from(openCollections),
-      },
-      { force: true }
-    );
   });
 
   if (!nftsEnabled) return null;

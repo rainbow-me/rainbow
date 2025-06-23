@@ -12,15 +12,15 @@ export default function useExternalWalletSectionsData({ address, type }: { addre
   } = useLegacyNFTs({
     address: address ?? '',
   });
-  const { hiddenTokens } = useHiddenTokens(address);
-  const { showcaseTokens } = useShowcaseTokens(address);
+  // const { hiddenTokens } = useHiddenTokens(address);
+  // const { showcaseTokens } = useShowcaseTokens(address);
 
   // TODO: Bring back selling tokens eventually
   // const sellingTokens = useMemo(() => uniqueTokens?.filter(token => token.) || [], [uniqueTokens]);
 
   const briefSectionsData = useMemo(
-    () => (uniqueTokens ? legacyBuildBriefUniqueTokenList(uniqueTokens, showcaseTokens, [], hiddenTokens, type) : []),
-    [uniqueTokens, showcaseTokens, hiddenTokens, type]
+    () => (uniqueTokens ? legacyBuildBriefUniqueTokenList(uniqueTokens, [], [], [], type) : []),
+    [uniqueTokens, type]
   );
 
   return {

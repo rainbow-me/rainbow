@@ -35,5 +35,6 @@ export default function useFetchShowcaseTokens({ address }: { address: string })
     enabled: Boolean(address),
     cacheTime: time.infinity,
     staleTime: time.minutes(10),
+    keepPreviousData: true,
   });
 }

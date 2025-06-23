@@ -7,11 +7,9 @@ import { AssetType, NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@
 import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
-import { Collection, CollectionId } from '@/state/nfts/types';
-import { isLowerCaseMatch } from '@/utils';
+import { Collection } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
-import { isDataComplete } from '@/hooks/useMigrateShowcaseAndHidden';
 
 const COINS_TO_SHOW = 5;
 
@@ -246,62 +244,25 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
   return rows;
 };
 
+/**
+ * @param id - `network_contractAddress`
+ * @param tokens - `network_contractAddress_tokenId`
+ * @returns The total number of occurrences of the id in the tokens array
+ */
+function getTotalOccurrencesOfId(id: string, tokens: string[]): number {
+  return tokens.filter(token => token.toLowerCase().includes(id.toLowerCase())).length;
+}
+
 export const buildBriefUniqueTokenList = (
   collections: Collection[] | null,
   showcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
   isFetchingNfts = false,
-  hasMoreCollections = false
+  hasMoreCollections = false,
+  isShowcaseDataMigrated = false,
+  isHiddenDataMigrated = false
 ) => {
-  const hiddenUniqueTokensIds: Map<CollectionId, number> = new Map();
-  const uniqueTokensInShowcaseIds: Map<CollectionId, number> = new Map();
-  const filteredCollections: Map<CollectionId, Collection> = new Map(collections?.map(c => [c.id.toLowerCase(), c]));
-
-  const includeShowcase = isDataComplete(showcaseTokens);
-  const includeHidden = isDataComplete(hiddenTokens);
-
-  if (includeShowcase) {
-    for (const token of showcaseTokens) {
-      const { contractAddress } = parseUniqueId(token);
-      const matchedCollection = collections?.find(c => {
-        const { contractAddress: collectionContractAddress } = parseUniqueId(c.id);
-        return isLowerCaseMatch(collectionContractAddress, contractAddress);
-      });
-
-      if (matchedCollection) {
-        const lowerCaseId = matchedCollection.id.toLowerCase();
-        uniqueTokensInShowcaseIds.set(lowerCaseId, (uniqueTokensInShowcaseIds.get(lowerCaseId) ?? 0) + 1);
-        // remove the collection from the filtered collections map if needed
-        const totalCount = filteredCollections.get(lowerCaseId)?.totalCount;
-        if (totalCount && Number(totalCount) === 1) {
-          filteredCollections.delete(lowerCaseId);
-        }
-      }
-    }
-  }
-
-  if (includeHidden) {
-    for (const token of hiddenTokens) {
-      const { contractAddress } = parseUniqueId(token);
-      const matchedCollection = collections?.find(c => {
-        const { contractAddress: collectionContractAddress } = parseUniqueId(c.id);
-        return isLowerCaseMatch(collectionContractAddress, contractAddress);
-      });
-
-      if (matchedCollection) {
-        const lowerCaseId = matchedCollection.id.toLowerCase();
-
-        hiddenUniqueTokensIds.set(lowerCaseId, (hiddenUniqueTokensIds.get(lowerCaseId) ?? 0) + 1);
-        // remove the collection from the filtered collections map if needed
-        const totalCount = filteredCollections.get(lowerCaseId)?.totalCount;
-        if (totalCount && Number(totalCount) === 1) {
-          filteredCollections.delete(lowerCaseId);
-        }
-      }
-    }
-  }
-
   const result: CellTypes[] = [
     {
       type: CellType.NFTS_HEADER,
@@ -310,7 +271,7 @@ export const buildBriefUniqueTokenList = (
     { type: CellType.NFTS_HEADER_SPACE_AFTER, uid: 'nfts-header-space-after' },
   ];
 
-  if (includeShowcase && showcaseTokens.length > 0) {
+  if (isShowcaseDataMigrated && showcaseTokens.length > 0) {
     result.push({
       name: i18n.t(i18n.l.account.tab_showcase),
       total: showcaseTokens.length,
@@ -327,7 +288,7 @@ export const buildBriefUniqueTokenList = (
         uid: `showcase-${uniqueId}`,
         uniqueId,
         index,
-        collectionId: `${network}_${contractAddress}`,
+        collectionId: `${network}_${contractAddress}`.toLowerCase(),
       });
     }
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
@@ -360,12 +321,15 @@ export const buildBriefUniqueTokenList = (
       result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading` });
     }
   } else {
-    for (const [id, { name, imageUrl, totalCount }] of filteredCollections) {
-      const amountInShowcase = uniqueTokensInShowcaseIds.get(id) ?? 0;
-      const amountHidden = hiddenUniqueTokensIds.get(id) ?? 0;
-      const adjustedTotalCount = Number(totalCount) - amountInShowcase - amountHidden;
+    const allSpecialCaseTokens = [...showcaseTokens, ...hiddenTokens];
+    for (const { id, imageUrl, name, totalCount } of collections) {
+      let adjustedTotalCount = totalCount;
 
-      if (adjustedTotalCount === 0) {
+      if (isShowcaseDataMigrated && isHiddenDataMigrated) {
+        adjustedTotalCount = String(Number(totalCount) - (getTotalOccurrencesOfId(id, allSpecialCaseTokens) ?? 0));
+      }
+
+      if (Number(adjustedTotalCount) === 0) {
         continue;
       }
 
@@ -386,7 +350,7 @@ export const buildBriefUniqueTokenList = (
     }
   }
 
-  if (includeHidden && hiddenTokens.length > 0 && !hasMoreCollections) {
+  if (isHiddenDataMigrated && hiddenTokens.length > 0 && !hasMoreCollections) {
     result.push({
       name: i18n.t(i18n.l.button.hidden),
       total: hiddenTokens.length,
@@ -413,7 +377,7 @@ export const buildBriefUniqueTokenList = (
 
 export const legacyBuildBriefUniqueTokenList = (
   uniqueTokens: UniqueAsset[],
-  selectedShowcaseTokens: string[] | undefined = [],
+  showcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
   listType: AssetListType = 'wallet',
@@ -434,8 +398,8 @@ export const legacyBuildBriefUniqueTokenList = (
     const { network, contractAddress, tokenId } = parseUniqueId(token.uniqueId);
 
     if (
-      selectedShowcaseTokens.includes(`${contractAddress}_${tokenId}`) ||
-      (network && selectedShowcaseTokens.includes(`${network}_${contractAddress}_${tokenId}`))
+      showcaseTokens.includes(`${contractAddress}_${tokenId}`) ||
+      (network && showcaseTokens.includes(`${network}_${contractAddress}_${tokenId}`))
     ) {
       uniqueTokensInShowcaseIds.push(token.uniqueId);
     }

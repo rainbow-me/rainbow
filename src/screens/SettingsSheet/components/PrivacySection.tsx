@@ -1,6 +1,5 @@
 import { analytics } from '@/analytics';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -12,13 +11,16 @@ import { Switch } from 'react-native-gesture-handler';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
+import { useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import { wipeWebData, initWebData } from '@/helpers/webData';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
 
 const PrivacySection = () => {
-  const { initWebData, wipeWebData, showcaseTokens } = useWebData();
+  const { showcaseTokens } = useShowcaseTokens();
+  const { hiddenTokens } = useHiddenTokens();
   const { navigate } = useNavigation();
-  const { accountENS } = useAccountProfileInfo();
+  const { accountENS, accountAddress, accountColorHex, accountSymbol } = useAccountProfileInfo();
 
   const [analyticsEnabled, toggleAnalytics] = useReducer(
     analyticsEnabled => {
@@ -43,13 +45,13 @@ const PrivacySection = () => {
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
-  const toggleWebData = useCallback(() => {
+  const toggleWebData = useCallback(async () => {
     if (showcaseTokens.length > 0) {
-      wipeWebData();
+      await wipeWebData(accountAddress);
     } else {
-      initWebData(showcaseTokens);
+      await initWebData(accountAddress, showcaseTokens, hiddenTokens, accountColorHex, accountSymbol || null);
     }
-  }, [initWebData, showcaseTokens, wipeWebData]);
+  }, [accountAddress, accountColorHex, accountSymbol, hiddenTokens, showcaseTokens]);
 
   return (
     <MenuContainer>

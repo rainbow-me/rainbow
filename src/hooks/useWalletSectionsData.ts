@@ -18,6 +18,7 @@ import { IS_TEST } from '@/env';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
+import { isDataComplete } from '@/hooks/useMigrateShowcaseAndHidden';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -77,6 +78,9 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
+  const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
+  const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
+
   const collections = useNftsStore(state => state.getNftCollections());
   const hasMoreCollections = useNftsStore(state => state.hasNextNftCollectionPage());
   const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
@@ -128,6 +132,8 @@ export default function useWalletSectionsData({
       claimables,
       remoteCards,
       hasMoreCollections,
+      isShowcaseDataMigrated,
+      isHiddenDataMigrated,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
@@ -164,5 +170,7 @@ export default function useWalletSectionsData({
     claimables,
     remoteCards,
     hasMoreCollections,
+    isShowcaseDataMigrated,
+    isHiddenDataMigrated,
   ]);
 }

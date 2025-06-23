@@ -1,14 +1,14 @@
 import { useCallback } from 'react';
 import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import useOpenFamilies from './useOpenFamilies';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import useFetchShowcaseTokens, { showcaseTokensQueryKey } from './useFetchShowcaseTokens';
 import { logger } from '@/logger';
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
 import { isLowerCaseMatch } from '@/utils';
+import { queryClient } from '@/react-query';
 
 export default function useShowcaseTokens(address?: string) {
-  const queryClient = useQueryClient();
   const accountAddress = useAccountAddress();
   const { updateOpenFamilies } = useOpenFamilies();
 
@@ -19,6 +19,7 @@ export default function useShowcaseTokens(address?: string) {
   const addShowcaseTokenMutation = useMutation({
     mutationFn: async (asset: string) => {
       const isReadOnlyWallet = getIsReadOnlyWallet();
+      console.log('isReadOnlyWallet', isReadOnlyWallet);
       if (isReadOnlyWallet) return showcaseTokens;
 
       const lowercasedUniqueId = asset.toLowerCase();

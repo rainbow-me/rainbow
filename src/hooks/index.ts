@@ -82,7 +82,6 @@ export { default as useWalletManualBackup } from './useWalletManualBackup';
 export { default as useWalletSectionsData } from './useWalletSectionsData';
 export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalancesAndNames';
 export { default as useWatchWallet } from './useWatchWallet';
-export { default as useWebData } from './useWebData';
 export { default as useForceUpdate } from './useForceUpdate';
 export { default as useOnAvatarPress } from './useOnAvatarPress';
 export { default as useAdditionalAssetData } from './useAdditionalAssetData';

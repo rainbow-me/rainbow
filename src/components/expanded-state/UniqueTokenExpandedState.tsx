@@ -232,7 +232,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
     walletAddress: accountAddress,
   });
 
-  const offer = useMemo(() => nftOffers?.find(offer => offer.nft.uniqueId === asset.uniqueId), [asset.uniqueId, nftOffers]);
+  const offer = useMemo(() => nftOffers?.find(offer => isLowerCaseMatch(offer.nft.uniqueId, asset.uniqueId)), [asset.uniqueId, nftOffers]);
   const offerValue = useMemo(
     () =>
       offer

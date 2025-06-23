@@ -9,14 +9,13 @@ import {
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';
-import { useWebData } from './index';
 import { isLowerCaseMatch } from '../utils';
+import { updateWebProfile } from '@/helpers/webData';
 
 export default function useUpdateEmoji() {
-  const { accountColor, accountName } = useAccountProfileInfo();
+  const { accountColor, accountName, accountSymbol } = useAccountProfileInfo();
   const wallets = useWallets();
   const selectedWallet = useSelectedWallet();
-  const { updateWebProfile, getWebProfile } = useWebData();
   const accountAddress = useAccountAddress();
   const { colors } = useTheme();
 
@@ -48,10 +47,10 @@ export default function useUpdateEmoji() {
       updateWallets(newWallets);
       const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
       if (nextColor) {
-        updateWebProfile(accountAddress, name, nextColor);
+        await updateWebProfile(accountAddress, name, nextColor, accountSymbol || null);
       }
     },
-    [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile, wallets]
+    [accountAddress, accountColor, accountSymbol, colors.avatarBackgrounds, selectedWallet, wallets]
   );
 
   const setNextEmoji = useCallback(() => {
@@ -67,7 +66,6 @@ export default function useUpdateEmoji() {
   }, [accountAddress, accountName, saveInfo, selectedWallet, wallets]);
 
   return {
-    getWebProfile,
     saveInfo,
     setNextEmoji,
   };

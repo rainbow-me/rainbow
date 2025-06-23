@@ -65,6 +65,8 @@ export type WalletSectionsState = {
   claimables: ClaimablesStore | null;
   remoteCards: string[];
   hasMoreCollections: boolean;
+  isShowcaseDataMigrated: boolean;
+  isHiddenDataMigrated: boolean;
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
@@ -84,6 +86,8 @@ const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
 const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
+const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
+const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHiddenDataMigrated;
 
 interface BalanceSectionData {
   balanceSection: CellTypes[];
@@ -314,6 +318,8 @@ const briefUniqueTokenDataSelector = createSelector(
     hiddenTokensSelector,
     isFetchingNftsSelector,
     hasMoreCollectionsSelector,
+    isShowcaseDataMigratedSelector,
+    isHiddenDataMigratedSelector,
   ],
   buildBriefUniqueTokenList
 );
