@@ -21,7 +21,7 @@ import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { loadWallets, useAccountAddress } from '@/state/wallets/walletsStore';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -74,7 +74,9 @@ function WalletScreen() {
   const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
 
   const handleWalletScreenMount = useCallback(() => {
-    hideSplashScreen();
+    loadWallets().then(() => {
+      hideSplashScreen();
+    });
     requestIdleCallback(() => {
       InteractionManager.runAfterInteractions(() => {
         useNavigationStore.setState({ isWalletScreenMounted: true });
