@@ -15,7 +15,6 @@
     "chroma-js": "^2.1.0",
     "lodash": "^4.17.20",
     "react": "16.13.1",
-    "react-coin-icon": "^0.1.19",
     "react-native": "0.63.2",
     "react-native-gesture-handler": "^1.7.0",
     "react-native-haptic-feedback": "^1.10.0",

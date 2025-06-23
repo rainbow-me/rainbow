@@ -21,6 +21,7 @@ import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -51,7 +52,8 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
 });
 
 function WalletScreen() {
-  const { network: currentNetwork, accountAddress } = useAccountSettings();
+  const { network: currentNetwork } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
 
   const {

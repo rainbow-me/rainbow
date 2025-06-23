@@ -135,7 +135,7 @@ export default function SendContactList({
       ),
       ['index']
     );
-  }, [accountAddress, currentInput, userAccounts]);
+  }, [currentInput, userAccounts]);
 
   const filteredWatchedAddresses = useMemo(() => {
     return sortBy(
