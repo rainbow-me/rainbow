@@ -14,6 +14,8 @@ export default function useWalletsWithBalancesAndNames() {
   const { balances } = useWalletBalances();
   const hiddenBalances = userAssetsStoreManager(state => state.hiddenAssetBalances);
 
+  console.log('wallets', JSON.stringify(wallets, null, 2));
+
   const walletsWithBalancesAndNames = useMemo(
     () =>
       mapValues(wallets, wallet => {

@@ -168,7 +168,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       try {
         const { accountAddress, walletNames } = get();
 
-        let addressFromKeychain: string | null = accountAddress;
+        let nextAccountAddress: string | null =
+          accountAddress ||
+          // @ts-expect-error this migrates from the old wallet store which had the state here
+          store.getState().settings['accountAddress'];
+
         const allWalletsResult = await getAllWallets();
 
         const wallets = allWalletsResult?.wallets || {};
@@ -208,13 +212,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         }
 
         // Recover from broken state (account address not in selected wallet)
-        if (!addressFromKeychain) {
-          addressFromKeychain = await loadAddress();
-          logger.debug("[walletsStore]: addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
+        if (!nextAccountAddress) {
+          nextAccountAddress = await loadAddress();
+          logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
         }
 
         const selectedAddress = selectedWallet?.addresses.find(a => {
-          return a.visible && a.address === addressFromKeychain;
+          return a.visible && a.address === nextAccountAddress;
         });
 
         // Let's select the first visible account if we don't have a selected address
@@ -231,6 +235,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           }
 
           if (!account) return;
+          nextAccountAddress = account.address;
           setAccountAddress(ensureValidHex(account.address));
           saveAddress(account.address);
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
@@ -238,10 +243,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
         const walletInfo = await refreshWalletsInfo({ wallets, walletNames, useCachedENS: true });
 
-        set({
-          selected: selectedWallet,
-          ...walletInfo,
-        });
+        set(walletInfo);
+        if (selectedWallet) {
+          setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined);
+        }
 
         return wallets;
       } catch (error) {
