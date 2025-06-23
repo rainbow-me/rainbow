@@ -107,6 +107,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       };
 
       if (address) {
+        console.log('set selected new', address);
         saveAddress(address);
         set({
           accountAddress: ensureValidHex(address),
@@ -141,6 +142,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     // see PD-188
     accountAddress: `0x`,
     setAccountAddress: (accountAddress: Address) => {
+      console.log('setting acc', accountAddress);
       set({
         accountAddress,
       });
