@@ -211,7 +211,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
       } else if (isFocused && tabBarIcon === 'tabHome') {
         recyclerList.scrollToTop?.();
       } else if (isFocused && tabBarIcon === 'tabActivity') {
-        // we used to scroll to top of sectionList here but no longer
+        // TODO(PD-192): we used to scroll to top of sectionList here but it was disabled, bring it back
       }
 
       lastPressRef.current = time;

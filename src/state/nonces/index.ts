@@ -4,7 +4,7 @@ import { RainbowTransaction } from '@/entities/transactions';
 import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getBatchedProvider } from '@/handlers/web3';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
 
 type NonceData = {
   currentNonce?: number;
@@ -33,7 +33,7 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   if (numPendingLocalTx === numPendingPublicTx) return pendingTxCountFromPublicRpc; // nothing in private mempool, proceed normally
   if (numPendingLocalTx === 0 && numPendingPublicTx > 0) return latestTxCountFromPublicRpc; // catch up with public
 
-  const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore.getState();
+  const { pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
   const pendingTransactions: RainbowTransaction[] = storePendingTransactions[address]?.filter(txn => txn.chainId === chainId) || [];
 
   let nextNonce = localNonce + 1;

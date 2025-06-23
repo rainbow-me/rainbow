@@ -1,8 +1,9 @@
-import { NewTransaction, RainbowTransaction } from '@/entities/transactions';
+import { RainbowTransaction, NewTransaction } from '@/entities/transactions';
+import { createStore } from '../internal/createStore';
+import create from 'zustand';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
-import { ChainId } from '@/state/backendNetworks/types';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { nonceStore } from '../nonces';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
@@ -12,7 +13,7 @@ export interface PendingTransactionsState {
   clearPendingTransactions: () => void;
 }
 
-export const usePendingTransactionsStore = createRainbowStore<PendingTransactionsState>(
+export const pendingTransactionsStore = createStore<PendingTransactionsState>(
   (set, get) => ({
     pendingTransactions: {},
     getPendingTransactionsInReverseOrder: address => {
@@ -60,13 +61,14 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
     },
   }),
   {
-    storageKey: 'pendingTransactions',
+    persist: {
+      name: 'pendingTransactions',
+      version: 1,
+    },
   }
 );
 
-// export static functions
-export const { addPendingTransaction, clearPendingTransactions, getPendingTransactionsInReverseOrder, setPendingTransactions } =
-  usePendingTransactionsStore.getState();
+export const usePendingTransactionsStore = create(pendingTransactionsStore);
 
 export const addNewTransaction = ({
   address,
@@ -77,6 +79,7 @@ export const addNewTransaction = ({
   chainId: ChainId;
   transaction: NewTransaction;
 }) => {
+  const { addPendingTransaction } = pendingTransactionsStore.getState();
   const { getNonce, setNonce } = nonceStore.getState();
   const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   addPendingTransaction({ address, pendingTransaction: parsedTransaction });

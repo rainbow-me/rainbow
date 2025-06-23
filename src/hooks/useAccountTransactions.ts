@@ -6,11 +6,11 @@ import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { getPendingTransactionsInReverseOrder, setPendingTransactions, usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 export const NOE_PAGE = 30;
 
@@ -18,6 +18,7 @@ export default function useAccountTransactions() {
   const { nativeCurrency } = useAccountSettings();
   const accountAddress = useAccountAddress();
 
+  const { getPendingTransactionsInReverseOrder } = pendingTransactionsStore.getState();
   const pendingTransactionsMostRecentFirst = getPendingTransactionsInReverseOrder(accountAddress);
   const walletConnectRequests = getSortedWalletConnectRequests();
 
@@ -65,7 +66,7 @@ export default function useAccountTransactions() {
     currentAddress: string;
     latestTransactions: Map<ChainId, RainbowTransaction | null>;
   }) {
-    const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore.getState();
+    const { setPendingTransactions, pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
     const pendingTransactions = storePendingTransactions[currentAddress] || [];
 
     const updatedPendingTransactions = pendingTransactions?.filter(tx => {

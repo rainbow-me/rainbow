@@ -1,23 +1,23 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
+import { FastTransactionCoinRow } from '@/components/coin-row';
+import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
+import { lazyMount } from '@/helpers/lazyMount';
+import { useAccountSettings, useAccountTransactions } from '@/hooks';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
+import { safeAreaInsetValues } from '@/utils';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList } from '@legendapp/list';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
-import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
-import { useAccountSettings, useAccountTransactions } from '@/hooks';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { FastTransactionCoinRow } from '@/components/coin-row';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
-import { safeAreaInsetValues } from '@/utils';
-import { lazyMount } from '@/helpers/lazyMount';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -27,7 +27,7 @@ const sx = StyleSheet.create({
   },
 });
 
-const keyExtractor = (data: ListItems, _index: number) => {
+const keyExtractor = (data: ListItems) => {
   if (data.type === 'header') {
     return data.value.title;
   }
