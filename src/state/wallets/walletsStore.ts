@@ -164,7 +164,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    async loadWallets(accountAddressIn?: string) {
+    async loadWallets(accountAddressIn) {
       try {
         const { accountAddress, walletNames } = get();
 
