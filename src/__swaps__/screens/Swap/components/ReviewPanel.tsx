@@ -310,7 +310,7 @@ export function ReviewPanel() {
         </Text>
 
         <Box gap={24} justifyContent="space-between" width="full">
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify" testID="review-panel-network-label">
             <Inline horizontalSpace="12px" alignVertical="center">
               <TextIcon color="labelTertiary" height={9} size="icon 13px" weight="bold" width={16}>
                 􀤆
@@ -338,7 +338,7 @@ export function ReviewPanel() {
 
           <Columns space="10px" alignVertical="center" alignHorizontal="justify">
             <Column width="content">
-              <Box alignItems="center" flexDirection="row" gap={12}>
+              <Box alignItems="center" flexDirection="row" gap={12} testID="review-panel-min-received-or-max-sold-label">
                 <TextIcon color="labelTertiary" height={9} size="icon 13px" weight="bold" width={16}>
                   􀄩
                 </TextIcon>
@@ -357,7 +357,7 @@ export function ReviewPanel() {
 
           <Columns space="10px" alignVertical="center" alignHorizontal="justify">
             <Column width="content">
-              <Box alignItems="center" flexDirection="row" gap={12}>
+              <Box alignItems="center" flexDirection="row" gap={12} testID="review-panel-rainbow-fee-label">
                 <TextIcon color="labelTertiary" height={9} size="icon 13px" weight="bold" width={16}>
                   􀘾
                 </TextIcon>

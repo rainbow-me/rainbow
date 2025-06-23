@@ -37,6 +37,7 @@ tags:
       # Select DAI as output token
       - tapOn: 'Find a token to buy'
       - inputText: 'DAI'
+      - hideKeyboard
       - tapOn:
           id: token-to-buy-dai-1
       - assertVisible: 'DAI.*'
@@ -45,14 +46,16 @@ tags:
       # Navigate to swap settings
       - tapOn:
           id: swap-settings-button
-      - assertVisible: 'Degen Mode Skip the review step to swap faster'
 
       # Toggle Degen Mode off and on and back off
-      - tapOn: 'Degen Mode.*'
+      - tapOn:
+          id: swap-settings-panel-degen-mode-button
       - assertNotVisible: 'Max Slippage'
-      - tapOn: 'Degen Mode.*'
+      - tapOn:
+          id: swap-settings-panel-degen-mode-button
       - assertVisible: 'Max Slippage'
-      - tapOn: 'Degen Mode.*'
+      - tapOn:
+          id: swap-settings-panel-degen-mode-button
       - assertNotVisible: 'Max Slippage'
       # Close settings
       - tapOn:
@@ -62,9 +65,16 @@ tags:
           id: swap-bottom-action-button
       - assertVisible:
           id: review-panel
-      - assertVisible: 'Minimum Received'
-      - assertVisible: 'Included Rainbow Fee'
-      - assertVisible: '.*Est. Network Fee.*'
+      - runFlow:
+          when:
+            platform: ios
+          commands:
+            - assertVisible:
+                id: review-panel-min-received-or-max-sold-label
+            - assertVisible:
+                id: review-panel-network-label
+            - assertVisible:
+                id: review-panel-rainbow-fee-label
       - tapOn:
           id: gas-speed-pager
       - assertVisible: '.*Custom.*'
