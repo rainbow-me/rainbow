@@ -107,7 +107,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       };
 
       if (address) {
-        console.log('set selected new', address);
         saveAddress(address);
         set({
           accountAddress: ensureValidHex(address),
@@ -142,7 +141,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     // see PD-188
     accountAddress: `0x`,
     setAccountAddress: (accountAddress: Address) => {
-      console.log('setting acc', accountAddress);
       set({
         accountAddress,
       });
@@ -170,13 +168,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       try {
         const { accountAddress, walletNames } = get();
 
-        let nextAccountAddress: string | null =
-          accountAddressIn ||
-          accountAddress ||
-          // @ts-expect-error this migrates from the old wallet store which had the state here
-          store.getState().settings['accountAddress'];
-
-        console.log('loading', accountAddress, store.getState().settings);
+        let nextAccountAddress: string | null = accountAddressIn || accountAddress;
 
         const allWalletsResult = await getAllWallets();
 
@@ -185,8 +177,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         if (isEmpty(wallets)) return;
 
         const selected = await getSelectedWalletFromKeychain();
-
-        console.log('loaded selected', JSON.stringify(selected, null, 2));
 
         // Prevent irrecoverable state (no selected wallet)
         let selectedWallet = selected?.wallet;

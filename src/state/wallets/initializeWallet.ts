@@ -88,8 +88,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       userPin,
     });
 
-    console.log('SHOULD INIT', walletAddress);
-
     if (shouldCancel()) return null;
 
     walletStatus = getWalletStatus(isNew, isImporting);

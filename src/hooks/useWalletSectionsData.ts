@@ -101,10 +101,6 @@ export default function useWalletSectionsData({
     );
   }, [walletsWithBalancesAndNames, selectedWallet, accountAddress]);
 
-  console.log('accountAddress', accountAddress);
-  console.log('accountWithBalance', accountWithBalance);
-  console.log('selectedWallet.id', selectedWallet?.id);
-
   const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
   const { isCoinListEdited } = useCoinListEdited();
 
