@@ -91,8 +91,6 @@ const ActivityList = lazyMount(() => {
   const flatData = useMemo(() => {
     const items: ListItems[] = [];
 
-    console.log('make sections', sections.length);
-
     sections.forEach(section => {
       if (section.data.length > 0) {
         items.push({ type: 'header', value: section });
