@@ -89,8 +89,9 @@ export default function useWalletSectionsData({
 
   const accountWithBalance = useMemo(() => {
     if (!selectedWallet) return null;
+    const accountAddressLowercase = accountAddress.toLowerCase();
     return walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
-      address => address.address.toLowerCase() === accountAddress.toLowerCase()
+      address => address.address.toLowerCase() === accountAddressLowercase
     );
   }, [walletsWithBalancesAndNames, selectedWallet, accountAddress]);
 

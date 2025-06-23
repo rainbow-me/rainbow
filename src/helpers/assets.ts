@@ -244,15 +244,6 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
   return rows;
 };
 
-/**
- * @param id - `network_contractAddress`
- * @param tokens - `network_contractAddress_tokenId`
- * @returns The total number of occurrences of the id in the tokens array
- */
-function getTotalOccurrencesOfId(id: string, tokens: string[]): number {
-  return tokens.filter(token => token.toLowerCase().includes(id.toLowerCase())).length;
-}
-
 export const buildBriefUniqueTokenList = (
   collections: Collection[] | null,
   showcaseTokens: string[] | undefined = [],
@@ -321,12 +312,23 @@ export const buildBriefUniqueTokenList = (
       result.push({ type: CellType.NFTS_LOADING, uid: `nft-loading` });
     }
   } else {
-    const allSpecialCaseTokens = [...showcaseTokens, ...hiddenTokens];
+    // Create a Map for O(1) lookups instead of filtering arrays
+    const specialTokensByCollection = new Map<string, number>();
+
+    if (isShowcaseDataMigrated && isHiddenDataMigrated) {
+      [...showcaseTokens, ...hiddenTokens].forEach(token => {
+        const { network, contractAddress } = parseUniqueId(token);
+        const collectionId = `${network}_${contractAddress}`.toLowerCase();
+        specialTokensByCollection.set(collectionId, (specialTokensByCollection.get(collectionId) || 0) + 1);
+      });
+    }
+
     for (const { id, imageUrl, name, totalCount } of collections) {
       let adjustedTotalCount = totalCount;
 
       if (isShowcaseDataMigrated && isHiddenDataMigrated) {
-        adjustedTotalCount = String(Number(totalCount) - (getTotalOccurrencesOfId(id, allSpecialCaseTokens) ?? 0));
+        const specialCount = specialTokensByCollection.get(id.toLowerCase()) || 0;
+        adjustedTotalCount = String(Math.max(0, Number(totalCount) - specialCount));
       }
 
       if (Number(adjustedTotalCount) === 0) {
@@ -390,18 +392,18 @@ export const legacyBuildBriefUniqueTokenList = (
   const filteredUniqueTokens: UniqueAsset[] = [];
 
   for (const token of uniqueTokens) {
-    if (hiddenTokens.includes(token.uniqueId)) {
-      hiddenUniqueTokensIds.push(token.uniqueId);
+    if (hiddenTokens.includes(token.uniqueId.toLowerCase())) {
+      hiddenUniqueTokensIds.push(token.uniqueId.toLowerCase());
       continue;
     }
 
     const { network, contractAddress, tokenId } = parseUniqueId(token.uniqueId);
 
     if (
-      showcaseTokens.includes(`${contractAddress}_${tokenId}`) ||
-      (network && showcaseTokens.includes(`${network}_${contractAddress}_${tokenId}`))
+      showcaseTokens.includes(`${contractAddress}_${tokenId}`.toLowerCase()) ||
+      (network && showcaseTokens.includes(`${network}_${contractAddress}_${tokenId}`.toLowerCase()))
     ) {
-      uniqueTokensInShowcaseIds.push(token.uniqueId);
+      uniqueTokensInShowcaseIds.push(token.uniqueId.toLowerCase());
     }
 
     if (listType === 'select-nft') {

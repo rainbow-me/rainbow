@@ -134,7 +134,6 @@ export async function getPreference<K extends keyof PreferencesDataMap>(
     const { data } = await preferencesAPI.get<PreferencesResponse<K>>(`${PREFS_ENDPOINT}/${key}`, {
       params: { address },
     });
-    console.log('data', JSON.stringify(data, null, 2));
     logger.debug(`[preferences]: ☁️  RESPONSE`, {
       reason: data?.reason,
       success: data?.success,

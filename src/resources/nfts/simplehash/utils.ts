@@ -44,7 +44,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
       animatedMimeType: nft.video_properties?.mime_type ?? nft.audio_properties?.mime_type ?? nft.image_properties?.mime_type ?? undefined,
       mimeType: nft.image_properties?.mime_type,
     },
-    uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}` as `${Network}_${Address}_${number}`,
+    uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`.toLowerCase() as `${Network}_${Address}_${number}`,
     tokenId: nft.token_id,
     name: nft.name,
     chainId: chainsIdByName[nft.chain],
