@@ -58,7 +58,7 @@ interface WalletsState {
   wallets: Wallets | null;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => void;
 
-  loadWallets: () => Promise<AllRainbowWallets | void>;
+  loadWallets: (accountAddress?: string) => Promise<AllRainbowWallets | void>;
 
   createAccount: (data: { id: RainbowWallet['id']; name: RainbowWallet['name']; color: RainbowWallet['color'] | null }) => Promise<{
     [id: string]: RainbowWallet;
@@ -166,11 +166,12 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    async loadWallets() {
+    async loadWallets(accountAddressIn?: string) {
       try {
         const { accountAddress, walletNames } = get();
 
         let nextAccountAddress: string | null =
+          accountAddressIn ||
           accountAddress ||
           // @ts-expect-error this migrates from the old wallet store which had the state here
           store.getState().settings['accountAddress'];

@@ -36,11 +36,6 @@ export default function useAccountSettings() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const testnetsEnabled = useConnectedToAnvilStore(state => state.connectedToAnvil);
 
-  // migrate account address!
-  useSelector(({ settings }: AppState) => {
-    console.log('old accountaddress?', JSON.stringify(settings));
-  });
-
   const settingsData = useSelector(({ settings: { appIcon, chainId, network } }: AppState) => ({
     appIcon,
     chainId,
