@@ -9,7 +9,6 @@ import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { useSectionListScrollToTopContext } from '@/navigation/SectionListScrollToTopContext';
 import { useAccountSettings, useAccountTransactions } from '@/hooks';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
@@ -81,7 +80,6 @@ const ActivityList = lazyMount(() => {
   const accountAddress = useAccountAddress();
   const { nativeCurrency } = useAccountSettings();
 
-  const { setScrollToTopRef } = useSectionListScrollToTopContext<TransactionItemForSectionList, TransactionSections>();
   const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
   const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
 
@@ -120,17 +118,11 @@ const ActivityList = lazyMount(() => {
     [theme]
   );
 
-  const handleScrollToTopRef = useCallback((ref: any) => {
-    if (!ref) return;
-    setScrollToTopRef(ref);
-  }, []);
-
   return (
     <LegendList
       data={flatData}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      ref={handleScrollToTopRef}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
       extraData={{
         hasPendingTransaction: pendingTransactions.length > 0,

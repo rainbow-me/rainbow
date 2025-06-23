@@ -46,7 +46,6 @@ import ProfileScreen from '../screens/ProfileScreen';
 import DiscoverScreen from '@/screens/DiscoverScreen';
 import { discoverScrollToTopFnRef, discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { ScrollPositionContext } from './ScrollPositionContext';
-import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
 import Routes from './routesNames';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
@@ -80,7 +79,6 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const recyclerList = useRecyclerListViewScrollToTopContext();
-  const sectionList = useSectionListScrollToTopContext();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
@@ -213,7 +211,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
       } else if (isFocused && tabBarIcon === 'tabHome') {
         recyclerList.scrollToTop?.();
       } else if (isFocused && tabBarIcon === 'tabActivity') {
-        sectionList.scrollToTop?.();
+        // we used to scroll to top of sectionList here but no longer
       }
 
       lastPressRef.current = time;
@@ -444,14 +442,12 @@ export function SwipeNavigator() {
   return (
     <FlexItem backgroundColor={colors.white}>
       <BrowserTabBarContextProvider>
-        <SectionListScrollToTopProvider>
-          <RecyclerListViewScrollToTopProvider>
-            {/* @ts-expect-error JS component */}
-            <ScrollPositionContext.Provider>
-              <SwipeNavigatorScreens />
-            </ScrollPositionContext.Provider>
-          </RecyclerListViewScrollToTopProvider>
-        </SectionListScrollToTopProvider>
+        <RecyclerListViewScrollToTopProvider>
+          {/* @ts-expect-error JS component */}
+          <ScrollPositionContext.Provider>
+            <SwipeNavigatorScreens />
+          </ScrollPositionContext.Provider>
+        </RecyclerListViewScrollToTopProvider>
       </BrowserTabBarContextProvider>
 
       <TestnetToast chainId={chainId} />
