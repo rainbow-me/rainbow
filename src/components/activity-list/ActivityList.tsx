@@ -18,6 +18,7 @@ import { FastTransactionCoinRow } from '@/components/coin-row';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { safeAreaInsetValues } from '@/utils';
+import { lazyMount } from '@/helpers/lazyMount';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -76,7 +77,7 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 
 type ListItems = { type: 'item'; value: TransactionItemForSectionList } | { type: 'header'; value: TransactionSections };
 
-const ActivityList = () => {
+const ActivityList = lazyMount(() => {
   const accountAddress = useAccountAddress();
   const { nativeCurrency } = useAccountSettings();
 
@@ -148,6 +149,6 @@ const ActivityList = () => {
       estimatedItemSize={60}
     />
   );
-};
+});
 
 export default ActivityList;
