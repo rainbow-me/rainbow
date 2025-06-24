@@ -9,7 +9,7 @@ import { Stack, Text, TextShadow, Bleed, Box } from '@/design-system';
 import ChartTypes from '@/helpers/chartTypes';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import styled, { useTheme } from '@/styled-thing';
+import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ColumnWithMargins } from '../../layout';
 import { ChartPercentChangeLabel, ChartPriceLabel, ChartDateLabel } from './chart-data-labels';
@@ -64,8 +64,8 @@ export default function ChartExpandedStateHeader({
 
   const title = isPool
     ? lang.t('expanded_state.chart.token_pool', {
-        tokenName: asset.tokenNames,
-      })
+      tokenName: asset.tokenNames,
+    })
     : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
