@@ -25,7 +25,6 @@ export type WalletBalanceResult = {
  * @returns Balances for all wallets
  */
 const useWalletBalances = (): WalletBalanceResult => {
-  const nativeCurrency = userAssetsStoreManager().currency;
   const summaryData = useWalletSummary();
 
   const balances = useMemo(() => {
@@ -36,6 +35,7 @@ const useWalletBalances = (): WalletBalanceResult => {
       return result;
     }
 
+    const nativeCurrency = userAssetsStoreManager.getState().currency;
     const allAddresses = getWalletAddresses(wallets);
 
     for (const address of allAddresses) {
@@ -63,7 +63,7 @@ const useWalletBalances = (): WalletBalanceResult => {
     }
 
     return result;
-  }, [summaryData, nativeCurrency]);
+  }, [summaryData]);
 
   return {
     balances,
