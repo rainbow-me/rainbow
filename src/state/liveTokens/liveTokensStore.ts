@@ -3,8 +3,11 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { SupportedCurrencyKey } from '@/references';
+import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
 import { getPlatformClient } from '@/resources/platform/client';
+import { logger, RainbowError } from '@/logger';
+
+const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
 
 function convertLegacyTokenIdToTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split('_');
@@ -14,6 +17,12 @@ function convertLegacyTokenIdToTokenId(tokenId: string): string {
 function convertTokenIdToLegacyTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split(':');
   return `${tokenAddress}_${chainId}`;
+}
+
+// Only works for tokens the user owns
+function isEthVariant(tokenId: string) {
+  const userAsset = useUserAssetsStore.getState().getUserAsset(convertTokenIdToLegacyTokenId(tokenId));
+  return userAsset && (userAsset.mainnetAddress === ETH_ADDRESS || userAsset.mainnetAddress === WETH_ADDRESS);
 }
 
 // route -> token id -> subscription count
@@ -56,8 +65,7 @@ type LiveTokensResponse = {
     requestTime: string;
   };
   result: LiveTokensData;
-  // TODO: get types from backend
-  errors: any[];
+  errors?: string[];
 };
 
 type LiveTokensParams = {
@@ -90,22 +98,65 @@ const initialState: LiveTokenStoreState = {
 };
 
 const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency }: LiveTokensParams): Promise<LiveTokensData | null> => {
-  const tokenIdsArray = Object.keys(subscribedTokensByRoute[activeRoute] || {});
+  const tokenIds = Object.keys(subscribedTokensByRoute[activeRoute] || {}).map(tokenId => {
+    if (tokenId.includes('_')) {
+      return convertLegacyTokenIdToTokenId(tokenId);
+    }
+    return tokenId;
+  });
 
-  if (tokenIdsArray.length === 0) {
+  if (tokenIds.length === 0) {
     return null;
   }
 
+  // Separate ETH variants from other tokens
+  const ethVariants: string[] = [];
+  const otherTokens: string[] = [];
+
+  tokenIds.forEach(tokenId => {
+    if (isEthVariant(tokenId)) {
+      ethVariants.push(tokenId);
+    } else {
+      otherTokens.push(tokenId);
+    }
+  });
+
+  const tokensToFetch = [
+    ...otherTokens,
+    // Only subscribe to mainnet ETH if we have any ETH variants
+    ...(ethVariants.length > 0 ? [ETH_MAINNET_TOKEN_ID] : []),
+  ];
+
   const response = await getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
     params: {
-      tokenIds: tokenIdsArray.map(convertLegacyTokenIdToTokenId).join(','),
+      tokenIds: tokensToFetch.join(','),
       currency,
     },
   });
 
-  return Object.fromEntries(
-    Object.entries(response.data.result).map(([platformTokenId, tokenData]) => [convertTokenIdToLegacyTokenId(platformTokenId), tokenData])
-  );
+  if (response.data.errors && response.data.errors.length > 0) {
+    logger.error(new RainbowError('[liveTokensStore] Error fetching tokens data'), {
+      errors: response.data.errors,
+    });
+  }
+
+  const result: LiveTokensData = {};
+
+  Object.entries(response.data.result).forEach(([tokenId, tokenData]) => {
+    if (tokenId !== ETH_MAINNET_TOKEN_ID) {
+      result[convertTokenIdToLegacyTokenId(tokenId)] = tokenData;
+    }
+  });
+
+  // Map ETH data to all ETH variants
+  if (response.data.result[ETH_MAINNET_TOKEN_ID]) {
+    const ethData = response.data.result[ETH_MAINNET_TOKEN_ID];
+    ethVariants.forEach(ethVariant => {
+      result[convertTokenIdToLegacyTokenId(ethVariant)] = ethData;
+    });
+  }
+
+  return result;
 };
 
 function updateUserAssetsStore(tokens: LiveTokensData) {
