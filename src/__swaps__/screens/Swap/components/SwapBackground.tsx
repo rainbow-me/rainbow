@@ -42,11 +42,19 @@ export const SwapBackground = () => {
   }
 
   return (
-    <Canvas style={styles.background}>
-      <Rect height={DEVICE_HEIGHT + (IS_ANDROID ? 24 : 0)} width={DEVICE_WIDTH} x={0} y={0}>
-        <Paint antiAlias dither>
-          <LinearGradient colors={gradientColors} end={vec(DEVICE_WIDTH / 2, DEVICE_HEIGHT)} start={vec(DEVICE_WIDTH / 2, 0)} />
-        </Paint>
+    <Canvas
+      style={[
+        styles.background,
+        {
+          backgroundColor: getColorValueForThemeWorklet(
+            internalSelectedInputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR,
+            isDarkMode
+          ),
+        },
+      ]}
+    >
+      <Rect height={DEVICE_HEIGHT + (IS_ANDROID ? 24 : 0)} width={DEVICE_WIDTH} x={0} y={0} antiAlias dither>
+        <LinearGradient colors={gradientColors} end={vec(DEVICE_WIDTH / 2, DEVICE_HEIGHT)} start={vec(DEVICE_WIDTH / 2, 0)} />
       </Rect>
     </Canvas>
   );

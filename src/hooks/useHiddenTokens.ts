@@ -3,8 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
 import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import useFetchHiddenTokens, { hiddenTokensQueryKey } from './useFetchHiddenTokens';
-import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
+import useFetchHiddenTokens, { getHidden, hiddenTokensQueryKey } from './useFetchHiddenTokens';
+import { PreferenceActionType, setPreference } from '@/model/preferences';
 import { logger } from '@/logger';
 
 export default function useHiddenTokens(address?: string) {
@@ -30,8 +30,8 @@ export default function useHiddenTokens(address?: string) {
       const newHiddenTokens = [...hiddenTokens, lowercasedUniqueId];
       logger.debug(`[useHiddenTokens] New hidden tokens: ${newHiddenTokens}`);
 
-      const response = await getPreference('hidden', addressToUse);
-      if (!response || !response.hidden.ids.length) {
+      const response = await getHidden(addressToUse);
+      if (!response.length) {
         logger.debug('[useHiddenTokens] Initializing hidden tokens');
         await setPreference(PreferenceActionType.init, 'hidden', addressToUse, newHiddenTokens);
       } else {
@@ -80,8 +80,8 @@ export default function useHiddenTokens(address?: string) {
       const newHiddenTokens = hiddenTokens.filter(id => id !== lowercasedUniqueId);
       logger.debug(`[useHiddenTokens] New hidden tokens: ${newHiddenTokens}`);
 
-      const response = await getPreference('hidden', addressToUse);
-      if (!response || !response.hidden.ids.length) {
+      const response = await getHidden(addressToUse);
+      if (!response.length) {
         logger.debug('[useHiddenTokens] Initializing hidden tokens');
         await setPreference(PreferenceActionType.init, 'hidden', addressToUse, newHiddenTokens);
       } else {

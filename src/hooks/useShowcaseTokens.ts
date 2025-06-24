@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import useOpenFamilies from './useOpenFamilies';
 import { useMutation } from '@tanstack/react-query';
-import useFetchShowcaseTokens, { showcaseTokensQueryKey } from './useFetchShowcaseTokens';
+import useFetchShowcaseTokens, { getShowcase, showcaseTokensQueryKey } from './useFetchShowcaseTokens';
 import { logger } from '@/logger';
-import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
+import { PreferenceActionType, setPreference } from '@/model/preferences';
 import { isLowerCaseMatch } from '@/utils';
 import { queryClient } from '@/react-query';
 
@@ -33,8 +33,8 @@ export default function useShowcaseTokens(address?: string) {
       const newShowcaseTokens = [...showcaseTokens, lowercasedUniqueId];
       logger.debug(`[useShowcaseTokens] New showcase tokens: ${newShowcaseTokens}`);
 
-      const response = await getPreference('showcase', addressToUse);
-      if (!response || !response.showcase.ids.length) {
+      const response = await getShowcase(addressToUse);
+      if (!response.length) {
         logger.debug('[useShowcaseTokens] Initializing showcase');
         await setPreference(PreferenceActionType.init, 'showcase', addressToUse, newShowcaseTokens);
       } else {
@@ -78,8 +78,8 @@ export default function useShowcaseTokens(address?: string) {
       });
       logger.debug(`[useShowcaseTokens] New showcase tokens: ${newShowcaseTokens}`);
 
-      const response = await getPreference('showcase', addressToUse);
-      if (!response || !response.showcase.ids.length) {
+      const response = await getShowcase(addressToUse);
+      if (!response.length) {
         logger.debug('[useShowcaseTokens] Initializing showcase');
         await setPreference(PreferenceActionType.init, 'showcase', addressToUse, newShowcaseTokens);
       } else {

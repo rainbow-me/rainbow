@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
-index 97dc50e..6e4a466 100644
+index 053c046..65814d8 100644
 --- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 +++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
-@@ -131,7 +131,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
+@@ -140,7 +140,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
      return mDelegate
    }
  
@@ -25,7 +25,7 @@ index 667d600..9054037 100644
  
  - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
-index 43d11b4..276024c 100644
+index 5bf0d32..ef1b74f 100644
 --- a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
 +++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
 @@ -390,12 +390,28 @@ - (void)setManualActivation:(BOOL)manualActivation

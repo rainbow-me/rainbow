@@ -11,6 +11,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import io.branch.rnbranch.RNBranchModule
 import me.rainbow.NativeModules.Haptics.RNHapticsPackage
@@ -45,9 +46,7 @@ class MainApplication : Application(), ReactApplication {
             return packages
         }
 
-        override fun getJSMainModuleName(): String {
-            return ".expo/.virtual-metro-entry"
-        }
+        override fun getJSMainModuleName(): String = "index"
 
         override val isNewArchEnabled: Boolean
             get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
@@ -59,7 +58,7 @@ class MainApplication : Application(), ReactApplication {
         ReactNativePerformance.onAppStarted();
         super.onCreate()
         appContext = this
-        SoLoader.init(this,  /* native exopackage */false)
+        SoLoader.init(this, OpenSourceMergedSoMapping)
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
             // If you opted-in for the New Architecture, we load the native entry point for this app.
             load()
