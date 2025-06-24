@@ -64,8 +64,8 @@ export default function ChartExpandedStateHeader({
 
   const title = isPool
     ? lang.t('expanded_state.chart.token_pool', {
-      tokenName: asset.tokenNames,
-    })
+        tokenName: asset.tokenNames,
+      })
     : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
