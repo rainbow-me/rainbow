@@ -1,7 +1,7 @@
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
-import { getWalletAddresses, useWallets } from '@/state/wallets/walletsStore';
+import { getWalletAddresses, getWallets } from '@/state/wallets/walletsStore';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 
@@ -25,17 +25,18 @@ export type WalletBalanceResult = {
  * @returns Balances for all wallets
  */
 const useWalletBalances = (): WalletBalanceResult => {
-  const wallets = useWallets();
-
   const nativeCurrency = userAssetsStoreManager().currency;
   const summaryData = useWalletSummary();
 
   const balances = useMemo(() => {
-    const allAddresses = getWalletAddresses(wallets || {});
-
     const result: Record<Address, WalletBalance> = {};
+    const wallets = getWallets();
 
-    if (!summaryData) return result;
+    if (!summaryData || !wallets) {
+      return result;
+    }
+
+    const allAddresses = getWalletAddresses(wallets);
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
@@ -62,7 +63,7 @@ const useWalletBalances = (): WalletBalanceResult => {
     }
 
     return result;
-  }, [wallets, summaryData, nativeCurrency]);
+  }, [summaryData, nativeCurrency]);
 
   return {
     balances,
