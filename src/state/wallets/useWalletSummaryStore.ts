@@ -1,4 +1,5 @@
 import { NativeCurrencyKey } from '@/entities';
+import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
@@ -42,11 +43,12 @@ const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummary
   {
     fetcher: fetchWalletSummary,
     params: {
-      addresses: $ => $(useWalletsStore, state => getWalletAddresses(state.wallets || {})),
+      addresses: $ => $(useWalletsStore, state => getConsistentArray(getWalletAddresses(state.wallets || {}))),
       currency: $ => $(userAssetsStoreManager).currency,
     },
+    maxRetries: 10,
     staleTime: time.minutes(1),
-    cacheTime: time.hours(24),
+    cacheTime: time.zero,
     // keeps last balances, otherwise you get loading bars during refreshes of balances
     keepPreviousData: true,
   },
