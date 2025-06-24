@@ -1,5 +1,6 @@
 import TextSize from 'react-native-text-size';
 import { fonts } from '../styles';
+import * as MeasureText from '@domir/react-native-measure-text';
 
 const defaultTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -27,4 +28,8 @@ export default async function measureText(text: any, textStyles = {}) {
     .catch(() => {
       return DefaultMeasurementsState;
     });
+}
+
+export function measureTextSync(text: string, textStyles = {}) {
+  return MeasureText.measureWidth(text, textStyles);
 }

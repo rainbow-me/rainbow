@@ -68,6 +68,7 @@
     "@candlefinance/faster-image": "1.6.2",
     "@capsizecss/core": "3.0.0",
     "@coinbase/mobile-wallet-protocol-host": "0.1.7",
+    "@domir/react-native-measure-text": "0.1.8",
     "@ensdomains/address-encoder": "0.2.16",
     "@ensdomains/content-hash": "2.5.7",
     "@ensdomains/eth-ens-namehash": "2.0.15",
