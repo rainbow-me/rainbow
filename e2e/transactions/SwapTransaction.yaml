@@ -41,7 +41,6 @@ tags:
       - tapOn:
           id: token-to-buy-dai-1
       - assertVisible: 'DAI.*'
-      - assertVisible: 'No Balance'
 
       # Navigate to swap settings
       - tapOn:

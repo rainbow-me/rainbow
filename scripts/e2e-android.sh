@@ -56,7 +56,7 @@ if [ -n "$ANVIL_PID" ]; then
   kill "$ANVIL_PID" 2>/dev/null || true
 fi
 # kill any other processes using port 8545
-ANVIL_PID=$(lsof -t -i:8545 -a -c anvil 2>/dev/null)
+lsof -t -i:8545 -a -c anvil | xargs kill
 
 # Remove the Anvil log file
 rm -rf anvil.log

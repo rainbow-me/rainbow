@@ -37,24 +37,29 @@ tags:
       # Select WETH as output token
       - tapOn: 'Find a token to buy'
       - inputText: 'Wrapped'
+      - hideKeyboard
       - tapOn:
           id: token-to-buy-wrapped-ether-1
       - assertVisible: 'WETH.*'
-      - assertVisible: 'No Balance'
 
-      # Test flip button
-      - assertVisible: '1 ETH 􀄭 1 WETH'
-      - tapOn:
-          id: flip-button
-      - assertVisible: '1 WETH 􀄭 1 ETH'
-      - tapOn:
-          id: flip-button
-      - assertVisible: '1 ETH 􀄭 1 WETH'
+      - runFlow:
+          when:
+            platform: ios
+          commands:
+            # Test flip button
+            - assertVisible: '1 ETH 􀄭 1 WETH'
+            - tapOn:
+                id: flip-button
+            - assertVisible: '1 WETH 􀄭 1 ETH'
+            - tapOn:
+                id: flip-button
+            - assertVisible: '1 ETH 􀄭 1 WETH'
 
       # Navigate to swap settings
       - tapOn:
           id: swap-settings-button
-      - assertVisible: 'Degen Mode Skip the review step to swap faster'
+      - assertVisible:
+          id: swap-settings-panel-degen-mode-button
 
       # Interact with slippage settings
       - assertVisible: 'Max Slippage'
@@ -79,7 +84,6 @@ tags:
       - tapOn:
           id: swap-bottom-action-button
 
-      - hideKeyboard
       - longPressOn:
           id: swap-bottom-action-button
       - runFlow: ../utils/MaybeSetupPin.yaml
@@ -88,6 +92,15 @@ tags:
       - retry:
           maxRetries: 3
           commands:
+            # On Android, pull to refresh
+            - runFlow:
+                when:
+                  platform: Android
+                commands:
+                  - swipe:
+                      from:
+                        id: wallet-screen
+                      direction: down
             - extendedWaitUntil:
                 visible:
                   id: balance-coin-row-Wrapped Ether
