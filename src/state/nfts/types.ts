@@ -11,7 +11,7 @@ export type NftParams = {
   walletAddress: Address | string;
   limit: number;
   pageKey: string | null;
-  openCollections?: CollectionId[];
+  collectionId?: CollectionId;
 };
 
 export type PaginationInfo = {

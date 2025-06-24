@@ -16,11 +16,11 @@ export async function getShowcase(address: string) {
 
   const showcaseTokens = await getPreference('showcase', address);
   if (showcaseTokens?.showcase?.ids && showcaseTokens?.showcase?.ids.length > 0) {
-    return showcaseTokens.showcase.ids;
+    return showcaseTokens.showcase.ids.map((id: string) => id.toLowerCase());
   }
 
   const previousData = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address }));
-  return previousData ?? STABLE_ARRAY;
+  return previousData?.map(id => id.toLowerCase()) ?? STABLE_ARRAY;
 }
 
 export async function fetchShowcaseTokens({ address }: { address: string }) {

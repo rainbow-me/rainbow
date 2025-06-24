@@ -13,10 +13,12 @@ export async function getHidden(address: string) {
   const previousData = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address }));
   const hiddenTokens = await getPreference('hidden', address);
   if (hiddenTokens?.hidden?.ids && hiddenTokens?.hidden?.ids.length > 0) {
-    return hiddenTokens.hidden.ids;
+    // Ensure all IDs are lowercase for consistent handling
+    return hiddenTokens.hidden.ids.map((id: string) => id.toLowerCase());
   }
 
-  return previousData ?? STABLE_ARRAY;
+  // Ensure previous data is also lowercase
+  return previousData?.map(id => id.toLowerCase()) ?? STABLE_ARRAY;
 }
 
 export default function useFetchHiddenTokens({ address }: { address: string }) {

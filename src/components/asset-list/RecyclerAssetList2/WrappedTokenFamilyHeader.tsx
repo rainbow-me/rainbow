@@ -5,7 +5,7 @@ import { ThemeContextProps } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { InteractionManager } from 'react-native';
+import { time } from '@/utils';
 
 type Props = {
   name: string;
@@ -28,26 +28,27 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
       [name]: !isFamilyOpen,
     });
 
-    requestIdleCallback(() => {
-      InteractionManager.runAfterInteractions(() => {
-        const normalizedCollectionId = uid.toLowerCase();
-        const { openCollections } = useNftsStore.getState();
+    const normalizedCollectionId = uid.toLowerCase();
+    const { openCollections } = useNftsStore.getState();
 
-        if (!isFamilyOpen && !openCollections.has(normalizedCollectionId)) {
-          openCollections.add(normalizedCollectionId);
-        } else if (isFamilyOpen && openCollections.has(normalizedCollectionId)) {
-          openCollections.delete(normalizedCollectionId);
-        }
-
-        useNftsStore.setState({
-          openCollections,
-        });
-
-        useNftsStore.getState().fetch({
-          openCollections: Array.from(openCollections),
-        });
-      });
+    // update the state with the new open collections
+    useNftsStore.setState({
+      openCollections,
     });
+
+    if (!isFamilyOpen && !openCollections.has(normalizedCollectionId)) {
+      openCollections.add(normalizedCollectionId);
+
+      useNftsStore.getState().fetch(
+        {
+          collectionId: normalizedCollectionId,
+        },
+        // we handle pruning / stale time manually, so we don't need to ever refetch the collection data
+        { staleTime: time.infinity }
+      );
+    } else if (isFamilyOpen && openCollections.has(normalizedCollectionId)) {
+      openCollections.delete(normalizedCollectionId);
+    }
   });
 
   if (!nftsEnabled) return null;
