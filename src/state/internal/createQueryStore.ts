@@ -440,7 +440,7 @@ export function createQueryStore<
               scheduleNextFetch(effectiveParams, options);
             }
             if (shouldUpdateQueryKey && storeQueryKey !== currentQueryKey) set(state => ({ ...state, queryKey: currentQueryKey }));
-            if (enableLogs) console.log('[💾 Returning Cached Data 💾] for params:', JSON.stringify(effectiveParams));
+            if (enableLogs) console.log('[💾 Returning Cached Data 💾] for params:', serializeParamsForLogging(effectiveParams));
             return cacheEntry?.data ?? null;
           }
         }
@@ -474,7 +474,7 @@ export function createQueryStore<
                   )}`
                 );
               } else {
-                console.log('[🔄 Fetching 🔄] for params:', JSON.stringify(effectiveParams));
+                console.log('[🔄 Fetching 🔄] for params:', serializeParamsForLogging(effectiveParams));
               }
             }
 
@@ -483,7 +483,7 @@ export function createQueryStore<
               : fetcher(effectiveParams, null));
 
             const lastFetchedAt = Date.now();
-            if (enableLogs) console.log('[✅ Fetch Successful ✅] for params:', JSON.stringify(effectiveParams));
+            if (enableLogs) console.log('[✅ Fetch Successful ✅] for params:', serializeParamsForLogging(effectiveParams));
 
             let transformedData: TData;
             try {
@@ -496,7 +496,7 @@ export function createQueryStore<
             }
 
             if (skipStoreUpdates) {
-              if (enableLogs) console.log('[🥷 Successful Parallel Fetch 🥷] for params:', JSON.stringify(effectiveParams));
+              if (enableLogs) console.log('[🥷 Successful Parallel Fetch 🥷] for params:', serializeParamsForLogging(effectiveParams));
               if (options.skipStoreUpdates === 'withCache' && !disableCache) {
                 set(state => ({
                   ...state,
@@ -527,7 +527,7 @@ export function createQueryStore<
                 if (enableLogs)
                   console.log(
                     '[💾 Setting Cache 💾] for params:',
-                    JSON.stringify(effectiveParams),
+                    serializeParamsForLogging(effectiveParams),
                     '| Has previous data?:',
                     !!newState.queryCache[currentQueryKey]?.data
                   );
@@ -541,7 +541,7 @@ export function createQueryStore<
                   } satisfies CacheEntry<TData>,
                 };
               } else if (setData) {
-                if (enableLogs) console.log('[💾 Setting Data 💾] for params:', JSON.stringify(effectiveParams));
+                if (enableLogs) console.log('[💾 Setting Data 💾] for params:', serializeParamsForLogging(effectiveParams));
                 setData({
                   data: transformedData,
                   params: effectiveParams,
@@ -587,7 +587,7 @@ export function createQueryStore<
             return transformedData ?? null;
           } catch (error) {
             if (error === abortError) {
-              if (enableLogs) console.log('[❌ Fetch Aborted ❌] for params:', JSON.stringify(effectiveParams));
+              if (enableLogs) console.log('[❌ Fetch Aborted ❌] for params:', serializeParamsForLogging(effectiveParams));
               return null;
             }
 
@@ -851,7 +851,18 @@ export function getQueryKey<TParams extends Record<string, unknown>>(params: TPa
   return JSON.stringify(
     Object.keys(params)
       .sort()
-      .map(key => params[key])
+      .map(key => {
+        const value = params[key];
+        // Convert Sets to sorted arrays for consistent serialization
+        if (value instanceof Set) {
+          return Array.from(value).sort();
+        }
+        // Convert Maps to sorted arrays of key-value pairs for consistent serialization
+        if (value instanceof Map) {
+          return Array.from(value.entries()).sort(([a], [b]) => String(a).localeCompare(String(b)));
+        }
+        return value;
+      })
   );
 }
 
@@ -869,7 +880,17 @@ function sortParamKeys<TParams extends Record<string, unknown>>(params: TParams)
     .sort()
     .reduce<Record<string, unknown>>((acc, key) => {
       const value = params[key];
-      acc[key] = value !== null && typeof value === 'object' ? sortParamKeys(value as Record<string, unknown>) : value;
+      if (value instanceof Set) {
+        // Convert Sets to sorted arrays for consistent serialization
+        acc[key] = Array.from(value).sort();
+      } else if (value instanceof Map) {
+        // Convert Maps to sorted arrays of key-value pairs for consistent serialization
+        acc[key] = Array.from(value.entries()).sort(([a], [b]) => String(a).localeCompare(String(b)));
+      } else if (value !== null && typeof value === 'object') {
+        acc[key] = sortParamKeys(value as Record<string, unknown>);
+      } else {
+        acc[key] = value;
+      }
       return acc;
     }, {}) as TParams;
 }
@@ -878,6 +899,24 @@ export function defaultRetryDelay(retryCount: number) {
   const baseDelay = time.seconds(5);
   const multiplier = Math.pow(2, retryCount);
   return Math.min(baseDelay * multiplier, time.minutes(5));
+}
+
+function serializeParamsForLogging<TParams extends Record<string, unknown>>(params: TParams): string {
+  const serializable = Object.keys(params)
+    .sort()
+    .reduce<Record<string, unknown>>((acc, key) => {
+      const value = params[key];
+      if (value instanceof Set) {
+        acc[key] = `Set(${value.size})[${Array.from(value).sort().join(', ')}]`;
+      } else if (value instanceof Map) {
+        const entries = Array.from(value.entries()).sort(([a], [b]) => String(a).localeCompare(String(b)));
+        acc[key] = `Map(${value.size}){${entries.map(([k, v]) => `${k}:${v}`).join(', ')}}`;
+      } else {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+  return JSON.stringify(serializable);
 }
 
 function getCompleteParams<TParams extends Record<string, unknown>>(

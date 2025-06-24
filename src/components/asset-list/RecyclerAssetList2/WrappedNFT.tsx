@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@/entities';
@@ -44,16 +44,19 @@ export default React.memo(function WrappedNFT({
     []
   );
 
-  const placementProps: BoxProps =
-    placement === 'left'
-      ? {
-          alignItems: 'flex-start',
-          paddingLeft: '19px (Deprecated)',
-        }
-      : {
-          alignItems: 'flex-end',
-          paddingRight: '19px (Deprecated)',
-        };
+  const placementProps: BoxProps = useMemo(
+    () =>
+      placement === 'left'
+        ? {
+            alignItems: 'flex-start',
+            paddingLeft: '19px (Deprecated)',
+          }
+        : {
+            alignItems: 'flex-end',
+            paddingRight: '19px (Deprecated)',
+          },
+    [placement]
+  );
 
   if (!nftsEnabled || !asset) return null;
 
