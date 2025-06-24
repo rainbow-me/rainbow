@@ -148,7 +148,6 @@ const ActivityList = lazyMount(() => {
       ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
       recycleItems
       maintainVisibleContentPosition
-      removeClippedSubviews
       drawDistance={PANEL_HEIGHT / 2}
       estimatedItemSize={ITEM_HEIGHT}
     />
