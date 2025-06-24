@@ -171,7 +171,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
     if (hasDataChanged) {
       const viewableItems = currentViewableIndices.map(index => briefSectionsData[index]);
-      const previousViewableItems = currentViewableIndices.map(index => previousData[index]);
+      const previousViewableItems = currentViewableIndices.map(index => previousData[index]).filter(Boolean);
 
       const currentUids = new Set(viewableItems.map(item => item.uid));
       const previousUids = new Set(previousViewableItems.map(item => item.uid));
