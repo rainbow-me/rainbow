@@ -216,7 +216,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
       lastPressRef.current = time;
     },
-    [canSwitchRef, jumpTo, reanimatedPosition, recyclerList, sectionList]
+    [canSwitchRef, jumpTo, reanimatedPosition, recyclerList]
   );
 
   const onLongPress = useCallback(

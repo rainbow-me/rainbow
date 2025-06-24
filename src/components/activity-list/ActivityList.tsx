@@ -18,6 +18,7 @@ import { ButtonPressAnimation } from '../animations';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -113,9 +114,16 @@ const ActivityList = lazyMount(() => {
         );
       }
 
-      return <FastTransactionCoinRow item={item.value as any} theme={theme} nativeCurrency={nativeCurrency} />;
+      return (
+        <FastTransactionCoinRow
+          // @nate: this as any was here prior to change to legend-list
+          item={item.value as any}
+          theme={theme}
+          nativeCurrency={nativeCurrency}
+        />
+      );
     },
-    [theme]
+    [nativeCurrency, theme]
   );
 
   return (
