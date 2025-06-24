@@ -18,7 +18,6 @@ import Animated, {
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { formatDate } from '@/utils/formatDate';
-import { useAccountSettings } from '@/hooks';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ShimmerAnimation } from '@/components/animations';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -31,6 +30,7 @@ import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { Address } from 'viem';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { sliderConfig, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 3;
 const LAYOUT_ANIMATION = FadeIn.duration(160);
@@ -213,7 +213,7 @@ const CreatedBySection = memo(function CreatedBySection() {
 });
 
 export function AssetInfoList() {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { accentColors, assetMetadata: metadata, basicAsset: asset, isLoadingMetadata } = useExpandedAssetSheetContext();
 
   const isExpanded = useSharedValue(true);

@@ -7,15 +7,15 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RAINBOW_COIN_EFFECT, useExperimentalFlag } from '@/config';
 import { Stack, Text, TextShadow, Bleed, Box } from '@/design-system';
 import ChartTypes from '@/helpers/chartTypes';
-import { useAccountSettings } from '@/hooks';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
-import styled from '@/styled-thing';
+import styled, { useTheme } from '@/styled-thing';
 import { padding } from '@/styles';
 import { ColumnWithMargins } from '../../layout';
 import { ChartPercentChangeLabel, ChartPriceLabel, ChartDateLabel } from './chart-data-labels';
 import { toCompactNotation } from '@/helpers/strings';
 import { supportedNativeCurrencies } from '@/references';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -37,7 +37,7 @@ export default function ChartExpandedStateHeader({
   const shouldUseRainbowCoinEffect = useExperimentalFlag(RAINBOW_COIN_EFFECT);
   const theme = useTheme();
   const color = givenColors || theme.colors.dark;
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const { data } = useChartData();
   const { isRainbowToken } = useExpandedAssetSheetContext();
