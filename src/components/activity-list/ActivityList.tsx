@@ -77,6 +77,9 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 
 type ListItems = { type: 'item'; value: TransactionItemForSectionList } | { type: 'header'; value: TransactionSections };
 
+// keeping everything the same height here since we basically can pretty easily
+const ITEM_HEIGHT = 59;
+
 const ActivityList = lazyMount(() => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
@@ -108,7 +111,9 @@ const ActivityList = lazyMount(() => {
     ({ item }: { item: ListItems }) => {
       if ('type' in item && item.type === 'header') {
         return (
-          <View style={[sx.sectionHeader, { backgroundColor: theme.colors.white }]}>
+          <View style={[sx.sectionHeader, { backgroundColor: theme.colors.white, height: ITEM_HEIGHT }]}>
+            {/* push month header to bottom */}
+            <View style={{ flex: 1 }} />
             <ActivityListHeader title={item.value.title} />
           </View>
         );
@@ -144,7 +149,7 @@ const ActivityList = lazyMount(() => {
       maintainVisibleContentPosition
       removeClippedSubviews
       drawDistance={PANEL_HEIGHT / 2}
-      estimatedItemSize={60}
+      estimatedItemSize={ITEM_HEIGHT}
     />
   );
 });
