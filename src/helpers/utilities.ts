@@ -442,13 +442,13 @@ export const convertAmountToNativeDisplayWorklet = (
   value: number | string,
   nativeCurrency: keyof nativeCurrencyType,
   useThreshold = false,
-  ignoreAlignment = false
+  ignoreAlignment = false,
+  decimalPlaces?: number
 ) => {
   'worklet';
 
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
-  const decimals = Math.min(rawDecimals, 6);
+  const { alignment, decimals: rawDecimals, symbol } = supportedNativeCurrencies[nativeCurrency];
+  const decimals = decimalPlaces ?? Math.min(rawDecimals, 6);
 
   const valueNumber = Number(value);
   const threshold = decimals < 4 ? 0.01 : 0.0001;

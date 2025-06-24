@@ -93,7 +93,6 @@ function WalletScreen() {
   const debouncedAddSubscribedTokensRef = useRef(
     debounce((viewableItems, routeName) => {
       const viewableTokenUniqueIds = extractTokenRowIds(viewableItems);
-      // console.log('[WalletScreen] viewableTokenUniqueIds', viewableTokenUniqueIds);
       if (viewableTokenUniqueIds.length > 0) {
         addSubscribedTokens({ route: routeName, tokenIds: viewableTokenUniqueIds });
       }

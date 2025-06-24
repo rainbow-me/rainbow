@@ -8,7 +8,7 @@ import Animated from 'react-native-reanimated';
 import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
-import { convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
 import { getSolidColorEquivalent } from '@/worklets/colors';
@@ -20,7 +20,7 @@ export function BalanceSection() {
 
   const tokenBalanceSelector = useCallback(
     (token: TokenData) => {
-      const { display } = convertRawAmountToNativeDisplay(tokenBalanceAmount, 1, token.price, nativeCurrency);
+      const { display } = convertAmountAndPriceToNativeDisplay(tokenBalanceAmount, token.price, nativeCurrency);
       return display;
     },
     [tokenBalanceAmount, nativeCurrency]
@@ -76,6 +76,7 @@ export function BalanceSection() {
             size="20pt"
             weight="heavy"
             align="right"
+            tabularNumbers
           />
         </Box>
       </Box>

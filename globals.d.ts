@@ -78,4 +78,5 @@ declare module 'react-native-dotenv' {
   export const TOKEN_LAUNCHER_URL: string;
   export const TOKEN_LAUNCHER_API_KEY: string;
   export const TOKEN_SEARCH_URL: string;
+  export const PLATFORM_BASE_URL: string;
 }

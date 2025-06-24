@@ -1,7 +1,7 @@
 import { memoFn } from '../utils/memoFn';
 import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey } from '@/entities';
-import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWorklet } from './utilities';
+import { convertAmountToNativeDisplay, convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWorklet } from './utilities';
 import {
   equalWorklet as safeEqualWorklet,
   divWorklet as safeDivWorklet,
@@ -141,7 +141,8 @@ function toDecimalString(num: number): string {
   return num.toFixed(20).replace(/\.?0+$/, '');
 }
 
-export function formatFractionWorklet(fraction: string): string {
+// TODO: change name of this
+export function formatFractionWorklet(fraction: string, significantDigitsCount = 2): string {
   'worklet';
   let leadingZeros = 0;
   for (let i = 0; i < fraction.length; i++) {
@@ -151,14 +152,11 @@ export function formatFractionWorklet(fraction: string): string {
       break;
     }
   }
-
   const significantPart = fraction.slice(leadingZeros);
   if (significantPart.length === 0 || /^[0]+$/.test(significantPart)) {
-    return '00';
+    return '0'.repeat(significantDigitsCount);
   }
-
-  const significantDigits = significantPart.slice(0, 2).padEnd(2, '0');
-
+  const significantDigits = significantPart.slice(0, significantDigitsCount).padEnd(significantDigitsCount, '0');
   if (leadingZeros >= 4) {
     const leadingZerosStr = leadingZeros.toString();
     let subscriptZeros = '';
@@ -201,7 +199,7 @@ export function formatCurrency(
   return `${currencySymbol}${formattedWhole}.${formattedFraction}`;
 }
 
-const DEFAULT_SUBSCRIPT_MAGNITUDE_THRESHOLD = -8;
+const DEFAULT_SUBSCRIPT_MAGNITUDE_THRESHOLD = -4;
 
 const zeroFormattedRegex = /^[-+]?0+(\.0+)?$/;
 
@@ -240,7 +238,7 @@ export function toCompactNotation({
     if (magnitude >= 6) {
       const divisor = safePowWorklet('10', magnitude.toString());
       const mantissa = safeDivWorklet(absNumericString, divisor);
-      const formattedMantissa = safeToFixedWorklet(mantissa, 2);
+      const formattedMantissa = safeToFixedWorklet(mantissa, decimalPlaces ?? 2);
       const superscriptExponent = `${magnitude
         .toString()
         .split('')
@@ -252,7 +250,7 @@ export function toCompactNotation({
     }
 
     if (currency) {
-      const nativeDisplay = convertAmountToNativeDisplayWorklet(absNumericString, currency, false, true);
+      const nativeDisplay = convertAmountToNativeDisplayWorklet(absNumericString, currency, false, true, decimalPlaces);
       // if the prefix is the same as the currency symbol, we need to remove it so it doesn't display twice
       const formattedValue = prefix === supportedNativeCurrencies[currency].symbol ? nativeDisplay.replace(prefix, '') : nativeDisplay;
       return prefix ? `${prefix}${sign}${formattedValue}` : `${sign}${formattedValue}`;
@@ -290,17 +288,83 @@ export function toCompactNotation({
     } else {
       fullFractionString = (bigIntNum < 0n ? -bigIntNum : bigIntNum).toString();
     }
-    const formattedFraction = formatFractionWorklet(fullFractionString);
+    const formattedFraction = formatFractionWorklet(fullFractionString, 4);
     return prefix ? `${prefix}${sign}0.${formattedFraction}` : `${sign}0.${formattedFraction}`;
   }
 }
 
-export function currencyToCompactNotation({ value, currency }: { value: string | number; currency: NativeCurrencyKey }): string {
+export function currencyToCompactNotation({
+  value,
+  currency,
+  decimals,
+}: {
+  value: string | number;
+  currency: NativeCurrencyKey;
+  decimals?: number;
+}): string {
   'worklet';
   return toCompactNotation({
     value,
     prefix: supportedNativeCurrencies[currency].symbol,
-    decimalPlaces: supportedNativeCurrencies[currency].decimals,
+    decimalPlaces: decimals ?? supportedNativeCurrencies[currency].decimals,
     currency,
   });
+}
+
+// Test the updated logic
+interface PercentageFormatOptions {
+  /** Threshold below which to use adaptive precision for small numbers */
+  lowBoundary?: number;
+  /** Threshold above which to use high precision */
+  highBoundary?: number;
+  /** Maximum decimal places to show for very small numbers */
+  maxSmallNumberPrecision?: number;
+  /** Decimal places for values between lowBoundary and highBoundary */
+  mediumPrecision?: number;
+  /** Decimal places for values above highBoundary */
+  highPrecision?: number;
+  /** What to return for invalid input */
+  invalidInputHandler?: string | ((input: string) => string);
+}
+
+export function formatPercentageChange(
+  value: string,
+  {
+    lowBoundary = 0.01,
+    highBoundary = 1,
+    maxSmallNumberPrecision = 4,
+    mediumPrecision = 2,
+    highPrecision = 2,
+    invalidInputHandler = (input: string) => input,
+  }: PercentageFormatOptions = {}
+): string {
+  const num = parseFloat(value);
+
+  // Handle invalid input
+  if (isNaN(num)) {
+    return typeof invalidInputHandler === 'function' ? invalidInputHandler(value) : invalidInputHandler;
+  }
+
+  // Handle zero
+  if (num === 0) {
+    return '0.00';
+  }
+
+  // If value is less than lowBoundary, show most significant digit up to maxSmallNumberPrecision
+  if (Math.abs(num) < lowBoundary) {
+    // Find the position of the first significant digit
+    const absNum = Math.abs(num);
+    const magnitude = Math.floor(Math.log10(absNum));
+    const digitsAfterDecimal = Math.max(1, Math.min(maxSmallNumberPrecision, -magnitude + 1));
+
+    return num.toFixed(digitsAfterDecimal);
+  }
+
+  // If value is less than highBoundary
+  if (Math.abs(num) < highBoundary) {
+    return num.toFixed(mediumPrecision);
+  }
+
+  // If value is highBoundary or greater
+  return num.toFixed(highPrecision);
 }

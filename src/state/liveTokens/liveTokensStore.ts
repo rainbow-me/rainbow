@@ -2,22 +2,27 @@ import { time } from '@/utils';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { SupportedCurrencyKey } from '@/references';
+import { getPlatformClient } from '@/resources/platform/client';
+
+function convertLegacyTokenIdToTokenId(tokenId: string): string {
+  const [tokenAddress, chainId] = tokenId.split('_');
+  return `${tokenAddress}:${chainId}`;
+}
+
+function convertTokenIdToLegacyTokenId(tokenId: string): string {
+  const [tokenAddress, chainId] = tokenId.split(':');
+  return `${tokenAddress}_${chainId}`;
+}
 
 // route -> token id -> subscription count
 type TokenSubscriptionCountByRoute = Record<string, Record<string, number>>;
 
-// export interface TokenData {
-//   price: string;
-//   change24hPct: string;
-//   change1hPct: string;
-//   volume24h: string;
-//   marketCap: string;
-//   updatedAt: string;
-//   valuation: {
-//     allowed: boolean;
-//     reason: string;
-//   };
-// }
+export type PriceReliabilityStatus =
+  | 'PRICE_RELIABILITY_STATUS_TRUSTED'
+  | 'PRICE_RELIABILITY_STATUS_NOT_TRUSTED'
+  | 'PRICE_RELIABILITY_STATUS_UNSPECIFIED';
 
 export interface TokenData {
   price: string;
@@ -28,22 +33,14 @@ export interface TokenData {
     change12hPct: string;
     change24hPct: string;
   };
-  // TODO: this not yet explicitly supported, definition might change
-  market: {
-    marketCap: string;
-    volume: {
-      '24h': string;
-    };
-  };
-  valuation: {
-    allowed: boolean;
-    reason: string;
+  marketData: {
+    marketCapFDV: string;
   };
   reliability: {
     metadata: {
       liquidityCap: string;
     };
-    status: string;
+    status: PriceReliabilityStatus;
   };
   updateTime: string;
 }
@@ -52,9 +49,21 @@ export interface LiveTokensData {
   [tokenId: string]: TokenData;
 }
 
+type LiveTokensResponse = {
+  metadata: {
+    currency: string;
+    requestId: string;
+    requestTime: string;
+  };
+  result: LiveTokensData;
+  // TODO: get types from backend
+  errors: any[];
+};
+
 type LiveTokensParams = {
   subscribedTokensByRoute: TokenSubscriptionCountByRoute;
   activeRoute: string;
+  currency: SupportedCurrencyKey;
 };
 
 type UpdateSubscribedTokensParams = {
@@ -62,108 +71,41 @@ type UpdateSubscribedTokensParams = {
   tokenIds: string[];
 };
 
-type State = {
+type LiveTokenStoreState = {
   subscribedTokensByRoute: TokenSubscriptionCountByRoute;
   tokens: LiveTokensData;
 };
 
-type Actions = {
+type LiveTokenStoreActions = {
   removeSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
   addSubscribedTokens: ({ route, tokenIds }: UpdateSubscribedTokensParams) => void;
   clear: () => void;
 };
 
-type LiveTokensStore = State & Actions;
+type LiveTokensStore = LiveTokenStoreState & LiveTokenStoreActions;
 
-const initialState: State = {
+const initialState: LiveTokenStoreState = {
   subscribedTokensByRoute: {},
   tokens: {},
 };
 
-// example response:
-// {
-//   "metadata": {
-//     "currency": "USD",
-//     "requestId": "req_1234567890abcdef",
-//     "requestTime": "2025-06-12T14:30:00.123Z",
-//     "responseTime": "2025-06-12T14:30:01.456Z",
-//     "success": true,
-//     "version": "v1.2.3"
-//   },
-//   "result": {
-//     "eth:1": {
-//       "change": {
-//         "change12hPct": "-1.67",
-//         "change1hPct": "-0.85",
-//         "change24hPct": "3.45",
-//         "change4hPct": "2.34",
-//         "change5mPct": "0.12"
-//       },
-//       "price": "67234.52",
-//       "reliability": {
-//         "metadata": {
-//           "liquidityCap": "50000000.00"
-//         },
-//         "status": "PRICE_RELIABILITY_STATUS_TRUSTED"
-//       },
-//       "updateTime": "2025-06-12T14:29:45.789Z"
-//     }
-//   }
-// }
-
-const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute }: LiveTokensParams): Promise<LiveTokensData | null> => {
+const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency }: LiveTokensParams): Promise<LiveTokensData | null> => {
   const tokenIdsArray = Object.keys(subscribedTokensByRoute[activeRoute] || {});
 
   if (tokenIdsArray.length === 0) {
     return null;
   }
 
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 300));
-
-  const tokens: LiveTokensData = {};
-  const currency = 'USD';
-
-  tokenIdsArray.forEach(id => {
-    const basePrice = parseInt(id.substring(2, 5), 16) / 10 || 10;
-    const fluctuation = (Math.random() - 0.1) * 0.5;
-    const price = (basePrice + fluctuation * 1000).toFixed(2);
-    const change24hPct = ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 50)).toFixed(2);
-    const change1hPct = (fluctuation * 100).toFixed(2);
-    const change12hPct = ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 40)).toFixed(2);
-    const change4hPct = ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 30)).toFixed(2);
-    const change5mPct = ((Math.random() > 0.5 ? -1 : 1) * (fluctuation * 20)).toFixed(2);
-
-    tokens[id] = {
-      price,
-      change: {
-        change24hPct,
-        change1hPct,
-        change12hPct,
-        change4hPct,
-        change5mPct,
-      },
-      market: {
-        marketCap: (basePrice * 1000000 + fluctuation * 1000000).toFixed(2),
-        volume: {
-          '24h': (basePrice * 1000 + fluctuation * 1000).toFixed(2),
-        },
-      },
-      updateTime: new Date().toISOString(),
-      valuation: {
-        allowed: true,
-        reason: '',
-      },
-      reliability: {
-        metadata: {
-          liquidityCap: '50000000.00',
-        },
-        status: 'PRICE_RELIABILITY_STATUS_TRUSTED',
-      },
-    };
+  const response = await getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
+    params: {
+      tokenIds: tokenIdsArray.map(convertLegacyTokenIdToTokenId).join(','),
+      currency,
+    },
   });
 
-  return tokens;
+  return Object.fromEntries(
+    Object.entries(response.data.result).map(([platformTokenId, tokenData]) => [convertTokenIdToLegacyTokenId(platformTokenId), tokenData])
+  );
 };
 
 function updateUserAssetsStore(tokens: LiveTokensData) {
@@ -190,6 +132,7 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
     params: {
       subscribedTokensByRoute: ($, store) => $(store).subscribedTokensByRoute,
       activeRoute: $ => $(useNavigationStore).activeRoute,
+      currency: $ => $(userAssetsStoreManager).currency,
     },
   },
 

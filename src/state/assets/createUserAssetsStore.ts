@@ -209,19 +209,23 @@ export const createUserAssetsStore = (address: Address | string) =>
       updateTokens: (tokens: LiveTokensData) => {
         set(state => {
           for (const [tokenId, token] of Object.entries(tokens)) {
-            // This indicates the backend has overridden the balance this token due to low liquidity
-            if (!token.valuation.allowed) continue;
-
+            // TODO: backend has not implemented this properly yet
+            // if (token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
             const asset = state.userAssets.get(tokenId);
             const currency = userAssetsStoreManager.getState().currency;
+            // TODO: why are these different numbers?
+            // console.log(asset.native.price?.change, asset.price?.relative_change_24h);
+
             // TODO: once backend updates with last updated time, we need to check if our update is actually newer
             if (asset?.price) {
               asset.price = {
                 value: Number(token.price),
-                relative_change_24h: Number(token.change24hPct),
+                relative_change_24h: Number(token.change.change24hPct),
               };
+            }
+            if (asset?.native?.price) {
               asset.native.price = {
-                change: '0',
+                change: token.change.change24hPct,
                 amount: Number(token.price),
                 display: convertAmountToNativeDisplayWorklet(token.price, currency),
               };

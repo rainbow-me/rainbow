@@ -61,3 +61,8 @@ export function formatTimestamp(timestamp: number): string {
 
   return res;
 }
+
+export function toUnixTime(date: string): number {
+  'worklet';
+  return new Date(date).getTime() / 1000;
+}

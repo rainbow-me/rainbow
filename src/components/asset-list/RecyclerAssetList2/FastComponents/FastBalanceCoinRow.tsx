@@ -12,9 +12,10 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
-import { LiveTokenText, useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { convertAmountAndPriceToNativeDisplay, toFixedDecimals } from '@/helpers/utilities';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { formatFractionWorklet, formatPercentageChange } from '@/helpers/strings';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -87,27 +88,15 @@ const MemoizedBalanceCoinRow = React.memo(
 
     const tokenPriceSelector = useCallback(
       (token: TokenData) => {
-        const { display } = convertRawAmountToNativeDisplay(tokenBalanceAmount, 1, token.price, nativeCurrency);
+        const { display } = convertAmountAndPriceToNativeDisplay(tokenBalanceAmount, token.price, nativeCurrency);
         return display;
       },
       [tokenBalanceAmount, nativeCurrency]
     );
 
     const tokenPriceChangeSelector = useCallback((token: TokenData) => {
-      return `${formatPercentageString(token.change.change24hPct)}%`;
+      return `${formatPercentageChange(token.change.change24hPct)}%`;
     }, []);
-
-    const livePriceChange = useLiveTokenValue({
-      tokenId: uniqueId,
-      // TODO:
-      initialValueLastUpdated: 0,
-      initialValue: percentageChangeDisplay,
-      autoSubscriptionEnabled: false,
-      selector: tokenPriceChangeSelector,
-    });
-
-    const isPositivePriceChange = livePriceChange && parseFloat(livePriceChange) >= 0;
-    const priceChangeColor = isPositivePriceChange ? theme.colors.green : theme.colors.blueGreyDark50;
 
     return (
       <View style={sx.flex} testID={'fast-coin-info'}>
@@ -148,10 +137,24 @@ const MemoizedBalanceCoinRow = React.memo(
                     {nativeBalanceDisplay}
                   </Text>
                 </View>
-
-                <Text align="right" color={{ custom: priceChangeColor }} size="14px / 19px (Deprecated)" weight="medium">
-                  {livePriceChange}
-                </Text>
+                <LiveTokenText
+                  selector={tokenPriceChangeSelector}
+                  tokenId={uniqueId}
+                  // TODO:
+                  initialValueLastUpdated={0}
+                  initialValue={percentageChangeDisplay}
+                  autoSubscriptionEnabled={false}
+                  usePriceChangeColor
+                  priceChangeChangeColors={{
+                    positive: theme.colors.green,
+                    negative: theme.colors.blueGreyDark50,
+                    neutral: theme.colors.blueGreyDark50,
+                  }}
+                  color={'label'}
+                  size="14px / 19px (Deprecated)"
+                  weight="medium"
+                  align="right"
+                />
               </View>
             </View>
           </View>

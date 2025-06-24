@@ -5,6 +5,7 @@ import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenDat
 import { useSharedValue, SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useRoute } from '@react-navigation/native';
+import { toUnixTime } from '@/worklets/dates';
 
 interface LiveTokenValueParams {
   tokenId: string;
@@ -13,8 +14,6 @@ interface LiveTokenValueParams {
   autoSubscriptionEnabled?: boolean;
   selector: (token: TokenData) => string;
 }
-
-const toUnixTime = (date: string) => new Date(date).getTime() / 1000;
 
 export function useLiveTokenSharedValue({
   tokenId,
@@ -28,7 +27,7 @@ export function useLiveTokenSharedValue({
   // prevValue and liveValue will always be equal, but there is a cost to reading shared values
   const prevValue = useRef(initialValue);
 
-  const onTokenUpdated = useCallback(
+  const updateToken = useCallback(
     (token: TokenData) => {
       // TODO: this shouldn't be possible
       if (!token) return;
@@ -43,7 +42,12 @@ export function useLiveTokenSharedValue({
     [initialValueLastUpdated, liveValue, selector]
   );
 
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated);
+  useListen(useLiveTokensStore, state => state.tokens[tokenId], updateToken);
+
+  // Immediately update value when selector changes
+  useEffect(() => {
+    updateToken(useLiveTokensStore.getState().tokens[tokenId]);
+  }, [selector, tokenId, updateToken]);
 
   useEffect(() => {
     if (!autoSubscriptionEnabled) return;
@@ -70,7 +74,7 @@ export function useLiveTokenValue({
   // prevLiveValue and liveValue will always be equal, but state is async
   const prevLiveValue = useRef(initialValue);
 
-  const onTokenUpdated = useCallback(
+  const updateToken = useCallback(
     (token: TokenData) => {
       // TODO: this shouldn't be possible
       if (!token) return;
@@ -85,7 +89,12 @@ export function useLiveTokenValue({
     [initialValueLastUpdated, selector]
   );
 
-  useListen(useLiveTokensStore, state => state.tokens[tokenId], onTokenUpdated);
+  useListen(useLiveTokensStore, state => state.tokens[tokenId], updateToken);
+
+  // Immediately update value when selector changes
+  useEffect(() => {
+    updateToken(useLiveTokensStore.getState().tokens[tokenId]);
+  }, [selector, tokenId, updateToken]);
 
   useEffect(() => {
     if (!autoSubscriptionEnabled) return;
@@ -105,6 +114,11 @@ type LiveTokenTextProps = LiveTokenValueParams &
     // TODO: do not like these prop names
     animateTrendChange?: boolean;
     usePriceChangeColor?: boolean;
+    priceChangeChangeColors?: {
+      positive?: string;
+      negative?: string;
+      neutral?: string;
+    };
   };
 
 export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
@@ -115,6 +129,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   selector,
   animateTrendChange = false,
   usePriceChangeColor = false,
+  priceChangeChangeColors,
   ...textProps
 }) {
   const liveValue = useLiveTokenSharedValue({
@@ -135,11 +150,11 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
     (value, previousValue) => {
       if (usePriceChangeColor) {
         if (parseFloat(value) > 0) {
-          textColor.value = theme.colors.green;
+          textColor.value = priceChangeChangeColors?.positive ?? theme.colors.green;
         } else if (parseFloat(value) < 0) {
-          textColor.value = theme.colors.red;
+          textColor.value = priceChangeChangeColors?.negative ?? theme.colors.red;
         } else {
-          textColor.value = baseColor;
+          textColor.value = priceChangeChangeColors?.neutral ?? baseColor;
         }
         return;
       }

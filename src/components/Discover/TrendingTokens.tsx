@@ -504,7 +504,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                     // TODO: not yet added to the token data by backend
                     initialValueLastUpdated={0}
                     initialValue={marketCap}
-                    selector={token => formatNumber(token.market.marketCap, { useOrderSuffix: true, decimals: 1, style: '$' })}
+                    selector={token => formatNumber(token.marketData.marketCapFDV, { useOrderSuffix: true, decimals: 1, style: '$' })}
                     color="labelTertiary"
                     numberOfLines={1}
                     size="11pt"

@@ -125,13 +125,15 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
     ({ change }: TokenData) => {
       if (selectedTimespan === 'day') {
         return change.change24hPct;
-      } else if (selectedTimespan === 'fourHour') {
-        return change.change4hPct;
-      } else if (selectedTimespan === 'fiveMinute') {
-        return change.change5mPct;
       } else if (selectedTimespan === 'hour') {
         return change.change1hPct;
       }
+      // TODO: backend has not exposed these yet, and they only exist on the candlestick chart which will not use this value anyways
+      // else if (selectedTimespan === 'fourHour') {
+      //   return change.change4hPct;
+      // } else if (selectedTimespan === 'fiveMinute') {
+      //   return change.change5mPct;
+      // }
       return '0';
     },
     [selectedTimespan]
