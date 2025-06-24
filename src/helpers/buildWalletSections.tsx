@@ -88,6 +88,8 @@ const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
 const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
 const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
 const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHiddenDataMigrated;
+const listTypeSelector = (state: WalletSectionsState) => state.listType;
+const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 
 interface BalanceSectionData {
   balanceSection: CellTypes[];
@@ -313,13 +315,15 @@ const withBriefBalanceSection = (
 const briefUniqueTokenDataSelector = createSelector(
   [
     collectionsSelector,
-    showcaseTokensSelector,
     sellingTokensSelector,
+    showcaseTokensSelector,
     hiddenTokensSelector,
+    listTypeSelector,
     isFetchingNftsSelector,
     hasMoreCollectionsSelector,
     isShowcaseDataMigratedSelector,
     isHiddenDataMigratedSelector,
+    isReadOnlyWalletSelector,
   ],
   buildBriefUniqueTokenList
 );
