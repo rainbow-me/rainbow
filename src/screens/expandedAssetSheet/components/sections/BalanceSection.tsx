@@ -10,7 +10,7 @@ import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { convertAmountAndPriceToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
-import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
+import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 export function BalanceSection() {

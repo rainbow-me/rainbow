@@ -1,6 +1,6 @@
 import { AnimatedText, TextProps, useTextStyle } from '@/design-system';
-import React, { useMemo, useRef, useEffect, useCallback, MutableRefObject, useState } from 'react';
-import { Animated as RNAnimated, StyleProp, TextStyle, StyleSheet, ViewStyle, View, PixelRatio } from 'react-native';
+import React, { useMemo, useCallback, useState } from 'react';
+import { StyleProp, TextStyle, StyleSheet, ViewStyle, View, PixelRatio } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -20,12 +20,10 @@ import Animated, {
   useDerivedValue,
   BaseAnimationBuilder,
   EntryExitAnimationFunction,
-  EntryAnimationsValues,
 } from 'react-native-reanimated';
 import { EasingGradient } from '../easing-gradient/EasingGradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { disableForTestingEnvironment } from '../animations/animationConfigs';
-import { measureText } from '@/utils';
 import { measureTextSync } from '@/utils/measureText';
 import { useIsFirstRender } from '@/hooks/useIsFirstRender';
 import { usePrevious } from '@/hooks';
@@ -33,16 +31,7 @@ import { usePrevious } from '@/hooks';
 // reanimated defines but does not export this type
 type EntryOrExitLayoutType = BaseAnimationBuilder | typeof BaseAnimationBuilder | EntryExitAnimationFunction;
 
-// TODO:
-// - add trend prop to animate individual digit color red / green
-// - add same exit animation translation fixing for separators
-// - handle value changes in middle of animations
-// - require and document why text alignment prop is required
-// - fix 1 frame desync in parts layout update and disabled state
-
 const DEFAULT_ANIMATION_DURATION = 600;
-// DEBUG
-// const DEFAULT_ANIMATION_DURATION = 1000;
 // credit to https://github.com/barvian/number-flow
 const EASING_KEYFRAMES = [
   0, 0.005, 0.019, 0.039, 0.066, 0.096, 0.129, 0.165, 0.202, 0.24, 0.278, 0.316, 0.354, 0.39, 0.426, 0.461, 0.494, 0.526, 0.557, 0.586,
@@ -81,10 +70,8 @@ type TimingAnimationConfig = WithTimingConfig & {
 
 interface DigitProps {
   part: Part;
-  // previousPart: Part | undefined;
   timingConfig: TimingAnimationConfig;
   digitHeight: number;
-  previousWidthDelta: SharedValue<number>;
   textStyle?: StyleProp<TextStyle>;
   numeralWidths: number[];
   isFirstRender: boolean;
@@ -118,7 +105,6 @@ const Digit = function Digit({
   textStyle,
   timingConfig,
   digitHeight,
-  previousWidthDelta,
   numeralWidths,
   isFirstRender,
   enteringAnimation,
@@ -277,7 +263,6 @@ const NumberParts = function NumberParts({
           textStyle={textStyle}
           timingConfig={timingConfig}
           digitHeight={digitHeight}
-          previousWidthDelta={previousWidthDelta}
           numeralWidths={numeralWidths}
           isFirstRender={isFirstRender}
           enteringAnimation={characterEnteringAnimation}
@@ -480,26 +465,22 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       suffixTranslateX.value = newSuffixTranslateX;
       maskTranslateX.value = newMaskTranslateX;
       maskWidth.value = values.currentWidth;
+      numberContainerTranslateX.value = newTranslateX;
 
       // Animate the number to its new position
       suffixTranslateX.value = withTiming(0, timingConfig);
       prefixTranslateX.value = withTiming(0, timingConfig);
+      numberContainerTranslateX.value = withTiming(0, timingConfig);
       // Animates mask to reveal new / hide removed digits
       maskWidth.value = withTiming(values.targetWidth, timingConfig);
       maskTranslateX.value = withTiming(0, timingConfig);
+
       numberContainerGlobalOriginX.value = values.targetGlobalOriginX;
       previousWidthDelta.value = widthDelta;
 
-      numberContainerTranslateX.value = newTranslateX;
-      numberContainerTranslateX.value = withTiming(0, timingConfig);
-
       return {
-        initialValues: {
-          // transform: [{ translateX: newTranslateX }],
-        },
-        animations: {
-          // transform: [{ translateX: withTiming(0, timingConfig) }],
-        },
+        initialValues: {},
+        animations: {},
       };
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -635,7 +616,11 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
             staticContainerStyle,
           ]}
         >
-          <AnimatedText {...textProps} style={textStyle}>
+          <AnimatedText
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...textProps}
+            style={textStyle}
+          >
             {value}
           </AnimatedText>
         </Animated.View>

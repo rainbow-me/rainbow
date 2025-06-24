@@ -4,7 +4,7 @@ import { AnimatedText } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { currencyToCompactNotation } from '@/helpers/strings';
 import { SharedValue, useDerivedValue } from 'react-native-reanimated';
-import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
+import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 
 const translations = {
   noPriceData: i18n.t(i18n.l.expanded_state.chart.no_price_data),

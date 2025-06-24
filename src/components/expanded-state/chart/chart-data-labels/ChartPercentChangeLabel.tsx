@@ -5,7 +5,7 @@ import { IS_ANDROID } from '@/env';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useTheme } from '@/theme';
 import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
-import { AnimatedNumber } from '@/components/live-token-text/AnimatedNumber';
+import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';
