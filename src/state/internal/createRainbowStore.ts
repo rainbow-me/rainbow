@@ -7,7 +7,6 @@ import { time } from '@/utils';
 import { rainbowStorage } from './rainbowStorage';
 import { LazyPersistParams, RainbowPersistConfig, RainbowStateCreator, RainbowStore } from './types';
 import { defaultDeserializeState, defaultSerializeState, omitStoreMethods } from './utils/persistUtils';
-import { debugStore } from '@/state/internal/utils/debugStoreUtils';
 
 /**
  * Creates a Rainbow store without persistence.
@@ -43,7 +42,7 @@ export function createRainbowStore<S, PersistedState extends Partial<S> = Partia
 
   return createWithEqualityFn<S>()(
     subscribeWithSelector(
-      persist(persistConfig?.debug ? debugStore(createState) : createState, {
+      persist(createState, {
         migrate: persistConfig.migrate,
         name: persistConfig.storageKey,
         onRehydrateStorage: persistConfig.onRehydrateStorage,
