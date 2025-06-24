@@ -793,7 +793,10 @@ export default async function runMigrations() {
 
   /**
    *************** Migration v28 ******************
-   * Delete nfts-sort-${address} from MMKV as it's no longer used
+   * Deletes nfts-sort-${address} from MMKV as it's no longer used going forward
+   * Deletes open-families-${address} from MMKV as we need to know which collection the Collection Name belongs to going forward
+   * We will use the new openCollections state in the nfts store to track which collections are open by collection ID
+   * This is to ensure we don't have any open families in MMKV without data to display
    */
   const v28 = async () => {
     const wallets = getWallets();
@@ -802,6 +805,7 @@ export default async function runMigrations() {
     for (const wallet of Object.values(wallets)) {
       for (const { address } of (wallet as RainbowWallet).addresses || []) {
         mmkv.delete(`nfts-sort-${address}`);
+        mmkv.delete(`open-families-${address}`);
       }
     }
   };

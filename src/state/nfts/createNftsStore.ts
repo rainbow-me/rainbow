@@ -164,7 +164,7 @@ export const createNftsStore = (address: Address | string) =>
         walletAddress: address,
         limit: PAGE_SIZE,
         pageKey: null,
-        openCollections: [],
+        openCollections: ['showcase'],
       },
       debugMode: IS_DEV,
       staleTime: STALE_TIME,
