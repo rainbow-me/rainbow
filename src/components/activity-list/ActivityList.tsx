@@ -78,6 +78,7 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 type ListItems = { type: 'item'; value: TransactionItemForSectionList } | { type: 'header'; value: TransactionSections };
 
 // keeping everything the same height here since we basically can pretty easily
+// improves performance and reduces jitter (until move to new architecture)
 const ITEM_HEIGHT = 59;
 
 const ActivityList = lazyMount(() => {
