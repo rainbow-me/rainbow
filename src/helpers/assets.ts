@@ -246,13 +246,15 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
 
 export const buildBriefUniqueTokenList = (
   collections: Collection[] | null,
-  showcaseTokens: string[] | undefined = [],
   sellingTokens: UniqueAsset[] | undefined = [],
+  showcaseTokens: string[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
+  listType: AssetListType = 'wallet',
   isFetchingNfts = false,
   hasMoreCollections = false,
   isShowcaseDataMigrated = false,
-  isHiddenDataMigrated = false
+  isHiddenDataMigrated = false,
+  isReadOnlyWallet = false
 ) => {
   const result: CellTypes[] = [
     {
@@ -262,7 +264,7 @@ export const buildBriefUniqueTokenList = (
     { type: CellType.NFTS_HEADER_SPACE_AFTER, uid: 'nfts-header-space-after' },
   ];
 
-  if (isShowcaseDataMigrated && showcaseTokens.length > 0) {
+  if (isShowcaseDataMigrated && showcaseTokens.length > 0 && listType !== 'select-nft') {
     result.push({
       name: i18n.t(i18n.l.account.tab_showcase),
       total: showcaseTokens.length,
@@ -352,7 +354,7 @@ export const buildBriefUniqueTokenList = (
     }
   }
 
-  if (isHiddenDataMigrated && hiddenTokens.length > 0 && !hasMoreCollections) {
+  if (isHiddenDataMigrated && hiddenTokens.length > 0 && listType === 'wallet' && !isReadOnlyWallet && !hasMoreCollections) {
     result.push({
       name: i18n.t(i18n.l.button.hidden),
       total: hiddenTokens.length,
