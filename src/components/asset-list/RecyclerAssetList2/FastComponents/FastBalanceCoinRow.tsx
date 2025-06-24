@@ -13,9 +13,9 @@ import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { convertAmountAndPriceToNativeDisplay, toFixedDecimals } from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay } from '@/helpers/utilities';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
-import { formatFractionWorklet, formatPercentageChange } from '@/helpers/strings';
+import { formatPercentageChange } from '@/helpers/strings';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -76,6 +76,7 @@ const MemoizedBalanceCoinRow = React.memo(
     const tokenBalanceAmount = item?.balance?.amount ?? '0';
     const percentChange = item?.native?.change || undefined;
     const percentageChangeDisplay = formatPercentageString(percentChange);
+    const priceUpdatedAt = item?.price?.changed_at ?? 0;
 
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
@@ -121,7 +122,7 @@ const MemoizedBalanceCoinRow = React.memo(
                 <LiveTokenText
                   selector={tokenPriceSelector}
                   tokenId={uniqueId}
-                  initialValueLastUpdated={item?.price?.changed_at ?? 0}
+                  initialValueLastUpdated={priceUpdatedAt}
                   initialValue={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
                   autoSubscriptionEnabled={false}
                   color={{ custom: theme.colors.dark }}
@@ -140,8 +141,7 @@ const MemoizedBalanceCoinRow = React.memo(
                 <LiveTokenText
                   selector={tokenPriceChangeSelector}
                   tokenId={uniqueId}
-                  // TODO:
-                  initialValueLastUpdated={0}
+                  initialValueLastUpdated={priceUpdatedAt}
                   initialValue={percentageChangeDisplay}
                   autoSubscriptionEnabled={false}
                   usePriceChangeColor

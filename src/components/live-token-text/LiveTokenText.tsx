@@ -9,7 +9,7 @@ import { toUnixTime } from '@/worklets/dates';
 
 interface LiveTokenValueParams {
   tokenId: string;
-  initialValueLastUpdated: number;
+  initialValueLastUpdated?: number;
   initialValue: string;
   autoSubscriptionEnabled?: boolean;
   selector: (token: TokenData) => string;
@@ -17,7 +17,7 @@ interface LiveTokenValueParams {
 
 export function useLiveTokenSharedValue({
   tokenId,
-  initialValueLastUpdated,
+  initialValueLastUpdated = 0,
   initialValue,
   autoSubscriptionEnabled = true,
   selector,
@@ -29,7 +29,6 @@ export function useLiveTokenSharedValue({
 
   const updateToken = useCallback(
     (token: TokenData) => {
-      // TODO: this shouldn't be possible
       if (!token) return;
 
       const newValue = selector(token);
@@ -64,7 +63,7 @@ export function useLiveTokenSharedValue({
 
 export function useLiveTokenValue({
   tokenId,
-  initialValueLastUpdated,
+  initialValueLastUpdated = 0,
   initialValue,
   autoSubscriptionEnabled = true,
   selector,
@@ -76,7 +75,6 @@ export function useLiveTokenValue({
 
   const updateToken = useCallback(
     (token: TokenData) => {
-      // TODO: this shouldn't be possible
       if (!token) return;
 
       const newValue = selector(token);

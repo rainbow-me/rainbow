@@ -501,8 +501,6 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   </Text>
                   <LiveTokenText
                     tokenId={token.uniqueId}
-                    // TODO: not yet added to the token data by backend
-                    initialValueLastUpdated={0}
                     initialValue={marketCap}
                     selector={token => formatNumber(token.marketData.marketCapFDV, { useOrderSuffix: true, decimals: 1, style: '$' })}
                     color="labelTertiary"
@@ -518,8 +516,6 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
               <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
                 <LiveTokenText
                   tokenId={token.uniqueId}
-                  // TODO: not yet added to the token data by backend
-                  initialValueLastUpdated={0}
                   initialValue={formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}
                   selector={token => `${formatNumber(token.change.change24hPct, { decimals: 2, useOrderSuffix: true })}%`}
                   color="label"
@@ -535,8 +531,6 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                 </Text>
                 <LiveTokenText
                   tokenId={token.uniqueId}
-                  // TODO: not yet added to the token data by backend
-                  initialValueLastUpdated={0}
                   initialValue={formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}
                   selector={token => `${formatNumber(token.change.change1hPct, { decimals: 2, useOrderSuffix: true })}%`}
                   color="label"

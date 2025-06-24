@@ -104,7 +104,6 @@ type ChartProps = {
 
 export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
   const { isDarkMode } = useColorMode();
-  // const priceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
   const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
   const chartGesturePriceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
   const chartGestureUnixTimestamp = useSharedValue<number>(0);
@@ -115,8 +114,6 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
 
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId: asset.uniqueId,
-    // TODO:
-    initialValueLastUpdated: 0,
     initialValue: asset.price.value?.toString() ?? '0',
     selector: state => state.price,
   });
@@ -128,12 +125,6 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
       } else if (selectedTimespan === 'hour') {
         return change.change1hPct;
       }
-      // TODO: backend has not exposed these yet, and they only exist on the candlestick chart which will not use this value anyways
-      // else if (selectedTimespan === 'fourHour') {
-      //   return change.change4hPct;
-      // } else if (selectedTimespan === 'fiveMinute') {
-      //   return change.change5mPct;
-      // }
       return '0';
     },
     [selectedTimespan]
@@ -141,8 +132,6 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
 
   const liveTokenPercentageChange = useLiveTokenSharedValue({
     tokenId: asset.uniqueId,
-    // TODO:
-    initialValueLastUpdated: 0,
     initialValue: asset.price.relativeChange24h?.toString() ?? '0',
     selector: liveTokenPercentageChangeSelector,
   });

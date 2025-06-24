@@ -1,6 +1,5 @@
 import React from 'react';
 import * as i18n from '@/languages';
-import { AnimatedText } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { currencyToCompactNotation } from '@/helpers/strings';
 import { SharedValue, useDerivedValue } from 'react-native-reanimated';
@@ -38,11 +37,5 @@ export function ChartPriceLabel({ price, backgroundColor, isChartGestureActive }
       easingMaskColor={backgroundColor}
       disabled={isChartGestureActive}
     />
-  );
-
-  return (
-    <AnimatedText size="34pt" weight="heavy" color="label" numberOfLines={1}>
-      {formattedPrice}
-    </AnimatedText>
   );
 }
