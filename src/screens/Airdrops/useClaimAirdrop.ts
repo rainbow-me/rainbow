@@ -11,6 +11,7 @@ import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { MeteorologyGasSuggestions } from '@/__swaps__/utils/meteorology';
 import { GasInfo, getAirdropClaimGasLimit, executeAirdropClaim, getGasInfo } from './utils';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export interface AirdropGasInfo extends GasInfo {
   lastUpdated: number;
@@ -41,7 +42,8 @@ const INITIAL_GAS_INFO: AirdropGasInfo = {
 };
 
 export function useClaimAirdrop(claimable: RainbowClaimable) {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const { nativeCurrency } = useAccountSettings();
   const gasSettingsRef = useRef<MeteorologyGasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>(undefined);
   const claimStatus = useSharedValue<ClaimStatus>(ClaimStatus.NOT_READY);
   const gasInfo = useSharedValue<AirdropGasInfo>(INITIAL_GAS_INFO);
