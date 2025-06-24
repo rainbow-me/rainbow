@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -13,6 +12,7 @@ import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { useNativeAsset } from '@/utils/ethereumUtils';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const NONE = 'None';
 
@@ -27,7 +27,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
 
   const { navigate } = useNavigation();
 
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const nativeAsset = useNativeAsset({ chainId: asset.chainId });
 

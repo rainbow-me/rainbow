@@ -87,6 +87,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       silent,
       userPin,
     });
+
     if (shouldCancel()) return null;
 
     walletStatus = getWalletStatus(isNew, isImporting);
@@ -122,7 +123,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     if (seedPhrase || isNew) {
       logger.debug('[initializeWallet]: walletsLoadState call #2');
-      await loadWallets();
+      await loadWallets(walletAddress);
       if (shouldCancel()) return null;
     }
 

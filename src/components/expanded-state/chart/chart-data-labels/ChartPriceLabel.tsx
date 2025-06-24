@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { Text } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
 import { ChartYLabel } from '@/react-native-animated-charts/src';
 import { SupportedCurrency, supportedNativeCurrencies } from '@/references';
 import { orderOfMagnitudeWorklet, significantDecimalsWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { toCompactNotation } from '@/helpers/strings';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 function calculateDecimalPlaces({
   amount,
@@ -89,7 +89,7 @@ export default function ChartPriceLabel({
   isNoPriceData: boolean;
   priceValue: string;
 }) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
 
   const formatWorklet = useCallback(

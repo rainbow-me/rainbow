@@ -2,7 +2,7 @@ import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
 import { lazyMount } from '@/helpers/lazyMount';
-import { useAccountSettings, useAccountTransactions } from '@/hooks';
+import { useAccountTransactions } from '@/hooks';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
@@ -78,7 +78,7 @@ type ListItems = { type: 'item'; value: TransactionItemForSectionList } | { type
 
 const ActivityList = lazyMount(() => {
   const accountAddress = useAccountAddress();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
   const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);

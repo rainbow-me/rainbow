@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
-import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
@@ -11,11 +10,12 @@ import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
 
   const { getPendingTransactionsInReverseOrder } = pendingTransactionsStore.getState();

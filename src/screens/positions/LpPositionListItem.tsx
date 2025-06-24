@@ -3,12 +3,12 @@ import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@
 import { useTheme } from '@/theme';
 import { convertAmountToPercentageDisplay, convertRawAmountToNativeDisplay, divide } from '@/helpers/utilities';
 import { RainbowUnderlyingAsset } from '@/resources/defi/types';
-import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { LpRangeBadge } from './LpRangeBadge';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 function getRangeStatus(assets: RainbowUnderlyingAsset[], isConcentratedLiquidity: boolean) {
   if (!isConcentratedLiquidity) {
@@ -32,7 +32,7 @@ type Props = {
 
 export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, isConcentratedLiquidity, dappVersion }) => {
   const { colors } = useTheme();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const totalAssetsValueNative = convertRawAmountToNativeDisplay(totalAssetsValue, 0, 1, nativeCurrency);

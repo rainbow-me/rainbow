@@ -29,13 +29,13 @@ import {
   externalTokenQueryKey,
   fetchExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import useAccountSettings from './useAccountSettings';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useQueries } from '@tanstack/react-query';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ETH_ADDRESS } from '@/references';
 import { analytics } from '@/analytics';
 import { useRoute } from '@react-navigation/native';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;
@@ -107,7 +107,7 @@ type GasData = {
 };
 
 export function useFetchNativePrices() {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const nativeAssets = useBackendNetworksStore(state => state.getChainsNativeAsset());
   // keep native assets up to date for gas price calculations

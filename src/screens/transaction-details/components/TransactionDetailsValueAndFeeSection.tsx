@@ -8,7 +8,6 @@ import * as i18n from '@/languages';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
-import { useAccountSettings } from '@/hooks';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import ImgixImage from '@/components/images/ImgixImage';
@@ -16,6 +15,7 @@ import { View } from 'react-native';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainId } from '@/state/backendNetworks/types';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -25,7 +25,7 @@ type Props = {
 
 export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transaction }) => {
   const theme = useTheme();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { fee } = transaction;
   const assetData = transaction?.asset;
   const change = transaction?.changes?.[0];

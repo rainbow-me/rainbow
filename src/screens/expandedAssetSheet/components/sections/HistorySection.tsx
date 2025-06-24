@@ -2,7 +2,6 @@ import React, { memo, useCallback, useMemo, useState } from 'react';
 import { AnimatedText, Box, Text, TextShadow, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
-import { useAccountSettings } from '@/hooks';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { Tabs } from '../shared/Tabs/Tabs';
@@ -30,6 +29,8 @@ import { minWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/Safe
 import { useTokenInteractions } from '@/resources/metadata/tokenInteractions';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const l = i18n.l.expanded_state.sections.history;
 
@@ -288,7 +289,7 @@ interface ListDataProps {
 }
 
 export const ListData = memo(function ListData({ data, buys, sells, isLoading }: ListDataProps) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { activeTabIndex, isExpanded } = useTabContext();
 
   const filteredTokenInteractions = useMemo(() => {
@@ -418,7 +419,8 @@ const HistoryContent = memo(function HistoryContent({
 });
 
 export const HistorySection = memo(function HistorySection() {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const accountAddress = useAccountAddress();
   const { basicAsset: asset } = useExpandedAssetSheetContext();
 
   const { data: tokenInteractions = [], isLoading: isLoadingTokenInteractions } = useTokenInteractions({
