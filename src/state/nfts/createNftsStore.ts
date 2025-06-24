@@ -375,9 +375,12 @@ async function setOrPruneNftsData(
           // Update fetch time for this collection
           updatedFetchedCollections[normalizedId] = now;
         } else {
-          // Collection should be pruned
-          mergedNftsByCollection.delete(normalizedId);
-          delete updatedFetchedCollections[normalizedId];
+          // if it's no longer open, we should check to see if the stale time is expired
+          const staleTime = updatedFetchedCollections[normalizedId];
+          if (staleTime && now - staleTime > STALE_TIME) {
+            mergedNftsByCollection.delete(normalizedId);
+            delete updatedFetchedCollections[normalizedId];
+          }
         }
       }
 
