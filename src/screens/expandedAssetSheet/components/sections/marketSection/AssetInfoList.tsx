@@ -239,17 +239,10 @@ export function AssetInfoList() {
   });
 
   const liveTokenMarketCap = useLiveTokenValue({
-    tokenId: asset.address,
+    tokenId: `${asset.address}_${asset.chainId}`,
     initialValue: String(metadata?.marketCap ?? 0),
     initialValueLastUpdated: 0,
-    selector: state => state.marketCap,
-  });
-
-  const liveTokenVolume1d = useLiveTokenValue({
-    tokenId: asset.address,
-    initialValue: String(metadata?.volume1d ?? 0),
-    initialValueLastUpdated: 0,
-    selector: state => state.volume24h,
+    selector: state => state.marketData.marketCapFDV,
   });
 
   const hasCreatedBySection = useMemo(() => {
@@ -271,7 +264,7 @@ export function AssetInfoList() {
     if (metadata.volume1d) {
       items.push({
         title: i18n.t(i18n.l.expanded_state.sections.market_stats.volume_24_hours),
-        value: bigNumberFormat(liveTokenVolume1d, nativeCurrency, true),
+        value: bigNumberFormat(metadata.volume1d, nativeCurrency, true),
         icon: '􀣉',
       });
     }
@@ -314,7 +307,7 @@ export function AssetInfoList() {
     }
 
     return items;
-  }, [metadata, asset, nativeCurrency, liveTokenMarketCap, liveTokenVolume1d]);
+  }, [metadata, asset, nativeCurrency, liveTokenMarketCap]);
 
   const ITEMS_COUNT = hasCreatedBySection ? DEFAULT_VISIBLE_ITEM_COUNT - 1 : DEFAULT_VISIBLE_ITEM_COUNT;
 
