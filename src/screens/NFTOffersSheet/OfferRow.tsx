@@ -15,10 +15,10 @@ import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { Network } from '@/state/backendNetworks/types';
-import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -95,7 +95,7 @@ export const FakeOfferRow = () => {
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { navigate } = useNavigation();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { colorMode } = useColorMode();
   const bgColor = useBackgroundColor('surfaceSecondaryElevated');
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[offer.network as Network];

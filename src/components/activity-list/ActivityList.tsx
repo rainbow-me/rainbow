@@ -12,10 +12,11 @@ import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { useSectionListScrollToTopContext } from '@/navigation/SectionListScrollToTopContext';
 import { safeAreaInsetValues } from '@/utils';
-import { useAccountSettings, useAccountTransactions } from '@/hooks';
+import { useAccountTransactions } from '@/hooks';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -87,7 +88,7 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 
 const ActivityList = () => {
   const accountAddress = useAccountAddress();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const { setScrollToTopRef } = useSectionListScrollToTopContext<TransactionItemForSectionList, TransactionSections>();
   const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();

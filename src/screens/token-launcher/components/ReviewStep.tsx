@@ -6,7 +6,6 @@ import { Box, Text, TextShadow } from '@/design-system';
 import { TextSize } from '@/design-system/components/Text/Text';
 import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat } from '@/helpers/validators';
-import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -25,6 +24,7 @@ import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherSt
 import { LINK_SETTINGS } from './LinksSection';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT, TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS } from './TokenLauncherHeader';
 import { TokenLogo } from './TokenLogo';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
@@ -273,7 +273,7 @@ function TotalSupplyCard() {
 
 function TotalCostPill() {
   const { accentColors, chainNativeAsset } = useTokenLauncherContext();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const extraBuyAmount = useTokenLauncherStore(state => state.extraBuyAmount);
   const chainNativeAssetNativePrice = useTokenLauncherStore(state => state.chainNativeAssetNativePrice);

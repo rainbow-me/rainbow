@@ -2,11 +2,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { Text } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
 import { useTheme } from '@/theme';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { toCompactNotation } from '@/helpers/strings';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 function trim(val: number) {
   return Math.min(Math.max(val, 0.05), 0.95);
@@ -63,7 +63,7 @@ const CenteredLabel = ({
 };
 
 const Labels = ({ color, width, isCard }: { color: string; width: number; isCard: boolean }) => {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
   const { colors } = useTheme();

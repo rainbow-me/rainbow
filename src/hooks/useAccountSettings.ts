@@ -7,7 +7,6 @@ import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Address } from 'viem';
 import { Language, updateLanguageLocale } from '../languages';
 import {
   settingsChangeAppIcon as changeAppIcon,
@@ -15,7 +14,6 @@ import {
   settingsChangeNativeCurrency as changeNativeCurrency,
   settingsChangeTestnetsEnabled as changeTestnetsEnabled,
 } from '../redux/settings';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 const languageSelector = (state: AppState) => state.settings.language;
 
@@ -26,7 +24,6 @@ const withLanguage = (language: Language) => {
   return { language };
 };
 
-const FALLBACK_ADDRESS = userAssetsStoreManager.getState().address;
 const createLanguageSelector = createSelector([languageSelector], withLanguage);
 
 export default function useAccountSettings() {

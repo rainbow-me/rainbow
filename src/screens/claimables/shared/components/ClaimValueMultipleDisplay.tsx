@@ -4,13 +4,13 @@ import { Box, globalColors, Text, TextShadow, useColorMode } from '@/design-syst
 import { StyleSheet } from 'react-native';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { useAccountSettings } from '@/hooks';
 import { PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export function ClaimValueMultipleDisplay({ totalCurrencyValue, assets }: { totalCurrencyValue: string; assets: Claimable['assets'] }) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { isDarkMode } = useColorMode();
 
   const color = !isDarkMode ? '#09111F' : globalColors.white100;

@@ -22,7 +22,7 @@ import {
   isZero,
   multiply,
 } from '@/helpers/utilities';
-import { useAccountSettings, useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
+import { useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
@@ -57,6 +57,7 @@ import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { QuantityButton } from './components/QuantityButton';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -129,7 +130,7 @@ const MintSheet = () => {
   const { collection: mintCollection, pricePerMint } = params;
   const chainId = mintCollection.chainId;
   const accountAddress = useAccountAddress();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();

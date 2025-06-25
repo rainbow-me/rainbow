@@ -2,7 +2,6 @@ import { useEffect, useMemo, memo } from 'react';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { time } from '@/utils';
-import { useAccountSettings } from '@/hooks';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -11,10 +10,11 @@ import { formatUnits } from 'viem';
 import { safeBigInt } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { lessThanOrEqualToWorklet } from '@/safe-math/SafeMath';
 import { TOKEN_LAUNCH_GAS_LIMIT } from '../constants';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 // Handles syncing price and gas data without triggering high level re-renders
 function _PriceAndGasSync() {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const chainId = useTokenLauncherStore(state => state.chainId);
   const gasSpeed = useTokenLauncherStore(state => state.gasSpeed);
