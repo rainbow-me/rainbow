@@ -33,7 +33,6 @@ export function ChartPriceLabel({ price, backgroundColor, isChartGestureActive }
       weight="heavy"
       align="left"
       color="label"
-      tabularNumbers
       easingMaskColor={backgroundColor}
       disabled={isChartGestureActive}
     />

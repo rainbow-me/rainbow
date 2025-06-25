@@ -8,7 +8,7 @@ export function getPlatformClient() {
   const baseUrl = PLATFORM_BASE_URL;
   if (!platformClient || clientUrl !== baseUrl) {
     platformClient = new RainbowFetchClient({
-      baseURL: PLATFORM_BASE_URL,
+      baseURL: `${PLATFORM_BASE_URL}/v1`,
     });
   }
 

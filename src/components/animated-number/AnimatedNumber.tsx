@@ -137,7 +137,7 @@ const Digit = function Digit({
 
       /**
        * TODO: this breaks the container layout animation, seemingly because animating multiple children widths and a parent's translateX at the same time does not work.
-       * This prevents us from having non tabular numbers
+       * In cases where we do not expect the number of digits to change often, this is acceptable.
        */
       const targetWidth = numeralWidths[value];
       if (isDigitFirstRender && !isFirstRender) {
@@ -363,9 +363,9 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   const prefixTranslateX = useSharedValue(0);
   const suffixTranslateX = useSharedValue(0);
   const numberContainerGlobalOriginX = useSharedValue(0);
-  const transitionProgress = useSharedValue(0);
   const previousWidthDelta = useSharedValue(0);
   const numberContainerTranslateX = useSharedValue(0);
+  const layoutTransitionProgress = useSharedValue(1);
 
   const disabled = useDerivedValue(() => {
     if (typeof disabledProp === 'boolean') {
@@ -466,6 +466,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       maskTranslateX.value = newMaskTranslateX;
       maskWidth.value = values.currentWidth;
       numberContainerTranslateX.value = newTranslateX;
+      layoutTransitionProgress.value = 0;
 
       // Animate the number to its new position
       suffixTranslateX.value = withTiming(0, timingConfig);
@@ -474,6 +475,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       // Animates mask to reveal new / hide removed digits
       maskWidth.value = withTiming(values.targetWidth, timingConfig);
       maskTranslateX.value = withTiming(0, timingConfig);
+      layoutTransitionProgress.value = withTiming(1, timingConfig);
 
       numberContainerGlobalOriginX.value = values.targetGlobalOriginX;
       previousWidthDelta.value = widthDelta;
@@ -527,7 +529,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       return { opacity: 0 };
     }
     return {
-      opacity: interpolate(transitionProgress.value, [0, 0.05, 0.8, 1], [0, 1, 1, 0]),
+      opacity: interpolate(layoutTransitionProgress.value, [0, 0.05, 0.8, 1], [0, 1, 1, 0]),
     };
   });
 
