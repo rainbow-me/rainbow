@@ -267,4 +267,4 @@ export const EthCard = () => {
       </Stack>
     </GenericCard>
   );
-});
+};

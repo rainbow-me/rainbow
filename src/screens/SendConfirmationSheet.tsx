@@ -181,11 +181,7 @@ const ChevronDown = () => {
 export const SendConfirmationSheet = () => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
-<<<<<<< HEAD
-  const { nativeCurrency } = useAccountSettings();
-=======
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
->>>>>>> develop
   const accountAddress = useAccountAddress();
   const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
   const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
