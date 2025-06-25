@@ -190,11 +190,6 @@ export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is 
   if ('signTransaction' in wallet) {
     return wallet as any;
   }
-  // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
-  logger.warn(
-    // @ts-expect-error using property types to log errors better
-    `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
-  );
 }
 
 export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWallet {
@@ -205,10 +200,6 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   if (typeof wallet.getPrivateKey !== 'function') {
     return wallet as any;
   }
-  // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
-  logger.warn(
-    `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
-  );
 }
 
 const isHardwareWalletKey = (key: string | null) => {
