@@ -4,11 +4,10 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import mapValues from 'lodash/mapValues';
 import { useMemo } from 'react';
 import { Address } from 'viem';
-import useAccountSettings from './useAccountSettings';
 import useWalletBalances from './useWalletBalances';
 
 export default function useWalletsWithBalancesAndNames() {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const walletNames = useWalletsStore(state => state.walletNames);
   const wallets = useWallets();
   const { balances } = useWalletBalances();

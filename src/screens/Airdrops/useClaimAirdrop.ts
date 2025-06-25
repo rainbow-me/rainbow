@@ -1,17 +1,17 @@
-import { useCallback, useRef, useMemo, MutableRefObject } from 'react';
-import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
-import { triggerHaptics } from 'react-native-turbo-haptics';
-import { useAccountSettings } from '@/hooks';
-import { RainbowError, logger } from '@/logger';
-import { RainbowClaimable } from '@/resources/addys/claimables/types';
-import { useAirdropsStore } from '@/state/claimables/airdropsStore';
-import { staleBalancesStore } from '@/state/staleBalances';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useGasSettings } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { MeteorologyGasSuggestions } from '@/__swaps__/utils/meteorology';
-import { GasInfo, getAirdropClaimGasLimit, executeAirdropClaim, getGasInfo } from './utils';
+import { logger, RainbowError } from '@/logger';
+import { RainbowClaimable } from '@/resources/addys/claimables/types';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useAirdropsStore } from '@/state/claimables/airdropsStore';
+import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { MutableRefObject, useCallback, useMemo, useRef } from 'react';
+import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import { executeAirdropClaim, GasInfo, getAirdropClaimGasLimit, getGasInfo } from './utils';
 
 export interface AirdropGasInfo extends GasInfo {
   lastUpdated: number;
@@ -42,8 +42,8 @@ const INITIAL_GAS_INFO: AirdropGasInfo = {
 };
 
 export function useClaimAirdrop(claimable: RainbowClaimable) {
-  const { nativeCurrency } = useAccountSettings();
   const accountAddress = useAccountAddress();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const gasSettingsRef = useRef<MeteorologyGasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>(undefined);
   const claimStatus = useSharedValue<ClaimStatus>(ClaimStatus.NOT_READY);
   const gasInfo = useSharedValue<AirdropGasInfo>(INITIAL_GAS_INFO);

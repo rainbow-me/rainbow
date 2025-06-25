@@ -1,13 +1,13 @@
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, FlexItem, Row } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils, magicMemo } from '@/utils';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const CoinIconSize = 40;
 const CoinRowPaddingTop = 9;
@@ -50,7 +50,7 @@ const TopRow = ({ name, showBalance }) => {
 };
 
 const ListCoinRow = ({ item, onPress }) => {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const handlePress = useCallback(() => onPress(item), [item, onPress]);
   const formattedItem = useMemo(() => {
     if (item?.native?.price) return item;

@@ -4,7 +4,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
 import showWalletErrorAlert from '@/helpers/support';
-import { useAccountSettings, useChartThrottledPoints, useColorForAsset } from '@/hooks';
+import { useChartThrottledPoints, useColorForAsset } from '@/hooks';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -25,11 +25,12 @@ import { ButtonPressAnimation } from '../animations';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import Labels from '../value-chart/ExtremeLabels';
 import { GenericCard } from './GenericCard';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
-export const EthCard = React.memo(function EthCard() {
-  const { nativeCurrency } = useAccountSettings();
+export const EthCard = () => {
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { data: externalEthAsset } = useExternalToken({

@@ -13,6 +13,7 @@ import Routes from '@rainbow-me/routes';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { IS_ANDROID, IS_DEV, IS_TEST } from '@/env';
 import { ethers } from 'ethers';
+import { getFavorites } from '@/resources/favorites';
 
 export type RainbowContextType = {
   config: Record<keyof typeof defaultConfig, boolean> | Record<string, never>;
@@ -45,6 +46,9 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   const [globalState, updateGlobalState] = useState({});
 
   useEffect(() => {
+    if (IS_TEST) {
+      getFavorites();
+    }
     const configFromStorage = storage.getString(storageKey);
     if (configFromStorage) {
       setConfig(config => ({ ...config, ...JSON.parse(configFromStorage) }));
@@ -108,8 +112,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   return (
     <RainbowContext.Provider value={initialValue}>
       {children}
-      {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type... Remove this comment to see the full error message */}
-      {showReloadButton && IS_DEV && <DevButton initialDisplacement={200} />}
+      {showReloadButton && IS_DEV && <DevButton color={colors.red} initialDisplacement={200} />}
       {((showConnectToAnvilButton && IS_DEV) || IS_TEST) && (
         <>
           <DevButton color={colors.purple} onPress={connectToAnvil} initialDisplacement={150} testID={'dev-button-anvil'} size={20}>

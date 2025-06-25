@@ -17,7 +17,7 @@ import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getPro
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import { useAccountSettings, useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
+import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -59,6 +59,7 @@ import { ENSProfile } from '../entities/ens';
 import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -180,7 +181,11 @@ const ChevronDown = () => {
 export const SendConfirmationSheet = () => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
+<<<<<<< HEAD
   const { nativeCurrency } = useAccountSettings();
+=======
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+>>>>>>> develop
   const accountAddress = useAccountAddress();
   const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
   const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();

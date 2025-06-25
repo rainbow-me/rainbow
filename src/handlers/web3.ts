@@ -208,6 +208,20 @@ export const ensureValidHex = (value: string): Address => {
 };
 
 /**
+ * @desc Ensures "0x" prefix on a string.
+ * @param value The potential address string.
+ * @return The same string.
+ */
+export const isValidHex = (value: any): value is Address => {
+  try {
+    assertValidHex(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
  * @desc is valid mnemonic
  * @param value The string to check.
  * @return Whether or not the string was a valid mnemonic.

@@ -1,7 +1,7 @@
 import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
-import { useAccountSettings, useChartDataLabels, useColorForAsset } from '@/hooks';
+import { useChartDataLabels, useColorForAsset } from '@/hooks';
 import { RouteProp, useRoute } from '@react-navigation/native';
 
 import { useNavigation } from '@/navigation';
@@ -11,6 +11,7 @@ import { DEFAULT_CHART_TYPE } from '@/redux/charts';
 import { ChartData, usePriceChart } from './useChartInfo';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 export const UniBalanceHeightDifference = 100;
 
 const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, data: ChartData[]) => {
@@ -83,7 +84,7 @@ export default function useChartThrottledPoints({
   shortHeightWithChart?: number;
   shortHeightWithoutChart?: number;
 }) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   let assetForColor = asset;
   if (isPool) {

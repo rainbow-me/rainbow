@@ -172,7 +172,6 @@ const SliderAndKeyboardAndBottomControls = () => {
       position="absolute"
       bottom="0px"
       style={AnimatedSwapStyles.hideWhenInputsExpanded && IS_TEST && { bottom: 50, height: 200 }}
-      testID="outer-text-please"
     >
       <SliderAndKeyboard />
       <SwapBottomPanel />

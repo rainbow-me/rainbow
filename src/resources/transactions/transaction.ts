@@ -9,7 +9,6 @@ import {
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
-import { useAccountSettings } from '@/hooks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_BASE_URL, ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
@@ -21,6 +20,7 @@ import { foundry } from 'viem/chains';
 import { Platform } from 'react-native';
 import { IS_TEST } from '@/env';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
 
@@ -174,7 +174,7 @@ export const transactionFetchQuery = async ({
 }) => queryClient.fetchQuery(transactionQueryKey({ address, currency, chainId, hash, originalType }), fetchTransaction);
 
 export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
 
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({

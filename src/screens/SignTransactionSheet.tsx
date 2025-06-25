@@ -9,7 +9,7 @@ import { IS_IOS } from '@/env';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { getProvider } from '@/handlers/web3';
 import { delay } from '@/helpers/utilities';
-import { useAccountSettings, useGas } from '@/hooks';
+import { useGas } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -67,6 +67,7 @@ import { RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -83,7 +84,7 @@ export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: Si
 export const SignTransactionSheet = () => {
   const { goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
 
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CONFIRM_REQUEST>>();

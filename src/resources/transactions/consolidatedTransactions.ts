@@ -75,7 +75,7 @@ export async function consolidatedTransactionsQueryFunction({
     nextPageFromAddys = response?.data?.meta?.next_page_cursor;
     cutoffFromAddys = response?.data?.meta?.cut_off;
   } catch (e) {
-    logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Addys'), {
+    logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from Addys', e), {
       message: e,
     });
   }

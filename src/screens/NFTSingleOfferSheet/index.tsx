@@ -26,7 +26,7 @@ import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountSettings, useGas } from '@/hooks';
+import { useGas } from '@/hooks';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
 import { analytics } from '@/analytics';
@@ -56,6 +56,7 @@ import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { RootStackParamList } from '@/navigation/types';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -88,7 +89,7 @@ function Row({ symbol, label, value }: { symbol: string; label: string; value: R
 export function NFTSingleOfferSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.NFT_SINGLE_OFFER_SHEET>>();
   const { navigate, setParams } = useNavigation<typeof Routes.NFT_SINGLE_OFFER_SHEET>();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const theme = useTheme();

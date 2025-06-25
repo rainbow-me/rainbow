@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import useENSRegistration from './useENSRegistration';
 import useGas from './useGas';
 import usePrevious from './usePrevious';
-import { useAccountSettings } from '.';
 import {
   estimateENSCommitGasLimit,
   estimateENSRegisterSetRecordsAndNameGasLimit,
@@ -29,6 +28,7 @@ import { ethUnits, timeUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',
@@ -56,7 +56,7 @@ export default function useENSRegistrationCosts({
   yearsDuration: number;
 }) {
   const accountAddress = useAccountAddress();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { registrationParameters, mode } = useENSRegistration();
   const duration = yearsDuration * timeUnits.secs.year;
   const name = inputName.replace(ENS_DOMAIN, '');
