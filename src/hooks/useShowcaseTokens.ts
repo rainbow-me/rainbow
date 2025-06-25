@@ -1,16 +1,15 @@
 import { useCallback } from 'react';
 import { getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
-import useOpenFamilies from './useOpenFamilies';
 import { useMutation } from '@tanstack/react-query';
 import useFetchShowcaseTokens, { getShowcase, showcaseTokensQueryKey } from './useFetchShowcaseTokens';
 import { logger } from '@/logger';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import { isLowerCaseMatch } from '@/utils';
 import { queryClient } from '@/react-query';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 export default function useShowcaseTokens(address?: string) {
   const accountAddress = useAccountAddress();
-  const { updateOpenFamilies } = useOpenFamilies();
 
   const addressToUse = address || accountAddress;
 
@@ -106,10 +105,10 @@ export default function useShowcaseTokens(address?: string) {
 
   const addShowcaseToken = useCallback(
     async (asset: string) => {
-      updateOpenFamilies({ Showcase: true });
+      useOpenCollectionsStore.getState().toggleCollection('showcase');
       return addShowcaseTokenMutation.mutateAsync(asset);
     },
-    [addShowcaseTokenMutation, updateOpenFamilies]
+    [addShowcaseTokenMutation]
   );
 
   const removeShowcaseToken = useCallback(

@@ -35,7 +35,7 @@ type UniqueTokenCardProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const UniqueTokenCard = ({
+export const UniqueTokenCard = React.memo(function UniqueTokenCard({
   borderEnabled = true,
   disabled = false,
   enableHapticFeedback = true,
@@ -46,7 +46,7 @@ const UniqueTokenCard = ({
   size = CardSize,
   style = undefined,
   ...props
-}: UniqueTokenCardProps) => {
+}: UniqueTokenCardProps) {
   usePersistentAspectRatio(item.images.lowResUrl);
   usePersistentDominantColorFromImage(item.images.lowResUrl);
 
@@ -72,7 +72,7 @@ const UniqueTokenCard = ({
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
           backgroundColor={item.backgroundColor || colors.lightestGrey}
-          imageUrl={item.images.highResUrl || item.images.animatedUrl}
+          imageUrl={item.images.highResUrl || item.images.animatedUrl || item.images.lowResUrl}
           isCard
           id={item.tokenId}
           type={item.type}
@@ -87,6 +87,6 @@ const UniqueTokenCard = ({
       </Content>
     </Container>
   );
-};
+});
 
 export default UniqueTokenCard;

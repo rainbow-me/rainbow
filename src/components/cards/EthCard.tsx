@@ -28,7 +28,7 @@ import { GenericCard } from './GenericCard';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
-export const EthCard = () => {
+export const EthCard = React.memo(function EthCard() {
   const { nativeCurrency } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
@@ -266,4 +266,4 @@ export const EthCard = () => {
       </Stack>
     </GenericCard>
   );
-};
+});

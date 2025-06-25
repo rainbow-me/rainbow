@@ -8,7 +8,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useNftsStore } from '@/state/nfts/nfts';
 
-export default React.memo(function WrappedNFT({
+export const WrappedNFT = React.memo(function WrappedNFT({
   onPress,
   collectionId,
   placement,
@@ -66,3 +66,5 @@ export default React.memo(function WrappedNFT({
     </Box>
   );
 });
+
+export default WrappedNFT;

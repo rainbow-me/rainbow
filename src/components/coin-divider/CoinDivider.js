@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState, memo } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
@@ -86,7 +86,7 @@ const useInterpolationRange = isCoinListEdited => {
   };
 };
 
-export default function CoinDivider({ balancesSum, defaultToEditButton, extendedState }) {
+const CoinDivider = memo(function CoinDivider({ balancesSum, defaultToEditButton, extendedState }) {
   const { isCoinListEdited, setIsCoinListEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
   const { nativeCurrency } = useAccountSettings();
@@ -151,4 +151,6 @@ export default function CoinDivider({ balancesSum, defaultToEditButton, extended
       </Container>
     </Animated.View>
   );
-}
+});
+
+export default CoinDivider;

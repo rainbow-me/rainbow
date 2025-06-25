@@ -66,6 +66,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.COIN_DIVIDER:
       return (
         <CoinDivider
+          // @ts-expect-error - untyped js file
           balancesSum={(data as CoinDividerExtraData).value}
           defaultToEditButton={(data as CoinDividerExtraData).defaultToEditButton}
           extendedState={extendedState}

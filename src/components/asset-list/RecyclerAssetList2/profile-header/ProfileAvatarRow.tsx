@@ -20,7 +20,7 @@ export const ProfileAvatarRowHeight = 80;
 export const ProfileAvatarRowTopInset = 24;
 export const ProfileAvatarSize = 80;
 
-export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }) {
+export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }) {
   // ////////////////////////////////////////////////////
   // Account
 
@@ -193,9 +193,9 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
       </RNAnimated.View>
     </AccentColorProvider>
   );
-}
+});
 
-export function EmojiAvatar({ size }: { size: number }) {
+export const EmojiAvatar = React.memo(function EmojiAvatar({ size }: { size: number }) {
   const { colors } = useTheme();
   const { accountColor, accountSymbol } = useAccountProfileInfo();
 
@@ -214,4 +214,4 @@ export function EmojiAvatar({ size }: { size: number }) {
       </Box>
     </AccentColorProvider>
   );
-}
+});

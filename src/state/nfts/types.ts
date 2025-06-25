@@ -36,7 +36,6 @@ export type Collection = {
 export interface NftsState {
   collections: Map<CollectionId, Collection>;
   nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
-  openCollections: Set<CollectionId>;
   fetchedPages: { [pageKey: string]: number };
   fetchedCollections: { [collectionId: string]: number };
   pagination: PaginationInfo | null;

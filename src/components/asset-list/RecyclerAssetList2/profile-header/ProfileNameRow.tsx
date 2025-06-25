@@ -20,7 +20,7 @@ const CARET_ICON_WIDTH = 22;
 const HIT_SLOP = 16;
 const GAP = 4;
 
-export function ProfileNameRow({
+export const ProfileNameRow = React.memo(function ProfileNameRow({
   disableOnPress,
   testIDPrefix,
   variant,
@@ -114,4 +114,4 @@ export function ProfileNameRow({
       />
     </Box>
   );
-}
+});

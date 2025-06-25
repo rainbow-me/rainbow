@@ -2,11 +2,12 @@ import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { AssetListType } from '..';
 import { CellType, CellTypes, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
-import { useCoinListEdited, useExternalWalletSectionsData, useOpenFamilies, useWalletSectionsData } from '@/hooks';
+import { useCoinListEdited, useExternalWalletSectionsData, useWalletSectionsData } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 const FILTER_TYPES = {
   'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.LEGACY_NFT, CellType.LEGACY_FAMILY_HEADER],
@@ -45,7 +46,7 @@ export default function useMemoBriefSectionData({
   const { isClaimablesOpen } = useOpenClaimables();
   const { isCoinListEdited } = useCoinListEdited();
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
-  const { openFamilies } = useOpenFamilies();
+  const openCollections = useOpenCollectionsStore(state => state.openCollections);
 
   const result = useMemo(() => {
     let afterDivider = false;
@@ -90,12 +91,13 @@ export default function useMemoBriefSectionData({
           }
         }
 
-        if (data.type === CellType.FAMILY_HEADER || data.type === CellType.LEGACY_FAMILY_HEADER) {
+        if (data.type === CellType.FAMILY_HEADER) {
           const name = (data as NFTFamilyExtraData).name;
-          isGroupOpen = openFamilies[name];
+          const uid = (data as NFTFamilyExtraData).uid;
+          isGroupOpen = (openCollections[name.toLowerCase()] || openCollections[uid.toLowerCase()]) ?? false;
         }
 
-        if (data.type === CellType.NFT || data.type === CellType.NFT_SPACE_AFTER || data.type === CellType.LEGACY_NFT) {
+        if (data.type === CellType.NFT || data.type === CellType.NFT_SPACE_AFTER) {
           return isGroupOpen;
         }
 
@@ -114,7 +116,16 @@ export default function useMemoBriefSectionData({
         return { type: cellType, uid };
       });
     return briefSectionsDataFiltered;
-  }, [sectionsDataToUse, type, isCoinListEdited, isSmallBalancesOpen, hiddenAssets, isPositionCardsOpen, isClaimablesOpen, openFamilies]);
+  }, [
+    sectionsDataToUse,
+    type,
+    isCoinListEdited,
+    isSmallBalancesOpen,
+    hiddenAssets,
+    isPositionCardsOpen,
+    isClaimablesOpen,
+    openCollections,
+  ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(
     () =>

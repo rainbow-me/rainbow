@@ -18,7 +18,7 @@ type LaunchFeaturedMintButtonProps = {
   featuredMint: ReturnType<typeof useMints>['data']['featuredMint'];
 };
 
-const LaunchFeaturedMintButton = ({ featuredMint }: LaunchFeaturedMintButtonProps) => {
+const LaunchFeaturedMintButton = React.memo(function LaunchFeaturedMintButton({ featuredMint }: LaunchFeaturedMintButtonProps) {
   const { isDarkMode } = useColorMode();
 
   const handlePress = useCallback(() => {
@@ -55,7 +55,7 @@ const LaunchFeaturedMintButton = ({ featuredMint }: LaunchFeaturedMintButtonProp
       </GestureHandlerButton>
     </Box>
   );
-};
+});
 
 export function NFTEmptyState() {
   const { mints_enabled, nfts_enabled } = useRemoteConfig();

@@ -35,8 +35,37 @@ type UniqueTokenImageProps = {
   transformSvgs?: boolean;
 };
 
+export const UniqueTokenName = React.memo(function UniqueTokenName({
+  backgroundColor,
+  isDarkMode,
+  colors,
+  collectionName,
+  tokenId,
+  name,
+  uniqueId,
+}: {
+  backgroundColor: string;
+  isDarkMode: boolean;
+  colors: Colors;
+  collectionName: string;
+  tokenId: string;
+  name: string;
+  uniqueId: string;
+}) {
+  return (
+    <Text color={{ custom: getFallbackTextColor(backgroundColor, isDarkMode, colors) }} size="15pt" align="center" containsEmoji>
+      {buildUniqueTokenName({
+        collectionName,
+        tokenId,
+        name,
+        uniqueId,
+      })}
+    </Text>
+  );
+});
+
 export const UniqueTokenImage = React.memo(function UniqueTokenImage({
-  backgroundColor: givenBackgroundColor,
+  backgroundColor,
   imageUrl,
   lowResImageUrl,
   collectionName,
@@ -53,16 +82,13 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const { hiddenTokens } = useHiddenTokens();
 
   const [errorLoadingImage, setErrorLoadingImage] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  const onLoad = useCallback(() => setIsLoaded(true), [setIsLoaded]);
   const onError = useCallback(() => setErrorLoadingImage(true), [setErrorLoadingImage]);
 
   const isHiddenToken = useMemo(() => {
     return hiddenTokens.find(token => isLowerCaseMatch(token, uniqueId));
   }, [hiddenTokens, uniqueId]);
 
-  const backgroundColor = givenBackgroundColor;
   const isENS = type === AssetType.ens;
   const isSVG = mimeType === 'image/svg+xml';
   const hasImage = imageUrl !== null && imageUrl !== undefined;
@@ -83,23 +109,21 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
           uri={imageUrl}
         />
       )}
-      {shouldShowRegularImage && (
-        <>
-          <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />
-          {!isLoaded && lowResImageUrl && <RainbowImage source={{ url: lowResImageUrl }} style={StyleSheet.absoluteFillObject} />}
-        </>
-      )}
+      {shouldShowRegularImage && <RainbowImage onError={onError} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />}
       {isHiddenToken && isCard && <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
       {shouldShowTextFallback && (
-        <Text color={{ custom: getFallbackTextColor(backgroundColor, isDarkMode, colors) }} size="15pt" align="center" containsEmoji>
-          {buildUniqueTokenName({
-            collectionName,
-            tokenId: id,
-            name,
-            uniqueId,
-          })}
-        </Text>
+        <UniqueTokenName
+          backgroundColor={backgroundColor}
+          isDarkMode={isDarkMode}
+          colors={colors}
+          collectionName={collectionName}
+          tokenId={id}
+          name={name}
+          uniqueId={uniqueId}
+        />
       )}
     </Centered>
   );
 });
+
+export default UniqueTokenImage;

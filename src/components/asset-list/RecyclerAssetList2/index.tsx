@@ -108,7 +108,7 @@ function handlePressMenuItem(route: (typeof Routes)[keyof typeof Routes]): void 
   Navigation.handleAction(route);
 }
 
-function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
+const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -238,4 +238,4 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
       </Box>
     </>
   );
-}
+});
