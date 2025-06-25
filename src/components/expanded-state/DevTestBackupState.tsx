@@ -1,6 +1,7 @@
 import CopyTooltip from '@/components/copy-tooltip';
 import { Box, Text } from '@/design-system';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { logger, RainbowError } from '@/logger';
 import { createBackup, restoreBackup } from '@/model/backup';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
@@ -60,6 +61,7 @@ export const DevTestBackupState = () => {
               loadingState: WalletLoadingStates.IMPORTING_WALLET,
             });
             const restored = await restoreBackup(backup);
+            logger.log(`restored: ${restored}`);
 
             if (restored) {
               await updateWalletsBackedUpState();
@@ -67,6 +69,8 @@ export const DevTestBackupState = () => {
             } else {
               Alert.alert(`invalid backup`);
             }
+          } catch (err) {
+            logger.error(new RainbowError(`Error restoring`, err));
           } finally {
             walletLoadingStore.setState({
               loadingState: null,
