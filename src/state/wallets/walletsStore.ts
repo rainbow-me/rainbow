@@ -225,6 +225,15 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return a.visible && a.address === nextAccountAddress;
         });
 
+        // Recover from broken state (account address not in selected wallet)
+        if (!nextAccountAddress) {
+          const loaded = await loadAddress();
+          if (loaded && isValidHex(loaded)) {
+            nextAccountAddress = ensureValidHex(loaded);
+          }
+          logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
+        }
+
         // Let's select the first visible account if we don't have a selected address
         if (!selectedAddress) {
           let account = null;
