@@ -44,8 +44,7 @@ export default function useUpdateEmoji() {
         },
       };
 
-      setSelectedWallet(newWallets[walletId]);
-      updateWallets(newWallets);
+      setSelectedWallet(newWallets[walletId], accountAddress, newWallets);
       const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
       if (nextColor) {
         updateWebProfile(accountAddress, name, nextColor);

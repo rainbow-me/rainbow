@@ -332,7 +332,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       await updateWallets(newWallets);
 
       if (selected?.id && walletIds.includes(selected?.id)) {
-        setSelectedWallet(newWallets[selected.id]);
+        await setSelectedWallet(newWallets[selected.id]);
       }
     },
 

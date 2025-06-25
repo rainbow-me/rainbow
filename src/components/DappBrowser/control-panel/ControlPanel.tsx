@@ -415,8 +415,8 @@ const HomePanel = memo(function HomePanel({
     // Check if it's different to the globally selected wallet
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
-      setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
-      initializeWallet({
+      await setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
+      await initializeWallet({
         shouldRunMigrations: false,
         overwrite: false,
         switching: true,

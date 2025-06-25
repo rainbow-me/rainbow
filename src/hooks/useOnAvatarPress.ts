@@ -72,8 +72,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       },
     };
 
-    setSelectedWallet(newWallets[selectedWallet.id]);
-    updateWallets(newWallets);
+    await setSelectedWallet(newWallets[selectedWallet.id], accountAddress, newWallets);
   }, [selectedWallet, accountAddress, wallets]);
 
   const processPhoto = useCallback(
@@ -92,8 +91,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         },
       };
 
-      setSelectedWallet(newWallets[selectedWallet.id]);
-      updateWallets(newWallets);
+      setSelectedWallet(newWallets[selectedWallet.id], accountAddress, newWallets);
     },
     [accountAddress, selectedWallet, wallets]
   );
