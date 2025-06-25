@@ -18,6 +18,7 @@ export default function useWalletsWithBalancesAndNames() {
       mapValues(wallets, wallet => {
         const updatedAccounts = (wallet.addresses || []).map(account => {
           const lowerCaseAddress = account.address.toLowerCase() as Address;
+
           return {
             ...account,
             balances: balances[lowerCaseAddress],

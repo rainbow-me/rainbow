@@ -1,7 +1,7 @@
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
-import { getWalletAddresses, getWallets } from '@/state/wallets/walletsStore';
+import { getWalletAddresses, getWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 

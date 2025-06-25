@@ -52,11 +52,11 @@ interface WalletsState {
   setWalletReady: () => void;
 
   selected: RainbowWallet | null;
-  setSelectedWallet: (wallet: RainbowWallet, address?: string) => void;
+  setSelectedWallet: (wallet: RainbowWallet, address?: string) => Promise<void>;
 
   walletNames: WalletNames;
   wallets: Wallets | null;
-  updateWallets: (wallets: { [id: string]: RainbowWallet }) => void;
+  updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -92,240 +92,259 @@ interface WalletsState {
 }
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
-  (set, get) => ({
-    getIsDamagedWallet: () => !!get().selected?.damaged,
-    getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
-    getIsHardwareWallet: () => !!get().selected?.deviceId,
-
-    selected: null,
-    setSelectedWallet(wallet, address) {
-      setSelectedWalletInKeychain(wallet);
-
-      // ensure not memoized
-      const selected = {
-        ...wallet,
-      };
-
-      if (address) {
-        saveAddress(address);
-        set({
-          accountAddress: ensureValidHex(address),
-          selected,
-        });
-      } else {
-        set({
-          selected,
-        });
-      }
-    },
-
-    walletNames: {},
-
-    wallets: null,
-    updateWallets(wallets) {
+  (set, get) => {
+    // anytime you change wallets you want to go through here to ensure we fetch ENS
+    // and that we normalize the labels
+    const updateWallets: WalletsState['updateWallets'] = async walletsIn => {
+      const { walletNames, wallets } = await refreshWalletsInfo({
+        wallets: walletsIn,
+        useCachedENS: true,
+      });
       saveAllWallets(wallets);
-      set({
-        // ensure its a new object to break any memoization downstream
-        wallets: {
-          ...wallets,
-        },
-      });
-    },
+      set({ walletNames, wallets });
+    };
 
-    walletReady: false,
-    setWalletReady: () => {
-      set({ walletReady: true });
-    },
+    return {
+      getIsDamagedWallet: () => !!get().selected?.damaged,
+      getIsReadOnlyWallet: () => get().selected?.type === WalletTypes.readOnly,
+      getIsHardwareWallet: () => !!get().selected?.deviceId,
 
-    // TODO follow-on and fix this type better - this is matching existing bug from before refactor
-    // see PD-188
-    accountAddress: `0x`,
-    setAccountAddress: (accountAddress: Address) => {
-      set({
-        accountAddress,
-      });
-    },
+      selected: null,
+      async setSelectedWallet(wallet, address) {
+        setSelectedWalletInKeychain(wallet);
 
-    getAccountProfileInfo: () => {
-      const state = get();
-      const { getWalletWithAccount } = state;
-      const address = state.accountAddress;
-      const wallet = getWalletWithAccount(address);
-      return getAccountProfileInfoFromState({ address, wallet }, state);
-    },
+        // ensure not memoized
+        const selected = {
+          ...wallet,
+        };
 
-    clearWalletState() {
-      set({
-        wallets: {},
-        accountAddress: `0x`,
-        walletReady: false,
-        walletNames: {},
-        selected: null,
-      });
-    },
-
-    loadWallets: async () => {
-      try {
-        const { accountAddress, walletNames, walletReady } = get();
-
-        if (walletReady) {
-          return;
+        if (address) {
+          saveAddress(address);
+          set({
+            accountAddress: ensureValidHex(address),
+            selected,
+          });
+        } else {
+          set({
+            selected,
+          });
         }
+      },
 
-        let nextAccountAddress: Address | null = accountAddress === `0x` ? null : accountAddress;
+      walletNames: {},
 
-        const allWalletsResult = await getAllWallets();
+      wallets: null,
+      updateWallets,
 
-        const wallets = allWalletsResult?.wallets || {};
+      walletReady: false,
+      setWalletReady: () => {
+        set({ walletReady: true });
+      },
 
-        if (isEmpty(wallets)) return;
-
-        const selected = await getSelectedWalletFromKeychain();
-
-        // Prevent irrecoverable state (no selected wallet)
-        let selectedWallet = selected?.wallet;
-
-        // Check if the selected wallet is among all the wallets
-        if (selectedWallet && !wallets[selectedWallet.id]) {
-          // If not then we should clear it and default to the first one
-          const firstWalletKey = Object.keys(wallets)[0];
-          selectedWallet = wallets[firstWalletKey];
-          setSelectedWallet(selectedWallet);
-        }
-
-        if (!selectedWallet) {
-          const address = await loadAddress();
-          if (!address) {
-            selectedWallet = wallets[Object.keys(wallets)[0]];
-          } else {
-            keys(wallets).some(key => {
-              const someWallet = wallets[key];
-              const found = (someWallet.addresses || []).some(account => {
-                return toChecksumAddress(account.address) === toChecksumAddress(address);
-              });
-              if (found) {
-                selectedWallet = someWallet;
-                logger.debug('[walletsStore]: Found selected wallet based on loadAddress result');
-              }
-              return found;
-            });
-          }
-        }
-
-        // Recover from broken state (account address not in selected wallet)
-        if (!nextAccountAddress) {
-          const loaded = await loadAddress();
-          if (loaded && isValidHex(loaded)) {
-            nextAccountAddress = ensureValidHex(loaded);
-          }
-          logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
-        }
-
-        const selectedAddress = selectedWallet?.addresses.find(a => {
-          return a.visible && a.address === nextAccountAddress;
+      // TODO follow-on and fix this type better - this is matching existing bug from before refactor
+      // see PD-188
+      accountAddress: `0x`,
+      setAccountAddress: (accountAddress: Address) => {
+        set({
+          accountAddress,
         });
+      },
 
-        // Let's select the first visible account if we don't have a selected address
-        if (!selectedAddress) {
-          const allWallets = Object.values(allWalletsResult?.wallets || {});
-          let account = null;
-          for (const wallet of allWallets) {
-            for (const rainbowAccount of wallet.addresses || []) {
-              if (rainbowAccount.visible) {
-                account = rainbowAccount;
-                break;
-              }
+      getAccountProfileInfo: () => {
+        const state = get();
+        const { getWalletWithAccount } = state;
+        const address = state.accountAddress;
+        const wallet = getWalletWithAccount(address);
+        return getAccountProfileInfoFromState({ address, wallet }, state);
+      },
+
+      clearWalletState() {
+        set({
+          wallets: {},
+          accountAddress: `0x`,
+          walletReady: false,
+          walletNames: {},
+          selected: null,
+        });
+      },
+
+      // this runs every time we create a wallet and ensures we normalize
+      // walletNames and refresh wallet info before setting we write to keychain
+      // inside createWallet (see setSelectedWallet call in wallet.ts) ideally
+      // we wouldn't do this and would use this store as a single source of
+      // setting and managing keychain
+      loadWallets: async () => {
+        try {
+          const { accountAddress } = get();
+
+          let nextAccountAddress: Address | null = accountAddress === `0x` ? null : accountAddress;
+
+          const allWalletsResult = await getAllWallets();
+
+          const wallets = allWalletsResult?.wallets || {};
+
+          if (isEmpty(wallets)) return;
+
+          const selected = await getSelectedWalletFromKeychain();
+
+          // Prevent irrecoverable state (no selected wallet)
+          let selectedWallet = selected?.wallet;
+
+          // Check if the selected wallet is among all the wallets
+          if (selectedWallet && !wallets[selectedWallet.id]) {
+            // If not then we should clear it and default to the first one
+            const firstWalletKey = Object.keys(wallets)[0];
+            selectedWallet = wallets[firstWalletKey];
+            setSelectedWallet(selectedWallet);
+          }
+
+          if (!selectedWallet) {
+            const address = await loadAddress();
+            if (!address) {
+              selectedWallet = wallets[Object.keys(wallets)[0]];
+            } else {
+              keys(wallets).some(key => {
+                const someWallet = wallets[key];
+                const found = (someWallet.addresses || []).some(account => {
+                  return toChecksumAddress(account.address) === toChecksumAddress(address);
+                });
+                if (found) {
+                  selectedWallet = someWallet;
+                  logger.debug('[walletsStore]: Found selected wallet based on loadAddress result');
+                }
+                return found;
+              });
             }
           }
 
-          if (!account) return;
-          if (isValidHex(account.address)) {
-            nextAccountAddress = account.address;
+          // Recover from broken state (account address not in selected wallet)
+          if (!nextAccountAddress) {
+            const loaded = await loadAddress();
+            if (loaded && isValidHex(loaded)) {
+              nextAccountAddress = ensureValidHex(loaded);
+            }
+            logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
           }
-          setAccountAddress(ensureValidHex(account.address));
-          saveAddress(account.address);
-          logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
+
+          const selectedAddress = selectedWallet?.addresses.find(a => {
+            return a.visible && a.address === nextAccountAddress;
+          });
+
+          // Let's select the first visible account if we don't have a selected address
+          if (!selectedAddress) {
+            const allWallets = Object.values(allWalletsResult?.wallets || {});
+            let account = null;
+            for (const wallet of allWallets) {
+              for (const rainbowAccount of wallet.addresses || []) {
+                if (rainbowAccount.visible) {
+                  account = rainbowAccount;
+                  break;
+                }
+              }
+            }
+
+            if (!account) return;
+            if (isValidHex(account.address)) {
+              nextAccountAddress = account.address;
+            }
+            setAccountAddress(ensureValidHex(account.address));
+            saveAddress(account.address);
+            logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
+          }
+
+          if (selectedWallet) {
+            setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined);
+          }
+
+          return wallets;
+        } catch (error) {
+          logger.error(new RainbowError('[walletsStore]: Exception during walletsLoadState'), {
+            message: (error as Error)?.message,
+          });
+        }
+      },
+
+      createAccount: async ({ id, name, color }) => {
+        const { wallets } = get();
+        const newWallets = { ...wallets };
+
+        let index = 0;
+        for (const account of newWallets[id].addresses) {
+          index = Math.max(index, account.index);
         }
 
-        const walletInfo = await refreshWalletsInfo({ wallets, walletNames, useCachedENS: true });
-
-        set(walletInfo);
-        if (selectedWallet) {
-          setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined);
+        const newIndex = index + 1;
+        const account = await generateAccount(id, newIndex);
+        if (!account) {
+          throw new Error(`No account generated`);
         }
 
-        return wallets;
-      } catch (error) {
-        logger.error(new RainbowError('[walletsStore]: Exception during walletsLoadState'), {
-          message: (error as Error)?.message,
+        const walletColorIndex = color !== null ? color : addressHashedColorIndex(account.address);
+        if (walletColorIndex == null) {
+          throw new Error(`No wallet color index`);
+        }
+
+        newWallets[id].addresses.push({
+          address: account.address,
+          avatar: null,
+          color: walletColorIndex,
+          index: newIndex,
+          label: name,
+          visible: true,
         });
-      }
-    },
 
-    createAccount: async ({ id, name, color }) => {
-      const { wallets, walletNames } = get();
-      const newWallets = { ...wallets };
+        store.dispatch(updateWebDataEnabled(true, account.address));
 
-      let index = 0;
-      for (const account of newWallets[id].addresses) {
-        index = Math.max(index, account.index);
-      }
+        setPreference(PreferenceActionType.init, 'profile', account.address, {
+          accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
+          accountSymbol: addressHashedEmoji(account.address),
+        });
 
-      const newIndex = index + 1;
-      const account = await generateAccount(id, newIndex);
-      if (!account) {
-        throw new Error(`No account generated`);
-      }
+        await Promise.all([
+          // update and set selected
+          updateWallets(newWallets),
+          setSelectedWallet(newWallets[id], account.address),
+        ]);
 
-      const walletColorIndex = color !== null ? color : addressHashedColorIndex(account.address);
-      if (walletColorIndex == null) {
-        throw new Error(`No wallet color index`);
-      }
+        return newWallets;
+      },
 
-      newWallets[id].addresses.push({
-        address: account.address,
-        avatar: null,
-        color: walletColorIndex,
-        index: newIndex,
-        label: name,
-        visible: true,
-      });
+      setAllWalletsWithIdsAsBackedUp: (walletIds, method, backupFile) => {
+        const { wallets, selected, updateWallets, setSelectedWallet } = get();
 
-      store.dispatch(updateWebDataEnabled(true, account.address));
+        const newWallets = { ...wallets };
 
-      setPreference(PreferenceActionType.init, 'profile', account.address, {
-        accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
-        accountSymbol: addressHashedEmoji(account.address),
-      });
+        let backupDate = Date.now();
+        if (backupFile) {
+          backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
+        }
 
-      // Save all the wallets
-      saveAllWallets(newWallets);
-      // Set the address selected (KEYCHAIN)
-      saveAddress(account.address);
-      // Set the wallet selected (KEYCHAIN)
-      setSelectedWallet(newWallets[id], account.address);
+        walletIds.forEach(walletId => {
+          newWallets[walletId] = {
+            ...newWallets[walletId],
+            backedUp: true,
+            backupDate,
+            backupFile,
+            backupType: method,
+          };
+        });
 
-      set({
-        selected: newWallets[id],
-        ...(await refreshWalletsInfo({ wallets: newWallets, walletNames, useCachedENS: true })),
-      });
+        updateWallets(newWallets);
 
-      setAccountAddress(ensureValidHex(account.address));
+        if (selected?.id && walletIds.includes(selected?.id)) {
+          setSelectedWallet(newWallets[selected.id]);
+        }
+      },
 
-      return newWallets;
-    },
+      setWalletBackedUp: (walletId, method, backupFile) => {
+        const { wallets, selected } = get();
+        const newWallets = { ...wallets };
 
-    setAllWalletsWithIdsAsBackedUp: (walletIds, method, backupFile) => {
-      const { wallets, selected, updateWallets, setSelectedWallet } = get();
+        let backupDate = Date.now();
+        if (backupFile) {
+          backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
+        }
 
-      const newWallets = { ...wallets };
-
-      let backupDate = Date.now();
-      if (backupFile) {
-        backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
-      }
-
-      walletIds.forEach(walletId => {
         newWallets[walletId] = {
           ...newWallets[walletId],
           backedUp: true,
@@ -333,185 +352,161 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           backupFile,
           backupType: method,
         };
-      });
 
-      updateWallets(newWallets);
-
-      if (selected?.id && walletIds.includes(selected?.id)) {
-        setSelectedWallet(newWallets[selected.id]);
-      }
-    },
-
-    setWalletBackedUp: (walletId, method, backupFile) => {
-      const { wallets, selected } = get();
-      const newWallets = { ...wallets };
-
-      let backupDate = Date.now();
-      if (backupFile) {
-        backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
-      }
-
-      newWallets[walletId] = {
-        ...newWallets[walletId],
-        backedUp: true,
-        backupDate,
-        backupFile,
-        backupType: method,
-      };
-
-      set({
-        wallets: newWallets,
-      });
-      if (selected?.id === walletId) {
         set({
-          selected: newWallets[walletId],
+          wallets: newWallets,
         });
-      }
-    },
-
-    clearAllWalletsBackupStatus: () => {
-      const { wallets } = get();
-      const newWallets = { ...wallets };
-
-      Object.keys(newWallets).forEach(key => {
-        newWallets[key].backedUp = undefined;
-        newWallets[key].backupDate = undefined;
-        newWallets[key].backupFile = undefined;
-        newWallets[key].backupType = undefined;
-      });
-
-      set({
-        wallets: newWallets,
-      });
-    },
-
-    refreshWalletInfo: async props => {
-      const { wallets, walletNames } = get();
-      const info = await refreshWalletsInfo({ wallets, walletNames, useCachedENS: props?.skipENS });
-      if (info) {
-        set(info);
-      }
-    },
-
-    checkKeychainIntegrity: async () => {
-      try {
-        let healthyKeychain = true;
-        logger.debug('[walletsStore]: Starting keychain integrity checks');
-
-        const hasAddress = await hasKey(addressKey);
-        if (hasAddress) {
-          logger.debug('[walletsStore]: address is ok');
-        } else {
-          healthyKeychain = false;
-          logger.debug(`[walletsStore]: address is missing: ${hasAddress}`);
+        if (selected?.id === walletId) {
+          set({
+            selected: newWallets[walletId],
+          });
         }
+      },
 
-        const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
-        if (hasOldSeedPhraseMigratedFlag) {
-          logger.debug('[walletsStore]: migrated flag is OK');
-        } else {
-          logger.debug(`[walletsStore]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
+      clearAllWalletsBackupStatus: () => {
+        const { wallets } = get();
+        const newWallets = { ...wallets };
+
+        Object.keys(newWallets).forEach(key => {
+          newWallets[key].backedUp = undefined;
+          newWallets[key].backupDate = undefined;
+          newWallets[key].backupFile = undefined;
+          newWallets[key].backupType = undefined;
+        });
+
+        set({
+          wallets: newWallets,
+        });
+      },
+
+      refreshWalletInfo: async props => {
+        const { wallets } = get();
+        const info = await refreshWalletsInfo({ wallets, useCachedENS: props?.skipENS });
+        if (info) {
+          set(info);
         }
+      },
 
-        const hasOldSeedphrase = await hasKey(seedPhraseKey);
-        if (hasOldSeedphrase) {
-          logger.debug('[walletsStore]: old seed is still present!');
-        } else {
-          logger.debug(`[walletsStore]: old seed is present: ${hasOldSeedphrase}`);
+      checkKeychainIntegrity: async () => {
+        try {
+          let healthyKeychain = true;
+          logger.debug('[walletsStore]: Starting keychain integrity checks');
+
+          const hasAddress = await hasKey(addressKey);
+          if (hasAddress) {
+            logger.debug('[walletsStore]: address is ok');
+          } else {
+            healthyKeychain = false;
+            logger.debug(`[walletsStore]: address is missing: ${hasAddress}`);
+          }
+
+          const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
+          if (hasOldSeedPhraseMigratedFlag) {
+            logger.debug('[walletsStore]: migrated flag is OK');
+          } else {
+            logger.debug(`[walletsStore]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
+          }
+
+          const hasOldSeedphrase = await hasKey(seedPhraseKey);
+          if (hasOldSeedphrase) {
+            logger.debug('[walletsStore]: old seed is still present!');
+          } else {
+            logger.debug(`[walletsStore]: old seed is present: ${hasOldSeedphrase}`);
+          }
+
+          const { wallets, selected } = get();
+          if (!wallets) {
+            logger.warn('[walletsStore]: wallets are missing');
+            return;
+          }
+
+          if (!selected) {
+            logger.warn('[walletsStore]: selectedWallet is missing');
+          }
+
+          const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets[key].type !== WalletTypes.readOnly);
+
+          for (const key of nonReadOnlyWalletKeys) {
+            let healthyWallet = true;
+            const wallet = wallets[key];
+
+            const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
+            if (!seedKeyFound) {
+              healthyWallet = false;
+              logger.warn('[walletsStore]: seed key is missing');
+            } else {
+              logger.debug('[walletsStore]: seed key is present');
+            }
+
+            for (const account of wallet.addresses || []) {
+              const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
+              if (!pkeyFound) {
+                healthyWallet = false;
+                logger.warn(`[walletsStore]: pkey is missing`);
+              } else {
+                logger.debug(`[walletsStore]: pkey is present`);
+              }
+            }
+
+            // Handle race condition:
+            // A wallet is NOT damaged if:
+            // - it's not imported
+            // - and hasn't been migrated yet
+            // - and the old seedphrase is still there
+            if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
+              healthyWallet = true;
+            }
+
+            if (!healthyWallet) {
+              logger.warn('[walletsStore]: declaring wallet unhealthy...');
+              healthyKeychain = false;
+              wallet.damaged = true;
+              set({
+                wallets,
+              });
+
+              // Update selected wallet if needed
+              if (wallets && selected && wallet.id === selected.id) {
+                logger.warn('[walletsStore]: declaring selected wallet unhealthy...');
+                set({
+                  selected: wallets[wallet.id],
+                });
+              }
+              logger.debug('[walletsStore]: done updating wallets');
+            }
+          }
+
+          if (!healthyKeychain) {
+            captureMessage('Keychain Integrity is not OK');
+          }
+
+          logger.debug('[walletsStore]: check completed');
+          saveKeychainIntegrityState('done');
+        } catch (e) {
+          logger.error(new RainbowError("[walletsStore]: error thrown'"), {
+            message: (e as Error)?.message,
+          });
+          captureMessage('Error running keychain integrity checks');
         }
+      },
 
-        const { wallets, selected } = get();
+      getWalletWithAccount(accountAddress: string): RainbowWallet | undefined {
+        const { wallets } = get();
         if (!wallets) {
-          logger.warn('[walletsStore]: wallets are missing from redux');
           return;
         }
 
-        if (!selected) {
-          logger.warn('[walletsStore]: selectedWallet is missing from redux');
-        }
-
-        const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets[key].type !== WalletTypes.readOnly);
-
-        for (const key of nonReadOnlyWalletKeys) {
-          let healthyWallet = true;
+        const lowerCaseAccountAddress = accountAddress.toLowerCase();
+        for (const key of Object.keys(wallets).sort()) {
           const wallet = wallets[key];
-
-          const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
-          if (!seedKeyFound) {
-            healthyWallet = false;
-            logger.warn('[walletsStore]: seed key is missing');
-          } else {
-            logger.debug('[walletsStore]: seed key is present');
-          }
-
-          for (const account of wallet.addresses || []) {
-            const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
-            if (!pkeyFound) {
-              healthyWallet = false;
-              logger.warn(`[walletsStore]: pkey is missing`);
-            } else {
-              logger.debug(`[walletsStore]: pkey is present`);
-            }
-          }
-
-          // Handle race condition:
-          // A wallet is NOT damaged if:
-          // - it's not imported
-          // - and hasn't been migrated yet
-          // - and the old seedphrase is still there
-          if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
-            healthyWallet = true;
-          }
-
-          if (!healthyWallet) {
-            logger.warn('[walletsStore]: declaring wallet unhealthy...');
-            healthyKeychain = false;
-            wallet.damaged = true;
-            set({
-              wallets,
-            });
-
-            // Update selected wallet if needed
-            if (wallets && selected && wallet.id === selected.id) {
-              logger.warn('[walletsStore]: declaring selected wallet unhealthy...');
-              set({
-                selected: wallets[wallet.id],
-              });
-            }
-            logger.debug('[walletsStore]: done updating wallets');
+          const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, lowerCaseAccountAddress));
+          if (found) {
+            return wallet;
           }
         }
-
-        if (!healthyKeychain) {
-          captureMessage('Keychain Integrity is not OK');
-        }
-
-        logger.debug('[walletsStore]: check completed');
-        saveKeychainIntegrityState('done');
-      } catch (e) {
-        logger.error(new RainbowError("[walletsStore]: error thrown'"), {
-          message: (e as Error)?.message,
-        });
-        captureMessage('Error running keychain integrity checks');
-      }
-    },
-
-    getWalletWithAccount(accountAddress: string): RainbowWallet | undefined {
-      const { wallets } = get();
-      if (!wallets) {
-        return;
-      }
-
-      const lowerCaseAccountAddress = accountAddress.toLowerCase();
-      for (const key of Object.keys(wallets).sort()) {
-        const wallet = wallets[key];
-        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, lowerCaseAccountAddress));
-        if (found) {
-          return wallet;
-        }
-      }
-    },
-  }),
+      },
+    };
+  },
   {
     storageKey: 'walletsStore',
     partialize: state => ({
@@ -523,7 +518,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
-type GetENSInfoProps = { wallets: Wallets | null; walletNames: WalletNames; useCachedENS?: boolean };
+type GetENSInfoProps = { wallets: Wallets | null; useCachedENS?: boolean };
 
 async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   if (!wallets) {
