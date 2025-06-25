@@ -34,6 +34,7 @@ import { ImgixImage } from '../images';
 import { Text } from '../text';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
+import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 
 type ComponentProps = {
   theme: ThemeContextProps;
@@ -152,49 +153,13 @@ export default function RestoreCloudStep() {
         }
 
         InteractionManager.runAfterInteractions(async () => {
-          const newWalletsState = await loadWallets();
           if (IS_ANDROID && filename) {
             filename = normalizeAndroidBackupFilename(filename);
           }
 
           logger.debug('[RestoreCloudStep]: Done updating backup state');
-          // NOTE: Marking the restored wallets as backed up
-          const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
 
-          logger.debug('[RestoreCloudStep]: Updating backup state of wallets with ids', {
-            walletIds: JSON.stringify(walletIdsToUpdate),
-          });
-          logger.debug(`[RestoreCloudStep]: Selected backup name: ${filename}`);
-
-          setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename);
-
-          const oldCloudIds: string[] = [];
-          const oldManualIds: string[] = [];
-          // NOTE: Looping over previous wallets and restoring backup state of that wallet
-          Object.values(prevWalletsState || {}).forEach(wallet => {
-            // NOTE: This handles cloud and manual backups
-            if (wallet.backedUp && wallet.backupType === walletBackupTypes.cloud) {
-              oldCloudIds.push(wallet.id);
-            } else if (wallet.backedUp && wallet.backupType === walletBackupTypes.manual) {
-              oldManualIds.push(wallet.id);
-            }
-          });
-
-          setAllWalletsWithIdsAsBackedUp(oldCloudIds, walletBackupTypes.cloud, filename);
-          setAllWalletsWithIdsAsBackedUp(oldManualIds, walletBackupTypes.manual, filename);
-
-          const walletKeys = Object.keys(newWalletsState || {});
-          const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
-          const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
-
-          if (firstWallet) {
-            await setSelectedWallet(firstWallet, firstAddress);
-            await initializeWallet({
-              shouldRunMigrations: false,
-              overwrite: false,
-              switching: true,
-            });
-          }
+          await updateWalletsBackedUpState({ filename, prevWalletsState });
         });
 
         onRestoreSuccess();

@@ -557,8 +557,13 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
   };
 
-  if (useCachedENS && account.label && account.image) {
-    return account;
+  if (useCachedENS && account.label) {
+    // we can cache if:
+    //  - we have a label and no image
+    //  - we have an image and a non-hex label
+    if (!account.image || !isValidHex(account.label)) {
+      return account;
+    }
   }
 
   const ens = await fetchReverseRecordWithRetry(account.address);
@@ -569,8 +574,8 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     return {
       ...account,
       image: newImage,
-      // prefer user-set label
-      label: account.label || ens,
+      // prefer user-set label if not an address
+      label: isValidHex(account.label) ? ens : account.label || ens,
     };
   }
 
