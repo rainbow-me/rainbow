@@ -143,6 +143,7 @@ export const FlipButton = () => {
       as={Animated.View}
       justifyContent="center"
       style={[AnimatedSwapStyles.flipButtonStyle, AnimatedSwapStyles.focusedSearchStyle, { height: 12, width: 28, zIndex: 10 }]}
+      testID="flip-button"
     >
       <Box
         as={Animated.View}
