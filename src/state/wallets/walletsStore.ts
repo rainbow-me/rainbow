@@ -557,11 +557,7 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
   };
 
-  // we can cache if:
-  //  - useCachedENS and account.label, and either:
-  //  - we have a label and no image
-  //  - we have an image and a non-hex label
-  const shouldCacheAccount = useCachedENS && account.label && ((account.image && isValidHex(account.label)) || !account.image);
+  const shouldCacheAccount = Boolean(useCachedENS && typeof account.ens === 'string');
 
   if (shouldCacheAccount) {
     return account;
@@ -575,9 +571,14 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     return {
       ...account,
       image: newImage,
+      ens,
       // prefer user-set label if not an address
       label: isValidHex(account.label) ? ens : account.label || ens,
     };
+  } else {
+    // set to empty string so we know it's been fetched but not found
+    // will ensure shouldCacheAccount is true next time
+    account.ens = '';
   }
 
   return account;

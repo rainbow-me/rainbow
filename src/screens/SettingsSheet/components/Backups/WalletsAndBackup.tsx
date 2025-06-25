@@ -311,24 +311,6 @@ export const WalletsAndBackup = () => {
               />
             </Menu>
 
-            {IS_DEV && (
-              <Box>
-                <Menu description="Dev Only: Quick Import/Export Backup">
-                  <MenuItem
-                    hasSfSymbol
-                    leftComponent={<MenuItem.TextIcon icon="⚠️" isLink />}
-                    onPress={() => {
-                      navigate(Routes.MODAL_SCREEN, {
-                        type: 'dev_test_backup',
-                      });
-                    }}
-                    size={52}
-                    titleComponent={<MenuItem.Title isLink text="Dev Only: Quick Import/Export Backup" />}
-                  />
-                </Menu>
-              </Box>
-            )}
-
             <Box>
               <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
                 <BackUpMenuItem
@@ -722,6 +704,24 @@ export const WalletsAndBackup = () => {
   return (
     <MenuContainer scrollviewRef={scrollviewRef}>
       <AbsolutePortalRoot style={{ zIndex: 100 }} />
+
+      {IS_DEV && (
+        <Box>
+          <Menu description="Dev Only: Quick Import/Export Backup">
+            <MenuItem
+              hasSfSymbol
+              leftComponent={<MenuItem.TextIcon icon="⚠️" isLink />}
+              onPress={() => {
+                navigate(Routes.MODAL_SCREEN, {
+                  type: 'dev_test_backup',
+                });
+              }}
+              size={52}
+              titleComponent={<MenuItem.Title isLink text="Dev Only: Quick Import/Export Backup" />}
+            />
+          </Menu>
+        </Box>
+      )}
       {renderView()}
     </MenuContainer>
   );

@@ -5,17 +5,14 @@ import { logger, RainbowError } from '@/logger';
 import { createBackup, restoreBackup } from '@/model/backup';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
-import { navigate, useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/Routes';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
-import { clearWalletState, loadWallets } from '@/state/wallets/walletsStore';
+import { clearWalletState } from '@/state/wallets/walletsStore';
 import Clipboard from '@react-native-clipboard/clipboard';
 import React, { useEffect, useState } from 'react';
 import { Alert, DevSettings, Pressable, View } from 'react-native';
 
 export const DevTestBackupState = () => {
-  const { goBack } = useNavigation();
   const [exported, setExported] = useState('test123');
 
   useEffect(() => {
