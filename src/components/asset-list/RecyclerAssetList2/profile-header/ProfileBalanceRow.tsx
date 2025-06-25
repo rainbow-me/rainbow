@@ -25,7 +25,6 @@ export function ProfileBalanceRow() {
         <Box paddingHorizontal={'36px'} width="full" style={{ alignItems: 'center' }} height={ProfileBalanceRowHeight}>
           <AnimatedNumber
             value={totalBalance}
-            // tabularNumbers
             color="label"
             align="center"
             easingMaskColor={backgroundColor}

@@ -135,9 +135,8 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
   });
 
   if (response.data.errors && response.data.errors.length > 0) {
-    logger.error(new RainbowError('[liveTokensStore] Error fetching tokens data'), {
-      errors: response.data.errors,
-    });
+    // TODO: should this be something we log to Sentry like this? It's expected behavior when we don't have data for a token
+    logger.warn('[liveTokensStore] Error fetching tokens data', { errors: response.data.errors });
   }
 
   const result: LiveTokensData = {};

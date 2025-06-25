@@ -96,7 +96,7 @@ function WalletScreen() {
       if (viewableTokenUniqueIds.length > 0) {
         addSubscribedTokens({ route: routeName, tokenIds: viewableTokenUniqueIds });
       }
-    }, 500)
+    }, 250)
   );
 
   const handleViewableItemsChanged = useCallback(
