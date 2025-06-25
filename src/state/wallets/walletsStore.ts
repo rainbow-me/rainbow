@@ -1,5 +1,5 @@
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
-import { ensureValidHex } from '@/handlers/web3';
+import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
@@ -164,7 +164,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
+<<<<<<< HEAD
     loadWallets: async initialAccountAddress => {
+=======
+    loadWallets: async () => {
+>>>>>>> origin/develop
       try {
         const { accountAddress, walletNames, walletReady } = get();
 
@@ -172,7 +176,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
+<<<<<<< HEAD
         let nextAccountAddress: string | null = initialAccountAddress || accountAddress;
+=======
+        let nextAccountAddress: Address | null = accountAddress === `0x` ? null : accountAddress;
+>>>>>>> origin/develop
 
         const allWalletsResult = await getAllWallets();
 
@@ -214,7 +222,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
         // Recover from broken state (account address not in selected wallet)
         if (!nextAccountAddress) {
+<<<<<<< HEAD
           nextAccountAddress = await loadAddress();
+=======
+          const loaded = await loadAddress();
+          if (loaded && isValidHex(loaded)) {
+            nextAccountAddress = ensureValidHex(loaded);
+          }
+>>>>>>> origin/develop
           logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
         }
 
@@ -236,7 +251,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           }
 
           if (!account) return;
+<<<<<<< HEAD
           nextAccountAddress = account.address;
+=======
+          if (isValidHex(account.address)) {
+            nextAccountAddress = account.address;
+          }
+>>>>>>> origin/develop
           setAccountAddress(ensureValidHex(account.address));
           saveAddress(account.address);
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');

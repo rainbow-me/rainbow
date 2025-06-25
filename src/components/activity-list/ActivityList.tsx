@@ -1,13 +1,6 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
-import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
 import { lazyMount } from '@/helpers/lazyMount';
-import { useAccountTransactions } from '@/hooks';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
-import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList } from '@legendapp/list';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -18,6 +11,13 @@ import { ButtonPressAnimation } from '../animations';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
+import styled from '@/styled-thing';
+import { useTheme } from '@/theme';
+import { safeAreaInsetValues } from '@/utils';
+import { useAccountTransactions } from '@/hooks';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
