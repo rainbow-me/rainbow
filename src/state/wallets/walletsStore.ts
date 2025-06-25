@@ -172,7 +172,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
-        let nextAccountAddress = accountAddress === `0x` ? null : accountAddress;
+        let nextAccountAddress: Address | null = accountAddress === `0x` ? null : accountAddress;
 
         const allWalletsResult = await getAllWallets();
 
