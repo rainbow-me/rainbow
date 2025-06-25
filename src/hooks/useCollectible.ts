@@ -17,7 +17,7 @@ export default function useCollectible(uniqueId: string, externalAddress?: strin
     sortDirection: nftSortDirection,
     config: {
       select: data => {
-        const asset = data.nfts[data.nftIndexMap[uniqueId]];
+        const asset = data.nfts[data.nftIndexMap[uniqueId.toLowerCase()]];
         const assetWithIsExternal: UniqueAsset & { isExternal: boolean } = { ...asset, isExternal };
         return assetWithIsExternal;
       },

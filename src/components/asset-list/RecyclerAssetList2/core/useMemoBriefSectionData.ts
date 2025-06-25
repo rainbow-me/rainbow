@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { AssetListType } from '..';
-import { CellType, CellTypes, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
+import { CellType, CellTypes, CoinExtraData, LegacyNFTFamilyExtraData, NFTFamilyExtraData } from './ViewTypes';
 import { useCoinListEdited, useExternalWalletSectionsData, useWalletSectionsData } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 import useOpenClaimables from '@/hooks/useOpenClaimables';
@@ -91,13 +91,18 @@ export default function useMemoBriefSectionData({
           }
         }
 
-        if (data.type === CellType.FAMILY_HEADER) {
-          const name = (data as NFTFamilyExtraData).name;
-          const uid = (data as NFTFamilyExtraData).uid;
-          isGroupOpen = (openCollections[name.toLowerCase()] || openCollections[uid.toLowerCase()]) ?? false;
+        if (data.type === CellType.LEGACY_FAMILY_HEADER) {
+          const name = (data as LegacyNFTFamilyExtraData).name;
+          const nameKey = `${name.toLowerCase()}-legacy`;
+          isGroupOpen = openCollections[nameKey] ?? false;
         }
 
-        if (data.type === CellType.NFT || data.type === CellType.NFT_SPACE_AFTER) {
+        if (data.type === CellType.FAMILY_HEADER) {
+          const name = (data as NFTFamilyExtraData).name;
+          isGroupOpen = openCollections[name.toLowerCase()] ?? false;
+        }
+
+        if (data.type === CellType.NFT || data.type === CellType.NFT_SPACE_AFTER || data.type === CellType.LEGACY_NFT) {
           return isGroupOpen;
         }
 

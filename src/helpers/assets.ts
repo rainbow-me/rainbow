@@ -170,16 +170,26 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
-export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: any[] = []) => {
-  let rows: any = [];
+export const buildUniqueTokenList = (uniqueTokens: UniqueAsset[], selectedShowcaseTokens: string[] = []) => {
+  let rows: {
+    childrenAmount: number;
+    familyImage?: string;
+    familyName: string;
+    isHeader: boolean;
+    stableId: string;
+    tokens: UniqueAsset[][];
+    uniqueId: string;
+    familyId?: number;
+    rowNumber?: number;
+  }[] = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
 
-  const grouped = groupBy(uniqueTokens, token => token.familyName);
+  const grouped = groupBy(uniqueTokens, token => token.collectionName);
   const families = Object.keys(grouped);
 
   for (const family of families) {
-    const tokensRow: any = [];
+    const tokensRow: UniqueAsset[][] = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
       if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
         showcaseTokens.push(grouped[family][j]);
@@ -193,14 +203,12 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
         tokensRow.push([grouped[family][j]]);
       }
     }
-    let tokens = compact(tokensRow);
-    tokens = chunk(tokens, 50);
-    // eslint-disable-next-line no-loop-func
-    tokens.forEach((tokenChunk, index) => {
-      const id = tokensRow[0].map(({ uniqueId }: any) => uniqueId).join(`__${index}`);
+    const tokenChunks = chunk(compact(tokensRow), 50);
+    tokenChunks.forEach((tokenChunk, index) => {
+      const id = tokensRow[0].map(({ uniqueId }) => uniqueId).join(`__${index}`);
       rows.push({
         childrenAmount: grouped[family].length,
-        familyImage: tokensRow?.[0]?.[0]?.familyImage ?? null,
+        familyImage: tokensRow?.[0]?.[0]?.images.lowResUrl ?? tokensRow?.[0]?.[0]?.images.highResUrl ?? undefined,
         familyName: family,
         isHeader: index === 0,
         stableId: id,
@@ -236,10 +244,8 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
     ].concat(rows);
   }
 
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'row' implicitly has an 'any' type.
   rows.forEach((row, i) => {
     row.familyId = i;
-    row.tokens[0][0].rowNumber = i;
   });
   return rows;
 };
