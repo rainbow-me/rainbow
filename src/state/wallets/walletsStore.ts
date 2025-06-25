@@ -508,6 +508,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       wallets: state.wallets,
       walletNames: state.walletNames,
     }),
+    debug: true,
   }
 );
 

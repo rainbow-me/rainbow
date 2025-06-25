@@ -167,7 +167,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
   } catch (e) {
     const error = ensureError(e);
     PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
-    console.log('what was the error', error?.message, error?.stack);
     logger.error(new RainbowError('[initializeWallet]: Error while initializing wallet', error), {
       walletStatus,
     });

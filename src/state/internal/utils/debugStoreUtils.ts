@@ -46,7 +46,9 @@ export function debugStore<CreateState extends RainbowStateCreator<any>>(createS
               key,
               typeof value === 'function'
                 ? (...args: any[]) => {
-                    insideFn = key;
+                    if (!key.startsWith('get')) {
+                      insideFn = key;
+                    }
                     return value(...args);
                   }
                 : value,
