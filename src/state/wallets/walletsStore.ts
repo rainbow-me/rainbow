@@ -58,7 +58,7 @@ interface WalletsState {
   wallets: Wallets | null;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => void;
 
-  loadWallets: (accountAddress?: string) => Promise<AllRainbowWallets | void>;
+  loadWallets: () => Promise<AllRainbowWallets | void>;
 
   createAccount: (data: { id: RainbowWallet['id']; name: RainbowWallet['name']; color: RainbowWallet['color'] | null }) => Promise<{
     [id: string]: RainbowWallet;
@@ -164,7 +164,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    loadWallets: async initialAccountAddress => {
+    loadWallets: async () => {
       try {
         const { accountAddress, walletNames, walletReady } = get();
 
@@ -172,7 +172,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
-        let nextAccountAddress: string | null = initialAccountAddress || accountAddress;
+        let nextAccountAddress = accountAddress === `0x` ? null : accountAddress;
 
         const allWalletsResult = await getAllWallets();
 
