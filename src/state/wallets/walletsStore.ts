@@ -67,7 +67,7 @@ interface WalletsState {
     ids: RainbowWallet['id'][],
     method: RainbowWallet['backupType'],
     backupFile?: RainbowWallet['backupFile']
-  ) => void;
+  ) => Promise<void>;
 
   setWalletBackedUp: (id: RainbowWallet['id'], method: RainbowWallet['backupType'], backupFile?: RainbowWallet['backupFile']) => void;
 
@@ -304,16 +304,12 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         accountSymbol: addressHashedEmoji(account.address),
       });
 
-      await Promise.all([
-        // update and set selected
-        updateWallets(newWallets),
-        setSelectedWallet(newWallets[id], account.address),
-      ]);
+      await setSelectedWallet(newWallets[id], account.address, newWallets);
 
       return newWallets;
     },
 
-    setAllWalletsWithIdsAsBackedUp: (walletIds, method, backupFile) => {
+    setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {
       const { wallets, selected, updateWallets, setSelectedWallet } = get();
 
       const newWallets = { ...wallets };
@@ -333,7 +329,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         };
       });
 
-      updateWallets(newWallets);
+      await updateWallets(newWallets);
 
       if (selected?.id && walletIds.includes(selected?.id)) {
         setSelectedWallet(newWallets[selected.id]);
