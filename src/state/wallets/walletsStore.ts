@@ -217,23 +217,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
             }
           }
 
-          // Recover from broken state (account address not in selected wallet)
-          if (!nextAccountAddress) {
-            const loaded = await loadAddress();
-            if (loaded && isValidHex(loaded)) {
-              nextAccountAddress = ensureValidHex(loaded);
-            }
-            logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
-          }
-
           const selectedAddress = selectedWallet?.addresses.find(a => {
             return a.visible && a.address === nextAccountAddress;
           });
 
           // Let's select the first visible account if we don't have a selected address
           if (!selectedAddress) {
-            const allWallets = Object.values(allWalletsResult?.wallets || {});
             let account = null;
+            const allWallets = Object.values(allWalletsResult?.wallets || {});
             for (const wallet of allWallets) {
               for (const rainbowAccount of wallet.addresses || []) {
                 if (rainbowAccount.visible) {
@@ -247,13 +238,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
             if (isValidHex(account.address)) {
               nextAccountAddress = account.address;
             }
-            setAccountAddress(ensureValidHex(account.address));
-            saveAddress(account.address);
             logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
           }
 
           if (selectedWallet) {
+            set({ wallets });
             setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined);
+          } else {
+            logger.error(new RainbowError('[walletsStore]: No selectedWallet ever found'));
           }
 
           return wallets;

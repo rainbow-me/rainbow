@@ -1,6 +1,6 @@
 import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
-import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import mapValues from 'lodash/mapValues';
 import { useMemo } from 'react';
 import { Address } from 'viem';

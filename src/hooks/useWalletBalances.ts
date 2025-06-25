@@ -26,10 +26,10 @@ export type WalletBalanceResult = {
  */
 const useWalletBalances = (): WalletBalanceResult => {
   const summaryData = useWalletSummary();
+  const wallets = useWallets();
 
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};
-    const wallets = getWallets();
 
     if (!summaryData || !wallets) {
       return result;
@@ -63,7 +63,7 @@ const useWalletBalances = (): WalletBalanceResult => {
     }
 
     return result;
-  }, [summaryData]);
+  }, [summaryData, wallets]);
 
   return {
     balances,
