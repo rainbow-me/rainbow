@@ -52,7 +52,7 @@ interface WalletsState {
   setWalletReady: () => void;
 
   selected: RainbowWallet | null;
-  setSelectedWallet: (wallet: RainbowWallet, address?: string) => Promise<void>;
+  setSelectedWallet: (wallet: RainbowWallet, address?: string, wallets?: AllRainbowWallets) => Promise<void>;
 
   walletNames: WalletNames;
   wallets: Wallets | null;
@@ -110,8 +110,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       getIsHardwareWallet: () => !!get().selected?.deviceId,
 
       selected: null,
-      async setSelectedWallet(wallet, address) {
+      async setSelectedWallet(wallet, address, walletsIn) {
         setSelectedWalletInKeychain(wallet);
+        const wallets = walletsIn || get().wallets;
+        const walletInfo = await refreshWalletsInfo({ wallets, useCachedENS: true });
 
         // ensure not memoized
         const selected = {
@@ -121,11 +123,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         if (address) {
           saveAddress(address);
           set({
+            ...walletInfo,
             accountAddress: ensureValidHex(address),
             selected,
           });
         } else {
           set({
+            ...walletInfo,
             selected,
           });
         }
@@ -195,7 +199,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
             // If not then we should clear it and default to the first one
             const firstWalletKey = Object.keys(wallets)[0];
             selectedWallet = wallets[firstWalletKey];
-            setSelectedWallet(selectedWallet);
           }
 
           if (!selectedWallet) {
@@ -242,8 +245,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           }
 
           if (selectedWallet) {
-            set({ wallets });
-            setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined);
+            setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined, wallets);
           } else {
             logger.error(new RainbowError('[walletsStore]: No selectedWallet ever found'));
           }
@@ -550,7 +552,7 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
   };
 
-  if (useCachedENS && account.label) {
+  if (useCachedENS && account.label && !isValidHex(account.label)) {
     return account;
   }
 
