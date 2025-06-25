@@ -1,16 +1,15 @@
 import CopyTooltip from '@/components/copy-tooltip';
 import { Box, Text } from '@/design-system';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { createBackup, restoreBackup } from '@/model/backup';
-import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, View } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
-import { navigate, useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/Routes';
-import { clearWalletState, loadWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useNavigation } from '@/navigation/Navigation';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { clearWalletState, loadWallets } from '@/state/wallets/walletsStore';
+import Clipboard from '@react-native-clipboard/clipboard';
+import React, { useEffect, useState } from 'react';
+import { Alert, DevSettings, Pressable, View } from 'react-native';
 
 export const DevTestBackupState = () => {
   const { goBack } = useNavigation();
@@ -94,11 +93,7 @@ export const DevTestBackupState = () => {
           await wipeKeychain();
           await clearAllStorages();
           clearWalletState();
-          // we need to navigate back to the welcome screen
-          goBack();
-          setTimeout(() => {
-            navigate(Routes.WELCOME_SCREEN);
-          }, 500);
+          DevSettings.reload();
         }}
       >
         <Box
