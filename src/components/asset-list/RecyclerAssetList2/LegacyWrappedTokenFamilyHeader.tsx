@@ -25,9 +25,11 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const isFamilyOpen = useOpenCollectionsStore(state => state.isCollectionOpen(name));
+  const nameKey = `${name}-legacy`;
 
-  const handleToggle = useLatestCallback(() => useOpenCollectionsStore.getState().toggleCollection(name));
+  const isFamilyOpen = useOpenCollectionsStore(state => state.isCollectionOpen(nameKey));
+
+  const handleToggle = useLatestCallback(() => useOpenCollectionsStore.getState().toggleCollection(nameKey));
 
   if (!nftsEnabled) return null;
 

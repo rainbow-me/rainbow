@@ -21,10 +21,10 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const isOpen = useOpenCollectionsStore(state => state.isCollectionOpen(uid));
+  const isOpen = useOpenCollectionsStore(state => state.isCollectionOpen(name));
 
   const handleToggle = useLatestCallback(() => {
-    useOpenCollectionsStore.getState().toggleCollection(uid);
+    useOpenCollectionsStore.getState().toggleCollection(name);
 
     // from closed -> open, let's fetch the inner nft metadata
     if (!isOpen) {
