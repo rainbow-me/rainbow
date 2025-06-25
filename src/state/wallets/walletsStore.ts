@@ -1,5 +1,5 @@
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
-import { ensureValidHex } from '@/handlers/web3';
+import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
@@ -214,7 +214,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
         // Recover from broken state (account address not in selected wallet)
         if (!nextAccountAddress) {
-          nextAccountAddress = await loadAddress();
+          const loaded = await loadAddress();
+          if (loaded && isValidHex(loaded)) {
+            nextAccountAddress = ensureValidHex(loaded);
+          }
           logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
         }
 
@@ -236,7 +239,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           }
 
           if (!account) return;
-          nextAccountAddress = account.address;
+          if (isValidHex(account.address)) {
+            nextAccountAddress = account.address;
+          }
           setAccountAddress(ensureValidHex(account.address));
           saveAddress(account.address);
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
