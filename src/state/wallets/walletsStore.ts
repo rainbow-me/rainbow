@@ -563,8 +563,6 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
   //  - we have an image and a non-hex label
   const shouldCacheAccount = useCachedENS && account.label && ((account.image && isValidHex(account.label)) || !account.image);
 
-  console.log('refresh?', shouldCacheAccount, account);
-
   if (shouldCacheAccount) {
     return account;
   }

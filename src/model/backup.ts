@@ -22,7 +22,7 @@ import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
+import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
 import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
@@ -34,7 +34,7 @@ import AesEncryptor from '../handlers/aesEncryption';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import { clearAllStorages } from './mmkv';
 import { getRemoteConfig } from './remoteConfig';
-import { AllRainbowWallets, createWallet, RainbowWallet } from './wallet';
+import { AllRainbowWallets, createWallet, loadWallet, RainbowWallet } from './wallet';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -286,12 +286,19 @@ export async function restoreBackup(data: string | { secrets: string }) {
     return RestoreCloudBackupResultStates.incorrectPinCode;
   }
 
-  return await restoreSpecificBackupIntoKeychain(
+  const restored = await restoreSpecificBackupIntoKeychain(
     {
       ...originalData.secrets,
     },
     userPIN
   );
+
+  if (restored) {
+    await loadWallets();
+    await refreshWalletInfo();
+  }
+
+  return restored;
 }
 
 export async function backupWalletToCloud({
