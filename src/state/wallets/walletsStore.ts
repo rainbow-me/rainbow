@@ -110,7 +110,12 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
       selected: null,
       async setSelectedWallet(wallet, address, walletsIn) {
+        if (address) {
+          const accountAddress = ensureValidHex(address);
+          saveAddress(accountAddress);
+        }
         setSelectedWalletInKeychain(wallet);
+
         const wallets = walletsIn || get().wallets;
         const walletInfo = await refreshWalletsInfo({ wallets, useCachedENS: true });
 
@@ -120,7 +125,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         };
 
         if (address) {
-          saveAddress(address);
           set({
             ...walletInfo,
             accountAddress: ensureValidHex(address),
@@ -148,6 +152,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       // see PD-188
       accountAddress: `0x`,
       setAccountAddress: (accountAddress: Address) => {
+        saveAddress(accountAddress);
         set({
           accountAddress,
         });
@@ -551,7 +556,7 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
   };
 
-  if (useCachedENS && account.label && !isValidHex(account.label)) {
+  if (useCachedENS && account.label) {
     return account;
   }
 
