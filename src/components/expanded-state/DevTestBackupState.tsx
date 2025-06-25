@@ -4,7 +4,8 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { createBackup, restoreBackup } from '@/model/backup';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
-import { useNavigation } from '@/navigation/Navigation';
+import { navigate, useNavigation } from '@/navigation/Navigation';
+import Routes from '@/navigation/Routes';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { clearWalletState, loadWallets } from '@/state/wallets/walletsStore';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -62,6 +63,7 @@ export const DevTestBackupState = () => {
             if (restored) {
               await loadWallets();
               goBack();
+              navigate(Routes.WALLET_SCREEN);
             } else {
               Alert.alert(`invalid backup`);
             }
