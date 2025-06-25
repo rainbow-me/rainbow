@@ -1,4 +1,4 @@
-import { useLatestCallback, useOpenFamilies } from '@/hooks';
+import { useLatestCallback } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import lang from 'i18n-js';
@@ -11,6 +11,7 @@ import TokenFamilyHeaderIcon from '@/components/token-family/TokenFamilyHeaderIc
 import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 type Props = {
   name: string;
@@ -24,14 +25,9 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const { openFamilies, updateOpenFamilies } = useOpenFamilies();
-  const isFamilyOpen = openFamilies[name];
+  const isFamilyOpen = useOpenCollectionsStore(state => state.isCollectionOpen(name));
 
-  const handleToggle = useLatestCallback(() =>
-    updateOpenFamilies({
-      [name]: !isFamilyOpen,
-    })
-  );
+  const handleToggle = useLatestCallback(() => useOpenCollectionsStore.getState().toggleCollection(name));
 
   if (!nftsEnabled) return null;
 

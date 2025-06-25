@@ -60,7 +60,6 @@ export { default as useManageCloudBackups } from './useManageCloudBackups';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useAnimationType } from './useAnimationType';
 export { default as useOpenENSNFTHandler } from './useOpenENSNFTHandler';
-export { default as useOpenFamilies } from './useOpenFamilies';
 export { default as usePrevious } from './usePrevious';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useRouteExistsInNavigationState } from './useRouteExistsInNavigationState';

@@ -9,7 +9,6 @@ import { isLowerCaseMatch } from '@/utils';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import { logger } from '@/logger';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
-import useOpenFamilies from '@/hooks/useOpenFamilies';
 import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 import { useHiddenTokens, useShowcaseTokens } from '@/hooks';
@@ -51,7 +50,6 @@ export function isDataComplete(tokens: string[]) {
 export default function useMigrateShowcaseAndHidden() {
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const { updateOpenFamilies } = useOpenFamilies();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const accountAddress = useAccountAddress();
 
@@ -68,9 +66,6 @@ export default function useMigrateShowcaseAndHidden() {
       logger.debug('🔄 [Migration] Showcase and hidden tokens have already been migrated...');
       return;
     }
-
-    logger.debug('🔄 [Migration] Starting showcase and hidden migration process...');
-    updateOpenFamilies({ Showcase: false });
 
     const queryKey = nftsQueryKey({
       address: accountAddress,
@@ -161,10 +156,8 @@ export default function useMigrateShowcaseAndHidden() {
       updateWebHidden(accountAddress, migratedHiddenTokens),
       queryClient.invalidateQueries({ queryKey: showcaseTokensQueryKey({ address: accountAddress }) }),
       queryClient.invalidateQueries({ queryKey: hiddenTokensQueryKey({ address: accountAddress }) }),
-    ]).finally(() => {
-      updateOpenFamilies({ Showcase: true });
-    });
-  }, [isReadOnlyWallet, showcaseTokens, hiddenTokens, updateOpenFamilies, accountAddress]);
+    ]);
+  }, [isReadOnlyWallet, showcaseTokens, hiddenTokens, accountAddress]);
 
   return migrateShowcaseAndHidden;
 }
