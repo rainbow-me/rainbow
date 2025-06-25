@@ -5,10 +5,10 @@ let platformClient: RainbowFetchClient | undefined;
 
 export function getPlatformClient() {
   const clientUrl = platformClient?.baseURL;
-  const baseUrl = PLATFORM_BASE_URL;
+  const baseUrl = `${PLATFORM_BASE_URL}/v1`;
   if (!platformClient || clientUrl !== baseUrl) {
     platformClient = new RainbowFetchClient({
-      baseURL: `${PLATFORM_BASE_URL}/v1`,
+      baseURL: baseUrl,
     });
   }
 
