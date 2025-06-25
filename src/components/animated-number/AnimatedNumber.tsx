@@ -562,15 +562,13 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     return new Array(10)
       .fill(0)
       .map((_, i) =>
-        PixelRatio.roundToNearestPixel(
-          measureTextSync(i.toString(), {
-            fontSize: baseTextStyle.fontSize,
-            fontFamily: baseTextStyle.fontFamily,
-            fontWeight: baseTextStyle.fontWeight,
-            letterSpacing: baseTextStyle.letterSpacing,
-            fontVariant: baseTextStyle.fontVariant,
-          })
-        )
+        measureTextSync(i.toString(), {
+          fontSize: baseTextStyle.fontSize,
+          fontFamily: baseTextStyle.fontFamily,
+          fontWeight: baseTextStyle.fontWeight,
+          letterSpacing: baseTextStyle.letterSpacing,
+          fontVariant: baseTextStyle.fontVariant,
+        })
       )
       .filter(width => width !== undefined);
   }, [baseTextStyle, textProps.tabularNumbers]);

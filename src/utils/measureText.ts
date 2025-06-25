@@ -1,6 +1,7 @@
 import TextSize from 'react-native-text-size';
 import { fonts } from '../styles';
 import * as MeasureText from '@domir/react-native-measure-text';
+import { PixelRatio } from 'react-native';
 
 const defaultTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -31,5 +32,6 @@ export default async function measureText(text: any, textStyles = {}) {
 }
 
 export function measureTextSync(text: string, textStyles = {}) {
-  return MeasureText.measureWidth(text, textStyles);
+  // This rounding is likely something the library should be doing, but it's not.
+  return PixelRatio.roundToNearestPixel(MeasureText.measureWidth(text, textStyles));
 }
