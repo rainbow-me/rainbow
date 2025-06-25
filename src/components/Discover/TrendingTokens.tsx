@@ -502,7 +502,9 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   <LiveTokenText
                     tokenId={token.uniqueId}
                     initialValue={marketCap}
-                    selector={token => formatNumber(token.marketData.marketCapFDV, { useOrderSuffix: true, decimals: 1, style: '$' })}
+                    selector={token =>
+                      formatNumber(token.marketData.circulatingMarketCap, { useOrderSuffix: true, decimals: 1, style: '$' })
+                    }
                     color="labelTertiary"
                     numberOfLines={1}
                     size="11pt"

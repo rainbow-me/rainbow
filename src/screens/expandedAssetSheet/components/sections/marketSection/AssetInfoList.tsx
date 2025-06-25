@@ -242,7 +242,7 @@ export function AssetInfoList() {
     tokenId: `${asset.address}_${asset.chainId}`,
     initialValue: String(metadata?.marketCap ?? 0),
     initialValueLastUpdated: 0,
-    selector: state => state.marketData.marketCapFDV,
+    selector: state => state.marketData.circulatingMarketCap,
   });
 
   const hasCreatedBySection = useMemo(() => {

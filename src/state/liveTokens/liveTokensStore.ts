@@ -43,7 +43,7 @@ export interface TokenData {
     change24hPct: string;
   };
   marketData: {
-    marketCapFDV: string;
+    circulatingMarketCap: string;
   };
   reliability: {
     metadata: {
