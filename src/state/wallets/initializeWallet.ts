@@ -119,12 +119,12 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       // Except when switching wallets!
       await runKeychainIntegrityChecks();
       if (shouldCancel()) return null;
-    }
 
-    if (seedPhrase || isNew) {
-      logger.debug('[initializeWallet]: walletsLoadState call #2');
-      await loadWallets();
-      if (shouldCancel()) return null;
+      if (seedPhrase || isNew) {
+        logger.debug('[initializeWallet]: walletsLoadState call #2');
+        await loadWallets();
+        if (shouldCancel()) return null;
+      }
     }
 
     if (isNil(walletAddress)) {

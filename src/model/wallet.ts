@@ -191,7 +191,7 @@ export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is 
     return wallet as any;
   }
   // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
-  logger.log(
+  logger.warn(
     // @ts-expect-error using property types to log errors better
     `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
   );
@@ -206,7 +206,7 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
     return wallet as any;
   }
   // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
-  logger.log(
+  logger.warn(
     `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
   );
 }
