@@ -148,6 +148,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         return;
       }
       if (info) {
+        console.log('setting to', JSON.stringify(info, null, 2));
         await saveAllWallets(info.wallets);
         set(info);
       }
@@ -551,14 +552,15 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
 // this isn't really our primary way of updating account info, and when people pull to refresh
 // they get new info, so for ENS related stuff we can just check if not valid hex + has image
 async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
+  const defaultLabel = addressAbbreviation(accountIn.address, 4, 4);
   const account = {
     ...accountIn,
-    label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
+    label: removeFirstEmojiFromString(accountIn.label || defaultLabel),
   };
 
+  const hasDefaultLabel = account.label === defaultLabel;
   const hasEnoughData = typeof account.ens === 'string' || !account.image;
   const shouldCacheAccount = Boolean(useCachedENS && hasEnoughData);
-  console.log('shouldCacheAccount', shouldCacheAccount, account.address, account.label);
 
   if (shouldCacheAccount) {
     return account;
@@ -569,12 +571,17 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
   if (ens) {
     const avatar = await fetchENSAvatarWithRetry(ens);
     const newImage = avatar?.imageUrl || null;
+
+    const shouldSetLabelToENS =
+      (account.ens && account.ens !== ens) ||
+      // prefer users label if they set to something other than account
+      hasDefaultLabel;
+
     return {
       ...account,
       image: newImage,
       ens,
-      // prefer user-set label if not an address
-      label: isValidHex(account.label) ? ens : account.label || ens,
+      label: shouldSetLabelToENS ? ens : account.label,
     };
   } else {
     // set to empty string so we know it's been fetched but not found

@@ -295,7 +295,7 @@ export async function restoreBackup(data: string | { secrets: string }) {
 
   if (restored) {
     await loadWallets();
-    void refreshWalletInfo();
+    await refreshWalletInfo();
   }
 
   return restored;
@@ -529,9 +529,10 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
         userPin,
       });
     }
+
     return true;
   } catch (e) {
-    logger.error(new RainbowError(`[backup]: Error restoring specific backup into keychain: ${e}`));
+    logger.error(new RainbowError(`[backup]: Error restoring specific backup into keychain`, e));
     return false;
   }
 }
