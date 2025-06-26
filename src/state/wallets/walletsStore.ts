@@ -55,7 +55,7 @@ interface WalletsState {
 
   walletNames: WalletNames;
   wallets: AllRainbowWallets | null;
-  updateWallets: (wallets: { [id: string]: RainbowWallet }, forceRefresh?: boolean) => Promise<void>;
+  updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -129,10 +129,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     walletNames: {},
 
     wallets: null,
-    updateWallets: async (walletsIn, forceRefresh = false) => {
+    updateWallets: async walletsIn => {
       const { walletNames, wallets } = await refreshWalletsInfo({
         wallets: walletsIn,
-        useCachedENS: !forceRefresh,
+        useCachedENS: true,
       });
       saveAllWallets(wallets);
       set({ walletNames, wallets });
@@ -369,10 +369,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    refreshWalletInfo: async ({ skipENS } = {}) => {
+    refreshWalletInfo: async props => {
       const { wallets } = get();
-      if (wallets) {
-        await updateWallets(wallets, !skipENS);
+      const info = await refreshWalletsInfo({ wallets, useCachedENS: props?.skipENS });
+      if (info) {
+        set(info);
       }
     },
 
@@ -548,7 +549,7 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
   };
 
-  const hasEnoughData = typeof account.ens === 'string' || (account.image && account.label); // || (!account.image && isValidHex(account.label));
+  const hasEnoughData = typeof account.ens === 'string' || !account.image;
 
   const shouldCacheAccount = Boolean(useCachedENS && hasEnoughData);
   console.log('shouldCacheAccount', shouldCacheAccount);
