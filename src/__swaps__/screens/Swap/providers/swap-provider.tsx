@@ -246,7 +246,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     slippage,
   });
 
-  const atomicSwapsEnabled = useExperimentalFlag(ATOMIC_SWAPS);
+  const atomicSwapsExperimentalFlag = useExperimentalFlag(ATOMIC_SWAPS);
   const config = useRemoteConfig();
 
   const { degenMode } = SwapSettings;
@@ -260,14 +260,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   }) => {
     try {
       const degenMode = swapsStore.getState().degenMode;
-      // const shouldDelegate =
-      //   (atomicSwapsEnabled || config.atomic_swaps_enabled) &&
-      //   (await getShouldDelegate(parameters.chainId, parameters.quote as Quote | CrosschainQuote, parameters.assetToSell));
-      const shouldDelegate = await getShouldDelegate(
-        parameters.chainId,
-        parameters.quote as Quote | CrosschainQuote,
-        parameters.assetToSell
-      );
+      const atomicSwapsEnabled =
+        (atomicSwapsExperimentalFlag || config.atomic_swaps_enabled) &&
+        (await getShouldDelegate(parameters.chainId, parameters.quote as Quote | CrosschainQuote, parameters.assetToSell));
+      const shouldDelegate = atomicSwapsEnabled && (await getShouldDelegate(parameters.chainId, parameters.quote, parameters.assetToSell));
       const selectedGas = getSelectedGas(parameters.chainId);
 
       const connectedToAnvil = useConnectedToAnvilStore.getState().connectedToAnvil;
