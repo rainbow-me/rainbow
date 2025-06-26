@@ -305,6 +305,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
       }
 
+      logger.log(`setting wallets as backed up`, {
+        walletIds,
+      });
+
       walletIds.forEach(walletId => {
         newWallets[walletId] = {
           ...newWallets[walletId],

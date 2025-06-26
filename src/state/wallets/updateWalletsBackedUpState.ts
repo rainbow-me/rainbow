@@ -6,7 +6,7 @@ import { loadWallets, setAllWalletsWithIdsAsBackedUp, setSelectedWallet } from '
 
 export async function updateWalletsBackedUpState({
   filename,
-  prevWalletsState,
+  prevWalletsState = {},
 }: {
   filename?: string;
   prevWalletsState?: AllRainbowWallets | void;
@@ -15,7 +15,7 @@ export async function updateWalletsBackedUpState({
   // here later updateWalletsBackedUpState diffs the two and uses that to
   // determine if its backed up it's not great, just documenting how it is
   const newWalletsState = await loadWallets();
-  const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
+  const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !prevWalletsState[walletId]);
 
   logger.debug('[RestoreCloudStep]: Updating backup state of wallets with ids', {
     walletIds: JSON.stringify(walletIdsToUpdate),
