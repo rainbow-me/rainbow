@@ -129,7 +129,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     walletNames: {},
 
     wallets: null,
-    updateWallets: async (walletsIn, forceRefresh) => {
+    updateWallets: async (walletsIn, forceRefresh = false) => {
       const { walletNames, wallets } = await refreshWalletsInfo({
         wallets: walletsIn,
         useCachedENS: !forceRefresh,
@@ -369,10 +369,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    refreshWalletInfo: async props => {
+    refreshWalletInfo: async ({ skipENS } = {}) => {
       const { wallets } = get();
       if (wallets) {
-        await updateWallets(wallets, !props?.skipENS);
+        await updateWallets(wallets, !skipENS);
       }
     },
 
