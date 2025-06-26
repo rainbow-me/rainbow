@@ -22,7 +22,7 @@ import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
-import { loadWallets, refreshWalletInfo, setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
+import { setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
 import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
@@ -34,7 +34,7 @@ import AesEncryptor from '../handlers/aesEncryption';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import { clearAllStorages } from './mmkv';
 import { getRemoteConfig } from './remoteConfig';
-import { AllRainbowWallets, createWallet, loadWallet, RainbowWallet } from './wallet';
+import { AllRainbowWallets, createWallet, RainbowWallet } from './wallet';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
