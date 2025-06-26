@@ -4,12 +4,9 @@ import { BlurView } from 'react-native-blur-view';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
-import RemoteSvg from '../svg/RemoteSvg';
 import { useColorMode, Text } from '@/design-system';
-import svgToPngIfNeeded from '@/handlers/svgs';
 import { useHiddenTokens } from '@/hooks';
 import { Colors } from '@/styles';
-import { AssetType } from '@/entities';
 import { isLowerCaseMatch } from '@/utils';
 import { RainbowImage } from '../RainbowImage';
 
@@ -27,12 +24,9 @@ type UniqueTokenImageProps = {
   id: string;
   collectionName: string;
   name: string;
-  type: AssetType;
   uniqueId: string;
   lowResImageUrl?: string | null | undefined;
-  mimeType: string | null | undefined;
   isCard?: boolean;
-  transformSvgs?: boolean;
   optimisticImageLoading?: boolean;
 };
 
@@ -71,12 +65,9 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   lowResImageUrl,
   collectionName,
   name,
-  type,
   uniqueId,
   id,
   isCard = false,
-  mimeType,
-  transformSvgs = true,
   optimisticImageLoading = false,
 }: UniqueTokenImageProps) {
   const { isDarkMode } = useColorMode();
@@ -85,8 +76,6 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
 
   const [isLoading, setIsLoading] = useState(optimisticImageLoading);
   const [errorLoadingImage, setErrorLoadingImage] = useState(false);
-
-  console.log('imageUrl', imageUrl, errorLoadingImage);
 
   const onLoad = useCallback(() => setIsLoading(false), [setIsLoading]);
   const onError = useCallback(
@@ -101,26 +90,12 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
     return hiddenTokens.find(token => isLowerCaseMatch(token, uniqueId));
   }, [hiddenTokens, uniqueId]);
 
-  const isENS = type === AssetType.ens;
-  const isSVG = mimeType === 'image/svg+xml';
   const hasImage = imageUrl !== null && imageUrl !== undefined;
-
-  const shouldShowSvg = hasImage && isSVG && !errorLoadingImage && !transformSvgs;
-  const shouldShowRegularImage = hasImage && !isSVG && !errorLoadingImage;
-  const shouldShowTextFallback = (!shouldShowSvg && !shouldShowRegularImage) || (isHiddenToken && isCard);
+  const shouldShowRegularImage = hasImage && !errorLoadingImage;
+  const shouldShowTextFallback = !shouldShowRegularImage || (isHiddenToken && isCard);
 
   return (
     <Centered backgroundColor={backgroundColor} style={StyleSheet.absoluteFill}>
-      {shouldShowSvg && (
-        <RemoteSvg
-          fallbackIfNonAnimated={!isENS || isCard}
-          fallbackUri={svgToPngIfNeeded(imageUrl, true)}
-          lowResFallbackUri={lowResImageUrl}
-          onError={onError}
-          style={StyleSheet.absoluteFill}
-          uri={imageUrl}
-        />
-      )}
       {shouldShowRegularImage && (
         <>
           <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />

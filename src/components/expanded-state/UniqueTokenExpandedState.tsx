@@ -438,10 +438,8 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
               backgroundColor={asset.backgroundColor || imageColor}
               imageUrl={asset.images.highResUrl}
               lowResImageUrl={asset.images.lowResUrl}
-              mimeType={asset.images.mimeType}
               uniqueId={asset.uniqueId}
               id={asset.uniqueId}
-              type={asset.type}
             />
             <BackgroundBlur />
           </BackgroundImage>
