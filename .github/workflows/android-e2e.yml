@@ -121,7 +121,7 @@ jobs:
           variant: debug
           github-token: ${{ secrets.GITHUB_TOKEN }}
           validate-gradle-wrapper: false
-          rnef-build-extra-params: '--no-daemon --build-cache --no-scan'
+          # rnef-build-extra-params: '--no-daemon --build-cache --no-scan'
 
       - name: Download and Unpack APK artifact
         run: |
