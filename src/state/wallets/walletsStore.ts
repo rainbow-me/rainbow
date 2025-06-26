@@ -537,13 +537,16 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
   };
 }
 
+// this isn't really our primary way of updating account info, and when people pull to refresh
+// they get new info, so for ENS related stuff we can just check if not valid hex + has image
 async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
   const account = {
     ...accountIn,
     label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
   };
 
-  const shouldCacheAccount = Boolean(useCachedENS && (typeof account.ens === 'string' || (account.image && !isValidHex(account.label))));
+  const isENSExisting = typeof account.ens === 'string' || (account.image && !isValidHex(account.label));
+  const shouldCacheAccount = Boolean(useCachedENS && isENSExisting);
 
   if (shouldCacheAccount) {
     return account;
