@@ -102,6 +102,7 @@ const UniqueTokenExpandedStateContent = ({
             id={asset.uniqueId}
             type={asset.type}
             transformSvgs={false}
+            optimisticImageLoading
           />
         )}
         {!!loading && (
