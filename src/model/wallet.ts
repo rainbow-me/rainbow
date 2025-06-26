@@ -54,6 +54,8 @@ import { GetOptions, SetOptions } from 'react-native-keychain';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 import { PublicClient, WalletClient, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+import { createLedgerWalletClient } from '@/handlers/LedgerWalletClient';
+import { mainnet } from 'viem/chains';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -365,10 +367,43 @@ export const loadWalletViem = async <S extends Screen>({
   const selectedWallet = getWalletWithAccount(addressToUse);
   const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
 
-  // For now, we'll skip hardware wallet support in viem version
-  // Hardware wallets would need special handling with viem
+  // Handle Ledger hardware wallets
   if (isHardwareWallet) {
-    logger.debug('[wallet]: Hardware wallets not yet supported in viem version');
+    // Attempt to load the hardware key ("deviceId/index") stored for this address
+    const hardwareKey = await loadPrivateKey(addressToUse, true);
+
+    // Bail out if user cancelled or isn't authenticated
+    if (hardwareKey === kc.ErrorType.UserCanceled || hardwareKey === kc.ErrorType.NotAuthenticated) {
+      return null;
+    }
+
+    if (hardwareKey && typeof hardwareKey === 'string' && hardwareKey.includes('/')) {
+      const [deviceId, indexStr] = hardwareKey.split('/');
+      const derivationIndex = Number(indexStr) || 0;
+
+      try {
+        const chainForLedger = publicClient.chain ?? mainnet;
+        const chainId = chainForLedger.id || ChainId.mainnet;
+        const providerUrl = useBackendNetworksStore.getState().getDefaultChains()[chainId]?.rpcUrls?.default?.http?.[0];
+
+        const walletClient = await createLedgerWalletClient({
+          deviceId,
+          index: derivationIndex,
+          chain: chainForLedger,
+          transport: http(providerUrl),
+        });
+
+        return walletClient;
+      } catch (error) {
+        logger.error(new RainbowError('[wallet]: Failed to create Ledger wallet client'), { error });
+        return null;
+      }
+    }
+
+    // Couldn't parse hardware key – fallback to null.
+    logger.error(new RainbowError('[wallet]: Invalid hardware key for Ledger wallet'), {
+      hardwareKey,
+    });
     return null;
   }
 
