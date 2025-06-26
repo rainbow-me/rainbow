@@ -94,7 +94,8 @@ jobs:
         with:
           cache-read-only: false
 
-      - run: cd rainbow-scripts && git checkout @janic/rn79
+      - name: Checkout Janic branch for now
+        run: cd rainbow-scripts && git checkout @janic/rn79
 
       - name: Install dependencies
         env:
@@ -113,8 +114,23 @@ jobs:
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
 
-      - name: Build the app in Release mode
-        run: ./scripts/e2e-android-build.sh
+      - name: RNEF Remote Build - Android
+        id: rnef-remote-build-android
+        uses: callstackincubator/android@v1
+        with:
+          variant: debug
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          validate-gradle-wrapper: false
+          rnef-build-extra-params: '-PisE2E=true --no-daemon --build-cache --no-scan'
+
+      - name: Download and Unpack APK artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ steps.rnef-remote-build-android.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          ls -l downloaded-artifacts
+          APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
+          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> $GITHUB_ENV
+        shell: bash
 
       - name: Install Maestro
         run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
