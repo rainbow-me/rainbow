@@ -117,13 +117,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           ...walletInfo,
           accountAddress: ensureValidHex(address),
           selected,
-          walletReady: true,
         });
       } else {
         set({
           ...walletInfo,
           selected,
-          walletReady: true,
         });
       }
     },
@@ -547,7 +545,8 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
   };
 
-  const hasEnoughData = typeof account.ens === 'string' || (account.image && account.label);
+  const hasEnoughData =
+    typeof account.ens === 'string' || (account.image && account.label) || (!account.image && isValidHex(account.label));
   const shouldCacheAccount = Boolean(useCachedENS && hasEnoughData);
 
   if (shouldCacheAccount) {
