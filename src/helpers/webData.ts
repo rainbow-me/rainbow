@@ -44,10 +44,10 @@ export const initWebData = async (
   });
 };
 
-export const updateWebHidden = async (address: string, assetIds: string[]) => {
+export const updateWebHidden = async (address: string, assetIds: string[], forceInit = false) => {
   // fullUniqueId[]
   const response = await getPreference('hidden', address);
-  if (!response || !response.hidden.ids.length) {
+  if (forceInit || !response || !response.hidden.ids.length) {
     await setPreference(PreferenceActionType.init, 'hidden', address, assetIds);
     logger.debug('[webData]: hidden initialized!');
     return;
@@ -56,10 +56,10 @@ export const updateWebHidden = async (address: string, assetIds: string[]) => {
   setPreference(PreferenceActionType.update, 'hidden', address, assetIds);
 };
 
-export const updateWebShowcase = async (address: string, assetIds: string[]) => {
+export const updateWebShowcase = async (address: string, assetIds: string[], forceInit = false) => {
   // uniqueId[]
   const response = await getPreference('showcase', address);
-  if (!response || !response.showcase.ids.length) {
+  if (forceInit || !response || !response.showcase.ids.length) {
     await setPreference(PreferenceActionType.init, 'showcase', address, assetIds);
     logger.debug('[webData]: showcase initialized!');
     return;

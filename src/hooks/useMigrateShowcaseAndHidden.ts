@@ -152,8 +152,8 @@ export default function useMigrateShowcaseAndHidden() {
     }
 
     await Promise.all([
-      updateWebShowcase(accountAddress, migratedShowcaseTokens),
-      updateWebHidden(accountAddress, migratedHiddenTokens),
+      updateWebShowcase(accountAddress, migratedShowcaseTokens, true),
+      updateWebHidden(accountAddress, migratedHiddenTokens, true),
       queryClient.invalidateQueries({ queryKey: showcaseTokensQueryKey({ address: accountAddress }) }),
       queryClient.invalidateQueries({ queryKey: hiddenTokensQueryKey({ address: accountAddress }) }),
     ]);
