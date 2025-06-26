@@ -279,7 +279,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           loadingState: WalletLoadingStates.IMPORTING_WALLET,
         });
 
+        console.log('1', showImportModal);
+
         if (!showImportModal) {
+          console.log('2');
           await walletInit({
             seedPhrase: input,
             color,
@@ -293,6 +296,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
+          console.log('3');
           initializeWallet({
             seedPhrase: input,
             color,
@@ -301,9 +305,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
           })
             .then(success => {
+              console.log('3.1', success);
               ios && handleSetImporting(false);
               if (success) {
                 InteractionManager.runAfterInteractions(async () => {
+                  console.log('3.2 nav');
                   Navigation.handleAction(
                     Routes.SWIPE_LAYOUT,
                     {
