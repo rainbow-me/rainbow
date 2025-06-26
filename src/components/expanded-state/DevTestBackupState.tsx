@@ -7,7 +7,7 @@ import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
-import { clearWalletState } from '@/state/wallets/walletsStore';
+import { clearWalletState, loadWallets } from '@/state/wallets/walletsStore';
 import Clipboard from '@react-native-clipboard/clipboard';
 import React, { useEffect, useState } from 'react';
 import { Alert, DevSettings, Pressable, View } from 'react-native';
@@ -57,11 +57,13 @@ export const DevTestBackupState = () => {
             walletLoadingStore.setState({
               loadingState: WalletLoadingStates.IMPORTING_WALLET,
             });
+
+            const prevWalletsState = await loadWallets();
             const restored = await restoreBackup(backup);
             logger.log(`restored: ${restored}`);
 
             if (restored) {
-              await updateWalletsBackedUpState();
+              await updateWalletsBackedUpState({ prevWalletsState });
               DevSettings.reload();
             } else {
               Alert.alert(`invalid backup`);
