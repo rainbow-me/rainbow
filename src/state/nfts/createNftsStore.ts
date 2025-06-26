@@ -3,16 +3,20 @@ import { arcClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
-import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, UniqueId } from './types';
+import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, UniqueId, Collection } from './types';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
 import { IS_DEV } from '@/env';
-import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
-import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
+import { getShowcase } from '@/hooks/useFetchShowcaseTokens';
+import { getHidden } from '@/hooks/useFetchHiddenTokens';
+// import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+// import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { mergeMaps, replaceEthereumWithMainnet } from '@/state/nfts/utils';
 import { UniqueAsset } from '@/entities';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
-import { queryClient } from '@/react-query';
+// FIXME: re-enable this after initial release so we don't block initial work going in
+// import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+// import { queryClient } from '@/react-query';
+import { useNftsStore } from '@/state/nfts/nfts';
 
 export const PAGE_SIZE = 12;
 export const STALE_TIME = time.minutes(10);
@@ -24,6 +28,7 @@ const EMPTY_RETURN_DATA: NftsQueryData = {
   pagination: null,
 };
 
+const uninitialized = Symbol();
 let paginationPromise: { address: Address | string; promise: Promise<void> } | null = null;
 
 const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string): Promise<NftsQueryData> => {
@@ -134,6 +139,89 @@ const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
   }
 };
 
+function createSelector<T>(
+  selectorFn: (
+    collections: Map<CollectionId, Collection>,
+    nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>,
+    pagination: PaginationInfo | null
+  ) => T
+): () => T {
+  let cachedResult: T | typeof uninitialized = uninitialized;
+  let memoizedFn:
+    | ((
+        collections: Map<CollectionId, Collection>,
+        nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>,
+        pagination: PaginationInfo | null
+      ) => T)
+    | null = null;
+  let lastCollections: Map<CollectionId, Collection> | null = null;
+  let lastNftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>> | null = null;
+  let lastPagination: PaginationInfo | null = null;
+
+  return () => {
+    const { collections, nftsByCollection, pagination } = useNftsStore.getState();
+
+    if (
+      cachedResult !== uninitialized &&
+      lastCollections === collections &&
+      lastNftsByCollection === nftsByCollection &&
+      lastPagination === pagination
+    ) {
+      return cachedResult;
+    }
+
+    if (lastCollections !== collections) lastCollections = collections;
+    if (lastNftsByCollection !== nftsByCollection) lastNftsByCollection = nftsByCollection;
+    if (lastPagination !== pagination) lastPagination = pagination;
+
+    if (!memoizedFn) memoizedFn = selectorFn;
+
+    cachedResult = memoizedFn(collections, nftsByCollection, pagination);
+    return cachedResult;
+  };
+}
+
+function createParameterizedSelector<T, Args extends unknown[]>(
+  selectorFn: (
+    collections: Map<CollectionId, Collection>,
+    nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>,
+    pagination: PaginationInfo | null
+  ) => (...args: Args) => T
+): (...args: Args) => T {
+  let cachedResult: T | typeof uninitialized = uninitialized;
+  let lastArgs: Args | null = null;
+  let memoizedFn: ((...args: Args) => T) | null = null;
+  let lastCollections: Map<CollectionId, Collection> | null = null;
+  let lastNftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>> | null = null;
+  let lastPagination: PaginationInfo | null = null;
+
+  return (...args: Args) => {
+    const { collections, nftsByCollection, pagination } = useNftsStore.getState();
+    const argsChanged = !lastArgs || args.length !== lastArgs.length || args.some((arg, i) => arg !== lastArgs?.[i]);
+
+    if (
+      cachedResult !== uninitialized &&
+      lastCollections === collections &&
+      lastNftsByCollection === nftsByCollection &&
+      lastPagination === pagination &&
+      !argsChanged
+    ) {
+      return cachedResult;
+    }
+
+    if (!memoizedFn || lastCollections !== collections || lastNftsByCollection !== nftsByCollection || lastPagination !== pagination) {
+      lastCollections = collections;
+      lastNftsByCollection = nftsByCollection;
+      lastPagination = pagination;
+      memoizedFn = selectorFn(collections, nftsByCollection, pagination);
+    }
+
+    lastArgs = args;
+    cachedResult = memoizedFn(...args);
+    return cachedResult;
+  };
+}
+
 export type RawCollectionResponse = Awaited<ReturnType<typeof fetchNftData>>;
 
 export const createNftsStore = (address: Address | string) =>
@@ -215,17 +303,38 @@ export const createNftsStore = (address: Address | string) =>
                     pagination: data.pagination,
                   });
                 })
-                .catch(() => {
+                .catch(async () => {
                   // If the pageKey is expired or invalid, refetch from the beginning
-                  return fetch({ pageKey: null, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true }).then(data => {
-                    if (!data) return;
-                    set({
-                      collections: data.collections,
-                      nftsByCollection: data.nftsByCollection,
-                      fetchedPages: { initial: now },
-                      pagination: data.pagination,
-                    });
+                  const data = await fetch({ pageKey: null, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true });
+                  if (!data) return;
+
+                  // Set initial data
+                  set({
+                    collections: data.collections,
+                    nftsByCollection: data.nftsByCollection,
+                    fetchedPages: { initial: now },
+                    pagination: data.pagination,
                   });
+
+                  // If there's a next page, fetch it immediately
+                  if (data.pagination?.hasNext && data.pagination?.pageKey) {
+                    const nextPageData = await fetch(
+                      { pageKey: data.pagination.pageKey, limit: PAGE_SIZE },
+                      { force: true, skipStoreUpdates: true }
+                    );
+
+                    if (nextPageData) {
+                      const { collections, nftsByCollection } = get();
+                      set({
+                        collections: collections ? new Map([...collections, ...nextPageData.collections]) : nextPageData.collections,
+                        nftsByCollection: nftsByCollection
+                          ? new Map([...nftsByCollection, ...nextPageData.nftsByCollection])
+                          : nextPageData.nftsByCollection,
+                        fetchedPages: { initial: now, [data.pagination.pageKey]: now },
+                        pagination: nextPageData.pagination,
+                      });
+                    }
+                  }
                 })
                 .finally(() => {
                   paginationPromise = null;
@@ -235,18 +344,40 @@ export const createNftsStore = (address: Address | string) =>
             return paginationPromise.promise;
           }
 
-          // PageKey is stale, refetch from the beginning
+          // PageKey is stale, refetch from the beginning and then fetch next page
           paginationPromise = {
             address,
             promise: fetch({ pageKey: null, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true })
-              .then(data => {
+              .then(async data => {
                 if (!data) return;
+
+                // Set initial data
                 set({
                   collections: data.collections,
                   nftsByCollection: data.nftsByCollection,
                   fetchedPages: { initial: now },
                   pagination: data.pagination,
                 });
+
+                // If there's a next page, fetch it immediately
+                if (data.pagination?.hasNext && data.pagination?.pageKey) {
+                  const nextPageData = await fetch(
+                    { pageKey: data.pagination.pageKey, limit: PAGE_SIZE },
+                    { force: true, skipStoreUpdates: true }
+                  );
+
+                  if (nextPageData) {
+                    const { collections, nftsByCollection } = get();
+                    set({
+                      collections: collections ? new Map([...collections, ...nextPageData.collections]) : nextPageData.collections,
+                      nftsByCollection: nftsByCollection
+                        ? new Map([...nftsByCollection, ...nextPageData.nftsByCollection])
+                        : nextPageData.nftsByCollection,
+                      fetchedPages: { initial: now, [data.pagination.pageKey]: now },
+                      pagination: nextPageData.pagination,
+                    });
+                  }
+                }
               })
               .finally(() => {
                 paginationPromise = null;
@@ -257,74 +388,87 @@ export const createNftsStore = (address: Address | string) =>
         }
       },
 
-      getNftCollections: () => {
-        const { collections, getData } = get();
+      getNftCollections: createSelector(collections => {
         if (!collections.size) {
-          const data = getData();
-          return data?.collections ? Array.from(data.collections.values()) : null;
+          const { getData } = get();
+          return getData()?.collections ?? null;
         }
-        return Array.from(collections.values());
-      },
+        return collections;
+      }),
 
-      getNftCollection: collectionId => {
-        const { collections, getData } = get();
+      getNftCollection: createParameterizedSelector(collections => collectionId => {
         const normalizedCollectionId = collectionId.toLowerCase();
         if (!collections.size) {
+          const { getData } = get();
           return getData()?.collections?.get(normalizedCollectionId) || null;
         }
         return collections.get(normalizedCollectionId) || null;
-      },
+      }),
 
-      getNftsByCollection: collectionId => {
-        const { nftsByCollection, getData } = get();
+      getNftsByCollection: createParameterizedSelector((_, nftsByCollection) => collectionId => {
         const normalizedCollectionId = collectionId.toLowerCase();
         if (!nftsByCollection.size) {
+          const { getData } = get();
           return getData()?.nftsByCollection?.get(normalizedCollectionId) || null;
         }
         return nftsByCollection.get(normalizedCollectionId) || null;
-      },
+      }),
 
-      getNftByUniqueId: (collectionId, uniqueId) => {
-        const { nftsByCollection, getData } = get();
+      getNftByUniqueId: createParameterizedSelector((_, nftsByCollection) => (collectionId, uniqueId) => {
         const normalizedCollectionId = collectionId.toLowerCase();
         const normalizedUniqueId = uniqueId.toLowerCase();
-
         if (!nftsByCollection.size) {
+          const { getData } = get();
           return getData()?.nftsByCollection?.get(normalizedCollectionId)?.get(normalizedUniqueId) || null;
         }
         return nftsByCollection.get(normalizedCollectionId)?.get(normalizedUniqueId) || null;
-      },
+      }),
 
-      getNft: (collectionId, index) => {
-        const { nftsByCollection, getData } = get();
+      // TODO: Need to think about this one more
+      // I don't like having to create a new Array for each call to this accessor
+      getNft: createParameterizedSelector((_, nftsByCollection) => (collectionId, index) => {
         const normalizedCollectionId = collectionId.toLowerCase();
         if (!nftsByCollection.size) {
+          const { getData } = get();
           const nftArray = Array.from(getData()?.nftsByCollection?.get(normalizedCollectionId)?.values() || []);
           return nftArray[index] || null;
         }
         const nftArray = Array.from(nftsByCollection.get(normalizedCollectionId)?.values() || []);
         return nftArray[index] || null;
-      },
+      }),
 
-      getNftPaginationInfo: () => {
-        const { pagination, getData } = get();
+      getNftPaginationInfo: createSelector((_, __, pagination) => {
         if (!pagination) {
+          const { getData } = get();
           return getData()?.pagination ?? null;
         }
         return pagination;
-      },
+      }),
 
-      hasNextNftCollectionPage: () => {
-        const paginationInfo = get().getNftPaginationInfo();
-        return Boolean(paginationInfo?.hasNext);
-      },
+      hasNextNftCollectionPage: createSelector((_, __, pagination) => {
+        if (!pagination) {
+          const { getData } = get();
+          return Boolean(getData()?.pagination?.hasNext);
+        }
+        return Boolean(pagination?.hasNext);
+      }),
 
-      getCurrentNftCollectionPageKey: () => get().getNftPaginationInfo()?.pageKey ?? null,
+      getCurrentNftCollectionPageKey: createSelector((_, __, pagination) => {
+        if (!pagination) {
+          const { getData } = get();
+          return getData()?.pagination?.pageKey ?? null;
+        }
+        return pagination?.pageKey ?? null;
+      }),
 
-      getNextNftCollectionPageKey: () => {
-        const paginationInfo = get().getNftPaginationInfo();
-        return paginationInfo?.hasNext ? paginationInfo.pageKey : null;
-      },
+      getNextNftCollectionPageKey: createSelector((_, __, pagination) => {
+        if (!pagination) {
+          const { getData } = get();
+          const data = getData();
+          return data?.pagination?.hasNext ? data?.pagination?.pageKey : null;
+        }
+        return pagination?.hasNext ? pagination.pageKey : null;
+      }),
     }),
 
     address.length
@@ -349,25 +493,6 @@ async function setOrPruneNftsData(
 ): Promise<void> {
   const now = Date.now();
 
-  const showcaseUniqueIds = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address: params.walletAddress })) ?? [];
-  const hiddenUniqueIds = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address: params.walletAddress })) ?? [];
-
-  const { openCollections } = useOpenCollectionsStore.getState();
-  // Extract collection IDs from unique IDs for comparison
-  const showcaseCollectionIds = new Set(
-    showcaseUniqueIds.map(uniqueId => {
-      const { network, contractAddress } = parseUniqueId(uniqueId);
-      return `${network}_${contractAddress}`.toLowerCase();
-    })
-  );
-
-  const hiddenCollectionIds = new Set(
-    hiddenUniqueIds.map(uniqueId => {
-      const { network, contractAddress } = parseUniqueId(uniqueId);
-      return `${network}_${contractAddress}`.toLowerCase();
-    })
-  );
-
   // when performing a specific fetch for a collection, we also want to handle pruning
   // previously opened collections that are no longer opened
   // this is a bit of a hack, but it works for now
@@ -376,8 +501,6 @@ async function setOrPruneNftsData(
       const { nftsByCollection, fetchedCollections } = currentState;
       const mergedNftsByCollection = new Map(nftsByCollection);
       const updatedFetchedCollections = { ...fetchedCollections };
-
-      const isHiddenOpen = openCollections['hidden'] ?? false;
 
       // First, add/update the new data for the fetched collection
       for (const [collectionId, newNftsMap] of data.nftsByCollection) {
@@ -394,36 +517,62 @@ async function setOrPruneNftsData(
         updatedFetchedCollections[normalizedId] = now;
       }
 
+      // FIXME: re-enable this after initial release so we don't block initial work going in
+      /**
+       * Essentially the goal is to prune closed collections that have been stale for > STALE_TMIE
+       * but it's sometimes pruning collections that are still open, but can't sink a bunch of time
+       * into this right now.
+       */
+
+      // const showcaseUniqueIds = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address: params.walletAddress })) ?? [];
+      // const hiddenUniqueIds = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address: params.walletAddress })) ?? [];
+      // const { openCollections } = useOpenCollectionsStore.getState();
+      // // Extract collection IDs from unique IDs for comparison
+      // const showcaseCollectionIds = new Set(
+      //   showcaseUniqueIds.map(uniqueId => {
+      //     const { network, contractAddress } = parseUniqueId(uniqueId);
+      //     return `${network}_${contractAddress}`.toLowerCase();
+      //   })
+      // );
+      //
+      // const hiddenCollectionIds = new Set(
+      //   hiddenUniqueIds.map(uniqueId => {
+      //     const { network, contractAddress } = parseUniqueId(uniqueId);
+      //     return `${network}_${contractAddress}`.toLowerCase();
+      //   })
+      // );
+      //
+      // const isHiddenOpen = openCollections['hidden'] ?? false;
       // Then, check ALL existing collections for pruning
-      for (const [collectionId] of mergedNftsByCollection) {
-        const normalizedId = collectionId.toLowerCase();
+      // for (const [collectionId] of mergedNftsByCollection) {
+      //   const normalizedId = collectionId.toLowerCase();
 
-        // Determine if this collection should be kept
-        let shouldKeepCollection = false;
+      //   // Determine if this collection should be kept
+      //   let shouldKeepCollection = false;
 
-        if (showcaseCollectionIds.has(normalizedId)) {
-          // for showcase tokens, we should always keep them and never prune them
-          shouldKeepCollection = true;
-        } else if (hiddenCollectionIds.has(normalizedId)) {
-          // for hidden tokens, we should keep them if hidden is open
-          shouldKeepCollection = isHiddenOpen;
-        } else {
-          // for every other token, we should keep them if they are still opened
-          // Check if this collection ID is open in the openFamilies store
-          shouldKeepCollection = openCollections[normalizedId] ?? false;
-        }
+      //   if (showcaseCollectionIds.has(normalizedId)) {
+      //     // for showcase tokens, we should always keep them and never prune them
+      //     shouldKeepCollection = true;
+      //   } else if (hiddenCollectionIds.has(normalizedId)) {
+      //     // for hidden tokens, we should keep them if hidden is open
+      //     shouldKeepCollection = isHiddenOpen;
+      //   } else {
+      //     // for every other token, we should keep them if they are still opened
+      //     // Check if this collection ID is open in the openFamilies store
+      //     shouldKeepCollection = openCollections[normalizedId] ?? false;
+      //   }
 
-        if (!shouldKeepCollection) {
-          // if it's no longer open, we should check to see if the stale time is expired
-          const staleTime = updatedFetchedCollections[normalizedId];
-          const timeSinceFetch = staleTime ? now - staleTime : 0;
+      //   if (!shouldKeepCollection) {
+      //     // if it's no longer open, we should check to see if the stale time is expired
+      //     const staleTime = updatedFetchedCollections[normalizedId];
+      //     const timeSinceFetch = staleTime ? now - staleTime : 0;
 
-          if (staleTime && timeSinceFetch > STALE_TIME) {
-            mergedNftsByCollection.delete(normalizedId);
-            delete updatedFetchedCollections[normalizedId];
-          }
-        }
-      }
+      //     if (staleTime && timeSinceFetch > STALE_TIME) {
+      //       mergedNftsByCollection.delete(normalizedId);
+      //       delete updatedFetchedCollections[normalizedId];
+      //     }
+      //   }
+      // }
 
       return {
         ...currentState,

@@ -72,7 +72,7 @@ export const UniqueTokenCard = React.memo(function UniqueTokenCard({
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
           backgroundColor={item.backgroundColor || colors.lightestGrey}
-          imageUrl={item.images.highResUrl || item.images.animatedUrl || item.images.lowResUrl}
+          imageUrl={item.images.lowResUrl || item.images.highResUrl || item.images.animatedUrl}
           isCard
           id={item.tokenId}
           type={item.type}

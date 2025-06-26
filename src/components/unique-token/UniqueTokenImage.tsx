@@ -33,6 +33,7 @@ type UniqueTokenImageProps = {
   mimeType: string | null | undefined;
   isCard?: boolean;
   transformSvgs?: boolean;
+  optimisticImageLoading?: boolean;
 };
 
 export const UniqueTokenName = React.memo(function UniqueTokenName({
@@ -76,13 +77,16 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   isCard = false,
   mimeType,
   transformSvgs = true,
+  optimisticImageLoading = false,
 }: UniqueTokenImageProps) {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const { hiddenTokens } = useHiddenTokens();
 
+  const [isLoading, setIsLoading] = useState(optimisticImageLoading);
   const [errorLoadingImage, setErrorLoadingImage] = useState(false);
 
+  const onLoad = useCallback(() => setIsLoading(false), [setIsLoading]);
   const onError = useCallback(() => setErrorLoadingImage(true), [setErrorLoadingImage]);
 
   const isHiddenToken = useMemo(() => {
@@ -109,7 +113,14 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
           uri={imageUrl}
         />
       )}
-      {shouldShowRegularImage && <RainbowImage onError={onError} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />}
+      {shouldShowRegularImage && (
+        <>
+          <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />
+          {optimisticImageLoading && isLoading && lowResImageUrl && (
+            <RainbowImage onError={onError} source={{ url: lowResImageUrl }} style={StyleSheet.absoluteFillObject} />
+          )}
+        </>
+      )}
       {isHiddenToken && isCard && <BlurView blurIntensity={40} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
       {shouldShowTextFallback && (
         <UniqueTokenName

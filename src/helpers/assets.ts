@@ -7,7 +7,7 @@ import { AssetType, NativeCurrencyKey, ParsedAddressAsset, UniqueAsset } from '@
 import { UniqueId } from '@/__swaps__/types/assets';
 import { CellType, CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
-import { Collection } from '@/state/nfts/types';
+import { Collection, CollectionId } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 
@@ -251,7 +251,7 @@ export const buildUniqueTokenList = (uniqueTokens: UniqueAsset[], selectedShowca
 };
 
 export const buildBriefUniqueTokenList = (
-  collections: Collection[] | null,
+  collections: Map<CollectionId, Collection> | null,
   sellingTokens: UniqueAsset[] | undefined = [],
   showcaseTokens: string[] | undefined = [],
   hiddenTokens: string[] | undefined = [],
@@ -313,7 +313,7 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: CellType.NFT_SPACE_AFTER, uid: `showcase-space-after` });
   }
 
-  if (!collections?.length) {
+  if (!collections?.size) {
     if (!isFetchingNfts) {
       result.push({ type: CellType.NFTS_EMPTY, uid: `nft-empty` });
     } else {
@@ -331,7 +331,7 @@ export const buildBriefUniqueTokenList = (
       });
     }
 
-    for (const { id, imageUrl, name, totalCount } of collections) {
+    for (const { id, imageUrl, name, totalCount } of collections.values()) {
       let adjustedTotalCount = totalCount;
 
       if (isShowcaseDataMigrated && isHiddenDataMigrated) {

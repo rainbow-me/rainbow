@@ -138,7 +138,7 @@ export default function useWalletSectionsData({
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
-    const hasNFTs = (collections?.length ?? 0) > 0;
+    const hasNFTs = (collections?.size ?? 0) > 0;
 
     return {
       hasNFTs,
