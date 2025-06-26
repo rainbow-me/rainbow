@@ -2,7 +2,7 @@ import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettin
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
-import { fetchENSAvatar, fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
+import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
 import { logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
 import { hasKey } from '@/model/keychain';
@@ -30,7 +30,7 @@ import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetr
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty, keys } from 'lodash';
+import { keys } from 'lodash';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
@@ -543,7 +543,7 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
     label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
   };
 
-  const shouldCacheAccount = Boolean(useCachedENS && typeof account.ens === 'string');
+  const shouldCacheAccount = Boolean(useCachedENS && (typeof account.ens === 'string' || (account.image && !isValidHex(account.label))));
 
   if (shouldCacheAccount) {
     return account;
