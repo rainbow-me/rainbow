@@ -2,7 +2,7 @@ import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettin
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
-import { fetchENSAvatar } from '@/hooks/useENSAvatar';
+import { fetchENSAvatar, fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
 import { logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
 import { hasKey } from '@/model/keychain';
@@ -564,7 +564,7 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
   const ens = await fetchReverseRecordWithRetry(account.address);
 
   if (ens) {
-    const avatar = await fetchENSAvatar(ens);
+    const avatar = await fetchENSAvatarWithRetry(ens);
     const newImage = avatar?.imageUrl || null;
     return {
       ...account,

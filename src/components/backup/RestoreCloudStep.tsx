@@ -158,7 +158,6 @@ export default function RestoreCloudStep() {
           }
 
           logger.debug('[RestoreCloudStep]: Done updating backup state');
-
           await updateWalletsBackedUpState({ filename, prevWalletsState });
         });
 
