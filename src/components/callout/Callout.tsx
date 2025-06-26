@@ -1,5 +1,5 @@
 import React from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 

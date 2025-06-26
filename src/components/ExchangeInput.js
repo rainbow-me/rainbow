@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import TextInputMask from 'react-native-text-input-mask';
+import { MaskedTextInput } from 'react-native-advanced-input-mask';
 import { Text } from '@/components/text';
 import styled from '@/styled-thing';
 import { buildTextStyles } from '@/styles';
@@ -15,7 +15,7 @@ const AndroidMaskWrapper = styled.View({
   top: 11.5,
 });
 
-const Input = styled(TextInputMask).attrs({
+const Input = styled(MaskedTextInput).attrs({
   allowFontScaling: false,
   keyboardType: 'decimal-pad',
 })(props => ({

@@ -3,7 +3,7 @@ import { StyleSheet, View, LayoutChangeEvent, useWindowDimensions } from 'react-
 import { BlurView } from 'react-native-blur-view';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 import { Box, globalColors, HitSlop, Text } from '@/design-system';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import Svg, { Path } from 'react-native-svg';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -29,7 +29,7 @@ const BORDER_RADIUS = 24;
 const ICON_SIZE = 36;
 
 /*
-  This draws the entire tooltip, including the arrow, in one path 
+  This draws the entire tooltip, including the arrow, in one path
   This allows the arrow to blend into the tooltip background nicely
 */
 const calculateTooltipPath = (side: Side, align: Align, width: number): string => {

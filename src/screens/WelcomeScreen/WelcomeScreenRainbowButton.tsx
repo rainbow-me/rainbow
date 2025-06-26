@@ -1,5 +1,6 @@
 import { BaseButtonAnimationProps } from '@/components/animations/ButtonPressAnimation/types';
 import { StyleProp, ViewStyle } from 'react-native';
+import ConditionalWrap from 'conditional-wrap';
 import { ButtonPressAnimation } from '@/components/animations';
 import React from 'react';
 import styled from '@/styled-thing';
@@ -47,7 +48,6 @@ const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { the
   ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
   borderRadius: 30,
   height: 60,
-  position: 'absolute',
   width: 236,
   ...(ios
     ? {
@@ -66,6 +66,7 @@ interface Props extends BaseButtonAnimationProps {
   emoji: string;
   shadowStyle?: StyleProp<ViewStyle>;
   darkShadowStyle?: StyleProp<ViewStyle>;
+  hasShadow?: boolean;
 }
 
 export const WelcomeScreenRainbowButton = ({
@@ -77,18 +78,20 @@ export const WelcomeScreenRainbowButton = ({
   style,
   textColor,
   text,
+  hasShadow = false,
   ...props
 }: Props) => {
   return (
     <ButtonPressAnimation onPress={onPress} radiusAndroid={height / 2} scaleTo={0.9} {...props}>
-      {ios && <DarkShadow style={darkShadowStyle} />}
-      <Shadow style={shadowStyle} />
-      <ButtonContainer height={height} style={style}>
-        <ButtonContent>
-          <ButtonEmoji name={emoji} />
-          <ButtonLabel textColor={textColor}>{text}</ButtonLabel>
-        </ButtonContent>
-      </ButtonContainer>
+      {ios && hasShadow && <DarkShadow style={darkShadowStyle} />}
+      <ConditionalWrap wrap={children => <Shadow style={shadowStyle}>{children}</Shadow>} condition={hasShadow}>
+        <ButtonContainer height={height} style={style}>
+          <ButtonContent>
+            <ButtonEmoji name={emoji} />
+            <ButtonLabel textColor={textColor}>{text}</ButtonLabel>
+          </ButtonContent>
+        </ButtonContainer>
+      </ConditionalWrap>
     </ButtonPressAnimation>
   );
 };

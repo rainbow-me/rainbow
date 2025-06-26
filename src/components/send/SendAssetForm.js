@@ -1,5 +1,5 @@
 import React, { Fragment, useMemo } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';

@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Alert } from '../../../components/alerts';
 import ButtonPressAnimation from '../../../components/animations/ButtonPressAnimation';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';

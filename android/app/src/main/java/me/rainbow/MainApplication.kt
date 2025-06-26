@@ -7,6 +7,7 @@ import android.app.Application
 import android.content.Context
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
@@ -51,6 +52,9 @@ class MainApplication : Application(), ReactApplication {
         override val isHermesEnabled: Boolean
             get() = BuildConfig.IS_HERMES_ENABLED
     })
+
+    override val reactHost: ReactHost
+        get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
 
     override fun onCreate() {
         ReactNativePerformance.onAppStarted();

@@ -225,15 +225,14 @@ export default function WelcomeScreen() {
               testID="new-wallet-button"
               text={lang.t('wallet.new.get_new_wallet')}
               textColor={isDarkMode ? colors.dark : colors.white}
+              hasShadow
             />
           </ButtonWrapper>
           <ButtonWrapper>
             <WelcomeScreenRainbowButton
-              darkShadowStyle={sx.existingWalletShadow}
               emoji="old_key"
               height={56}
               onPress={showRestoreSheet}
-              shadowStyle={sx.existingWalletShadow}
               style={[sx.existingWallet, { backgroundColor: colors.blueGreyDarkLight }]}
               testID="already-have-wallet-button"
               text={lang.t('wallet.new.already_have_wallet')}
@@ -264,8 +263,5 @@ export default function WelcomeScreen() {
 const sx = StyleSheet.create({
   existingWallet: {
     width: 248,
-  },
-  existingWalletShadow: {
-    opacity: 0,
   },
 });

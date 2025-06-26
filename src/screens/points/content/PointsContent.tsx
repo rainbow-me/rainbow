@@ -57,7 +57,7 @@ import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useReduc
 import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
 import FastImage, { Source } from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
 import { InfoCard } from '../components/InfoCard';
