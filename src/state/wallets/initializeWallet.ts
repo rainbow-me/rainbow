@@ -123,7 +123,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
     if (seedPhrase || isNew) {
       logger.debug('[initializeWallet]: walletsLoadState call #2');
-      await loadWallets(walletAddress);
+      await loadWallets();
       if (shouldCancel()) return null;
     }
 
