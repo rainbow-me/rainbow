@@ -253,7 +253,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         }
 
         if (selectedWallet) {
-          setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined, wallets);
+          await setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined, wallets);
         } else {
           logger.error(new RainbowError('[walletsStore]: No selectedWallet ever found'));
         }
