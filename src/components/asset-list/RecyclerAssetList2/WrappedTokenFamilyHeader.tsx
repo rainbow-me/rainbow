@@ -32,8 +32,7 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
         {
           collectionId: uid.toLowerCase(),
         },
-        // we handle pruning / stale time manually, so we don't need to ever refetch the collection data
-        { staleTime: time.infinity }
+        { staleTime: time.infinity, cacheTime: time.infinity }
       );
     }
   });
