@@ -75,13 +75,10 @@ export const UniqueTokenCard = React.memo(function UniqueTokenCard({
           imageUrl={item.images.lowResUrl || item.images.highResUrl || item.images.animatedUrl}
           isCard
           id={item.tokenId}
-          type={item.type}
           collectionName={item.collectionName ?? ''}
           name={item.name}
           uniqueId={item.uniqueId}
-          mimeType={item.images.mimeType ?? ''}
           lowResImageUrl={item.images.lowResUrl}
-          transformSvgs={false}
         />
         {borderEnabled && <InnerBorder opacity={0.04} radius={UniqueTokenCardBorderRadius} width={0.5} />}
       </Content>
