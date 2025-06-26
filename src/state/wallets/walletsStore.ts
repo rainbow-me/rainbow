@@ -550,6 +550,7 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
 
   const hasEnoughData =
     typeof account.ens === 'string' || (account.image && account.label) || (!account.image && isValidHex(account.label));
+
   const shouldCacheAccount = Boolean(useCachedENS && hasEnoughData);
 
   if (shouldCacheAccount) {

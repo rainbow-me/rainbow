@@ -285,9 +285,8 @@ export default function ChangeWalletSheet() {
                 };
 
                 await setSelectedWallet(updatedWallet, accountAddress, updatedWallets);
-                await refreshWalletInfo();
-
-                updateWebProfile(address, name, colors.avatarBackgrounds[color]);
+                void refreshWalletInfo();
+                void updateWebProfile(address, name, colors.avatarBackgrounds[color]);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }
