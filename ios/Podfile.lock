@@ -2540,7 +2540,7 @@ SPEC CHECKSUMS:
   Permission-Notifications: e254bc5abf9c33a6ac6b9f68f4c406d5bf7ab46e
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   Rainbow-Internals: ebb58dacc43c3061546db8d1fc04939ff4af194d
-  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
+  RCT-Folly: 5dc73daec3476616d19e8a53f0156176f7b55461
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
   RCTRequired: d530a0f489699c8500e944fde963102c42dcd0c2
   RCTTypeSafety: b20878506b094fa3d9007d7b9e4be0faa3562499
