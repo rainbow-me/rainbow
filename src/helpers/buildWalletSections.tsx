@@ -10,7 +10,7 @@ import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { Collection } from '@/state/nfts/types';
+import { Collection, CollectionId } from '@/state/nfts/types';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -59,7 +59,7 @@ export type WalletSectionsState = {
   sellingTokens?: UniqueAsset[];
   experimentalConfig: ReturnType<typeof useExperimentalConfig>;
   showcaseTokens: string[];
-  collections: Collection[] | null;
+  collections: Map<CollectionId, Collection> | null;
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
@@ -192,13 +192,13 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
-  collections: Collection[] | null,
+  collections: Map<CollectionId, Collection> | null,
   remoteCards: string[]
 ): BalanceSectionResult => {
   const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
   const hasTokens = briefAssets?.length;
-  const hasNFTs = (collections?.length || 0) > 0;
+  const hasNFTs = (collections?.size ?? 0) > 0;
   const hasNFTsOnly = !hasTokens && hasNFTs;
 
   const isEmpty = !hasTokens && !hasNFTs;

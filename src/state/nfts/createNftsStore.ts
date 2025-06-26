@@ -7,15 +7,12 @@ import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, Uniq
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
 import { IS_DEV } from '@/env';
-import { getShowcase } from '@/hooks/useFetchShowcaseTokens';
-import { getHidden } from '@/hooks/useFetchHiddenTokens';
-// import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
-// import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
+import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { mergeMaps, replaceEthereumWithMainnet } from '@/state/nfts/utils';
 import { UniqueAsset } from '@/entities';
-// FIXME: re-enable this after initial release so we don't block initial work going in
-// import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
-// import { queryClient } from '@/react-query';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { queryClient } from '@/react-query';
 import { useNftsStore } from '@/state/nfts/nfts';
 
 export const PAGE_SIZE = 12;
@@ -295,10 +292,9 @@ export const createNftsStore = (address: Address | string) =>
               promise: fetch({ pageKey: nextPageKey, limit: PAGE_SIZE }, { force: true, skipStoreUpdates: true })
                 .then(data => {
                   if (!data) return;
-                  const { collections, nftsByCollection } = get();
+                  const { collections } = get();
                   set({
                     collections: collections ? new Map([...collections, ...data.collections]) : data.collections,
-                    nftsByCollection: nftsByCollection ? new Map([...nftsByCollection, ...data.nftsByCollection]) : data.nftsByCollection,
                     fetchedPages: { ...cleanedFetchedPages, [nextPageKey]: Date.now() },
                     pagination: data.pagination,
                   });
@@ -311,7 +307,6 @@ export const createNftsStore = (address: Address | string) =>
                   // Set initial data
                   set({
                     collections: data.collections,
-                    nftsByCollection: data.nftsByCollection,
                     fetchedPages: { initial: now },
                     pagination: data.pagination,
                   });
@@ -324,12 +319,9 @@ export const createNftsStore = (address: Address | string) =>
                     );
 
                     if (nextPageData) {
-                      const { collections, nftsByCollection } = get();
+                      const { collections } = get();
                       set({
                         collections: collections ? new Map([...collections, ...nextPageData.collections]) : nextPageData.collections,
-                        nftsByCollection: nftsByCollection
-                          ? new Map([...nftsByCollection, ...nextPageData.nftsByCollection])
-                          : nextPageData.nftsByCollection,
                         fetchedPages: { initial: now, [data.pagination.pageKey]: now },
                         pagination: nextPageData.pagination,
                       });
@@ -354,7 +346,6 @@ export const createNftsStore = (address: Address | string) =>
                 // Set initial data
                 set({
                   collections: data.collections,
-                  nftsByCollection: data.nftsByCollection,
                   fetchedPages: { initial: now },
                   pagination: data.pagination,
                 });
@@ -367,12 +358,9 @@ export const createNftsStore = (address: Address | string) =>
                   );
 
                   if (nextPageData) {
-                    const { collections, nftsByCollection } = get();
+                    const { collections } = get();
                     set({
                       collections: collections ? new Map([...collections, ...nextPageData.collections]) : nextPageData.collections,
-                      nftsByCollection: nftsByCollection
-                        ? new Map([...nftsByCollection, ...nextPageData.nftsByCollection])
-                        : nextPageData.nftsByCollection,
                       fetchedPages: { initial: now, [data.pagination.pageKey]: now },
                       pagination: nextPageData.pagination,
                     });
@@ -517,62 +505,55 @@ async function setOrPruneNftsData(
         updatedFetchedCollections[normalizedId] = now;
       }
 
-      // FIXME: re-enable this after initial release so we don't block initial work going in
-      /**
-       * Essentially the goal is to prune closed collections that have been stale for > STALE_TMIE
-       * but it's sometimes pruning collections that are still open, but can't sink a bunch of time
-       * into this right now.
-       */
+      const showcaseUniqueIds = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address: params.walletAddress })) ?? [];
+      const hiddenUniqueIds = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address: params.walletAddress })) ?? [];
+      const { openCollections } = useOpenCollectionsStore.getState();
+      // Extract collection IDs from unique IDs for comparison
+      const showcaseCollectionIds = new Set(
+        showcaseUniqueIds.map(uniqueId => {
+          const { network, contractAddress } = parseUniqueId(uniqueId);
+          return `${network}_${contractAddress}`.toLowerCase();
+        })
+      );
 
-      // const showcaseUniqueIds = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address: params.walletAddress })) ?? [];
-      // const hiddenUniqueIds = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address: params.walletAddress })) ?? [];
-      // const { openCollections } = useOpenCollectionsStore.getState();
-      // // Extract collection IDs from unique IDs for comparison
-      // const showcaseCollectionIds = new Set(
-      //   showcaseUniqueIds.map(uniqueId => {
-      //     const { network, contractAddress } = parseUniqueId(uniqueId);
-      //     return `${network}_${contractAddress}`.toLowerCase();
-      //   })
-      // );
-      //
-      // const hiddenCollectionIds = new Set(
-      //   hiddenUniqueIds.map(uniqueId => {
-      //     const { network, contractAddress } = parseUniqueId(uniqueId);
-      //     return `${network}_${contractAddress}`.toLowerCase();
-      //   })
-      // );
-      //
-      // const isHiddenOpen = openCollections['hidden'] ?? false;
+      const hiddenCollectionIds = new Set(
+        hiddenUniqueIds.map(uniqueId => {
+          const { network, contractAddress } = parseUniqueId(uniqueId);
+          return `${network}_${contractAddress}`.toLowerCase();
+        })
+      );
+
+      const isHiddenOpen = openCollections['hidden'] ?? false;
       // Then, check ALL existing collections for pruning
-      // for (const [collectionId] of mergedNftsByCollection) {
-      //   const normalizedId = collectionId.toLowerCase();
+      for (const [collectionId] of mergedNftsByCollection) {
+        const normalizedId = collectionId.toLowerCase();
 
-      //   // Determine if this collection should be kept
-      //   let shouldKeepCollection = false;
+        // Determine if this collection should be kept
+        let shouldKeepCollection = false;
 
-      //   if (showcaseCollectionIds.has(normalizedId)) {
-      //     // for showcase tokens, we should always keep them and never prune them
-      //     shouldKeepCollection = true;
-      //   } else if (hiddenCollectionIds.has(normalizedId)) {
-      //     // for hidden tokens, we should keep them if hidden is open
-      //     shouldKeepCollection = isHiddenOpen;
-      //   } else {
-      //     // for every other token, we should keep them if they are still opened
-      //     // Check if this collection ID is open in the openFamilies store
-      //     shouldKeepCollection = openCollections[normalizedId] ?? false;
-      //   }
+        if (showcaseCollectionIds.has(normalizedId)) {
+          // for showcase tokens, we should always keep them and never prune them
+          shouldKeepCollection = true;
+        } else if (hiddenCollectionIds.has(normalizedId)) {
+          // for hidden tokens, we should keep them if hidden is open
+          shouldKeepCollection = isHiddenOpen;
+        } else {
+          // for every other token, we should keep them if they are still opened
+          // Check if this collection ID is open in the openFamilies store
+          shouldKeepCollection = openCollections[normalizedId] ?? false;
+        }
 
-      //   if (!shouldKeepCollection) {
-      //     // if it's no longer open, we should check to see if the stale time is expired
-      //     const staleTime = updatedFetchedCollections[normalizedId];
-      //     const timeSinceFetch = staleTime ? now - staleTime : 0;
+        if (!shouldKeepCollection) {
+          // if it's no longer open, we should check to see if the stale time is expired
+          const staleTime = updatedFetchedCollections[normalizedId];
+          const timeSinceFetch = staleTime ? now - staleTime : 0;
 
-      //     if (staleTime && timeSinceFetch > STALE_TIME) {
-      //       mergedNftsByCollection.delete(normalizedId);
-      //       delete updatedFetchedCollections[normalizedId];
-      //     }
-      //   }
-      // }
+          if (staleTime && timeSinceFetch > STALE_TIME) {
+            mergedNftsByCollection.delete(normalizedId);
+            delete updatedFetchedCollections[normalizedId];
+          }
+        }
+      }
 
       return {
         ...currentState,
