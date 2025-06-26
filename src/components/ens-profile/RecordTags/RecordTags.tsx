@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import Skeleton from '../../skeleton/Skeleton';

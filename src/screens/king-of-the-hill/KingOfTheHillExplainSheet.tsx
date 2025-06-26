@@ -8,7 +8,7 @@ import { SheetHandle } from '@/components/sheet';
 import { Box, Text, Separator, AnimatedText, ColorModeProvider } from '@/design-system';
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Extrapolation, interpolate, SharedValue, useDerivedValue } from 'react-native-reanimated';

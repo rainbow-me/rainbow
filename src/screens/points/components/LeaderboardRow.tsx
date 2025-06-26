@@ -18,7 +18,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { noop } from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { switchWallet } from '@/state/wallets/switchWallet';
 
