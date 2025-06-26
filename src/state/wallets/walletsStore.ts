@@ -117,11 +117,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           ...walletInfo,
           accountAddress: ensureValidHex(address),
           selected,
+          walletReady: true,
         });
       } else {
         set({
           ...walletInfo,
           selected,
+          walletReady: true,
         });
       }
     },
