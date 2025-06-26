@@ -178,65 +178,50 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     // setting and managing keychain
     loadWallets: async () => {
       try {
-        const { accountAddress } = get();
+        const [selected, loadedAccountAddress, allWalletsResult] = await Promise.all([
+          getSelectedWalletFromKeychain(),
+          loadAddress(),
+          getAllWallets(),
+        ]);
 
-        let nextAccountAddress: Address | null = accountAddress === `0x` ? null : accountAddress;
-
-        const allWalletsResult = await getAllWallets();
-
-        const wallets = allWalletsResult?.wallets || {};
-
-        if (isEmpty(wallets)) return;
-
-        const selected = await getSelectedWalletFromKeychain();
-
-        // Prevent irrecoverable state (no selected wallet)
+        let accountAddress: Address | null = isValidHex(loadedAccountAddress) ? loadedAccountAddress : null;
         let selectedWallet = selected?.wallet;
 
-        // Check if the selected wallet is among all the wallets
+        const wallets = allWalletsResult?.wallets;
+        if (!wallets) return;
+
+        // repair if selectedWallet not in wallets
         if (selectedWallet && !wallets[selectedWallet.id]) {
-          // If not then we should clear it and default to the first one
-          const firstWalletKey = Object.keys(wallets)[0];
-          selectedWallet = wallets[firstWalletKey];
+          selectedWallet = wallets[Object.keys(wallets)[0]];
         }
 
+        // repair if no selectedWallet
         if (!selectedWallet) {
-          const address = await loadAddress();
-          if (!address) {
+          if (!accountAddress) {
             selectedWallet = wallets[Object.keys(wallets)[0]];
           } else {
-            keys(wallets).some(key => {
+            for (const key in wallets) {
               const someWallet = wallets[key];
               const found = (someWallet.addresses || []).some(account => {
-                return toChecksumAddress(account.address) === toChecksumAddress(address);
+                return toChecksumAddress(account.address) === accountAddress;
               });
               if (found) {
                 selectedWallet = someWallet;
                 logger.debug('[walletsStore]: Found selected wallet based on loadAddress result');
+                break;
               }
-              return found;
-            });
+            }
           }
         }
 
         const selectedAddress = selectedWallet?.addresses.find(a => {
-          return a.visible && a.address === nextAccountAddress;
+          return a.visible && a.address === accountAddress;
         });
 
-        // Recover from broken state (account address not in selected wallet)
-        if (!nextAccountAddress) {
-          const loaded = await loadAddress();
-          if (loaded && isValidHex(loaded)) {
-            nextAccountAddress = ensureValidHex(loaded);
-          }
-          logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
-        }
-
-        // Let's select the first visible account if we don't have a selected address
-        if (!selectedAddress) {
+        // repair if we can't find accountAddress in selectedWallet
+        if (!selectedAddress && allWalletsResult?.wallets) {
           let account = null;
-          const allWallets = Object.values(allWalletsResult?.wallets || {});
-          for (const wallet of allWallets) {
+          for (const wallet of Object.values(allWalletsResult.wallets)) {
             for (const rainbowAccount of wallet.addresses || []) {
               if (rainbowAccount.visible) {
                 account = rainbowAccount;
@@ -244,19 +229,19 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
               }
             }
           }
-
           if (!account) return;
           if (isValidHex(account.address)) {
-            nextAccountAddress = account.address;
+            accountAddress = account.address;
           }
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
-        if (selectedWallet) {
-          await setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined, wallets);
-        } else {
+        if (!selectedWallet) {
           logger.error(new RainbowError('[walletsStore]: No selectedWallet ever found'));
+          return;
         }
+
+        await setSelectedWallet(selectedWallet, accountAddress ? ensureValidHex(accountAddress) : undefined, wallets);
 
         return wallets;
       } catch (error) {
