@@ -40,6 +40,7 @@ src/config/debug.ts
 # Android/IntelliJ
 #
 build/
+.cxx/
 android/app/src/main/java/me/rainbow/NativeModules/Internals/
 .idea
 .gradle
