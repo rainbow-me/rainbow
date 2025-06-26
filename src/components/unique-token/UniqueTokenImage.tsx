@@ -86,8 +86,16 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const [isLoading, setIsLoading] = useState(optimisticImageLoading);
   const [errorLoadingImage, setErrorLoadingImage] = useState(false);
 
+  console.log('imageUrl', imageUrl, errorLoadingImage);
+
   const onLoad = useCallback(() => setIsLoading(false), [setIsLoading]);
-  const onError = useCallback(() => setErrorLoadingImage(true), [setErrorLoadingImage]);
+  const onError = useCallback(
+    (...args: unknown[]) => {
+      console.log('onError', args);
+      setErrorLoadingImage(true);
+    },
+    [setErrorLoadingImage]
+  );
 
   const isHiddenToken = useMemo(() => {
     return hiddenTokens.find(token => isLowerCaseMatch(token, uniqueId));
@@ -117,7 +125,7 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
         <>
           <RainbowImage onError={onError} onSuccess={onLoad} source={{ url: imageUrl }} style={StyleSheet.absoluteFillObject} />
           {optimisticImageLoading && isLoading && lowResImageUrl && (
-            <RainbowImage onError={onError} source={{ url: lowResImageUrl }} style={StyleSheet.absoluteFillObject} />
+            <RainbowImage source={{ url: lowResImageUrl }} style={StyleSheet.absoluteFillObject} />
           )}
         </>
       )}
