@@ -42,7 +42,7 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
             !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Set up ENV vars & scripts
@@ -53,36 +53,43 @@ jobs:
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS
-
-      - run: cd rainbow-scripts && git checkout @janic/rn79
-
+      - name: Checkout Janic branch for now
+        run: cd rainbow-scripts && git checkout @janic/rn79
       - name: Install dependencies
         run: |
           yarn install && yarn setup
 
-      - name: Version debug
-        run: |
-          npx react-native info
-
-      - name: Install pods
-        run: |
-          rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
-          yarn install-bundle && yarn install-pods
-
-      - uses: irgaly/xcode-cache@v1
-        with:
-          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
-          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
-
-      - name: Install Maestro
-        run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
-
-      - name: Modify env and build app in release mode
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      - name: Modify env
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-          ./scripts/e2e-ios-build.sh
+
+      - name: RNEF Remote Build - iOS simulator
+        id: rnef-remote-build-ios
+        uses: callstackincubator/ios@v1
+        with:
+          scheme: Rainbow
+          destination: simulator
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration: Debug
+          comment-bot: false
+
+      - name: Download and Unpack IPA artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ steps.rnef-remote-build-ios.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          ls -l downloaded-artifacts
+          APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
+          tar -xzf "$APP_ARCHIVE_PATH" -C downloaded-artifacts
+          APP_PATH=$(find downloaded-artifacts -name "*.app" -type d | head -n 1)
+          echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> $GITHUB_ENV
+
+      - name: Modify env
+        run: |
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+
+      - name: Install Maestro
+        run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
+
       - uses: futureware-tech/simulator-action@v4
         id: simulator
         with:

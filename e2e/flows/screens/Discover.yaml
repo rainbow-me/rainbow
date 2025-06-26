@@ -1,0 +1,74 @@
+appId: ${APP_ID}
+tags:
+  - discover
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Check various screens exist and can be navigated to
+- swipe:
+    direction: LEFT
+- assertVisible:
+    id: discover-header
+- tapOn:
+    id: tab-bar-icon-ProfileScreen
+- assertVisible:
+    id: profile-screen
+- swipe:
+    direction: LEFT
+- assertVisible:
+    id: points-screen
+- tapOn:
+    id: tab-bar-icon-DiscoverScreen
+- assertVisible:
+    id: discover-header
+
+# Discover screen search for SOCKS and open expanded state
+- tapOn:
+    id: discover-search-icon
+- assertVisible:
+    id: done-button
+- inputText: 'SOCKS'
+- assertVisible:
+    id: discover-currency-select-list-exchange-coin-row-SOCKS-1
+- tapOn:
+    id: discover-currency-select-list-exchange-coin-row-SOCKS-1
+- assertVisible:
+    id: chart-header-Unisocks
+- swipe:
+    direction: DOWN
+- tapOn:
+    id: discover-search-clear-input
+- tapOn:
+    id: discover-search-input
+
+# Bitcoin search and section verification
+- inputText: 'bitcoin'
+- assertVisible:
+    id: favorites-0
+- assertVisible:
+    id: verified-1
+- tapOn:
+    id: discover-search-clear-input
+
+# Check ENS resolution and profile sheet
+- tapOn:
+    id: discover-search-input
+- inputText: 'rainbowwallet.eth'
+- assertVisible:
+    id: discover-currency-select-list-contact-row-rainbowwallet.eth
+- tapOn:
+    id: discover-currency-select-list-contact-row-rainbowwallet.eth
+- assertVisible:
+    id: profile-sheet
+- tapOn:
+    id: profile-sheet-watch-button
+- runFlow: ../../utils/MaybeSetupPin.yaml
+- assertVisible:
+    id: wallet-screen
