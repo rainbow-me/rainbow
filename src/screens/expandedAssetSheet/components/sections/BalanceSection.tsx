@@ -64,7 +64,7 @@ export function BalanceSection() {
             symbol={asset.symbol}
           />
           <TextShadow blur={12} containerStyle={{ flex: 1 }} shadowOpacity={0.24}>
-            <Text numberOfLines={1} ellipsizeMode="tail" weight="bold" size="20pt" color={'accent'}>
+            <Text style={{ flex: 1 }} numberOfLines={1} ellipsizeMode="tail" weight="bold" size="20pt" color={'accent'}>
               {asset.balance.display}
             </Text>
           </TextShadow>
