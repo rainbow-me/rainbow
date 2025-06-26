@@ -235,11 +235,11 @@ export default function ChangeWalletSheet() {
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newWallets[walletId];
-        updateWallets(newWallets);
+        await updateWallets(newWallets);
       } else {
-        updateWallets(newWallets);
+        await updateWallets(newWallets);
       }
-      removeWalletData(address);
+      await removeWalletData(address);
     },
     [wallets]
   );

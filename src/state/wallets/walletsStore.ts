@@ -134,8 +134,23 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         wallets: walletsIn,
         useCachedENS: true,
       });
-      saveAllWallets(wallets);
+      await saveAllWallets(wallets);
       set({ walletNames, wallets });
+    },
+
+    refreshWalletInfo: async props => {
+      const { wallets } = get();
+      const info = await refreshWalletsInfo({ wallets, useCachedENS: props?.skipENS });
+      // ensure wallets havent changed under us
+      const hasChangedSinceFetch = get().wallets !== wallets;
+      if (hasChangedSinceFetch) {
+        logger.warn(`Changed wallets since fetch, aborting update`);
+        return;
+      }
+      if (info) {
+        await saveAllWallets(info.wallets);
+        set(info);
+      }
     },
 
     walletReady: false,
@@ -369,14 +384,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    refreshWalletInfo: async props => {
-      const { wallets } = get();
-      const info = await refreshWalletsInfo({ wallets, useCachedENS: props?.skipENS });
-      if (info) {
-        set(info);
-      }
-    },
-
     checkKeychainIntegrity: async () => {
       try {
         let healthyKeychain = true;
@@ -550,9 +557,8 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
   };
 
   const hasEnoughData = typeof account.ens === 'string' || !account.image;
-
   const shouldCacheAccount = Boolean(useCachedENS && hasEnoughData);
-  console.log('shouldCacheAccount', shouldCacheAccount);
+  console.log('shouldCacheAccount', shouldCacheAccount, account.address, account.label);
 
   if (shouldCacheAccount) {
     return account;
