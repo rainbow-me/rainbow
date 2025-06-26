@@ -55,7 +55,7 @@ interface WalletsState {
 
   walletNames: WalletNames;
   wallets: AllRainbowWallets | null;
-  updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
+  updateWallets: (wallets: { [id: string]: RainbowWallet }, forceRefresh?: boolean) => Promise<void>;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -129,10 +129,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     walletNames: {},
 
     wallets: null,
-    updateWallets: async walletsIn => {
+    updateWallets: async (walletsIn, forceRefresh) => {
       const { walletNames, wallets } = await refreshWalletsInfo({
         wallets: walletsIn,
-        useCachedENS: true,
+        useCachedENS: !forceRefresh,
       });
       saveAllWallets(wallets);
       set({ walletNames, wallets });
@@ -371,9 +371,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     refreshWalletInfo: async props => {
       const { wallets } = get();
-      const info = await refreshWalletsInfo({ wallets, useCachedENS: props?.skipENS });
-      if (info) {
-        set(info);
+      if (wallets) {
+        await updateWallets(wallets, !props?.skipENS);
       }
     },
 
