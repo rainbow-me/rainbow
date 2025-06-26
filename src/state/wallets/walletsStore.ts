@@ -180,6 +180,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       try {
         const [selected, loadedAccountAddress, allWalletsResult] = await Promise.all([
           getSelectedWalletFromKeychain(),
+          // because createWallet() calls saveAddress() and then calls this, we re-run this after
+          // it's not a good pattern, we should move createWallet and walletInit into this store
+          // and then remove keychain entirely from being read after initial load
           loadAddress(),
           getAllWallets(),
         ]);
