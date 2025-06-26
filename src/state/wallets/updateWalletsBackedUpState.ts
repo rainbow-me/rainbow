@@ -13,8 +13,7 @@ export async function updateWalletsBackedUpState({
 } = {}) {
   // we're abusing keychain here - restore writes to keychain, we re-read it
   // here later updateWalletsBackedUpState diffs the two and uses that to
-  // determine if its backed up it's not great, just documenting existing
-  // behavior
+  // determine if its backed up it's not great, just documenting how it is
   const newWalletsState = await loadWallets();
   const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
 
