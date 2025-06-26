@@ -1,5 +1,5 @@
 import { RecyclerListViewRef } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import React, { createContext, useState } from 'react';
+import React, { createContext, useMemo, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const RecyclerListViewScrollToTopContext = createContext<{
@@ -19,15 +19,15 @@ const RecyclerListViewScrollToTopProvider: React.FC<ScrollToTopProviderProps> = 
 
   const [scrollToTopRef, setScrollToTopRef] = useState<RecyclerListViewRef | null>(null);
 
-  const scrollToTop = () => {
-    scrollToTopRef?.scrollToOffset(0, -insets.top, true);
-  };
+  const memoizedValue = useMemo(() => {
+    const scrollToTop = () => {
+      scrollToTopRef?.scrollToOffset(0, -insets.top, true);
+    };
 
-  return (
-    <RecyclerListViewScrollToTopContext.Provider value={{ scrollToTop, setScrollToTopRef }}>
-      {children}
-    </RecyclerListViewScrollToTopContext.Provider>
-  );
+    return { scrollToTop, setScrollToTopRef };
+  }, [scrollToTopRef]);
+
+  return <RecyclerListViewScrollToTopContext.Provider value={memoizedValue}>{children}</RecyclerListViewScrollToTopContext.Provider>;
 };
 
 export const useRecyclerListViewScrollToTopContext = () => React.useContext(RecyclerListViewScrollToTopContext);
