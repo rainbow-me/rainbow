@@ -2,14 +2,12 @@ import walletTypes from '@/helpers/walletTypes';
 import { AllRainbowWallets } from '@/model/wallet';
 import { queryClient } from '@/react-query';
 import store from '@/redux/store';
-import { addysSummaryQueryKey, useAddysSummary } from '@/resources/summary/summary';
+import { AddysSummary, addysSummaryQueryKey } from '@/resources/summary/summary';
 import { isLowerCaseMatch } from '@/utils';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import { Address } from 'viem';
 import { useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
-
-type SummaryData = ReturnType<typeof useAddysSummary>['data'];
 
 const getWalletForAddress = (wallets: AllRainbowWallets | null, address: string) => {
   return Object.values(wallets || {}).find(wallet => (wallet.addresses || []).some(addr => isLowerCaseMatch(addr.address, address)));
@@ -26,7 +24,7 @@ export const useFarcasterAccountForWallets = () => {
   );
 
   useEffect(() => {
-    const summaryData = queryClient.getQueryData<SummaryData>(
+    const summaryData = queryClient.getQueryData<AddysSummary>(
       addysSummaryQueryKey({
         addresses: allAddresses,
         currency: store.getState().settings.nativeCurrency,

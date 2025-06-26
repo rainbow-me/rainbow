@@ -127,6 +127,8 @@ export function formatAssetPrice({
   const valueString = safeToStringWorklet(value);
   if (!safeIsNumberStringWorklet(valueString)) return valueString ?? '';
 
+  // eslint-disable-next-line no-param-reassign
+  prefix = currency && !prefix ? supportedNativeCurrencies[currency].symbol : prefix;
   const numericString = valueString;
   const isNegative = safeLessThanWorklet(numericString, '0');
   const absNumericString = isNegative ? safeMulWorklet(numericString, '-1') : numericString;

@@ -4,13 +4,6 @@ import { Address } from 'viem';
 import useAccountSettings from './useAccountSettings';
 import { useAddysSummary } from '@/resources/summary/summary';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-
-const QUERY_CONFIG = {
-  staleTime: 60_000, // 1 minute
-  cacheTime: 1000 * 60 * 60 * 24, // 24 hours
-  refetchInterval: 120_000, // 2 minutes
-};
 
 export type WalletBalance = {
   assetBalanceAmount: string;
@@ -40,13 +33,10 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     [wallets]
   );
 
-  const { data: summaryData, isLoading } = useAddysSummary(
-    {
-      addresses: allAddresses,
-      currency: nativeCurrency,
-    },
-    QUERY_CONFIG
-  );
+  const { data: summaryData, isLoading } = useAddysSummary({
+    addresses: allAddresses,
+    currency: nativeCurrency,
+  });
 
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};

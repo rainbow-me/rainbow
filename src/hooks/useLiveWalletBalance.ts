@@ -12,6 +12,7 @@ export const useLiveWalletBalance = createDerivedStore(
     const liveTokens = $(useLiveTokensStore, state => state.tokens);
     const initialBalance = $(useUserAssetsStore, state => state.getTotalBalance());
     const userAssets = $(useUserAssetsStore, state => state.userAssets);
+    const isFetching = $(useUserAssetsStore, state => state.status === 'loading');
 
     const params = $(userAssetsStoreManager, state => ({ address: state.address, currency: state.currency }), shallowEqual);
     const claimablesBalance = $(useClaimablesStore, state => state.getData(params)?.totalValueAmount || '0');
@@ -56,10 +57,10 @@ export const useLiveWalletBalance = createDerivedStore(
       },
     };
 
-    const isLoading = initialBalance === undefined;
+    const isLoading = initialBalance === 0 && isFetching;
 
     return { balances, isLoading };
   },
 
-  { debounce: 300, equalityFn: deepEqual }
+  { debounce: 250, equalityFn: deepEqual }
 );

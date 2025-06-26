@@ -1,4 +1,5 @@
 import { RainbowFetchClient } from '@/rainbow-fetch';
+import { time } from '@/utils';
 import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 
 let addysHttp: RainbowFetchClient | undefined;
@@ -12,6 +13,7 @@ export const getAddysHttpClient = () => {
       headers: {
         Authorization: `Bearer ${ADDYS_API_KEY}`,
       },
+      timeout: time.seconds(30),
     });
   }
 
