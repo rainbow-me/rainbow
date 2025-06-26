@@ -100,8 +100,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     async setSelectedWallet(wallet, address, walletsIn) {
       if (address) {
         const accountAddress = ensureValidHex(address);
-
-        // note: you need to set this before even doing the async await refreshWalletsInfo
         saveAddress(accountAddress);
       }
       setSelectedWalletInKeychain(wallet);
