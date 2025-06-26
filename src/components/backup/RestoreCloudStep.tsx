@@ -139,6 +139,7 @@ export default function RestoreCloudStep() {
         password: pwd,
         backupFilename: filename,
       });
+
       if (status === RestoreCloudBackupResultStates.success) {
         // Store it in the keychain in case it was missing
         if (backupsStore.getState().storedPassword !== pwd) {

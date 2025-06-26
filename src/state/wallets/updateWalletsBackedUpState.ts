@@ -11,7 +11,10 @@ export async function updateWalletsBackedUpState({
   filename?: string;
   prevWalletsState?: AllRainbowWallets | void;
 } = {}) {
-  // NOTE: Marking the restored wallets as backed up
+  // we're abusing keychain here - restore writes to keychain, we re-read it
+  // here later updateWalletsBackedUpState diffs the two and uses that to
+  // determine if its backed up it's not great, just documenting existing
+  // behavior
   const newWalletsState = await loadWallets();
   const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
 
