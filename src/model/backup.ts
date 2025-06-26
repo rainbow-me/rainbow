@@ -295,7 +295,7 @@ export async function restoreBackup(data: string | { secrets: string }) {
 
   if (restored) {
     await loadWallets();
-    await refreshWalletInfo();
+    void refreshWalletInfo();
   }
 
   return restored;
