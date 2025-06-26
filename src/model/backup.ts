@@ -293,11 +293,6 @@ export async function restoreBackup(data: string | { secrets: string }) {
     userPIN
   );
 
-  if (restored) {
-    await loadWallets();
-    void refreshWalletInfo();
-  }
-
   return restored;
 }
 
