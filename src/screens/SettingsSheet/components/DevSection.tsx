@@ -396,6 +396,22 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_fcm_token')} />}
             />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔍" isEmoji />}
+              onPress={() => {
+                const wallets = useWalletsStore.getState().wallets;
+                const accounts = Object.values(wallets || {})
+                  .map(wallet => wallet.addresses)
+                  .flat();
+                const addresses = accounts.map(account => account.address);
+                const addressesString = addresses.join('\n');
+                console.log(JSON.stringify(addresses, null, 2));
+                Clipboard.setString(addressesString);
+                Alert.alert('Copied');
+              }}
+              size={52}
+              titleComponent={<MenuItem.Title text={'Copy all wallet addresses'} />}
+            />
             {getExperimetalFlag(LOG_PUSH) && (
               <MenuItem
                 leftComponent={<MenuItem.TextIcon icon="📋" isEmoji />}
