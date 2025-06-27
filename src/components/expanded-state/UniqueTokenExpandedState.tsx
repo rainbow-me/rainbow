@@ -282,9 +282,9 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
   const isNFT = asset.type === AssetType.nft;
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS ? asset.name : '';
+  const cleanENSName = asset.name.trim();
   const ensProfile = useENSProfile(cleanENSName, {
-    enabled: isENS && !!cleanENSName.trim(),
+    enabled: isENS && !!cleanENSName,
   });
   const ensData = ensProfile.data;
 
