@@ -521,7 +521,7 @@ export const createNftsStore = (address: Address | string) =>
             pagination: state.pagination,
           }),
           storageKey: `nfts_${address}`,
-          version: 100001,
+          version: 1,
         }
       : undefined
   );
