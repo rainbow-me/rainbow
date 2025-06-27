@@ -25,7 +25,7 @@ export default function useMemoBriefSectionData({
 } = {}) {
   let sectionsDataToUse: CellTypes[];
 
-  if (type === 'ens-profile') {
+  if (type === 'ens-profile' && !briefSectionsData) {
     // `type` is a static prop, so hooks will always execute in order.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     sectionsDataToUse = useExternalWalletSectionsData({
