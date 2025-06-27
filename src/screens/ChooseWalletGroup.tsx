@@ -109,7 +109,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
       onCloseModal: async ({ name, color }) => {
         try {
           if (wallet.damaged) throw new Error('Wallet is damaged');
-          createAccount({
+          await createAccount({
             id: wallet.id,
             color,
             name,

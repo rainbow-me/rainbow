@@ -148,7 +148,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         return;
       }
       if (info) {
-        console.log('setting to', JSON.stringify(info, null, 2));
         await saveAllWallets(info.wallets);
         set(info);
       }
@@ -531,7 +530,7 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
       const newAddresses = await Promise.all(
         wallet.addresses.map(async ogAccount => {
           const account = await refreshAccountInfo(ogAccount, useCachedENS);
-          updatedWalletNames[account.address] = account.label;
+          updatedWalletNames[account.address] = removeFirstEmojiFromString(account.label);
           return account;
         })
       );
@@ -552,13 +551,14 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
 // this isn't really our primary way of updating account info, and when people pull to refresh
 // they get new info, so for ENS related stuff we can just check if not valid hex + has image
 async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
-  const defaultLabel = addressAbbreviation(accountIn.address, 4, 4);
+  const abbreviatedAddress = addressAbbreviation(accountIn.address, 4, 4);
+  const defaultLabel = `${addressHashedEmoji(accountIn.address)} ${abbreviatedAddress}`;
   const account = {
     ...accountIn,
-    label: removeFirstEmojiFromString(accountIn.label || defaultLabel),
+    label: accountIn.label || defaultLabel,
   };
 
-  const hasDefaultLabel = account.label === defaultLabel;
+  const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress;
   const hasEnoughData = typeof account.ens === 'string' || !account.image;
   const shouldCacheAccount = Boolean(useCachedENS && hasEnoughData);
 
@@ -668,8 +668,7 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
   const accountENS = walletNames?.[address] || '';
   const accountName = labelWithoutEmoji || accountENS || addressAbbreviation(address, 4, 4);
-  const emojiAvatar = returnStringFirstEmoji(label);
-  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address));
+  const accountSymbol = returnStringFirstEmoji(label) || addressHashedEmoji(address) || '🌈';
   const accountColor = color;
   const accountImage = image && isValidImagePath(image) ? image : null;
 

@@ -10,6 +10,7 @@ import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
 import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
 import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
@@ -29,6 +30,7 @@ import { refreshWalletInfo, setSelectedWallet, updateWallets, useAccountAddress,
 import { useTheme } from '@/theme';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { addressHashedEmoji } from '@/utils/profileUtils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
@@ -263,30 +265,31 @@ export default function ChangeWalletSheet() {
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
 
-                const walletAddresses = wallets[walletId].addresses;
-                const walletAddressIndex = walletAddresses.findIndex(account => account.address === address);
-                const walletAddress = walletAddresses[walletAddressIndex];
+                const accounts = wallets[walletId].addresses;
+                const accountIndex = accounts.findIndex(account => account.address === address);
+                const account = accounts[accountIndex];
 
-                const updatedWalletAddress = {
-                  ...walletAddress,
+                const emoji = returnStringFirstEmoji(account.label) || addressHashedEmoji(account.address);
+
+                const updatedAccounts = [...accounts];
+                updatedAccounts[accountIndex] = {
+                  ...account,
                   color,
-                  label: name,
+                  label: emoji ? `${emoji} ${name}` : name,
                 };
-                const updatedWalletAddresses = [...walletAddresses];
-                updatedWalletAddresses[walletAddressIndex] = updatedWalletAddress;
 
                 const updatedWallet = {
                   ...wallets[walletId],
-                  addresses: updatedWalletAddresses,
+                  addresses: updatedAccounts,
                 };
                 const updatedWallets = {
                   ...wallets,
                   [walletId]: updatedWallet,
                 };
 
-                await setSelectedWallet(updatedWallet, accountAddress, updatedWallets).then(() => {
-                  refreshWalletInfo();
-                });
+                await setSelectedWallet(updatedWallet, accountAddress, updatedWallets);
+                // no need to wait these will run async and refresh data
+                void refreshWalletInfo();
                 void updateWebProfile(address, name, colors.avatarBackgrounds[color]);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
