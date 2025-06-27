@@ -404,7 +404,7 @@ export const createNftsStore = (address: Address | string) =>
 
         const promise = fetch(
           { collectionId: normalizedCollectionId },
-          { force: false, skipStoreUpdates: true, updateQueryKey: false, cacheTime: time.infinity, staleTime: time.infinity }
+          { skipStoreUpdates: true, updateQueryKey: false, cacheTime: time.infinity, staleTime: time.infinity }
         )
           .then(data => {
             if (!data) return;
