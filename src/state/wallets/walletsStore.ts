@@ -624,7 +624,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     },
   }),
   {
-    storageKey: 'walletsStore3428s444h982443x2334',
+    storageKey: 'walletStore',
     partialize: state => ({
       selected: state.selected,
       accountAddress: state.accountAddress,
