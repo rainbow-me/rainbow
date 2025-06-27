@@ -568,9 +568,8 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 20,
-    height: IS_IOS ? SEARCH_BAR_HEIGHT : 60,
+    height: SEARCH_BAR_HEIGHT,
     letterSpacing: 0.36,
-    lineHeight: IS_IOS ? undefined : 24,
     marginRight: 7,
     paddingLeft: 16,
     paddingRight: 9,
@@ -594,7 +593,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   inputContentWrapper: {
-    height: IS_IOS ? SEARCH_BAR_HEIGHT : 60,
+    height: SEARCH_BAR_HEIGHT,
     position: 'absolute',
     width: '100%',
   },
