@@ -145,7 +145,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {abbreviateEnsForDisplay(accounts[0].ens) || formatAddressForDisplay(accounts[0].address, 4, 4)}
+            {(accounts[0].ens && abbreviateEnsForDisplay(accounts[0].ens)) || formatAddressForDisplay(accounts[0].address, 4, 4)}
           </Text>
           {accounts.length > 1 && (
             <View

@@ -36,7 +36,7 @@ function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
 let runId = 0;
 
 export const initializeWallet = async (props: InitializeWalletParams = {}) => {
-  runId = Math.random();
+  runId += 1;
   const curRunId = runId;
   const shouldCancel = () => curRunId !== runId;
 
