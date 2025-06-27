@@ -18,7 +18,6 @@ export default function useShowcaseTokens(address?: string) {
   const addShowcaseTokenMutation = useMutation({
     mutationFn: async (asset: string) => {
       const isReadOnlyWallet = getIsReadOnlyWallet();
-      console.log('isReadOnlyWallet', isReadOnlyWallet);
       if (isReadOnlyWallet) return showcaseTokens;
 
       const lowercasedUniqueId = asset.toLowerCase();
@@ -105,7 +104,7 @@ export default function useShowcaseTokens(address?: string) {
 
   const addShowcaseToken = useCallback(
     async (asset: string) => {
-      useOpenCollectionsStore.getState().toggleCollection('showcase');
+      useOpenCollectionsStore.getState().setCollectionOpen('showcase', true);
       return addShowcaseTokenMutation.mutateAsync(asset);
     },
     [addShowcaseTokenMutation]

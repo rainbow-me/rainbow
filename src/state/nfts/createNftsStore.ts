@@ -7,17 +7,17 @@ import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, Uniq
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
 import { IS_DEV } from '@/env';
-import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
-import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
-import { mergeMaps, replaceEthereumWithMainnet } from '@/state/nfts/utils';
+import { getShowcase } from '@/hooks/useFetchShowcaseTokens';
+import { getHidden } from '@/hooks/useFetchHiddenTokens';
+import { mergeMaps, pruneStaleAndClosedCollections, replaceEthereumWithMainnet } from '@/state/nfts/utils';
 import { UniqueAsset } from '@/entities';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
-import { queryClient } from '@/react-query';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { isEmpty } from 'lodash';
 
 export const PAGE_SIZE = 12;
 export const STALE_TIME = time.minutes(10);
 export const PAGINATION_STALE_TIME = time.seconds(30);
+export const TIME_BETWEEN_PRUNES = time.minutes(10);
 
 const EMPTY_RETURN_DATA: NftsQueryData = {
   collections: new Map(),
@@ -27,6 +27,8 @@ const EMPTY_RETURN_DATA: NftsQueryData = {
 
 const uninitialized = Symbol();
 let paginationPromise: { address: Address | string; promise: Promise<void> } | null = null;
+const collectionPromises = new Map<CollectionId, Promise<void>>();
+let prunePromise: { address: Address | string; promise: Promise<void>; lastPruneAt: number } | null = null;
 
 const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string): Promise<NftsQueryData> => {
   const tokensForCategory = collectionId === 'showcase' ? (await getShowcase(walletAddress)) || [] : (await getHidden(walletAddress)) || [];
@@ -376,6 +378,56 @@ export const createNftsStore = (address: Address | string) =>
         }
       },
 
+      async fetchNftCollection(collectionId: CollectionId) {
+        const normalizedCollectionId = collectionId.toLowerCase();
+        if (collectionPromises.has(normalizedCollectionId)) {
+          return collectionPromises.get(normalizedCollectionId);
+        }
+
+        const now = Date.now();
+        if (!prunePromise || prunePromise.address !== address || now - prunePromise.lastPruneAt > TIME_BETWEEN_PRUNES) {
+          prunePromise = {
+            address,
+            lastPruneAt: now,
+            promise: pruneStaleAndClosedCollections({ address, set }).finally(() => {
+              prunePromise = null;
+            }),
+          };
+        }
+
+        const { nftsByCollection, fetch } = get();
+
+        const collection = nftsByCollection.get(normalizedCollectionId);
+
+        // NOTE: This doesn't work for showcase / hidden, but is probably fine for now to always kick off that request?
+        if (collection && !isEmpty(collection)) return;
+
+        const promise = fetch(
+          { collectionId: normalizedCollectionId },
+          { force: false, skipStoreUpdates: true, updateQueryKey: false, cacheTime: time.infinity, staleTime: time.infinity }
+        )
+          .then(data => {
+            if (!data) return;
+
+            const now = Date.now();
+
+            const newNftsByCollection = new Map([...nftsByCollection, ...data.nftsByCollection]);
+            set(state => ({
+              nftsByCollection: newNftsByCollection,
+              fetchedCollections: { ...state.fetchedCollections, [normalizedCollectionId]: now },
+            }));
+          })
+          .catch(error => {
+            logger.error(new RainbowError('Failed to fetch NFT collection', error));
+          })
+          .finally(() => {
+            collectionPromises.delete(normalizedCollectionId);
+          });
+
+        collectionPromises.set(normalizedCollectionId, promise);
+        return promise;
+      },
+
       getNftCollections: createSelector(collections => {
         if (!collections.size) {
           const { getData } = get();
@@ -480,91 +532,6 @@ async function setOrPruneNftsData(
   set: (partial: NftsState | Partial<NftsState> | ((state: NftsState) => NftsState | Partial<NftsState>)) => void
 ): Promise<void> {
   const now = Date.now();
-
-  // when performing a specific fetch for a collection, we also want to handle pruning
-  // previously opened collections that are no longer opened
-  // this is a bit of a hack, but it works for now
-  if (params.collectionId) {
-    set(currentState => {
-      const { nftsByCollection, fetchedCollections } = currentState;
-      const mergedNftsByCollection = new Map(nftsByCollection);
-      const updatedFetchedCollections = { ...fetchedCollections };
-
-      // First, add/update the new data for the fetched collection
-      for (const [collectionId, newNftsMap] of data.nftsByCollection) {
-        const normalizedId = collectionId.toLowerCase();
-
-        const existingNftsMap = mergedNftsByCollection.get(normalizedId);
-        if (existingNftsMap) {
-          const mergedNftsMap = mergeMaps(existingNftsMap, newNftsMap);
-          mergedNftsByCollection.set(normalizedId, mergedNftsMap);
-        } else {
-          mergedNftsByCollection.set(normalizedId, newNftsMap);
-        }
-        // Update fetch time for this collection
-        updatedFetchedCollections[normalizedId] = now;
-      }
-
-      const showcaseUniqueIds = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address: params.walletAddress })) ?? [];
-      const hiddenUniqueIds = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address: params.walletAddress })) ?? [];
-      const { openCollections } = useOpenCollectionsStore.getState();
-      // Extract collection IDs from unique IDs for comparison
-      const showcaseCollectionIds = new Set(
-        showcaseUniqueIds.map(uniqueId => {
-          const { network, contractAddress } = parseUniqueId(uniqueId);
-          return `${network}_${contractAddress}`.toLowerCase();
-        })
-      );
-
-      const hiddenCollectionIds = new Set(
-        hiddenUniqueIds.map(uniqueId => {
-          const { network, contractAddress } = parseUniqueId(uniqueId);
-          return `${network}_${contractAddress}`.toLowerCase();
-        })
-      );
-
-      const isHiddenOpen = openCollections['hidden'] ?? false;
-      // Then, check ALL existing collections for pruning
-      for (const [collectionId] of mergedNftsByCollection) {
-        const normalizedId = collectionId.toLowerCase();
-
-        // Determine if this collection should be kept
-        let shouldKeepCollection = false;
-
-        if (showcaseCollectionIds.has(normalizedId)) {
-          // for showcase tokens, we should always keep them and never prune them
-          shouldKeepCollection = true;
-        } else if (hiddenCollectionIds.has(normalizedId)) {
-          // for hidden tokens, we should keep them if hidden is open
-          shouldKeepCollection = isHiddenOpen;
-        } else {
-          // for every other token, we should keep them if they are still opened
-          // Check if this collection ID is open in the openFamilies store
-          shouldKeepCollection = openCollections[normalizedId] ?? false;
-        }
-
-        if (!shouldKeepCollection) {
-          // if it's no longer open, we should check to see if the stale time is expired
-          const staleTime = updatedFetchedCollections[normalizedId];
-          const timeSinceFetch = staleTime ? now - staleTime : 0;
-
-          if (staleTime && timeSinceFetch > STALE_TIME) {
-            mergedNftsByCollection.delete(normalizedId);
-            delete updatedFetchedCollections[normalizedId];
-          }
-        }
-      }
-
-      return {
-        ...currentState,
-        nftsByCollection: mergedNftsByCollection,
-        fetchedCollections: updatedFetchedCollections,
-      };
-    });
-
-    return;
-  }
-
   // Handle initial fetch or pull-to-refresh essentially resetting the pagination state
   if (!params.pageKey && params.limit === PAGE_SIZE && params.walletAddress) {
     set(state => ({

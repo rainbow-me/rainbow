@@ -5,7 +5,6 @@ import { ThemeContextProps } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { time } from '@/utils';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 type Props = {
@@ -21,19 +20,14 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const isOpen = useOpenCollectionsStore(state => state.isCollectionOpen(name));
+  const isOpen = useOpenCollectionsStore(state => state.isCollectionOpen(uid));
 
   const handleToggle = useLatestCallback(() => {
-    useOpenCollectionsStore.getState().toggleCollection(name);
+    useOpenCollectionsStore.getState().toggleCollection(uid);
 
     // from closed -> open, let's fetch the inner nft metadata
     if (!isOpen) {
-      useNftsStore.getState().fetch(
-        {
-          collectionId: uid.toLowerCase(),
-        },
-        { staleTime: time.infinity, cacheTime: time.infinity }
-      );
+      useNftsStore.getState().fetchNftCollection(uid.toLowerCase());
     }
   });
 

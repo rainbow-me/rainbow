@@ -98,8 +98,8 @@ export default function useMemoBriefSectionData({
         }
 
         if (data.type === CellType.FAMILY_HEADER) {
-          const name = (data as NFTFamilyExtraData).name;
-          isGroupOpen = openCollections[name.toLowerCase()] ?? false;
+          const uid = (data as NFTFamilyExtraData).uid;
+          isGroupOpen = openCollections[uid.toLowerCase()] ?? false;
         }
 
         if (data.type === CellType.NFT || data.type === CellType.NFT_SPACE_AFTER || data.type === CellType.LEGACY_NFT) {

@@ -1,11 +1,11 @@
-import { CollectionId, CollectionName } from '@/state/nfts/types';
+import { CollectionId } from '@/state/nfts/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 type OpenCollectionsState = {
   openCollections: Record<CollectionId, boolean>;
-  toggleCollection: (collectionName: CollectionName) => void;
-  isCollectionOpen: (collectionName: CollectionName) => boolean;
-  setCollectionOpen: (collectionName: CollectionName, isOpen: boolean) => void;
+  toggleCollection: (collectionId: CollectionId) => void;
+  isCollectionOpen: (collectionId: CollectionId) => boolean;
+  setCollectionOpen: (collectionId: CollectionId, isOpen: boolean) => void;
 };
 
 export const useOpenCollectionsStore = createRainbowStore<OpenCollectionsState>(

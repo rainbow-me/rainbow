@@ -40,6 +40,7 @@ export interface NftsState {
   fetchedCollections: { [collectionId: string]: number };
   pagination: PaginationInfo | null;
   fetchNextNftCollectionPage: () => Promise<void>;
+  fetchNftCollection: (collectionId: CollectionId) => Promise<void>;
   getNftCollections: () => Map<CollectionId, Collection> | null;
   getNftCollection: (collectionId: CollectionId) => Collection | null;
   getNftsByCollection: (collectionId: CollectionId) => Map<UniqueId, UniqueAsset> | null;
