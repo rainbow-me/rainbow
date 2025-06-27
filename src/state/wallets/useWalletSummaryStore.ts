@@ -59,7 +59,7 @@ const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummary
 
   () => ({ summary: null }),
 
-  { storageKey: 'walletSummary' }
+  { storageKey: 'walletSummaryStore' }
 );
 
 interface WalletSummary {
