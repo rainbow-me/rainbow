@@ -1,32 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Bleed, useColorMode } from '@/design-system';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { ContactAvatar } from '@/components/contacts';
-import { Bleed, useColorMode } from '@/design-system';
 import { useAppSessionsStore } from '@/state/appSessions';
-import { getDappHost } from '../handleProviderRequest';
-import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
+import { getAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
-import { getWalletWithAccount, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { getDappHost } from '../handleProviderRequest';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { isDarkMode } = useColorMode();
-
-  const accountInfo = useAccountProfileInfo();
-  const accountAddress = accountInfo.accountAddress;
-  const [currentAddress, setCurrentAddress] = useState(accountAddress);
-
-  const selectedWallet = useMemo(() => getWalletWithAccount(currentAddress), [currentAddress]);
-
-  // fix bad state - if no wallet exists, we should revert to the default
-  useEffect(() => {
-    if (currentAddress && !selectedWallet) {
-      setCurrentAddress(accountAddress);
-    }
-  }, [accountAddress, currentAddress, selectedWallet]);
 
   const { activeTabRef } = useBrowserContext();
   const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || RAINBOW_HOME;
@@ -43,8 +30,14 @@ export const AccountIcon = React.memo(function AccountIcon() {
     [hostSessions]
   );
 
+  const accountAddress = getAccountAddress();
+  const [currentAddress, setCurrentAddress] = useState(
+    () => currentSession?.address || hostSessions?.activeSessionAddress || accountAddress
+  );
+  const accountInfo = useAccountProfileInfo(currentAddress);
+
   // listens to the current active tab and sets the account
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (activeTabHost || isOnHomepage) {
       if (currentSession?.address) {
         setCurrentAddress(currentSession?.address);
@@ -54,7 +47,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
         setCurrentAddress(accountAddress);
       }
     }
-  }, [accountAddress, activeTabHost, currentSession, hostSessions?.activeSessionAddress, isOnHomepage]);
+  }, [accountAddress, activeTabHost, currentSession?.address, hostSessions?.activeSessionAddress, isOnHomepage]);
 
   const handleOnPress = useCallback(() => {
     Navigation.handleAction(Routes.DAPP_BROWSER_CONTROL_PANEL, {

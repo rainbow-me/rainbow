@@ -709,9 +709,9 @@ export const isImportedWallet = (address: string): boolean => {
   return false;
 };
 
-export const useAccountProfileInfo = () => {
+export const useAccountProfileInfo = (address?: Address) => {
   const { colors } = useTheme();
-  const info = useWalletsStore(state => state.getAccountProfileInfo(), dequal);
+  const info = useWalletsStore(state => state.getAccountProfileInfo(address), dequal);
 
   return useMemo(() => {
     return {
