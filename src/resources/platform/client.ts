@@ -1,5 +1,5 @@
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { PLATFORM_BASE_URL } from 'react-native-dotenv';
+import { PLATFORM_API_KEY, PLATFORM_BASE_URL } from 'react-native-dotenv';
 
 let platformClient: RainbowFetchClient | undefined;
 
@@ -9,6 +9,9 @@ export function getPlatformClient() {
   if (!platformClient || clientUrl !== baseUrl) {
     platformClient = new RainbowFetchClient({
       baseURL: baseUrl,
+      headers: {
+        Authorization: `Bearer ${PLATFORM_API_KEY}`,
+      },
     });
   }
 

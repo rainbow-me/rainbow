@@ -209,8 +209,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       updateTokens: (tokens: LiveTokensData) => {
         set(state => {
           for (const [tokenId, token] of Object.entries(tokens)) {
-            // TODO: backend has not implemented this properly yet
-            // if (token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
+            if (token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
             const asset = state.userAssets.get(tokenId);
             const currency = userAssetsStoreManager.getState().currency;
             // TODO: why are these different numbers?
