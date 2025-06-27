@@ -66,6 +66,7 @@ const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeTex
         testID={testID}
         value={formatValue(inputValue)}
         placeholder={android || isTinyPhone ? lang.t('fields.address.short_placeholder') : lang.t('fields.address.long_placeholder')}
+        placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
       />
     </Row>
   );
