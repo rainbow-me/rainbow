@@ -15,13 +15,14 @@ import { changeAccount, disconnectSession } from '@/walletConnect';
 import { SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { TruncatedText } from '../text';
+import { isValidHex } from '@/handlers/web3';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -44,7 +45,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   const walletNames = useWalletsStore(state => state.walletNames);
 
   const [address, setAddress] = useState<string | undefined>(undefined);
-  const [accountInfo, setAccountInfo] = useState<ReturnType<typeof getAccountProfileInfo> | undefined>(undefined);
+  const [accountInfo, updateAccountInfo] = useState<ReturnType<typeof getAccountProfileInfo> | undefined>(undefined);
 
   const radialGradientProps = {
     center: [0, 1],
@@ -66,9 +67,8 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   }, [session]);
 
   useEffect(() => {
-    if (address) {
-      const wallet = getWalletWithAccount(address);
-      setAccountInfo(getAccountProfileInfo({ address, wallet }));
+    if (address && isValidHex(address)) {
+      updateAccountInfo(getAccountProfileInfo(address));
     }
   }, [address, walletNames]);
 

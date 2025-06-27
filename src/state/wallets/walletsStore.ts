@@ -2,8 +2,8 @@ import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettin
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
-import { fetchENSAvatar, fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
-import { logger, RainbowError } from '@/logger';
+import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
 import { hasKey } from '@/model/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
@@ -23,20 +23,19 @@ import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import store from '@/redux/store';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
-import { isLowerCaseMatch } from '@/utils';
-import { address as addressAbbreviation } from '@/utils/abbreviations';
+import { isLowerCaseMatch, time } from '@/utils';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { isEmpty, keys } from 'lodash';
+import { keys } from 'lodash';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface AccountProfileInfo {
-  accountAddress: string;
+  accountAddress: Address;
   accountColor: number;
   accountENS?: string;
   accountImage?: string | null;
@@ -44,18 +43,27 @@ interface AccountProfileInfo {
   accountSymbol?: string | false;
 }
 
-type WalletNames = { [address: string]: string };
+type WalletNames = { [address: string]: string }; // Maps addresses to ENS names only
 
 interface WalletsState {
   walletReady: boolean;
   setWalletReady: () => void;
 
   selected: RainbowWallet | null;
-  setSelectedWallet: (wallet: RainbowWallet, address?: string, wallets?: AllRainbowWallets) => Promise<void>;
+  setSelectedWallet: (wallet: RainbowWallet, address?: string) => Promise<void>;
 
   walletNames: WalletNames;
-  wallets: AllRainbowWallets | null;
+  wallets: AllRainbowWallets;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
+
+  updateAccountInfo: ({
+    address,
+    color,
+    emoji,
+    image,
+    label,
+    walletId,
+  }: { address: Address; walletId: string } & Partial<Pick<RainbowAccount, 'avatar' | 'color' | 'emoji' | 'image' | 'label'>>) => void;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -76,10 +84,9 @@ interface WalletsState {
   accountAddress: Address;
   setAccountAddress: (address: Address) => void;
 
-  getAccountProfileInfo: () => AccountProfileInfo;
+  getAccountProfileInfo: (address?: Address) => AccountProfileInfo;
 
-  refreshWalletInfo: (props?: { skipENS?: boolean }) => Promise<void>;
-
+  refreshWalletInfo: (props?: { addresses?: string[]; useCachedENS?: boolean }) => Promise<void>;
   checkKeychainIntegrity: () => Promise<void>;
 
   getIsDamagedWallet: () => boolean;
@@ -97,49 +104,68 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
     selected: null,
-    async setSelectedWallet(wallet, address, walletsIn) {
-      if (address) {
-        const accountAddress = ensureValidHex(address);
-        saveAddress(accountAddress);
-      }
-      setSelectedWalletInKeychain(wallet);
+    setSelectedWallet(wallet, address) {
+      const { accountAddress: currentAccountAddress, refreshWalletInfo } = get();
+      const accountAddress = address ? ensureValidHex(address) : currentAccountAddress;
 
-      const wallets = walletsIn || get().wallets;
-      const walletInfo = await refreshWalletsInfo({ wallets, useCachedENS: true });
+      set({
+        accountAddress,
+        selected: { ...wallet },
+      });
 
-      // ensure not memoized
-      const selected = {
-        ...wallet,
-      };
+      const keychainPromise = Promise.all(
+        address ? [saveAddress(accountAddress), setSelectedWalletInKeychain(wallet)] : [setSelectedWalletInKeychain(wallet)]
+      ).then(() => {
+        return;
+      });
 
-      if (address) {
-        set({
-          ...walletInfo,
-          accountAddress: ensureValidHex(address),
-          selected,
-        });
-      } else {
-        set({
-          ...walletInfo,
-          selected,
-        });
-      }
+      refreshWalletInfo({ addresses: [accountAddress], useCachedENS: true });
+
+      return keychainPromise;
     },
 
     walletNames: {},
 
-    wallets: null,
-    updateWallets: async walletsIn => {
-      const { walletNames, wallets } = await refreshWalletsInfo({
-        wallets: walletsIn,
-        useCachedENS: true,
+    wallets: {},
+    updateWallets: updatedWallets => {
+      set({ wallets: updatedWallets });
+      return saveAllWallets(updatedWallets);
+    },
+
+    updateAccountInfo: ({ address, avatar, color, emoji, image, label, walletId }) => {
+      set(state => {
+        const { wallets } = state;
+        const updatedMetadata: Partial<Pick<RainbowAccount, 'avatar' | 'color' | 'image' | 'label'>> = {};
+
+        if (avatar !== undefined) updatedMetadata.avatar = avatar;
+        if (color !== undefined) updatedMetadata.color = color;
+        if (image !== undefined) updatedMetadata.image = image;
+
+        return {
+          ...state,
+          wallets: {
+            ...wallets,
+            [walletId]: {
+              ...wallets[walletId],
+              addresses: wallets[walletId].addresses.map(account =>
+                account.address === address
+                  ? {
+                      ...account,
+                      ...updatedMetadata,
+                      emoji: emoji ?? ((label && returnStringFirstEmoji(label)) || account.emoji),
+                      label: formatAccountLabel({ address, label, ens: account.ens }),
+                    }
+                  : account
+              ),
+            },
+          },
+        };
       });
-      saveAllWallets(wallets);
-      set({ walletNames, wallets });
     },
 
     walletReady: false,
     setWalletReady: () => {
+      if (get().walletReady) return;
       set({ walletReady: true });
     },
 
@@ -153,10 +179,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    getAccountProfileInfo: () => {
+    getAccountProfileInfo: providedAddress => {
       const state = get();
       const { getWalletWithAccount } = state;
-      const address = state.accountAddress;
+      const address = providedAddress || state.accountAddress;
       const wallet = getWalletWithAccount(address);
       return getAccountProfileInfoFromState({ address, wallet }, state);
     },
@@ -178,65 +204,53 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     // setting and managing keychain
     loadWallets: async () => {
       try {
-        const { accountAddress } = get();
+        const [selected, loadedAccountAddress, allWalletsResult] = await Promise.all([
+          getSelectedWalletFromKeychain(),
+          // because createWallet() calls saveAddress() and then calls this, we re-run this after
+          // it's not a good pattern, we should move createWallet and walletInit into this store
+          // and then remove keychain entirely from being read after initial load
+          loadAddress(),
+          getAllWallets(),
+        ]);
 
-        let nextAccountAddress: Address | null = accountAddress === `0x` ? null : accountAddress;
-
-        const allWalletsResult = await getAllWallets();
-
-        const wallets = allWalletsResult?.wallets || {};
-
-        if (isEmpty(wallets)) return;
-
-        const selected = await getSelectedWalletFromKeychain();
-
-        // Prevent irrecoverable state (no selected wallet)
+        let accountAddress: Address | null = isValidHex(loadedAccountAddress) ? loadedAccountAddress : null;
         let selectedWallet = selected?.wallet;
 
-        // Check if the selected wallet is among all the wallets
+        const wallets = allWalletsResult?.wallets;
+        if (!wallets) return;
+
+        // repair if selectedWallet not in wallets
         if (selectedWallet && !wallets[selectedWallet.id]) {
-          // If not then we should clear it and default to the first one
-          const firstWalletKey = Object.keys(wallets)[0];
-          selectedWallet = wallets[firstWalletKey];
+          selectedWallet = wallets[Object.keys(wallets)[0]];
         }
 
+        // repair if no selectedWallet
         if (!selectedWallet) {
-          const address = await loadAddress();
-          if (!address) {
+          if (!accountAddress) {
             selectedWallet = wallets[Object.keys(wallets)[0]];
           } else {
-            keys(wallets).some(key => {
+            for (const key in wallets) {
               const someWallet = wallets[key];
               const found = (someWallet.addresses || []).some(account => {
-                return toChecksumAddress(account.address) === toChecksumAddress(address);
+                return toChecksumAddress(account.address) === accountAddress;
               });
               if (found) {
                 selectedWallet = someWallet;
                 logger.debug('[walletsStore]: Found selected wallet based on loadAddress result');
+                break;
               }
-              return found;
-            });
+            }
           }
         }
 
         const selectedAddress = selectedWallet?.addresses.find(a => {
-          return a.visible && a.address === nextAccountAddress;
+          return a.visible && a.address === accountAddress;
         });
 
-        // Recover from broken state (account address not in selected wallet)
-        if (!nextAccountAddress) {
-          const loaded = await loadAddress();
-          if (loaded && isValidHex(loaded)) {
-            nextAccountAddress = ensureValidHex(loaded);
-          }
-          logger.debug("[walletsStore]: nextAccountAddress wasn't set on settings so it is being loaded from loadAddress");
-        }
-
-        // Let's select the first visible account if we don't have a selected address
-        if (!selectedAddress) {
+        // repair if we can't find accountAddress in selectedWallet
+        if (!selectedAddress && allWalletsResult?.wallets) {
           let account = null;
-          const allWallets = Object.values(allWalletsResult?.wallets || {});
-          for (const wallet of allWallets) {
+          for (const wallet of Object.values(allWalletsResult.wallets)) {
             for (const rainbowAccount of wallet.addresses || []) {
               if (rainbowAccount.visible) {
                 account = rainbowAccount;
@@ -244,24 +258,31 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
               }
             }
           }
-
           if (!account) return;
           if (isValidHex(account.address)) {
-            nextAccountAddress = account.address;
+            accountAddress = account.address;
           }
           logger.debug('[walletsStore]: Selected the first visible address because there was not selected one');
         }
 
-        if (selectedWallet) {
-          await setSelectedWallet(selectedWallet, nextAccountAddress ? ensureValidHex(nextAccountAddress) : undefined, wallets);
-        } else {
+        if (!selectedWallet) {
           logger.error(new RainbowError('[walletsStore]: No selectedWallet ever found'));
+          return;
         }
+
+        set(state => ({
+          ...state,
+          accountAddress: accountAddress ?? state.accountAddress,
+          selected: selectedWallet,
+          wallets: applyWalletUpdatesFromKeychain(state.wallets, wallets),
+        }));
+
+        get().refreshWalletInfo();
 
         return wallets;
       } catch (error) {
         logger.error(new RainbowError('[walletsStore]: Exception during walletsLoadState'), {
-          message: (error as Error)?.message,
+          message: ensureError(error).message,
         });
       }
     },
@@ -286,14 +307,20 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         throw new Error(`No wallet color index`);
       }
 
-      newWallets[id].addresses.push({
-        address: account.address,
-        avatar: null,
-        color: walletColorIndex,
-        index: newIndex,
-        label: name,
-        visible: true,
-      });
+      newWallets[id] = {
+        ...newWallets[id],
+        addresses: [
+          ...newWallets[id].addresses,
+          {
+            address: account.address,
+            avatar: null,
+            color: walletColorIndex,
+            index: newIndex,
+            label: name,
+            visible: true,
+          },
+        ],
+      };
 
       store.dispatch(updateWebDataEnabled(true, account.address));
 
@@ -302,13 +329,18 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         accountSymbol: addressHashedEmoji(account.address),
       });
 
-      await setSelectedWallet(newWallets[id], account.address, newWallets);
+      set(state => ({
+        ...state,
+        accountAddress: ensureValidHex(account.address),
+        selected: newWallets[id],
+        wallets: applyWalletUpdatesFromKeychain(state.wallets, newWallets),
+      }));
 
       return newWallets;
     },
 
     setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {
-      const { wallets, selected, updateWallets, setSelectedWallet } = get();
+      const { wallets, selected } = get();
 
       const newWallets = { ...wallets };
 
@@ -327,61 +359,141 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         };
       });
 
-      await updateWallets(newWallets);
+      const shouldUpdateSelected = selected?.id && walletIds.includes(selected?.id);
 
-      if (selected?.id && walletIds.includes(selected?.id)) {
-        await setSelectedWallet(newWallets[selected.id]);
+      set(state => ({
+        ...state,
+        selected: shouldUpdateSelected ? newWallets[selected.id] : state.selected,
+        wallets: newWallets,
+      }));
+
+      if (shouldUpdateSelected) {
+        await Promise.all([saveAllWallets(newWallets), setSelectedWalletInKeychain(newWallets[selected.id])]);
+      } else {
+        await saveAllWallets(newWallets);
       }
     },
 
-    setWalletBackedUp: (walletId, method, backupFile) => {
-      const { wallets, selected } = get();
-      const newWallets = { ...wallets };
+    setWalletBackedUp: (walletId, method, backupFile) =>
+      set(state => {
+        const { selected, wallets } = state;
 
-      let backupDate = Date.now();
-      if (backupFile) {
-        backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
-      }
+        let backupDate = Date.now();
+        if (backupFile) {
+          backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
+        }
 
-      newWallets[walletId] = {
-        ...newWallets[walletId],
-        backedUp: true,
-        backupDate,
-        backupFile,
-        backupType: method,
-      };
+        const newWallets = {
+          ...wallets,
+          [walletId]: {
+            ...wallets[walletId],
+            backedUp: true,
+            backupDate,
+            backupFile,
+            backupType: method,
+          },
+        };
 
-      set({
-        wallets: newWallets,
-      });
-      if (selected?.id === walletId) {
-        set({
-          selected: newWallets[walletId],
+        return {
+          ...state,
+          selected: selected?.id === walletId ? newWallets[walletId] : state.selected,
+          wallets: newWallets,
+        };
+      }),
+
+    clearAllWalletsBackupStatus: () =>
+      set(state => {
+        const { wallets } = state;
+
+        const newWallets = Object.fromEntries(
+          Object.entries(wallets).map(([key, wallet]) => [
+            key,
+            {
+              ...wallet,
+              backedUp: undefined,
+              backupDate: undefined,
+              backupFile: undefined,
+              backupType: undefined,
+            },
+          ])
+        );
+
+        return { ...state, wallets: newWallets };
+      }),
+
+    async refreshWalletInfo({ addresses, useCachedENS } = {}) {
+      const { wallets } = get();
+
+      // Default to a full refresh if no addresses provided
+      const targetAddresses = addresses || Object.values(wallets).flatMap(w => w.addresses.map(account => account.address));
+      if (!targetAddresses.length) return;
+
+      try {
+        const accountsToRefresh: Array<{ walletId: string; account: RainbowAccount }> = [];
+
+        Object.entries(wallets).forEach(([walletId, wallet]) => {
+          wallet.addresses.forEach(account => {
+            if (targetAddresses.includes(account.address)) {
+              accountsToRefresh.push({ walletId, account });
+            }
+          });
         });
-      }
-    },
 
-    clearAllWalletsBackupStatus: () => {
-      const { wallets } = get();
-      const newWallets = { ...wallets };
+        const results = await Promise.all(
+          accountsToRefresh.map(async ({ walletId, account }) => ({
+            walletId,
+            address: account.address,
+            metadata: await refreshAccountInfo(account, useCachedENS),
+          }))
+        );
 
-      Object.keys(newWallets).forEach(key => {
-        newWallets[key].backedUp = undefined;
-        newWallets[key].backupDate = undefined;
-        newWallets[key].backupFile = undefined;
-        newWallets[key].backupType = undefined;
-      });
+        set(state => {
+          if (!state.wallets) return state;
 
-      set({
-        wallets: newWallets,
-      });
-    },
+          const newWallets = { ...state.wallets };
+          const newWalletNames = { ...state.walletNames };
 
-    refreshWalletInfo: async props => {
-      const { wallets } = get();
-      const info = await refreshWalletsInfo({ wallets, useCachedENS: props?.skipENS });
-      if (info) {
-        set(info);
+          results.forEach(({ walletId, address, metadata }) => {
+            const currentWallet = newWallets[walletId];
+            if (!currentWallet || !metadata) return;
+
+            newWallets[walletId] = {
+              ...currentWallet,
+              addresses: currentWallet.addresses.map(account => {
+                if (account.address !== address) return account;
+                return {
+                  ...account,
+                  emoji: account.emoji || addressHashedEmoji(address) || undefined,
+                  ens: metadata.ens || account.ens,
+                  image: metadata.image || account.image,
+                  label: metadata.label || account.label,
+                };
+              }),
+            };
+
+            if (metadata.ens) {
+              // Update ENS names mapping
+              newWalletNames[address] = metadata.ens;
+            } else if (newWalletNames[address]) {
+              // Remove if ENS was cleared
+              delete newWalletNames[address];
+            }
+          });
+
+          const newSelected = state.selected && newWallets[state.selected.id] ? newWallets[state.selected.id] : state.selected;
+
+          return {
+            ...state,
+            selected: newSelected,
+            wallets: newWallets,
+            walletNames: newWalletNames,
+          };
+        });
+      } catch (error) {
+        logger.error(new RainbowError('[walletsStore]: Failed to refresh metadata'), {
+          addresses: targetAddresses,
+          error: ensureError(error).message,
+        });
       }
     },
 
@@ -413,16 +525,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         }
 
         const { wallets, selected } = get();
-        if (!wallets) {
-          logger.warn('[walletsStore]: wallets are missing');
-          return;
-        }
 
         if (!selected) {
           logger.warn('[walletsStore]: selectedWallet is missing');
         }
 
         const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets[key].type !== WalletTypes.readOnly);
+        const damagedWalletIds = new Set<string>();
 
         for (const key of nonReadOnlyWalletKeys) {
           let healthyWallet = true;
@@ -458,20 +567,34 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           if (!healthyWallet) {
             logger.warn('[walletsStore]: declaring wallet unhealthy...');
             healthyKeychain = false;
-            wallet.damaged = true;
-            set({
-              wallets,
+            damagedWalletIds.add(wallet.id);
+          }
+        }
+
+        if (damagedWalletIds.size) {
+          set(state => {
+            if (!state.wallets) return state;
+
+            const updatedWallets = { ...state.wallets };
+
+            damagedWalletIds.forEach(walletId => {
+              updatedWallets[walletId] = {
+                ...updatedWallets[walletId],
+                damaged: true,
+              };
             });
 
-            // Update selected wallet if needed
-            if (wallets && selected && wallet.id === selected.id) {
-              logger.warn('[walletsStore]: declaring selected wallet unhealthy...');
-              set({
-                selected: wallets[wallet.id],
-              });
-            }
+            const newSelected =
+              state.selected && damagedWalletIds.has(state.selected.id) ? updatedWallets[state.selected.id] : state.selected;
+
             logger.debug('[walletsStore]: done updating wallets');
-          }
+
+            return {
+              ...state,
+              wallets: updatedWallets,
+              selected: newSelected,
+            };
+          });
         }
 
         if (!healthyKeychain) {
@@ -482,7 +605,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         saveKeychainIntegrityState('done');
       } catch (e) {
         logger.error(new RainbowError("[walletsStore]: error thrown'"), {
-          message: (e as Error)?.message,
+          message: ensureError(e).message,
         });
         captureMessage('Error running keychain integrity checks');
       }
@@ -490,12 +613,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     getWalletWithAccount(accountAddress: string): RainbowWallet | undefined {
       const { wallets } = get();
-      if (!wallets) {
-        return;
-      }
-
       const lowerCaseAccountAddress = accountAddress.toLowerCase();
-      for (const key of Object.keys(wallets).sort()) {
+      for (const key of Object.keys(wallets)) {
         const wallet = wallets[key];
         const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, lowerCaseAccountAddress));
         if (found) {
@@ -505,91 +624,66 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     },
   }),
   {
-    storageKey: 'walletsStore',
+    storageKey: 'walletsStore3428s444h982443x2334',
     partialize: state => ({
       selected: state.selected,
       accountAddress: state.accountAddress,
       wallets: state.wallets,
       walletNames: state.walletNames,
     }),
+    persistThrottleMs: time.seconds(1),
   }
 );
 
-type GetENSInfoProps = { wallets: AllRainbowWallets | null; useCachedENS?: boolean };
+async function refreshAccountInfo(
+  account: RainbowAccount,
+  useCachedENS = false
+): Promise<Partial<Pick<RainbowAccount, 'ens' | 'image' | 'label'>> | null> {
+  try {
+    if (useCachedENS && account.ens !== undefined) {
+      // If we've already checked for ENS, don't check again
+      return null;
+    }
 
-async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
-  if (!wallets) {
-    throw new Error(`No wallets`);
-  }
+    const ens = await fetchReverseRecordWithRetry(account.address);
 
-  const updatedWallets: Record<string, RainbowWallet> = {};
-  const updatedWalletNames: Record<string, string> = {};
+    if (ens) {
+      // Only fetch avatar if ENS changed or we don't have an image
+      const shouldFetchAvatar = account.ens !== ens || !account.image;
+      let newImage = account.image;
 
-  // this is imperfect still, ideally we remove walletNames entirely as a separate concept
-  await Promise.all(
-    Object.entries(wallets).map(async ([key, wallet]) => {
-      const newAddresses = await Promise.all(
-        wallet.addresses.map(async ogAccount => {
-          const account = await refreshAccountInfo(ogAccount, useCachedENS);
-          updatedWalletNames[account.address] = account.label;
-          return account;
-        })
-      );
+      if (shouldFetchAvatar) {
+        const avatar = await fetchENSAvatarWithRetry(ens);
+        newImage = avatar?.imageUrl || null;
+      }
 
-      updatedWallets[key] = {
-        ...wallet,
-        addresses: newAddresses,
+      return {
+        ens,
+        image: newImage,
+        label: formatAccountLabel({ address: account.address, label: account.label, ens }),
       };
-    })
-  );
+    }
 
-  return {
-    wallets: updatedWallets,
-    walletNames: updatedWalletNames,
-  };
-}
-
-async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
-  const account = {
-    ...accountIn,
-    label: removeFirstEmojiFromString(accountIn.label || addressAbbreviation(accountIn.address, 4, 4)),
-  };
-
-  const shouldCacheAccount = Boolean(useCachedENS && typeof account.ens === 'string');
-
-  if (shouldCacheAccount) {
-    return account;
+    // Mark as checked but not found
+    return { ens: null };
+  } catch (error) {
+    logger.debug('[refreshAccountInfo]: Failed to fetch ENS data', {
+      address: account.address,
+      error: ensureError(error).message,
+    });
+    return null;
   }
-
-  const ens = await fetchReverseRecordWithRetry(account.address);
-
-  if (ens) {
-    const avatar = await fetchENSAvatarWithRetry(ens);
-    const newImage = avatar?.imageUrl || null;
-    return {
-      ...account,
-      image: newImage,
-      ens,
-      // prefer user-set label if not an address
-      label: isValidHex(account.label) ? ens : account.label || ens,
-    };
-  } else {
-    // set to empty string so we know it's been fetched but not found
-    // will ensure shouldCacheAccount is true next time
-    account.ens = '';
-  }
-
-  return account;
 }
 
 export const useWallets = () => useWalletsStore(state => state.wallets);
-export const useWallet = (id: string) => useWallets()?.[id];
+export const useWallet = (id: string) => useWalletsStore(state => state.wallets?.[id]);
+
 export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
 export const getWallets = () => useWalletsStore.getState().wallets;
 export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
 
-export const getWalletAddresses = (wallets: AllRainbowWallets) => {
+export const getWalletAddresses = (wallets: AllRainbowWallets | null) => {
   return Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address));
 };
 
@@ -599,16 +693,14 @@ export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsRea
 export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
 export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamagedWallet());
 
-export const useWalletAddresses = () => {
-  const wallets = useWallets();
-  return useMemo(() => getWalletAddresses(wallets || {}), [wallets]);
-};
+export const useWalletAddresses = () => useWalletsStore(state => getWalletAddresses(state.wallets));
 
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
-  if (!wallets) {
+  if (!Object.keys(wallets).length) {
     return false;
   }
+
   for (const wallet of Object.values(wallets)) {
     if ((wallet.addresses || []).some(account => account.address === address)) {
       return true;
@@ -629,19 +721,16 @@ export const useAccountProfileInfo = () => {
   }, [colors.avatarBackgrounds, info]);
 };
 
-export const getAccountProfileInfo = (props: { address: string; wallet?: RainbowWallet }) => {
-  return getAccountProfileInfoFromState(props, useWalletsStore.getState());
-};
-
-const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
+const getAccountProfileInfoFromState = (props: { address: Address; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
   const wallet = props.wallet || state.selected;
   const { walletNames } = state;
   const address = props.address || state.accountAddress;
 
-  if (!wallet || !address) {
+  if (!wallet) {
     return {
       accountAddress: address,
-      accountColor: 0,
+      accountColor: addressHashedColorIndex(address) ?? 0,
+      accountSymbol: addressHashedEmoji(address) ?? undefined,
     };
   }
 
@@ -650,22 +739,24 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
   if (!selectedAccount) {
     return {
       accountAddress: address,
-      accountColor: 0,
+      accountColor: addressHashedColorIndex(address) ?? 0,
+      accountSymbol: addressHashedEmoji(address) ?? undefined,
     };
   }
 
-  const { label, color, image } = selectedAccount;
-  const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-  const accountENS = walletNames?.[address] || '';
-  const accountName = labelWithoutEmoji || accountENS || addressAbbreviation(address, 4, 4);
-  const emojiAvatar = returnStringFirstEmoji(label);
-  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address));
-  const accountColor = color;
+  const { label, color, emoji, ens, image } = selectedAccount;
+
+  const firstEmoji = label ? returnStringFirstEmoji(label) : null;
+  const labelWithoutEmoji = firstEmoji && label ? removeFirstEmojiFromString(label) : label;
+
+  const accountENS = ens || walletNames?.[address] || undefined;
+  const accountName = labelWithoutEmoji || accountENS || '';
+  const accountSymbol = emoji || addressHashedEmoji(address) || undefined;
   const accountImage = image && isValidImagePath(image) ? image : null;
 
   return {
     accountAddress: address,
-    accountColor,
+    accountColor: color,
     accountENS,
     accountImage,
     accountName,
@@ -673,12 +764,57 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
   };
 };
 
+function applyWalletUpdatesFromKeychain(storeWallets: AllRainbowWallets | null, keychainWallets: AllRainbowWallets): AllRainbowWallets {
+  if (!storeWallets) return keychainWallets;
+
+  const result = { ...storeWallets };
+
+  Object.entries(keychainWallets).forEach(([walletId, keychainWallet]) => {
+    if (!result[walletId]) {
+      // Wallet doesn't exist in store - add it
+      result[walletId] = keychainWallet;
+    } else {
+      // Wallet exists - check for missing addresses
+      const existingAddresses = new Set(result[walletId].addresses.map(a => a.address.toLowerCase()));
+
+      const missingAddresses = keychainWallet.addresses.filter(account => !existingAddresses.has(account.address.toLowerCase()));
+
+      if (missingAddresses.length) {
+        // Add new addresses to existing wallet
+        result[walletId] = {
+          ...result[walletId],
+          addresses: [...result[walletId].addresses, ...missingAddresses],
+        };
+      }
+    }
+  });
+
+  return result;
+}
+
+export function formatAccountLabel({
+  address,
+  ens,
+  label,
+}: {
+  address: Address | string;
+  ens: string | null | undefined;
+  label: string | null | undefined;
+}): string {
+  const firstEmoji = label ? returnStringFirstEmoji(label) : null;
+  const labelWithoutEmoji = firstEmoji && label ? removeFirstEmojiFromString(label) : label;
+  const formattedLabel = labelWithoutEmoji === address ? undefined : labelWithoutEmoji;
+
+  return formattedLabel || ens || '';
+}
+
 // export static functions
 export const {
   clearWalletState,
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
   createAccount,
+  getAccountProfileInfo,
   getIsDamagedWallet,
   getIsHardwareWallet,
   getIsReadOnlyWallet,
@@ -690,5 +826,6 @@ export const {
   setWalletBackedUp,
   setWalletReady,
   setAccountAddress,
+  updateAccountInfo,
   updateWallets,
 } = useWalletsStore.getState();

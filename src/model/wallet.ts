@@ -115,7 +115,8 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
-  ens?: string;
+  emoji?: string;
+  ens?: string | null;
   image?: string | null;
 }
 
@@ -859,6 +860,10 @@ export const createWallet = async ({
     let walletName = DEFAULT_WALLET_NAME;
     if (name) {
       walletName = name;
+    } else if (!isImported && type === EthereumWalletType.mnemonic) {
+      // For new wallet groups (mnemonics), generate "Wallet Group X" name
+      const mnemonicWalletCount = Object.values(allWallets).filter(w => w.type === EthereumWalletType.mnemonic).length;
+      walletName = `Wallet Group ${mnemonicWalletCount + 1}`;
     }
 
     let primary = false;

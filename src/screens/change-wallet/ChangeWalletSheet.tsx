@@ -10,6 +10,7 @@ import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
 import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
+import { isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
@@ -25,7 +26,14 @@ import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { refreshWalletInfo, setSelectedWallet, updateWallets, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import {
+  getAccountProfileInfo,
+  setSelectedWallet,
+  updateAccountInfo,
+  updateWallets,
+  useAccountAddress,
+  useWallets,
+} from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
@@ -65,6 +73,7 @@ export interface AddressItem {
   id: EthereumAddress;
   address: EthereumAddress;
   color: number;
+  emoji: string | undefined;
   isReadOnly: boolean;
   isLedger: boolean;
   isSelected: boolean;
@@ -136,6 +145,7 @@ export default function ChangeWalletSheet() {
           address: account.address,
           image: account.image,
           color: account.color,
+          emoji: account.emoji,
           label: account.label,
           balance: balanceText,
           isLedger: wallet.type === WalletTypes.bluetooth,
@@ -195,7 +205,6 @@ export default function ChangeWalletSheet() {
       if (address === accountAddress) return;
       try {
         setSelectedWallet(wallet, address);
-        remotePromoSheetsStore.setState({ isShown: false });
         initializeWallet({
           shouldRunMigrations: false,
           overwrite: false,
@@ -204,6 +213,7 @@ export default function ChangeWalletSheet() {
         if (!fromDeletion) {
           goBack();
         }
+        remotePromoSheetsStore.setState({ isShown: false });
       } catch (e) {
         logger.error(new RainbowError('[ChangeWalletSheet]: Error while switching account', e), {
           error: e,
@@ -248,7 +258,7 @@ export default function ChangeWalletSheet() {
     (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
-      const account = wallet.addresses?.find(account => account.address === address);
+      const account = isValidHex(address) ? getAccountProfileInfo(address) : undefined;
 
       InteractionManager.runAfterInteractions(() => {
         goBack();
@@ -260,42 +270,24 @@ export default function ChangeWalletSheet() {
             address,
             asset: [],
             onCloseModal: async ({ name, color }) => {
+              if (!isValidHex(address)) return;
+              updateAccountInfo({
+                address,
+                label: name || undefined,
+                walletId,
+              });
+
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
-
-                const walletAddresses = wallets[walletId].addresses;
-                const walletAddressIndex = walletAddresses.findIndex(account => account.address === address);
-                const walletAddress = walletAddresses[walletAddressIndex];
-
-                const updatedWalletAddress = {
-                  ...walletAddress,
-                  color,
-                  label: name,
-                };
-                const updatedWalletAddresses = [...walletAddresses];
-                updatedWalletAddresses[walletAddressIndex] = updatedWalletAddress;
-
-                const updatedWallet = {
-                  ...wallets[walletId],
-                  addresses: updatedWalletAddresses,
-                };
-                const updatedWallets = {
-                  ...wallets,
-                  [walletId]: updatedWallet,
-                };
-
-                await setSelectedWallet(updatedWallet, accountAddress, updatedWallets);
-                await refreshWalletInfo();
-
                 updateWebProfile(address, name, colors.avatarBackgrounds[color]);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }
             },
             profile: {
-              color: account?.color || null,
-              image: account?.image || ``,
-              name: account?.label || ``,
+              color: account?.accountColor || null,
+              image: account?.accountImage || ``,
+              name: account?.accountName || ``,
             },
             type: 'wallet_profile',
           });
@@ -342,8 +334,8 @@ export default function ChangeWalletSheet() {
       // it's deletable
       let isLastAvailableWallet = false;
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
-      for (let i = 0; i < Object.keys(wallets as any).length; i++) {
-        const key = Object.keys(wallets as any)[i];
+      for (let i = 0; i < Object.keys(wallets).length; i++) {
+        const key = Object.keys(wallets)[i];
         const someWallet = wallets?.[key];
         const otherAccount = someWallet?.addresses.find(account => account.visible && account.address !== address);
         if (otherAccount) {

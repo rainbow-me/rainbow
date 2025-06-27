@@ -6,21 +6,13 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { isZero } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS } from '@/references';
-import {
-  setSelectedWallet,
-  updateWallets,
-  useAccountProfileInfo,
-  useWallets,
-  useSelectedWallet,
-  getIsReadOnlyWallet,
-} from '@/state/wallets/walletsStore';
-import { isLowerCaseMatch, showActionSheetWithOptions } from '@/utils';
+import { useAccountProfileInfo, getIsReadOnlyWallet, useWalletsStore, updateAccountInfo } from '@/state/wallets/walletsStore';
+import { showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
 import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
-import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAsset from './useAccountAsset';
 import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';
@@ -37,8 +29,6 @@ type UseOnAvatarPressProps = {
 };
 
 export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
-  const wallets = useWallets();
-  const selectedWallet = useSelectedWallet();
   const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -51,7 +41,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   });
 
   const { data: avatar } = useENSAvatar(accountENS || '', {
-    enabled: profileEnabled && profilesEnabled,
+    enabled: !!accountENS && profileEnabled && profilesEnabled,
   });
   const hasENSAvatar = Boolean(avatar?.imageUrl);
 
@@ -60,47 +50,37 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { setNextEmoji } = useUpdateEmoji();
 
   const onAvatarRemovePhoto = useCallback(async () => {
+    const { selected: selectedWallet, wallets } = useWalletsStore.getState();
     if (!selectedWallet || !wallets) return;
 
-    const newWallets: typeof wallets = {
-      ...wallets,
-      [selectedWallet.id]: {
-        ...wallets[selectedWallet.id],
-        addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
-          isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: null } : account
-        ),
-      },
-    };
-
-    await setSelectedWallet(newWallets[selectedWallet.id], accountAddress, newWallets);
-  }, [selectedWallet, accountAddress, wallets]);
+    updateAccountInfo({
+      address: accountAddress,
+      image: null,
+      walletId: selectedWallet.id,
+    });
+  }, [accountAddress]);
 
   const processPhoto = useCallback(
     (image: ImageOrVideo | null) => {
+      const { selected: selectedWallet, wallets } = useWalletsStore.getState();
       if (!selectedWallet || !wallets) return;
 
       const stringIndex = image?.path.indexOf('/tmp');
       const imagePath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
-      const newWallets: typeof wallets = {
-        ...wallets,
-        [selectedWallet.id]: {
-          ...wallets[selectedWallet.id],
-          addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
-            isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: imagePath } : account
-          ),
-        },
-      };
 
-      setSelectedWallet(newWallets[selectedWallet.id], accountAddress, newWallets);
+      updateAccountInfo({
+        address: accountAddress,
+        image: imagePath,
+        walletId: selectedWallet.id,
+      });
     },
-    [accountAddress, selectedWallet, wallets]
+    [accountAddress]
   );
 
   const onAvatarPickEmoji = useCallback(() => {
-    if (!accountName) return;
     navigate(screenType === 'wallet' ? Routes.AVATAR_BUILDER_WALLET : Routes.AVATAR_BUILDER, {
       initialAccountColor: accountColor,
-      initialAccountName: accountName,
+      initialAccountName: accountName || '',
     });
   }, [accountColor, accountName, navigate, screenType]);
 

@@ -10,30 +10,23 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
-import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 
 export const AccountIcon = React.memo(function AccountIcon() {
-  const accountAddress = useAccountAddress();
   const { isDarkMode } = useColorMode();
-  const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
-  const selectedWallet = getWalletWithAccount(currentAddress);
 
-  const accountInfo = useMemo(() => {
-    const profileInfo = getAccountProfileInfo({
-      address: currentAddress,
-      wallet: selectedWallet,
-    });
-    return {
-      ...profileInfo,
-    };
-  }, [currentAddress, selectedWallet]);
+  const accountInfo = useAccountProfileInfo();
+  const accountAddress = accountInfo.accountAddress;
+  const [currentAddress, setCurrentAddress] = useState(accountAddress);
+
+  const selectedWallet = useMemo(() => getWalletWithAccount(currentAddress), [currentAddress]);
 
   // fix bad state - if no wallet exists, we should revert to the default
   useEffect(() => {
     if (currentAddress && !selectedWallet) {
       setCurrentAddress(accountAddress);
     }
-  }, [currentAddress, selectedWallet, accountAddress]);
+  }, [accountAddress, currentAddress, selectedWallet]);
 
   const { activeTabRef } = useBrowserContext();
   const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || RAINBOW_HOME;

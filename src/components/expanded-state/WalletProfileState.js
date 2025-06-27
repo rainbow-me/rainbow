@@ -10,6 +10,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
+import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { isValidHex } from '@/handlers/web3';
 
 export default function WalletProfileState({
   actionType,
@@ -25,15 +27,25 @@ export default function WalletProfileState({
   const { goBack, navigate } = useNavigation();
   const { getWebProfile } = useUpdateEmoji();
 
-  const { color: nameColor, emoji: nameEmoji } = useMemo(
-    () => getWalletProfileMeta(address, profile, webProfile, isNewProfile, forceColor),
-    [address, forceColor, isNewProfile, profile, webProfile]
-  );
+  const {
+    color: nameColor,
+    emoji: nameEmoji,
+    name,
+    profileImage,
+  } = useMemo(() => {
+    const webProfileData = getWalletProfileMeta(address, profile, webProfile, isNewProfile, forceColor);
+    const accountInfo = isValidHex(address) ? getAccountProfileInfo(address) : undefined;
+    return {
+      color: accountInfo?.accountColor ?? webProfileData.color,
+      emoji: accountInfo?.accountSymbol ?? webProfileData.emoji,
+      name: accountInfo?.accountName ?? profile?.name,
+      profileImage: accountInfo?.accountImage ?? profile?.image,
+    };
+  }, [address, forceColor, isNewProfile, profile, webProfile]);
 
-  const [value, setValue] = useState(profile?.name ? removeFirstEmojiFromString(profile.name) : '');
+  const [value, setValue] = useState(name ? removeFirstEmojiFromString(name) : '');
 
   const accentColor = colors.avatarBackgrounds[nameColor];
-  const profileImage = profile.image;
 
   const handleCancel = useCallback(() => {
     onCancel?.();
@@ -47,6 +59,7 @@ export default function WalletProfileState({
   const handleSubmit = useCallback(async () => {
     analytics.track(analytics.event.walletProfileSubmitted);
     onCloseModal({
+      canceled: false,
       color: typeof nameColor === 'string' ? profileUtils.colorHexToIndex(nameColor) : nameColor,
       image: profileImage,
       name: value,

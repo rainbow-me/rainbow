@@ -1,6 +1,6 @@
-import React, { useMemo, useRef, useState } from 'react';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useRoute } from '@react-navigation/native';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
@@ -21,6 +21,8 @@ const AvatarBuilderTopPoint = HeaderHeightWithStatusBar + AvatarCircleHeight + A
 
 const Container = styled(Column)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  height: ({ height }) => height,
+  width: ({ width }) => width,
 });
 
 const SheetContainer = styled(Column)({
@@ -68,11 +70,14 @@ const AvatarBuilder = () => {
   const colorIndex = useRef(params.initialAccountColor);
   const { saveInfo } = useUpdateEmoji();
 
-  const onChangeEmoji = event => {
-    ReactNativeHapticFeedback.trigger('selection');
-    setCurrentEmoji(`${event} ${params.initialAccountName}`);
-    saveInfo(`${event} ${params.initialAccountName}`, colorIndex.current);
-  };
+  const onChangeEmoji = useCallback(
+    emoji => {
+      triggerHaptics('selection');
+      setCurrentEmoji(emoji);
+      saveInfo({ color: colorIndex.current, emoji });
+    },
+    [saveInfo]
+  );
 
   const selectedRingStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: selectedRingPosition.value }],
@@ -94,7 +99,7 @@ const AvatarBuilder = () => {
   }, [params.initialAccountColor, width, colors.avatarBackgrounds.length]);
 
   return (
-    <Container {...deviceUtils.dimensions} testID="avatar-builder">
+    <Container height={deviceUtils.dimensions.height} testID="avatar-builder" width={deviceUtils.dimensions.width}>
       <TouchableBackdrop onPress={goBack} />
       <Column align="center" pointerEvents="box-none" top={AvatarBuilderTopPoint + AVATAR_CIRCLE_TOP_MARGIN}>
         <Row justify="center" paddingBottom={16} paddingTop={15} width="100%">
@@ -110,7 +115,7 @@ const AvatarBuilder = () => {
                   selectedRingPosition.value = withSpring(destination, springConfig);
                   colorIndex.current = colors.avatarBackgrounds.indexOf(color);
                   setCurrentAccountColor(color);
-                  saveInfo(currentEmoji, colorIndex.current);
+                  saveInfo({ color: colorIndex.current, emoji: currentEmoji });
                 }}
               />
             ))}
