@@ -10,7 +10,7 @@ import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
 import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
 import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
@@ -26,7 +26,14 @@ import { WalletList } from '@/screens/change-wallet/components/WalletList';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
-import { refreshWalletInfo, setSelectedWallet, updateWallets, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import {
+  refreshWalletInfo,
+  setSelectedWallet,
+  updateAccount,
+  updateWallets,
+  useAccountAddress,
+  useWallets,
+} from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
@@ -86,7 +93,6 @@ export default function ChangeWalletSheet() {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { colors, isDarkMode } = useTheme();
-  const { updateWebProfile } = useWebData();
   const { goBack, navigate } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -190,15 +196,15 @@ export default function ChangeWalletSheet() {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
       if (watchOnly && onChangeWallet) {
-        setSelectedWallet(wallet, address);
+        await setSelectedWallet(wallet, address);
         onChangeWallet(address, wallet);
         return;
       }
       if (address === accountAddress) return;
       try {
-        setSelectedWallet(wallet, address);
+        await setSelectedWallet(wallet, address);
         remotePromoSheetsStore.setState({ isShown: false });
-        initializeWallet({
+        await initializeWallet({
           shouldRunMigrations: false,
           overwrite: false,
           switching: true,
@@ -246,11 +252,14 @@ export default function ChangeWalletSheet() {
     [wallets]
   );
 
+  console.log('wallets are', JSON.stringify(wallets, null, 2));
+
   const renameWallet = useCallback(
     (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
       const account = wallet.addresses?.find(account => account.address === address);
+      console.log('rename', account, JSON.stringify(wallets, null, 2));
 
       InteractionManager.runAfterInteractions(() => {
         goBack();
@@ -264,28 +273,12 @@ export default function ChangeWalletSheet() {
             onCloseModal: async ({ name, color }) => {
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
-
-                const accounts = wallets[walletId].addresses;
-                const accountIndex = accounts.findIndex(account => account.address === address);
-                const account = accounts[accountIndex];
-
-                const emoji = returnStringFirstEmoji(account.label) || addressHashedEmoji(account.address);
-
-                const updatedAccounts = [...accounts];
-                updatedAccounts[accountIndex] = {
-                  ...account,
-                  color,
-                  label: emoji ? `${emoji} ${name}` : name,
-                };
-
-                const updatedWallet = {
-                  ...wallets[walletId],
-                  addresses: updatedAccounts,
-                };
-
-                await setSelectedWallet(updatedWallet, accountAddress);
-                // no need to wait these will run async and refresh data
-                void refreshWalletInfo();
+                const updatedWallet = await updateAccount({ name, color });
+                if (updatedWallet) {
+                  await setSelectedWallet(updatedWallet, accountAddress);
+                  // no need to wait these will run async and refresh data
+                  void refreshWalletInfo();
+                }
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }
@@ -300,7 +293,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [wallets, goBack, navigate, updateWebProfile, colors.avatarBackgrounds]
+    [wallets, goBack, navigate, accountAddress]
   );
 
   const onPressEdit = useCallback(

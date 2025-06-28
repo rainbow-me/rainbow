@@ -30,7 +30,7 @@ import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetr
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { keys, update } from 'lodash';
+import { keys } from 'lodash';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
@@ -55,7 +55,9 @@ interface WalletsState {
 
   walletNames: WalletNames;
   wallets: AllRainbowWallets;
-  updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
+  updateWallets: (wallets: AllRainbowWallets) => Promise<void>;
+
+  updateAccount: (walletId: string, address: string, wallet: Partial<RainbowAccount>) => Promise<RainbowWallet | null>;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -112,6 +114,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         ...wallet,
       };
 
+      console.log('setting');
+
       if (address) {
         set({
           ...walletInfo,
@@ -138,11 +142,54 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({ walletNames, wallets });
     },
 
+    async updateAccount(walletId, address, update) {
+      const { wallets } = get();
+      const wallet = wallets[walletId];
+      const accounts = wallets[walletId].addresses;
+      const accountIndex = accounts.findIndex(account => isLowerCaseMatch(account.address, address));
+      const foundAccount = accounts[accountIndex];
+
+      if (!foundAccount) {
+        logger.warn(`updateAccount failed, no account! ${walletId} ${address}`);
+        return null;
+      }
+
+      const updatedAccount = {
+        ...foundAccount,
+        ...update,
+      };
+
+      const foundEmoji = returnStringFirstEmoji(updatedAccount.label);
+      const defaultEmoji = addressHashedEmoji(updatedAccount.address);
+
+      if (!foundEmoji) {
+        updatedAccount.label = `${defaultEmoji} ${updatedAccount.label}`;
+      }
+
+      const updatedAccounts = accounts.map((account, index) => {
+        return index === accountIndex ? updatedAccount : account;
+      });
+
+      const updatedWallet = {
+        ...wallet,
+        addresses: updatedAccounts,
+      };
+
+      const updatedWallets = {
+        ...wallets,
+        [walletId]: updatedWallet,
+      } satisfies AllRainbowWallets;
+
+      await updateWallets(updatedWallets);
+
+      return updatedWallet;
+    },
+
     refreshWalletInfo: async props => {
       const { wallets } = get();
       const info = await refreshWalletsInfo({ wallets, cachedENS: props?.skipENS });
       // ensure wallets havent changed under us
-      const hasChangedSinceFetch = get().wallets !== wallets;
+      const hasChangedSinceFetch = !dequal(get().wallets, wallets);
       if (hasChangedSinceFetch) {
         logger.warn(`Changed wallets since fetch, aborting update`);
         return;
@@ -539,7 +586,7 @@ async function refreshWalletsInfo({ wallets, cachedENS }: GetENSInfoProps) {
     Object.entries(wallets).map(async ([key, wallet]) => {
       const newAddresses = await Promise.all(
         wallet.addresses.map(async ogAccount => {
-          const account = cachedENS === 'force' ? ogAccount : await refreshAccountInfo(ogAccount, cachedENS);
+          const account = await refreshAccountInfo(ogAccount, cachedENS);
           updatedWalletNames[account.address] = removeFirstEmojiFromString(account.label);
           return account;
         })
@@ -560,13 +607,17 @@ async function refreshWalletsInfo({ wallets, cachedENS }: GetENSInfoProps) {
 
 // this isn't really our primary way of updating account info, and when people pull to refresh
 // they get new info, so for ENS related stuff we can just check if not valid hex + has image
-async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS = false): Promise<RainbowAccount> {
+async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS: boolean | 'force' = false): Promise<RainbowAccount> {
   const abbreviatedAddress = addressAbbreviation(accountIn.address, 4, 4);
-  const defaultLabel = `${addressHashedEmoji(accountIn.address)} ${abbreviatedAddress}`;
+  const defaultEmoji = addressHashedEmoji(accountIn.address);
+  const defaultLabel = `${defaultEmoji} ${abbreviatedAddress}`;
+  const formattedLabel = accountIn.label || defaultLabel;
   const account = {
     ...accountIn,
-    label: accountIn.label || defaultLabel,
+    label: removeFirstEmojiFromString(formattedLabel) ? formattedLabel : `${defaultEmoji} ${formattedLabel}`,
   };
+
+  console.log('RETURNING', account);
 
   const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress;
   const hasEnoughData = typeof account.ens === 'string' || !account.image;
@@ -655,7 +706,6 @@ export const getAccountProfileInfo = (props: { address: string; wallet?: Rainbow
 
 const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
   const wallet = props.wallet || state.selected;
-  const { walletNames } = state;
   const address = props.address || state.accountAddress;
 
   if (!wallet || !address) {
@@ -665,18 +715,26 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
     };
   }
 
-  const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
+  let account = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
 
-  if (!selectedAccount) {
+  if (!account) {
+    // find right account
+    for (const key in state.wallets) {
+      account = state.wallets[key].addresses.find(account => isLowerCaseMatch(account.address, address));
+      if (account) break;
+    }
+  }
+
+  if (!account) {
     return {
       accountAddress: address,
-      accountColor: 0,
+      accountColor: addressHashedColorIndex(ensureValidHex(address)) || 0,
     };
   }
 
-  const { label, color, image } = selectedAccount;
+  const { label, color, image } = account;
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-  const accountENS = walletNames?.[address] || '';
+  const accountENS = account.ens || '';
   const accountName = labelWithoutEmoji || accountENS || addressAbbreviation(address, 4, 4);
   const accountSymbol = returnStringFirstEmoji(label) || addressHashedEmoji(address) || '🌈';
   const accountColor = color;
@@ -710,4 +768,5 @@ export const {
   setWalletReady,
   setAccountAddress,
   updateWallets,
+  updateWallet,
 } = useWalletsStore.getState();
