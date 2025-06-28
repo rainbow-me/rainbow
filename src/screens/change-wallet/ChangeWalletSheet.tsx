@@ -274,8 +274,6 @@ export default function ChangeWalletSheet() {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
                 const updatedWallet = await updateAccount(walletId, accountAddress, { label: name, color });
 
-                console.log('update is now', name, color, updatedWallet);
-
                 if (updatedWallet) {
                   await setSelectedWallet(updatedWallet, accountAddress);
                   // no need to wait these will run async and refresh data
