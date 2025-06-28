@@ -823,17 +823,16 @@ export default async function runMigrations() {
 
   migrations.push(v28);
 
-  console.log(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
-    console.log(`[runMigrations]: Nothing to run`);
+    logger.debug(`[runMigrations]: Nothing to run`);
     return;
   }
 
   for (let i = currentVersion; i < migrations.length; i++) {
-    console.log(`[runMigrations]: Running migration v${i}`);
+    logger.debug(`[runMigrations]: Running migration v${i}`);
     await migrations[i].apply(null);
-    console.log(`[runMigrations]: Migration ${i} completed succesfully`);
+    logger.debug(`[runMigrations]: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
   }
 }
