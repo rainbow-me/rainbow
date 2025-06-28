@@ -56,6 +56,7 @@ export const CodePreview = ({
               : {}),
           })}
         >
+          {/* @ts-expect-error react 19 upgrade */}
           <Box>{wrapper(element)}</Box>
         </div>
       </div>

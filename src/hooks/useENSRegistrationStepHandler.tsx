@@ -54,7 +54,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
   const prevCommitTrasactionHash = usePrevious(commitTransactionHash);
   const [startInterval, stopInterval, timeoutRef] = useInterval();
 
-  const timeout = useRef<NodeJS.Timeout>();
+  const timeout = useRef<NodeJS.Timeout>(undefined);
 
   const [secondsSinceCommitConfirmed, setSecondsSinceCommitConfirmed] = useState(
     (registrationParameters?.commitTransactionConfirmedAt &&

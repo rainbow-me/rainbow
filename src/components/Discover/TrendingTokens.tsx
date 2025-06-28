@@ -17,9 +17,9 @@ import Routes from '@/navigation/routesNames';
 import { FarcasterUser, TrendingToken, useTrendingTokens } from '@/resources/trendingTokens/trendingTokens';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { useCallback, useEffect, useMemo } from 'react';
-import React, { FlatList, View, Image } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { ReactNode, useCallback, useEffect, useMemo } from 'react';
+import { FlatList, View, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
@@ -46,7 +46,7 @@ function FilterButton({
 }: {
   onPress?: VoidFunction;
   label: string;
-  icon: string | JSX.Element;
+  icon: string | ReactNode;
   selected: boolean;
   iconColor?: string;
   highlightedBackgroundColor?: string;

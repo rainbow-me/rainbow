@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Columns, Column, globalColors } from '@/design-system';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export const FadeMask = ({
   fadeEdgeInset = 6,

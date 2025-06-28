@@ -1,11 +1,11 @@
 import { useTextStyle } from '@/design-system/components/Text/useTextStyle';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo, useMemo } from 'react';
-import LinearGradient, { LinearGradientProps } from 'react-native-linear-gradient';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 
 interface GradientTextProps extends LinearGradientProps {
   bleed?: number;
-  children: React.ReactElement;
+  children: React.ReactElement<any>;
 }
 
 const GradientText = memo(function GradientText({

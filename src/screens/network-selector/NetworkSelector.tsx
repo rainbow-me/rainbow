@@ -23,10 +23,10 @@ import deviceUtils, { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import MaskedView from '@react-native-masked-view/masked-view';
 import chroma from 'chroma-js';
 import { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import React, { Pressable, StyleSheet, View, TextInput, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, View, TextInput, ScrollView } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import Animated, {
   DerivedValue,
