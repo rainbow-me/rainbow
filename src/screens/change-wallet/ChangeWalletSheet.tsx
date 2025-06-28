@@ -255,8 +255,9 @@ export default function ChangeWalletSheet() {
   const renameWallet = useCallback(
     (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
-      if (!wallet) return;
       const account = wallet.addresses?.find(account => account.address === address);
+      const accountAddress = account?.address;
+      if (!wallet || !accountAddress) return;
       console.log('rename', account, JSON.stringify(wallets, null, 2));
 
       InteractionManager.runAfterInteractions(() => {
@@ -271,7 +272,7 @@ export default function ChangeWalletSheet() {
             onCloseModal: async ({ name, color }) => {
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
-                const updatedWallet = await updateAccount({ name, color });
+                const updatedWallet = await updateAccount(walletId, accountAddress, { label: name, color });
 
                 console.log('update is now', name, color, updatedWallet);
 
@@ -294,7 +295,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [wallets, goBack, navigate, accountAddress]
+    [wallets, goBack, navigate]
   );
 
   const onPressEdit = useCallback(
