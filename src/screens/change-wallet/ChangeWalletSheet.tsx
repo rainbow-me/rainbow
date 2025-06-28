@@ -250,8 +250,6 @@ export default function ChangeWalletSheet() {
     [wallets]
   );
 
-  console.log('wallets are', JSON.stringify(wallets, null, 2));
-
   const renameWallet = useCallback(
     (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
