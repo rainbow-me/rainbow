@@ -18,7 +18,7 @@ import { IS_TEST } from '@/env';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
-import { isDataComplete } from '@/hooks/useMigrateShowcaseAndHidden';
+import { isDataComplete } from '@/state/nfts/utils';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];

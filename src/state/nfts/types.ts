@@ -12,6 +12,7 @@ export type NftParams = {
   limit: number;
   pageKey: string | null;
   collectionId?: CollectionId;
+  isMigration?: boolean;
 };
 
 export type PaginationInfo = {
@@ -33,14 +34,16 @@ export type Collection = {
   totalCount: string;
 };
 
+export type NftsByCollection = Map<CollectionId, Map<UniqueId, UniqueAsset>>;
+
 export interface NftsState {
   collections: Map<CollectionId, Collection>;
-  nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>;
+  nftsByCollection: NftsByCollection;
   fetchedPages: { [pageKey: string]: number };
   fetchedCollections: { [collectionId: string]: number };
   pagination: PaginationInfo | null;
   fetchNextNftCollectionPage: () => Promise<void>;
-  fetchNftCollection: (collectionId: CollectionId) => Promise<void>;
+  fetchNftCollection: (collectionId: CollectionId, isMigration?: boolean) => Promise<NftsByCollection>;
   getNftCollections: () => Map<CollectionId, Collection> | null;
   getNftCollection: (collectionId: CollectionId) => Collection | null;
   getNftsByCollection: (collectionId: CollectionId) => Map<UniqueId, UniqueAsset> | null;

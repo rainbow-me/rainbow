@@ -3,16 +3,26 @@ import { arcClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
-import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, UniqueId, Collection } from './types';
+import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, UniqueId, Collection, NftsByCollection } from './types';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
 import { IS_DEV } from '@/env';
 import { getShowcase } from '@/hooks/useFetchShowcaseTokens';
 import { getHidden } from '@/hooks/useFetchHiddenTokens';
-import { mergeMaps, pruneStaleAndClosedCollections, replaceEthereumWithMainnet } from '@/state/nfts/utils';
+import {
+  getHiddenAndShowcaseCollectionIds,
+  mergeMaps,
+  migrateTokens,
+  pruneStaleAndClosedCollections,
+  replaceEthereumWithMainnet,
+} from '@/state/nfts/utils';
 import { UniqueAsset } from '@/entities';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { isEmpty } from 'lodash';
+import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import walletTypes from '@/helpers/walletTypes';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 export const PAGE_SIZE = 12;
 export const STALE_TIME = time.minutes(10);
@@ -27,11 +37,21 @@ const EMPTY_RETURN_DATA: NftsQueryData = {
 
 const uninitialized = Symbol();
 let paginationPromise: { address: Address | string; promise: Promise<void> } | null = null;
-const collectionPromises = new Map<CollectionId, Promise<void>>();
+const collectionsPromises: Map<Address | string, Map<string, Promise<NftsByCollection>>> = new Map();
 let prunePromise: { address: Address | string; promise: Promise<void>; lastPruneAt: number } | null = null;
 
-const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string): Promise<NftsQueryData> => {
-  const tokensForCategory = collectionId === 'showcase' ? (await getShowcase(walletAddress)) || [] : (await getHidden(walletAddress)) || [];
+const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string, isMigration = false): Promise<NftsQueryData> => {
+  let tokensForCategory: string[] = [];
+
+  if (collectionId === 'showcase') {
+    tokensForCategory = (await getShowcase(walletAddress, isMigration)) || [];
+  } else if (collectionId === 'hidden') {
+    tokensForCategory = (await getHidden(walletAddress, isMigration)) || [];
+  }
+
+  if (isMigration) {
+    tokensForCategory = (await migrateTokens(walletAddress, tokensForCategory)) || [];
+  }
 
   const tokens = tokensForCategory
     .map((token: string) => parseUniqueId(token))
@@ -39,7 +59,9 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
     .reduce(
       (acc, curr) => {
         const network = replaceEthereumWithMainnet(curr.network);
-        if (!network) return acc;
+        if (!network) {
+          return acc;
+        }
 
         acc[network] ||= [];
         acc[network].push({
@@ -75,6 +97,18 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
     }
   });
 
+  if (isMigration) {
+    const wallet = getWalletWithAccount(walletAddress);
+    if (wallet?.type !== walletTypes.readOnly) {
+      if (collectionId === 'showcase') {
+        await updateWebShowcase(walletAddress, tokensForCategory, true);
+        useOpenCollectionsStore.getState().setCollectionOpen('showcase', true);
+      } else if (collectionId === 'hidden') {
+        await updateWebHidden(walletAddress, tokensForCategory, true);
+      }
+    }
+  }
+
   return {
     collections: new Map(),
     nftsByCollection,
@@ -84,13 +118,13 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
 
 const fetchNftData = async (params: NftParams): Promise<NftsQueryData> => {
   try {
-    const { walletAddress, collectionId } = params;
+    const { walletAddress, collectionId, isMigration = false } = params;
 
     if (collectionId) {
       const nftsByCollection = new Map<CollectionId, Map<UniqueId, UniqueAsset>>();
 
       if (collectionId === 'showcase' || collectionId === 'hidden') {
-        const results = await fetchMultipleCollectionNfts(collectionId, walletAddress);
+        const results = await fetchMultipleCollectionNfts(collectionId, walletAddress, isMigration);
         for (const [id, nftsMap] of results.nftsByCollection) {
           nftsByCollection.set(id.toLowerCase(), nftsMap);
         }
@@ -378,10 +412,18 @@ export const createNftsStore = (address: Address | string) =>
         }
       },
 
-      async fetchNftCollection(collectionId: CollectionId) {
+      async fetchNftCollection(collectionId: CollectionId, isMigration = false): Promise<NftsByCollection> {
         const normalizedCollectionId = collectionId.toLowerCase();
-        if (collectionPromises.has(normalizedCollectionId)) {
-          return collectionPromises.get(normalizedCollectionId);
+
+        let addressPromises = collectionsPromises.get(address);
+        if (!addressPromises) {
+          addressPromises = new Map();
+          collectionsPromises.set(address, addressPromises);
+        }
+
+        const existingPromise = addressPromises.get(normalizedCollectionId);
+        if (existingPromise) {
+          return existingPromise;
         }
 
         const now = Date.now();
@@ -397,17 +439,42 @@ export const createNftsStore = (address: Address | string) =>
 
         const { nftsByCollection, fetch } = get();
 
-        const collection = nftsByCollection.get(normalizedCollectionId);
+        if (!isMigration) {
+          if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
+            let needsFetch = false;
+            const { collectionIds } = getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
+            if (!collectionIds) {
+              return Promise.resolve(nftsByCollection);
+            }
 
-        // NOTE: This doesn't work for showcase / hidden, but is probably fine for now to always kick off that request?
-        if (collection && !isEmpty(collection)) return;
+            if (!needsFetch) {
+              for (const collectionId of collectionIds) {
+                const normalizedCollectionId = collectionId.toLowerCase();
+                const collection = nftsByCollection.get(normalizedCollectionId);
+                if (!collection || isEmpty(collection)) {
+                  needsFetch = true;
+                  break;
+                }
+              }
+            }
+
+            if (!needsFetch) {
+              return Promise.resolve(nftsByCollection);
+            }
+          } else {
+            const collection = nftsByCollection.get(normalizedCollectionId);
+            if (collection && !isEmpty(collection)) {
+              return Promise.resolve(nftsByCollection);
+            }
+          }
+        }
 
         const promise = fetch(
-          { collectionId: normalizedCollectionId },
+          { collectionId: normalizedCollectionId, isMigration },
           { skipStoreUpdates: true, updateQueryKey: false, cacheTime: time.infinity, staleTime: time.infinity }
         )
           .then(data => {
-            if (!data) return;
+            if (!data) return nftsByCollection;
 
             const now = Date.now();
 
@@ -416,15 +483,25 @@ export const createNftsStore = (address: Address | string) =>
               nftsByCollection: newNftsByCollection,
               fetchedCollections: { ...state.fetchedCollections, [normalizedCollectionId]: now },
             }));
+            return newNftsByCollection;
           })
           .catch(error => {
             logger.error(new RainbowError('Failed to fetch NFT collection', error));
+            return nftsByCollection;
           })
           .finally(() => {
-            collectionPromises.delete(normalizedCollectionId);
+            // Clean up the promise when it's done
+            const addressPromises = collectionsPromises.get(address);
+            if (addressPromises) {
+              addressPromises.delete(normalizedCollectionId);
+              // Clean up the address entry if no more promises
+              if (addressPromises.size === 0) {
+                collectionsPromises.delete(address);
+              }
+            }
           });
 
-        collectionPromises.set(normalizedCollectionId, promise);
+        addressPromises.set(normalizedCollectionId, promise);
         return promise;
       },
 

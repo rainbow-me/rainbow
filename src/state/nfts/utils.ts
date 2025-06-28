@@ -8,6 +8,92 @@ import { STALE_TIME } from '@/state/nfts/createNftsStore';
 import { NftsState } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import { logger } from '@/logger';
+import { isLowerCaseMatch } from '@/utils';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
+import { UniqueAsset } from '@/entities';
+import { fetchNFTData, NFTData, nftsQueryKey } from '@/resources/nfts';
+import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
+import { isENSAddressFormat } from '@/helpers/validators';
+
+export function isDataComplete(tokens: string[]) {
+  if (!tokens.length) return true;
+
+  for (const token of tokens) {
+    const { network, contractAddress, tokenId } = parseUniqueId(token);
+    if (!network || !contractAddress || !tokenId) return false;
+  }
+  return true;
+}
+
+export function matchEnsNameToUniqueId(ensName: string, nfts: UniqueAsset[]): UniqueAsset['uniqueId'] | undefined {
+  for (const nft of nfts) {
+    if (!isLowerCaseMatch(nft.contractAddress, ENS_NFT_CONTRACT_ADDRESS) || !isLowerCaseMatch(nft.name, ensName)) continue;
+    return nft.uniqueId;
+  }
+
+  return undefined;
+}
+
+export function matchContractAndAddress(uniqueId: string, nfts: UniqueAsset[]): string | undefined {
+  const { contractAddress, tokenId } = parseUniqueId(uniqueId);
+
+  for (const nft of nfts) {
+    if (!isLowerCaseMatch(nft.contractAddress, contractAddress)) continue;
+    return `${nft.network}_${contractAddress}_${tokenId}`;
+  }
+
+  return undefined;
+}
+
+export async function migrateTokens(accountAddress: string, tokens: string[]): Promise<string[] | null> {
+  const migratedTokens: string[] = [];
+
+  const queryKey = nftsQueryKey({
+    address: accountAddress,
+    sortBy: NftCollectionSortCriterion.MostRecent,
+    sortDirection: SortDirection.Asc,
+  });
+
+  let data = queryClient.getQueryData<NFTData>(queryKey);
+  logger.debug(`🔄 [Migration] Has cached query data: ${!!data}`);
+  if (!data) {
+    data = await fetchNFTData({
+      queryKey,
+      meta: undefined,
+    });
+  }
+
+  if (!data.nfts.length) return null;
+
+  for (const token of tokens) {
+    const isENS = isENSAddressFormat(token);
+    if (isENS) {
+      logger.debug(`🔄 [Migration] Migrating ENS name: ${token}`);
+      const uniqueId = matchEnsNameToUniqueId(token, data.nfts);
+      if (!uniqueId) {
+        logger.debug(`🔄 [Migration] No match found for ENS name: ${token}`);
+        continue;
+      }
+
+      logger.debug(`🔄 [Migration] Migrating ENS name to uniqueId: ${uniqueId}`);
+      migratedTokens.push(uniqueId.toLowerCase());
+    } else {
+      logger.debug(`🔄 [Migration] Migrating contractAddress and tokenId: ${token}`);
+      const uniqueId = matchContractAndAddress(token, data.nfts);
+      if (!uniqueId) {
+        logger.debug(`🔄 [Migration] No match found for token: ${token}`);
+        continue;
+      }
+
+      logger.debug(`🔄 [Migration] Migrating token ${token} to uniqueId: ${uniqueId}`);
+      migratedTokens.push(uniqueId.toLowerCase());
+    }
+  }
+
+  if (!migratedTokens.length) return null;
+
+  return migratedTokens;
+}
 
 export function replaceEthereumWithMainnet(network: string | undefined): string | undefined {
   if (!network) return undefined;
@@ -27,7 +113,50 @@ export function mergeMaps<T>(map1: Map<string, T>, map2: Map<string, T>) {
   );
 }
 
-export function getHiddenAndShowcaseCollectionIds(address: Address | string) {
+export function getShowcaseAndHiddenTokenIds(address: Address | string, category?: 'showcase' | 'hidden') {
+  if (category) {
+    const tokens =
+      category === 'showcase'
+        ? queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? []
+        : queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? [];
+
+    return new Set(tokens);
+  }
+
+  const showcaseTokens = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? [];
+  const hiddenTokens = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? [];
+
+  return new Set([...showcaseTokens, ...hiddenTokens]);
+}
+
+export function getHiddenAndShowcaseCollectionIds(
+  address: Address | string,
+  category: 'showcase' | 'hidden'
+): { collectionIds: Set<string> };
+export function getHiddenAndShowcaseCollectionIds(address: Address | string): {
+  showcaseCollectionIds: Set<string>;
+  hiddenCollectionIds: Set<string>;
+};
+export function getHiddenAndShowcaseCollectionIds(
+  address: Address | string,
+  category?: 'showcase' | 'hidden'
+): { collectionIds: Set<string> } | { showcaseCollectionIds: Set<string>; hiddenCollectionIds: Set<string> } {
+  if (category) {
+    const tokens =
+      category === 'showcase'
+        ? queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? []
+        : queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? [];
+
+    return {
+      collectionIds: new Set(
+        tokens.map(uniqueId => {
+          const { network, contractAddress } = parseUniqueId(uniqueId);
+          return `${network}_${contractAddress}`.toLowerCase();
+        })
+      ),
+    };
+  }
+
   const showcaseTokens = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? [];
   const hiddenTokens = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? [];
 

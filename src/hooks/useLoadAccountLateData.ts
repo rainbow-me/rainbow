@@ -4,11 +4,8 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { prefetchAccountENSDomains } from './useAccountENSDomains';
-import useMigrateShowcaseAndHidden from './useMigrateShowcaseAndHidden';
 
 export default function useLoadAccountLateData() {
-  const migrateShowcaseAndHidden = useMigrateShowcaseAndHidden();
-
   const accountAddress = useAccountAddress();
   const dispatch = useDispatch();
 
@@ -17,9 +14,8 @@ export default function useLoadAccountLateData() {
 
     if (!getIsReadOnlyWallet()) {
       await Promise.allSettled([dispatch(ensRegistrationsLoadState()), prefetchAccountENSDomains({ accountAddress })]);
-      await migrateShowcaseAndHidden();
     }
-  }, [accountAddress, dispatch, migrateShowcaseAndHidden]);
+  }, [accountAddress, dispatch]);
 
   return loadAccountLateData;
 }

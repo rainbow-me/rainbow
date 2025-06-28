@@ -65,6 +65,7 @@ export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useRouteExistsInNavigationState } from './useRouteExistsInNavigationState';
 export { default as useSafeImageUri } from './useSafeImageUri';
 export { default as useScanner } from './useScanner';
+export { default as useFetchOpenCollectionsOnMount } from './useFetchOpenCollectionsOnMount';
 export { default as useSelectImageMenu } from './useSelectImageMenu';
 export { default as useSendSheetInputRefs } from './useSendSheetInputRefs';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
