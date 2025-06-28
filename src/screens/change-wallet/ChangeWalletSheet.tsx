@@ -282,15 +282,10 @@ export default function ChangeWalletSheet() {
                   ...wallets[walletId],
                   addresses: updatedAccounts,
                 };
-                const updatedWallets = {
-                  ...wallets,
-                  [walletId]: updatedWallet,
-                };
 
-                await setSelectedWallet(updatedWallet, accountAddress, updatedWallets);
+                await setSelectedWallet(updatedWallet, accountAddress);
                 // no need to wait these will run async and refresh data
                 void refreshWalletInfo();
-                void updateWebProfile(address, name, colors.avatarBackgrounds[color]);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }

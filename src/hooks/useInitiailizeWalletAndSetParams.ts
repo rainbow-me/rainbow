@@ -26,6 +26,7 @@ export const useInitializeWalletAndSetParams = () => {
 
       await initializeWallet({
         isRestoring: !params?.emptyWallet,
+        shouldRunMigrations: true,
       });
 
       walletState.current = WalletLoadingStates.INITIALIZED;

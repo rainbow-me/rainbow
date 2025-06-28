@@ -62,17 +62,15 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const onAvatarRemovePhoto = useCallback(async () => {
     if (!selectedWallet || !wallets) return;
 
-    const newWallets: typeof wallets = {
-      ...wallets,
-      [selectedWallet.id]: {
+    await setSelectedWallet(
+      {
         ...wallets[selectedWallet.id],
         addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
           isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: null } : account
         ),
       },
-    };
-
-    await setSelectedWallet(newWallets[selectedWallet.id], accountAddress, newWallets);
+      accountAddress
+    );
   }, [selectedWallet, accountAddress, wallets]);
 
   const processPhoto = useCallback(
@@ -81,17 +79,16 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
       const stringIndex = image?.path.indexOf('/tmp');
       const imagePath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
-      const newWallets: typeof wallets = {
-        ...wallets,
-        [selectedWallet.id]: {
+
+      setSelectedWallet(
+        {
           ...wallets[selectedWallet.id],
           addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
             isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: imagePath } : account
           ),
         },
-      };
-
-      setSelectedWallet(newWallets[selectedWallet.id], accountAddress, newWallets);
+        accountAddress
+      );
     },
     [accountAddress, selectedWallet, wallets]
   );

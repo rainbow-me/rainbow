@@ -51,10 +51,10 @@ interface WalletsState {
   setWalletReady: () => void;
 
   selected: RainbowWallet | null;
-  setSelectedWallet: (wallet: RainbowWallet, address?: string, wallets?: AllRainbowWallets) => Promise<void>;
+  setSelectedWallet: (wallet: RainbowWallet, address?: string) => Promise<void>;
 
   walletNames: WalletNames;
-  wallets: AllRainbowWallets | null;
+  wallets: AllRainbowWallets;
   updateWallets: (wallets: { [id: string]: RainbowWallet }) => Promise<void>;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
@@ -97,14 +97,14 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
     selected: null,
-    async setSelectedWallet(wallet, address, walletsIn) {
+    async setSelectedWallet(wallet, address) {
       if (address) {
         const accountAddress = ensureValidHex(address);
         saveAddress(accountAddress);
       }
       setSelectedWalletInKeychain(wallet);
 
-      const wallets = walletsIn || get().wallets;
+      const wallets = get().wallets;
       const walletInfo = await refreshWalletsInfo({ wallets, useCachedENS: true });
 
       // ensure not memoized
@@ -128,7 +128,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     walletNames: {},
 
-    wallets: null,
+    wallets: {},
     updateWallets: async walletsIn => {
       const { walletNames, wallets } = await refreshWalletsInfo({
         wallets: walletsIn,
@@ -259,7 +259,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
-        await setSelectedWallet(selectedWallet, accountAddress ? ensureValidHex(accountAddress) : undefined, wallets);
+        await setSelectedWallet(selectedWallet, accountAddress ? ensureValidHex(accountAddress) : undefined);
 
         return wallets;
       } catch (error) {
@@ -271,10 +271,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     createAccount: async ({ id, name, color }) => {
       const { wallets } = get();
-      const newWallets = { ...wallets };
 
       let index = 0;
-      for (const account of newWallets[id].addresses) {
+      for (const account of wallets[id].addresses) {
         index = Math.max(index, account.index);
       }
 
@@ -289,15 +288,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         throw new Error(`No wallet color index`);
       }
 
-      newWallets[id].addresses.push({
-        address: account.address,
-        avatar: null,
-        color: walletColorIndex,
-        index: newIndex,
-        label: name,
-        visible: true,
-      });
-
       store.dispatch(updateWebDataEnabled(true, account.address));
 
       setPreference(PreferenceActionType.init, 'profile', account.address, {
@@ -305,9 +295,24 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         accountSymbol: addressHashedEmoji(account.address),
       });
 
-      await setSelectedWallet(newWallets[id], account.address, newWallets);
+      const newWallet: RainbowWallet = {
+        ...wallets[id],
+        addresses: [
+          ...wallets[id].addresses,
+          {
+            address: account.address,
+            avatar: null,
+            color: walletColorIndex,
+            index: newIndex,
+            label: name,
+            visible: true,
+          },
+        ],
+      };
 
-      return newWallets;
+      await setSelectedWallet(newWallet, account.address);
+
+      return get().wallets;
     },
 
     setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {

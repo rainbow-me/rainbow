@@ -48,7 +48,7 @@ const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummary
     fetcher: fetchWalletSummary,
     setData: ({ data, set }) => set({ summary: data }),
     params: {
-      addresses: $ => $(useWalletsStore, state => getConsistentArray(getWalletAddresses(state.wallets || {}))),
+      addresses: $ => $(useWalletsStore, state => getConsistentArray(getWalletAddresses(state.wallets))),
       currency: $ => $(userAssetsStoreManager).currency,
     },
     cacheTime: time.zero,

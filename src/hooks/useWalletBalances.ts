@@ -39,10 +39,12 @@ const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResu
     const allAddresses = getWalletAddresses(wallets);
 
     for (const address of allAddresses) {
+      console.log('checking', address);
       const lowerCaseAddress = address.toLowerCase() as Address;
       const summary = summaryData.addresses?.[lowerCaseAddress]?.summary;
 
       if (!summary) {
+        console.log('no summary?', summary);
         continue;
       }
 
