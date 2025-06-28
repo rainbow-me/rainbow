@@ -768,5 +768,5 @@ export const {
   setWalletReady,
   setAccountAddress,
   updateWallets,
-  updateWallet,
+  updateAccount,
 } = useWalletsStore.getState();

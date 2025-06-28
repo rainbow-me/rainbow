@@ -10,9 +10,8 @@ import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
 import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useWalletsWithBalancesAndNames } from '@/hooks';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -37,7 +36,6 @@ import {
 import { useTheme } from '@/theme';
 import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { addressHashedEmoji } from '@/utils/profileUtils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ConditionalWrap from 'conditional-wrap';
@@ -274,6 +272,9 @@ export default function ChangeWalletSheet() {
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
                 const updatedWallet = await updateAccount({ name, color });
+
+                console.log('update is now', name, color, updatedWallet);
+
                 if (updatedWallet) {
                   await setSelectedWallet(updatedWallet, accountAddress);
                   // no need to wait these will run async and refresh data
