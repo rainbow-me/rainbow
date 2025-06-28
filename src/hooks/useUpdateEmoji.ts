@@ -1,16 +1,16 @@
 import {
   setSelectedWallet,
-  updateWallets,
-  useAccountProfileInfo,
+  updateAccount,
   useAccountAddress,
-  useWallets,
+  useAccountProfileInfo,
   useSelectedWallet,
+  useWallets,
 } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';
-import { useWebData } from './index';
 import { isLowerCaseMatch } from '../utils';
+import { useWebData } from './index';
 
 export default function useUpdateEmoji() {
   const { accountColor, accountName } = useAccountProfileInfo();
@@ -25,26 +25,24 @@ export default function useUpdateEmoji() {
       if (!selectedWallet) return;
 
       const walletId = selectedWallet.id;
-      const newWallets = {
-        ...wallets,
-        [walletId]: {
-          ...wallets![walletId],
-          addresses: wallets![walletId].addresses.map(singleAddress =>
-            isLowerCaseMatch(singleAddress.address, accountAddress)
-              ? {
-                  ...singleAddress,
-                  ...(name && { label: name }),
-                  ...(color !== undefined && { color }),
-                  // We need to call this in order to make sure
-                  // the profile picture is removed in "Remove Photo" flow
-                  image: null,
-                }
-              : singleAddress
-          ),
-        },
+      const newWallet = {
+        ...wallets![walletId],
+        addresses: wallets![walletId].addresses.map(singleAddress =>
+          isLowerCaseMatch(singleAddress.address, accountAddress)
+            ? {
+                ...singleAddress,
+                ...(name && { label: name }),
+                ...(color !== undefined && { color }),
+                // We need to call this in order to make sure
+                // the profile picture is removed in "Remove Photo" flow
+                image: null,
+              }
+            : singleAddress
+        ),
       };
 
-      await setSelectedWallet(newWallets[walletId], accountAddress, newWallets);
+      await updateAccount(walletId, accountAddress, newWallet);
+      await setSelectedWallet(newWallet, accountAddress);
       const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
       if (nextColor) {
         updateWebProfile(accountAddress, name, nextColor);
