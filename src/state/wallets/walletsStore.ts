@@ -114,8 +114,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         ...wallet,
       };
 
-      console.log('setting');
-
       if (address) {
         set({
           ...walletInfo,
