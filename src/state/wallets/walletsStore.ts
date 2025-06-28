@@ -259,6 +259,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
+        set({ wallets });
         await setSelectedWallet(selectedWallet, accountAddress ? ensureValidHex(accountAddress) : undefined);
 
         return wallets;
