@@ -30,7 +30,7 @@ import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetr
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { keys } from 'lodash';
+import { keys, update } from 'lodash';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
@@ -105,7 +105,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       setSelectedWalletInKeychain(wallet);
 
       const wallets = get().wallets;
-      const walletInfo = await refreshWalletsInfo({ wallets, useCachedENS: true });
+      const walletInfo = await refreshWalletsInfo({ wallets, cachedENS: 'force' });
 
       // ensure not memoized
       const selected = {
@@ -132,7 +132,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     updateWallets: async walletsIn => {
       const { walletNames, wallets } = await refreshWalletsInfo({
         wallets: walletsIn,
-        useCachedENS: true,
+        cachedENS: true,
       });
       await saveAllWallets(wallets);
       set({ walletNames, wallets });
@@ -140,7 +140,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     refreshWalletInfo: async props => {
       const { wallets } = get();
-      const info = await refreshWalletsInfo({ wallets, useCachedENS: props?.skipENS });
+      const info = await refreshWalletsInfo({ wallets, cachedENS: props?.skipENS });
       // ensure wallets havent changed under us
       const hasChangedSinceFetch = get().wallets !== wallets;
       if (hasChangedSinceFetch) {
@@ -289,7 +289,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         throw new Error(`No wallet color index`);
       }
 
-      store.dispatch(updateWebDataEnabled(true, account.address));
+      void store.dispatch(updateWebDataEnabled(true, account.address));
 
       setPreference(PreferenceActionType.init, 'profile', account.address, {
         accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
@@ -311,6 +311,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         ],
       };
 
+      await updateWallets({
+        ...wallets,
+        [id]: newWallet,
+      });
       await setSelectedWallet(newWallet, account.address);
 
       return get().wallets;
@@ -520,9 +524,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
-type GetENSInfoProps = { wallets: AllRainbowWallets | null; useCachedENS?: boolean };
+type GetENSInfoProps = { wallets: AllRainbowWallets | null; cachedENS?: boolean | 'force' };
 
-async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
+async function refreshWalletsInfo({ wallets, cachedENS }: GetENSInfoProps) {
   if (!wallets) {
     throw new Error(`No wallets`);
   }
@@ -535,7 +539,7 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
     Object.entries(wallets).map(async ([key, wallet]) => {
       const newAddresses = await Promise.all(
         wallet.addresses.map(async ogAccount => {
-          const account = await refreshAccountInfo(ogAccount, useCachedENS);
+          const account = cachedENS === 'force' ? ogAccount : await refreshAccountInfo(ogAccount, cachedENS);
           updatedWalletNames[account.address] = removeFirstEmojiFromString(account.label);
           return account;
         })
@@ -556,7 +560,7 @@ async function refreshWalletsInfo({ wallets, useCachedENS }: GetENSInfoProps) {
 
 // this isn't really our primary way of updating account info, and when people pull to refresh
 // they get new info, so for ENS related stuff we can just check if not valid hex + has image
-async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = false): Promise<RainbowAccount> {
+async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS = false): Promise<RainbowAccount> {
   const abbreviatedAddress = addressAbbreviation(accountIn.address, 4, 4);
   const defaultLabel = `${addressHashedEmoji(accountIn.address)} ${abbreviatedAddress}`;
   const account = {
@@ -566,7 +570,7 @@ async function refreshAccountInfo(accountIn: RainbowAccount, useCachedENS = fals
 
   const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress;
   const hasEnoughData = typeof account.ens === 'string' || !account.image;
-  const shouldCacheAccount = Boolean(useCachedENS && hasEnoughData);
+  const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
 
   if (shouldCacheAccount) {
     return account;

@@ -9,7 +9,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { createAccount, loadWallets, useWallets } from '@/state/wallets/walletsStore';
+import { createAccount, loadWallets, refreshWalletInfo, updateWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { profileUtils } from '@/utils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
@@ -33,6 +33,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
           await createWallet({ name });
           await loadWallets();
           await initializeWallet();
+          void refreshWalletInfo();
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (error) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), { error });
@@ -114,7 +115,9 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
             color,
             name,
           });
+          await loadWallets();
           await initializeWallet();
+          void refreshWalletInfo();
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (e) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), { error: e });
