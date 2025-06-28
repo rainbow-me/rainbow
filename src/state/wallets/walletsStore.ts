@@ -764,15 +764,15 @@ const getAccountProfileInfoFromState = (props: { address: Address; wallet?: Rain
   };
 };
 
-function applyWalletUpdatesFromKeychain(storeWallets: AllRainbowWallets | null, keychainWallets: AllRainbowWallets): AllRainbowWallets {
-  if (!storeWallets) return keychainWallets;
+function applyWalletUpdatesFromKeychain(storeWallets: AllRainbowWallets, keychainWallets: AllRainbowWallets): AllRainbowWallets {
+  if (!Object.keys(storeWallets).length) return keychainWallets;
 
-  const newWallets = { ...storeWallets };
+  let newWallets = storeWallets;
 
   Object.entries(keychainWallets).forEach(([walletId, keychainWallet]) => {
     if (!newWallets[walletId]) {
       // Wallet doesn't exist in store - add it
-      newWallets[walletId] = keychainWallet;
+      newWallets = { ...newWallets, [walletId]: keychainWallet };
     } else {
       // Wallet exists - check for missing addresses or wallet type changes
       const existingAddresses = new Set(newWallets[walletId].addresses.map(a => a.address.toLowerCase()));
@@ -782,10 +782,13 @@ function applyWalletUpdatesFromKeychain(storeWallets: AllRainbowWallets | null, 
 
       if (needsUpdate) {
         // Add new addresses to existing wallet
-        newWallets[walletId] = {
-          ...newWallets[walletId],
-          addresses: missingAddresses.length ? [...newWallets[walletId].addresses, ...missingAddresses] : newWallets[walletId].addresses,
-          type: keychainWallet.type,
+        newWallets = {
+          ...newWallets,
+          [walletId]: {
+            ...newWallets[walletId],
+            addresses: missingAddresses.length ? [...newWallets[walletId].addresses, ...missingAddresses] : newWallets[walletId].addresses,
+            type: keychainWallet.type,
+          },
         };
       }
     }
