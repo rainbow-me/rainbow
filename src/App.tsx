@@ -33,7 +33,7 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
-import { IS_DEV, IS_TEST } from '@/env';
+import { IS_DEV, IS_PROD, IS_TEST } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
@@ -114,7 +114,7 @@ function Root() {
   }, [setInitializing]);
 
   return initializing ? null : (
-    <PerformanceProfiler useRenderTimeouts={false} onReportPrepared={onReportPrepared}>
+    <PerformanceProfiler useRenderTimeouts={false} enabled={IS_PROD} onReportPrepared={onReportPrepared}>
       {/* @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>' */}
       <ReduxProvider store={store}>
         <RecoilRoot>
