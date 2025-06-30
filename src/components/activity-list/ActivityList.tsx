@@ -135,24 +135,21 @@ const ActivityList = lazyMount(() => {
     [nativeCurrency, theme]
   );
 
-  const [legendList, setLegendList] = useState<LegendListRef | null>(null);
-
-  useEffect(() => {
-    if (!legendList) return;
-    setScrollToTopRef?.({
-      scrollToTop() {
-        legendList.scrollToIndex({
-          index: 0,
-          animated: true,
-        });
-      },
-    });
-  }, [legendList, setScrollToTopRef]);
-
   return (
     <LegendList
       data={flatData}
-      ref={setLegendList}
+      ref={list => {
+        if (list) {
+          setScrollToTopRef?.({
+            scrollToTop() {
+              list.scrollToIndex({
+                index: 0,
+                animated: true,
+              });
+            },
+          });
+        }
+      }}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}

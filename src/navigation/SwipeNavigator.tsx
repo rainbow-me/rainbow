@@ -80,7 +80,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const recyclerList = useRecyclerListViewScrollToTopContext();
-  const list = useMainList();
+  const mainList = useMainList();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
@@ -213,12 +213,12 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
       } else if (isFocused && tabBarIcon === 'tabHome') {
         recyclerList.scrollToTop?.();
       } else if (isFocused && tabBarIcon === 'tabActivity') {
-        list?.scrollToTop();
+        mainList?.scrollToTop();
       }
 
       lastPressRef.current = time;
     },
-    [canSwitchRef, jumpTo, reanimatedPosition, recyclerList, list]
+    [canSwitchRef, jumpTo, reanimatedPosition, recyclerList, mainList]
   );
 
   const onLongPress = useCallback(

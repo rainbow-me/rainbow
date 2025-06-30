@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState } from 'react';
+import React, { createContext, useMemo, useRef } from 'react';
 
 type ListScrollToTopRef = {
   scrollToTop: () => void;
@@ -13,16 +13,16 @@ export type MainListContext =
 export const MainListContext = createContext<MainListContext>(null);
 
 export function MainListProvider({ children }: { children: React.ReactNode }) {
-  const [scrollToTopRef, setScrollToTopRef] = useState<ListScrollToTopRef | null>(null);
+  const scrollToTopRef = useRef<ListScrollToTopRef | null>(null);
 
   const context: MainListContext = useMemo(() => {
-    if (!scrollToTopRef) {
-      return null;
-    }
-
     return {
-      ...scrollToTopRef,
-      setScrollToTopRef: ref => setScrollToTopRef(ref),
+      scrollToTop() {
+        scrollToTopRef.current?.scrollToTop();
+      },
+      setScrollToTopRef: ref => {
+        scrollToTopRef.current = ref;
+      },
     };
   }, [scrollToTopRef]);
 
