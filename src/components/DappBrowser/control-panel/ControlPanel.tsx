@@ -44,7 +44,6 @@ import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
 import { address } from '@/utils/abbreviations';
-import { getDappHost } from '@/utils/connectedApps';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -56,6 +55,7 @@ import { toHex } from 'viem';
 import { TOP_INSET } from '../Dimensions';
 import Navigation from '@/navigation/Navigation';
 import { RAINBOW_HOME } from '../constants';
+import { getDappHost } from '../handleProviderRequest';
 import { formatUrl } from '../utils';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
@@ -77,7 +77,7 @@ export const ControlPanel = () => {
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_CONTROL_PANEL>>();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
-  const activeTabHost = getDappHost(activeTabUrl || '');
+  const activeTabHost = getDappHost(activeTabUrl) || RAINBOW_HOME;
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
   const addSession = useAppSessionsStore(state => state.addSession);
@@ -104,11 +104,7 @@ export const ControlPanel = () => {
   // listens to the current active tab and sets the account
   useEffect(() => {
     const isOnHomepage = useBrowserStore.getState().isOnHomepage();
-    if (isOnHomepage) {
-      setCurrentAddress(accountAddress);
-      setIsConnected(false);
-      return;
-    }
+    if (isOnHomepage) setIsConnected(false);
 
     if (activeTabHost) {
       if (!currentSession) {

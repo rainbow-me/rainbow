@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -14,8 +14,9 @@ import { getDappHost } from '../handleProviderRequest';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { isDarkMode } = useColorMode();
-
   const { activeTabRef } = useBrowserContext();
+
+  const accountAddress = useAccountAddress();
   const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || RAINBOW_HOME;
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
   const currentSession = useMemo(
@@ -29,23 +30,12 @@ export const AccountIcon = React.memo(function AccountIcon() {
     [hostSessions]
   );
 
-  const accountAddress = useAccountAddress();
-  const [currentAddress, setCurrentAddress] = useState(() =>
-    useBrowserStore.getState().isOnHomepage()
-      ? accountAddress
-      : currentSession?.address || hostSessions?.activeSessionAddress || accountAddress
+  const currentAddress = useMemo(
+    () => currentSession?.address || hostSessions?.activeSessionAddress || accountAddress,
+    [currentSession?.address, hostSessions?.activeSessionAddress, accountAddress]
   );
 
   const accountInfo = useAccountProfileInfo(currentAddress);
-
-  // listens to the current active tab and sets the account
-  useEffect(() => {
-    if (useBrowserStore.getState().isOnHomepage()) {
-      setCurrentAddress(accountAddress);
-    } else {
-      setCurrentAddress(currentSession?.address || hostSessions?.activeSessionAddress || accountAddress);
-    }
-  }, [accountAddress, currentSession?.address, hostSessions?.activeSessionAddress]);
 
   const handleOnPress = useCallback(() => {
     Navigation.handleAction(Routes.DAPP_BROWSER_CONTROL_PANEL, {
