@@ -105,3 +105,27 @@ tags:
                 visible:
                   id: balance-coin-row-Wrapped Ether
                 timeout: 30000
+      # Unwrap Weth
+      - tapOn: 'Ethereum'
+      - tapOn:
+          id: swap-action-button
+      - tapOn:
+          id: token-to-buy-wrapped-ether-1
+      - tapOn:
+          id: flip-button
+      - longPressOn:
+          id: swap-bottom-action-button
+      - runFlow: ../utils/MaybeSetupPin.yaml
+      # Update balances
+      - retry:
+          maxRetries: 3
+          commands:
+            # On Android, pull to refresh
+            - runFlow:
+                when:
+                  platform: Android
+                commands:
+                  - swipe:
+                      from:
+                        id: wallet-screen
+                      direction: down
