@@ -10,7 +10,7 @@ import * as Sentry from '@sentry/react-native';
 import { isNil } from 'lodash';
 import { Address } from 'viem';
 import runMigrations from '../../model/migrations';
-import { InitializeWalletParams, walletInit } from '../../model/wallet';
+import { createWallet, InitializeWalletParams, walletInit } from '../../model/wallet';
 import { settingsLoadNetwork } from '../../redux/settings';
 import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
@@ -44,6 +44,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     seedPhrase,
     color = null,
     name = null,
+    shouldCreateFirstWallet = false,
     shouldRunMigrations = false,
     overwrite = false,
     checkedWallet = null,
@@ -59,12 +60,17 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
     logger.debug('[initializeWallet]: Start wallet setup');
 
+    if (shouldCreateFirstWallet) await createWallet();
+
     const isImporting = !!seedPhrase;
     logger.debug(`[initializeWallet]: isImporting? ${isImporting}`);
+
+    let didLoadWallets = false;
 
     if (shouldRunMigrations && !seedPhrase) {
       logger.debug('[initializeWallet]: shouldRunMigrations && !seedPhrase? => true');
       await loadWallets();
+      didLoadWallets = true;
       logger.debug('[initializeWallet]: walletsLoadState call #1');
       await runMigrations();
       logger.debug('[initializeWallet]: done with migrations');
@@ -122,7 +128,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
 
       if (seedPhrase || isNew) {
         logger.debug('[initializeWallet]: walletsLoadState call #2');
-        await loadWallets();
+        if (!didLoadWallets) await loadWallets();
         if (shouldCancel()) return null;
       }
     }

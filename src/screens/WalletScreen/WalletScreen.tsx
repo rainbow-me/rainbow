@@ -14,7 +14,7 @@ import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolL
 import Routes from '@/navigation/Routes';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
-import { useInitializeWalletAndSetParams } from '@/hooks/useInitiailizeWalletAndSetParams';
+import { useInitializeWalletAndSetParams } from '@/hooks/useInitializeWalletAndSetParams';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
