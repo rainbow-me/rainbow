@@ -93,7 +93,6 @@ function getDecimalPlacesFromThresholds(value: number, thresholds: ThresholdConf
   return sortedThresholds[sortedThresholds.length - 1]?.minDecimalPlaces ?? decimalPlaces;
 }
 
-// Helper function to get significant digits for subscript notation
 function getSignificantDigitsFromThresholds(value: number, thresholds: SubscriptThresholdConfig[], defaultDigits = 4) {
   'worklet';
   if (thresholds.length === 0) return defaultDigits;

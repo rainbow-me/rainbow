@@ -13,9 +13,8 @@ import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { convertAmountAndPriceToNativeDisplay } from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, toSignificantDigits } from '@/helpers/utilities';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
-import { formatPercentageChange } from '@/helpers/strings';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -56,7 +55,9 @@ const CoinCheckButton = React.memo(function CoinCheckButton({ isHidden, isPinned
 });
 
 function formatPercentageString(percentString?: string) {
-  return percentString ? percentString.split('-').join('- ') : '-';
+  if (!percentString) return '0.00%';
+  const formatted = percentString.split('-').join('- ');
+  return formatted.endsWith('%') ? formatted : `${formatted}%`;
 }
 
 interface MemoizedBalanceCoinRowProps {
@@ -96,7 +97,7 @@ const MemoizedBalanceCoinRow = React.memo(
     );
 
     const tokenPriceChangeSelector = useCallback((token: TokenData) => {
-      return `${formatPercentageChange(token.change.change24hPct)}%`;
+      return formatPercentageString(toSignificantDigits(token.change.change24hPct, 3));
     }, []);
 
     return (

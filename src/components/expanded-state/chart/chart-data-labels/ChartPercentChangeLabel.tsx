@@ -74,7 +74,7 @@ export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({
     };
   });
 
-  // TODO: figure out how to add the text shadow
+  // TODO: Add text shadow to AnimatedNumber
   return (
     <Box flexDirection="row" alignItems="center" gap={2}>
       <AnimatedText size="20pt" style={percentageChangeDirectionStyle} tabularNumbers weight="heavy">
@@ -93,12 +93,4 @@ export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({
       />
     </Box>
   );
-
-  // return (
-  //   <TextShadow blur={12} shadowOpacity={0.24}>
-  //     <AnimatedText numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="heavy">
-  //       {percentageChangeText}
-  //     </AnimatedText>
-  //   </TextShadow>
-  // );
 });

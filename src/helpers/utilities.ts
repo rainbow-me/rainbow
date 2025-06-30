@@ -649,3 +649,39 @@ export const formatNumber = (value: string, options?: { decimals?: number }) => 
   if (+whole > 0) return `${whole}${decimalSeparator}${paddedFraction.slice(0, 2)}`;
   return `0${decimalSeparator}${paddedFraction.slice(0, 4)}`;
 };
+
+/**
+ * Formats a number to a specific number of significant digits with optional minimum decimal places
+ * @param value The number to format
+ * @param significantDigits Number of significant digits to show
+ * @param minDecimalPlaces Minimum number of decimal places to show
+ * @returns Formatted string with the specified significant digits and minimum decimals
+ */
+export function toSignificantDigits(value: BigNumberish, significantDigits = 3, minDecimalPlaces = 2): string {
+  const num = new BigNumber(value);
+
+  if (num.isZero()) {
+    return minDecimalPlaces > 0 ? '0.' + '0'.repeat(minDecimalPlaces) : '0';
+  }
+
+  const sign = num.isNegative() ? '-' : '';
+  const absNum = num.abs();
+
+  const withSigDigs = parseFloat(absNum.toPrecision(significantDigits));
+
+  let result = withSigDigs.toString();
+
+  const decimalIndex = result.indexOf('.');
+  const currentDecimalPlaces = decimalIndex === -1 ? 0 : result.length - decimalIndex - 1;
+
+  if (currentDecimalPlaces < minDecimalPlaces) {
+    if (decimalIndex === -1) {
+      // No decimal point, add one
+      result += '.';
+    }
+    // Add zeros to reach minimum decimal places
+    result += '0'.repeat(minDecimalPlaces - currentDecimalPlaces);
+  }
+
+  return sign + result;
+}
