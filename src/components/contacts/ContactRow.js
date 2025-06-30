@@ -71,7 +71,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const initialENSName = typeof ens === 'string' ? ens : nickname?.includes(ENS_DOMAIN) ? nickname : '';
+  const initialENSName = ens || (nickname?.includes(ENS_DOMAIN) ? nickname : '');
 
   const [ensName, setENSName] = useState(initialENSName);
 

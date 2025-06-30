@@ -25,7 +25,7 @@ import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import store from '@/redux/store';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
-import { isLowerCaseMatch } from '@/utils';
+import { isLowerCaseMatch, time } from '@/utils';
 import { address as addressAbbreviation } from '@/utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
@@ -603,6 +603,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }),
   {
     storageKey: 'walletsStore',
+    persistThrottleMs: time.seconds(1),
     partialize: state => ({
       selected: state.selected,
       accountAddress: state.accountAddress,

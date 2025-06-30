@@ -131,7 +131,7 @@ export default function SendContactList({
       filterList(
         userAccounts.filter(account => account.visible && account.address.toLowerCase() !== accountAddress.toLowerCase()),
         currentInput,
-        ['label']
+        ['ens', 'address']
       ),
       ['index']
     );
@@ -142,7 +142,7 @@ export default function SendContactList({
       filterList(
         watchedAccounts.filter(account => account.visible && account.address.toLowerCase() !== accountAddress.toLowerCase()),
         currentInput,
-        ['label']
+        ['ens', 'address']
       ),
       ['index']
     );

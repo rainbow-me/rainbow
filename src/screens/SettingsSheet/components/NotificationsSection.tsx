@@ -32,7 +32,7 @@ import { Alert, Linking, Switch } from 'react-native';
 import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { ContactAvatar } from '../../../components/contacts';
 import ImageAvatar from '../../../components/contacts/ImageAvatar';
-import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWallets } from '@/state/wallets/walletsStore';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
@@ -160,7 +160,6 @@ const NotificationsSection = () => {
   const { chainId } = useAccountSettings();
   const isTestnet = isTestnetChain({ chainId });
   const wallets = useWallets();
-  const walletNames = useWalletsStore(state => state.walletNames);
   const { isConnected } = useNetInfo();
   const { points_enabled, points_notifications_toggle } = useRemoteConfig();
   const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
@@ -364,7 +363,7 @@ const NotificationsSection = () => {
               />
               {ownedWallets.map(wallet => (
                 <WalletRow
-                  ens={walletNames[wallet.address]}
+                  ens={wallet.ens || ''}
                   groupOff={!storedOwnerEnabled}
                   isTestnet={isTestnet}
                   key={wallet.address}
@@ -392,7 +391,7 @@ const NotificationsSection = () => {
               />
               {watchedWallets.map(wallet => (
                 <WalletRow
-                  ens={walletNames[wallet.address]}
+                  ens={wallet.ens || ''}
                   groupOff={!storedWatcherEnabled}
                   isTestnet={isTestnet}
                   key={wallet.address}

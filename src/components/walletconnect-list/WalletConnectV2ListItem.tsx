@@ -41,7 +41,6 @@ const columnStyle = padding.object(0, 10, 0, 12);
 export function WalletConnectV2ListItem({ session, reload }: { session: SessionTypes.Struct; reload(): void }) {
   const { goBack } = useNavigation();
   const { colors } = useTheme();
-  const walletNames = useWalletsStore(state => state.walletNames);
 
   const [address, setAddress] = useState<string | undefined>(undefined);
   const [accountInfo, setAccountInfo] = useState<ReturnType<typeof getAccountProfileInfo> | undefined>(undefined);
@@ -70,7 +69,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
       const wallet = getWalletWithAccount(address);
       setAccountInfo(getAccountProfileInfo({ address, wallet }));
     }
-  }, [address, walletNames]);
+  }, [address]);
 
   const chains = useMemo(() => namespaces?.eip155?.chains || [], [namespaces]);
   const chainIds = useMemo(
