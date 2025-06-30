@@ -10,6 +10,7 @@ export type InlineProps = {
   space?: Space;
   horizontalSpace?: Space;
   verticalSpace?: Space;
+  testID?: string;
 } & (
   | {
       separator?: undefined;
@@ -34,6 +35,7 @@ export function Inline({
   verticalSpace: verticalSpaceProp,
   separator,
   wrap = true,
+  testID,
 }: InlineProps) {
   const verticalSpace = verticalSpaceProp ?? space;
   const horizontalSpace = horizontalSpaceProp ?? space;
@@ -48,6 +50,7 @@ export function Inline({
         columnGap: horizontalSpace ? resolveToken(spaceTokens, horizontalSpace) : undefined,
         rowGap: verticalSpace ? resolveToken(spaceTokens, verticalSpace) : undefined,
       }}
+      testID={testID}
     >
       {wrap || !separator
         ? children

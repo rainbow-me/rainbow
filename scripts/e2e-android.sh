@@ -29,7 +29,7 @@ if [[ $FLOW == *"transaction"* || $FLOW == "e2e" ]]; then
 
   # Kill any existing Anvil process
   echo "Cleaning up any existing Anvil processes..."
-  ANVIL_PID=$(lsof -t -i:8545 -c anvil 2>/dev/null)
+  ANVIL_PID=$(lsof -t -i:8545 -a -c anvil 2>/dev/null)
   if [ -n "$ANVIL_PID" ]; then
     kill $ANVIL_PID
   fi
@@ -56,7 +56,7 @@ if [ -n "$ANVIL_PID" ]; then
   kill "$ANVIL_PID" 2>/dev/null || true
 fi
 # kill any other processes using port 8545
-kill $(lsof -t -i:8545) 2>/dev/null || true
+lsof -t -i:8545 -a -c anvil | xargs kill
 
 # Remove the Anvil log file
 rm -rf anvil.log
