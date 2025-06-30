@@ -1,5 +1,4 @@
 import { NativeCurrencyKey } from '@/entities';
-import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
@@ -48,7 +47,7 @@ const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummary
     fetcher: fetchWalletSummary,
     setData: ({ data, set }) => set({ summary: data }),
     params: {
-      addresses: $ => $(useWalletsStore, state => getConsistentArray(getWalletAddresses(state.wallets))),
+      addresses: $ => $(useWalletsStore, state => getWalletAddresses(state.wallets)),
       currency: $ => $(userAssetsStoreManager).currency,
     },
     cacheTime: time.zero,

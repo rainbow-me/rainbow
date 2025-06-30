@@ -1,6 +1,7 @@
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { getConsistentArray } from '@/helpers/getConsistentArray';
 import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
 import { ensureError, logger, RainbowError } from '@/logger';
@@ -26,11 +27,11 @@ import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time } from '@/utils';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
+import { shallowEqual } from '@/worklets/comparisons';
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { keys } from 'lodash';
-import { useMemo } from 'react';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
@@ -684,7 +685,9 @@ export const getSelectedWallet = () => useWalletsStore.getState().selected;
 export const getWalletReady = () => useWalletsStore.getState().walletReady;
 
 export const getWalletAddresses = (wallets: AllRainbowWallets | null) => {
-  return Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address));
+  return getConsistentArray(
+    Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address))
+  );
 };
 
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
@@ -693,7 +696,7 @@ export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsRea
 export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
 export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamagedWallet());
 
-export const useWalletAddresses = () => useWalletsStore(state => getWalletAddresses(state.wallets));
+export const useWalletAddresses = () => useWalletsStore(state => getWalletAddresses(state.wallets), shallowEqual);
 
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
@@ -711,14 +714,13 @@ export const isImportedWallet = (address: string): boolean => {
 
 export const useAccountProfileInfo = (address?: Address) => {
   const { colors } = useTheme();
-  const info = useWalletsStore(state => state.getAccountProfileInfo(address), dequal);
-
-  return useMemo(() => {
+  return useWalletsStore(state => {
+    const info = state.getAccountProfileInfo(address);
     return {
       ...info,
       accountColorHex: info?.accountColor ? colors.avatarBackgrounds[info.accountColor] : '',
     };
-  }, [colors.avatarBackgrounds, info]);
+  }, dequal);
 };
 
 const getAccountProfileInfoFromState = (props: { address: Address; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
