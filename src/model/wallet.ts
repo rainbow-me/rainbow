@@ -223,6 +223,7 @@ export const getHdPath = ({ type, index }: { type: WalletLibraryType; index: num
 export type InitializeWalletParams = CreateWalletParams & {
   network?: string;
   seedPhrase?: string;
+  shouldCreateFirstWallet?: boolean;
   shouldRunMigrations?: boolean;
   switching?: boolean;
 };
@@ -267,7 +268,7 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
   walletAddress = await loadAddress();
 
   if (!walletAddress) {
-    const wallet = await createWallet({});
+    const wallet = await createWallet();
     ensureEthereumWallet(wallet!);
     if (!wallet?.address) {
       throw new RainbowError('Error creating wallet address');
@@ -642,7 +643,7 @@ export const createWallet = async ({
   silent = false,
   clearCallbackOnStartCreation = false,
   userPin,
-}: CreateWalletParams): Promise<null | EthereumWallet> => {
+}: CreateWalletParams = {}): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;

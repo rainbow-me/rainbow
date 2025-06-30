@@ -24,13 +24,15 @@ export const useInitializeWalletAndSetParams = () => {
     const initializeAndSetParams = async () => {
       walletState.current = WalletLoadingStates.INITIALIZING;
 
+      const shouldCreateFirstWallet = params?.emptyWallet ?? false;
+
       await initializeWallet({
-        isRestoring: !params?.emptyWallet,
+        shouldCreateFirstWallet,
         shouldRunMigrations: true,
       });
 
       walletState.current = WalletLoadingStates.INITIALIZED;
-      setParams({ emptyWallet: false });
+      if (shouldCreateFirstWallet) setParams({ emptyWallet: false });
 
       setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {
