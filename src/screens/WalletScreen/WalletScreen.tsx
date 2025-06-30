@@ -1,9 +1,9 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,7 +21,10 @@ import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { AppState } from '@/redux/store';
+import { useSelector } from 'react-redux';
+import { Network } from '@/state/backendNetworks/types';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -52,52 +55,38 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
 });
 
 function WalletScreen() {
-  const { network: currentNetwork } = useAccountSettings();
-  const accountAddress = useAccountAddress();
+  const currentNetwork = useCurrentNetwork();
   const insets = useSafeAreaInsets();
 
-  const {
-    isWalletEthZero,
-    isLoadingUserAssets,
-    isLoadingBalance,
-    briefSectionsData: walletBriefSectionsData,
-  } = useWalletSectionsData({ type: 'wallet' });
-
-  const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
+  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const { highContrastAccentColor } = useAccountAccentColor();
 
-  const disableRefreshControl = useMemo(
-    () => isLoadingUserAssetsAndAddress || isLoadingBalance,
-    [isLoadingUserAssetsAndAddress, isLoadingBalance]
-  );
-
   const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
-
-  const handleWalletScreenMount = useCallback(() => {
-    hideSplashScreen();
-    requestIdleCallback(() => {
-      InteractionManager.runAfterInteractions(() => {
-        useNavigationStore.setState({ isWalletScreenMounted: true });
-      });
-    });
-  }, []);
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
       <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
-        <AssetList
-          accentColor={highContrastAccentColor}
-          disableRefreshControl={disableRefreshControl}
-          isWalletEthZero={isWalletEthZero}
-          network={currentNetwork}
-          walletBriefSectionsData={walletBriefSectionsData}
-        />
+        <AssetList accentColor={highContrastAccentColor} network={currentNetwork} />
         <ToastComponent />
         <UtilityComponents />
         <WalletScreenEffects />
       </Box>
     </PerformanceMeasureView>
   );
+}
+
+function useCurrentNetwork(): Network {
+  const network = useSelector(({ settings: { network } }: AppState) => network);
+  return network;
+}
+
+function handleWalletScreenMount(): void {
+  hideSplashScreen();
+  requestIdleCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      useNavigationStore.setState({ isWalletScreenMounted: true });
+    });
+  });
 }
 
 export default React.memo(WalletScreen);
