@@ -2,13 +2,13 @@ import React from 'react';
 import { Box, Bleed, AnimatedText } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
-import { AnimatedTextProps } from '@/design-system/components/Text/AnimatedText';
+import { AnimatedTextChildProps, AnimatedTextProps } from '@/design-system/components/Text/AnimatedText';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 
 export type AnimatedTextIconProps = {
   align?: 'center' | 'left' | 'right';
-  children: AnimatedTextProps['children'];
+  children: AnimatedTextChildProps['children'];
   color?: TextColor | CustomColor;
   containerSize?: number;
   height?: number;
