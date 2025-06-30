@@ -107,7 +107,6 @@ export function SwapBottomPanel() {
           AnimatedSwapStyles.keyboardStyle,
           AnimatedSwapStyles.swapActionWrapperStyle,
           IS_TEST && {
-            width: '100%',
             height: 200,
             opacity: 1,
             pointerEvents: 'auto',
@@ -127,12 +126,9 @@ export function SwapBottomPanel() {
           style={[
             { alignSelf: 'center' },
             IS_TEST && {
-              width: '100%',
-              height: 200,
               opacity: 1,
               pointerEvents: 'auto',
               overflow: 'visible',
-              bottom: 50,
             },
           ]}
           width="full"

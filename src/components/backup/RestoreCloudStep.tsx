@@ -97,7 +97,7 @@ export default function RestoreCloudStep() {
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
-      const pwd = await getLocalBackupPassword(await maybeAuthenticateWithPIN());
+      const pwd = await getLocalBackupPassword(undefined);
       if (pwd) {
         backupsStore.getState().setStoredPassword(pwd);
         backupsStore.getState().setPassword(pwd);

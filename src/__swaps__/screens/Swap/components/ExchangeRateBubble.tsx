@@ -176,6 +176,7 @@ export const ExchangeRateBubble = () => {
             bubbleVisibilityWrapper,
             { borderColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR, borderWidth: THICK_BORDER_WIDTH },
           ]}
+          testID="swap-exchange-rate-bubble"
         >
           <Inline alignHorizontal="center" alignVertical="center" space="6px" wrap={false}>
             <AnimatedText align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
