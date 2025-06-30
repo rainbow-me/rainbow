@@ -82,7 +82,9 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
           <Box width={{ custom: 40 }} height={{ custom: 40 }}>
             <Box style={styles.iconContainer}>
               <Animated.View style={[{ width: 40, height: 40, justifyContent: 'center' }, fallbackIconStyle]}>
-                <AnimatedText color="labelQuaternary" size="icon 28px" weight="black" staticText="􀎭" align="center" />
+                <AnimatedText align="center" color="labelQuaternary" size="icon 28px" weight="black">
+                  􀎭
+                </AnimatedText>
               </Animated.View>
               {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
               {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
