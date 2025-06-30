@@ -36,7 +36,7 @@ export default function useMemoBriefSectionData({
     // briefSectionsData is an optional thing - we might send it from the tree
     // so we run it only once for a tree
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    sectionsDataToUse = useWalletSectionsData({ type }).briefSectionsData!;
+    sectionsDataToUse = useWalletSectionsData({ type }).briefSectionsData;
   } else {
     sectionsDataToUse = briefSectionsData;
   }
@@ -85,7 +85,7 @@ export default function useMemoBriefSectionData({
         }
 
         if (afterDivider && data.type === CellType.COIN) {
-          numberOfSmallBalancesAllowed--;
+          numberOfSmallBalancesAllowed -= 1;
           if (numberOfSmallBalancesAllowed <= 0) {
             return false;
           }
@@ -93,8 +93,7 @@ export default function useMemoBriefSectionData({
 
         if (data.type === CellType.LEGACY_FAMILY_HEADER) {
           const name = (data as LegacyNFTFamilyExtraData).name;
-          const nameKey = `${name.toLowerCase()}-legacy`;
-          isGroupOpen = openCollections[nameKey] ?? false;
+          isGroupOpen = openCollections[name.toLowerCase()] ?? false;
         }
 
         if (data.type === CellType.FAMILY_HEADER) {
