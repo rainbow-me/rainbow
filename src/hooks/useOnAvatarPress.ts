@@ -6,21 +6,13 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { isZero } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS } from '@/references';
-import {
-  setSelectedWallet,
-  updateWallets,
-  useAccountProfileInfo,
-  useWallets,
-  useSelectedWallet,
-  getIsReadOnlyWallet,
-} from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet, updateAccount, useAccountProfileInfo, useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch, showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
 import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
-import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAsset from './useAccountAsset';
 import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';
@@ -62,33 +54,29 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const onAvatarRemovePhoto = useCallback(async () => {
     if (!selectedWallet || !wallets) return;
 
-    await setSelectedWallet(
-      {
-        ...wallets[selectedWallet.id],
-        addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
-          isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: null } : account
-        ),
-      },
-      accountAddress
-    );
+    const account = selectedWallet.addresses.find(s => isLowerCaseMatch(s.address, accountAddress));
+    if (!account) return;
+
+    await updateAccount(selectedWallet.id, {
+      ...account,
+      image: null,
+    });
   }, [selectedWallet, accountAddress, wallets]);
 
   const processPhoto = useCallback(
-    (image: ImageOrVideo | null) => {
+    async (image: ImageOrVideo | null) => {
       if (!selectedWallet || !wallets) return;
 
       const stringIndex = image?.path.indexOf('/tmp');
       const imagePath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
 
-      setSelectedWallet(
-        {
-          ...wallets[selectedWallet.id],
-          addresses: wallets[selectedWallet.id].addresses.map((account: RainbowAccount) =>
-            isLowerCaseMatch(account.address, accountAddress) ? { ...account, image: imagePath } : account
-          ),
-        },
-        accountAddress
-      );
+      const account = selectedWallet.addresses.find(s => isLowerCaseMatch(s.address, accountAddress));
+      if (!account) return;
+
+      await updateAccount(selectedWallet.id, {
+        ...account,
+        image: imagePath,
+      });
     },
     [accountAddress, selectedWallet, wallets]
   );

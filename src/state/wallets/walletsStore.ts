@@ -57,7 +57,7 @@ interface WalletsState {
   wallets: AllRainbowWallets;
   updateWallets: (wallets: AllRainbowWallets) => Promise<void>;
 
-  updateAccount: (walletId: string, address: string, wallet: Partial<RainbowAccount>) => Promise<RainbowWallet | null>;
+  updateAccount: (walletId: string, account: Partial<RainbowAccount> & Pick<RainbowAccount, 'address'>) => Promise<RainbowWallet | null>;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -140,21 +140,21 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({ walletNames, wallets });
     },
 
-    async updateAccount(walletId, address, update) {
+    async updateAccount(walletId, account) {
       const { wallets } = get();
       const wallet = wallets[walletId];
       const accounts = wallets[walletId].addresses;
-      const accountIndex = accounts.findIndex(account => isLowerCaseMatch(account.address, address));
+      const accountIndex = accounts.findIndex(a => isLowerCaseMatch(a.address, account.address));
       const foundAccount = accounts[accountIndex];
 
       if (!foundAccount) {
-        logger.warn(`updateAccount failed, no account! ${walletId} ${address}`);
+        logger.warn(`updateAccount failed, no account! ${walletId} ${account?.address}`);
         return null;
       }
 
       const updatedAccount = {
         ...foundAccount,
-        ...update,
+        ...account,
       };
 
       const foundEmoji = returnStringFirstEmoji(updatedAccount.label);
@@ -585,7 +585,7 @@ async function refreshWalletsInfo({ wallets, cachedENS }: GetENSInfoProps) {
       const newAddresses = await Promise.all(
         wallet.addresses.map(async ogAccount => {
           const account = await refreshAccountInfo(ogAccount, cachedENS);
-          updatedWalletNames[account.address] = removeFirstEmojiFromString(account.label);
+          updatedWalletNames[account.address] = account.label;
           return account;
         })
       );

@@ -1,3 +1,5 @@
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { RainbowAccount } from '@/model/wallet';
 import {
   setSelectedWallet,
   updateAccount,
@@ -24,40 +26,35 @@ export default function useUpdateEmoji() {
     async (name: string, color: number) => {
       if (!selectedWallet) return;
 
-      const walletId = selectedWallet.id;
-      const newWallet = {
-        ...wallets![walletId],
-        addresses: wallets![walletId].addresses.map(singleAddress =>
-          isLowerCaseMatch(singleAddress.address, accountAddress)
-            ? {
-                ...singleAddress,
-                ...(name && { label: name }),
-                ...(color !== undefined && { color }),
-                // We need to call this in order to make sure
-                // the profile picture is removed in "Remove Photo" flow
-                image: null,
-              }
-            : singleAddress
-        ),
+      const existing = selectedWallet.addresses.find(singleAddress => isLowerCaseMatch(singleAddress.address, accountAddress));
+      if (!existing) return;
+
+      const newAccount: RainbowAccount = {
+        ...existing,
+        ...(name && { label: name }),
+        ...(color !== undefined && { color }),
+        // We need to call this in order to make sure
+        // the profile picture is removed in "Remove Photo" flow
+        image: null,
       };
 
-      await updateAccount(walletId, accountAddress, newWallet);
-      await setSelectedWallet(newWallet, accountAddress);
+      await updateAccount(selectedWallet.id, newAccount);
+      await setSelectedWallet(selectedWallet, accountAddress);
       const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
       if (nextColor) {
         updateWebProfile(accountAddress, name, nextColor);
       }
     },
-    [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile, wallets]
+    [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile]
   );
 
   const setNextEmoji = useCallback(() => {
     if (!selectedWallet || !wallets) return;
-
     const walletId = selectedWallet.id;
-    const { label } =
-      wallets[walletId].addresses.find(({ address }: { address: string }) => address.toLowerCase() === accountAddress.toLowerCase()) || {};
-    const maybeEmoji = label?.split(' ')[0] ?? '';
+    const account = wallets[walletId].addresses.find(wallet => isLowerCaseMatch(wallet.address, accountAddress));
+    if (!account) return;
+    const { label } = account;
+    const maybeEmoji = removeFirstEmojiFromString(label);
     const { emoji, colorIndex } = getNextEmojiWithColor(maybeEmoji);
     const name = `${emoji} ${accountName}`;
     saveInfo(name, colorIndex);

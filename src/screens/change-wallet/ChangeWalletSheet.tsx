@@ -26,6 +26,7 @@ import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoShe
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import {
+  getWallets,
   refreshWalletInfo,
   setSelectedWallet,
   updateAccount,
@@ -191,7 +192,7 @@ export default function ChangeWalletSheet() {
   const onChangeAccount = useCallback(
     async (walletId: string, address: Address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
-      const wallet = wallets?.[walletId];
+      const wallet = getWallets()?.[walletId];
       if (!wallet) return;
       if (watchOnly && onChangeWallet) {
         await setSelectedWallet(wallet, address);
@@ -216,43 +217,41 @@ export default function ChangeWalletSheet() {
         });
       }
     },
-    [accountAddress, editMode, goBack, onChangeWallet, wallets, watchOnly]
+    [accountAddress, editMode, goBack, onChangeWallet, watchOnly]
   );
 
-  const deleteWallet = useCallback(
-    async (walletId: string, address: string) => {
-      const currentWallet = wallets?.[walletId];
-      // There's nothing to delete if there's no wallet
-      if (!currentWallet) return;
+  const deleteWallet = useCallback(async (walletId: string, address: string) => {
+    const wallets = getWallets();
+    const currentWallet = wallets?.[walletId];
+    // There's nothing to delete if there's no wallet
+    if (!currentWallet) return;
 
-      const newWallets = {
-        ...wallets,
-        [walletId]: {
-          ...currentWallet,
-          addresses: (currentWallet.addresses || []).map(account =>
-            account.address.toLowerCase() === address.toLowerCase() ? { ...account, visible: false } : account
-          ),
-        },
-      };
+    const newWallets = {
+      ...wallets,
+      [walletId]: {
+        ...currentWallet,
+        addresses: (currentWallet.addresses || []).map(account =>
+          account.address.toLowerCase() === address.toLowerCase() ? { ...account, visible: false } : account
+        ),
+      },
+    };
 
-      // If there are no visible wallets
-      // then delete the wallet
-      const visibleAddresses = (newWallets[walletId]?.addresses || []).filter(account => account.visible);
-      if (visibleAddresses.length === 0) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete newWallets[walletId];
-        await updateWallets(newWallets);
-      } else {
-        await updateWallets(newWallets);
-      }
-      await removeWalletData(address);
-    },
-    [wallets]
-  );
+    // If there are no visible wallets
+    // then delete the wallet
+    const visibleAddresses = (newWallets[walletId]?.addresses || []).filter(account => account.visible);
+    if (visibleAddresses.length === 0) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete newWallets[walletId];
+      await updateWallets(newWallets);
+    } else {
+      await updateWallets(newWallets);
+    }
+    await removeWalletData(address);
+  }, []);
 
   const renameWallet = useCallback(
     (walletId: string, address: string) => {
-      const wallet = wallets?.[walletId];
+      const wallet = getWallets()?.[walletId];
       const account = wallet.addresses?.find(account => account.address === address);
       const accountAddress = account?.address;
       if (!wallet || !accountAddress) return;
@@ -269,7 +268,7 @@ export default function ChangeWalletSheet() {
             onCloseModal: async ({ name, color }) => {
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
-                const updatedWallet = await updateAccount(walletId, accountAddress, { label: name, color });
+                const updatedWallet = await updateAccount(walletId, { label: name, color, address: accountAddress });
 
                 if (updatedWallet) {
                   await setSelectedWallet(updatedWallet, accountAddress);
@@ -290,7 +289,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [wallets, goBack, navigate]
+    [goBack, navigate]
   );
 
   const onPressEdit = useCallback(
@@ -329,9 +328,12 @@ export default function ChangeWalletSheet() {
       // If there's more than 1 account
       // it's deletable
       let isLastAvailableWallet = false;
+      const wallets = getWallets();
+      const walletKeys = Object.keys(wallets);
+
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
-      for (let i = 0; i < Object.keys(wallets as any).length; i++) {
-        const key = Object.keys(wallets as any)[i];
+      for (let i = 0; i < walletKeys.length; i++) {
+        const key = walletKeys[i];
         const someWallet = wallets?.[key];
         const otherAccount = someWallet?.addresses.find(account => account.visible && account.address !== address);
         if (otherAccount) {
@@ -339,6 +341,7 @@ export default function ChangeWalletSheet() {
           break;
         }
       }
+
       // Delete wallet with confirmation
       showActionSheetWithOptions(
         {
@@ -374,7 +377,7 @@ export default function ChangeWalletSheet() {
         }
       );
     },
-    [accountAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
+    [accountAddress, deleteWallet, goBack, navigate, onChangeAccount]
   );
 
   const onPressCopyAddress = useCallback((address: string) => {
