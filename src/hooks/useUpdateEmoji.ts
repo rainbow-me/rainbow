@@ -39,7 +39,6 @@ export default function useUpdateEmoji() {
       };
 
       await updateAccount(selectedWallet.id, newAccount);
-      await setSelectedWallet(selectedWallet, accountAddress);
       const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
       if (nextColor) {
         updateWebProfile(accountAddress, name, nextColor);
