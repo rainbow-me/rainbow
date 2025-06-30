@@ -652,10 +652,6 @@ export const formatNumber = (value: string, options?: { decimals?: number }) => 
 
 /**
  * Formats a number to a specific number of significant digits with optional minimum decimal places
- * @param value The number to format
- * @param significantDigits Number of significant digits to show
- * @param minDecimalPlaces Minimum number of decimal places to show
- * @returns Formatted string with the specified significant digits and minimum decimals
  */
 export function toSignificantDigits(value: BigNumberish, significantDigits = 3, minDecimalPlaces = 2): string {
   const num = new BigNumber(value);

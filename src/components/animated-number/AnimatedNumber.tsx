@@ -362,7 +362,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   ...textProps
 }: AnimatedNumberProps) {
   const numberContainerRef = useAnimatedRef<Animated.View>();
-  // holds the width of each numeral 0-9 for the current text style
   const isFirstRender = useIsFirstRender();
 
   const maskWidth = useSharedValue(0);
@@ -381,7 +380,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     return disabledProp?.value ?? false;
   });
 
-  // This is not ideal, but required to accommodate the use of a shared value for the value prop
+  // Required to accommodate the use of a shared value for the value prop
   const [parts, setParts] = useState(() => (typeof value === 'string' ? getPartsByType(value) : getPartsByType(value.value)));
   const previousParts = usePrevious(parts);
 
@@ -482,7 +481,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
         opacity: 0,
       },
       animations: {
-        // TODO: fix this
         opacity: withTiming(1, {
           ...timingConfig,
           // TODO: make this configurable
