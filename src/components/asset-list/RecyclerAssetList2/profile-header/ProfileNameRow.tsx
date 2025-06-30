@@ -65,7 +65,7 @@ export function ProfileNameRow({
         address: accountAddress,
         ens: abbreviateEnsForDisplay(accountENS, 20),
         label: accountName,
-      }) || address(accountAddress, 4, 6)
+      }) || address(accountAddress, 4, 4)
     );
   }, [accountAddress, accountENS, accountName]);
 

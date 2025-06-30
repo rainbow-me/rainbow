@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
@@ -12,6 +11,7 @@ import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
 import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { isValidHex } from '@/handlers/web3';
+import { useWebData } from '@/hooks';
 
 export default function WalletProfileState({
   actionType,
@@ -25,7 +25,7 @@ export default function WalletProfileState({
 }) {
   const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
-  const { getWebProfile } = useUpdateEmoji();
+  const { getWebProfile } = useWebData();
 
   const {
     color: nameColor,
@@ -36,8 +36,8 @@ export default function WalletProfileState({
     const webProfileData = getWalletProfileMeta(address, profile, webProfile, isNewProfile, forceColor);
     const accountInfo = isValidHex(address) ? getAccountProfileInfo(address) : undefined;
     return {
-      color: accountInfo?.accountColor ?? webProfileData.color,
-      emoji: accountInfo?.accountSymbol ?? webProfileData.emoji,
+      color: typeof accountInfo?.accountColor === 'number' ? accountInfo?.accountColor : webProfileData.color || undefined,
+      emoji: accountInfo?.accountSymbol || webProfileData.emoji || undefined,
       name: accountInfo?.accountName ?? profile?.name,
       profileImage: accountInfo?.accountImage ?? profile?.image,
     };
@@ -45,7 +45,7 @@ export default function WalletProfileState({
 
   const [value, setValue] = useState(name ? removeFirstEmojiFromString(name) : '');
 
-  const accentColor = colors.avatarBackgrounds[nameColor];
+  const accentColor = typeof nameColor === 'number' ? colors.avatarBackgrounds[nameColor] : nameColor;
 
   const handleCancel = useCallback(() => {
     onCancel?.();

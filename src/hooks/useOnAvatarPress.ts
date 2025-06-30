@@ -37,7 +37,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const profileEnabled = Boolean(accountENS);
 
   const { isOwner } = useENSOwner(accountENS || '', {
-    enabled: profileEnabled && profilesEnabled,
+    enabled: !!accountENS && profileEnabled && profilesEnabled,
   });
 
   const { data: avatar } = useENSAvatar(accountENS || '', {
