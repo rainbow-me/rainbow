@@ -256,7 +256,6 @@ export default function ChangeWalletSheet() {
       const account = wallet.addresses?.find(account => account.address === address);
       const accountAddress = account?.address;
       if (!wallet || !accountAddress) return;
-      console.log('rename', account, JSON.stringify(wallets, null, 2));
 
       InteractionManager.runAfterInteractions(() => {
         goBack();
