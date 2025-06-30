@@ -31,7 +31,7 @@ import { usePrevious } from '@/hooks';
 // reanimated defines but does not export this type
 type EntryOrExitLayoutType = BaseAnimationBuilder | typeof BaseAnimationBuilder | EntryExitAnimationFunction;
 
-const DEFAULT_ANIMATION_DURATION = 600;
+const DEFAULT_ANIMATION_DURATION = 550;
 // credit to https://github.com/barvian/number-flow
 const EASING_KEYFRAMES = [
   0, 0.005, 0.019, 0.039, 0.066, 0.096, 0.129, 0.165, 0.202, 0.24, 0.278, 0.316, 0.354, 0.39, 0.426, 0.461, 0.494, 0.526, 0.557, 0.586,
@@ -127,11 +127,15 @@ const Digit = function Digit({
       } else {
         if (isDigitFirstRender && !isFirstRender) {
           translateY.value = 0;
-          translateY.value = withTiming(targetY, timingConfig);
+          requestAnimationFrame(() => {
+            translateY.value = withTiming(targetY, timingConfig);
+          });
         } else if (isFirstRender) {
           translateY.value = targetY;
         } else {
-          translateY.value = withTiming(targetY, timingConfig);
+          requestAnimationFrame(() => {
+            translateY.value = withTiming(targetY, timingConfig);
+          });
         }
       }
 
@@ -146,10 +150,8 @@ const Digit = function Digit({
         if (disabled.value) {
           currentDigitWidth.value = targetWidth;
         } else {
-          currentDigitWidth.value = withTiming(targetWidth, {
-            ...timingConfig,
-            // TODO: make configurable
-            duration: timingConfig.duration * 1,
+          requestAnimationFrame(() => {
+            currentDigitWidth.value = withTiming(targetWidth, timingConfig);
           });
         }
       }
@@ -339,6 +341,11 @@ function getPartsByType(value: string) {
   };
 }
 
+const emptyLayoutTransition = {
+  initialValues: {},
+  animations: {},
+};
+
 type AnimatedNumberProps = Omit<TextProps, 'children'> & {
   value: string | SharedValue<string> | DerivedValue<string>;
   timingConfig?: TimingAnimationConfig;
@@ -431,10 +438,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
         numberContainerGlobalOriginX.value = values.targetGlobalOriginX;
         previousWidthDelta.value = values.currentWidth - values.targetWidth;
         maskWidth.value = values.targetWidth;
-        return {
-          initialValues: {},
-          animations: {},
-        };
+        return emptyLayoutTransition;
       }
 
       const currentWidth = values.currentWidth;
@@ -480,10 +484,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       numberContainerGlobalOriginX.value = values.targetGlobalOriginX;
       previousWidthDelta.value = widthDelta;
 
-      return {
-        initialValues: {},
-        animations: {},
-      };
+      return emptyLayoutTransition;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [timingConfig, baseTextStyle, disabled, previousParts]
@@ -492,16 +493,14 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   const characterEnteringAnimation = useCallback(() => {
     'worklet';
     if (disabled.value) {
-      return {
-        initialValues: {},
-        animations: {},
-      };
+      return emptyLayoutTransition;
     }
     return {
       initialValues: {
         opacity: 0,
       },
       animations: {
+        // TODO: fix this
         opacity: withTiming(1, {
           ...timingConfig,
           // TODO: make this configurable
@@ -510,6 +509,23 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       },
     };
   }, [timingConfig, disabled]);
+
+  // const styles = useMemo(() => {
+  //   return {
+  //     maskElementAnimatedStyle: useAnimatedStyle(() => {
+  //       if (maskWidth.value === 0) {
+  //         return {
+  //           width: undefined,
+  //           transform: [{ translateX: 0 }],
+  //         };
+  //       }
+  //       return {
+  //         width: maskWidth.value,
+  //         transform: [{ translateX: maskTranslateX.value }],
+  //       };
+  //     })
+  //   };
+  // }, [digitHeight, edgeGradientSizes.vertical]);
 
   const maskElementAnimatedStyle = useAnimatedStyle(() => {
     if (maskWidth.value === 0) {

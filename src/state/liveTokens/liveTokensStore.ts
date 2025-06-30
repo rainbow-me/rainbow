@@ -5,7 +5,6 @@ import { useUserAssetsStore } from '../assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
 import { getPlatformClient } from '@/resources/platform/client';
-import { logger, RainbowError } from '@/logger';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
 
@@ -133,11 +132,6 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
       currency,
     },
   });
-
-  if (response.data.errors && response.data.errors.length > 0) {
-    // TODO: should this be something we log to Sentry like this? It's expected behavior when we don't have data for a token
-    logger.warn('[liveTokensStore] Error fetching tokens data', { errors: response.data.errors });
-  }
 
   const result: LiveTokensData = {};
 

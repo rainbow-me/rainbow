@@ -21,6 +21,7 @@ import {
 } from './utils';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
+import { toUnixTime } from '@/worklets/dates';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
@@ -209,13 +210,15 @@ export const createUserAssetsStore = (address: Address | string) =>
       updateTokens: (tokens: LiveTokensData) => {
         set(state => {
           for (const [tokenId, token] of Object.entries(tokens)) {
-            if (token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
+            if (token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') {
+              console.log('tokenId', tokenId, 'is not trusted', JSON.stringify(token, null, 2));
+              continue;
+            }
             const asset = state.userAssets.get(tokenId);
             const currency = userAssetsStoreManager.getState().currency;
-            // TODO: why are these different numbers?
-            // console.log(asset.native.price?.change, asset.price?.relative_change_24h);
 
-            // TODO: once backend updates with last updated time, we need to check if our update is actually newer
+            if (!asset || (asset?.price?.changed_at && asset?.price?.changed_at > toUnixTime(token.updateTime))) continue;
+
             if (asset?.price) {
               asset.price = {
                 value: Number(token.price),
