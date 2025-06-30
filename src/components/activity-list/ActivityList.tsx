@@ -2,7 +2,7 @@ import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
 import { lazyMount } from '@/helpers/lazyMount';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { LegendList } from '@legendapp/list';
+import { LegendList, LegendListRef } from '@legendapp/list';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ActivityIndicator from '../ActivityIndicator';
@@ -19,6 +19,7 @@ import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { TransactionSections, TransactionItemForSectionList } from '@/helpers/buildTransactionsSectionsSelector';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useMainList } from '@/navigation/MainListContext';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -90,6 +91,8 @@ const ActivityList = lazyMount(() => {
 
   const theme = useTheme();
 
+  const { setScrollToTopRef } = useMainList() || {};
+
   // Flatten sections into a single data array for LegendList
   const flatData = useMemo(() => {
     const items: ListItems[] = [];
@@ -132,9 +135,24 @@ const ActivityList = lazyMount(() => {
     [nativeCurrency, theme]
   );
 
+  const [legendList, setLegendList] = useState<LegendListRef | null>(null);
+
+  useEffect(() => {
+    if (!legendList) return;
+    setScrollToTopRef?.({
+      scrollToTop() {
+        legendList.scrollToIndex({
+          index: 0,
+          animated: true,
+        });
+      },
+    });
+  }, [legendList, setScrollToTopRef]);
+
   return (
     <LegendList
       data={flatData}
+      ref={setLegendList}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
