@@ -654,16 +654,20 @@ async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS: boolean 
   const defaultEmoji = addressHashedEmoji(accountIn.address);
   const defaultLabel = `${defaultEmoji} ${abbreviatedAddress}`;
   const formattedLabel = accountIn.label || defaultLabel;
+  const hasEmoji = Boolean(returnStringFirstEmoji(formattedLabel));
   const account = {
     ...accountIn,
-    label: removeFirstEmojiFromString(formattedLabel) ? formattedLabel : `${defaultEmoji} ${formattedLabel}`,
+    label: hasEmoji ? formattedLabel : `${defaultEmoji} ${formattedLabel}`,
   };
-
-  console.log('account', account, formattedLabel);
 
   const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress;
   const hasEnoughData = typeof account.ens === 'string' || !account.image;
   const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
+
+  // some potential memoization wins downstream
+  if (dequal(accountIn, account)) {
+    return accountIn;
+  }
 
   if (shouldCacheAccount) {
     return account;
