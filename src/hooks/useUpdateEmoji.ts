@@ -1,13 +1,6 @@
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { RainbowAccount } from '@/model/wallet';
-import {
-  setSelectedWallet,
-  updateAccount,
-  useAccountAddress,
-  useAccountProfileInfo,
-  useSelectedWallet,
-  useWallets,
-} from '@/state/wallets/walletsStore';
+import { updateAccount, useAccountAddress, useAccountProfileInfo, useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';
