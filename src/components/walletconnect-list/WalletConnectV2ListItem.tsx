@@ -15,7 +15,7 @@ import { changeAccount, disconnectSession } from '@/walletConnect';
 import { SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import { getAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
@@ -42,7 +42,6 @@ const columnStyle = padding.object(0, 10, 0, 12);
 export function WalletConnectV2ListItem({ session, reload }: { session: SessionTypes.Struct; reload(): void }) {
   const { goBack } = useNavigation();
   const { colors } = useTheme();
-  const walletNames = useWalletsStore(state => state.walletNames);
 
   const [address, setAddress] = useState<string | undefined>(undefined);
   const [accountInfo, updateAccountInfo] = useState<ReturnType<typeof getAccountProfileInfo> | undefined>(undefined);
@@ -70,7 +69,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     if (address && isValidHex(address)) {
       updateAccountInfo(getAccountProfileInfo(address));
     }
-  }, [address, walletNames]);
+  }, [address]);
 
   const chains = useMemo(() => namespaces?.eip155?.chains || [], [namespaces]);
   const chainIds = useMemo(
