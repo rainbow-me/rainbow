@@ -6,6 +6,7 @@ import { useMemoOne } from 'use-memo-one';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';
 import { safeAreaInsetValues } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 const extraPadding = { paddingBottom: 100 + safeAreaInsetValues.bottom };
 const ExternalScrollViewWithRef = React.forwardRef<BaseScrollView, ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }>(
@@ -38,11 +39,9 @@ const ExternalScrollViewWithRef = React.forwardRef<BaseScrollView, ScrollViewDef
     return (
       <RNAnimated.ScrollView
         {...(rest as ScrollViewProps)}
-        contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
-        contentInset={{ top: insets.top }}
-        contentOffset={{ x: 0, y: -insets.top }}
+        contentContainerStyle={[extraPadding, rest.contentContainerStyle, { paddingTop: IS_ANDROID ? insets.top - 24 : insets.top }]}
         onScroll={event}
-        // @ts-ignore possibly undefined
+        // @ts-expect-error possibly undefined
         ref={scrollViewRef}
       />
     );
