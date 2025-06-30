@@ -135,25 +135,50 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         if (isReadOnly || isZeroETH) {
           if (buttonIndex === 0) onAvatarViewProfile();
           if (buttonIndex === 1) onAvatarChooseImage();
-          if (buttonIndex === 2) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+          if (buttonIndex === 2) {
+            if (accountImage) {
+              onAvatarRemovePhoto();
+            } else {
+              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+            }
+          }
         } else {
           if (buttonIndex === 0) onAvatarEditProfile();
           if (buttonIndex === 1) onAvatarViewProfile();
           if (buttonIndex === 2) onAvatarChooseImage();
-          if (buttonIndex === 3) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+          if (buttonIndex === 3) {
+            if (accountImage) {
+              onAvatarRemovePhoto();
+            } else {
+              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+            }
+          }
         }
       } else {
         if (isReadOnly || isZeroETH) {
           if (buttonIndex === 0) onAvatarChooseImage();
-          if (buttonIndex === 1) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+          if (buttonIndex === 1) {
+            if (accountImage) {
+              onAvatarRemovePhoto();
+            } else {
+              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+            }
+          }
         } else {
           if (buttonIndex === 0) onAvatarCreateProfile();
           if (buttonIndex === 1) onAvatarChooseImage();
-          if (buttonIndex === 2) IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+          if (buttonIndex === 2) {
+            if (accountImage) {
+              onAvatarRemovePhoto();
+            } else {
+              IS_IOS ? onAvatarPickEmoji() : setNextEmoji();
+            }
+          }
         }
       }
     },
     [
+      accountImage,
       isENSProfile,
       isReadOnly,
       isZeroETH,
@@ -161,6 +186,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       onAvatarCreateProfile,
       onAvatarEditProfile,
       onAvatarPickEmoji,
+      onAvatarRemovePhoto,
       onAvatarViewProfile,
       setNextEmoji,
     ]
