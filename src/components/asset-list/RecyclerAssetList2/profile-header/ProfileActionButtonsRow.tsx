@@ -5,7 +5,7 @@ import * as lang from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useAccountAddress, useIsDamagedWallet, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { analytics } from '@/analytics';
@@ -139,10 +139,8 @@ function ActionButton({
 }
 
 function BuyButton() {
-  const isDamaged = useIsDamagedWallet();
-
   const handlePress = React.useCallback(() => {
-    if (isDamaged) {
+    if (getIsDamagedWallet()) {
       showWalletErrorAlert();
       return;
     }
@@ -150,7 +148,7 @@ function BuyButton() {
     analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
     Navigation.handleAction(Routes.ADD_CASH_SHEET);
-  }, [isDamaged]);
+  }, []);
 
   return (
     <Box>
@@ -162,16 +160,14 @@ function BuyButton() {
 }
 
 function SwapButton() {
-  const isReadOnlyWallet = useIsReadOnlyWallet();
-
   const handlePress = React.useCallback(async () => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
       navigateToSwaps();
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet]);
+  }, []);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">
@@ -181,17 +177,15 @@ function SwapButton() {
 }
 
 function SendButton() {
-  const isReadOnlyWallet = useIsReadOnlyWallet();
-
   const handlePress = React.useCallback(() => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSend, { category: 'home screen' });
 
       Navigation.handleAction(Routes.SEND_FLOW);
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet]);
+  }, []);
 
   return (
     <ActionButton icon="􀈟" onPress={handlePress} testID="send-button">
@@ -203,10 +197,9 @@ function SendButton() {
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const accountAddress = useAccountAddress();
-  const isDamaged = useIsDamagedWallet();
 
   const handlePressCopy = React.useCallback(() => {
-    if (isDamaged) {
+    if (getIsDamagedWallet()) {
       showWalletErrorAlert();
       return;
     }
@@ -218,7 +211,7 @@ export function CopyButton() {
       }, 2000);
     }
     Clipboard.setString(accountAddress);
-  }, [accountAddress, isDamaged, isToastActive, setToastActive]);
+  }, [accountAddress, isToastActive, setToastActive]);
 
   return (
     <>

@@ -15,6 +15,51 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.69] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.69)
+
+### Changed
+
+- Bump iOS and Android to v1.9.69 (#6691)
+
+### Fixed
+
+- Revert Fix yarn android launching the activity (#6697)
+
+## [1.9.68] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.68)
+
+### Added
+
+- E2E Send Transactions (#6623)
+- Add useListen, new query store options (#6625)
+- yaml linting on commit (#6648)
+- E2E Send NFT flow (#6646)
+- Add createDerivedStore (#6652)
+
+### Changed
+
+- E2E EditContact flow (#6624)
+- E2E retry wrap (#6638)
+- E2E Update blacksmith runner to 2404 (#6643)
+- E2E tests for import secret and basic settings flows (#6614)
+- E2E Enhance Anvil E2E Transaction Handling & Display (#6654)
+- Improve RainbowError toString to show cause toString (#6658)
+- Bump iOS and Android to v1.9.68 (#6661)
+- E2E Add timeout to android e2e tests (#6668)
+
+### Fixed
+
+- Cannot Copy Message Details Fix (#6644)
+- E2E fix hanging tests (#6650)
+- Don't run sentry gradle plugin for debug builds (#6621)
+- Invalidate interactionsCountQueryKey cache on send (#6665)
+- Codified android app link intent filter matching (#6596)
+- Fixed layout for swaps gas menu / remove the priority fee for L2s that don't use it (#6667)
+- Make the fiat onboarding links open in a safari web view context (#6662)
+- KOT small loading logic fix (#6674)
+- Fix yarn android launching the activity (#6678)
+- Fix backup stuck in syncing state (#6681)
+- Fix saving SVG NFTs (#6677)
+
 ## [1.9.67] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.67)
 
 ### Added

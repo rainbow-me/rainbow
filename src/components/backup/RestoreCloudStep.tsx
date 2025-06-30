@@ -27,13 +27,13 @@ import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { Source } from 'react-native-fast-image';
-import { useDispatch } from 'react-redux';
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { PasswordField } from '../fields';
 import { ImgixImage } from '../images';
 import { Text } from '../text';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 
 type ComponentProps = {
   theme: ThemeContextProps;
@@ -91,7 +91,6 @@ export default function RestoreCloudStep() {
     }
   }, [canGoBack, goBack]);
 
-  const dispatch = useDispatch();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
@@ -99,7 +98,7 @@ export default function RestoreCloudStep() {
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
-      const pwd = await getLocalBackupPassword();
+      const pwd = await getLocalBackupPassword(undefined);
       if (pwd) {
         backupsStore.getState().setStoredPassword(pwd);
         backupsStore.getState().setPassword(pwd);

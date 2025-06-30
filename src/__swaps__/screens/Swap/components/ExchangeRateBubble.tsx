@@ -10,9 +10,9 @@ import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { useAccountSettings } from '@/hooks';
 import { StyleSheet } from 'react-native';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
@@ -23,7 +23,7 @@ export const ExchangeRateBubble = () => {
     internalSelectedOutputAsset,
     isFetching,
   } = useSwapContext();
-  const { nativeCurrency: currentCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const rotatingIndex = useSharedValue(0);
   const fromAssetText = useSharedValue('');
@@ -96,7 +96,7 @@ export const ExchangeRateBubble = () => {
 
       if (isSameAssetOnDifferentChains) {
         fromAssetText.value = `1 ${inputAssetSymbol}`;
-        toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
+        toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, nativeCurrency);
         return;
       }
 
@@ -129,12 +129,12 @@ export const ExchangeRateBubble = () => {
         }
         case 2: {
           fromAssetText.value = `1 ${inputAssetSymbol}`;
-          toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
+          toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, nativeCurrency);
           break;
         }
         case 3: {
           fromAssetText.value = `1 ${outputAssetSymbol}`;
-          toAssetText.value = convertAmountToNativeDisplayWorklet(outputAssetPrice, currentCurrency);
+          toAssetText.value = convertAmountToNativeDisplayWorklet(outputAssetPrice, nativeCurrency);
           break;
         }
       }
@@ -176,6 +176,7 @@ export const ExchangeRateBubble = () => {
             bubbleVisibilityWrapper,
             { borderColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR, borderWidth: THICK_BORDER_WIDTH },
           ]}
+          testID="swap-exchange-rate-bubble"
         >
           <Inline alignHorizontal="center" alignVertical="center" space="6px" wrap={false}>
             <AnimatedText align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">

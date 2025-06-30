@@ -8,8 +8,6 @@ import { TransactionAssetType, TransactionSimulationAsset } from '@/graphql/__ge
 import { Network } from '@/state/backendNetworks/types';
 import { convertAmountToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 
-import { useAccountSettings } from '@/hooks';
-
 import { maybeSignUri } from '@/handlers/imgix';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
@@ -17,6 +15,7 @@ import { EventInfo, EventType } from '@/components/Transactions/types';
 import { infoForEventType, CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
 import { EventIcon } from '@/components/Transactions/TransactionIcons';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type TransactionSimulatedEventRowProps = {
   amount: string | 'unlimited';
@@ -26,7 +25,7 @@ type TransactionSimulatedEventRowProps = {
 };
 
 export const TransactionSimulatedEventRow = ({ amount, asset, eventType, price }: TransactionSimulatedEventRowProps) => {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset?.network as Network];
 

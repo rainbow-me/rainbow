@@ -158,7 +158,7 @@ class Button : RCTView {
     }
     if let touch = touches.first {
       let location = touch.location(in: self)
-      onCancel(["close":Button.isClose(locationA: location, locationB: tapLocation!), "state": self.longPress?.value(forKey: "_state")])
+      onCancel(["close":Button.isClose(locationA: location, locationB: tapLocation!), "state": self.longPress?.state ?? UIGestureRecognizer.State.cancelled])
     }
     if shouldLongPressHoldPress == false {
       animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)

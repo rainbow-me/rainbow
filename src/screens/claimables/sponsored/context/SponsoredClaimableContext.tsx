@@ -1,7 +1,6 @@
 import React, { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
 import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
 import { logger, RainbowError } from '@/logger';
-import { useAccountSettings } from '@/hooks';
 import { getProvider } from '@/handlers/web3';
 import { haptics } from '@/utils';
 import { getAddysHttpClient } from '@/resources/addys/client';
@@ -11,6 +10,7 @@ import { ClaimStatus } from '../../shared/types';
 import { analytics } from '@/analytics';
 import { ADDYS_BASE_URL } from 'react-native-dotenv';
 import { useClaimablesStore } from '@/state/claimables/claimables';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 enum ErrorMessages {
   CLAIM_API_CALL_FAILED = 'Failed to execute sponsored claim api call',
@@ -39,7 +39,7 @@ export function useSponsoredClaimableContext() {
 }
 
 export function SponsoredClaimableContextProvider({ claimable, children }: { claimable: SponsoredClaimable; children: React.ReactNode }) {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('ready');
 

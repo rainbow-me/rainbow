@@ -5,17 +5,17 @@ import { Menu } from './Menu';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { mintsQueryKey, useMints, useMintsFilter } from '@/resources/mints';
-import { useAccountSettings, useDimensions } from '@/hooks';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { queryClient } from '@/react-query';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { Box, Text, useForegroundColor } from '@/design-system';
 import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export function MintsCard() {
   const { navigate } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const {
     data: { mints, featuredMint },
     dataUpdatedAt,
@@ -27,7 +27,6 @@ export function MintsCard() {
   });
   const { filter } = useMintsFilter();
 
-  const { width: deviceWidth } = useDimensions();
   const fillSecondary = useForegroundColor('fillSecondary');
   return (
     <CarouselCard

@@ -36,6 +36,7 @@ export default function CloudBackupPrompt() {
       fn: () =>
         createBackup({
           walletId: selectedWallet.id,
+          addToCurrentBackup: true,
         }),
       logout: true,
     });

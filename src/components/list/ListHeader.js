@@ -2,7 +2,7 @@ import Divider from '@/components/Divider';
 import { useDimensions, useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
-import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import lang from 'i18n-js';
@@ -12,7 +12,6 @@ import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
-import { SavingsListHeader } from '../savings';
 import { H1 } from '../text';
 
 export const ListHeaderHeight = 48;
@@ -53,66 +52,53 @@ const StickyBackgroundBlocker = styled.View({
 export default function ListHeader({ children, contextMenuOptions, isCoinListEdited, showDivider = true, title, totalValue }) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
-  const isReadOnlyWallet = useIsReadOnlyWallet();
   const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
   const { initializeShowcaseIfNeeded } = useWebData();
 
   const handleShare = useCallback(() => {
-    if (!isReadOnlyWallet) {
+    const isReadOnly = getIsReadOnlyWallet();
+    if (!isReadOnly) {
       initializeShowcaseIfNeeded();
     }
     const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountENS || accountAddress}`;
     const shareOptions = {
-      message: isReadOnlyWallet
+      message: isReadOnly
         ? lang.t('list.share.check_out_this_wallet', { showcaseUrl })
         : lang.t('list.share.check_out_my_wallet', { showcaseUrl }),
     };
     Share.share(shareOptions);
-  }, [accountAddress, accountENS, initializeShowcaseIfNeeded, isReadOnlyWallet]);
+  }, [accountAddress, accountENS, initializeShowcaseIfNeeded]);
 
-  if (title === lang.t('pools.pools_title')) {
-    return (
-      <SavingsListHeader
-        emoji="whale"
-        isOpen={false}
-        onPress={() => {}}
-        savingsSumValue={totalValue}
-        showSumValue
-        title={lang.t('pools.pools_title')}
-      />
-    );
-  } else {
-    return (
-      <Fragment>
-        <Content>
-          {title && (
-            <Row align="center">
-              {/* eslint-disable-next-line react/no-children-prop */}
-              <Row style={{ maxWidth: 200 }}>
-                <H1 ellipsizeMode="tail" numberOfLines={1}>
-                  {title}
-                </H1>
-              </Row>
-              {title === i18n.t(i18n.l.account.tab_collectibles) && (
-                <Column align="flex-end" flex={1}>
-                  <ShareCollectiblesButton onPress={() => handleShare(isReadOnlyWallet, accountAddress)} />
-                </Column>
-              )}
-              <ContextMenu marginTop={3} {...contextMenuOptions} />
+  return (
+    <Fragment>
+      <Content>
+        {title && (
+          <Row align="center">
+            {/* eslint-disable-next-line react/no-children-prop */}
+            <Row style={{ maxWidth: 200 }}>
+              <H1 ellipsizeMode="tail" numberOfLines={1}>
+                {title}
+              </H1>
             </Row>
-          )}
-          {children}
-        </Content>
-        {
-          /*
-           The divider shows up as a white line in dark mode (android)
-           so we won't render it till we figure it out why
-          */
-          showDivider && !(android && isDarkMode) && <Divider color={colors.rowDividerLight} />
-        }
-        <StickyBackgroundBlocker deviceDimensions={deviceDimensions} isEditMode={isCoinListEdited} />
-      </Fragment>
-    );
-  }
+            {title === i18n.t(i18n.l.account.tab_collectibles) && (
+              <Column align="flex-end" flex={1}>
+                <ShareCollectiblesButton onPress={() => handleShare(getIsReadOnlyWallet(), accountAddress)} />
+              </Column>
+            )}
+            <ContextMenu marginTop={3} {...contextMenuOptions} />
+          </Row>
+        )}
+        {children}
+      </Content>
+      {
+        /*
+         The divider shows up as a white line in dark mode (android)
+         so we won't render it till we figure it out why
+        */
+        showDivider && !(android && isDarkMode) && <Divider color={colors.rowDividerLight} />
+      }
+      <StickyBackgroundBlocker deviceDimensions={deviceDimensions} isEditMode={isCoinListEdited} />
+    </Fragment>
+  );
 }

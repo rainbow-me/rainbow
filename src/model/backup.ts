@@ -1,12 +1,7 @@
 import { analytics } from '@/analytics';
 import { Alert as NativeAlert } from '@/components/alerts';
 import { IS_ANDROID, IS_DEV } from '@/env';
-import {
-  authenticateWithPIN,
-  decryptPIN,
-  maybeAuthenticateWithPIN,
-  maybeAuthenticateWithPINAndCreateIfNeeded,
-} from '@/handlers/authentication';
+import { authenticateWithPIN, decryptPIN, maybeAuthenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import {
   CLOUD_BACKUP_ERRORS,
   encryptAndSaveDataToCloud,
@@ -26,10 +21,9 @@ import { logger, RainbowError } from '@/logger';
 import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { AppDispatch } from '@/redux/store';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { setAllWalletsWithIdsAsBackedUp } from '@/state/wallets/walletsStore';
-import { allWalletsKey, identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey } from '@/utils/keychainConstants';
+import { identifierForVendorKey, pinKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { cloudPlatform } from '@/utils/platform';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -174,13 +168,8 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   const allowedPkeysKeys = wallet?.addresses?.map(account => `${account.address}_${privateKeyKey}`);
 
   allKeys.forEach(item => {
-    // Ignore allWalletsKey
-    if (item.username === allWalletsKey) {
-      return;
-    }
-
-    // Ignore selected wallet
-    if (item.username === selectedWalletKey) {
+    // Ignore keys that are not seed phrases or private keys.
+    if (item.username.indexOf(seedPhraseKey) === -1 && item.username.indexOf(privateKeyKey) === -1) {
       return;
     }
 
@@ -202,6 +191,7 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
 type CreateBackupProps = {
   now?: number;
   onError?: (message: string) => void;
+  userPIN?: string;
 };
 
 export async function backupAllWalletsToCloud({
@@ -209,6 +199,7 @@ export async function backupAllWalletsToCloud({
   password,
   onError,
   onSuccess,
+  userPIN,
 }: CreateBackupProps & {
   onSuccess?: (password: BackupPassword) => void;
   wallets: AllRainbowWallets;
@@ -216,7 +207,7 @@ export async function backupAllWalletsToCloud({
 }) {
   try {
     const now = Date.now();
-    const data = await createBackup({ onError, now });
+    const data = await createBackup({ onError, now, userPIN });
     if (!data) {
       return;
     }
@@ -246,15 +237,7 @@ export async function backupAllWalletsToCloud({
   }
 }
 
-export async function createBackup({ onError, now = Date.now() }: CreateBackupProps) {
-  let userPIN: string | undefined;
-  try {
-    userPIN = await maybeAuthenticateWithPIN();
-  } catch (e) {
-    onError?.(i18n.t(i18n.l.back_up.wrong_pin));
-    return;
-  }
-
+export async function createBackup({ onError, now = Date.now(), userPIN }: CreateBackupProps) {
   /**
    * Loop over all keys and decrypt if necessary for android
    */
@@ -590,8 +573,8 @@ export async function saveBackupPassword(password: BackupPassword): Promise<void
   }
 }
 
-export async function getLocalBackupPassword(): Promise<string | null> {
-  const { value } = await kc.get('RainbowBackupPassword');
+export async function getLocalBackupPassword(androidEncryptionPin: string | undefined): Promise<string | null> {
+  const { value } = await kc.get('RainbowBackupPassword', { androidEncryptionPin });
   if (value) {
     return value;
   }
