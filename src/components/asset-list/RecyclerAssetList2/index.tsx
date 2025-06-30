@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useMemoOne } from 'use-memo-one';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
 import RawMemoRecyclerAssetList from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
@@ -18,6 +17,7 @@ import * as lang from '@/languages';
 import { useWalletSectionsData } from '@/hooks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { IS_ANDROID } from '@/env';
+import { useStableValue } from '@/hooks/useStableValue';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -47,6 +47,7 @@ export interface RecyclerAssetList2Props {
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
 }
+
 function RecyclerAssetList({
   accentColor,
   disablePullDownToRefresh,
@@ -63,7 +64,7 @@ function RecyclerAssetList({
 
   const insets = useSafeAreaInsets();
 
-  const position = useMemoOne(() => new RNAnimated.Value(type === 'wallet' ? -insets.top : 0), []);
+  const position = useStableValue(() => new RNAnimated.Value(0));
 
   const extendedState = useMemo(
     () => ({ additionalData, externalAddress, onPressUniqueToken }),
@@ -108,12 +109,12 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const yOffset = IS_ANDROID ? 80 : 0;
+  const yOffset = IS_ANDROID ? navbarHeight : insets.top;
   const shadowOpacityStyle = useMemo(
     () => ({
       shadowOpacity: position.interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 19],
+        inputRange: [yOffset, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 1],
       }),
     }),
@@ -123,19 +124,19 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
     () => ({
       opacity: position.interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 38],
+        inputRange: [yOffset, yOffset, yOffset + 38],
         outputRange: [0, 1, 1],
       }),
       shadowOpacity: position.interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 19],
+        inputRange: [yOffset, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 0],
       }),
       transform: [
         {
           translateY: position.interpolate({
             extrapolate: 'clamp',
-            inputRange: [0, yOffset, yOffset + 38],
+            inputRange: [yOffset, yOffset, yOffset + 38],
             outputRange: [0, 24, 0],
           }),
         },
@@ -147,7 +148,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
     () => ({
       opacity: position.interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 38],
+        inputRange: [yOffset, yOffset, yOffset + 38],
         outputRange: [0, 0, 1],
       }),
     }),
@@ -225,7 +226,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
               as={RNAnimated.View}
               height={{ custom: navbarHeight }}
               justifyContent="center"
-              style={[walletNameStyle, { alignSelf: 'center', bottom: 2 }]}
+              style={[walletNameStyle, { alignSelf: 'center', bottom: IS_ANDROID ? 8 : 2 }]}
             >
               <ProfileNameRow variant="header" />
             </Box>
