@@ -408,24 +408,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     return lineHeight * 1.1;
   }, [baseTextStyle]);
 
-  const textStyle = useMemo(() => {
-    return [
-      {
-        ...baseTextStyle,
-        lineHeight: digitHeight,
-      },
-      style ?? {},
-    ];
-  }, [baseTextStyle, style, digitHeight]);
-
-  const digitContainerStyle = useMemo(() => {
-    return {
-      height: digitHeight,
-      justifyContent: 'center',
-      alignItems: 'center',
-    } as const;
-  }, [digitHeight]);
-
   const layoutTransition = useCallback(
     (values: LayoutAnimationsValues) => {
       'worklet';
@@ -510,45 +492,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     };
   }, [timingConfig, disabled]);
 
-  // const styles = useMemo(() => {
-  //   return {
-  //     maskElementAnimatedStyle: useAnimatedStyle(() => {
-  //       if (maskWidth.value === 0) {
-  //         return {
-  //           width: undefined,
-  //           transform: [{ translateX: 0 }],
-  //         };
-  //       }
-  //       return {
-  //         width: maskWidth.value,
-  //         transform: [{ translateX: maskTranslateX.value }],
-  //       };
-  //     })
-  //   };
-  // }, [digitHeight, edgeGradientSizes.vertical]);
-
-  const maskElementAnimatedStyle = useAnimatedStyle(() => {
-    if (maskWidth.value === 0) {
-      return {
-        width: undefined,
-        transform: [{ translateX: 0 }],
-      };
-    }
-    return {
-      width: maskWidth.value,
-      transform: [{ translateX: maskTranslateX.value }],
-    };
-  });
-
-  const horizontalEasingMaskAnimatedStyle = useAnimatedStyle(() => {
-    if (disabled.value) {
-      return { opacity: 0 };
-    }
-    return {
-      opacity: interpolate(layoutTransitionProgress.value, [0, 0.05, 0.8, 1], [0, 1, 1, 0]),
-    };
-  });
-
   const onNumberContainerLayout = useCallback(() => {
     runOnUI(() => {
       if (numberContainerGlobalOriginX.value === 0) {
@@ -558,18 +501,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       }
     })();
   }, [numberContainerGlobalOriginX, numberContainerRef]);
-
-  const prefixPartAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: prefixTranslateX.value }],
-    };
-  });
-
-  const suffixPartAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: suffixTranslateX.value }],
-    };
-  });
 
   const numeralWidths = useMemo(() => {
     if (textProps.tabularNumbers) {
@@ -589,11 +520,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       .filter(width => width !== undefined);
   }, [baseTextStyle, textProps.tabularNumbers]);
 
-  const maskElementStyle = {
-    height: digitHeight,
-    backgroundColor: 'red', // arbitrary color
-  };
-
   const edgeGradientSizes = useMemo(() => {
     return {
       horizontal: baseTextStyle.fontSize * 0.2,
@@ -601,51 +527,115 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
     };
   }, [baseTextStyle]);
 
-  const staticContainerStyle = useAnimatedStyle(() => {
-    return {
-      opacity: disabled.value ? 1 : 0,
-    };
-  });
+  const animatedStyles = {
+    maskElement: useAnimatedStyle(() => {
+      if (maskWidth.value === 0) {
+        return {
+          width: undefined,
+          transform: [{ translateX: 0 }],
+        };
+      }
+      return {
+        width: maskWidth.value,
+        transform: [{ translateX: maskTranslateX.value }],
+      };
+    }),
 
-  const animatedContainerStyle = useAnimatedStyle(() => {
-    return {
-      opacity: disabled.value ? 0 : 1,
-    };
-  });
+    horizontalEasingMask: useAnimatedStyle(() => {
+      if (disabled.value) {
+        return { opacity: 0 };
+      }
+      return {
+        opacity: interpolate(layoutTransitionProgress.value, [0, 0.05, 0.8, 1], [0, 1, 1, 0]),
+      };
+    }),
 
-  const numberContainerStyle = useAnimatedStyle(() => {
+    prefixPart: useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: prefixTranslateX.value }],
+      };
+    }),
+
+    suffixPart: useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: suffixTranslateX.value }],
+      };
+    }),
+
+    staticContainer: useAnimatedStyle(() => {
+      return {
+        opacity: disabled.value ? 1 : 0,
+      };
+    }),
+
+    animatedContainer: useAnimatedStyle(() => {
+      return {
+        opacity: disabled.value ? 0 : 1,
+      };
+    }),
+
+    numberContainer: useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: numberContainerTranslateX.value }],
+      };
+    }),
+  };
+
+  const styles = useMemo(() => {
     return {
-      transform: [{ translateX: numberContainerTranslateX.value }],
+      row: {
+        flexDirection: 'row' as const,
+      },
+      text: [
+        {
+          ...baseTextStyle,
+          lineHeight: digitHeight,
+        },
+        style ?? {},
+      ],
+      digitContainer: {
+        height: digitHeight,
+        justifyContent: 'center' as const,
+        alignItems: 'center' as const,
+      },
+      maskElement: {
+        height: digitHeight,
+        backgroundColor: 'red', // arbitrary color
+      },
+      outerContainer: {
+        flexDirection: 'row' as const,
+        height: digitHeight,
+        marginVertical: -edgeGradientSizes.vertical,
+      },
+      staticContainer: {
+        position: 'absolute' as const,
+        height: digitHeight,
+        justifyContent: 'center' as const,
+      },
+      suffixContainer: {
+        height: digitHeight,
+      },
     };
-  });
+  }, [baseTextStyle, digitHeight, edgeGradientSizes.vertical, style]);
 
   return (
     <LayoutAnimationConfig skipEntering skipExiting>
-      <View style={[styles.row, { height: digitHeight, marginVertical: -edgeGradientSizes.vertical }]}>
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              height: digitHeight,
-              justifyContent: 'center',
-            },
-            staticContainerStyle,
-          ]}
-        >
+      <View style={styles.outerContainer}>
+        <Animated.View style={[styles.staticContainer, animatedStyles.staticContainer]}>
           <AnimatedText
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...textProps}
-            style={textStyle}
+            style={styles.text}
           >
             {value}
           </AnimatedText>
         </Animated.View>
-        <Animated.View style={[styles.row, animatedContainerStyle]}>
+        <Animated.View style={[styles.row, animatedStyles.animatedContainer]}>
           {parts.prefix && (
-            <Animated.View style={prefixPartAnimatedStyle}>
+            <Animated.View style={animatedStyles.prefixPart}>
               <NumberParts
                 parts={parts.prefix}
-                textStyle={textStyle}
+                textStyle={styles.text}
                 timingConfig={timingConfig}
                 digitHeight={digitHeight}
                 previousWidthDelta={previousWidthDelta}
@@ -653,16 +643,21 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
                 isFirstRender={isFirstRender}
                 characterEnteringAnimation={characterEnteringAnimation}
                 disabled={disabled}
-                digitContainerStyle={digitContainerStyle}
+                digitContainerStyle={styles.digitContainer}
               />
             </Animated.View>
           )}
-          <Animated.View style={numberContainerStyle} ref={numberContainerRef} layout={layoutTransition} onLayout={onNumberContainerLayout}>
-            <MaskedView maskElement={<Animated.View style={[maskElementAnimatedStyle, maskElementStyle]} />}>
+          <Animated.View
+            style={animatedStyles.numberContainer}
+            ref={numberContainerRef}
+            layout={layoutTransition}
+            onLayout={onNumberContainerLayout}
+          >
+            <MaskedView maskElement={<Animated.View style={[styles.maskElement, animatedStyles.maskElement]} />}>
               <View style={styles.row}>
                 <NumberParts
                   parts={parts.number}
-                  textStyle={textStyle}
+                  textStyle={styles.text}
                   timingConfig={timingConfig}
                   digitHeight={digitHeight}
                   previousWidthDelta={previousWidthDelta}
@@ -670,22 +665,22 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
                   isFirstRender={isFirstRender}
                   characterEnteringAnimation={characterEnteringAnimation}
                   disabled={disabled}
-                  digitContainerStyle={digitContainerStyle}
+                  digitContainerStyle={styles.digitContainer}
                 />
               </View>
             </MaskedView>
             <AnimatedEdgeGradients
-              maskElementAnimatedStyle={maskElementAnimatedStyle}
-              horizontalEasingMaskAnimatedStyle={horizontalEasingMaskAnimatedStyle}
+              maskElementAnimatedStyle={animatedStyles.maskElement}
+              horizontalEasingMaskAnimatedStyle={animatedStyles.horizontalEasingMask}
               edgeSizes={edgeGradientSizes}
               color={easingMaskColor}
             />
           </Animated.View>
           {parts.suffix && (
-            <Animated.View style={[suffixPartAnimatedStyle, { height: digitHeight }]}>
+            <Animated.View style={[animatedStyles.suffixPart, styles.suffixContainer]}>
               <NumberParts
                 parts={parts.suffix}
-                textStyle={textStyle}
+                textStyle={styles.text}
                 timingConfig={timingConfig}
                 digitHeight={digitHeight}
                 previousWidthDelta={previousWidthDelta}
@@ -693,7 +688,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
                 isFirstRender={isFirstRender}
                 characterEnteringAnimation={characterEnteringAnimation}
                 disabled={disabled}
-                digitContainerStyle={digitContainerStyle}
+                digitContainerStyle={styles.digitContainer}
               />
             </Animated.View>
           )}
