@@ -659,6 +659,8 @@ async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS: boolean 
     label: removeFirstEmojiFromString(formattedLabel) ? formattedLabel : `${defaultEmoji} ${formattedLabel}`,
   };
 
+  console.log('account', account, formattedLabel);
+
   const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress;
   const hasEnoughData = typeof account.ens === 'string' || !account.image;
   const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
