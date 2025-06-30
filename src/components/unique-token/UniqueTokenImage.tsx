@@ -9,6 +9,7 @@ import { useHiddenTokens } from '@/hooks';
 import { Colors } from '@/styles';
 import { isLowerCaseMatch } from '@/utils';
 import { RainbowImage } from '../RainbowImage';
+import { logger } from '@/logger';
 
 function getFallbackTextColor(bg: string, isDarkMode: boolean, colors: Colors) {
   const variants = {
@@ -80,10 +81,10 @@ export const UniqueTokenImage = React.memo(function UniqueTokenImage({
   const onLoad = useCallback(() => setIsLoading(false), [setIsLoading]);
   const onError = useCallback(
     (...args: unknown[]) => {
-      console.log('onError', args);
+      logger.warn(`[UniqueTokenImage] Error loading image: ${args} for ${uniqueId}`);
       setErrorLoadingImage(true);
     },
-    [setErrorLoadingImage]
+    [setErrorLoadingImage, uniqueId]
   );
 
   const isHiddenToken = useMemo(() => {

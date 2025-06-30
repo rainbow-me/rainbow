@@ -70,3 +70,25 @@ export type NftsRouter = NftsStoreType & {
     address?: Address | string
   ): void;
 };
+
+export interface OpenCollectionsState {
+  openCollections: Record<CollectionId, boolean>;
+  insertionOrder: CollectionId[]; // Track the order in which collections were opened
+  toggleCollection: (collectionId: CollectionId) => void;
+  isCollectionOpen: (collectionId: CollectionId) => boolean;
+  setCollectionOpen: (collectionId: CollectionId, isOpen: boolean) => void;
+}
+
+export type OpenCollectionsStoreType = OptionallyPersistedRainbowStore<OpenCollectionsState, Partial<OpenCollectionsState>>;
+
+export type OpenCollectionsRouter = OpenCollectionsStoreType & {
+  getState(address?: Address | string): OpenCollectionsState;
+  setState(
+    partial:
+      | OpenCollectionsState
+      | Partial<OpenCollectionsState>
+      | ((state: OpenCollectionsState) => OpenCollectionsState | Partial<OpenCollectionsState>),
+    replace?: boolean,
+    address?: Address | string
+  ): void;
+};

@@ -20,8 +20,7 @@ import { UniqueAsset } from '@/entities';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { isEmpty } from 'lodash';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
-import walletTypes from '@/helpers/walletTypes';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 export const PAGE_SIZE = 12;
@@ -98,11 +97,11 @@ const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: 
   });
 
   if (isMigration) {
-    const wallet = getWalletWithAccount(walletAddress);
-    if (wallet?.type !== walletTypes.readOnly) {
+    const isReadOnlyWallet = getIsReadOnlyWallet();
+    if (!isReadOnlyWallet) {
       if (collectionId === 'showcase') {
         await updateWebShowcase(walletAddress, tokensForCategory, true);
-        useOpenCollectionsStore.getState().setCollectionOpen('showcase', true);
+        useOpenCollectionsStore.getState(walletAddress).setCollectionOpen('showcase', true);
       } else if (collectionId === 'hidden') {
         await updateWebHidden(walletAddress, tokensForCategory, true);
       }
@@ -428,22 +427,29 @@ export const createNftsStore = (address: Address | string) =>
 
         const now = Date.now();
         if (!prunePromise || prunePromise.address !== address || now - prunePromise.lastPruneAt > TIME_BETWEEN_PRUNES) {
+          logger.debug(`🔍 [NFT Store] Starting prune operation for address: ${address}`);
           prunePromise = {
             address,
             lastPruneAt: now,
             promise: pruneStaleAndClosedCollections({ address, set }).finally(() => {
+              logger.debug(`🔍 [NFT Store] Prune operation completed for address: ${address}`);
               prunePromise = null;
             }),
           };
         }
 
         const { nftsByCollection, fetch } = get();
+        logger.debug(`🔍 [NFT Store] Current nftsByCollection size: ${nftsByCollection.size}`);
 
         if (!isMigration) {
           if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
+            logger.debug(`🔍 [NFT Store] Processing showcase/hidden collection: ${normalizedCollectionId}`);
             let needsFetch = false;
             const { collectionIds } = getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
+            logger.debug(`🔍 [NFT Store] Collection IDs for showcase/hidden: ${collectionIds}`);
+
             if (!collectionIds) {
+              logger.debug('🔍 [NFT Store] No collection IDs found, returning existing nftsByCollection');
               return Promise.resolve(nftsByCollection);
             }
 
@@ -451,19 +457,33 @@ export const createNftsStore = (address: Address | string) =>
               for (const collectionId of collectionIds) {
                 const normalizedCollectionId = collectionId.toLowerCase();
                 const collection = nftsByCollection.get(normalizedCollectionId);
+                logger.debug(`🔍 [NFT Store] Checking collection: ${collectionId}`, {
+                  collectionId,
+                  normalizedCollectionId,
+                  hasCollection: !!collection,
+                  isEmpty: collection ? isEmpty(collection) : 'N/A',
+                });
                 if (!collection || isEmpty(collection)) {
                   needsFetch = true;
+                  logger.debug(`🔍 [NFT Store] Collection needs fetch: ${collectionId}`);
                   break;
                 }
               }
             }
 
             if (!needsFetch) {
+              logger.debug('🔍 [NFT Store] No fetch needed for showcase/hidden, returning existing nftsByCollection');
               return Promise.resolve(nftsByCollection);
             }
           } else {
             const collection = nftsByCollection.get(normalizedCollectionId);
+            logger.debug(`🔍 [NFT Store] Checking regular collection: ${normalizedCollectionId}`, {
+              normalizedCollectionId,
+              hasCollection: !!collection,
+              isEmpty: collection ? isEmpty(collection) : 'N/A',
+            });
             if (collection && !isEmpty(collection)) {
+              logger.debug(`🔍 [NFT Store] Collection exists and not empty, returning existing nftsByCollection`);
               return Promise.resolve(nftsByCollection);
             }
           }
@@ -486,7 +506,7 @@ export const createNftsStore = (address: Address | string) =>
             return newNftsByCollection;
           })
           .catch(error => {
-            logger.error(new RainbowError('Failed to fetch NFT collection', error));
+            logger.error(new RainbowError(`Failed to fetch NFT collection: ${normalizedCollectionId}`, error));
             return nftsByCollection;
           })
           .finally(() => {

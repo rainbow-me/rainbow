@@ -10,26 +10,24 @@ export const showcaseTokensQueryKey = ({ address }: { address: string }) => ['sh
 
 const STABLE_ARRAY: string[] = [];
 
-export async function getShowcase(address: string, isMigratingShowcase = false) {
+export async function getShowcase(address: string, isMigration = false) {
   if (!address) {
     return STABLE_ARRAY;
   }
 
   const showcaseTokens = await getPreference('showcase', address);
-
   if (showcaseTokens?.showcase?.ids?.length) {
     const tokens = showcaseTokens.showcase.ids;
-
-    if (!isDataComplete(tokens) && !isMigratingShowcase) {
-      const previousOpenState = useOpenCollectionsStore.getState().openCollections['showcase'] ?? false;
+    if (!isDataComplete(tokens) && !isMigration) {
+      const previousState = useOpenCollectionsStore.getState(address).openCollections['showcase'] ?? false;
 
       // first, close the showcase collection so we don't show an empty collection to the user
-      useOpenCollectionsStore.getState().setCollectionOpen('showcase', false);
+      useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', false);
 
       const tokens = await useNftsStore.getState(address).fetchNftCollection('showcase', true);
       const flattenedTokens = Array.from(tokens.values()).flatMap(collection => Array.from(collection.keys()));
-      if (previousOpenState) {
-        useOpenCollectionsStore.getState().setCollectionOpen('showcase', previousOpenState);
+      if (previousState) {
+        useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', previousState);
       }
 
       return flattenedTokens;
@@ -39,10 +37,7 @@ export async function getShowcase(address: string, isMigratingShowcase = false) 
     return result;
   }
 
-  const previousData = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address }));
-
-  const fallbackResult = previousData?.map(id => id.toLowerCase()) ?? STABLE_ARRAY;
-  return fallbackResult;
+  return STABLE_ARRAY;
 }
 
 export async function fetchShowcaseTokens({ address }: { address: string }) {
@@ -57,6 +52,5 @@ export default function useFetchShowcaseTokens({ address }: { address: string })
     enabled: Boolean(address),
     cacheTime: time.infinity,
     staleTime: time.minutes(10),
-    keepPreviousData: true,
   });
 }

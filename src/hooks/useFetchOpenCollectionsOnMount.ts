@@ -1,34 +1,39 @@
+import { parseUniqueId } from '@/resources/nfts/utils';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { promiseUtils } from '@/utils';
 import { isAddress } from '@ethersproject/address';
 import { useCallback, useEffect } from 'react';
+import { logger } from '@/logger';
 
 export default function useFetchOpenCollectionsOnMount() {
   const address = useAccountAddress();
 
   const fetchCollections = useCallback(() => {
-    console.log('[useFetchOpenCollectionsOnMount] fetchCollections called', { address });
+    logger.debug('[useFetchOpenCollectionsOnMount] fetchCollections called', { address });
 
     if (!address) {
-      console.log('[useFetchOpenCollectionsOnMount] No address, returning early');
+      logger.debug('[useFetchOpenCollectionsOnMount] No address, returning early');
       return;
     }
 
-    const { openCollections } = useOpenCollectionsStore.getState();
-    console.log('[useFetchOpenCollectionsOnMount] Open collections state:', openCollections);
+    const { openCollections } = useOpenCollectionsStore.getState(address);
+    logger.debug('[useFetchOpenCollectionsOnMount] Open collections state:', openCollections);
 
-    const collections = Object.keys(openCollections).filter(collectionId => openCollections[collectionId] && isAddress(collectionId));
-    console.log('[useFetchOpenCollectionsOnMount] Filtered open collections:', collections);
+    const collections = Object.keys(openCollections).filter(collectionId => {
+      const { contractAddress } = parseUniqueId(collectionId);
+      return isAddress(contractAddress) && openCollections[collectionId];
+    });
+    logger.debug(`[useFetchOpenCollectionsOnMount] Filtered open collections: ${collections.join(', ')}`);
 
     const { fetchNftCollection } = useNftsStore.getState(address);
     const promises = collections.map(collectionId => {
-      console.log('[useFetchOpenCollectionsOnMount] Creating promise for collection:', collectionId);
+      logger.debug(`[useFetchOpenCollectionsOnMount] Creating promise for collection: ${collectionId}`);
       return fetchNftCollection(collectionId, collectionId.toLowerCase() === 'showcase');
     });
 
-    console.log('[useFetchOpenCollectionsOnMount] Starting PromiseAllWithFails with', promises.length, 'promises');
+    logger.debug(`[useFetchOpenCollectionsOnMount] Starting PromiseAllWithFails with ${promises.length} promises`);
     promiseUtils.PromiseAllWithFails(promises);
   }, [address]);
 

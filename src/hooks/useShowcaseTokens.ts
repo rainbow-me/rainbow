@@ -13,7 +13,7 @@ export default function useShowcaseTokens(address?: string) {
 
   const addressToUse = address || accountAddress;
 
-  const { data: showcaseTokens = [] } = useFetchShowcaseTokens({ address: addressToUse });
+  const { data: showcaseTokens = [], isLoading: isLoadingShowcaseTokens } = useFetchShowcaseTokens({ address: addressToUse });
 
   const addShowcaseTokenMutation = useMutation({
     mutationFn: async (asset: string) => {
@@ -104,10 +104,10 @@ export default function useShowcaseTokens(address?: string) {
 
   const addShowcaseToken = useCallback(
     async (asset: string) => {
-      useOpenCollectionsStore.getState().setCollectionOpen('showcase', true);
+      useOpenCollectionsStore.getState(addressToUse).setCollectionOpen('showcase', true);
       return addShowcaseTokenMutation.mutateAsync(asset);
     },
-    [addShowcaseTokenMutation]
+    [addShowcaseTokenMutation, addressToUse]
   );
 
   const removeShowcaseToken = useCallback(
@@ -121,6 +121,6 @@ export default function useShowcaseTokens(address?: string) {
     addShowcaseToken,
     removeShowcaseToken,
     showcaseTokens,
-    isLoading: addShowcaseTokenMutation.isLoading || removeShowcaseTokenMutation.isLoading,
+    isLoading: addShowcaseTokenMutation.isLoading || removeShowcaseTokenMutation.isLoading || isLoadingShowcaseTokens,
   };
 }

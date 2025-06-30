@@ -1,49 +1,56 @@
-import { CollectionId } from '@/state/nfts/types';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { Address } from 'viem';
+import { createStoreFactoryUtils } from '@/state/internal/utils/factoryUtils';
+import { createOpenCollectionsStore } from './createOpenCollectionsStore';
+import { openCollectionsStoreManager } from './openCollectionsStoreManager';
+import { OpenCollectionsRouter, OpenCollectionsStoreType, OpenCollectionsState } from './types';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 
-type OpenCollectionsState = {
-  openCollections: Record<CollectionId, boolean>;
-  toggleCollection: (collectionId: CollectionId) => void;
-  isCollectionOpen: (collectionId: CollectionId) => boolean;
-  setCollectionOpen: (collectionId: CollectionId, isOpen: boolean) => void;
-};
+const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<
+  OpenCollectionsStoreType,
+  Partial<OpenCollectionsState>
+>(getOrCreateStore);
 
-export const useOpenCollectionsStore = createRainbowStore<OpenCollectionsState>(
-  (set, get) => ({
-    openCollections: { showcase: true },
+function getOrCreateStore(address?: Address | string): OpenCollectionsStoreType {
+  const rawAddress = address?.length ? address : getAccountAddress();
+  const { address: cachedAddress, cachedStore } = openCollectionsStoreManager.getState();
 
-    toggleCollection: collectionName => {
-      set(state => {
-        const lowerCaseCollectionName = collectionName.toLowerCase();
-        const newOpenCollections = {
-          ...state.openCollections,
-          [lowerCaseCollectionName]: !state.openCollections[lowerCaseCollectionName],
-        };
-        return { openCollections: newOpenCollections };
-      });
-    },
+  /**
+   * Fallback to ensure an address is always available on app launch, mirroring
+   * the behavior in the user assets store.
+   */
+  const accountAddress = rawAddress?.length ? rawAddress : cachedAddress ?? rawAddress;
 
-    setCollectionOpen: (collectionName, isOpen) => {
-      set(state => {
-        const newOpenCollections = {
-          ...state.openCollections,
-          [collectionName.toLowerCase()]: isOpen,
-        };
-        return { openCollections: newOpenCollections };
-      });
-    },
+  if (cachedStore && cachedAddress === accountAddress) return cachedStore;
 
-    isCollectionOpen: collectionName => {
-      return get().openCollections[collectionName.toLowerCase()] ?? false;
-    },
-  }),
-  {
-    storageKey: 'open-collections',
-    version: 1,
-    partialize: state => ({
-      openCollections: state.openCollections,
-    }),
-  }
-);
+  const newStore = createOpenCollectionsStore(accountAddress);
+
+  if (cachedStore) rebindSubscriptions(cachedStore, newStore);
+
+  openCollectionsStoreManager.setState({ address: accountAddress, cachedStore: newStore });
+  return newStore;
+}
+
+function useOpenCollectionsStoreInternal(): OpenCollectionsState;
+function useOpenCollectionsStoreInternal<T>(selector: (state: OpenCollectionsState) => T, equalityFn?: (a: T, b: T) => boolean): T;
+function useOpenCollectionsStoreInternal<T>(
+  selector?: (state: OpenCollectionsState) => T,
+  equalityFn?: (a: T, b: T) => boolean
+): OpenCollectionsState | T {
+  const address = useAccountAddress();
+  const store = getOrCreateStore(address);
+  return selector ? store(selector, equalityFn) : store();
+}
+
+export const useOpenCollectionsStore: OpenCollectionsRouter = Object.assign(useOpenCollectionsStoreInternal, {
+  destroy: () => getOrCreateStore().destroy(),
+  getInitialState: () => getOrCreateStore().getInitialState(),
+  getState: (address?: Address | string) => getOrCreateStore(address).getState(),
+  persist,
+  setState: (...args: Parameters<OpenCollectionsRouter['setState']>) => {
+    const [partial, replace, address] = args;
+    return getOrCreateStore(address).setState(partial, replace);
+  },
+  subscribe: portableSubscribe,
+});
 
 export type OpenCollectionsStore = typeof useOpenCollectionsStore;

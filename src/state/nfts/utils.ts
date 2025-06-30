@@ -54,14 +54,8 @@ export async function migrateTokens(accountAddress: string, tokens: string[]): P
     sortDirection: SortDirection.Asc,
   });
 
-  let data = queryClient.getQueryData<NFTData>(queryKey);
+  const data = await queryClient.fetchQuery<NFTData>({ queryKey, queryFn: () => fetchNFTData({ queryKey, meta: undefined }) });
   logger.debug(`🔄 [Migration] Has cached query data: ${!!data}`);
-  if (!data) {
-    data = await fetchNFTData({
-      queryKey,
-      meta: undefined,
-    });
-  }
 
   if (!data.nfts.length) return null;
 
@@ -190,7 +184,7 @@ export async function pruneStaleAndClosedCollections({
   }
 
   const { nftsByCollection, fetchedCollections } = useNftsStore.getState(address);
-  const { openCollections } = useOpenCollectionsStore.getState();
+  const { openCollections } = useOpenCollectionsStore.getState(address);
 
   if (ENABLE_DEEPER_DEBUG_LOGS) {
     logger.debug(`[📊 pruneStaleAndClosedCollections] Current nftsByCollection size: ${nftsByCollection.size}`);
