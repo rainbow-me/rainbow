@@ -82,7 +82,7 @@ function AccountAvatar({ account, size }: { account: RainbowAccount; size: numbe
   }
 
   const backgroundColor = colors.avatarBackgrounds[account.color];
-  const emoji = returnStringFirstEmoji(account.label) || profileUtils.addressHashedEmoji(account.address);
+  const emoji = account.emoji || returnStringFirstEmoji(account.label) || profileUtils.addressHashedEmoji(account.address);
 
   return (
     <View

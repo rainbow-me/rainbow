@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { ContextCircleButton } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { address as formatAddress } from '@/utils/abbreviations';
 import { cloudPlatform } from '@/utils/platform';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -32,7 +31,7 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { createAccount, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
+import { createAccount, formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -70,7 +69,7 @@ const WalletAvatar = ({ account }: WalletAvatarProps) => {
   const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
 
   const { data: ENSAvatar } = useENSAvatar(label);
-  const accountImage = addressHashedEmoji(account.address);
+  const accountImage = account.emoji || addressHashedEmoji(account.address);
 
   return ENSAvatar?.imageUrl ? (
     <ImageAvatar image={ENSAvatar.imageUrl} marginRight={12} size="rewards" />
@@ -265,9 +264,13 @@ const ViewWalletBackup = () => {
   const onPressMenuItem = ({ nativeEvent: { actionKey: menuAction }, account }: MenuEvent) => {
     switch (menuAction) {
       case WalletMenuAction.ViewPrivateKey: {
-        const title = account.label.endsWith('.eth')
-          ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8)
-          : formatAddress(account.address, 4, 5);
+        const title =
+          formatAccountLabel({
+            address: account.address,
+            ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+            label: account.label,
+          }) || abbreviations.address(account.address, 6, 4);
+
         navigate(Routes.SECRET_WARNING, {
           walletId,
           isBackingUp: false,
@@ -433,11 +436,13 @@ const ViewWalletBackup = () => {
           {wallet?.addresses
             .filter(a => a.visible)
             .map((account: RainbowAccount) => {
-              const isNamedOrEns = account.label.endsWith('.eth') || removeFirstEmojiFromString(account.label) !== '';
-              const label = isNamedOrEns ? abbreviations.address(account.address, 3, 5) : undefined;
-              const title = isNamedOrEns
-                ? abbreviations.abbreviateEnsForDisplay(removeFirstEmojiFromString(account.label), 20) ?? ''
-                : abbreviations.address(account.address, 3, 5) ?? '';
+              const nameOrENS = formatAccountLabel({
+                address: account.address,
+                ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+                label: account.label,
+              });
+              const label = nameOrENS ? abbreviations.address(account.address, 4, 4) : undefined;
+              const title = nameOrENS || abbreviations.address(account.address, 4, 4);
 
               return (
                 <ContextMenuWrapper account={account} menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} key={account.address}>
