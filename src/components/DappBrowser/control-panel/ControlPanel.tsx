@@ -39,7 +39,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { getWalletWithAccount, setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';

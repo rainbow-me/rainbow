@@ -95,9 +95,8 @@ export const DevTestBackupState = () => {
 
       <Pressable
         onPress={async () => {
-          await wipeKeychain();
-          await clearAllStorages();
-          clearWalletState();
+          await clearWalletState({ resetKeychain: true });
+          clearAllStorages();
           DevSettings.reload();
         }}
       >

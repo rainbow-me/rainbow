@@ -1162,8 +1162,8 @@ export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => 
     return null;
   }
 };
-let callbackAfterSeeds: null | (() => void) = null;
 
+let callbackAfterSeeds: null | (() => void) = null;
 export function setCallbackAfterObtainingSeedsFromKeychainOrError(callback: () => void) {
   callbackAfterSeeds = callback;
 }
@@ -1369,4 +1369,8 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
     logger.error(new RainbowError('[wallet]: Error in loadSeedPhraseAndMigrateIfNeeded'), { error });
     throw error;
   }
+};
+
+export const resetSelectedWallet = async (): Promise<void> => {
+  return keychain.saveObject(selectedWalletKey, {}, keychain.publicAccessControlOptions);
 };

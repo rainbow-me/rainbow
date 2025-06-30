@@ -5,16 +5,18 @@ import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
 import { logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
-import { hasKey } from '@/model/keychain';
+import { hasKey, wipeKeychain } from '@/model/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
   AllRainbowWallets,
+  cleanUpWalletKeys,
   generateAccount,
   getAllWallets,
   getSelectedWallet as getSelectedWalletFromKeychain,
   loadAddress,
   RainbowAccount,
   RainbowWallet,
+  resetSelectedWallet as resetSelectedWalletInKeychain,
   saveAddress,
   saveAllWallets,
   setSelectedWallet as setSelectedWalletInKeychain,
@@ -89,8 +91,10 @@ interface WalletsState {
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
 
-  clearWalletState: () => void;
+  clearWalletState: (options?: { resetKeychain?: boolean }) => Promise<void>;
 }
+
+const INITIAL_ADDRESS = '' as Address;
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
   (set, get) => ({
@@ -178,6 +182,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         [walletId]: updatedWallet,
       } satisfies AllRainbowWallets;
 
+      // no need to await here likely
       await updateWallets(updatedWallets);
 
       return updatedWallet;
@@ -186,15 +191,49 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     refreshWalletInfo: async props => {
       const { wallets } = get();
       const info = await refreshWalletsInfo({ wallets, cachedENS: props?.skipENS });
-      // ensure wallets havent changed under us
-      const hasChangedSinceFetch = !dequal(get().wallets, wallets);
-      if (hasChangedSinceFetch) {
-        logger.warn(`Changed wallets since fetch, aborting update`);
-        return;
-      }
+
       if (info) {
-        await saveAllWallets(info.wallets);
-        set(info);
+        // wallets may have changed since the refresh started so lets merge them together
+        set(state => {
+          // prefer the latest state
+          const latestWallets = { ...state.wallets };
+
+          // loop the refreshed wallet info
+          for (const key in info.wallets) {
+            const latestWallet = latestWallets[key];
+            const refreshedWallet = info.wallets[key];
+
+            // if deleted or added to latest state, no need to update
+            if (!latestWallet || !refreshedWallet) {
+              continue;
+            }
+
+            // update wallet with refreshed info
+            latestWallets[key] = {
+              ...latestWallet,
+              addresses: latestWallet.addresses.map(latestAccount => {
+                const refreshedAccount = refreshedWallet.addresses.find(account => account.address === latestAccount.address);
+
+                // account has been removed, keep new state
+                if (!refreshedAccount) {
+                  return latestAccount;
+                }
+
+                return {
+                  ...latestAccount,
+                  ...refreshedAccount,
+                };
+              }),
+            };
+          }
+
+          return {
+            ...state,
+            wallets: latestWallets,
+          };
+        });
+
+        await saveAllWallets(get().wallets);
       }
     },
 
@@ -203,9 +242,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       set({ walletReady: true });
     },
 
-    // TODO follow-on and fix this type better - this is matching existing bug from before refactor
-    // see PD-188
-    accountAddress: `0x`,
+    accountAddress: INITIAL_ADDRESS,
     setAccountAddress: (accountAddress: Address) => {
       saveAddress(accountAddress);
       set({
@@ -221,10 +258,16 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       return getAccountProfileInfoFromState({ address, wallet }, state);
     },
 
-    clearWalletState() {
+    async clearWalletState({ resetKeychain = false } = {}) {
+      if (resetKeychain) {
+        await wipeKeychain();
+        await cleanUpWalletKeys();
+        await Promise.all([saveAddress(INITIAL_ADDRESS), resetSelectedWalletInKeychain(), saveAllWallets({})]);
+      }
+
       set({
         wallets: {},
-        accountAddress: `0x`,
+        accountAddress: INITIAL_ADDRESS,
         walletReady: false,
         walletNames: {},
         selected: null,
