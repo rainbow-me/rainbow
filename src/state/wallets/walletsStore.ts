@@ -6,16 +6,18 @@ import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
-import { hasKey } from '@/model/keychain';
+import { hasKey, wipeKeychain } from '@/model/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
   AllRainbowWallets,
+  cleanUpWalletKeys,
   generateAccount,
   getAllWallets,
   getSelectedWallet as getSelectedWalletFromKeychain,
   loadAddress,
   RainbowAccount,
   RainbowWallet,
+  resetSelectedWallet as resetSelectedWalletInKeychain,
   saveAddress,
   saveAllWallets,
   setSelectedWallet as setSelectedWalletInKeychain,
@@ -68,9 +70,7 @@ interface WalletsState {
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
-  createAccount: (data: { id: RainbowWallet['id']; name: RainbowWallet['name']; color: RainbowWallet['color'] | null }) => Promise<{
-    [id: string]: RainbowWallet;
-  }>;
+  createAccount: (data: { id: RainbowWallet['id']; name: RainbowWallet['name']; color: RainbowWallet['color'] | null }) => Promise<void>;
 
   setAllWalletsWithIdsAsBackedUp: (
     ids: RainbowWallet['id'][],
@@ -95,8 +95,10 @@ interface WalletsState {
   getIsHardwareWallet: () => boolean;
   getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
 
-  clearWalletState: () => void;
+  clearWalletState: (options?: { resetKeychain?: boolean }) => Promise<void>;
 }
+
+const INITIAL_ADDRESS = '' as Address;
 
 export const useWalletsStore = createRainbowStore<WalletsState>(
   (set, get) => ({
@@ -111,7 +113,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
       set({
         accountAddress,
-        selected: { ...wallet },
+        selected: wallet,
       });
 
       const keychainPromise = Promise.all(
@@ -136,6 +138,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     updateAccountInfo: ({ address, avatar, color, emoji, image, label, walletId }) => {
       set(state => {
         const { wallets } = state;
+        if (!wallets[walletId]) return state;
+
         const updatedMetadata: Partial<Pick<RainbowAccount, 'avatar' | 'color' | 'image' | 'label'>> = {};
 
         if (avatar !== undefined) updatedMetadata.avatar = avatar;
@@ -172,7 +176,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     // TODO follow-on and fix this type better - this is matching existing bug from before refactor
     // see PD-188
-    accountAddress: `0x`,
+    accountAddress: INITIAL_ADDRESS,
     setAccountAddress: (accountAddress: Address) => {
       saveAddress(accountAddress);
       set({
@@ -188,13 +192,18 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       return getAccountProfileInfoFromState({ address, wallet }, state);
     },
 
-    clearWalletState() {
+    async clearWalletState({ resetKeychain = false } = {}) {
+      if (resetKeychain) {
+        await wipeKeychain();
+        await cleanUpWalletKeys();
+        await Promise.all([saveAddress(INITIAL_ADDRESS), resetSelectedWalletInKeychain(), saveAllWallets({})]);
+      }
       set({
-        wallets: {},
-        accountAddress: `0x`,
-        walletReady: false,
-        walletNames: {},
+        accountAddress: INITIAL_ADDRESS,
         selected: null,
+        walletNames: {},
+        walletReady: false,
+        wallets: {},
       });
     },
 
@@ -278,7 +287,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           wallets: applyWalletUpdatesFromKeychain(state.wallets, wallets),
         }));
 
-        get().refreshWalletInfo();
+        const { accountAddress: newAccountAddress, refreshWalletInfo } = get();
+
+        refreshWalletInfo({ addresses: [newAccountAddress] }).then(() => {
+          refreshWalletInfo({ useCachedENS: true });
+        });
 
         return wallets;
       } catch (error) {
@@ -290,38 +303,53 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     createAccount: async ({ id, name, color }) => {
       const { wallets } = get();
-      const newWallets = { ...wallets };
+
+      if (!wallets[id]) {
+        logger.error(new RainbowError(`[walletsStore - createAccount]: Wallet ${id} not found`));
+      }
 
       let index = 0;
-      for (const account of newWallets[id].addresses) {
+      for (const account of wallets[id].addresses) {
         index = Math.max(index, account.index);
       }
 
       const newIndex = index + 1;
       const account = await generateAccount(id, newIndex);
       if (!account) {
-        throw new Error(`No account generated`);
+        throw new Error('[walletsStore - createAccount]: No account generated');
       }
 
       const walletColorIndex = color !== null ? color : addressHashedColorIndex(account.address);
       if (walletColorIndex == null) {
-        throw new Error(`No wallet color index`);
+        throw new Error('[walletsStore - createAccount]: No wallet color index');
       }
 
-      newWallets[id] = {
-        ...newWallets[id],
-        addresses: [
-          ...newWallets[id].addresses,
-          {
-            address: account.address,
-            avatar: null,
-            color: walletColorIndex,
-            index: newIndex,
-            label: name,
-            visible: true,
+      set(state => {
+        const newWallets = {
+          ...state.wallets,
+          [id]: {
+            ...state.wallets[id],
+            addresses: [
+              ...state.wallets[id].addresses,
+              {
+                address: account.address,
+                avatar: null,
+                color: walletColorIndex,
+                index: newIndex,
+                label: name,
+                visible: true,
+              },
+            ],
           },
-        ],
-      };
+        };
+
+        return {
+          ...state,
+          accountAddress: ensureValidHex(account.address),
+          selected: newWallets[id],
+          wallets: newWallets,
+        };
+      });
 
       store.dispatch(updateWebDataEnabled(true, account.address));
 
@@ -329,15 +357,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
         accountSymbol: addressHashedEmoji(account.address),
       });
-
-      set(state => ({
-        ...state,
-        accountAddress: ensureValidHex(account.address),
-        selected: newWallets[id],
-        wallets: applyWalletUpdatesFromKeychain(state.wallets, newWallets),
-      }));
-
-      return newWallets;
     },
 
     setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {

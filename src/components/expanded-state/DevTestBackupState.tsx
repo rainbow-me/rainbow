@@ -3,8 +3,9 @@ import { Box, Text } from '@/design-system';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { logger, RainbowError } from '@/logger';
 import { createBackup, restoreBackup } from '@/model/backup';
-import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 import { clearWalletState } from '@/state/wallets/walletsStore';
@@ -93,10 +94,9 @@ export const DevTestBackupState = () => {
 
       <Pressable
         onPress={async () => {
-          await wipeKeychain();
-          await clearAllStorages();
-          clearWalletState();
-          DevSettings.reload();
+          await clearWalletState({ resetKeychain: true });
+          clearAllStorages();
+          Navigation.handleAction(Routes.WELCOME_SCREEN);
         }}
       >
         <Box

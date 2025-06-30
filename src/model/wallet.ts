@@ -1134,6 +1134,10 @@ export const setSelectedWallet = async (wallet: RainbowWallet): Promise<void> =>
   return keychain.saveObject(selectedWalletKey, val, keychain.publicAccessControlOptions);
 };
 
+export const resetSelectedWallet = async (): Promise<void> => {
+  return keychain.saveObject(selectedWalletKey, {}, keychain.publicAccessControlOptions);
+};
+
 export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletData> => {
   try {
     const selectedWalletData = await keychain.loadObject(selectedWalletKey);
