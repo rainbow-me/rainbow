@@ -17,7 +17,7 @@ type EasingGradientProps = UseEasingGradientParams & ViewProps;
  * **Optional:**
  * @param easing The easing function to apply to the gradient.
  * @param endOpacity The opacity at the end of the gradient.
- * @param endPosition The end position of the gradient (`'top', 'bottom', 'left', 'right'`). Defaults to `'top'`.
+ * @param endPosition The end position of the gradient (`'top', 'bottom', 'left', 'right'`). Defaults to `'bottom'`.
  * @param pointerEvents Defaults to `'none'`.
  * @param startOpacity The opacity at the start of the gradient.
  * @param startPosition The start position of the gradient (`'top', 'bottom', 'left', 'right'`). Defaults to `'top'`.

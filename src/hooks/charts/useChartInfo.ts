@@ -39,12 +39,14 @@ export const usePriceChart = ({
   address,
   currency,
   chainId,
+  refetchInterval = time.seconds(30),
   timespan,
 }: {
   mainnetAddress?: string;
   address: string;
   currency: SupportedCurrencyKey;
   chainId: ChainId;
+  refetchInterval?: number;
   timespan: ChartTime;
 }) => {
   return useQuery({
@@ -55,7 +57,7 @@ export const usePriceChart = ({
     },
     queryKey: createQueryKey('price chart', { address, chainId, timespan }),
     keepPreviousData: true,
-    refetchInterval: time.seconds(30),
+    refetchInterval,
     staleTime: time.zero,
   });
 };
