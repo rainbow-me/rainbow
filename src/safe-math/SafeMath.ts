@@ -2,6 +2,13 @@ export const INTERNAL_PRECISION = 20;
 const INTERNAL_PRECISION_BIGINT = BigInt(INTERNAL_PRECISION);
 const SCALE_FACTOR = BigInt(10) ** INTERNAL_PRECISION_BIGINT;
 
+const patterns = {
+  number: /^[-+]?\d+(\.\d+)?([eE][-+]?\d+)?$/,
+  exponent: /[eE]/,
+  trailingZeros: /0+$/,
+  trailingDecimalPoint: /^\d+\.$/,
+};
+
 // Utility function to remove the decimal point and keep track of the number of decimal places
 export function removeDecimalWorklet(num: string): [bigint, number] {
   'worklet';
@@ -9,8 +16,8 @@ export function removeDecimalWorklet(num: string): [bigint, number] {
   let bigIntNum: bigint;
 
   // Check if there's an exponent
-  if (/[eE]/.test(num)) {
-    const [base, exponent] = num.split(/[eE]/);
+  if (patterns.exponent.test(num)) {
+    const [base, exponent] = num.split(patterns.exponent);
     const exp = Number(exponent);
 
     const parts = base.split('.');
@@ -38,7 +45,7 @@ export function removeDecimalWorklet(num: string): [bigint, number] {
 
 export const isNumberStringWorklet = (value: string): boolean => {
   'worklet';
-  return /^-?\d+(\.\d+)?([eE][-+]?\d+)?$/.test(value);
+  return patterns.number.test(value);
 };
 
 const isZeroWorklet = (value: string): boolean => {
@@ -65,7 +72,7 @@ const formatResultWorklet = (result: bigint): string => {
   const resultStr = absResult.toString().padStart(INTERNAL_PRECISION + 1, '0');
   const integerPart = resultStr.slice(0, -INTERNAL_PRECISION) || '0';
   let fractionalPart = resultStr.slice(-INTERNAL_PRECISION);
-  fractionalPart = fractionalPart.replace(/0+$/, ''); // Remove trailing zeros
+  fractionalPart = fractionalPart.replace(patterns.trailingZeros, ''); // Remove trailing zeros
   const formattedResult = fractionalPart.length > 0 ? `${integerPart}.${fractionalPart}` : integerPart;
   return isNegative ? `-${formattedResult}` : formattedResult;
 };
@@ -76,7 +83,7 @@ export const toStringWorklet = (value: string | number): string => {
   const string = typeof value === 'number' ? value.toString() : value;
 
   // Slice trailing decimal point if not followed by a number
-  if (/^\d+\.$/.test(string)) return string.slice(0, -1);
+  if (patterns.trailingDecimalPoint.test(string)) return string.slice(0, -1);
 
   return string;
 };

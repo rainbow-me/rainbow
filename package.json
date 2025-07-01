@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.68-1",
+  "version": "1.9.70-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -97,7 +97,7 @@
     "@lavamoat/preinstall-always-fail": "2.0.0",
     "@ledgerhq/hw-app-eth": "6.39.0",
     "@ledgerhq/react-native-hw-transport-ble": "6.33.4",
-    "@legendapp/list": "1.0.0-beta.15",
+    "@legendapp/list": "1.1.0",
     "@metamask/eth-sig-util": "7.0.2",
     "@notifee/react-native": "7.8.2",
     "@rainbow-me/provider": "0.1.2",
@@ -121,7 +121,7 @@
     "@reown/walletkit": "1.1.2",
     "@reservoir0x/reservoir-sdk": "2.3.0",
     "@rudderstack/rudder-sdk-react-native": "2.0.0",
-    "@sentry/react-native": "5.35.0",
+    "@sentry/react-native": "6.15.1",
     "@shopify/flash-list": "1.7.2",
     "@shopify/react-native-performance": "4.1.2",
     "@shopify/react-native-skia": "1.9.0",
@@ -205,7 +205,6 @@
     "qs": "6.9.7",
     "querystring-es3": "0.2.1",
     "react": "18.2.0",
-    "react-coin-icon": "rainbow-me/react-coin-icon#06464588a3d986f6ef3a7d7341b2d7ea0c5ac50b",
     "react-fast-compare": "3.2.2",
     "react-flatten-children": "1.1.2",
     "react-freeze": "1.0.4",

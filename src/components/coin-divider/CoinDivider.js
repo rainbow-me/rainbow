@@ -9,11 +9,12 @@ import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditAction from '@/helpers/EditAction';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { useAccountSettings, useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions } from '@/hooks';
+import { useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;
@@ -89,7 +90,7 @@ const useInterpolationRange = isCoinListEdited => {
 export default function CoinDivider({ balancesSum, defaultToEditButton, extendedState }) {
   const { isCoinListEdited, setIsCoinListEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const { width: deviceWidth } = useDimensions();
 

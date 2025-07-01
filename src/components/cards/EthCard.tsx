@@ -5,7 +5,7 @@ import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-s
 import assetTypes from '@/entities/assetTypes';
 import { IS_IOS } from '@/env';
 import showWalletErrorAlert from '@/helpers/support';
-import { useAccountSettings, useChartThrottledPoints, useColorForAsset } from '@/hooks';
+import { useChartThrottledPoints, useColorForAsset } from '@/hooks';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -15,7 +15,7 @@ import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-
 import { ETH_ADDRESS } from '@/references';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/state/backendNetworks/types';
-import { useIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -26,14 +26,14 @@ import { ButtonPressAnimation } from '../animations';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
 import { GenericCard } from './GenericCard';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
 export const EthCard = () => {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
-  const isDamaged = useIsDamagedWallet();
   const { data: externalEthAsset } = useExternalToken({
     address: ETH_ADDRESS,
     chainId: ChainId.mainnet,
@@ -60,7 +60,7 @@ export const EthCard = () => {
         e.stopPropagation();
       }
 
-      if (isDamaged) {
+      if (getIsDamagedWallet()) {
         showWalletErrorAlert();
         return;
       }
@@ -72,7 +72,7 @@ export const EthCard = () => {
         routeName,
       });
     },
-    [isDamaged, navigate, routeName]
+    [navigate, routeName]
   );
 
   const handleAssetPress = useCallback(() => {

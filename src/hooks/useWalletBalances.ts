@@ -1,16 +1,9 @@
-import { AllRainbowWallets } from '@/model/wallet';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
+import { getWalletAddresses, getWallets } from '@/state/wallets/walletsStore';
 import { useMemo } from 'react';
 import { Address } from 'viem';
-import useAccountSettings from './useAccountSettings';
-import { useAddysSummary } from '@/resources/summary/summary';
-import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-
-const QUERY_CONFIG = {
-  staleTime: 60_000, // 1 minute
-  cacheTime: 1000 * 60 * 60 * 24, // 24 hours
-  refetchInterval: 120_000, // 2 minutes
-};
 
 export type WalletBalance = {
   assetBalanceAmount: string;
@@ -23,7 +16,6 @@ export type WalletBalance = {
 
 export type WalletBalanceResult = {
   balances: Record<Address, WalletBalance>;
-  isLoading: boolean;
 };
 
 /**
@@ -32,32 +24,31 @@ export type WalletBalanceResult = {
  * @param wallets - All Rainbow wallets
  * @returns Balances for all wallets
  */
-const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
-  const { nativeCurrency } = useAccountSettings();
-
-  const allAddresses = useMemo(
-    () => Object.values(wallets).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address)),
-    [wallets]
-  );
-
-  const { data: summaryData, isLoading } = useAddysSummary(
-    {
-      addresses: allAddresses,
-      currency: nativeCurrency,
-    },
-    QUERY_CONFIG
-  );
+const useWalletBalances = (): WalletBalanceResult => {
+  const summaryData = useWalletSummary();
 
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};
+    const wallets = getWallets();
 
-    if (isLoading) return result;
+    if (!summaryData || !wallets) {
+      return result;
+    }
+
+    const nativeCurrency = userAssetsStoreManager.getState().currency;
+    const allAddresses = getWalletAddresses(wallets);
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value?.toString() || '0';
-      const positionsBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.positions_value?.toString() || '0';
-      const claimablesBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.claimables_value?.toString() || '0';
+      const summary = summaryData.addresses?.[lowerCaseAddress]?.summary;
+
+      if (!summary) {
+        continue;
+      }
+
+      const assetBalance = summary.asset_value?.toString() || '0';
+      const positionsBalance = summary.positions_value?.toString() || '0';
+      const claimablesBalance = summary.claimables_value?.toString() || '0';
 
       const totalAccountBalance = add(assetBalance, add(positionsBalance, claimablesBalance));
 
@@ -72,11 +63,10 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     }
 
     return result;
-  }, [isLoading, allAddresses, summaryData?.data?.addresses, nativeCurrency]);
+  }, [summaryData]);
 
   return {
     balances,
-    isLoading,
   };
 };
 

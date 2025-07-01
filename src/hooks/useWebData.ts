@@ -2,14 +2,13 @@ import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
-import useAccountSettings from './useAccountSettings';
 import { containsEmoji } from '@/helpers/strings';
 import WalletTypes from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
-import { getWalletWithAccount, useAccountProfileInfo, useWallets } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, useAccountAddress, useAccountProfileInfo, useWallets } from '@/state/wallets/walletsStore';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -28,7 +27,7 @@ const wipeNotEmoji = (text: string) => {
 };
 
 export default function useWebData() {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const dispatch = useDispatch();
   const wallets = useWallets();
 

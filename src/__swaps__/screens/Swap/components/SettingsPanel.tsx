@@ -76,7 +76,7 @@ export function SettingsPanel() {
         {i18n.t(i18n.l.expanded_state.swap_details_v2.settings)}
       </Text>
 
-      <GestureHandlerButton onPressWorklet={SwapSettings.onToggleDegenMode} scaleTo={0.97}>
+      <GestureHandlerButton onPressWorklet={SwapSettings.onToggleDegenMode} scaleTo={0.97} testID="swap-settings-panel-degen-mode-button">
         <Box
           background={isDarkMode ? 'fillQuaternary' : 'fillTertiary'}
           borderRadius={20}

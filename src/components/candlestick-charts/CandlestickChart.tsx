@@ -915,7 +915,8 @@ class CandlestickChartManager {
     const isDarkMode = this.isDarkMode;
     const stride = this.getStride(candleWidth);
 
-    const nearestCandleIndex = Math.round((cx - this.offset.value - candleWidth / 2) / stride);
+    const unclampedIndex = Math.round((cx - this.offset.value - candleWidth / 2) / stride);
+    const nearestCandleIndex = clamp(unclampedIndex, 0, this.candles.length - 1);
     const snappedX = nearestCandleIndex * stride + this.offset.value + candleWidth / 2;
     const yWithOffset = cy + config.crosshair.yOffset;
     const verticalInset = config.crosshair.strokeWidth / 2;
@@ -1129,14 +1130,13 @@ class CandlestickChartManager {
 
     if (providedConfig?.crosshair?.dotColor) {
       this.colors.crosshairDot = Skia.Color(providedConfig.crosshair.dotColor);
-
       if (!isDarkMode) {
         const color = opacityWorklet(providedConfig.crosshair.dotColor, 0.64);
         const shadowColor = Skia.Color(color);
         this.paints.crosshairDot.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 1, 2, 2, shadowColor, null));
       }
     } else {
-      this.colors.crosshairDot = Skia.Color(this.config.crosshair.dotColor);
+      this.colors.crosshairDot = Skia.Color(DEFAULT_CANDLESTICK_CONFIG.crosshair.dotColor);
     }
 
     if (isDarkMode) this.paints.crosshairDot.setImageFilter(null);
@@ -1144,7 +1144,7 @@ class CandlestickChartManager {
     if (providedConfig?.crosshair?.lineColor) {
       this.colors.crosshairLine = Skia.Color(providedConfig.crosshair.lineColor);
     } else {
-      this.colors.crosshairLine = Skia.Color(this.config.crosshair.lineColor);
+      this.colors.crosshairLine = Skia.Color(DEFAULT_CANDLESTICK_CONFIG.crosshair.lineColor);
     }
 
     this.paints.crosshairLine.setColor(this.colors.crosshairLine);
@@ -1153,13 +1153,13 @@ class CandlestickChartManager {
     if (providedConfig?.grid?.color) {
       this.paints.grid.setColor(Skia.Color(providedConfig.grid.color));
     } else {
-      this.paints.grid.setColor(Skia.Color(this.config.grid.color));
+      this.paints.grid.setColor(Skia.Color(DEFAULT_CANDLESTICK_CONFIG.grid.color));
     }
 
     if (providedConfig?.volume?.color) {
       this.volumeBarColor = Skia.Color(providedConfig.volume.color);
     } else {
-      this.volumeBarColor = Skia.Color(this.config.volume.color);
+      this.volumeBarColor = Skia.Color(DEFAULT_CANDLESTICK_CONFIG.volume.color);
     }
 
     this.rebuildChart(false, true);

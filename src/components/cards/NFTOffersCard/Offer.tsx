@@ -20,10 +20,10 @@ import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { useAccountSettings } from '@/hooks';
 import { Network } from '@/state/backendNetworks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 export const CELL_HORIZONTAL_PADDING = 7;
@@ -66,7 +66,7 @@ export const FakeOffer = () => {
 export const Offer = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
   const theme = useTheme();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const offerChainId = useBackendNetworksStore.getState().getChainsIdByName()[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address as AddressOrEth,

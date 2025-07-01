@@ -1,6 +1,7 @@
 /* eslint-disable no-promise-executor-return */
 import { analytics } from '@/analytics';
 import { DelayedAlert } from '@/components/alerts';
+import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import showWalletErrorAlert from '@/helpers/support';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWalletCloudBackup } from '@/hooks';
@@ -13,19 +14,18 @@ import { useWallets } from '@/state/wallets/walletsStore';
 import { cloudPlatform } from '@/utils/platform';
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
-import { useDispatch } from 'react-redux';
 
 type UseCreateBackupProps = {
   walletId?: string;
+  addToCurrentBackup?: boolean;
 };
 
 type ConfirmBackupProps = {
   password: string;
+  userPIN: string | undefined;
 } & UseCreateBackupProps;
 
 export const useCreateBackup = () => {
-  const dispatch = useDispatch();
-
   const walletCloudBackup = useWalletCloudBackup();
   const wallets = useWallets();
 
@@ -87,7 +87,7 @@ export const useCreateBackup = () => {
   );
 
   const onConfirmBackup = useCallback(
-    async ({ password, walletId }: ConfirmBackupProps) => {
+    async ({ password, walletId, userPIN, addToCurrentBackup = false }: ConfirmBackupProps) => {
       analytics.track(analytics.event.backupConfirmed);
       backupsStore.getState().setStatus(CloudBackupState.InProgress);
 
@@ -110,6 +110,7 @@ export const useCreateBackup = () => {
           password,
           onError,
           onSuccess,
+          userPIN,
         });
         return;
       }
@@ -119,20 +120,21 @@ export const useCreateBackup = () => {
         onSuccess,
         password,
         walletId,
+        addToCurrentBackup,
       });
     },
-    [walletCloudBackup, onError, wallets, onSuccess, dispatch]
+    [walletCloudBackup, onError, wallets, onSuccess]
   );
 
-  const getPassword = useCallback(async (props: UseCreateBackupProps): Promise<string | null> => {
-    const password = await getLocalBackupPassword();
+  const getPassword = useCallback(async (props: UseCreateBackupProps, userPIN: string | undefined): Promise<string | null> => {
+    const password = await getLocalBackupPassword(userPIN);
     if (password) {
       backupsStore.getState().setStoredPassword(password);
       return password;
     }
 
     return new Promise(resolve => {
-      return Navigation.handleAction(Routes.BACKUP_SHEET, {
+      Navigation.handleAction(Routes.BACKUP_SHEET, {
         nativeScreen: true,
         step: walletBackupStepTypes.create_cloud_backup,
         onSuccess: async (password: string) => {
@@ -151,7 +153,16 @@ export const useCreateBackup = () => {
       if (backupsStore.getState().status !== CloudBackupState.Ready) {
         return false;
       }
-      const password = await getPassword(props);
+
+      let userPIN: string | undefined;
+      try {
+        userPIN = await maybeAuthenticateWithPIN();
+      } catch (e) {
+        onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+        return;
+      }
+
+      const password = await getPassword(props, userPIN);
       if (!password) {
         setLoadingStateWithTimeout({
           state: CloudBackupState.Ready,
@@ -160,11 +171,12 @@ export const useCreateBackup = () => {
       }
       onConfirmBackup({
         password,
+        userPIN,
         ...props,
       });
       return true;
     },
-    [getPassword, onConfirmBackup, setLoadingStateWithTimeout]
+    [getPassword, onConfirmBackup, setLoadingStateWithTimeout, onError]
   );
 
   return createBackup;

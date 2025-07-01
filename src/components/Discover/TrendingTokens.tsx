@@ -25,7 +25,6 @@ import { ButtonPressAnimation } from '../animations';
 import { useFarcasterAccountForWallets } from '@/hooks/useFarcasterAccountForWallets';
 import { ImgixImage } from '../images';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useAccountSettings } from '@/hooks';
 import { getColorWorklet, getMixedColor, opacity } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_IOS, IS_TEST } from '@/env';
@@ -33,6 +32,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { RAINBOW_TRENDING_TOKENS_LIST, useExperimentalFlag } from '@/config';
 import { shallowEqual } from '@/worklets/comparisons';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const t = i18n.l.trending_tokens;
 
@@ -122,7 +122,7 @@ function FilterButton({
 }
 
 function useTrendingTokensData() {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const remoteConfig = useRemoteConfig();
 
   const { chainId, category, timeframe, sort } = useTrendingTokensStore(
@@ -584,7 +584,7 @@ function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<Chain
 
   const navigateToNetworkSelector = useCallback(() => {
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
-      selected: selectedChainId,
+      selected: selectedChainId.value ?? chainId,
       setSelected,
       allowedNetworks: category === 'Rainbow' ? tokenLauncherNetworks : undefined,
     });
@@ -690,7 +690,7 @@ function TrendingTokensLoader() {
 }
 
 function TrendingTokenData() {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { data: trendingTokens, isLoading } = useTrendingTokensData();
 
   const renderItem = useCallback(

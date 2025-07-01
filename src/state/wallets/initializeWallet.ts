@@ -87,6 +87,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       silent,
       userPin,
     });
+
     if (shouldCancel()) return null;
 
     walletStatus = getWalletStatus(isNew, isImporting);

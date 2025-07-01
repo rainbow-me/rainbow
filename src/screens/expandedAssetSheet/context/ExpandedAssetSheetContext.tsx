@@ -1,5 +1,5 @@
 import { ParsedAddressAsset } from '@/entities';
-import { useAccountSettings, useAdditionalAssetData, useColorForAsset } from '@/hooks';
+import { useAdditionalAssetData, useColorForAsset } from '@/hooks';
 import { TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -19,6 +19,7 @@ import { useTheme } from '@/theme';
 import { time } from '@/utils';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -114,7 +115,7 @@ export function ExpandedAssetSheetContextProvider({
   children,
   hideClaimSection = false,
 }: ExpandedAssetSheetContextProviderProps) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
 
