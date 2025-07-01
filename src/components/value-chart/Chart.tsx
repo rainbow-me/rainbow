@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import * as i18n from '@/languages';
-import { useWindowDimensions } from 'react-native';
+import { ScrollView, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Text, Box, TextIcon, useColorMode } from '@/design-system';
 import { LineChart } from './LineChart';
@@ -11,6 +11,7 @@ import { colors } from '@/styles';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { formatTimestamp } from '@/worklets/dates';
 import { useAppSettingsStore } from '@/state/appSettings/appSettingsStore';
+import { useExperimentalFlag } from '@/config';
 
 const translations = {
   noChartData: i18n.t(i18n.l.expanded_state.chart.no_chart_data),
@@ -107,6 +108,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   const chartGestureUnixTimestamp = useSharedValue<number>(0);
   const isChartGestureActive = useSharedValue(false);
   const { width: screenWidth } = useWindowDimensions();
+  const enableCandlestickCharts = useExperimentalFlag('Candlestick Charts');
 
   const chartType = useAppSettingsStore(state => state.chartType);
   const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>('hour');
@@ -132,6 +134,13 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
       return CandlestickChartTimespans;
     }
   }, [chartType]);
+
+  const timespanKeys = Object.keys(timespans);
+
+  const timespanScrollViewOffset = useMemo(() => {
+    const timespansWidth = timespanKeys.length * 44 + 12 * (timespanKeys.length - 1);
+    return Math.max(24, (screenWidth - timespansWidth) / 2);
+  }, [screenWidth, timespanKeys]);
 
   const onPressTimespan = useCallback((timespan: ChartTimespan) => {
     setSelectedTimespan(timespan);
@@ -208,35 +217,50 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
             />
           </Box>
         )}
-        <Box height={34} width={'full'} flexDirection="row" justifyContent="center" alignItems="center" gap={12}>
-          {Object.keys(timespans).map(timespan => (
-            <ButtonPressAnimation key={timespan} onPress={() => onPressTimespan(timespan as ChartTimespan)}>
-              <Box
-                width={44}
-                paddingVertical={'12px'}
-                justifyContent="center"
-                alignItems="center"
-                borderRadius={20}
-                backgroundColor={timespan === selectedTimespan ? colors.alpha(accentColors.color, 0.06) : 'transparent'}
-              >
-                <Text
-                  color={timespan === selectedTimespan ? { custom: accentColors.color } : 'labelQuaternary'}
-                  uppercase
-                  size="15pt"
-                  weight="heavy"
+        <Box>
+          <ScrollView
+            horizontal
+            contentOffset={{ x: -timespanScrollViewOffset, y: 0 }}
+            contentContainerStyle={{
+              paddingLeft: timespanScrollViewOffset,
+              height: 34,
+              gap: 12,
+            }}
+            showsHorizontalScrollIndicator={false}
+          >
+            {timespanKeys.map(timespan => (
+              <ButtonPressAnimation key={timespan} onPress={() => onPressTimespan(timespan as ChartTimespan)}>
+                <Box
+                  width={44}
+                  paddingVertical={'12px'}
+                  justifyContent="center"
+                  alignItems="center"
+                  borderRadius={20}
+                  backgroundColor={timespan === selectedTimespan ? colors.alpha(accentColors.color, 0.06) : 'transparent'}
                 >
-                  {ChartTimespanLabels[timespan as ChartTimespan].short}
-                </Text>
-              </Box>
-            </ButtonPressAnimation>
-          ))}
-          <ButtonPressAnimation onPress={onPresschartType}>
-            <Box borderRadius={20} justifyContent="center" alignItems="center" width={44} paddingVertical={'12px'}>
-              <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
-                {chartType === ChartTypes.LINE ? '􀋪' : '􀋦'}
-              </TextIcon>
+                  <Text
+                    color={timespan === selectedTimespan ? { custom: accentColors.color } : 'labelQuaternary'}
+                    uppercase
+                    size="15pt"
+                    weight="heavy"
+                  >
+                    {ChartTimespanLabels[timespan as ChartTimespan].short}
+                  </Text>
+                </Box>
+              </ButtonPressAnimation>
+            ))}
+          </ScrollView>
+          {enableCandlestickCharts && (
+            <Box position="absolute" right={{ custom: 12 }}>
+              <ButtonPressAnimation onPress={onPresschartType}>
+                <Box borderRadius={20} justifyContent="center" alignItems="center" width={44} paddingVertical={'12px'}>
+                  <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
+                    {chartType === ChartTypes.LINE ? '􀋪' : '􀋦'}
+                  </TextIcon>
+                </Box>
+              </ButtonPressAnimation>
             </Box>
-          </ButtonPressAnimation>
+          )}
         </Box>
       </Box>
     </Box>
