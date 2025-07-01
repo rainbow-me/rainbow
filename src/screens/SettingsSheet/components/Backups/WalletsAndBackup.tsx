@@ -573,6 +573,7 @@ export const WalletsAndBackup = () => {
                       })}
                     />
                   }
+                  testID="view-cloud-backups"
                 />
                 <MenuItem
                   hasSfSymbol
@@ -587,6 +588,7 @@ export const WalletsAndBackup = () => {
                       })}
                     />
                   }
+                  testID="cloud-backups-settings"
                 />
               </Menu>
             </Stack>

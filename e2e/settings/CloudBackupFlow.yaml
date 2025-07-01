@@ -1,4 +1,7 @@
 appId: ${APP_ID}
+env:
+  CLOUD_BACKUP_EMAIL: ${CLOUD_BACKUP_EMAIL}
+  CLOUD_BACKUP_PASSWORD: ${CLOUD_BACKUP_PASSWORD}
 tags:
   - backup
   - parallel
@@ -25,28 +28,49 @@ tags:
           id: backup-section
       - tapOn:
           id: backup-now-button
-      # This part of the test is different for iOS and Android.
-      - runFlow:
-          when:
-            platform: Android
-          commands:
-            - assertVisible: '(Sign in|Choose an account)'
-            - tapOn: 'Email or phone'
-            # On certain android versions this requires backing twice.
-            # - retry:
-            #     maxRetries: 2
-            #     commands:
-            # - back
-            # - assertVisible: 'Wallets & Backup'
-      # - runFlow:
-      #     when:
-      #       platform: iOS
-      #     commands:
-      #       - assertVisible: 'iCloud Not Enabled'
-      #       - tapOn: 'No thanks'
-      #       - assertVisible: 'Wallets & Backup'
+      - assertVisible: '(Sign in|Choose an account)'
 
-      # - assertVisible: '.*Enable Cloud Backups'
-
-      # # Check Learn More link
-      # - tapOn: ".*Learn more.*"
+      - tapOn: 'Email or phone'
+      - tapOn:
+          id: 'identifierId'
+      - inputText: ${CLOUD_BACKUP_EMAIL}
+      - tapOn:
+          id: 'identifierNext'
+      - tapOn:
+          text: 'Enter your password'
+      - inputSecretText: ${CLOUD_BACKUP_PASSWORD}
+      - tapOn:
+          id: 'passwordNext'
+      - tapOn: 'I agree'
+      - tapOn: 'ACCEPT'
+      - runFlow: ../utils/MaybeSetupPin.yaml
+      - tapOn:
+          id: password-input
+      - inputText: 12345678
+      - tapOn:
+          id: confirm-password-input
+      - inputText: 12345678
+      - tapOn:
+          id: backup-button
+      - runFlow: ../utils/MaybeSetupPin.yaml
+      - assertVisible: '.*Up to Date.*'
+      - assertVisible: 'Latest Backup:.*'
+      - scrollUntilVisible:
+          element:
+            id: cloud-backups-settings
+      - tapOn:
+          id: view-cloud-backups
+      - assertVisible: '.*Most Recent Backup.*'
+      - tapOn: ' , back'
+      - tapOn:
+          id: cloud-backups-settings
+      - tapOn: 'Delete All Google Drive Backups'
+      - tapOn: 'Confirm and Delete Backups'
+      - tapOn:
+          text: '1'
+          repeat: 4
+          delay: 1000
+      - assertVisible: '(Sign in|Choose an account)'
+      - tapOn:
+          id: 'com.google.android.gms:id/account_display_name'
+      - assertVisible: 'Not Enabled'
