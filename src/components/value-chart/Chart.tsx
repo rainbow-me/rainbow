@@ -12,6 +12,9 @@ import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSh
 import { formatTimestamp } from '@/worklets/dates';
 import { useAppSettingsStore } from '@/state/appSettings/appSettingsStore';
 import { useExperimentalFlag } from '@/config';
+import { CandleResolution } from '@/components/candlestick-charts/types';
+import { setCandleResolution } from '@/components/candlestick-charts/CandleSelector';
+import { useChartsStore } from '@/components/candlestick-charts/candlestickStore';
 
 const translations = {
   noChartData: i18n.t(i18n.l.expanded_state.chart.no_chart_data),
@@ -111,7 +114,9 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   const enableCandlestickCharts = useExperimentalFlag('Candlestick Charts');
 
   const chartType = useAppSettingsStore(state => state.chartType);
-  const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>('hour');
+  const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>(() =>
+    chartType === ChartTypes.LINE ? 'hour' : convertToChartTimespan(useChartsStore.getState().candleResolution)
+  );
 
   const selectedTimespanLabel = useMemo(() => {
     return i18n.t(i18n.l.expanded_state.chart.past_timespan, {
@@ -142,9 +147,15 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
     return Math.max(24, (screenWidth - timespansWidth) / 2);
   }, [screenWidth, timespanKeys]);
 
-  const onPressTimespan = useCallback((timespan: ChartTimespan) => {
-    setSelectedTimespan(timespan);
-  }, []);
+  const onPressTimespan = useCallback(
+    (timespan: ChartTimespan) => {
+      if (chartType === ChartTypes.CANDLESTICK) {
+        setCandleResolution(convertToCandleResolution(timespan));
+      }
+      setSelectedTimespan(timespan);
+    },
+    [chartType]
+  );
 
   const onPresschartType = useCallback(() => {
     const selectedTimespanIndex = Object.keys(chartType === ChartTypes.LINE ? LineChartTimespans : CandlestickChartTimespans).indexOf(
@@ -163,6 +174,35 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
       opacity: isChartGestureActive.value && chartType === ChartTypes.CANDLESTICK ? 0 : 1,
     };
   });
+
+  const candleConfig = useMemo(
+    () => ({
+      activeCandleCard: {
+        style: {
+          backgroundColor: accentColors.opacity6,
+          paddingHorizontal: 16,
+          alignSelf: 'center',
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: accentColors.opacity10,
+          width: screenWidth - 48,
+        },
+        height: 75,
+      },
+      crosshair: isDarkMode ? undefined : { dotColor: accentColors.color, lineColor: accentColors.color },
+      grid: { color: accentColors.opacity12 },
+      volume: { color: accentColors.opacity24 },
+    }),
+    [
+      accentColors.color,
+      accentColors.opacity6,
+      accentColors.opacity10,
+      accentColors.opacity12,
+      accentColors.opacity24,
+      isDarkMode,
+      screenWidth,
+    ]
+  );
 
   return (
     <Box>
@@ -189,29 +229,11 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
         {chartType === ChartTypes.CANDLESTICK && (
           <Box height={TOTAL_CHART_HEIGHT}>
             <CandlestickChart
+              address={asset.address}
               backgroundColor={backgroundColor}
-              // xAxisLabelsHeight - xAxisGap - activeCandleCardGap
+              chainId={asset.chainId}
               chartHeight={TOTAL_CHART_HEIGHT - 13 - 10 - 16}
-              config={{
-                chart: {
-                  activeCandleCardGap: 16,
-                },
-                activeCandleCard: {
-                  style: {
-                    backgroundColor: accentColors.opacity6,
-                    paddingHorizontal: 16,
-                    alignSelf: 'center',
-                    borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: accentColors.opacity10,
-                    width: screenWidth - 48,
-                  },
-                  height: 75,
-                },
-                crosshair: isDarkMode ? undefined : { dotColor: accentColors.color, lineColor: accentColors.color },
-                grid: { color: accentColors.opacity12 },
-                volume: { color: accentColors.opacity24 },
-              }}
+              config={candleConfig}
               isChartGestureActive={isChartGestureActive}
               showChartControls={false}
             />
@@ -266,3 +288,38 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
     </Box>
   );
 });
+
+// -- TODO: Temporary - clean these up
+function convertToCandleResolution(timespan: ChartTimespan): CandleResolution {
+  switch (timespan) {
+    case 'minute':
+      return CandleResolution.M1;
+    case 'fiveMinute':
+      return CandleResolution.M5;
+    case 'hour':
+      return CandleResolution.H1;
+    case 'fourHour':
+      return CandleResolution.H4;
+    case 'day':
+      return CandleResolution.D1;
+    default:
+      return CandleResolution.M15;
+  }
+}
+
+function convertToChartTimespan(candleResolution: CandleResolution): ChartTimespan {
+  switch (candleResolution) {
+    case CandleResolution.M1:
+      return 'minute';
+    case CandleResolution.M5:
+      return 'fiveMinute';
+    case CandleResolution.H1:
+      return 'hour';
+    case CandleResolution.H4:
+      return 'fourHour';
+    case CandleResolution.D1:
+      return 'day';
+    default:
+      return 'hour';
+  }
+}

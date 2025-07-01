@@ -37,6 +37,8 @@ declare module 'react-native-dotenv' {
   export const CLOUDINARY_API_KEY: string;
   export const CLOUDINARY_API_SECRET: string;
   export const CLOUDINARY_CLOUD_NAME: string;
+  export const GATEWAY_API_KEY: string;
+  export const GATEWAY_BASE_URL: string;
   export const NOTIFICATIONS_API_KEY: string;
   export const PINATA_API_KEY: string;
   export const PINATA_API_SECRET: string;

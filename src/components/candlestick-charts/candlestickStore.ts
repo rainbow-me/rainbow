@@ -1,33 +1,101 @@
-import { Address } from 'viem';
+import qs from 'qs';
 import { NativeCurrencyKey } from '@/entities';
+import { getGatewayHttpClient } from '@/resources/gateway/gatewayClient';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { time } from '@/utils';
-import { generateMockCandleData } from './mockData';
-import { Bar } from './types';
+import { Bar, CandleResolution, GetCandleChartRequest, CandlestickChartResponse } from './types';
+import { transformApiResponseToBars } from './utils';
 
-export const CANDLE_TYPES = ['1m', '5m', '15m', '30m', '1h', '4h', '12h', '1d', '7d'] as const;
-export type CandleType = (typeof CANDLE_TYPES)[number];
+const CANDLESTICK_ENDPOINT = '/tokens/charts/GetCandleChart';
+const INITIAL_BAR_COUNT = 200;
+
+type ChartSettingsState = {
+  barCount: number;
+  candleResolution: CandleResolution;
+  chartType: 'candlestick' | 'line';
+  token: { address: string; chainId: ChainId } | undefined;
+  resetCandlestickSettings: () => void;
+};
+
+export const useChartsStore = createRainbowStore<ChartSettingsState>(
+  set => ({
+    barCount: INITIAL_BAR_COUNT,
+    candleResolution: CandleResolution.H4,
+    chartType: 'candlestick',
+    token: undefined,
+
+    resetCandlestickSettings: () =>
+      set({
+        barCount: INITIAL_BAR_COUNT,
+        token: undefined,
+      }),
+  }),
+
+  { storageKey: 'chartSettingsStore' }
+);
 
 export type CandlestickParams = {
   barCount?: number;
-  candleType?: (typeof CANDLE_TYPES)[number];
-  currency?: NativeCurrencyKey;
+  candleResolution?: CandleResolution;
+  currency: NativeCurrencyKey;
   startTimestamp?: number;
-  token?: { address: Address; chainId: number };
+  token: { address: string; chainId: ChainId } | undefined;
 };
 
 export const useCandlestickStore = createQueryStore<Bar[], CandlestickParams>({
-  fetcher: fetchMockData,
-  params: { barCount: 1500 },
+  fetcher: fetchCandlestickData,
+  params: {
+    barCount: $ => $(useChartsStore).barCount,
+    candleResolution: $ => $(useChartsStore).candleResolution,
+    currency: $ => $(userAssetsStoreManager).currency,
+    token: $ => $(useChartsStore).token,
+  },
   cacheTime: time.minutes(1),
-  disableAutoRefetching: true,
+  staleTime: time.seconds(6),
 });
 
-function fetchMockData(params: CandlestickParams): Promise<Bar[]> {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const mockData = generateMockCandleData(params.barCount);
-      resolve(mockData);
-    }, 500);
-  });
+function buildCandleChartRequest(params: CandlestickParams): GetCandleChartRequest {
+  const currency = params.currency;
+  const resolution = params.candleResolution || CandleResolution.H1;
+
+  const startTime = params.startTimestamp;
+
+  let tokenId = 'eth:1';
+  if (params.token) tokenId = `${params.token.address}:${params.token.chainId}`;
+
+  return {
+    currency,
+    start_time: startTime,
+    requested_candles: params.barCount ?? INITIAL_BAR_COUNT,
+    resolution,
+    token_id: tokenId,
+  };
+}
+
+function buildQueryParams(request: GetCandleChartRequest): string {
+  return qs.stringify({
+    currency: request.currency,
+    requested_candles: request.requested_candles,
+    resolution: request.resolution,
+    start_time: request.start_time,
+    token_id: request.token_id,
+  } satisfies GetCandleChartRequest);
+}
+
+async function fetchCandlestickData(params: CandlestickParams, abortController: AbortController | null): Promise<Bar[]> {
+  const gatewayClient = getGatewayHttpClient();
+  const request = buildCandleChartRequest(params);
+  const queryParams = buildQueryParams(request);
+
+  const fullUrl = `${CANDLESTICK_ENDPOINT}?${queryParams}`;
+  const response = await gatewayClient.get<CandlestickChartResponse>(fullUrl, { abortController });
+
+  if (!response.data || !response.data.result) {
+    throw new Error('Invalid response structure from candlestick API');
+  }
+
+  return transformApiResponseToBars(response.data);
 }
