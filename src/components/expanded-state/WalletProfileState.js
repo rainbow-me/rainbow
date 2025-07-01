@@ -14,16 +14,7 @@ import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 
 export default function WalletProfileState(props) {
-  const {
-    actionType,
-    address,
-    isNewProfile,
-    onCancel,
-    onCloseModal,
-    profile,
-    forceColor,
-    isFromSettings = true,
-  } = props
+  const { actionType, address, isNewProfile, onCancel, onCloseModal, profile, forceColor, isFromSettings = true } = props;
   const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
   const { getWebProfile } = useUpdateEmoji();
@@ -36,11 +27,11 @@ export default function WalletProfileState(props) {
   } = useMemo(() => {
     const webProfileData = getWalletProfileMeta(address, profile, webProfile, isNewProfile, forceColor);
     const accountInfo = isValidHex(address) ? getAccountProfileInfo({ address }) : undefined;
-    const { abbreviatedAddress } = getDefaultLabel(address)
+    const { abbreviatedAddress } = getDefaultLabel(address);
 
-    const nameIn = removeFirstEmojiFromString(accountInfo?.accountName ?? profile?.name)
+    const nameIn = removeFirstEmojiFromString(accountInfo?.accountName ?? profile?.name);
     // if it's the default address leave it empty for easier changing
-    const name = nameIn === abbreviatedAddress ? '' : nameIn
+    const name = nameIn === abbreviatedAddress ? '' : nameIn;
 
     return {
       color: accountInfo?.accountColor ?? webProfileData.color,
