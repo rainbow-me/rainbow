@@ -1,27 +1,27 @@
-import React, { memo, useCallback, useMemo } from 'react';
-import { AssetList } from '../../components/asset-list';
-import { Page } from '../../components/layout';
+import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
-import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
-import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import Routes from '@/navigation/Routes';
 import { useWalletCohort } from '@/hooks/useWalletCohort';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useInitializeWalletAndSetParams } from '@/hooks/useInitializeWalletAndSetParams';
-import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
-import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
-import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import { InteractionManager } from 'react-native';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
+import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
+import React, { memo, useCallback, useMemo } from 'react';
+import { InteractionManager } from 'react-native';
+import { AssetList } from '../../components/asset-list';
+import { Page } from '../../components/layout';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
