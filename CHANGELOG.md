@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.70] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.70)
+
+### Changed
+
+- Bump iOS and Android to v1.9.70 (#6701)
+
+### Fixed
+
+- Change removed private api access for button gesture (#6718)
+
 ## [1.9.69] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.69)
 
 ### Changed
