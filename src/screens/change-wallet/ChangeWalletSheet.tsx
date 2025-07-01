@@ -254,9 +254,9 @@ export default function ChangeWalletSheet() {
     (walletId: string, address: string) => {
       const wallet = wallets[walletId];
       const account = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
-      const accountAddress = account?.address;
+      const curAddress = account?.address;
 
-      if (!wallet || !accountAddress) return;
+      if (!wallet || !curAddress) return;
 
       InteractionManager.runAfterInteractions(() => {
         goBack();
@@ -265,17 +265,17 @@ export default function ChangeWalletSheet() {
       InteractionManager.runAfterInteractions(() => {
         setTimeout(() => {
           navigate(Routes.MODAL_SCREEN, {
-            address: accountAddress,
+            address: curAddress,
             asset: [],
             onCloseModal: async ({ name, color }) => {
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
-                const updatedWallet = await updateAccount(walletId, { label: name, color, address: accountAddress });
+                const updatedWallet = await updateAccount(walletId, { label: name, color, address: curAddress });
 
                 if (updatedWallet) {
-                  await setSelectedWallet(updatedWallet, accountAddress);
+                  await setSelectedWallet(updatedWallet, curAddress);
                   // no need to wait these will run async and refresh data
-                  void refreshWalletInfo({ addresses: [accountAddress] });
+                  void refreshWalletInfo({ addresses: [curAddress] });
                 }
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);

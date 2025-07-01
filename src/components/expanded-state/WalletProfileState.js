@@ -61,7 +61,7 @@ export default function WalletProfileState(props) {
       canceled: false,
       color: typeof nameColor === 'string' ? profileUtils.colorHexToIndex(nameColor) : nameColor,
       image: profileImage,
-      name: value === '' ? name : value,
+      name: value === '' ? name : `${nameEmoji} ${value}`,
     });
     const callback = async () => {
       goBack();
