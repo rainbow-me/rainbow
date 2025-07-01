@@ -1744,7 +1744,7 @@ export const CandlestickChart = memo(function CandlestickChart({
             startColor={backgroundColor}
             startPosition="right"
             steps={8}
-            style={[styles.bottomFade, { height: Math.round(config.volume.heightFactor * chartHeight * 0.5) }]}
+            style={styles.leftFade}
           />
         </Animated.View>
 
