@@ -1,6 +1,6 @@
 import { AnimatedText, TextProps, useTextStyle } from '@/design-system';
 import React, { useMemo, useCallback, useState } from 'react';
-import { StyleProp, TextStyle, StyleSheet, ViewStyle, View, PixelRatio } from 'react-native';
+import { StyleProp, TextStyle, StyleSheet, ViewStyle, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -93,7 +93,9 @@ const Numerals = React.memo(function Numerals({ textStyle, digitHeight }: { text
     <>
       {numerals.map((_, i) => (
         <View key={i} style={containerStyle}>
-          <Animated.Text style={textStyle}>{i}</Animated.Text>
+          <Animated.Text style={textStyle} allowFontScaling={false}>
+            {i}
+          </Animated.Text>
         </View>
       ))}
     </>
@@ -222,6 +224,8 @@ const NumberParts = function NumberParts({
     ({ currentOriginX, currentOriginY }: ExitAnimationsValues) => {
       'worklet';
       const translateX = currentOriginX + previousWidthDelta.value;
+      // TODO: previously this was defined in the digit component and changed based on the current digit,
+      // Should be moved back to that so that roll direction can be configured by which is further
       const targetOriginY = -9 * digitHeight;
 
       return {
@@ -275,7 +279,9 @@ const NumberParts = function NumberParts({
     } else {
       return (
         <Animated.View key={part.key} style={digitContainerStyle} entering={characterEnteringAnimation} exiting={characterExitingAnimation}>
-          <Animated.Text style={textStyle}>{part.value}</Animated.Text>
+          <Animated.Text style={textStyle} allowFontScaling={false}>
+            {part.value}
+          </Animated.Text>
         </Animated.View>
       );
     }
@@ -404,7 +410,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   // TODO: should be configurable
   const digitHeight = useMemo(() => {
     const lineHeight = baseTextStyle.lineHeight ?? baseTextStyle.fontSize;
-    return lineHeight * 1.1;
+    return lineHeight;
   }, [baseTextStyle]);
 
   const layoutTransition = useCallback(
@@ -512,7 +518,6 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
           fontFamily: baseTextStyle.fontFamily,
           fontWeight: baseTextStyle.fontWeight,
           letterSpacing: baseTextStyle.letterSpacing,
-          fontVariant: baseTextStyle.fontVariant,
         })
       )
       .filter(width => width !== undefined);
@@ -520,10 +525,10 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
 
   const edgeGradientSizes = useMemo(() => {
     return {
-      horizontal: baseTextStyle.fontSize * 0.2,
-      vertical: baseTextStyle.fontSize * 0.2,
+      horizontal: digitHeight * 0.1,
+      vertical: digitHeight * 0.1,
     };
-  }, [baseTextStyle]);
+  }, [digitHeight]);
 
   const animatedStyles = {
     maskElement: useAnimatedStyle(() => {
@@ -603,7 +608,8 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       outerContainer: {
         flexDirection: 'row' as const,
         height: digitHeight,
-        marginVertical: -edgeGradientSizes.vertical,
+        marginTop: baseTextStyle.marginTop,
+        marginBottom: baseTextStyle.marginBottom,
       },
       staticContainer: {
         position: 'absolute' as const,
@@ -614,7 +620,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
         height: digitHeight,
       },
     };
-  }, [baseTextStyle, digitHeight, edgeGradientSizes.vertical, style]);
+  }, [baseTextStyle, digitHeight, style]);
 
   return (
     <LayoutAnimationConfig skipEntering skipExiting>
@@ -743,10 +749,4 @@ const AnimatedEdgeGradients = React.memo(function AnimatedEdgeGradients({
       />
     </Animated.View>
   );
-});
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-  },
 });

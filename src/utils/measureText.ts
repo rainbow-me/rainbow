@@ -31,7 +31,20 @@ export default async function measureText(text: any, textStyles = {}) {
     });
 }
 
-export function measureTextSync(text: string, textStyles = {}) {
-  // This rounding is likely something the library should be doing, but it's not.
+export function measureTextSync(
+  text: string,
+  // not all style props are supported by the react-native-measure-text library
+  textStyles: { fontSize?: number; fontFamily?: string; fontWeight?: string; letterSpacing?: number; allowFontScaling?: boolean } = {}
+) {
+  if (textStyles.allowFontScaling) {
+    const fontScale = PixelRatio.getFontScale();
+
+    const style = {
+      ...textStyles,
+      fontSize: textStyles.fontSize ? Math.round(textStyles.fontSize * fontScale) : textStyles.fontSize,
+    };
+    return PixelRatio.roundToNearestPixel(MeasureText.measureWidth(text, style));
+  }
+
   return PixelRatio.roundToNearestPixel(MeasureText.measureWidth(text, textStyles));
 }
