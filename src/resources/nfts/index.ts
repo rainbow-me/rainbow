@@ -42,6 +42,9 @@ export interface NFTData {
 
 type NFTQueryKey = ReturnType<typeof nftsQueryKey>;
 
+const STABLE_OBJECT = Object.freeze({});
+const STABLE_ARRAY: UniqueAsset[] = [];
+
 export const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) => {
   const [{ address, sortBy, sortDirection }] = queryKey;
   const queryResponse = await arcClient.getNFTs({ walletAddress: address, sortBy, sortDirection });
@@ -49,14 +52,14 @@ export const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryK
   const nfts = queryResponse?.nftsV2?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
 
   const nftIndexMap = nfts?.reduce<Record<string, number>>((acc, nft, index) => {
-    acc[nft.uniqueId] = index;
+    acc[nft.uniqueId.toLowerCase()] = index;
     return acc;
   }, {});
 
-  return { nfts: nfts ?? [], nftIndexMap: nftIndexMap ?? {} };
+  return { nfts: nfts ?? STABLE_ARRAY, nftIndexMap: nftIndexMap ?? STABLE_OBJECT };
 };
 
-const FALLBACK_DATA: NFTData = { nfts: [], nftIndexMap: {} };
+const FALLBACK_DATA: NFTData = { nfts: STABLE_ARRAY, nftIndexMap: STABLE_OBJECT };
 
 export const useLegacyNFTs = function useLegacyNFTs<TSelected = NFTData>({
   address,
