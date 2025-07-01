@@ -26,7 +26,6 @@ import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoShe
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import {
-  getWallets,
   refreshWalletInfo,
   setSelectedWallet,
   updateAccount,
@@ -35,7 +34,7 @@ import {
   useWallets,
 } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { doesWalletsContainAddress, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
+import { doesWalletsContainAddress, isLowerCaseMatch, safeAreaInsetValues, showActionSheetWithOptions } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -192,7 +191,7 @@ export default function ChangeWalletSheet() {
   const onChangeAccount = useCallback(
     async (walletId: string, address: Address, fromDeletion = false) => {
       if (editMode && !fromDeletion) return;
-      const wallet = getWallets()?.[walletId];
+      const wallet = wallets[walletId];
       if (!wallet) return;
       if (watchOnly && onChangeWallet) {
         await setSelectedWallet(wallet, address);
@@ -217,43 +216,46 @@ export default function ChangeWalletSheet() {
         });
       }
     },
-    [accountAddress, editMode, goBack, onChangeWallet, watchOnly]
+    [accountAddress, editMode, goBack, onChangeWallet, wallets, watchOnly]
   );
 
-  const deleteWallet = useCallback(async (walletId: string, address: string) => {
-    const wallets = getWallets();
-    const currentWallet = wallets?.[walletId];
-    // There's nothing to delete if there's no wallet
-    if (!currentWallet) return;
+  const deleteWallet = useCallback(
+    async (walletId: string, address: string) => {
+      const currentWallet = wallets?.[walletId];
+      // There's nothing to delete if there's no wallet
+      if (!currentWallet) return;
 
-    const newWallets = {
-      ...wallets,
-      [walletId]: {
-        ...currentWallet,
-        addresses: (currentWallet.addresses || []).map(account =>
-          account.address.toLowerCase() === address.toLowerCase() ? { ...account, visible: false } : account
-        ),
-      },
-    };
+      const newWallets = {
+        ...wallets,
+        [walletId]: {
+          ...currentWallet,
+          addresses: (currentWallet.addresses || []).map(account =>
+            account.address.toLowerCase() === address.toLowerCase() ? { ...account, visible: false } : account
+          ),
+        },
+      };
 
-    // If there are no visible wallets
-    // then delete the wallet
-    const visibleAddresses = (newWallets[walletId]?.addresses || []).filter(account => account.visible);
-    if (visibleAddresses.length === 0) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete newWallets[walletId];
-      await updateWallets(newWallets);
-    } else {
-      await updateWallets(newWallets);
-    }
-    await removeWalletData(address);
-  }, []);
+      // If there are no visible wallets
+      // then delete the wallet
+      const visibleAddresses = (newWallets[walletId]?.addresses || []).filter(account => account.visible);
+      if (visibleAddresses.length === 0) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete newWallets[walletId];
+        await updateWallets(newWallets);
+      } else {
+        await updateWallets(newWallets);
+      }
+      await removeWalletData(address);
+    },
+    [wallets]
+  );
 
   const renameWallet = useCallback(
     (walletId: string, address: string) => {
-      const wallet = getWallets()?.[walletId];
-      const account = wallet.addresses?.find(account => account.address === address);
+      const wallet = wallets[walletId];
+      const account = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
       const accountAddress = account?.address;
+
       if (!wallet || !accountAddress) return;
 
       InteractionManager.runAfterInteractions(() => {
@@ -263,7 +265,7 @@ export default function ChangeWalletSheet() {
       InteractionManager.runAfterInteractions(() => {
         setTimeout(() => {
           navigate(Routes.MODAL_SCREEN, {
-            address,
+            address: accountAddress,
             asset: [],
             onCloseModal: async ({ name, color }) => {
               if (name) {
@@ -273,23 +275,23 @@ export default function ChangeWalletSheet() {
                 if (updatedWallet) {
                   await setSelectedWallet(updatedWallet, accountAddress);
                   // no need to wait these will run async and refresh data
-                  void refreshWalletInfo();
+                  void refreshWalletInfo({ addresses: [accountAddress] });
                 }
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }
             },
             profile: {
-              color: account?.color || null,
-              image: account?.image || ``,
-              name: account?.label || ``,
+              color: account.color || null,
+              image: account.image || ``,
+              name: account.label || ``,
             },
             type: 'wallet_profile',
           });
         }, 50);
       });
     },
-    [goBack, navigate]
+    [goBack, navigate, wallets]
   );
 
   const onPressEdit = useCallback(
@@ -328,7 +330,6 @@ export default function ChangeWalletSheet() {
       // If there's more than 1 account
       // it's deletable
       let isLastAvailableWallet = false;
-      const wallets = getWallets();
       const walletKeys = Object.keys(wallets);
 
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -377,7 +378,7 @@ export default function ChangeWalletSheet() {
         }
       );
     },
-    [accountAddress, deleteWallet, goBack, navigate, onChangeAccount]
+    [accountAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
   );
 
   const onPressCopyAddress = useCallback((address: string) => {

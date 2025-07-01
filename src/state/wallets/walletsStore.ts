@@ -82,7 +82,7 @@ interface WalletsState {
 
   getAccountProfileInfo: () => AccountProfileInfo;
 
-  refreshWalletInfo: (props?: { skipENS?: boolean }) => Promise<void>;
+  refreshWalletInfo: (props?: { skipENS?: boolean; addresses?: string[] }) => Promise<void>;
 
   checkKeychainIntegrity: () => Promise<void>;
 
@@ -111,7 +111,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       setSelectedWalletInKeychain(wallet);
 
       const wallets = get().wallets;
-      const walletInfo = await refreshWalletsInfo({ wallets, cachedENS: 'force' });
+      const walletInfo = await refreshWalletsInfo({
+        wallets,
+        cachedENS: true,
+        ...(address && {
+          addresses: [address],
+        }),
+      });
 
       // ensure not memoized
       const selected = {
@@ -190,7 +196,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     refreshWalletInfo: async props => {
       const { wallets } = get();
-      const info = await refreshWalletsInfo({ wallets, cachedENS: props?.skipENS });
+      const info = await refreshWalletsInfo({
+        addresses: props?.addresses,
+        wallets,
+        cachedENS: props?.skipENS,
+      });
 
       if (info) {
         // wallets may have changed since the refresh started so lets merge them together
@@ -347,6 +357,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
+        // needs to get info if necessary (import from see)
         set({ wallets });
         await setSelectedWallet(selectedWallet, accountAddress ? ensureValidHex(accountAddress) : undefined);
 
@@ -613,9 +624,13 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
-type GetENSInfoProps = { wallets: AllRainbowWallets | null; cachedENS?: boolean | 'force' };
+type GetENSInfoProps = {
+  addresses?: string[];
+  wallets: AllRainbowWallets | null;
+  cachedENS?: boolean;
+};
 
-async function refreshWalletsInfo({ wallets, cachedENS }: GetENSInfoProps) {
+async function refreshWalletsInfo({ addresses, wallets, cachedENS }: GetENSInfoProps) {
   if (!wallets) {
     throw new Error(`No wallets`);
   }
@@ -628,6 +643,10 @@ async function refreshWalletsInfo({ wallets, cachedENS }: GetENSInfoProps) {
     Object.entries(wallets).map(async ([key, wallet]) => {
       const newAddresses = await Promise.all(
         wallet.addresses.map(async ogAccount => {
+          if (addresses && !addresses.includes(ogAccount.address)) {
+            // skip update if we are filtering down to specific addresses
+            return ogAccount;
+          }
           const account = await refreshAccountInfo(ogAccount, cachedENS);
           updatedWalletNames[account.address] = account.label;
           return account;
@@ -647,12 +666,20 @@ async function refreshWalletsInfo({ wallets, cachedENS }: GetENSInfoProps) {
   };
 }
 
+export function getDefaultLabel(address: string) {
+  const abbreviatedAddress = addressAbbreviation(address, 4, 4);
+  const defaultEmoji = addressHashedEmoji(address);
+  return {
+    defaultLabel: `${defaultEmoji} ${abbreviatedAddress}`,
+    defaultEmoji,
+    abbreviatedAddress,
+  };
+}
+
 // this isn't really our primary way of updating account info, and when people pull to refresh
 // they get new info, so for ENS related stuff we can just check if not valid hex + has image
-async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS: boolean | 'force' = false): Promise<RainbowAccount> {
-  const abbreviatedAddress = addressAbbreviation(accountIn.address, 4, 4);
-  const defaultEmoji = addressHashedEmoji(accountIn.address);
-  const defaultLabel = `${defaultEmoji} ${abbreviatedAddress}`;
+async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS = false): Promise<RainbowAccount> {
+  const { abbreviatedAddress, defaultEmoji, defaultLabel } = getDefaultLabel(accountIn.address);
   const formattedLabel = accountIn.label || defaultLabel;
   const hasEmoji = Boolean(returnStringFirstEmoji(formattedLabel));
   const account = {
@@ -661,15 +688,15 @@ async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS: boolean 
   };
 
   const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress;
-  const hasEnoughData = typeof account.ens === 'string' || !account.image;
+  const hasEnoughData = typeof account.ens === 'string';
   const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
 
-  // some potential memoization wins downstream
-  if (dequal(accountIn, account)) {
-    return accountIn;
-  }
-
   if (shouldCacheAccount) {
+    // some potential memoization wins downstream
+    if (dequal(accountIn, account)) {
+      return accountIn;
+    }
+
     return account;
   }
 

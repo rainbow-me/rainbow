@@ -36,6 +36,7 @@ const getWalletColor = (
   if (!webProfile) return null;
   if (webProfile?.accountColor) return webProfile?.accountColor;
   if (forceColor) return forceColor;
+  if (profile?.color) return profile.color;
   const addressHashedColor = profileUtils.addressHashedColorIndex(address);
   if (isNewProfile) return addressHashedColor;
   return profile?.color ?? addressHashedColor;

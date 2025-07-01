@@ -21,9 +21,16 @@ export const refreshAccountData = async () => {
   refetchWalletSummary();
   queryClient.invalidateQueries(createQueryKey('nfts', { address: accountAddress }));
 
+  setTimeout(() => {
+    // lazy refresh of all wallets, but don't hold the refresh indicator for it
+    void refreshWalletInfo();
+    // start it a bit after the others so it doesn't compete for network, but not after
+    // so it's not too late
+  }, 200);
+
   await Promise.all([
     delay(MIN_REFRESH_DURATION),
-    refreshWalletInfo(),
+    refreshWalletInfo({ addresses: [accountAddress] }),
     userAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),

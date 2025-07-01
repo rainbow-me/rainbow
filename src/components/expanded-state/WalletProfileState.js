@@ -5,7 +5,7 @@ import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getDefaultLabel } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
 import lang from 'i18n-js';
@@ -13,16 +13,17 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 
-export default function WalletProfileState({
-  actionType,
-  address,
-  isNewProfile,
-  onCancel,
-  onCloseModal,
-  profile,
-  forceColor,
-  isFromSettings = true,
-}) {
+export default function WalletProfileState(props) {
+  const {
+    actionType,
+    address,
+    isNewProfile,
+    onCancel,
+    onCloseModal,
+    profile,
+    forceColor,
+    isFromSettings = true,
+  } = props
   const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
   const { getWebProfile } = useUpdateEmoji();
@@ -35,16 +36,22 @@ export default function WalletProfileState({
   } = useMemo(() => {
     const webProfileData = getWalletProfileMeta(address, profile, webProfile, isNewProfile, forceColor);
     const accountInfo = isValidHex(address) ? getAccountProfileInfo({ address }) : undefined;
+    const { abbreviatedAddress } = getDefaultLabel(address)
+
+    const nameIn = removeFirstEmojiFromString(accountInfo?.accountName ?? profile?.name)
+    // if it's the default address leave it empty for easier changing
+    const name = nameIn === abbreviatedAddress ? '' : nameIn
 
     return {
       color: accountInfo?.accountColor ?? webProfileData.color,
       emoji: accountInfo?.accountSymbol ?? webProfileData.emoji,
-      name: accountInfo?.accountName ?? profile?.name,
+      name,
       profileImage: accountInfo?.accountImage ?? profile?.image,
+      abbreviatedAddress,
     };
   }, [address, forceColor, isNewProfile, profile, webProfile]);
 
-  const [value, setValue] = useState(name ? removeFirstEmojiFromString(name) : '');
+  const [value, setValue] = useState(name);
 
   const accentColor = colors.avatarBackgrounds[nameColor];
 
@@ -63,7 +70,7 @@ export default function WalletProfileState({
       canceled: false,
       color: typeof nameColor === 'string' ? profileUtils.colorHexToIndex(nameColor) : nameColor,
       image: profileImage,
-      name: value,
+      name: value === '' ? name : value,
     });
     const callback = async () => {
       goBack();
