@@ -10,6 +10,7 @@ import { CandlestickChart } from '../candlestick-charts/CandlestickChart';
 import { colors } from '@/styles';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { formatTimestamp } from '@/worklets/dates';
+import { useAppSettingsStore } from '@/state/appSettings/appSettingsStore';
 
 const translations = {
   noChartData: i18n.t(i18n.l.expanded_state.chart.no_chart_data),
@@ -107,8 +108,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   const isChartGestureActive = useSharedValue(false);
   const { width: screenWidth } = useWindowDimensions();
 
-  // TODO: move to a new settings store
-  const [chartType, setChartType] = useState<ChartType>(ChartTypes.LINE);
+  const chartType = useAppSettingsStore(state => state.chartType);
   const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>('hour');
 
   const selectedTimespanLabel = useMemo(() => {
@@ -146,7 +146,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
     ];
 
     setSelectedTimespan(newchartTypeEquivalentTimespan as ChartTimespan);
-    setChartType(chartType === ChartTypes.LINE ? ChartTypes.CANDLESTICK : ChartTypes.LINE);
+    useAppSettingsStore.getState().toggleChartType();
   }, [selectedTimespan, chartType]);
 
   const chartHeaderStyle = useAnimatedStyle(() => {
