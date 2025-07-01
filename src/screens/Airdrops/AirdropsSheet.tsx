@@ -162,7 +162,6 @@ const AirdropsList = () => {
       maintainVisibleContentPosition
       onEndReached={!airdrops || airdrops.length < INITIAL_PAGE_SIZE ? undefined : fetchNextPage}
       recycleItems
-      removeClippedSubviews
       renderItem={renderItem}
       renderScrollComponent={ListScrollView}
       scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}

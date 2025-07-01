@@ -1,30 +1,31 @@
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
+import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
-import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { useRecoilValue } from 'recoil';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
-import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
-import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
-import Routes from '@/navigation/Routes';
-import { useWalletCohort } from '@/hooks/useWalletCohort';
-import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { useInitializeWalletAndSetParams } from '@/hooks/useInitiailizeWalletAndSetParams';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
-import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
-import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import { InteractionManager } from 'react-native';
+import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
+import { useWalletCohort } from '@/hooks/useWalletCohort';
+import Routes from '@/navigation/Routes';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { addSubscribedTokens, removeSubscribedTokens } from '@/state/liveTokens/liveTokensStore';
 import { debounce } from 'lodash';
-import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useRoute } from '@react-navigation/native';
+import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
+import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
+import { InteractionManager } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRecoilValue } from 'recoil';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -59,7 +60,8 @@ function extractTokenRowIds(items: CellTypes[]) {
 }
 
 function WalletScreen() {
-  const { network: currentNetwork, accountAddress } = useAccountSettings();
+  const { network: currentNetwork } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
   const route = useRoute();
 

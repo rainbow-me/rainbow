@@ -1,5 +1,6 @@
 import React, { useCallback, forwardRef, useImperativeHandle, useState } from 'react';
-import { AnimatedText, AnimatedTextProps, Box, Text, useTextStyle } from '@/design-system';
+import { AnimatedText, Box, Text, useTextStyle } from '@/design-system';
+import { AnimatedTextChildProps } from '@/design-system/components/Text/AnimatedText';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import Animated, {
   withTiming,
@@ -290,7 +291,7 @@ const LabelContent = ({
   title,
   titleContainerStyle,
 }: {
-  errorLabel: AnimatedTextProps['children'];
+  errorLabel: AnimatedTextChildProps['children'];
   icon: React.ReactNode;
   isSubtitleVisible: boolean;
   labelPosition: 'left' | 'right';

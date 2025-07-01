@@ -14,6 +14,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { useExperimentalFlag } from '@/config';
 import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useSharedValue } from 'react-native-reanimated';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -23,6 +24,7 @@ const ProfileScreenPage = styled(Page)({
 export default function ProfileScreen() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
   const enableCandlestickCharts = useExperimentalFlag('Candlestick Charts');
+  const isChartGestureActive = useSharedValue(false);
 
   return (
     <ProfileScreenPage
@@ -45,7 +47,7 @@ export default function ProfileScreen() {
 
       {enableCandlestickCharts ? (
         <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center', paddingBottom: 100 }}>
-          <CandlestickChart />
+          <CandlestickChart isChartGestureActive={isChartGestureActive} />
         </View>
       ) : (
         <ActivityList />

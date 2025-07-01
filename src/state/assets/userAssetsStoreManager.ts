@@ -4,7 +4,7 @@ import { SupportedCurrencyKey } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { UserAssetsStoreType } from './types';
 
-type StoreManagerState = {
+export type StoreManagerState = {
   address: Address | string | null;
   cachedStore: UserAssetsStoreType | null;
   currency: SupportedCurrencyKey;

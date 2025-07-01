@@ -1,4 +1,4 @@
-import React, { ElementRef, forwardRef, useMemo } from 'react';
+import React, { ElementRef, ReactNode, Ref, RefAttributes, forwardRef, useMemo } from 'react';
 import { StyleProp, TextStyle } from 'react-native';
 import AnimateableText from 'react-native-animateable-text';
 import { DerivedValue, SharedValue, useAnimatedProps } from 'react-native-reanimated';
@@ -14,46 +14,38 @@ export type SharedOrDerivedValueText =
   | (SharedValue<string | undefined> | DerivedValue<string | undefined>)
   | (SharedValue<string | null | undefined> | DerivedValue<string | null | undefined>);
 
-export type AnimatedTextProps = {
+export type AnimatedTextProps<T extends SharedValue | DerivedValue = SharedValue | DerivedValue> = {
   align?: 'center' | 'left' | 'right';
-  children?: SharedOrDerivedValueText | string | null | undefined;
   color?: TextColor | CustomColor;
   ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip' | undefined;
   numberOfLines?: number;
   selectable?: boolean;
   size: TextSize;
-  /**
-   * @deprecated
-   * Use `children` instead, which now accepts either a string or a shared value that holds a string.
-   */
-  staticText?: string;
   style?: StyleProp<TextStyle>;
   tabularNumbers?: boolean;
-  /**
-   * @deprecated
-   * You can now pass in a value like this:
-   *
-   * ```
-   * <AnimatedText>
-   *   {derivedOrSharedValue}
-   * </AnimatedText>
-   * ```
-   *
-   * `derivedOrSharedValue` should be a Reanimated shared or derived value.
-   *
-   * To create a derived value, use the `useDerivedValue` hook from 'react-native-reanimated'.
-   * For example:
-   * ```
-   * const text = useDerivedValue(() => `Hello ${someOtherValue.value}`);
-   * ```
-   **/
-  text?: SharedOrDerivedValueText;
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
+} & (AnimatedTextChildProps | AnimatedTextSelectorProps<T>);
+
+export type AnimatedTextChildProps = {
+  children: SharedOrDerivedValueText | string | null | undefined;
+  selector?: undefined;
 };
 
-export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, AnimatedTextProps>(function Text(
+export type AnimatedTextSelectorProps<T extends SharedValue | DerivedValue> = {
+  children: T;
+  /**
+   * A worklet function that selects text from a shared value provided via `children`.
+   */
+  selector: (sharedValue: T) => string | null | undefined;
+};
+
+const typedForwardRef: <T extends SharedValue | DerivedValue>(
+  render: (props: AnimatedTextProps<T>, ref: Ref<ElementRef<typeof AnimateableText>>) => ReactNode
+) => (props: AnimatedTextProps<T> & RefAttributes<ElementRef<typeof AnimateableText>>) => ReactNode = forwardRef;
+
+export const AnimatedText = typedForwardRef(function AnimatedText<T extends SharedValue | DerivedValue>(
   {
     align,
     children,
@@ -61,16 +53,15 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
     ellipsizeMode,
     numberOfLines,
     selectable,
+    selector,
     size,
-    staticText,
+    style,
     tabularNumbers,
     testID,
-    text,
     uppercase,
     weight,
-    style,
-  },
-  ref
+  }: AnimatedTextProps<T>,
+  ref: Ref<ElementRef<typeof AnimateableText>>
 ) {
   const textStyle = useTextStyle({
     align,
@@ -83,11 +74,9 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
 
   const lineHeightFixNode = useMemo(() => createLineHeightFixNode(textStyle.lineHeight), [textStyle]);
 
-  const animatedText = useAnimatedProps(() => {
-    return {
-      text: typeof children === 'string' ? children : children?.value ?? text?.value ?? staticText ?? '',
-    };
-  });
+  const animatedText = useAnimatedProps(() => ({
+    text: (selector ? selector(children) : typeof children === 'string' ? children : children?.value) ?? '',
+  }));
 
   return (
     <AnimateableText
@@ -97,7 +86,7 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
       ellipsizeMode={ellipsizeMode}
       ref={ref}
       selectable={selectable}
-      style={[textStyle, style || {}]}
+      style={style ? [textStyle, style] : textStyle}
       testID={testID}
     >
       {lineHeightFixNode}

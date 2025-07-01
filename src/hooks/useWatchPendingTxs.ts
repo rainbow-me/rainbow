@@ -1,5 +1,4 @@
 import { useMemo, useCallback } from 'react';
-import useAccountSettings from './useAccountSettings';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
@@ -11,6 +10,7 @@ import { Address } from 'viem';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const storePendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions);
@@ -18,7 +18,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
   const pendingTransactions = useMemo(() => storePendingTransactions[address] || [], [address, storePendingTransactions]);
 
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const refreshAssets = useCallback(() => {
     userAssetsStore.getState().fetch(undefined, { force: true });

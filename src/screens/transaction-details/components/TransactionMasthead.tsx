@@ -25,7 +25,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { isLowerCaseMatch } from '@/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { useAccountSettings, useContacts, useUserAccounts } from '@/hooks';
+import { useContacts, useUserAccounts } from '@/hooks';
 import { useTiming } from 'react-native-redash';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -35,6 +35,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import * as lang from '@/languages';
 import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -79,7 +80,7 @@ function CurrencyTile({
   address?: string;
   onAddressCopied: () => void;
 }) {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const theme = useTheme();
   const { contacts } = useContacts();
 

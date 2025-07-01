@@ -16,7 +16,7 @@ import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { updateTransaction } from '@/state/pendingTransactions';
-import { useIsHardwareWallet } from '@/state/wallets/walletsStore';
+import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -112,7 +112,8 @@ const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {
 
 export default function SpeedUpAndCancelSheet() {
   const { navigate, goBack } = useNavigation();
-  const { accountAddress, chainId } = useAccountSettings();
+  const { chainId } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
