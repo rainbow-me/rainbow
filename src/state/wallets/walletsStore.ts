@@ -638,9 +638,9 @@ async function refreshAccountInfo(
   account: RainbowAccount,
   cachedENS = false
 ): Promise<Partial<Pick<RainbowAccount, 'ens' | 'image' | 'label'>> | null> {
-  const { abbreviatedAddress, defaultLabel } = getDefaultLabel(account.address);
   const hasEnoughData = account.ens !== undefined;
   const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
+  const defaultLabel = account.ens || account.address;
 
   if (shouldCacheAccount) {
     if (!account.label) {
@@ -657,7 +657,7 @@ async function refreshAccountInfo(
   if (ens) {
     const avatar = await fetchENSAvatarWithRetry(ens);
     const newImage = avatar?.imageUrl || null;
-    const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress || account.label === account.address;
+    const hasDefaultLabel = account.label === account.ens || account.label === account.address;
 
     const shouldSetLabelToENS =
       !account.label ||
@@ -675,17 +675,6 @@ async function refreshAccountInfo(
   // mark checked but not found
   return {
     ens: null,
-  };
-}
-
-export function getDefaultLabel(address: string) {
-  const isHex = isValidHex(address);
-  const abbreviatedAddress = isHex ? addressAbbreviation(address, 4, 4) : address;
-  const defaultEmoji = addressHashedEmoji(address);
-  return {
-    defaultLabel: defaultEmoji ? `${defaultEmoji} ${abbreviatedAddress}` : address,
-    defaultEmoji,
-    abbreviatedAddress,
   };
 }
 
