@@ -1,0 +1,27 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runFlow: ./Prepare.yaml
+- assertVisible:
+    id: welcome-screen
+- tapOn: '.*Get a new wallet'
+- runFlow: ../utils/MaybeSetupPin.yaml
+
+# Dismiss the backup sheet
+- runFlow:
+    when:
+      visible:
+        id: backup-sheet
+    commands:
+      - tapOn: 'Manual backup'
+      - tapOn: 'Done'
+
+- stopApp
+- launchApp
+- runFlow:
+    when:
+      visible: 'Notifications'
+    commands:
+      - tapOn: 'Not Now'
