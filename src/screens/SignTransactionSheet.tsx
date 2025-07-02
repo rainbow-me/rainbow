@@ -214,7 +214,7 @@ export const SignTransactionSheet = () => {
 
   const accountInfo = useMemo(() => {
     const selectedWallet = wallets ? getWalletForAddress(addressToUse) : undefined;
-    const profileInfo = getAccountProfileInfo(ensureValidHex(addressToUse));
+    const profileInfo = getAccountProfileInfo(addressToUse);
     return {
       ...profileInfo,
       address: addressToUse,

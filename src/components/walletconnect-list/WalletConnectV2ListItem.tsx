@@ -22,6 +22,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { TruncatedText } from '../text';
+import { isValidHex } from '@/handlers/web3';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -65,9 +66,8 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   }, [session]);
 
   useEffect(() => {
-    if (address) {
-      const wallet = getWalletForAddress(address);
-      setAccountInfo(getAccountProfileInfo({ address, wallet }));
+    if (isValidHex(address)) {
+      setAccountInfo(getAccountProfileInfo(address));
     }
   }, [address]);
 
