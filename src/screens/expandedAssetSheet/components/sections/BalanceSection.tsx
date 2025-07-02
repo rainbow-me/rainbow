@@ -7,8 +7,7 @@ import { SheetSeparator } from '../shared/Separator';
 import Animated from 'react-native-reanimated';
 import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { TokenData } from '@/state/liveTokens/liveTokensStore';
-import { convertAmountAndPriceToNativeDisplay } from '@/helpers/utilities';
+import { getBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useAccountSettings } from '@/hooks';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { getSolidColorEquivalent } from '@/worklets/colors';
@@ -16,14 +15,13 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 export function BalanceSection() {
   const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
-  const tokenBalanceAmount = asset?.balance?.amount ?? '0';
+  const balanceAmount = asset?.balance?.amount ?? '0';
 
   const tokenBalanceSelector = useCallback(
     (token: TokenData) => {
-      const { display } = convertAmountAndPriceToNativeDisplay(tokenBalanceAmount, token.price, nativeCurrency);
-      return display;
+      return getBalance({ token, balanceAmount, nativeCurrency });
     },
-    [tokenBalanceAmount, nativeCurrency]
+    [balanceAmount, nativeCurrency]
   );
 
   const liveTokenBalance = useLiveTokenValue({

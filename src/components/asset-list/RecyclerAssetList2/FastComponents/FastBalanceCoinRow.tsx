@@ -13,8 +13,8 @@ import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
 import { Navigation } from '@/navigation';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { convertAmountAndPriceToNativeDisplay, toSignificantDigits } from '@/helpers/utilities';
-import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { toSignificantDigits } from '@/helpers/utilities';
+import { getBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -88,10 +88,9 @@ const MemoizedBalanceCoinRow = React.memo(
       }
     }, [item, maybeCallback]);
 
-    const tokenPriceSelector = useCallback(
+    const tokenBalanceSelector = useCallback(
       (token: TokenData) => {
-        const { display } = convertAmountAndPriceToNativeDisplay(tokenBalanceAmount, token.price, nativeCurrency);
-        return display;
+        return getBalance({ token, balanceAmount: tokenBalanceAmount, nativeCurrency });
       },
       [tokenBalanceAmount, nativeCurrency]
     );
@@ -121,7 +120,7 @@ const MemoizedBalanceCoinRow = React.memo(
                   </Text>
                 </View>
                 <LiveTokenText
-                  selector={tokenPriceSelector}
+                  selector={tokenBalanceSelector}
                   tokenId={uniqueId}
                   initialValueLastUpdated={priceUpdatedAt}
                   initialValue={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}

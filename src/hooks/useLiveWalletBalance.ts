@@ -1,4 +1,4 @@
-import { add, convertAmountToNativeDisplay, multiply, subtract } from '@/helpers/utilities';
+import { add, convertAmountToNativeDisplay, greaterThan, multiply, subtract } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
@@ -26,7 +26,12 @@ export const useLiveWalletBalance = createDerivedStore(
 
         if (userAsset && canUseLivePrice) {
           // override the asset’s price with the live token price
-          const liveAssetBalance = multiply(token.price, userAsset.balance.amount);
+          let liveAssetBalance = multiply(token.price, userAsset.balance.amount);
+
+          if (greaterThan(liveAssetBalance, token.reliability.metadata.liquidityCap)) {
+            liveAssetBalance = token.reliability.metadata.liquidityCap;
+          }
+
           const assetBalanceDifference = subtract(liveAssetBalance, userAsset.native.balance.amount);
           valueDifference = add(valueDifference, assetBalanceDifference);
         }
