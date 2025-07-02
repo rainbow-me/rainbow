@@ -115,7 +115,8 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
-  ens?: string;
+  emoji?: string;
+  ens?: string | null;
   image?: string | null;
 }
 

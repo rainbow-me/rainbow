@@ -57,7 +57,9 @@ interface WalletsState {
   updateWallets: (props: { wallets?: AllRainbowWallets; selected?: RainbowWallet; accountAddress?: Address }) => Promise<void>;
   mapUpdateWallets: (getNewWallet: (wallet: RainbowWallet) => RainbowWallet) => Promise<void>;
 
-  updateAccount: (walletId: string, account: Partial<RainbowAccount> & Pick<RainbowAccount, 'address'>) => RainbowWallet | null;
+  updateAccountInfo: (
+    props: { address: Address; walletId: string } & Partial<Pick<RainbowAccount, 'avatar' | 'color' | 'emoji' | 'image' | 'label'>>
+  ) => void;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -147,44 +149,33 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    updateAccount(walletId, account) {
-      const { wallets } = get();
-      const wallet = wallets[walletId];
-      const accounts = wallets[walletId].addresses;
-      const accountIndex = accounts.findIndex(a => isLowerCaseMatch(a.address, account.address));
-      const foundAccount = accounts[accountIndex];
+    updateAccountInfo({ address, avatar, color, emoji, image, label, walletId }) {
+      // avoid await - this is label/color/etc, not critical for keychain
+      void get().mapUpdateWallets(wallet => {
+        if (wallet.id !== walletId) {
+          return wallet;
+        }
 
-      if (!foundAccount) {
-        logger.warn(`updateAccount failed, no account! ${walletId} ${account?.address}`);
-        return null;
-      }
+        const updatedMetadata: Partial<Pick<RainbowAccount, 'avatar' | 'color' | 'image' | 'label'>> = {};
 
-      const updatedAccount = {
-        ...foundAccount,
-        ...account,
-      };
+        if (avatar !== undefined) updatedMetadata.avatar = avatar;
+        if (color !== undefined) updatedMetadata.color = color;
+        if (image !== undefined) updatedMetadata.image = image;
 
-      if (!account.label) {
-        const { defaultLabel } = getDefaultLabel(account.address);
-        account.label = defaultLabel;
-      }
-
-      const updatedWallet = {
-        ...wallet,
-        addresses: accounts.map((account, index) => {
-          return index === accountIndex ? updatedAccount : account;
-        }),
-      };
-
-      const updatedWallets = {
-        ...wallets,
-        [walletId]: updatedWallet,
-      } satisfies AllRainbowWallets;
-
-      // avoid await - this is label/color/etc, not critical and not likely to race
-      void get().updateWallets({ wallets: updatedWallets });
-
-      return updatedWallet;
+        return {
+          ...wallet,
+          addresses: wallet.addresses.map(account =>
+            account.address === address
+              ? {
+                  ...account,
+                  ...updatedMetadata,
+                  emoji: emoji ?? ((label && returnStringFirstEmoji(label)) || account.emoji),
+                  label: formatAccountLabel({ address, label, ens: account.ens }),
+                }
+              : account
+          ),
+        };
+      });
     },
 
     refreshWalletInfo: async props => {
@@ -732,6 +723,22 @@ export const getAccountProfileInfo = (props: { address: string; wallet?: Rainbow
   return getAccountProfileInfoFromState(props, useWalletsStore.getState());
 };
 
+export function formatAccountLabel({
+  address,
+  ens,
+  label,
+}: {
+  address: Address | string;
+  ens: string | null | undefined;
+  label: string | null | undefined;
+}): string {
+  const firstEmoji = label ? returnStringFirstEmoji(label) : null;
+  const labelWithoutEmoji = firstEmoji && label ? removeFirstEmojiFromString(label) : label;
+  const formattedLabel = labelWithoutEmoji === address ? undefined : labelWithoutEmoji;
+
+  return formattedLabel || ens || '';
+}
+
 const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
   const wallet = props.wallet || state.selected;
   const address = props.address || state.accountAddress;
@@ -796,5 +803,5 @@ export const {
   setWalletReady,
   setAccountAddress,
   updateWallets,
-  updateAccount,
+  updateAccountInfo,
 } = useWalletsStore.getState();
