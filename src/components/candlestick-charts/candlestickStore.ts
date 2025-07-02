@@ -1,6 +1,5 @@
 import qs from 'qs';
 import { NativeCurrencyKey } from '@/entities';
-import { getGatewayHttpClient } from '@/resources/gateway/gatewayClient';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -8,6 +7,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { time } from '@/utils';
 import { Bar, CandleResolution, GetCandleChartRequest, CandlestickChartResponse } from './types';
 import { transformApiResponseToBars } from './utils';
+import { getPlatformClient } from '@/resources/platform/client';
 
 const CANDLESTICK_ENDPOINT = '/tokens/charts/GetCandleChart';
 const INITIAL_BAR_COUNT = 200;
@@ -86,12 +86,12 @@ function buildQueryParams(request: GetCandleChartRequest): string {
 }
 
 async function fetchCandlestickData(params: CandlestickParams, abortController: AbortController | null): Promise<Bar[]> {
-  const gatewayClient = getGatewayHttpClient();
+  const platformClient = getPlatformClient();
   const request = buildCandleChartRequest(params);
   const queryParams = buildQueryParams(request);
 
   const fullUrl = `${CANDLESTICK_ENDPOINT}?${queryParams}`;
-  const response = await gatewayClient.get<CandlestickChartResponse>(fullUrl, { abortController });
+  const response = await platformClient.get<CandlestickChartResponse>(fullUrl, { abortController });
 
   if (!response.data || !response.data.result) {
     throw new Error('Invalid response structure from candlestick API');
