@@ -70,7 +70,11 @@ interface WalletsState {
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
-  createAccount: (data: { id: RainbowWallet['id']; name: RainbowWallet['name']; color: RainbowWallet['color'] | null }) => Promise<void>;
+  createAccountInExistingWallet: (data: {
+    id: RainbowWallet['id'];
+    name: RainbowWallet['name'];
+    color: RainbowWallet['color'] | null;
+  }) => Promise<void>;
 
   setAllWalletsWithIdsAsBackedUp: (
     ids: RainbowWallet['id'][],
@@ -116,15 +120,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         selected: wallet,
       });
 
-      const keychainPromise = Promise.all(
-        address ? [saveAddress(accountAddress), setSelectedWalletInKeychain(wallet)] : [setSelectedWalletInKeychain(wallet)]
-      ).then(() => {
-        return;
-      });
+      void refreshWalletInfo({ addresses: [accountAddress], useCachedENS: true });
 
-      refreshWalletInfo({ addresses: [accountAddress], useCachedENS: true });
-
-      return keychainPromise;
+      return saveSelectedWalletInKeychain(wallet, accountAddress);
     },
 
     walletNames: {},
@@ -301,11 +299,11 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       }
     },
 
-    createAccount: async ({ id, name, color }) => {
+    createAccountInExistingWallet: async ({ id, name, color }) => {
       const { wallets } = get();
 
       if (!wallets[id]) {
-        logger.error(new RainbowError(`[walletsStore - createAccount]: Wallet ${id} not found`));
+        logger.error(new RainbowError(`[walletsStore - createAccountInExistingWallet]: Wallet ${id} not found`));
       }
 
       let index = 0;
@@ -316,12 +314,12 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       const newIndex = index + 1;
       const account = await generateAccount(id, newIndex);
       if (!account) {
-        throw new Error('[walletsStore - createAccount]: No account generated');
+        throw new Error('[walletsStore - createAccountInExistingWallet]: No account generated');
       }
 
       const walletColorIndex = color !== null ? color : addressHashedColorIndex(account.address);
       if (walletColorIndex == null) {
-        throw new Error('[walletsStore - createAccount]: No wallet color index');
+        throw new Error(`[walletsStore - createAccountInExistingWallet]: No wallet color index: ${walletColorIndex}`);
       }
 
       set(state => {
@@ -357,6 +355,8 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
         accountSymbol: addressHashedEmoji(account.address),
       });
+
+      return saveSelectedWalletInKeychain(get().wallets[id], account.address);
     },
 
     setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {
@@ -834,12 +834,16 @@ export function formatAccountLabel({
   return formattedLabel || ens || '';
 }
 
+async function saveSelectedWalletInKeychain(wallet: RainbowWallet, accountAddress?: string) {
+  await Promise.all([accountAddress ? saveAddress(accountAddress) : null, setSelectedWalletInKeychain(wallet)]);
+}
+
 // export static functions
 export const {
   clearWalletState,
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
-  createAccount,
+  createAccountInExistingWallet,
   getAccountProfileInfo,
   getIsDamagedWallet,
   getIsHardwareWallet,

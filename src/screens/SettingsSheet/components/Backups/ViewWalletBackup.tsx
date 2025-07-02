@@ -30,8 +30,7 @@ import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { initializeWallet } from '@/state/wallets/initializeWallet';
-import { createAccount, formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
+import { createAccountInExistingWallet, formatAccountLabel, getIsDamagedWallet, useWallet } from '@/state/wallets/walletsStore';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { format } from 'date-fns';
@@ -188,17 +187,14 @@ const ViewWalletBackup = () => {
               try {
                 // If we found it and it's not damaged use it to create the new account
                 if (wallet && !wallet.damaged) {
-                  await createAccount({
+                  void createAccountInExistingWallet({
                     id: wallet.id,
                     color,
                     name,
                   });
-                  await initializeWallet();
                 }
               } catch (e) {
-                logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
-                  error: e,
-                });
+                logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`, e));
                 if (getIsDamagedWallet()) {
                   setTimeout(() => {
                     showWalletErrorAlert();

@@ -9,7 +9,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createWallet, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
-import { createAccount, loadWallets, useWallets } from '@/state/wallets/walletsStore';
+import { createAccountInExistingWallet, loadWallets, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { profileUtils } from '@/utils';
 import { abbreviateEnsForDisplay, formatAddressForDisplay } from '@/utils/abbreviations';
@@ -35,7 +35,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
           await initializeWallet();
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (error) {
-          logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), { error });
+          logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', error), { error });
         }
       },
       profile: { color: null, name: `` },
@@ -106,18 +106,19 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
       actionType: 'Create',
       asset: [],
       isNewProfile: true,
-      onCloseModal: async ({ name, color }) => {
+      onCloseModal: async ({ name = '', color = null }) => {
         try {
           if (wallet.damaged) throw new Error('Wallet is damaged');
-          createAccount({
+
+          void createAccountInExistingWallet({
             id: wallet.id,
             color,
             name,
           });
-          await initializeWallet();
+
           navigate(Routes.WALLET_SCREEN, {}, true);
         } catch (e) {
-          logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), { error: e });
+          logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', e));
           showWalletErrorAlert();
         }
       },

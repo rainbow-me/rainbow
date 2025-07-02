@@ -54,7 +54,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     userPin,
   } = props;
 
-  const network = store.getState().settings.network;
   let walletStatus: WalletStatus = 'unknown';
   try {
     PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
@@ -79,7 +78,12 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     setIsSmallBalancesOpen(false);
 
     // Load the network first
-    await store.dispatch(settingsLoadNetwork());
+    let network = store.getState().settings.network;
+    if (!network) {
+      await store.dispatch(settingsLoadNetwork());
+      network = store.getState().settings.network;
+    }
+
     if (shouldCancel()) return null;
 
     const { isNew, walletAddress } = await walletInit({
