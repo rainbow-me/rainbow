@@ -541,6 +541,28 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
   }
 );
 
+export const useWallets = () => useWalletsStore(state => state.wallets);
+export const useWallet = (id: string) => useWallets()?.[id];
+export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
+export const getWallets = () => useWalletsStore.getState().wallets;
+export const getSelectedWallet = () => useWalletsStore.getState().selected;
+export const getWalletReady = () => useWalletsStore.getState().walletReady;
+
+export const getWalletAddresses = (wallets: AllRainbowWallets) => {
+  return Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address));
+};
+
+export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
+export const useSelectedWallet = () => useWalletsStore(state => state.selected);
+export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
+export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
+export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamagedWallet());
+
+export const useWalletAddresses = () => {
+  const wallets = useWallets();
+  return useMemo(() => getWalletAddresses(wallets || {}), [wallets]);
+};
+
 function mergeWallets(oldWallets: AllRainbowWallets, newWallets: AllRainbowWallets) {
   // prefer the latest state
   const next = { ...oldWallets };
@@ -613,17 +635,6 @@ async function getRefreshedWallets({ addresses, wallets, cachedENS }: GetENSInfo
   return updatedWallets;
 }
 
-export function getDefaultLabel(address: string) {
-  const isHex = isValidHex(address);
-  const abbreviatedAddress = isHex ? addressAbbreviation(address, 4, 4) : address;
-  const defaultEmoji = addressHashedEmoji(address);
-  return {
-    defaultLabel: defaultEmoji ? `${defaultEmoji} ${abbreviatedAddress}` : address,
-    defaultEmoji,
-    abbreviatedAddress,
-  };
-}
-
 async function refreshAccountInfo(
   account: RainbowAccount,
   cachedENS = false
@@ -660,36 +671,40 @@ async function refreshAccountInfo(
       ens,
       label: shouldSetLabelToENS ? ens : account.label,
     };
-  } else {
-    return {
-      ens: null,
-    };
   }
 
-  return account;
+  // mark checked but not found
+  return {
+    ens: null,
+  };
 }
 
-export const useWallets = () => useWalletsStore(state => state.wallets);
-export const useWallet = (id: string) => useWallets()?.[id];
-export const getAccountAddress = () => useWalletsStore.getState().accountAddress;
-export const getWallets = () => useWalletsStore.getState().wallets;
-export const getSelectedWallet = () => useWalletsStore.getState().selected;
-export const getWalletReady = () => useWalletsStore.getState().walletReady;
+export function getDefaultLabel(address: string) {
+  const isHex = isValidHex(address);
+  const abbreviatedAddress = isHex ? addressAbbreviation(address, 4, 4) : address;
+  const defaultEmoji = addressHashedEmoji(address);
+  return {
+    defaultLabel: defaultEmoji ? `${defaultEmoji} ${abbreviatedAddress}` : address,
+    defaultEmoji,
+    abbreviatedAddress,
+  };
+}
 
-export const getWalletAddresses = (wallets: AllRainbowWallets) => {
-  return Object.values(wallets || {}).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address));
-};
+export function formatAccountLabel({
+  address,
+  ens,
+  label,
+}: {
+  address: Address | string;
+  ens: string | null | undefined;
+  label: string | null | undefined;
+}): string {
+  const firstEmoji = label ? returnStringFirstEmoji(label) : null;
+  const labelWithoutEmoji = firstEmoji && label ? removeFirstEmojiFromString(label) : label;
+  const formattedLabel = labelWithoutEmoji === address ? undefined : labelWithoutEmoji;
 
-export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
-export const useSelectedWallet = () => useWalletsStore(state => state.selected);
-export const useIsReadOnlyWallet = () => useWalletsStore(state => state.getIsReadOnlyWallet());
-export const useIsHardwareWallet = () => useWalletsStore(state => state.getIsHardwareWallet());
-export const useIsDamagedWallet = () => useWalletsStore(state => state.getIsDamagedWallet());
-
-export const useWalletAddresses = () => {
-  const wallets = useWallets();
-  return useMemo(() => getWalletAddresses(wallets || {}), [wallets]);
-};
+  return formattedLabel || ens || '';
+}
 
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
@@ -719,22 +734,6 @@ export const useAccountProfileInfo = () => {
 export const getAccountProfileInfo = (props: { address: string; wallet?: RainbowWallet }) => {
   return getAccountProfileInfoFromState(props, useWalletsStore.getState());
 };
-
-export function formatAccountLabel({
-  address,
-  ens,
-  label,
-}: {
-  address: Address | string;
-  ens: string | null | undefined;
-  label: string | null | undefined;
-}): string {
-  const firstEmoji = label ? returnStringFirstEmoji(label) : null;
-  const labelWithoutEmoji = firstEmoji && label ? removeFirstEmojiFromString(label) : label;
-  const formattedLabel = labelWithoutEmoji === address ? undefined : labelWithoutEmoji;
-
-  return formattedLabel || ens || '';
-}
 
 const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
   const wallet = props.wallet || state.selected;
