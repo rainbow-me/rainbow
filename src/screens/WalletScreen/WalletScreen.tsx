@@ -1,30 +1,30 @@
 import React, { memo, useMemo } from 'react';
+import { useRecoilValue } from 'recoil';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
-import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
-import Routes from '@/navigation/Routes';
-import { useWalletCohort } from '@/hooks/useWalletCohort';
-import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useInitializeWalletAndSetParams } from '@/hooks/useInitializeWalletAndSetParams';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
-import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
-import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import { InteractionManager } from 'react-native';
+import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
+import { useWalletCohort } from '@/hooks/useWalletCohort';
+import Routes from '@/navigation/Routes';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { AppState } from '@/redux/store';
 import { useSelector } from 'react-redux';
 import { Network } from '@/state/backendNetworks/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
+import { PerformanceMeasureView } from '@shopify/react-native-performance';
+import { InteractionManager } from 'react-native';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (

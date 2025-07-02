@@ -130,6 +130,8 @@ export interface RainbowToken extends Asset {
   network: string;
   mainnet_address?: EthereumAddress;
   networks?: any;
+  isNativeAsset?: boolean;
+  icon_url?: string;
 }
 
 export interface IndexToken extends Asset {
