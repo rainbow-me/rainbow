@@ -1,6 +1,5 @@
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { RainbowAccount } from '@/model/wallet';
-import { updateAccount, useAccountAddress, useAccountProfileInfo, useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
+import { updateAccountInfo, useAccountAddress, useAccountProfileInfo, useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';
@@ -22,16 +21,16 @@ export default function useUpdateEmoji() {
       const existing = selectedWallet.addresses.find(singleAddress => isLowerCaseMatch(singleAddress.address, accountAddress));
       if (!existing) return;
 
-      const newAccount: RainbowAccount = {
-        ...existing,
-        ...(name && { label: name }),
-        ...(color !== undefined && { color }),
+      updateAccountInfo({
+        walletId: selectedWallet.id,
+        address: accountAddress,
+        label: name,
+        color,
         // We need to call this in order to make sure
         // the profile picture is removed in "Remove Photo" flow
         image: null,
-      };
+      });
 
-      await updateAccount(selectedWallet.id, newAccount);
       const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
       if (nextColor) {
         updateWebProfile(accountAddress, name, nextColor);

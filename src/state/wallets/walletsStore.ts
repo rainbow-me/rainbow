@@ -80,7 +80,7 @@ interface WalletsState {
   accountAddress: Address;
   setAccountAddress: (address: Address) => void;
 
-  getAccountProfileInfo: () => AccountProfileInfo;
+  getAccountProfileInfo: (address?: Address) => AccountProfileInfo;
 
   refreshWalletInfo: (props?: { cachedENS?: boolean; addresses?: string[] }) => Promise<void>;
 
@@ -200,11 +200,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    getAccountProfileInfo: () => {
+    getAccountProfileInfo: providedAddress => {
       const state = get();
-      const { getWalletWithAccount } = state;
-      const address = state.accountAddress;
-      const wallet = getWalletWithAccount(address);
+      const address = providedAddress || state.accountAddress;
+      const wallet = state.getWalletWithAccount(address);
       return getAccountProfileInfoFromState({ address, wallet }, state);
     },
 

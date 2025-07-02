@@ -196,11 +196,7 @@ export function WalletConnectApprovalSheet() {
 
   const approvalAccountInfo = useMemo(() => {
     if (!approvalAccount.wallet) return;
-
-    const approvalAccountInfo = getAccountProfileInfo({
-      wallet: approvalAccount.wallet,
-      address: approvalAccount.address,
-    });
+    const approvalAccountInfo = getAccountProfileInfo(approvalAccount.address);
     return {
       ...approvalAccountInfo,
       accountLabel: approvalAccountInfo.accountENS || approvalAccountInfo.accountName || approvalAccount.address,
