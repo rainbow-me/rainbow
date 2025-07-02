@@ -167,11 +167,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         ...account,
       };
 
-      const foundEmoji = returnStringFirstEmoji(updatedAccount.label);
-      const defaultEmoji = addressHashedEmoji(updatedAccount.address);
-
-      if (!foundEmoji) {
-        updatedAccount.label = `${defaultEmoji} ${updatedAccount.label}`;
+      if (!account.label) {
+        const { defaultLabel } = getDefaultLabel(account.address);
+        account.label = defaultLabel;
       }
 
       const updatedAccounts = accounts.map((account, index) => {
@@ -357,7 +355,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
-        // needs to get info if necessary (import from see)
         await updateWallets(wallets);
         await setSelectedWallet(selectedWallet, accountAddress ? ensureValidHex(accountAddress) : undefined);
 
@@ -667,10 +664,11 @@ async function refreshWalletsInfo({ addresses, wallets, cachedENS }: GetENSInfoP
 }
 
 export function getDefaultLabel(address: string) {
-  const abbreviatedAddress = addressAbbreviation(address, 4, 4);
-  const defaultEmoji = addressHashedEmoji(address);
+  const isHex = isValidHex(address);
+  const abbreviatedAddress = isHex ? addressAbbreviation(address, 4, 4) : address;
+  const defaultEmoji = isHex ? addressHashedEmoji(address) : null;
   return {
-    defaultLabel: `${defaultEmoji} ${abbreviatedAddress}`,
+    defaultLabel: defaultEmoji ? `${defaultEmoji} ${abbreviatedAddress}` : address,
     defaultEmoji,
     abbreviatedAddress,
   };
@@ -678,25 +676,15 @@ export function getDefaultLabel(address: string) {
 
 // this isn't really our primary way of updating account info, and when people pull to refresh
 // they get new info, so for ENS related stuff we can just check if not valid hex + has image
-async function refreshAccountInfo(accountIn: RainbowAccount, cachedENS = false): Promise<RainbowAccount> {
-  const { abbreviatedAddress, defaultEmoji, defaultLabel } = getDefaultLabel(accountIn.address);
-  const formattedLabel = accountIn.label || defaultLabel;
-  const hasEmoji = Boolean(returnStringFirstEmoji(formattedLabel));
-  const account = {
-    ...accountIn,
-    label: hasEmoji ? formattedLabel : `${defaultEmoji} ${formattedLabel}`,
-  };
+
+async function refreshAccountInfo(account: RainbowAccount, cachedENS = false): Promise<RainbowAccount> {
+  const { abbreviatedAddress, defaultLabel } = getDefaultLabel(account.address);
 
   const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress;
   const hasEnoughData = typeof account.ens === 'string';
   const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
 
   if (shouldCacheAccount) {
-    // some potential memoization wins downstream
-    if (dequal(accountIn, account)) {
-      return accountIn;
-    }
-
     return account;
   }
 
@@ -805,6 +793,7 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
     };
   }
 
+  console.log('account', account);
   const { label, color, image } = account;
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
   const accountENS = account.ens || '';

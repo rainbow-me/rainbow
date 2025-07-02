@@ -1,11 +1,11 @@
 import { analytics } from '@/analytics';
 import { isValidHex } from '@/handlers/web3';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getAccountProfileInfo, getDefaultLabel } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
 import lang from 'i18n-js';
@@ -27,20 +27,20 @@ export default function WalletProfileState(props) {
   } = useMemo(() => {
     const webProfileData = getWalletProfileMeta(address, profile, webProfile, isNewProfile, forceColor);
     const accountInfo = isValidHex(address) ? getAccountProfileInfo({ address }) : undefined;
-    const { abbreviatedAddress } = getDefaultLabel(address);
 
-    const nameIn = removeFirstEmojiFromString(accountInfo?.accountName ?? profile?.name);
-    // if it's the default address leave it empty for easier changing
-    const name = nameIn === abbreviatedAddress ? '' : nameIn;
+    const nameIn = profile?.name ?? accountInfo?.accountName
+    const emoji = returnStringFirstEmoji(nameIn)
+    const name = removeFirstEmojiFromString(nameIn)
 
     return {
-      color: accountInfo?.accountColor ?? webProfileData.color,
-      emoji: accountInfo?.accountSymbol ?? webProfileData.emoji,
+      color: profile?.color ?? accountInfo?.accountColor ?? webProfileData.color,
+      emoji: emoji || (accountInfo?.accountSymbol ?? webProfileData.emoji),
       name,
-      profileImage: accountInfo?.accountImage ?? profile?.image,
-      abbreviatedAddress,
+      profileImage: profile?.image ?? accountInfo?.accountImage,
     };
   }, [address, forceColor, isNewProfile, profile, webProfile]);
+
+
 
   const [value, setValue] = useState(name);
 
@@ -75,7 +75,7 @@ export default function WalletProfileState(props) {
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
     }
-  }, [actionType, nameColor, goBack, isNewProfile, navigate, onCloseModal, profileImage, value, isFromSettings]);
+  }, [onCloseModal, nameColor, profileImage, value, name, nameEmoji, actionType, goBack, isNewProfile, isFromSettings, navigate]);
 
   useEffect(() => {
     const getProfile = async () => {
