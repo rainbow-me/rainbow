@@ -504,7 +504,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           const lastSelected = newWallets.find(w => w.id === get().selected?.id);
           const newSelected = lastSelected?.damaged ? newWallets.find(w => !w.damaged) : lastSelected;
 
-          get().updateWallet({ wallets: walletsMarkedDamaged, selected: newSelected });
+          get().updateWallets({ wallets: walletsMarkedDamaged, selected: newSelected });
         }
 
         saveKeychainIntegrityState('done');
