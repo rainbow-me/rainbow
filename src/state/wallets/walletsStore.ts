@@ -731,49 +731,41 @@ export const useAccountProfileInfo = () => {
   }, [colors.avatarBackgrounds, info]);
 };
 
-export const getAccountProfileInfo = (props: { address: string; wallet?: RainbowWallet }) => {
-  return getAccountProfileInfoFromState(props, useWalletsStore.getState());
-};
-
-const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
+const getAccountProfileInfoFromState = (props: { address: Address; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
   const wallet = props.wallet || state.selected;
   const address = props.address || state.accountAddress;
 
-  if (!wallet || !address) {
+  if (!wallet) {
     return {
       accountAddress: address,
-      accountColor: 0,
+      accountColor: addressHashedColorIndex(address) ?? 0,
+      accountSymbol: addressHashedEmoji(address) ?? undefined,
     };
   }
 
-  let account = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
+  const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
 
-  if (!account) {
-    // find right account
-    for (const key in state.wallets) {
-      account = state.wallets[key].addresses.find(account => isLowerCaseMatch(account.address, address));
-      if (account) break;
-    }
-  }
-
-  if (!account) {
+  if (!selectedAccount) {
     return {
       accountAddress: address,
-      accountColor: addressHashedColorIndex(ensureValidHex(address)) || 0,
+      accountColor: addressHashedColorIndex(address) ?? 0,
+      accountSymbol: addressHashedEmoji(address) ?? undefined,
     };
   }
 
-  const { label, color, image } = account;
-  const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-  const accountENS = account.ens || '';
-  const accountName = labelWithoutEmoji || accountENS || addressAbbreviation(address, 4, 4);
-  const accountSymbol = returnStringFirstEmoji(label) || addressHashedEmoji(address) || '🌈';
-  const accountColor = color;
+  const { label, color, emoji, ens, image } = selectedAccount;
+
+  const firstEmoji = label ? returnStringFirstEmoji(label) : null;
+  const labelWithoutEmoji = firstEmoji && label ? removeFirstEmojiFromString(label) : label;
+
+  const accountENS = ens || undefined;
+  const accountName = labelWithoutEmoji || accountENS || '';
+  const accountSymbol = emoji || addressHashedEmoji(address) || undefined;
   const accountImage = image && isValidImagePath(image) ? image : null;
 
   return {
     accountAddress: address,
-    accountColor,
+    accountColor: color,
     accountENS,
     accountImage,
     accountName,
@@ -783,21 +775,22 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
 
 // export static functions
 export const {
-  clearWalletState,
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
+  clearWalletState,
   createAccount,
+  getAccountProfileInfo,
   getIsDamagedWallet,
   getIsHardwareWallet,
   getIsReadOnlyWallet,
   getWalletWithAccount,
   loadWallets,
   refreshWalletInfo,
+  setAccountAddress,
   setAllWalletsWithIdsAsBackedUp,
   setSelectedWallet,
   setWalletBackedUp,
   setWalletReady,
-  setAccountAddress,
-  updateWallets,
   updateAccountInfo,
+  updateWallets,
 } = useWalletsStore.getState();
