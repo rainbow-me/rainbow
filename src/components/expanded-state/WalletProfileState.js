@@ -28,9 +28,9 @@ export default function WalletProfileState(props) {
     const webProfileData = getWalletProfileMeta(address, profile, webProfile, isNewProfile, forceColor);
     const accountInfo = isValidHex(address) ? getAccountProfileInfo({ address }) : undefined;
 
-    const nameIn = profile?.name ?? accountInfo?.accountName
-    const emoji = returnStringFirstEmoji(nameIn)
-    const name = removeFirstEmojiFromString(nameIn)
+    const nameIn = profile?.name ?? accountInfo?.accountName;
+    const emoji = returnStringFirstEmoji(nameIn);
+    const name = removeFirstEmojiFromString(nameIn);
 
     return {
       color: profile?.color ?? accountInfo?.accountColor ?? webProfileData.color,
@@ -39,8 +39,6 @@ export default function WalletProfileState(props) {
       profileImage: profile?.image ?? accountInfo?.accountImage,
     };
   }, [address, forceColor, isNewProfile, profile, webProfile]);
-
-
 
   const [value, setValue] = useState(name);
 
