@@ -52,38 +52,52 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
 });
 
 function WalletScreen() {
-  const currentNetwork = useCurrentNetwork();
+  const { network: currentNetwork } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
 
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
+  const {
+    isWalletEthZero,
+    isLoadingUserAssets,
+    isLoadingBalance,
+    briefSectionsData: walletBriefSectionsData,
+  } = useWalletSectionsData({ type: 'wallet' });
+
+  const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
   const { highContrastAccentColor } = useAccountAccentColor();
 
+  const disableRefreshControl = useMemo(
+    () => isLoadingUserAssetsAndAddress || isLoadingBalance,
+    [isLoadingUserAssetsAndAddress, isLoadingBalance]
+  );
+
   const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
+
+  const handleWalletScreenMount = useCallback(() => {
+    hideSplashScreen();
+    requestIdleCallback(() => {
+      InteractionManager.runAfterInteractions(() => {
+        useNavigationStore.setState({ isWalletScreenMounted: true });
+      });
+    });
+  }, []);
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
       <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
-        <AssetList accentColor={highContrastAccentColor} network={currentNetwork} />
+        <AssetList
+          accentColor={highContrastAccentColor}
+          disableRefreshControl={disableRefreshControl}
+          isWalletEthZero={isWalletEthZero}
+          network={currentNetwork}
+          walletBriefSectionsData={walletBriefSectionsData}
+        />
         <ToastComponent />
         <UtilityComponents />
         <WalletScreenEffects />
       </Box>
     </PerformanceMeasureView>
   );
-}
-
-function useCurrentNetwork(): Network {
-  const network = useSelector(({ settings: { network } }: AppState) => network);
-  return network;
-}
-
-function handleWalletScreenMount(): void {
-  hideSplashScreen();
-  requestIdleCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      useNavigationStore.setState({ isWalletScreenMounted: true });
-    });
-  });
 }
 
 export default React.memo(WalletScreen);
