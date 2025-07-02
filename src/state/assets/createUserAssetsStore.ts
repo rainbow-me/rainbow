@@ -19,6 +19,9 @@ import {
   parsedSearchAssetToParsedAddressAsset,
   setUserAssets,
 } from './utils';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
+import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
+import { toUnixTime } from '@/worklets/dates';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
@@ -201,6 +204,35 @@ export const createUserAssetsStore = (address: Address | string) =>
           });
 
           return { hiddenAssets, hiddenAssetsBalance };
+        });
+      },
+
+      updateTokens: (tokens: LiveTokensData) => {
+        set(state => {
+          for (const [tokenId, token] of Object.entries(tokens)) {
+            if (token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
+
+            const asset = state.userAssets.get(tokenId);
+            const currency = userAssetsStoreManager.getState().currency;
+
+            if (!asset || (asset?.price?.changed_at && asset?.price?.changed_at > toUnixTime(token.updateTime))) continue;
+
+            if (asset?.price) {
+              asset.price = {
+                value: Number(token.price),
+                relative_change_24h: Number(token.change.change24hPct),
+              };
+            }
+            if (asset?.native?.price) {
+              asset.native.price = {
+                change: token.change.change24hPct,
+                amount: Number(token.price),
+                display: convertAmountToNativeDisplayWorklet(token.price, currency),
+              };
+            }
+          }
+          // We return the same state object to skip triggering selectors
+          return state;
         });
       },
     }),

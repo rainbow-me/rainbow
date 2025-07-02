@@ -87,6 +87,7 @@ export type ParsedAssetsDictByChain = Record<ChainId | number, ParsedAssetsDict>
 export interface ZerionAssetPrice {
   value: number;
   relative_change_24h?: number;
+  changed_at?: number;
 }
 
 export type AssetApiResponse = {

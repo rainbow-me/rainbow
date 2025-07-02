@@ -3,9 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { CoinIconIndicator } from '@/components/coin-icon';
 import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
-
 import { ExtendedState } from '../core/RawRecyclerList';
-
 import { Text } from '@/design-system';
 import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
@@ -13,6 +11,10 @@ import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
+import { Navigation } from '@/navigation';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { convertAmountAndPriceToNativeDisplay, toSignificantDigits } from '@/helpers/utilities';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -52,43 +54,51 @@ const CoinCheckButton = React.memo(function CoinCheckButton({ isHidden, isPinned
   );
 });
 
-const formatPercentageString = (percentString?: string) => (percentString ? percentString.split('-').join('- ') : '-');
+function formatPercentageString(percentString?: string) {
+  if (!percentString) return '0.00%';
+  const formatted = percentString.split('-').join('- ');
+  return formatted.endsWith('%') ? formatted : `${formatted}%`;
+}
 
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
   nativeCurrency: NativeCurrencyKey;
   theme: any;
-  navigate: any;
   nativeCurrencySymbol: string;
   isHidden: boolean;
   maybeCallback: React.RefObject<null | (() => void)>;
 }
 
 const MemoizedBalanceCoinRow = React.memo(
-  ({ uniqueId, nativeCurrency, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
+  ({ uniqueId, nativeCurrency, theme, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
     const item = useAccountAsset(uniqueId, nativeCurrency);
+    const nativeBalanceDisplay = item?.balance?.display ?? '';
+    const chainId = item?.chainId || ChainId.mainnet;
+    const tokenBalanceAmount = item?.balance?.amount ?? '0';
+    const percentChange = item?.native?.change || undefined;
+    const percentageChangeDisplay = formatPercentageString(percentChange);
+    const priceUpdatedAt = item?.price?.changed_at ?? 0;
 
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
         maybeCallback.current();
       } else {
         if (!item) return;
-        navigate(Routes.EXPANDED_ASSET_SHEET_V2, { asset: item, address: item.address, chainId: item.chainId });
+        Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, { asset: item, address: item.address, chainId: item.chainId });
       }
-    }, [navigate, item, maybeCallback]);
+    }, [item, maybeCallback]);
 
-    const percentChange = item?.native?.change || undefined;
-    const percentageChangeDisplay = formatPercentageString(percentChange);
+    const tokenPriceSelector = useCallback(
+      (token: TokenData) => {
+        const { display } = convertAmountAndPriceToNativeDisplay(tokenBalanceAmount, token.price, nativeCurrency);
+        return display;
+      },
+      [tokenBalanceAmount, nativeCurrency]
+    );
 
-    const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
-
-    const changeColor = isPositive ? theme.colors.green : theme.colors.blueGreyDark50;
-
-    const nativeDisplay = item?.balance?.display;
-
-    const valueColor = nativeDisplay ? theme.colors.dark : theme.colors.blueGreyLight;
-
-    const chainId = item?.chainId || ChainId.mainnet;
+    const tokenPriceChangeSelector = useCallback((token: TokenData) => {
+      return formatPercentageString(toSignificantDigits(token.change.change24hPct, 3));
+    }, []);
 
     return (
       <View style={sx.flex} testID={'fast-coin-info'}>
@@ -110,22 +120,42 @@ const MemoizedBalanceCoinRow = React.memo(
                     {item?.name}
                   </Text>
                 </View>
-
-                <Text align="right" color={{ custom: valueColor }} size="16px / 22px (Deprecated)" weight="medium">
-                  {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
-                </Text>
+                <LiveTokenText
+                  selector={tokenPriceSelector}
+                  tokenId={uniqueId}
+                  initialValueLastUpdated={priceUpdatedAt}
+                  initialValue={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
+                  autoSubscriptionEnabled={false}
+                  color={{ custom: theme.colors.dark }}
+                  size={'16px / 22px (Deprecated)'}
+                  weight="bold"
+                  align="right"
+                />
               </View>
 
               <View style={[sx.row, sx.bottom]}>
                 <View style={sx.textWrapper}>
-                  <Text color={{ custom: theme.colors.blueGreyDark50 }} numberOfLines={1} size="14px / 19px (Deprecated)" weight="medium">
-                    {nativeDisplay ?? ''}
+                  <Text color={{ custom: theme.colors.blueGreyDark50 }} numberOfLines={1} size="14px / 19px (Deprecated)" weight="bold">
+                    {nativeBalanceDisplay}
                   </Text>
                 </View>
-
-                <Text align="right" color={{ custom: changeColor }} size="14px / 19px (Deprecated)" weight="medium">
-                  {percentageChangeDisplay}
-                </Text>
+                <LiveTokenText
+                  selector={tokenPriceChangeSelector}
+                  tokenId={uniqueId}
+                  initialValueLastUpdated={priceUpdatedAt}
+                  initialValue={percentageChangeDisplay}
+                  autoSubscriptionEnabled={false}
+                  usePriceChangeColor
+                  priceChangeChangeColors={{
+                    positive: theme.colors.green,
+                    negative: theme.colors.blueGreyDark50,
+                    neutral: theme.colors.blueGreyDark50,
+                  }}
+                  color={'label'}
+                  size="14px / 19px (Deprecated)"
+                  weight="bold"
+                  align="right"
+                />
               </View>
             </View>
           </View>
@@ -138,8 +168,7 @@ const MemoizedBalanceCoinRow = React.memo(
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
 export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, hiddenAssets, pinnedCoins, toggleSelectedCoin, isCoinListEdited } =
-    extendedState;
+  const { theme, nativeCurrencySymbol, nativeCurrency, hiddenAssets, pinnedCoins, toggleSelectedCoin, isCoinListEdited } = extendedState;
 
   const onPress = useCallback(() => {
     toggleSelectedCoin(uniqueId);
@@ -162,7 +191,6 @@ export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: {
         maybeCallback={maybeCallback}
         nativeCurrency={nativeCurrency}
         nativeCurrencySymbol={nativeCurrencySymbol}
-        navigate={navigate}
         theme={theme}
         uniqueId={uniqueId}
       />
