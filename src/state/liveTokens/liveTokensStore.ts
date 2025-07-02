@@ -5,6 +5,7 @@ import { useUserAssetsStore } from '../assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
 import { getPlatformClient } from '@/resources/platform/client';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
 
@@ -250,3 +251,21 @@ export function removeSubscribedToken({ route, tokenId }: { route: string; token
 }
 
 export const { addSubscribedTokens, removeSubscribedTokens } = useLiveTokensStore.getState();
+
+export function getBalance({
+  token,
+  balanceAmount,
+  nativeCurrency,
+}: {
+  token: TokenData;
+  balanceAmount: string;
+  nativeCurrency: SupportedCurrencyKey;
+}) {
+  const balance = multiply(token.price, balanceAmount);
+  if (greaterThan(balance, token.reliability.metadata.liquidityCap)) {
+    return convertAmountToNativeDisplayWorklet(token.reliability.metadata.liquidityCap, nativeCurrency);
+  }
+
+  const { display } = convertAmountAndPriceToNativeDisplay(balanceAmount, token.price, nativeCurrency);
+  return display;
+}
