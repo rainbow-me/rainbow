@@ -23,7 +23,7 @@ export const TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS = { bottom: 42, top: TOKEN_L
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { width: deviceWidth } = useDimensions();
-  const { accountColorHex, accountImage, accountAddress } = useAccountProfileInfo();
+  const { accountColorHex, accountImage, accountAddress, accountSymbol } = useAccountProfileInfo();
   const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
@@ -81,6 +81,7 @@ export function TokenLauncherHeader() {
                 <AddressAvatar
                   url={accountImage}
                   address={accountAddress}
+                  emoji={accountSymbol}
                   label={accountAddress}
                   color={accountColorHex}
                   size={EXIT_BUTTON_SIZE}

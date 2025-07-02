@@ -27,7 +27,6 @@ import store from '@/redux/store';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time } from '@/utils';
-import { address as addressAbbreviation } from '@/utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { captureMessage } from '@sentry/react-native';
@@ -43,7 +42,7 @@ interface AccountProfileInfo {
   accountENS?: string;
   accountImage?: string | null;
   accountName?: string;
-  accountSymbol?: string | false;
+  accountSymbol?: string;
 }
 
 interface WalletsState {
@@ -734,7 +733,7 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
     return {
       accountAddress: address,
       accountColor: addressHashedColorIndex(address) ?? 0,
-      accountSymbol: addressHashedEmoji(address) ?? undefined,
+      accountSymbol: addressHashedEmoji(address) || undefined,
     };
   }
 
@@ -744,7 +743,7 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
     return {
       accountAddress: address,
       accountColor: addressHashedColorIndex(address) ?? 0,
-      accountSymbol: addressHashedEmoji(address) ?? undefined,
+      accountSymbol: addressHashedEmoji(address) || undefined,
     };
   }
 
