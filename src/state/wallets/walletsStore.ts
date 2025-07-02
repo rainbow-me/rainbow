@@ -592,20 +592,19 @@ async function getRefreshedWallets({ addresses, wallets, cachedENS }: GetENSInfo
 
   await Promise.all(
     Object.entries(wallets).map(async ([key, wallet]) => {
-      const newAddresses = await Promise.all(
+      const updatedAccounts = await Promise.all(
         wallet.addresses.map(async ogAccount => {
           if (addresses && !addresses.includes(ogAccount.address)) {
             // skip update if we are filtering down to specific addresses
             return ogAccount;
           }
-          const account = await refreshAccountInfo(ogAccount, cachedENS);
-          return account;
+          return await refreshAccountInfo(ogAccount, cachedENS);
         })
       );
 
       updatedWallets[key] = {
         ...wallet,
-        addresses: newAddresses,
+        addresses: updatedAccounts,
       };
     })
   );
@@ -624,25 +623,24 @@ export function getDefaultLabel(address: string) {
   };
 }
 
-// this isn't really our primary way of updating account info, and when people pull to refresh
-// they get new info, so for ENS related stuff we can just check if not valid hex + has image
-
-async function refreshAccountInfo(account: RainbowAccount, cachedENS = false): Promise<RainbowAccount> {
+async function refreshAccountInfo(
+  account: RainbowAccount,
+  cachedENS = false
+): Promise<Partial<Pick<RainbowAccount, 'ens' | 'image' | 'label'>> | null> {
   const { abbreviatedAddress, defaultLabel } = getDefaultLabel(account.address);
 
   const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress || account.label === account.address;
-  const hasEnoughData = typeof account.ens === 'string';
+  const hasEnoughData = account.ens !== undefined;
   const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
 
   if (shouldCacheAccount) {
     if (!account.label) {
       return {
-        ...account,
         label: defaultLabel,
       };
     }
 
-    return account;
+    return null;
   }
 
   const ens = await fetchReverseRecordWithRetry(account.address);
@@ -658,15 +656,14 @@ async function refreshAccountInfo(account: RainbowAccount, cachedENS = false): P
       hasDefaultLabel;
 
     return {
-      ...account,
       image: newImage,
       ens,
       label: shouldSetLabelToENS ? ens : account.label,
     };
   } else {
-    // set to empty string so we know it's been fetched but not found
-    // will ensure shouldCacheAccount is true next time
-    account.ens = '';
+    return {
+      ens: null,
+    };
   }
 
   return account;
