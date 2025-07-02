@@ -7,7 +7,7 @@ import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackg
 import { NewTransaction, TransactionStatus } from '@/entities';
 import { IS_IOS } from '@/env';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
-import { ensureValidHex, getProvider } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { delay } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
 import * as i18n from '@/languages';
@@ -68,6 +68,7 @@ import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { Address } from 'viem';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -214,7 +215,7 @@ export const SignTransactionSheet = () => {
 
   const accountInfo = useMemo(() => {
     const selectedWallet = wallets ? getWalletForAddress(addressToUse) : undefined;
-    const profileInfo = getAccountProfileInfo(addressToUse);
+    const profileInfo = getAccountProfileInfo(addressToUse as Address);
     return {
       ...profileInfo,
       address: addressToUse,
