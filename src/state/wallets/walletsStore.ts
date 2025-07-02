@@ -358,7 +358,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         }
 
         // needs to get info if necessary (import from see)
-        set({ wallets });
+        await updateWallets(wallets);
         await setSelectedWallet(selectedWallet, accountAddress ? ensureValidHex(accountAddress) : undefined);
 
         return wallets;
