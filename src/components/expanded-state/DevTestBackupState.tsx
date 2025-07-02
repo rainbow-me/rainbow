@@ -65,7 +65,7 @@ export const DevTestBackupState = () => {
 
             if (restored) {
               await updateWalletsBackedUpState();
-              DevSettings.reload();
+              Navigation.handleAction(Routes.WELCOME_SCREEN);
             } else {
               Alert.alert(`invalid backup`);
             }
