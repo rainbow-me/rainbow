@@ -10,8 +10,9 @@ import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
 import { EthereumAddress } from '@/entities';
 import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
+import { isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames } from '@/hooks';
+import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -28,7 +29,7 @@ import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pin
 import {
   refreshWalletInfo,
   setSelectedWallet,
-  updateAccount,
+  updateAccountInfo,
   updateWallets,
   useAccountAddress,
   useWallets,
@@ -91,6 +92,7 @@ export default function ChangeWalletSheet() {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { colors, isDarkMode } = useTheme();
+  const { updateWebProfile } = useWebData();
   const { goBack, navigate } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -268,15 +270,17 @@ export default function ChangeWalletSheet() {
             address: curAddress,
             asset: [],
             onCloseModal: async ({ name, color }) => {
+              if (!isValidHex(address)) return;
+
+              updateAccountInfo({
+                address,
+                label: name || undefined,
+                walletId,
+              });
+
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
-                const updatedWallet = await updateAccount(walletId, { label: name, color, address: curAddress });
-
-                if (updatedWallet) {
-                  await setSelectedWallet(updatedWallet, curAddress);
-                  // no need to wait these will run async and refresh data
-                  void refreshWalletInfo({ addresses: [curAddress] });
-                }
+                updateWebProfile(address, name, colors.avatarBackgrounds[color]);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }
@@ -291,7 +295,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [goBack, navigate, wallets]
+    [colors.avatarBackgrounds, goBack, navigate, updateWebProfile, wallets]
   );
 
   const onPressEdit = useCallback(
