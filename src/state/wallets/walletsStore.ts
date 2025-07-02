@@ -37,7 +37,7 @@ import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface AccountProfileInfo {
-  accountAddress: string;
+  accountAddress: Address;
   accountColor: number;
   accountENS?: string;
   accountImage?: string | null;
@@ -79,7 +79,7 @@ interface WalletsState {
   accountAddress: Address;
   setAccountAddress: (address: Address) => void;
 
-  getAccountProfileInfo: (address?: string) => AccountProfileInfo;
+  getAccountProfileInfo: (address?: Address) => AccountProfileInfo;
 
   refreshWalletInfo: (props?: { cachedENS?: boolean; addresses?: string[] }) => Promise<void>;
 
@@ -725,7 +725,7 @@ export const useAccountProfileInfo = () => {
   }, [colors.avatarBackgrounds, info]);
 };
 
-const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
+const getAccountProfileInfoFromState = (props: { address: Address; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
   const wallet = props.wallet || state.selected;
   const address = props.address || state.accountAddress;
 
