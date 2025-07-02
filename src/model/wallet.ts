@@ -135,9 +135,9 @@ export interface RainbowWallet {
   deviceId?: string;
 }
 
-export interface AllRainbowWallets {
+export type AllRainbowWallets = {
   [key: string]: RainbowWallet;
-}
+};
 
 export interface AllRainbowWalletsData {
   wallets: AllRainbowWallets;

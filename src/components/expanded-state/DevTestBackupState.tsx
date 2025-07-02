@@ -5,6 +5,8 @@ import { logger, RainbowError } from '@/logger';
 import { createBackup, restoreBackup } from '@/model/backup';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
+import Navigation from '@/navigation/__mocks__/Navigation';
+import Routes from '@/navigation/Routes';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 import { clearWalletState, loadWallets } from '@/state/wallets/walletsStore';
@@ -97,7 +99,7 @@ export const DevTestBackupState = () => {
         onPress={async () => {
           await clearWalletState({ resetKeychain: true });
           clearAllStorages();
-          DevSettings.reload();
+          Navigation.handleAction(Routes.WELCOME_SCREEN);
         }}
       >
         <Box

@@ -241,9 +241,9 @@ export default function ChangeWalletSheet() {
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newWallets[walletId];
-        await updateWallets(newWallets);
+        await updateWallets({ wallets: newWallets });
       } else {
-        await updateWallets(newWallets);
+        await updateWallets({ wallets: newWallets });
       }
       await removeWalletData(address);
     },

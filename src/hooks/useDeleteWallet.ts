@@ -35,9 +35,9 @@ export default function useDeleteWallet({ address: primaryAddress }: { address?:
     if (visibleAddresses.length === 0) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete newWallets[watchingWalletId];
-      updateWallets(newWallets);
+      updateWallets({ wallets: newWallets });
     } else {
-      updateWallets(newWallets);
+      updateWallets({ wallets: newWallets });
     }
     removeWalletData(primaryAddress);
   }, [primaryAddress, wallets, watchingWalletId]);

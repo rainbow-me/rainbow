@@ -92,7 +92,7 @@ const DevSection = () => {
       delete newWallets[key].backupType;
     });
 
-    await updateWallets(newWallets);
+    await updateWallets({ wallets: newWallets });
 
     // Delete all backups (debugging)
     await deleteAllBackups();
