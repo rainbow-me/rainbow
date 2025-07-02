@@ -156,7 +156,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
                       ...account,
                       ...updatedMetadata,
                       emoji: emoji ?? ((label && returnStringFirstEmoji(label)) || account.emoji),
-                      label: formatAccountLabel({ address, label, ens: account.ens }),
+                      label: label ? formatAccountLabel({ address, label, ens: account.ens }) : account.label,
                     }
                   : account
               ),

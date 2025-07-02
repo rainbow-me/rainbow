@@ -93,6 +93,7 @@ export default function WalletProfileState({
       emojiAvatar={nameEmoji}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
+      disableChangeAvatar={actionType === 'Switch'}
       imageAvatar={profileImage}
       inputValue={value}
       onChange={setValue}

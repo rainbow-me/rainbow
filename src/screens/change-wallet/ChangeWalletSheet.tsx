@@ -28,6 +28,7 @@ import { initializeWallet } from '@/state/wallets/initializeWallet';
 import { MAX_PINNED_ADDRESSES, usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import {
   getAccountProfileInfo,
+  getWallets,
   setSelectedWallet,
   updateAccountInfo,
   updateWallets,
@@ -269,8 +270,12 @@ export default function ChangeWalletSheet() {
           navigate(Routes.MODAL_SCREEN, {
             address,
             asset: [],
-            onCloseModal: async ({ name, color }) => {
+            onCloseModal: async props => {
+              const { name = '', color: colorProp = null } = props;
               if (!isValidHex(address)) return;
+
+              const color = colorProp || account?.accountColor || 0;
+
               updateAccountInfo({
                 address,
                 label: name || undefined,
@@ -285,11 +290,12 @@ export default function ChangeWalletSheet() {
               }
             },
             profile: {
-              color: account?.accountColor || null,
+              color: account?.accountColor,
               image: account?.accountImage || ``,
               name: account?.accountName || ``,
             },
             type: 'wallet_profile',
+            actionType: 'Switch',
           });
         }, 50);
       });
@@ -300,6 +306,7 @@ export default function ChangeWalletSheet() {
   const onPressEdit = useCallback(
     (walletId: string, address: string) => {
       analytics.track(analytics.event.tappedEditWallet);
+      setSelectedWallet(getWallets()[walletId], address);
       renameWallet(walletId, address);
     },
     [renameWallet]
