@@ -32,7 +32,6 @@ import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetr
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { keys } from 'lodash';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
@@ -477,12 +476,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     checkKeychainIntegrity: async () => {
       try {
-        let healthyKeychain = true;
         logger.debug('[walletsStore]: Starting keychain integrity checks');
 
         const hasAddress = await hasKey(addressKey);
         if (!hasAddress) {
-          healthyKeychain = false;
           logger.debug(`[walletsStore]: address is missing: ${hasAddress}`);
         }
 
@@ -501,10 +498,18 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           logger.warn('[walletsStore]: selectedWallet is missing');
         }
 
-        const markedDamagedWallets: AllRainbowWallets = Object.fromEntries(
+        const walletsMarkedDamaged: AllRainbowWallets = Object.fromEntries(
           await Promise.all(
             Object.entries(wallets).map(async ([key, wallet]) => {
               if (wallets[key].type === WalletTypes.readOnly) {
+                return [key, wallet];
+              }
+
+              // A wallet is NOT damaged if:
+              // - it's not imported
+              // - and hasn't been migrated yet
+              // - and the old seedphrase is still there
+              if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
                 return [key, wallet];
               }
 
@@ -526,53 +531,26 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
                 return walletMarkedDamaged;
               }
 
-              if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
-                return walletMarkedDamaged;
-              }
-
               return [key, wallet];
             })
           )
         );
 
-        //     // Handle race condition:
-        //     // A wallet is NOT damaged if:
-        //     // - it's not imported
-        //     // - and hasn't been migrated yet
-        //     // - and the old seedphrase is still there
-        //     if () {
-        //       healthyWallet = true;
-        //     }
+        const newWallets = Object.values(walletsMarkedDamaged);
+        const hasDamagedWallet = newWallets.some(w => w.damaged);
 
-        //     if (!healthyWallet) {
-        //       logger.warn('[walletsStore]: declaring wallet unhealthy...');
-        //       healthyKeychain = false;
-        //       wallet.damaged = true;
-        //       set({
-        //         wallets,
-        //       });
+        if (hasDamagedWallet || !hasAddress) {
+          captureMessage(`Keychain Integrity is not OK: hasAddress: ${hasAddress} hasDamagedWallet ${hasDamagedWallet}`);
 
-        //       // Update selected wallet if needed
-        //       if (wallets && selected && wallet.id === selected.id) {
-        //         logger.warn('[walletsStore]: declaring selected wallet unhealthy...');
-        //         set({
-        //           selected: wallets[wallet.id],
-        //         });
-        //       }
-        //       logger.debug('[walletsStore]: done updating wallets');
-        //     }
-        //   }
+          const lastSelected = newWallets.find(w => w.id === get().selected?.id);
+          const newSelected = lastSelected?.damaged ? newWallets.find(w => !w.damaged) : lastSelected;
 
-        //   if (!healthyKeychain) {
-        //     captureMessage('Keychain Integrity is not OK');
-        //   }
+          get().update({ wallets: walletsMarkedDamaged, selected: newSelected });
+        }
 
-        //   logger.debug('[walletsStore]: check completed');
-        //   saveKeychainIntegrityState('done');
+        saveKeychainIntegrityState('done');
       } catch (e) {
-        logger.error(new RainbowError("[walletsStore]: error thrown'"), {
-          message: (e as Error)?.message,
-        });
+        logger.error(new RainbowError("[walletsStore]: error thrown'", e));
         captureMessage('Error running keychain integrity checks');
       }
     },
