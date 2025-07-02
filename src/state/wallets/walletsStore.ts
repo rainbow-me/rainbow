@@ -598,7 +598,8 @@ async function getRefreshedWallets({ addresses, wallets, cachedENS }: GetENSInfo
             // skip update if we are filtering down to specific addresses
             return ogAccount;
           }
-          return await refreshAccountInfo(ogAccount, cachedENS);
+          const refreshed = await refreshAccountInfo(ogAccount, cachedENS);
+          return refreshed ? { ...ogAccount, ...refreshed } : ogAccount;
         })
       );
 
@@ -628,8 +629,6 @@ async function refreshAccountInfo(
   cachedENS = false
 ): Promise<Partial<Pick<RainbowAccount, 'ens' | 'image' | 'label'>> | null> {
   const { abbreviatedAddress, defaultLabel } = getDefaultLabel(account.address);
-
-  const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress || account.label === account.address;
   const hasEnoughData = account.ens !== undefined;
   const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
 
@@ -648,6 +647,7 @@ async function refreshAccountInfo(
   if (ens) {
     const avatar = await fetchENSAvatarWithRetry(ens);
     const newImage = avatar?.imageUrl || null;
+    const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress || account.label === account.address;
 
     const shouldSetLabelToENS =
       !account.label ||
