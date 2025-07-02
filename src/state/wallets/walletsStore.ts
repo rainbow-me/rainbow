@@ -182,7 +182,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       } satisfies AllRainbowWallets;
 
       // avoid await - this is label/color/etc, not critical and not likely to race
-      void get().updateWallet({ wallets: updatedWallets });
+      void get().updateWallets({ wallets: updatedWallets });
 
       return updatedWallet;
     },
@@ -193,7 +193,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         ...props,
         wallets,
       });
-      await get().updateWallet({ wallets: refreshedWallets });
+      await get().updateWallets({ wallets: refreshedWallets });
     },
 
     walletReady: false,
@@ -304,16 +304,17 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
-        set(state => ({
-          ...state,
-          accountAddress: accountAddress ?? state.accountAddress,
+        // loadWallets is used with backup flow to set => get => set
+        // that needs refactoring be we want to await for keychain write here
+        await get().updateWallets({
+          accountAddress: accountAddress ? ensureValidHex(accountAddress) : undefined,
           selected: selectedWallet,
-          wallets: mergeWallets(state.wallets, wallets),
-        }));
+          wallets,
+        });
 
         const { accountAddress: newAccountAddress, refreshWalletInfo } = get();
 
-        refreshWalletInfo({ addresses: [newAccountAddress] }).then(() => {
+        void refreshWalletInfo({ addresses: [newAccountAddress] }).then(() => {
           refreshWalletInfo({ cachedENS: true });
         });
 
