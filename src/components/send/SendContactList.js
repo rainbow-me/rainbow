@@ -17,7 +17,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { filterList } from '@/utils';
+import { filterList, isLowerCaseMatch } from '@/utils';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const KeyboardArea = styled.View({
@@ -129,13 +129,13 @@ export default function SendContactList({
   const filteredAddresses = useMemo(() => {
     return sortBy(
       filterList(
-        userAccounts.filter(account => account.visible && account.address.toLowerCase() !== accountAddress.toLowerCase()),
+        userAccounts.filter(account => account.visible && !isLowerCaseMatch(account.address, accountAddress)),
         currentInput,
         ['label']
       ),
       ['index']
     );
-  }, [currentInput, userAccounts]);
+  }, [accountAddress, currentInput, userAccounts]);
 
   const filteredWatchedAddresses = useMemo(() => {
     return sortBy(
