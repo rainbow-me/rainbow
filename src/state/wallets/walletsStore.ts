@@ -610,7 +610,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     },
   }),
   {
-    storageKey: 'walletsStore',
+    storageKey: 'walletsStore2',
     persistThrottleMs: time.seconds(1),
     partialize: state => ({
       selected: state.selected,
@@ -666,7 +666,7 @@ async function refreshWalletsInfo({ addresses, wallets, cachedENS }: GetENSInfoP
 export function getDefaultLabel(address: string) {
   const isHex = isValidHex(address);
   const abbreviatedAddress = isHex ? addressAbbreviation(address, 4, 4) : address;
-  const defaultEmoji = isHex ? addressHashedEmoji(address) : null;
+  const defaultEmoji = addressHashedEmoji(address);
   return {
     defaultLabel: defaultEmoji ? `${defaultEmoji} ${abbreviatedAddress}` : address,
     defaultEmoji,
@@ -680,11 +680,18 @@ export function getDefaultLabel(address: string) {
 async function refreshAccountInfo(account: RainbowAccount, cachedENS = false): Promise<RainbowAccount> {
   const { abbreviatedAddress, defaultLabel } = getDefaultLabel(account.address);
 
-  const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress;
+  const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress || account.label === account.address;
   const hasEnoughData = typeof account.ens === 'string';
   const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
 
   if (shouldCacheAccount) {
+    if (!account.label) {
+      return {
+        ...account,
+        label: defaultLabel,
+      };
+    }
+
     return account;
   }
 
@@ -695,6 +702,7 @@ async function refreshAccountInfo(account: RainbowAccount, cachedENS = false): P
     const newImage = avatar?.imageUrl || null;
 
     const shouldSetLabelToENS =
+      !account.label ||
       (account.ens && account.ens !== ens) ||
       // prefer users label if they set to something other than account
       hasDefaultLabel;
