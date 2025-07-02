@@ -1,12 +1,17 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const blacklist = require('metro-config/src/defaults/exclusionList');
+const { escapeRegExp } = require('lodash');
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
 const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
 
+const makeRelativeExclusionListRE = re => new RegExp(`^${escapeRegExp(__dirname)}\\/${re}`);
+
 // Deny list is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
 const blacklistRE = blacklist([
+  makeRelativeExclusionListRE('(ios|android)\\/.*'),
+  makeRelativeExclusionListRE('node_modules\\/.*\\/(ios|android)\\/.*'),
   // react-native-animated-charts
   /src\/react-native-animated-charts\/Example\/.*/,
   /src\/react-native-animated-charts\/node_modules\/.*/,
