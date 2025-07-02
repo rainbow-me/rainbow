@@ -1,17 +1,20 @@
 #!/bin/bash
 
-export PATH="$PATH":"$HOME/.maestro/bin"
+set -euo pipefail
+
+source ./scripts/e2e-metro.sh
+
+export PATH="$PATH:$HOME/.maestro/bin"
 export MAESTRO_CLI_NO_ANALYTICS=true
 export MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true
 
 ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
 
-# Install the app.
-xcrun simctl install $DEVICE_UDID ios/build/Build/Products/Release-iphonesimulator/Rainbow.app
+# TODO: Run release builds
+start_metro ios
 
-# Run the tests with proper parameters
-echo "Running tests..."
-./scripts/e2e-ios.sh --device $DEVICE_UDID --debug-output $ARTIFACTS_FOLDER --flatten-debug-output
-TEST_STATUS=$?
+# Install the app on the simulator
+xcrun simctl install "$DEVICE_UDID" "$ARTIFACT_PATH_FOR_E2E"
 
-exit $TEST_STATUS
+# Run the tests
+./scripts/e2e-run.sh --shard-total ${SHARD_TOTAL:-1} --shard-index ${SHARD_INDEX:-1}

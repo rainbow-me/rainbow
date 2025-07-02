@@ -1,5 +1,6 @@
 import { Canvas, Image, Mask, Rect, useImage } from '@shopify/react-native-skia';
 import React from 'react';
+import { View } from 'react-native';
 import Animated, {
   Easing,
   SharedValue,
@@ -12,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useForegroundColor } from '@/design-system';
 import { useCleanup } from '@/hooks/useCleanup';
+import { IS_TEST } from '@/env';
 
 export const spinnerExitConfig = {
   duration: 400,
@@ -74,6 +76,10 @@ export const AnimatedSpinner = ({
   );
 
   useCleanup(() => spinnerImage?.dispose?.(), [spinnerImage]);
+
+  if (IS_TEST) {
+    return <View style={{ height: size, width: size }} />;
+  }
 
   return (
     <Animated.View pointerEvents="none" style={[spinnerStyle, { height: size, width: size }]}>

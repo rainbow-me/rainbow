@@ -7,7 +7,7 @@ on:
 
 jobs:
   # iOS build and e2e tests
-  e2e-build-ios:
+  e2e-ios:
     if: github.event.pull_request.draft == false
     runs-on: ["self-hosted"]
     concurrency:
@@ -71,24 +71,21 @@ jobs:
           comment-bot: false
 
       - name: Download and Unpack IPA artifact
-        id: download-artifact
         run: |
           curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ steps.rnef-remote-build-ios.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
-          ls -lh downloaded-artifacts
-
-          # Move the file to workspace root so it's available in next step
+          ls -l downloaded-artifacts
           APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
-          cp "$APP_ARCHIVE_PATH" "$GITHUB_WORKSPACE/app.tar.gz"
-          echo "ipa-path=$GITHUB_WORKSPACE/app.tar.gz" >> $GITHUB_OUTPUT
-        shell: bash
+          tar -xzf "$APP_ARCHIVE_PATH" -C downloaded-artifacts
+          APP_PATH=$(find downloaded-artifacts -name "*.app" -type d | head -n 1)
+          echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> $GITHUB_ENV
 
       - name: Modify env
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
       - name: Install Maestro
-        run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
+        run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - uses: futureware-tech/simulator-action@v4
         id: simulator
@@ -113,7 +110,6 @@ jobs:
         run: ./scripts/e2e-ios-ci.sh
         env:
           DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
-          ARTIFACT_PATH_FOR_E2E: ${{ steps.download-artifact.outputs.ipa-path }}
 
       - name: Upload artifacts
         if: ${{ always() }}
