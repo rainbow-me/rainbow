@@ -6,7 +6,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { parseTimestampFromBackupFile } from '@/model/backup';
-import { hasKey, wipeKeychain } from '@/model/keychain';
+import { hasKey } from '@/model/keychain';
 import { PreferenceActionType, setPreference } from '@/model/preferences';
 import {
   AllRainbowWallets,
@@ -192,7 +192,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
 
     async clearWalletState({ resetKeychain = false } = {}) {
       if (resetKeychain) {
-        await wipeKeychain();
         await cleanUpWalletKeys();
         await Promise.all([saveAddress(INITIAL_ADDRESS), resetSelectedWalletInKeychain(), saveAllWallets({})]);
       }

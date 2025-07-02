@@ -1,11 +1,13 @@
 import CopyTooltip from '@/components/copy-tooltip';
 import { Box, Text } from '@/design-system';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { clear } from '@/keychain';
 import { logger, RainbowError } from '@/logger';
 import { createBackup, restoreBackup } from '@/model/backup';
 import { clearAllStorages } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { rainbowStorage } from '@/state/internal/rainbowStorage';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 import { clearWalletState } from '@/state/wallets/walletsStore';
@@ -38,7 +40,7 @@ export const DevTestBackupState = () => {
       >
         <CopyTooltip textToCopy={exported} tooltipText="Copy">
           <Text color="base" size="15pt">
-            Copy Backup!
+            📋 Copy Backup!
           </Text>
         </CopyTooltip>
       </Box>
@@ -90,12 +92,11 @@ export const DevTestBackupState = () => {
         </Box>
       </Pressable>
 
-      <View style={{ height: 100 }} />
+      <View style={{ height: 50 }} />
 
       <Pressable
         onPress={async () => {
           await clearWalletState({ resetKeychain: true });
-          clearAllStorages();
           Navigation.handleAction(Routes.WELCOME_SCREEN);
         }}
       >
@@ -108,7 +109,35 @@ export const DevTestBackupState = () => {
           shadow="21px light (Deprecated)"
         >
           <Text color="base" size="15pt">
-            Clear All Wallets/State (‼️)
+            Clear All Wallets
+          </Text>
+        </Box>
+      </Pressable>
+
+      <View style={{ height: 20 }} />
+
+      <Pressable
+        onPress={async () => {
+          await Promise.all([
+            // attempt clearing as much as possible
+            clearWalletState({ resetKeychain: true }),
+            clearAllStorages(),
+            clear(),
+            rainbowStorage.clearAll(),
+          ]);
+          Navigation.handleAction(Routes.WELCOME_SCREEN);
+        }}
+      >
+        <Box
+          background="card (Deprecated)"
+          borderRadius={25}
+          height={{ custom: 50 }}
+          paddingHorizontal="24px"
+          paddingVertical="19px (Deprecated)"
+          shadow="21px light (Deprecated)"
+        >
+          <Text color="base" size="15pt">
+            Clear All Storage ‼️
           </Text>
         </Box>
       </Pressable>
