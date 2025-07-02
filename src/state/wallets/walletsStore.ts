@@ -89,7 +89,8 @@ interface WalletsState {
   getIsDamagedWallet: () => boolean;
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
-  getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
+  getWalletForAddress: (address: string) => RainbowWallet | undefined;
+  getAccountForAddress: (address: string) => RainbowAccount | undefined;
 
   clearWalletState: (options?: { resetKeychain?: boolean }) => Promise<void>;
 }
@@ -203,7 +204,7 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     getAccountProfileInfo: providedAddress => {
       const state = get();
       const address = providedAddress || state.accountAddress;
-      const wallet = state.getWalletWithAccount(address);
+      const wallet = state.getWalletForAddress(address);
       return getAccountProfileInfoFromState({ address, wallet }, state);
     },
 
@@ -513,18 +514,24 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       }
     },
 
-    getWalletWithAccount(accountAddress: string): RainbowWallet | undefined {
+    getWalletForAddress(address: string): RainbowWallet | undefined {
       const { wallets } = get();
-      if (!wallets) {
-        return;
-      }
-
-      const lowerCaseAccountAddress = accountAddress.toLowerCase();
-      for (const key of Object.keys(wallets).sort()) {
-        const wallet = wallets[key];
-        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, lowerCaseAccountAddress));
+      if (!wallets) return;
+      for (const wallet of Object.values(wallets)) {
+        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
         if (found) {
           return wallet;
+        }
+      }
+    },
+
+    getAccountForAddress(address: string): RainbowAccount | undefined {
+      const { wallets } = get();
+      if (!wallets) return;
+      for (const wallet of Object.values(wallets)) {
+        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
+        if (found) {
+          return found;
         }
       }
     },
@@ -767,11 +774,12 @@ export const {
   clearAllWalletsBackupStatus,
   clearWalletState,
   createAccount,
+  getAccountForAddress,
   getAccountProfileInfo,
   getIsDamagedWallet,
   getIsHardwareWallet,
   getIsReadOnlyWallet,
-  getWalletWithAccount,
+  getWalletForAddress,
   loadWallets,
   refreshWalletInfo,
   setAccountAddress,
@@ -781,4 +789,5 @@ export const {
   setWalletReady,
   updateAccountInfo,
   updateWallets,
+  mapUpdateWallets,
 } = useWalletsStore.getState();

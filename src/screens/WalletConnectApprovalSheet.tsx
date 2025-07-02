@@ -24,7 +24,7 @@ import { RootStackParamList } from '@/navigation/types';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
-import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletForAddress, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { WalletconnectMeta } from '@/walletConnect/types';
@@ -139,7 +139,7 @@ export function WalletConnectApprovalSheet() {
       return { address: accountAddressAsAddress, wallet: selectedWallet };
     }
 
-    const wallet = getWalletWithAccount(params?.meta?.proposedAddress);
+    const wallet = getWalletForAddress(params?.meta?.proposedAddress);
     if (!wallet) {
       return { address: accountAddressAsAddress, wallet: selectedWallet };
     }

@@ -15,7 +15,7 @@ export default function useUpdateEmoji() {
   const { colors } = useTheme();
 
   const saveInfo = useCallback(
-    async (name: string, color: number) => {
+    async ({ colorIndex, emoji }: { colorIndex: number; emoji?: string }) => {
       if (!selectedWallet) return;
 
       const existing = selectedWallet.addresses.find(singleAddress => isLowerCaseMatch(singleAddress.address, accountAddress));
@@ -24,16 +24,16 @@ export default function useUpdateEmoji() {
       updateAccountInfo({
         walletId: selectedWallet.id,
         address: accountAddress,
-        label: name,
-        color,
+        emoji,
+        color: colorIndex,
         // We need to call this in order to make sure
         // the profile picture is removed in "Remove Photo" flow
         image: null,
       });
 
-      const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
-      if (nextColor) {
-        updateWebProfile(accountAddress, name, nextColor);
+      const color = colorIndex !== undefined ? colors.avatarBackgrounds[colorIndex || accountColor] : undefined;
+      if (color && emoji) {
+        updateWebProfile(accountAddress, emoji, color);
       }
     },
     [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile]
@@ -47,9 +47,8 @@ export default function useUpdateEmoji() {
     const { label } = account;
     const maybeEmoji = removeFirstEmojiFromString(label);
     const { emoji, colorIndex } = getNextEmojiWithColor(maybeEmoji);
-    const name = `${emoji} ${accountName}`;
-    saveInfo(name, colorIndex);
-  }, [accountAddress, accountName, saveInfo, selectedWallet, wallets]);
+    saveInfo({ emoji, colorIndex });
+  }, [accountAddress, saveInfo, selectedWallet, wallets]);
 
   return {
     getWebProfile,

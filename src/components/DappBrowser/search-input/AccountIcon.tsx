@@ -10,14 +10,14 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
 import { HOMEPAGE_BACKGROUND_COLOR_DARK, HOMEPAGE_BACKGROUND_COLOR_LIGHT, RAINBOW_HOME } from '../constants';
-import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletForAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { ensureValidHex } from '@/handlers/web3';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const accountAddress = useAccountAddress();
   const { isDarkMode } = useColorMode();
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
-  const selectedWallet = getWalletWithAccount(currentAddress);
+  const selectedWallet = getWalletForAddress(currentAddress);
 
   const accountInfo = useMemo(() => {
     const profileInfo = getAccountProfileInfo(ensureValidHex(currentAddress));

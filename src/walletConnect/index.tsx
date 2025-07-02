@@ -23,7 +23,7 @@ import * as portal from '@/screens/Portal';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { addNewWalletConnectRequest, removeWalletConnectRequest } from '@/state/walletConnectRequests';
-import { getWallets, getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { getWallets, getWalletForAddress } from '@/state/wallets/walletsStore';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import {
@@ -681,7 +681,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         return;
       }
 
-      const selectedWallet = getWalletWithAccount(address);
+      const selectedWallet = getWalletForAddress(address);
 
       const isReadOnly = selectedWallet?.type === WalletTypes.readOnly;
       if (!selectedWallet || isReadOnly) {
@@ -856,7 +856,7 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
 
   const authenticate: AuthRequestAuthenticateSignature = async ({ address }) => {
     try {
-      const selectedWallet = getWalletWithAccount(address);
+      const selectedWallet = getWalletForAddress(address);
       const isHardwareWallet = selectedWallet?.type === WalletTypes.bluetooth;
       const iss = `did:pkh:eip155:1:${address}`;
 

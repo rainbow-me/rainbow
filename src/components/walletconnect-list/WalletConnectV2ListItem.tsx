@@ -15,7 +15,7 @@ import { changeAccount, disconnectSession } from '@/walletConnect';
 import { SessionTypes } from '@walletconnect/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import { getAccountProfileInfo, getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletForAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
@@ -66,7 +66,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
 
   useEffect(() => {
     if (address) {
-      const wallet = getWalletWithAccount(address);
+      const wallet = getWalletForAddress(address);
       setAccountInfo(getAccountProfileInfo({ address, wallet }));
     }
   }, [address]);

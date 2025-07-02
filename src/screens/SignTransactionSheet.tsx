@@ -7,7 +7,7 @@ import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackg
 import { NewTransaction, TransactionStatus } from '@/entities';
 import { IS_IOS } from '@/env';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
-import { getProvider } from '@/handlers/web3';
+import { ensureValidHex, getProvider } from '@/handlers/web3';
 import { delay } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
 import * as i18n from '@/languages';
@@ -61,7 +61,7 @@ import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
-import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletForAddress, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
@@ -213,8 +213,8 @@ export const SignTransactionSheet = () => {
     !!(simulationResult?.simulationData && itemCount === 0) && simulationResult?.simulationScanResult === TransactionScanResultType.Ok;
 
   const accountInfo = useMemo(() => {
-    const selectedWallet = wallets ? getWalletWithAccount(addressToUse) : undefined;
-    const profileInfo = getAccountProfileInfo({ wallet: selectedWallet, address: addressToUse });
+    const selectedWallet = wallets ? getWalletForAddress(addressToUse) : undefined;
+    const profileInfo = getAccountProfileInfo(ensureValidHex(addressToUse));
     return {
       ...profileInfo,
       address: addressToUse,

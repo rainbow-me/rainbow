@@ -1,6 +1,6 @@
 import { securelyHashWalletAddress } from '@/analytics/utils';
 import { EthereumWalletType } from '@/helpers/walletTypes';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { getWalletForAddress } from '@/state/wallets/walletsStore';
 import type { Address } from 'viem';
 
 export type WalletContext = {
@@ -21,8 +21,10 @@ export async function getWalletContext(address: Address): Promise<WalletContext>
   if (!address || address === ('' as Address)) return {};
 
   // walletType maybe undefined after initial wallet creation
-  const wallet = getWalletWithAccount(address);
-  const walletType = walletContextTypes[wallet?.type!];
+  const wallet = getWalletForAddress(address);
+  if (!wallet) return {};
+
+  const walletType = walletContextTypes[wallet.type];
   const walletAddressHash = securelyHashWalletAddress(address);
 
   return {
