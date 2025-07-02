@@ -793,7 +793,6 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
     };
   }
 
-  console.log('account', account);
   const { label, color, image } = account;
   const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
   const accountENS = account.ens || '';
