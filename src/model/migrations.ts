@@ -108,7 +108,7 @@ export default async function runMigrations() {
         const wallets = { [id]: currentWallet };
 
         logger.debug('[runMigrations]: v1 migration - update wallets and selected wallet');
-        await updateWallets(wallets);
+        await updateWallets({ wallets });
         setSelectedWallet(currentWallet);
       }
     }
@@ -168,7 +168,7 @@ export default async function runMigrations() {
           primary: true,
         };
         logger.debug('[runMigrations]: v2 migration - update wallets');
-        await updateWallets(updatedWallets);
+        await updateWallets({ wallets: updatedWallets });
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
         if (selected?.id === primaryWalletKey) {
@@ -235,7 +235,7 @@ export default async function runMigrations() {
           }
         });
         logger.debug('[runMigrations]: updating all wallets');
-        await updateWallets(updatedWallets);
+        await updateWallets({ wallets: updatedWallets });
         logger.debug('[runMigrations]: done updating all wallets');
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
@@ -335,7 +335,7 @@ export default async function runMigrations() {
         updatedWallets[walletKeys[i]] = newWallet;
       }
       logger.debug('[runMigrations]: update wallets in store to index new colors');
-      await updateWallets(updatedWallets);
+      await updateWallets({ wallets: updatedWallets });
 
       const selectedWalletId = selected?.id;
       if (selectedWalletId) {
@@ -832,7 +832,7 @@ export default async function runMigrations() {
       }
     });
 
-    if (hasUpdates) await updateWallets(wallets);
+    if (hasUpdates) await updateWallets({ wallets: wallets });
   };
 
   migrations.push(v28);

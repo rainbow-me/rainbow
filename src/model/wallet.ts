@@ -50,7 +50,7 @@ import { sanitizeTypedData } from '@/utils/signingUtils';
 import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
 import { Network } from '@/state/backendNetworks/types';
 import { GetOptions, SetOptions } from 'react-native-keychain';
-import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { getWalletForAddress } from '@/state/wallets/walletsStore';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -115,7 +115,8 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
-  ens?: string;
+  emoji?: string;
+  ens?: string | null;
   image?: string | null;
 }
 
@@ -135,9 +136,9 @@ export interface RainbowWallet {
   deviceId?: string;
 }
 
-export interface AllRainbowWallets {
+export type AllRainbowWallets = {
   [key: string]: RainbowWallet;
-}
+};
 
 export interface AllRainbowWalletsData {
   wallets: AllRainbowWallets;
@@ -302,7 +303,7 @@ export const loadWallet = async <S extends Screen>({
   }
 
   // checks if the address is a hardware wallet for proper handling
-  const selectedWallet = getWalletWithAccount(addressToUse);
+  const selectedWallet = getWalletForAddress(addressToUse);
   const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
 
   let privateKey: Awaited<ReturnType<typeof loadPrivateKey>>;

@@ -7,7 +7,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
-import { getWalletWithAccount, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { getWalletForAddress, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 
 const getAccountSymbol = (name: string) => {
   if (!name) {
@@ -65,7 +65,7 @@ export default function useWebData() {
   const updateWebProfile = useCallback(
     async (address: string, name: string, color: string) => {
       if (!webDataEnabled) return;
-      const wallet = getWalletWithAccount(address);
+      const wallet = getWalletForAddress(address);
       if (!wallet || wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color || accountColorHex,

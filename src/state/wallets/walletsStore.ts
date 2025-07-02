@@ -1,6 +1,7 @@
 import { saveKeychainIntegrityState } from '@/handlers/localstorage/globalSettings';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { objectMapValues } from '@/helpers/objectTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { fetchENSAvatarWithRetry } from '@/hooks/useENSAvatar';
 import { logger, RainbowError } from '@/logger';
@@ -26,40 +27,38 @@ import store from '@/redux/store';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time } from '@/utils';
-import { address as addressAbbreviation } from '@/utils/abbreviations';
 import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry, isValidImagePath } from '@/utils/profileUtils';
 import { captureMessage } from '@sentry/react-native';
 import { dequal } from 'dequal';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { keys } from 'lodash';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 interface AccountProfileInfo {
-  accountAddress: string;
+  accountAddress: Address;
   accountColor: number;
   accountENS?: string;
   accountImage?: string | null;
   accountName?: string;
-  accountSymbol?: string | false;
+  accountSymbol?: string;
 }
-
-type WalletNames = { [address: string]: string };
 
 interface WalletsState {
   walletReady: boolean;
   setWalletReady: () => void;
 
   selected: RainbowWallet | null;
-  setSelectedWallet: (wallet: RainbowWallet, address?: string) => Promise<void>;
+  setSelectedWallet: (wallet: RainbowWallet, address?: string) => void;
 
-  walletNames: WalletNames;
   wallets: AllRainbowWallets;
-  updateWallets: (wallets: AllRainbowWallets) => Promise<void>;
+  updateWallets: (props: { wallets?: AllRainbowWallets; selected?: RainbowWallet; accountAddress?: Address }) => Promise<void>;
+  mapUpdateWallets: (getNewWallet: (wallet: RainbowWallet) => RainbowWallet) => Promise<void>;
 
-  updateAccount: (walletId: string, account: Partial<RainbowAccount> & Pick<RainbowAccount, 'address'>) => Promise<RainbowWallet | null>;
+  updateAccountInfo: (
+    props: { address: Address; walletId: string } & Partial<Pick<RainbowAccount, 'avatar' | 'color' | 'emoji' | 'image' | 'label'>>
+  ) => void;
 
   loadWallets: () => Promise<AllRainbowWallets | void>;
 
@@ -71,7 +70,7 @@ interface WalletsState {
     ids: RainbowWallet['id'][],
     method: RainbowWallet['backupType'],
     backupFile?: RainbowWallet['backupFile']
-  ) => Promise<void>;
+  ) => void;
 
   setWalletBackedUp: (id: RainbowWallet['id'], method: RainbowWallet['backupType'], backupFile?: RainbowWallet['backupFile']) => void;
 
@@ -80,16 +79,17 @@ interface WalletsState {
   accountAddress: Address;
   setAccountAddress: (address: Address) => void;
 
-  getAccountProfileInfo: () => AccountProfileInfo;
+  getAccountProfileInfo: (address?: Address) => AccountProfileInfo;
 
-  refreshWalletInfo: (props?: { skipENS?: boolean; addresses?: string[] }) => Promise<void>;
+  refreshWalletInfo: (props?: { cachedENS?: boolean; addresses?: string[] }) => Promise<void>;
 
   checkKeychainIntegrity: () => Promise<void>;
 
   getIsDamagedWallet: () => boolean;
   getIsReadOnlyWallet: () => boolean;
   getIsHardwareWallet: () => boolean;
-  getWalletWithAccount: (accountAddress: string) => RainbowWallet | undefined;
+  getWalletForAddress: (address: string) => RainbowWallet | undefined;
+  getAccountForAddress: (address: string) => RainbowAccount | undefined;
 
   clearWalletState: (options?: { resetKeychain?: boolean }) => Promise<void>;
 }
@@ -103,146 +103,88 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
     getIsHardwareWallet: () => !!get().selected?.deviceId,
 
     selected: null,
-    async setSelectedWallet(wallet, address) {
-      if (address) {
-        const accountAddress = ensureValidHex(address);
-        saveAddress(accountAddress);
-      }
-      setSelectedWalletInKeychain(wallet);
 
-      const wallets = get().wallets;
-      const walletInfo = await refreshWalletsInfo({
-        wallets,
-        cachedENS: true,
-        ...(address && {
-          addresses: [address],
-        }),
+    async setSelectedWallet(wallet, address) {
+      set({
+        accountAddress: address ? ensureValidHex(address) : get().accountAddress,
+        selected: {
+          ...wallet,
+        },
       });
 
-      // ensure not memoized
-      const selected = {
-        ...wallet,
-      };
-
-      if (address) {
-        set({
-          ...walletInfo,
-          accountAddress: ensureValidHex(address),
-          selected,
-        });
-      } else {
-        set({
-          ...walletInfo,
-          selected,
-        });
-      }
+      await Promise.all([
+        get().refreshWalletInfo({
+          addresses: address ? [address] : undefined,
+        }),
+        (() => {
+          if (address) {
+            const accountAddress = ensureValidHex(address);
+            return saveAddress(accountAddress);
+          }
+        })(),
+        setSelectedWalletInKeychain(wallet),
+      ]);
     },
-
-    walletNames: {},
 
     wallets: {},
-    updateWallets: async walletsIn => {
-      const { walletNames, wallets } = await refreshWalletsInfo({
-        wallets: walletsIn,
-        cachedENS: true,
-      });
-      await saveAllWallets(wallets);
-      set({ walletNames, wallets });
+
+    /**
+     * We generally want to route wallet updates through here as it will save to keychain
+     */
+    updateWallets({ wallets, accountAddress, selected }) {
+      set(state => ({
+        ...state,
+        wallets: wallets ? mergeWallets(state.wallets, wallets) : state.wallets,
+        accountAddress: accountAddress || state.accountAddress,
+        selected: selected || state.selected,
+      }));
+
+      return saveAllWallets(get().wallets);
     },
 
-    async updateAccount(walletId, account) {
-      const { wallets } = get();
-      const wallet = wallets[walletId];
-      const accounts = wallets[walletId].addresses;
-      const accountIndex = accounts.findIndex(a => isLowerCaseMatch(a.address, account.address));
-      const foundAccount = accounts[accountIndex];
-
-      if (!foundAccount) {
-        logger.warn(`updateAccount failed, no account! ${walletId} ${account?.address}`);
-        return null;
-      }
-
-      const updatedAccount = {
-        ...foundAccount,
-        ...account,
-      };
-
-      if (!account.label) {
-        const { defaultLabel } = getDefaultLabel(account.address);
-        account.label = defaultLabel;
-      }
-
-      const updatedAccounts = accounts.map((account, index) => {
-        return index === accountIndex ? updatedAccount : account;
+    // helper to make it easier to be immutable
+    async mapUpdateWallets(getter) {
+      await updateWallets({
+        wallets: objectMapValues(get().wallets, getter),
       });
+    },
 
-      const updatedWallet = {
-        ...wallet,
-        addresses: updatedAccounts,
-      };
+    updateAccountInfo({ address, avatar, color, emoji, image, label, walletId }) {
+      // avoid await - this is label/color/etc, not critical for keychain
+      void get().mapUpdateWallets(wallet => {
+        if (wallet.id !== walletId) {
+          return wallet;
+        }
 
-      const updatedWallets = {
-        ...wallets,
-        [walletId]: updatedWallet,
-      } satisfies AllRainbowWallets;
+        const updatedMetadata: Partial<Pick<RainbowAccount, 'avatar' | 'color' | 'image' | 'label'>> = {};
 
-      // no need to await here likely
-      await updateWallets(updatedWallets);
+        if (avatar !== undefined) updatedMetadata.avatar = avatar;
+        if (color !== undefined) updatedMetadata.color = color;
+        if (image !== undefined) updatedMetadata.image = image;
 
-      return updatedWallet;
+        return {
+          ...wallet,
+          addresses: wallet.addresses.map(account =>
+            account.address === address
+              ? {
+                  ...account,
+                  ...updatedMetadata,
+                  emoji: emoji ?? ((label && returnStringFirstEmoji(label)) || account.emoji),
+                  label: formatAccountLabel({ address, label, ens: account.ens }),
+                }
+              : account
+          ),
+        };
+      });
     },
 
     refreshWalletInfo: async props => {
       const { wallets } = get();
-      const info = await refreshWalletsInfo({
-        addresses: props?.addresses,
+      const refreshedWallets = await getRefreshedWallets({
+        ...props,
         wallets,
-        cachedENS: props?.skipENS,
       });
-
-      if (info) {
-        // wallets may have changed since the refresh started so lets merge them together
-        set(state => {
-          // prefer the latest state
-          const latestWallets = { ...state.wallets };
-
-          // loop the refreshed wallet info
-          for (const key in info.wallets) {
-            const latestWallet = latestWallets[key];
-            const refreshedWallet = info.wallets[key];
-
-            // if deleted or added to latest state, no need to update
-            if (!latestWallet || !refreshedWallet) {
-              continue;
-            }
-
-            // update wallet with refreshed info
-            latestWallets[key] = {
-              ...latestWallet,
-              addresses: latestWallet.addresses.map(latestAccount => {
-                const refreshedAccount = refreshedWallet.addresses.find(account => account.address === latestAccount.address);
-
-                // account has been removed, keep new state
-                if (!refreshedAccount) {
-                  return latestAccount;
-                }
-
-                return {
-                  ...latestAccount,
-                  ...refreshedAccount,
-                };
-              }),
-            };
-          }
-
-          return {
-            ...state,
-            wallets: latestWallets,
-          };
-        });
-
-        await saveAllWallets(get().wallets);
-      }
+      await get().updateWallets({ wallets: refreshedWallets });
     },
 
     walletReady: false,
@@ -258,11 +200,10 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       });
     },
 
-    getAccountProfileInfo: () => {
+    getAccountProfileInfo: providedAddress => {
       const state = get();
-      const { getWalletWithAccount } = state;
-      const address = state.accountAddress;
-      const wallet = getWalletWithAccount(address);
+      const address = providedAddress || state.accountAddress;
+      const wallet = state.getWalletForAddress(address);
       return getAccountProfileInfoFromState({ address, wallet }, state);
     },
 
@@ -272,18 +213,16 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         await cleanUpWalletKeys();
         await Promise.all([saveAddress(INITIAL_ADDRESS), resetSelectedWalletInKeychain(), saveAllWallets({})]);
       }
-
       set({
-        wallets: {},
         accountAddress: INITIAL_ADDRESS,
+        wallets: {},
         walletReady: false,
-        walletNames: {},
         selected: null,
       });
     },
 
     // this runs every time we create a wallet and ensures we normalize
-    // walletNames and refresh wallet info before setting we write to keychain
+    // and refresh wallet info before setting we write to keychain
     // inside createWallet (see setSelectedWallet call in wallet.ts) ideally
     // we wouldn't do this and would use this store as a single source of
     // setting and managing keychain
@@ -355,8 +294,19 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           return;
         }
 
-        await updateWallets(wallets);
-        await setSelectedWallet(selectedWallet, accountAddress ? ensureValidHex(accountAddress) : undefined);
+        // loadWallets is used with backup flow to set => get => set
+        // that needs refactoring be we want to await for keychain write here
+        await get().updateWallets({
+          accountAddress: accountAddress ? ensureValidHex(accountAddress) : undefined,
+          selected: selectedWallet,
+          wallets,
+        });
+
+        const { accountAddress: newAccountAddress, refreshWalletInfo } = get();
+
+        void refreshWalletInfo({ addresses: [newAccountAddress] }).then(() => {
+          refreshWalletInfo({ cachedENS: true });
+        });
 
         return wallets;
       } catch (error) {
@@ -385,13 +335,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         throw new Error(`No wallet color index`);
       }
 
-      void store.dispatch(updateWebDataEnabled(true, account.address));
-
-      setPreference(PreferenceActionType.init, 'profile', account.address, {
-        accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
-        accountSymbol: addressHashedEmoji(account.address),
-      });
-
       const newWallet: RainbowWallet = {
         ...wallets[id],
         addresses: [
@@ -407,204 +350,187 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         ],
       };
 
-      await updateWallets({
+      const newWallets = {
         ...wallets,
         [id]: newWallet,
-      });
-      await setSelectedWallet(newWallet, account.address);
+      };
 
-      return get().wallets;
+      // create flows are very slow, and keychain is safely merged
+      void get().updateWallets({
+        accountAddress: ensureValidHex(account.address),
+        selected: newWallet,
+        wallets: newWallets,
+      });
+
+      void store.dispatch(updateWebDataEnabled(true, account.address));
+      void setPreference(PreferenceActionType.init, 'profile', account.address, {
+        accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
+        accountSymbol: addressHashedEmoji(account.address),
+      });
+
+      return newWallets;
     },
 
-    setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {
-      const { wallets, selected, updateWallets, setSelectedWallet } = get();
-
-      const newWallets = { ...wallets };
-
-      let backupDate = Date.now();
-      if (backupFile) {
-        backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
-      }
-
+    setAllWalletsWithIdsAsBackedUp: (walletIds, method, backupFile) => {
       logger.log(`setting wallets as backed up`, {
         walletIds,
       });
 
-      walletIds.forEach(walletId => {
-        newWallets[walletId] = {
-          ...newWallets[walletId],
-          backedUp: true,
-          backupDate,
-          backupFile,
-          backupType: method,
-        };
-      });
-
-      await updateWallets(newWallets);
-
-      if (selected?.id && walletIds.includes(selected?.id)) {
-        await setSelectedWallet(newWallets[selected.id]);
-      }
-    },
-
-    setWalletBackedUp: (walletId, method, backupFile) => {
-      const { wallets, selected } = get();
-      const newWallets = { ...wallets };
-
       let backupDate = Date.now();
       if (backupFile) {
         backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
       }
 
-      newWallets[walletId] = {
-        ...newWallets[walletId],
-        backedUp: true,
-        backupDate,
-        backupFile,
-        backupType: method,
-      };
+      return get().mapUpdateWallets(wallet =>
+        walletIds.includes(wallet.id)
+          ? {
+              ...wallet,
+              backedUp: true,
+              backupDate,
+              backupFile,
+              backupType: method,
+            }
+          : wallet
+      );
+    },
 
-      set({
-        wallets: newWallets,
+    setWalletBackedUp: (walletId, method, backupFile) => {
+      set(state => {
+        const { selected, wallets } = state;
+
+        let backupDate = Date.now();
+        if (backupFile) {
+          backupDate = parseTimestampFromBackupFile(backupFile) ?? Date.now();
+        }
+
+        const newWallets = {
+          ...wallets,
+          [walletId]: {
+            ...wallets[walletId],
+            backedUp: true,
+            backupDate,
+            backupFile,
+            backupType: method,
+          },
+        };
+
+        return {
+          ...state,
+          selected: selected?.id === walletId ? newWallets[walletId] : state.selected,
+          wallets: newWallets,
+        };
       });
-      if (selected?.id === walletId) {
-        set({
-          selected: newWallets[walletId],
-        });
-      }
     },
 
     clearAllWalletsBackupStatus: () => {
-      const { wallets } = get();
-      const newWallets = { ...wallets };
-
-      Object.keys(newWallets).forEach(key => {
-        newWallets[key].backedUp = undefined;
-        newWallets[key].backupDate = undefined;
-        newWallets[key].backupFile = undefined;
-        newWallets[key].backupType = undefined;
-      });
-
-      set({
-        wallets: newWallets,
-      });
+      return get().mapUpdateWallets(wallet => ({
+        ...wallet,
+        backedUp: undefined,
+        backupDate: undefined,
+        backupFile: undefined,
+        backupType: undefined,
+      }));
     },
 
     checkKeychainIntegrity: async () => {
       try {
-        let healthyKeychain = true;
         logger.debug('[walletsStore]: Starting keychain integrity checks');
 
         const hasAddress = await hasKey(addressKey);
-        if (hasAddress) {
-          logger.debug('[walletsStore]: address is ok');
-        } else {
-          healthyKeychain = false;
+        if (!hasAddress) {
           logger.debug(`[walletsStore]: address is missing: ${hasAddress}`);
         }
 
         const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
-        if (hasOldSeedPhraseMigratedFlag) {
-          logger.debug('[walletsStore]: migrated flag is OK');
-        } else {
+        if (!hasOldSeedPhraseMigratedFlag) {
           logger.debug(`[walletsStore]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
         }
 
         const hasOldSeedphrase = await hasKey(seedPhraseKey);
-        if (hasOldSeedphrase) {
-          logger.debug('[walletsStore]: old seed is still present!');
-        } else {
+        if (!hasOldSeedphrase) {
           logger.debug(`[walletsStore]: old seed is present: ${hasOldSeedphrase}`);
         }
 
         const { wallets, selected } = get();
-        if (!wallets) {
-          logger.warn('[walletsStore]: wallets are missing');
-          return;
-        }
-
         if (!selected) {
           logger.warn('[walletsStore]: selectedWallet is missing');
         }
 
-        const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets[key].type !== WalletTypes.readOnly);
+        const walletsMarkedDamaged: AllRainbowWallets = Object.fromEntries(
+          await Promise.all(
+            Object.entries(wallets).map(async ([key, wallet]) => {
+              if (wallets[key].type === WalletTypes.readOnly) {
+                return [key, wallet];
+              }
 
-        for (const key of nonReadOnlyWalletKeys) {
-          let healthyWallet = true;
-          const wallet = wallets[key];
+              // A wallet is NOT damaged if:
+              // - it's not imported
+              // - and hasn't been migrated yet
+              // - and the old seedphrase is still there
+              if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
+                return [key, wallet];
+              }
 
-          const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
-          if (!seedKeyFound) {
-            healthyWallet = false;
-            logger.warn('[walletsStore]: seed key is missing');
-          } else {
-            logger.debug('[walletsStore]: seed key is present');
-          }
+              const walletMarkedDamaged = [key, { ...wallet, damaged: true }];
 
-          for (const account of wallet.addresses || []) {
-            const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
-            if (!pkeyFound) {
-              healthyWallet = false;
-              logger.warn(`[walletsStore]: pkey is missing`);
-            } else {
-              logger.debug(`[walletsStore]: pkey is present`);
-            }
-          }
+              const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
+              if (!seedKeyFound) {
+                return walletMarkedDamaged;
+              }
 
-          // Handle race condition:
-          // A wallet is NOT damaged if:
-          // - it's not imported
-          // - and hasn't been migrated yet
-          // - and the old seedphrase is still there
-          if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
-            healthyWallet = true;
-          }
+              const hasDamagedAccounts = await Promise.all(
+                wallet.addresses.map(async account => {
+                  const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
+                  return !pkeyFound;
+                })
+              );
 
-          if (!healthyWallet) {
-            logger.warn('[walletsStore]: declaring wallet unhealthy...');
-            healthyKeychain = false;
-            wallet.damaged = true;
-            set({
-              wallets,
-            });
+              if (hasDamagedAccounts.some(Boolean)) {
+                return walletMarkedDamaged;
+              }
 
-            // Update selected wallet if needed
-            if (wallets && selected && wallet.id === selected.id) {
-              logger.warn('[walletsStore]: declaring selected wallet unhealthy...');
-              set({
-                selected: wallets[wallet.id],
-              });
-            }
-            logger.debug('[walletsStore]: done updating wallets');
-          }
+              return [key, wallet];
+            })
+          )
+        );
+
+        const newWallets = Object.values(walletsMarkedDamaged);
+        const hasDamagedWallet = newWallets.some(w => w.damaged);
+
+        if (hasDamagedWallet || !hasAddress) {
+          captureMessage(`Keychain Integrity is not OK: hasAddress: ${hasAddress} hasDamagedWallet ${hasDamagedWallet}`);
+
+          const lastSelected = newWallets.find(w => w.id === get().selected?.id);
+          const newSelected = lastSelected?.damaged ? newWallets.find(w => !w.damaged) : lastSelected;
+
+          get().updateWallets({ wallets: walletsMarkedDamaged, selected: newSelected });
         }
 
-        if (!healthyKeychain) {
-          captureMessage('Keychain Integrity is not OK');
-        }
-
-        logger.debug('[walletsStore]: check completed');
         saveKeychainIntegrityState('done');
       } catch (e) {
-        logger.error(new RainbowError("[walletsStore]: error thrown'"), {
-          message: (e as Error)?.message,
-        });
+        logger.error(new RainbowError("[walletsStore]: error thrown'", e));
         captureMessage('Error running keychain integrity checks');
       }
     },
 
-    getWalletWithAccount(accountAddress: string): RainbowWallet | undefined {
+    getWalletForAddress(address: string): RainbowWallet | undefined {
       const { wallets } = get();
-      if (!wallets) {
-        return;
-      }
-
-      const lowerCaseAccountAddress = accountAddress.toLowerCase();
-      for (const key of Object.keys(wallets).sort()) {
-        const wallet = wallets[key];
-        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, lowerCaseAccountAddress));
+      if (!wallets) return;
+      for (const wallet of Object.values(wallets)) {
+        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
         if (found) {
           return wallet;
+        }
+      }
+    },
+
+    getAccountForAddress(address: string): RainbowAccount | undefined {
+      const { wallets } = get();
+      if (!wallets) return;
+      for (const wallet of Object.values(wallets)) {
+        const found = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
+        if (found) {
+          return found;
         }
       }
     },
@@ -616,111 +542,9 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
       selected: state.selected,
       accountAddress: state.accountAddress,
       wallets: state.wallets,
-      walletNames: state.walletNames,
     }),
   }
 );
-
-type GetENSInfoProps = {
-  addresses?: string[];
-  wallets: AllRainbowWallets | null;
-  cachedENS?: boolean;
-};
-
-async function refreshWalletsInfo({ addresses, wallets, cachedENS }: GetENSInfoProps) {
-  if (!wallets) {
-    throw new Error(`No wallets`);
-  }
-
-  const updatedWallets: Record<string, RainbowWallet> = {};
-  const updatedWalletNames: Record<string, string> = {};
-
-  // this is imperfect still, ideally we remove walletNames entirely as a separate concept
-  await Promise.all(
-    Object.entries(wallets).map(async ([key, wallet]) => {
-      const newAddresses = await Promise.all(
-        wallet.addresses.map(async ogAccount => {
-          if (addresses && !addresses.includes(ogAccount.address)) {
-            // skip update if we are filtering down to specific addresses
-            return ogAccount;
-          }
-          const account = await refreshAccountInfo(ogAccount, cachedENS);
-          updatedWalletNames[account.address] = account.label;
-          return account;
-        })
-      );
-
-      updatedWallets[key] = {
-        ...wallet,
-        addresses: newAddresses,
-      };
-    })
-  );
-
-  return {
-    wallets: updatedWallets,
-    walletNames: updatedWalletNames,
-  };
-}
-
-export function getDefaultLabel(address: string) {
-  const isHex = isValidHex(address);
-  const abbreviatedAddress = isHex ? addressAbbreviation(address, 4, 4) : address;
-  const defaultEmoji = addressHashedEmoji(address);
-  return {
-    defaultLabel: defaultEmoji ? `${defaultEmoji} ${abbreviatedAddress}` : address,
-    defaultEmoji,
-    abbreviatedAddress,
-  };
-}
-
-// this isn't really our primary way of updating account info, and when people pull to refresh
-// they get new info, so for ENS related stuff we can just check if not valid hex + has image
-
-async function refreshAccountInfo(account: RainbowAccount, cachedENS = false): Promise<RainbowAccount> {
-  const { abbreviatedAddress, defaultLabel } = getDefaultLabel(account.address);
-
-  const hasDefaultLabel = account.label === defaultLabel || account.label === abbreviatedAddress || account.label === account.address;
-  const hasEnoughData = typeof account.ens === 'string';
-  const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
-
-  if (shouldCacheAccount) {
-    if (!account.label) {
-      return {
-        ...account,
-        label: defaultLabel,
-      };
-    }
-
-    return account;
-  }
-
-  const ens = await fetchReverseRecordWithRetry(account.address);
-
-  if (ens) {
-    const avatar = await fetchENSAvatarWithRetry(ens);
-    const newImage = avatar?.imageUrl || null;
-
-    const shouldSetLabelToENS =
-      !account.label ||
-      (account.ens && account.ens !== ens) ||
-      // prefer users label if they set to something other than account
-      hasDefaultLabel;
-
-    return {
-      ...account,
-      image: newImage,
-      ens,
-      label: shouldSetLabelToENS ? ens : account.label,
-    };
-  } else {
-    // set to empty string so we know it's been fetched but not found
-    // will ensure shouldCacheAccount is true next time
-    account.ens = '';
-  }
-
-  return account;
-}
 
 export const useWallets = () => useWalletsStore(state => state.wallets);
 export const useWallet = (id: string) => useWallets()?.[id];
@@ -743,6 +567,138 @@ export const useWalletAddresses = () => {
   const wallets = useWallets();
   return useMemo(() => getWalletAddresses(wallets || {}), [wallets]);
 };
+
+function mergeWallets(oldWallets: AllRainbowWallets, newWallets: AllRainbowWallets) {
+  // prefer the latest state
+  const next = { ...oldWallets };
+
+  // loop the refreshed wallet info
+  for (const key in newWallets) {
+    const oldWallet = next[key];
+    const newWallet = newWallets[key];
+
+    // if deleted or added to latest state, no need to update
+    if (!oldWallet || !newWallet) {
+      continue;
+    }
+
+    // update wallet with refreshed info
+    next[key] = {
+      ...oldWallet,
+      addresses: oldWallet.addresses.map(oldAccount => {
+        const newAccount = newWallet.addresses.find(account => account.address === oldAccount.address);
+
+        // account has been removed, keep new state
+        if (!newAccount) {
+          return oldAccount;
+        }
+
+        return {
+          ...oldAccount,
+          ...newAccount,
+        };
+      }),
+    };
+  }
+
+  return next;
+}
+
+type GetENSInfoProps = {
+  addresses?: string[];
+  wallets: AllRainbowWallets | null;
+  cachedENS?: boolean;
+};
+
+async function getRefreshedWallets({ addresses, wallets, cachedENS }: GetENSInfoProps) {
+  if (!wallets) {
+    throw new Error(`No wallets`);
+  }
+
+  const updatedWallets: Record<string, RainbowWallet> = {};
+
+  await Promise.all(
+    Object.entries(wallets).map(async ([key, wallet]) => {
+      const updatedAccounts = await Promise.all(
+        wallet.addresses.map(async ogAccount => {
+          if (addresses && !addresses.includes(ogAccount.address)) {
+            // skip update if we are filtering down to specific addresses
+            return ogAccount;
+          }
+          const refreshed = await refreshAccountInfo(ogAccount, cachedENS);
+          return refreshed ? { ...ogAccount, ...refreshed } : ogAccount;
+        })
+      );
+
+      updatedWallets[key] = {
+        ...wallet,
+        addresses: updatedAccounts,
+      };
+    })
+  );
+
+  return updatedWallets;
+}
+
+async function refreshAccountInfo(
+  account: RainbowAccount,
+  cachedENS = false
+): Promise<Partial<Pick<RainbowAccount, 'ens' | 'image' | 'label'>> | null> {
+  const hasEnoughData = account.ens !== undefined;
+  const shouldCacheAccount = Boolean(cachedENS && hasEnoughData);
+  const defaultLabel = account.ens || account.address;
+
+  if (shouldCacheAccount) {
+    if (!account.label) {
+      return {
+        label: defaultLabel,
+      };
+    }
+
+    return null;
+  }
+
+  const ens = await fetchReverseRecordWithRetry(account.address);
+
+  if (ens) {
+    const avatar = await fetchENSAvatarWithRetry(ens);
+    const newImage = avatar?.imageUrl || null;
+    const hasDefaultLabel = account.label === account.ens || account.label === account.address;
+
+    const shouldSetLabelToENS =
+      !account.label ||
+      (account.ens && account.ens !== ens) ||
+      // prefer users label if they set to something other than account
+      hasDefaultLabel;
+
+    return {
+      image: newImage,
+      ens,
+      label: shouldSetLabelToENS ? ens : account.label,
+    };
+  }
+
+  // mark checked but not found
+  return {
+    ens: null,
+  };
+}
+
+export function formatAccountLabel({
+  address,
+  ens,
+  label,
+}: {
+  address: Address | string;
+  ens: string | null | undefined;
+  label: string | null | undefined;
+}): string {
+  const firstEmoji = label ? returnStringFirstEmoji(label) : null;
+  const labelWithoutEmoji = firstEmoji && label ? removeFirstEmojiFromString(label) : label;
+  const formattedLabel = labelWithoutEmoji === address ? undefined : labelWithoutEmoji;
+
+  return formattedLabel || ens || '';
+}
 
 export const isImportedWallet = (address: string): boolean => {
   const wallets = getWallets();
@@ -769,49 +725,41 @@ export const useAccountProfileInfo = () => {
   }, [colors.avatarBackgrounds, info]);
 };
 
-export const getAccountProfileInfo = (props: { address: string; wallet?: RainbowWallet }) => {
-  return getAccountProfileInfoFromState(props, useWalletsStore.getState());
-};
-
-const getAccountProfileInfoFromState = (props: { address: string; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
+const getAccountProfileInfoFromState = (props: { address: Address; wallet?: RainbowWallet }, state: WalletsState): AccountProfileInfo => {
   const wallet = props.wallet || state.selected;
   const address = props.address || state.accountAddress;
 
-  if (!wallet || !address) {
+  if (!wallet) {
     return {
       accountAddress: address,
-      accountColor: 0,
+      accountColor: addressHashedColorIndex(address) ?? 0,
+      accountSymbol: addressHashedEmoji(address) || undefined,
     };
   }
 
-  let account = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
+  const selectedAccount = wallet.addresses?.find(account => isLowerCaseMatch(account.address, address));
 
-  if (!account) {
-    // find right account
-    for (const key in state.wallets) {
-      account = state.wallets[key].addresses.find(account => isLowerCaseMatch(account.address, address));
-      if (account) break;
-    }
-  }
-
-  if (!account) {
+  if (!selectedAccount) {
     return {
       accountAddress: address,
-      accountColor: addressHashedColorIndex(ensureValidHex(address)) || 0,
+      accountColor: addressHashedColorIndex(address) ?? 0,
+      accountSymbol: addressHashedEmoji(address) || undefined,
     };
   }
 
-  const { label, color, image } = account;
-  const labelWithoutEmoji = label && removeFirstEmojiFromString(label);
-  const accountENS = account.ens || '';
-  const accountName = labelWithoutEmoji || accountENS || addressAbbreviation(address, 4, 4);
-  const accountSymbol = returnStringFirstEmoji(label) || addressHashedEmoji(address) || '🌈';
-  const accountColor = color;
+  const { label, color, emoji, ens, image } = selectedAccount;
+
+  const firstEmoji = label ? returnStringFirstEmoji(label) : null;
+  const labelWithoutEmoji = firstEmoji && label ? removeFirstEmojiFromString(label) : label;
+
+  const accountENS = ens || undefined;
+  const accountName = labelWithoutEmoji || accountENS || '';
+  const accountSymbol = emoji || addressHashedEmoji(address) || undefined;
   const accountImage = image && isValidImagePath(image) ? image : null;
 
   return {
     accountAddress: address,
-    accountColor,
+    accountColor: color,
     accountENS,
     accountImage,
     accountName,
@@ -821,21 +769,24 @@ const getAccountProfileInfoFromState = (props: { address: string; wallet?: Rainb
 
 // export static functions
 export const {
-  clearWalletState,
   checkKeychainIntegrity,
   clearAllWalletsBackupStatus,
+  clearWalletState,
   createAccount,
+  getAccountForAddress,
+  getAccountProfileInfo,
   getIsDamagedWallet,
   getIsHardwareWallet,
   getIsReadOnlyWallet,
-  getWalletWithAccount,
+  getWalletForAddress,
   loadWallets,
   refreshWalletInfo,
+  setAccountAddress,
   setAllWalletsWithIdsAsBackedUp,
   setSelectedWallet,
   setWalletBackedUp,
   setWalletReady,
-  setAccountAddress,
+  updateAccountInfo,
   updateWallets,
-  updateAccount,
+  mapUpdateWallets,
 } = useWalletsStore.getState();

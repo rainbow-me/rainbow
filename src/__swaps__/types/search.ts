@@ -41,6 +41,7 @@ export type SearchAsset = {
   symbol: string;
   type?: AssetType;
   uniqueId: UniqueId;
+  chainName?: string;
 };
 
 export type FavoritedAsset = SearchAsset & { favorite: boolean };

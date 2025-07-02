@@ -61,13 +61,14 @@ import { useSimulation } from '@/resources/transactions/transactionSimulation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
-import { getAccountProfileInfo, getWalletWithAccount, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import { getAccountProfileInfo, getWalletForAddress, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { RequestData } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { Address } from 'viem';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -213,8 +214,8 @@ export const SignTransactionSheet = () => {
     !!(simulationResult?.simulationData && itemCount === 0) && simulationResult?.simulationScanResult === TransactionScanResultType.Ok;
 
   const accountInfo = useMemo(() => {
-    const selectedWallet = wallets ? getWalletWithAccount(addressToUse) : undefined;
-    const profileInfo = getAccountProfileInfo({ wallet: selectedWallet, address: addressToUse });
+    const selectedWallet = wallets ? getWalletForAddress(addressToUse) : undefined;
+    const profileInfo = getAccountProfileInfo(addressToUse as Address);
     return {
       ...profileInfo,
       address: addressToUse,

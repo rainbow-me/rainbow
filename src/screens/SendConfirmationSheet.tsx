@@ -201,7 +201,7 @@ export const SendConfirmationSheet = () => {
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_CONFIRMATION_SHEET>>();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
-  const walletNames = useWalletsStore(state => state.walletNames);
+
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return account.address.toLowerCase() === toAddress?.toLowerCase();
@@ -404,8 +404,8 @@ export const SendConfirmationSheet = () => {
   if (!avatarName) {
     if (isValidDomainFormat(to)) {
       avatarName = to;
-    } else if (walletNames?.[to]) {
-      avatarName = walletNames[to];
+    } else if (existingAccount?.ens) {
+      avatarName = existingAccount?.ens;
     } else {
       avatarName = address(to, 4, 6) ?? 'default';
     }

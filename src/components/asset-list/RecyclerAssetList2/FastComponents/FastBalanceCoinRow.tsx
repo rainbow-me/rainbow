@@ -111,7 +111,13 @@ const MemoizedBalanceCoinRow = React.memo(
                   </Text>
                 </View>
 
-                <Text align="right" color={{ custom: valueColor }} size="16px / 22px (Deprecated)" weight="medium">
+                <Text
+                  align="right"
+                  color={{ custom: valueColor }}
+                  size="16px / 22px (Deprecated)"
+                  weight="medium"
+                  testID={`balance-coin-row-value-${item?.name}`}
+                >
                   {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
                 </Text>
               </View>

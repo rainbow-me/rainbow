@@ -1,3 +1,7 @@
+import { getENSProfile, saveENSProfile } from '@/handlers/localstorage/ens';
+import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
+import { fetchENSAddress } from '@/resources/ens/ensAddressQuery';
+import { getAccountForAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { useQuery } from '@tanstack/react-query';
 import { ensAvatarQueryKey, fetchENSAvatar } from './useENSAvatar';
 import { ensCoverQueryKey, fetchENSCover } from './useENSCover';
@@ -5,10 +9,6 @@ import { ensOwnerQueryKey, fetchENSOwner } from './useENSOwner';
 import { ensRecordsQueryKey, fetchENSRecords } from './useENSRecords';
 import { ensRegistrantQueryKey, fetchENSRegistrant } from './useENSRegistrant';
 import { ensResolverQueryKey, fetchENSResolver } from './useENSResolver';
-import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
-import { getENSProfile, saveENSProfile } from '@/handlers/localstorage/ens';
-import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
-import { fetchENSAddress } from '@/resources/ens/ensAddressQuery';
 
 const queryKey = (name: string, { supportedRecordsOnly }: { supportedRecordsOnly?: boolean } = {}) => [
   'ens-profile',
@@ -76,7 +76,6 @@ export default function useENSProfile(
   } = {}
 ) {
   const accountAddress = useAccountAddress();
-  const walletNames = useWalletsStore(state => state.walletNames);
   const { data, isLoading, isSuccess } = useQuery<UseQueryData<typeof fetchENSProfile>>(
     queryKey(name, { supportedRecordsOnly }),
     async () => fetchENSProfile(name, { supportedRecordsOnly }),
@@ -95,7 +94,7 @@ export default function useENSProfile(
   // but the name won't be set. Disabling it to avoid these cases
   const isSetNameEnabled = data?.coinAddresses?.ETH?.toLowerCase() === accountAddress?.toLowerCase();
 
-  const isPrimaryName = walletNames?.[accountAddress]?.toLowerCase() === name?.toLowerCase();
+  const isPrimaryName = getAccountForAddress(accountAddress)?.ens?.toLowerCase() === name?.toLowerCase();
 
   return {
     data,

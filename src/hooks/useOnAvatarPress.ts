@@ -6,7 +6,7 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { isZero } from '@/helpers/utilities';
 import Routes from '@/navigation/routesNames';
 import { ETH_ADDRESS } from '@/references';
-import { getIsReadOnlyWallet, updateAccount, useAccountProfileInfo, useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
+import { getIsReadOnlyWallet, updateAccountInfo, useAccountProfileInfo, useSelectedWallet, useWallets } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch, showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -57,9 +57,10 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     const account = selectedWallet.addresses.find(s => isLowerCaseMatch(s.address, accountAddress));
     if (!account) return;
 
-    await updateAccount(selectedWallet.id, {
-      ...account,
+    updateAccountInfo({
+      address: accountAddress,
       image: null,
+      walletId: selectedWallet.id,
     });
   }, [selectedWallet, accountAddress, wallets]);
 
@@ -73,9 +74,10 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       const account = selectedWallet.addresses.find(s => isLowerCaseMatch(s.address, accountAddress));
       if (!account) return;
 
-      await updateAccount(selectedWallet.id, {
-        ...account,
+      updateAccountInfo({
+        address: accountAddress,
         image: imagePath,
+        walletId: selectedWallet.id,
       });
     },
     [accountAddress, selectedWallet, wallets]

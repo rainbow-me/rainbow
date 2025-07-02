@@ -34,7 +34,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { noop } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { Address } from 'viem';
-import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { getAccountAddress, getIsReadOnlyWallet, getWalletForAddress } from '@/state/wallets/walletsStore';
 import { SEND_TRANSACTION } from './signingMethods';
 import watchingAlert from './watchingAlert';
 
@@ -342,7 +342,7 @@ const findWalletForAddress = async (address: string) => {
     return Promise.reject(new Error('Invalid address'));
   }
 
-  const selectedWallet = getWalletWithAccount(address);
+  const selectedWallet = getWalletForAddress(address);
   if (!selectedWallet) {
     return Promise.reject(new Error('Wallet not found'));
   }
