@@ -37,8 +37,8 @@ export default function useWatchWallet({
     async (walletId: string, address: string) => {
       const wallet = (wallets || {})[walletId];
       try {
-        setSelectedWallet(wallet, address);
-        initializeWallet({
+        await setSelectedWallet(wallet, address);
+        await initializeWallet({
           shouldRunMigrations: false,
           overwrite: false,
           switching: true,

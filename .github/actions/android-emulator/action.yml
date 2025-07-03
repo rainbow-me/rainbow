@@ -34,7 +34,7 @@ runs:
         sudo udevadm trigger --name-match=kvm
 
     - name: AVD cache
-      uses: useblacksmith/cache@v5
+      uses: actions/cache@v4
       id: avd-cache
       with:
         path: |
