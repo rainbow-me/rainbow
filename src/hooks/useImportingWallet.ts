@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import { fetchENSAvatar } from './useENSAvatar';
 import { initializeWallet } from '../state/wallets/initializeWallet';
 import useIsWalletEthZero from './useIsWalletEthZero';
-import useMagicAutofocus from './useMagicAutofocus';
 import usePrevious from './usePrevious';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
@@ -25,7 +24,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { IS_TEST } from '@/env';
+import { IS_IOS, IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { loadWallets, useWallets, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
@@ -51,8 +50,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const backupProvider = backupsStore(state => state.backupProvider);
 
   const inputRef = useRef<TextInput>(null);
-
-  const { handleFocus } = useMagicAutofocus(inputRef);
 
   const isSecretValid = useMemo(() => {
     return seedPhrase !== accountAddress && isValidWallet(seedPhrase);
@@ -301,46 +298,46 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             image,
           })
             .then(success => {
-              ios && handleSetImporting(false);
+              if (IS_IOS) {
+                handleSetImporting(false);
+              }
               if (success) {
-                InteractionManager.runAfterInteractions(async () => {
-                  Navigation.handleAction(
-                    Routes.SWIPE_LAYOUT,
-                    {
-                      screen: Routes.WALLET_SCREEN,
-                      params: { initialized: true },
-                    },
-                    previousWalletCount === 0
-                  );
+                Navigation.handleAction(
+                  Routes.SWIPE_LAYOUT,
+                  {
+                    screen: Routes.WALLET_SCREEN,
+                    params: { initialized: true },
+                  },
+                  previousWalletCount === 0
+                );
 
-                  if (android) {
-                    handleSetImporting(false);
-                  }
+                if (android) {
+                  handleSetImporting(false);
+                }
 
-                  if (
-                    backupProvider === walletBackupTypes.cloud &&
-                    !(
-                      IS_TEST ||
-                      isENSAddressFormat(input) ||
-                      isUnstoppableAddressFormat(input) ||
-                      isValidAddress(input) ||
-                      isValidBluetoothDeviceId(input)
-                    )
-                  ) {
-                    Navigation.handleAction(Routes.BACKUP_SHEET, {
-                      step: WalletBackupStepTypes.backup_prompt_cloud,
-                    });
-                  }
-
-                  analytics.track(analytics.event.importedSeedPhrase, {
-                    isWalletEthZero,
+                if (
+                  backupProvider === walletBackupTypes.cloud &&
+                  !(
+                    IS_TEST ||
+                    isENSAddressFormat(input) ||
+                    isUnstoppableAddressFormat(input) ||
+                    isValidAddress(input) ||
+                    isValidBluetoothDeviceId(input)
+                  )
+                ) {
+                  Navigation.handleAction(Routes.BACKUP_SHEET, {
+                    step: WalletBackupStepTypes.backup_prompt_cloud,
                   });
+                }
 
-                  walletLoadingStore.setState({
-                    loadingState: null,
-                  });
-                  dangerouslyGetParent?.()?.goBack();
+                analytics.track(analytics.event.importedSeedPhrase, {
+                  isWalletEthZero,
                 });
+
+                walletLoadingStore.setState({
+                  loadingState: null,
+                });
+                dangerouslyGetParent?.()?.goBack();
               } else {
                 if (android) {
                   handleSetImporting(false);
@@ -390,7 +387,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   return {
     busy,
-    handleFocus,
     handlePressImportButton,
     handleSetSeedPhrase,
     inputRef,
