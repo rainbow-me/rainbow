@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ChartXLabel } from '@/react-native-animated-charts/src';
+import { SharedValue } from 'react-native-reanimated';
 
 const MONTHS = [
   lang.t('expanded_state.chart.date.months.month_00'),
@@ -70,12 +71,12 @@ function formatDatetime(value: string, chartTimeDefaultValue: string) {
 
 export default function ChartDateLabel({ chartTimeDefaultValue }: { chartTimeDefaultValue: string }) {
   const formatWorklet = useCallback(
-    (value: string) => {
+    (value: SharedValue<string>) => {
       'worklet';
-      return formatDatetime(value, chartTimeDefaultValue);
+      return formatDatetime(value.value, chartTimeDefaultValue);
     },
     [chartTimeDefaultValue]
   );
 
-  return <ChartXLabel formatWorklet={formatWorklet} size="20pt" color="labelQuaternary" tabularNumbers weight="bold" />;
+  return <ChartXLabel color="labelQuaternary" formatWorklet={formatWorklet} size="20pt" tabularNumbers weight="bold" />;
 }

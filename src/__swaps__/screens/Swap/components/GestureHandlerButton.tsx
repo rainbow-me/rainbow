@@ -58,7 +58,7 @@ export function GestureHandlerButton({
   disabled = false,
   hapticTrigger = 'tap-start',
   hapticType = 'selection',
-  hitSlop = 10,
+  hitSlop,
   longPressDuration = LONG_PRESS_DURATION_IN_MS,
   longPressRef,
   onLayout,
