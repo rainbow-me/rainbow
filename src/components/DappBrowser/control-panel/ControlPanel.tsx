@@ -39,12 +39,11 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { getWalletWithAccount, setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
+import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
 import { address } from '@/utils/abbreviations';
-import { getDappHost } from '@/utils/connectedApps';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -56,6 +55,7 @@ import { toHex } from 'viem';
 import { TOP_INSET } from '../Dimensions';
 import Navigation from '@/navigation/Navigation';
 import { RAINBOW_HOME } from '../constants';
+import { getDappHost } from '../handleProviderRequest';
 import { formatUrl } from '../utils';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
@@ -77,7 +77,7 @@ export const ControlPanel = () => {
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_CONTROL_PANEL>>();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
-  const activeTabHost = getDappHost(activeTabUrl || '') || RAINBOW_HOME;
+  const activeTabHost = getDappHost(activeTabUrl) || RAINBOW_HOME;
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
   const addSession = useAppSessionsStore(state => state.addSession);
@@ -95,14 +95,17 @@ export const ControlPanel = () => {
     [hostSessions]
   );
 
-  const [isConnected, setIsConnected] = useState(!!(activeTabHost && currentSession?.address));
+  const [isConnected, setIsConnected] = useState(() => !!(activeTabHost && currentSession?.address));
   const [currentAddress, setCurrentAddress] = useState<string>(
-    currentSession?.address || hostSessions?.activeSessionAddress || accountAddress
+    () => currentSession?.address || hostSessions?.activeSessionAddress || accountAddress
   );
   const [currentChainId, setCurrentChainId] = useState<ChainId>(currentSession?.chainId || ChainId.mainnet);
 
   // listens to the current active tab and sets the account
   useEffect(() => {
+    const isOnHomepage = useBrowserStore.getState().isOnHomepage();
+    if (isOnHomepage) setIsConnected(false);
+
     if (activeTabHost) {
       if (!currentSession) {
         setIsConnected(false);
@@ -140,7 +143,7 @@ export const ControlPanel = () => {
             IconComponent: account.image ? (
               <ListAvatar url={account.image} />
             ) : (
-              <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
+              <ListEmojiAvatar address={account.address} color={account.color} emoji={account.emoji} label={account.label} />
             ),
             label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
             secondaryLabel: wallet.type === WalletTypes.readOnly ? i18n.t(i18n.l.wallet.change_wallet.watching) : balanceText,
@@ -415,8 +418,8 @@ const HomePanel = memo(function HomePanel({
     // Check if it's different to the globally selected wallet
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
-      setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
-      initializeWallet({
+      await setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
+      await initializeWallet({
         shouldRunMigrations: false,
         overwrite: false,
         switching: true,
@@ -797,17 +800,19 @@ const ListAvatar = memo(function ListAvatar({ size = 36, url }: { size?: number;
 const ListEmojiAvatar = memo(function ListEmojiAvatar({
   address,
   color,
+  emoji,
   label,
   size = 36,
 }: {
   address: string;
   color: number | string;
+  emoji: string | undefined;
   label: string;
   size?: number;
 }) {
   const fillTertiary = useForegroundColor('fillTertiary');
   const emojiAvatar = returnStringFirstEmoji(label);
-  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address)) || '';
+  const accountSymbol = emoji || returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address)) || '';
 
   const backgroundColor =
     typeof color === 'number'

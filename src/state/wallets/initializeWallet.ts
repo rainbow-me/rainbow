@@ -10,7 +10,7 @@ import * as Sentry from '@sentry/react-native';
 import { isNil } from 'lodash';
 import { Address } from 'viem';
 import runMigrations from '../../model/migrations';
-import { InitializeWalletParams, walletInit } from '../../model/wallet';
+import { createWallet, InitializeWalletParams, walletInit } from '../../model/wallet';
 import { settingsLoadNetwork } from '../../redux/settings';
 import { loadWallets, setAccountAddress, setWalletReady } from '@/state/wallets/walletsStore';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
@@ -36,7 +36,7 @@ function getWalletStatus(isNew: boolean, isImporting: boolean): WalletStatus {
 let runId = 0;
 
 export const initializeWallet = async (props: InitializeWalletParams = {}) => {
-  runId = Math.random();
+  runId += 1;
   const curRunId = runId;
   const shouldCancel = () => curRunId !== runId;
 
@@ -44,6 +44,7 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     seedPhrase,
     color = null,
     name = null,
+    shouldCreateFirstWallet = false,
     shouldRunMigrations = false,
     overwrite = false,
     checkedWallet = null,
@@ -53,18 +54,22 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     userPin,
   } = props;
 
-  const network = store.getState().settings.network;
   let walletStatus: WalletStatus = 'unknown';
   try {
     PerformanceTracking.startMeasuring(event.performanceInitializeWallet);
     logger.debug('[initializeWallet]: Start wallet setup');
 
+    if (shouldCreateFirstWallet) await createWallet();
+
     const isImporting = !!seedPhrase;
     logger.debug(`[initializeWallet]: isImporting? ${isImporting}`);
+
+    let didLoadWallets = false;
 
     if (shouldRunMigrations && !seedPhrase) {
       logger.debug('[initializeWallet]: shouldRunMigrations && !seedPhrase? => true');
       await loadWallets();
+      didLoadWallets = true;
       logger.debug('[initializeWallet]: walletsLoadState call #1');
       await runMigrations();
       logger.debug('[initializeWallet]: done with migrations');
@@ -73,7 +78,12 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
     setIsSmallBalancesOpen(false);
 
     // Load the network first
-    await store.dispatch(settingsLoadNetwork());
+    let network = store.getState().settings.network;
+    if (!network) {
+      await store.dispatch(settingsLoadNetwork());
+      network = store.getState().settings.network;
+    }
+
     if (shouldCancel()) return null;
 
     const { isNew, walletAddress } = await walletInit({
@@ -119,12 +129,12 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
       // Except when switching wallets!
       await runKeychainIntegrityChecks();
       if (shouldCancel()) return null;
-    }
 
-    if (seedPhrase || isNew) {
-      logger.debug('[initializeWallet]: walletsLoadState call #2');
-      await loadWallets();
-      if (shouldCancel()) return null;
+      if (seedPhrase || isNew) {
+        logger.debug('[initializeWallet]: walletsLoadState call #2');
+        if (!didLoadWallets) await loadWallets();
+        if (shouldCancel()) return null;
+      }
     }
 
     if (isNil(walletAddress)) {
@@ -167,7 +177,6 @@ export const initializeWallet = async (props: InitializeWalletParams = {}) => {
   } catch (e) {
     const error = ensureError(e);
     PerformanceTracking.clearMeasure(event.performanceInitializeWallet);
-    console.log('what was the error', error?.message, error?.stack);
     logger.error(new RainbowError('[initializeWallet]: Error while initializing wallet', error), {
       walletStatus,
     });

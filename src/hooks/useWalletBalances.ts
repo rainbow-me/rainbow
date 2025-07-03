@@ -1,7 +1,8 @@
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { AllRainbowWallets } from '@/model/wallet';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
-import { getWalletAddresses, getWallets } from '@/state/wallets/walletsStore';
+import { getWalletAddresses } from '@/state/wallets/walletsStore';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 
@@ -24,12 +25,11 @@ export type WalletBalanceResult = {
  * @param wallets - All Rainbow wallets
  * @returns Balances for all wallets
  */
-const useWalletBalances = (): WalletBalanceResult => {
+const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResult => {
   const summaryData = useWalletSummary();
 
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};
-    const wallets = getWallets();
 
     if (!summaryData || !wallets) {
       return result;
@@ -63,7 +63,7 @@ const useWalletBalances = (): WalletBalanceResult => {
     }
 
     return result;
-  }, [summaryData]);
+  }, [summaryData, wallets]);
 
   return {
     balances,

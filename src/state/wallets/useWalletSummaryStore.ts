@@ -1,5 +1,4 @@
 import { NativeCurrencyKey } from '@/entities';
-import { getConsistentArray } from '@/helpers/getConsistentArray';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
@@ -28,33 +27,38 @@ async function fetchWalletSummary(
 }
 
 export const useWalletSummary = () => {
-  return useWalletSummaryQueryStore(state => state.getData()?.data);
+  return useWalletSummaryQueryStore(state => state.summary?.data);
 };
 
 export const getWalletSummary = () => {
-  return useWalletSummaryQueryStore.getState().getData();
+  return useWalletSummaryQueryStore.getState().summary;
 };
 
 export const refetchWalletSummary = () => {
   return useWalletSummaryQueryStore.getState().fetch(undefined, { force: true });
 };
 
-const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs>(
+type WalletSummaryState = {
+  summary: WalletSummary | null;
+};
+
+const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummaryArgs, WalletSummaryState>(
   {
     fetcher: fetchWalletSummary,
+    setData: ({ data, set }) => set({ summary: data }),
     params: {
-      addresses: $ => $(useWalletsStore, state => getConsistentArray(getWalletAddresses(state.wallets || {}))),
+      addresses: $ => $(useWalletsStore, state => getWalletAddresses(state.wallets)),
       currency: $ => $(userAssetsStoreManager).currency,
     },
-    maxRetries: 10,
-    staleTime: time.minutes(1),
     cacheTime: time.zero,
-    // keeps last balances, otherwise you get loading bars during refreshes of balances
     keepPreviousData: true,
+    maxRetries: 10,
+    staleTime: time.minutes(2),
   },
-  {
-    storageKey: 'walletSummary',
-  }
+
+  () => ({ summary: null }),
+
+  { storageKey: 'walletSummaryStore' }
 );
 
 interface WalletSummary {

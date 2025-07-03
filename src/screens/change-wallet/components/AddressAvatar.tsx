@@ -14,17 +14,18 @@ function AddressImageAvatar({ url, size = DEFAULT_SIZE }: { url: string; size?: 
 function AddressEmojiAvatar({
   address,
   color,
+  emoji,
   label,
   size = DEFAULT_SIZE,
 }: {
   address: string;
   color: string | number;
+  emoji?: string;
   label: string;
   size?: number;
 }) {
   const fillTertiary = useForegroundColor('fillTertiary');
-  const emojiAvatar = returnStringFirstEmoji(label);
-  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address)) || '';
+  const accountSymbol = emoji || returnStringFirstEmoji(returnStringFirstEmoji(label) || addressHashedEmoji(address)) || '';
 
   const backgroundColor =
     typeof color === 'number'
@@ -61,12 +62,14 @@ function AddressEmojiAvatar({
 export const AddressAvatar = React.memo(function AddressAvatar({
   address,
   color,
+  emoji,
   label,
   size = DEFAULT_SIZE,
   url,
 }: {
   address: string;
   color: string | number;
+  emoji?: string;
   label: string;
   size?: number;
   url?: string | null;
@@ -74,6 +77,6 @@ export const AddressAvatar = React.memo(function AddressAvatar({
   return url ? (
     <AddressImageAvatar url={url} size={size} />
   ) : (
-    <AddressEmojiAvatar address={address} color={color} label={label} size={size} />
+    <AddressEmojiAvatar address={address} color={color} emoji={emoji} label={label} size={size} />
   );
 });
