@@ -14,7 +14,7 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { updateWallets, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
+import { clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -35,7 +35,6 @@ import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { analyzeEnvVariables } from '@/utils/analyzeEnvVariables';
 import FastImage from 'react-native-fast-image';
-import { cleanUpWalletKeys } from '@/model/wallet';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -170,35 +169,19 @@ const DevSection = () => {
   };
 
   const clearWallets = async () => {
-    await wipeKeychain();
-    await cleanUpWalletKeys();
-    useWalletsStore.persist.clearStorage();
+    const isAuth = await isAuthenticated();
+    if (isAuth) {
+      const shouldWipeKeychain = await confirmKeychainAlert();
+      if (shouldWipeKeychain) {
+        await clearWalletState({ resetKeychain: true });
+      }
+    }
     // we need to navigate back to the welcome screen
     navigate(Routes.WELCOME_SCREEN);
   };
 
   const wipeKeychainWithAlert = async () => {
-    const confirmKeychainAlert = () =>
-      new Promise<boolean>(resolve => {
-        Alert.alert(lang.t('developer_settings.keychain.alert_title'), lang.t('developer_settings.keychain.alert_body'), [
-          {
-            onPress: () => {
-              resolve(true);
-            },
-            text: lang.t('developer_settings.keychain.delete_wallets'),
-          },
-          {
-            onPress: () => {
-              resolve(false);
-            },
-            style: 'cancel',
-            text: lang.t('button.cancel'),
-          },
-        ]);
-      });
-
     const isAuth = await isAuthenticated();
-
     // we should require auth before wiping the keychain
     if (isAuth) {
       const shouldWipeKeychain = await confirmKeychainAlert();
@@ -428,5 +411,25 @@ const DevSection = () => {
     </MenuContainer>
   );
 };
+
+function confirmKeychainAlert(): Promise<boolean> {
+  return new Promise<boolean>(resolve => {
+    Alert.alert(lang.t('developer_settings.keychain.alert_title'), lang.t('developer_settings.keychain.alert_body'), [
+      {
+        onPress: () => {
+          resolve(true);
+        },
+        text: lang.t('developer_settings.keychain.delete_wallets'),
+      },
+      {
+        onPress: () => {
+          resolve(false);
+        },
+        style: 'cancel',
+        text: lang.t('button.cancel'),
+      },
+    ]);
+  });
+}
 
 export default DevSection;

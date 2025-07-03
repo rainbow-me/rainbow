@@ -230,7 +230,7 @@ export type PairHardwareWalletNavigatorParams = {
 };
 
 export type ModalParams = {
-  actionType?: 'Import' | 'Create';
+  actionType?: 'Import' | 'Create' | 'Switch';
   additionalPadding?: boolean;
   address?: string | undefined;
   asset?: (ParsedAddressAsset | UniqueAsset)[];

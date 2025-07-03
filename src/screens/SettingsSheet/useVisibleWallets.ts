@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import * as i18n from '@/languages';
 
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
@@ -33,25 +34,28 @@ export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount:
 };
 
 export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWalletProps): RainbowWallet[] => {
-  if (!wallets) {
-    return [];
-  }
+  return useMemo(() => {
+    walletTypeCount.phrase = 0;
+    walletTypeCount.privateKey = 0;
 
-  return Object.keys(wallets)
-    .filter(key => wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth)
-    .map(key => {
-      const wallet = wallets[key];
+    if (!wallets) return [];
 
-      if (wallet.type === WalletTypes.mnemonic) {
-        walletTypeCount.phrase += 1;
-      } else if (wallet.type === WalletTypes.privateKey) {
-        walletTypeCount.privateKey += 1;
-      }
+    return Object.keys(wallets)
+      .filter(key => wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth)
+      .map(key => {
+        const wallet = wallets[key];
 
-      return {
-        ...wallet,
-        name: getTitleForWalletType(wallet.type, walletTypeCount),
-        addresses: Object.values(wallet.addresses).filter(address => address.visible),
-      };
-    });
+        if (wallet.type === WalletTypes.mnemonic) {
+          walletTypeCount.phrase += 1;
+        } else if (wallet.type === WalletTypes.privateKey) {
+          walletTypeCount.privateKey += 1;
+        }
+
+        return {
+          ...wallet,
+          name: getTitleForWalletType(wallet.type, walletTypeCount),
+          addresses: Object.values(wallet.addresses).filter(address => address.visible),
+        };
+      });
+  }, [wallets, walletTypeCount]);
 };
