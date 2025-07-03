@@ -6,6 +6,7 @@ import { useSharedValue, SharedValue, useAnimatedStyle, useAnimatedReaction, wit
 import { useListen } from '@/state/internal/hooks/useListen';
 import { useRoute } from '@react-navigation/native';
 import { toUnixTime } from '@/worklets/dates';
+import { usePrevious } from '@/hooks';
 
 interface LiveTokenValueParams {
   tokenId: string;
@@ -22,10 +23,20 @@ export function useLiveTokenSharedValue({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): SharedValue<string> {
+  const prevTokenId = usePrevious(tokenId);
   const { name: routeName } = useRoute();
   const liveValue = useSharedValue(initialValue);
   // prevValue and liveValue will always be equal, but there is a cost to reading shared values
   const prevValue = useRef(initialValue);
+
+  // Reset values when tokenId changes, unsubscribe from previous token
+  useEffect(() => {
+    if (prevTokenId && prevTokenId !== tokenId) {
+      liveValue.value = initialValue;
+      prevValue.current = initialValue;
+      removeSubscribedToken({ route: routeName, tokenId: prevTokenId });
+    }
+  }, [initialValue, liveValue, prevTokenId, tokenId, routeName]);
 
   const updateToken = useCallback(
     (token: TokenData) => {
@@ -68,10 +79,20 @@ export function useLiveTokenValue({
   autoSubscriptionEnabled = true,
   selector,
 }: LiveTokenValueParams): string {
+  const prevTokenId = usePrevious(tokenId);
   const { name: routeName } = useRoute();
   const [liveValue, setLiveValue] = useState(initialValue);
   // prevLiveValue and liveValue will always be equal, but state is async
   const prevLiveValue = useRef(initialValue);
+
+  // Reset values when tokenId changes, unsubscribe from previous token
+  useEffect(() => {
+    if (prevTokenId && prevTokenId !== tokenId) {
+      setLiveValue(initialValue);
+      prevLiveValue.current = initialValue;
+      removeSubscribedToken({ route: routeName, tokenId: prevTokenId });
+    }
+  }, [initialValue, prevTokenId, tokenId, routeName]);
 
   const updateToken = useCallback(
     (token: TokenData) => {
