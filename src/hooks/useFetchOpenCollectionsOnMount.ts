@@ -29,8 +29,9 @@ export default function useFetchOpenCollectionsOnMount() {
 
     const { fetchNftCollection } = useNftsStore.getState(address);
     const promises = collections.map(collectionId => {
-      logger.debug(`[useFetchOpenCollectionsOnMount] Creating promise for collection: ${collectionId}`);
-      return fetchNftCollection(collectionId, collectionId.toLowerCase() === 'showcase');
+      const normalizedCollectionId = collectionId.toLowerCase();
+      logger.debug(`[useFetchOpenCollectionsOnMount] Creating promise for collection: ${normalizedCollectionId}`);
+      return fetchNftCollection(normalizedCollectionId);
     });
 
     logger.debug(`[useFetchOpenCollectionsOnMount] Starting PromiseAllWithFails with ${promises.length} promises`);
