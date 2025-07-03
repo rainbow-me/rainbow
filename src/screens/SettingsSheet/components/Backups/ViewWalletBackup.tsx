@@ -162,12 +162,13 @@ const ViewWalletBackup = () => {
 
   const onCreateNewWallet = useCallback(async () => {
     try {
+      if (creatingWallet.current) return;
+      creatingWallet.current = true;
+
       analytics.track(analytics.event.addWalletFlowStarted, {
         isFirstWallet: false,
         type: 'new',
       });
-      if (creatingWallet.current) return;
-      creatingWallet.current = true;
 
       InteractionManager.runAfterInteractions(() => {
         setTimeout(() => {
@@ -187,7 +188,7 @@ const ViewWalletBackup = () => {
               try {
                 // If we found it and it's not damaged use it to create the new account
                 if (wallet && !wallet.damaged) {
-                  void createAccountInExistingWallet({
+                  await createAccountInExistingWallet({
                     id: wallet.id,
                     color,
                     name,
@@ -209,18 +210,16 @@ const ViewWalletBackup = () => {
             },
             profile: {
               color: null,
-              name: ``,
+              name: '',
             },
             type: 'wallet_profile',
           });
         }, 50);
       });
     } catch (e) {
-      logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
-        error: e,
-      });
+      logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`, e));
     }
-  }, [creatingWallet, navigate, wallet]);
+  }, [navigate, wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {
