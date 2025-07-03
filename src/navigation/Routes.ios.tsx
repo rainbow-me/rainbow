@@ -109,6 +109,7 @@ import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
+import { DedelegationPanel } from '@/screens/delegation/DedelegationPanel';
 import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
@@ -281,6 +282,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
+      <NativeStack.Screen component={DedelegationPanel} name={Routes.DEDELEGATION_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
       <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />

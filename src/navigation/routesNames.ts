@@ -111,6 +111,7 @@ const Routes = {
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
   NETWORK_SELECTOR: 'NetworkSelector',
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
+  DEDELEGATION_PANEL: 'DedelegationPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
   KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',
 } as const;

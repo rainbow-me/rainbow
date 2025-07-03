@@ -183,12 +183,12 @@ GEM
       google-apis-core (>= 0.11.0, < 2.a)
     google-apis-storage_v1 (0.31.0)
       google-apis-core (>= 0.11.0, < 2.a)
-    google-cloud-core (1.8.0)
+    google-cloud-core (1.7.1)
       google-cloud-env (>= 1.0, < 3.a)
       google-cloud-errors (~> 1.0)
     google-cloud-env (1.6.0)
       faraday (>= 0.17.3, < 3.0)
-    google-cloud-errors (1.5.0)
+    google-cloud-errors (1.4.0)
     google-cloud-storage (1.47.0)
       addressable (~> 2.8)
       digest-crc (~> 0.4)
@@ -243,7 +243,7 @@ GEM
     ruby2_keywords (0.0.5)
     rubyzip (2.4.1)
     security (0.1.5)
-    signet (0.20.0)
+    signet (0.19.0)
       addressable (~> 2.8)
       faraday (>= 0.17.5, < 3.a)
       jwt (>= 1.5, < 3.0)
@@ -291,4 +291,4 @@ RUBY VERSION
    ruby 2.7.5p203
 
 BUNDLED WITH
-   2.2.31
+   2.4.22

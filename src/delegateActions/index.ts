@@ -20,8 +20,6 @@ import { ATOMIC_SWAPS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { encodeDelegateCalldata, executeBatchedTransaction, getCanDelegate } from 'rainbow-delegation';
 
-const MAX_UINT = 2n ** 256n - 1n;
-
 export const walletExecuteWithDelegate = async ({
   walletClient,
   publicClient,
@@ -91,10 +89,11 @@ export const useShouldDelegate = (chainId: number, quote: Quote | CrosschainQuot
 export const getApproveAndSwapCalls = async (quote: Quote | CrosschainQuote) => {
   const provider = getProvider({ chainId: quote.chainId });
   const wallet = await loadWallet({ provider });
+  const approvalAmount = BigInt(quote.sellAmount.toString());
   const approvalCalldata = encodeFunctionData({
     abi: erc20Abi,
     functionName: 'approve',
-    args: [quote.allowanceTarget as Address, MAX_UINT],
+    args: [quote.allowanceTarget as Address, approvalAmount],
   });
 
   let swapCalldata;
@@ -136,4 +135,47 @@ export const estimateDelegatedApproveAndSwapGasLimit = async (quote: Quote | Cro
     return simulatedEstimate;
   }
   return null;
+};
+
+export const removeDelegation = async ({
+  walletClient,
+  publicClient,
+}: {
+  walletClient: WalletClient;
+  publicClient: PublicClient;
+}): Promise<`0x${string}`> => {
+  if (!walletClient.account) {
+    throw new Error('Wallet client must have an account');
+  }
+
+  const userAddress = walletClient.account.address as Address;
+
+  const auth = await walletClient.signAuthorization({
+    account: walletClient.account,
+    contractAddress: '0x0000000000000000000000000000000000000000',
+    executor: 'self',
+  });
+
+  const gas = await publicClient.estimateGas({
+    account: userAddress,
+    to: userAddress,
+    value: 0n,
+    data: '0x',
+  });
+
+  try {
+    const txHash = await walletClient.sendTransaction({
+      account: walletClient.account,
+      to: userAddress,
+      data: '0x',
+      gas,
+      value: 0n,
+      chain: publicClient.chain,
+      authorizationList: [auth],
+    });
+
+    return txHash as `0x${string}`;
+  } catch (error) {
+    throw new Error(`Failed to remove delegation on chain id ${publicClient.chain?.id}: ${(error as Error).message}`);
+  }
 };

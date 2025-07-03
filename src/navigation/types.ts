@@ -19,17 +19,14 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { Checkbox } from '@/screens/SendConfirmationSheet';
 import { ENSProfile } from '@/entities/ens';
 import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { BackupFile, CloudBackups } from '@/model/backup';
+import { BackupFile } from '@/model/backup';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
-import { NftOffer, PoapEvent, ReservoirCollection } from '@/graphql/__generated__/arc';
+import { ReservoirCollection } from '@/graphql/__generated__/arc';
 import { Contact } from '@/redux/contacts';
 import { NavigatorScreenParams } from '@react-navigation/native';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { LearnCardKey, LearnCategory } from '@/components/cards/utils/types';
-import { CardType } from '@/components/cards/GenericCard';
 import { MutableRefObject } from 'react';
-import { ActiveTabRef } from '@/components/DappBrowser/types';
 import { WalletNotificationSettings } from '@/notifications/settings';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { BigNumberish } from '@ethersproject/bignumber';
@@ -573,61 +570,13 @@ export type RootStackParamList = {
     selectedBackup: BackupFile;
   };
 
-  [Routes.TOKEN_LAUNCHER_SCREEN]: {
-    gestureEnabled?: boolean;
-  };
-
-  [Routes.LEARN_WEB_VIEW_SCREEN]: {
-    category: LearnCategory;
-    url: string;
-    displayType: CardType;
-    routeName: string;
-    key: LearnCardKey;
-  };
-
-  [Routes.NFT_SINGLE_OFFER_SHEET]: {
-    offer: NftOffer;
-    longFormHeight?: number;
-  };
-
-  [Routes.VIEW_CLOUD_BACKUPS]: {
-    backups: CloudBackups;
-    title: string;
-  };
-
-  [Routes.VIEW_WALLET_BACKUP]: {
-    imported?: boolean;
-    title: string;
-    walletId: string;
-  };
-
-  [Routes.RESTORE_SHEET]: {
-    fromSettings?: boolean;
-  };
-  [Routes.PAIR_HARDWARE_WALLET_NAVIGATOR]:
-    | NavigatorScreenParams<{
-        [Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET]: { shouldGoBack?: boolean };
-        [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: undefined;
-      }>
-    | PairHardwareWalletNavigatorParams;
-  [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: PairHardwareWalletNavigatorParams;
-  [Routes.ADD_WALLET_NAVIGATOR]:
-    | NavigatorScreenParams<{
-        [Routes.ADD_WALLET_SHEET]: AddWalletNavigatorParams;
-        [Routes.IMPORT_OR_WATCH_WALLET_SHEET]: AddWalletNavigatorParams;
-      }>
-    | AddWalletNavigatorParams;
-  [Routes.ADD_WALLET_SHEET]: AddWalletNavigatorParams;
-  [Routes.IMPORT_OR_WATCH_WALLET_SHEET]: AddWalletNavigatorParams;
-  [Routes.DAPP_BROWSER_SCREEN]: {
-    url?: string;
-  };
-  [Routes.DAPP_BROWSER_CONTROL_PANEL]: {
-    activeTabRef: MutableRefObject<ActiveTabRef | null>;
-  };
-  [Routes.CHOOSE_WALLET_GROUP]: undefined;
-  [Routes.POAP_SHEET]: {
-    event: PoapEvent;
-  };
   [Routes.MODAL_SCREEN]: ModalParams;
+  [Routes.CLAIM_REWARDS_PANEL]: undefined;
+  [Routes.DEDELEGATION_PANEL]: {
+    delegationsToRevoke: Array<{
+      chainId: number;
+      contractAddress: string;
+    }>;
+  };
+  [Routes.KING_OF_THE_HILL_EXPLAIN_SHEET]: undefined;
 } & UntypedRoutes;

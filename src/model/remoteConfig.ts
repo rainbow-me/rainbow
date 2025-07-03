@@ -12,10 +12,11 @@ import { shallowEqual } from '@/worklets/comparisons';
 
 const REMOTE_CONFIG_VERSION = digitsOnly(CURRENT_APP_VERSION);
 
-export interface RainbowConfig extends Record<string, string | boolean | number | Record<string, number>> {
+export interface RainbowConfig extends Record<string, string | boolean | number | Record<string, number | string>> {
   /* Objects */
   default_slippage_bips: Record<string, number>;
   default_slippage_bips_chainId: Record<string, number>;
+  dedelegation: Record<string, string>; // { [chainId]: contractAddress }
 
   /* Strings */
   op_nft_network: string;
@@ -133,6 +134,7 @@ export const DEFAULT_CONFIG = {
   /* Objects */
   default_slippage_bips: DEFAULT_SLIPPAGE_BIPS,
   default_slippage_bips_chainId: DEFAULT_SLIPPAGE_BIPS_CHAINID,
+  dedelegation: {},
 
   /* Strings */
   op_nft_network: 'op-mainnet',
@@ -206,11 +208,13 @@ type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
 type StringifiedFirebaseDefaults = Readonly<{
   default_slippage_bips: string;
   default_slippage_bips_chainId: string;
+  dedelegation: string;
 }>;
 
 const STRINGIFIED_FIREBASE_DEFAULTS: StringifiedFirebaseDefaults = {
   default_slippage_bips: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips),
   default_slippage_bips_chainId: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips_chainId),
+  dedelegation: JSON.stringify(DEFAULT_CONFIG.dedelegation),
 };
 
 type FirebaseConfigDefaults = Omit<RainbowConfig, keyof StringifiedFirebaseDefaults> &

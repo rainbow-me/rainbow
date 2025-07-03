@@ -93,6 +93,7 @@ import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
+import { DedelegationPanel } from '@/screens/delegation/DedelegationPanel';
 import { RootStackParamList } from './types';
 import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
@@ -246,6 +247,7 @@ function BSNavigator() {
       <BSStack.Screen component={NetworkSelector} name={Routes.NETWORK_SELECTOR} />
       <BSStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} />
       <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
+      <BSStack.Screen component={DedelegationPanel} name={Routes.DEDELEGATION_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
       <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
