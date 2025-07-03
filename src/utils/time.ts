@@ -1,14 +1,16 @@
 type TimeInMs = number;
 type TimeUtils = {
-  /** Convert seconds to milliseconds */
+  /** Returns the input value unchanged, in milliseconds */
+  ms: (ms: number) => TimeInMs;
+  /** Converts seconds to milliseconds */
   seconds: (seconds: number) => TimeInMs;
-  /** Convert minutes to milliseconds */
+  /** Converts minutes to milliseconds */
   minutes: (minutes: number) => TimeInMs;
-  /** Convert hours to milliseconds */
+  /** Converts hours to milliseconds */
   hours: (hours: number) => TimeInMs;
-  /** Convert days to milliseconds */
+  /** Converts days to milliseconds */
   days: (days: number) => TimeInMs;
-  /** Convert weeks to milliseconds */
+  /** Converts weeks to milliseconds */
   weeks: (weeks: number) => TimeInMs;
   /** Represents infinite time */
   infinity: typeof Infinity;
@@ -17,8 +19,10 @@ type TimeUtils = {
 };
 
 /**
- * Utility object for time conversions and helpers.
+ * Worklet-compatible utility object for defining time values.
+ *
  * All methods convert the input unit to milliseconds.
+ *
  * @example
  * time.seconds(5) // 5 seconds
  * time.minutes(2) // 2 minutes
@@ -30,11 +34,30 @@ type TimeUtils = {
  * time.zero // 0
  */
 export const time: TimeUtils = {
-  seconds: seconds => seconds * 1000,
-  minutes: minutes => time.seconds(minutes * 60),
-  hours: hours => time.minutes(hours * 60),
-  days: days => time.hours(days * 24),
-  weeks: weeks => time.days(weeks * 7),
+  ms: ms => {
+    'worklet';
+    return ms;
+  },
+  seconds: seconds => {
+    'worklet';
+    return seconds * 1000;
+  },
+  minutes: minutes => {
+    'worklet';
+    return time.seconds(minutes * 60);
+  },
+  hours: hours => {
+    'worklet';
+    return time.minutes(hours * 60);
+  },
+  days: days => {
+    'worklet';
+    return time.hours(days * 24);
+  },
+  weeks: weeks => {
+    'worklet';
+    return time.days(weeks * 7);
+  },
   infinity: Infinity,
   zero: 0,
 };
