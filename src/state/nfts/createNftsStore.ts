@@ -3,7 +3,7 @@ import { arcClient } from '@/graphql';
 import { logger, RainbowError } from '@/logger';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
-import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, UniqueId, Collection, NftsByCollection } from './types';
+import { NftsState, NftParams, NftsQueryData, PaginationInfo, CollectionId, UniqueId, Collection } from './types';
 import { parseUniqueAsset, parseUniqueId } from '@/resources/nfts/utils';
 import { useBackendNetworksStore } from '../backendNetworks/backendNetworks';
 import { IS_DEV } from '@/env';
@@ -27,6 +27,7 @@ export const PAGE_SIZE = 12;
 export const STALE_TIME = time.minutes(10);
 export const PAGINATION_STALE_TIME = time.seconds(30);
 export const TIME_BETWEEN_PRUNES = time.minutes(10);
+const MAX_RETRIES = 3;
 
 const EMPTY_RETURN_DATA: NftsQueryData = {
   collections: new Map(),
@@ -36,7 +37,7 @@ const EMPTY_RETURN_DATA: NftsQueryData = {
 
 const uninitialized = Symbol();
 let paginationPromise: { address: Address | string; promise: Promise<void> } | null = null;
-const collectionsPromises: Map<Address | string, Map<string, Promise<NftsByCollection>>> = new Map();
+const collectionsPromises: Map<Address | string, Map<string, Promise<void>>> = new Map();
 let prunePromise: { address: Address | string; promise: Promise<void>; lastPruneAt: number } | null = null;
 
 const fetchMultipleCollectionNfts = async (collectionId: string, walletAddress: string, isMigration = false): Promise<NftsQueryData> => {
@@ -411,7 +412,7 @@ export const createNftsStore = (address: Address | string) =>
         }
       },
 
-      async fetchNftCollection(collectionId: CollectionId, isMigration = false): Promise<NftsByCollection> {
+      async fetchNftCollection(collectionId) {
         const normalizedCollectionId = collectionId.toLowerCase();
 
         let addressPromises = collectionsPromises.get(address);
@@ -438,88 +439,87 @@ export const createNftsStore = (address: Address | string) =>
           };
         }
 
-        const { nftsByCollection, fetch } = get();
-        logger.debug(`🔍 [NFT Store] Current nftsByCollection size: ${nftsByCollection.size}`);
+        const { fetch, getNftsByCollection } = get();
 
-        if (!isMigration) {
-          if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
-            logger.debug(`🔍 [NFT Store] Processing showcase/hidden collection: ${normalizedCollectionId}`);
-            let needsFetch = false;
-            const { collectionIds } = getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
-            logger.debug(`🔍 [NFT Store] Collection IDs for showcase/hidden: ${collectionIds}`);
+        if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
+          logger.debug(`🔍 [NFT Store] Processing showcase/hidden collection: ${normalizedCollectionId}`);
+          let needsFetch = false;
+          const { collectionIds } = getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
+          logger.debug(`🔍 [NFT Store] Collection IDs for showcase/hidden: ${collectionIds}`);
 
-            if (!collectionIds) {
-              logger.debug('🔍 [NFT Store] No collection IDs found, returning existing nftsByCollection');
-              return Promise.resolve(nftsByCollection);
-            }
+          if (!collectionIds) {
+            logger.debug('🔍 [NFT Store] No collection IDs found, exiting early');
+            return;
+          }
 
-            if (!needsFetch) {
-              for (const collectionId of collectionIds) {
-                const normalizedCollectionId = collectionId.toLowerCase();
-                const collection = nftsByCollection.get(normalizedCollectionId);
-                logger.debug(`🔍 [NFT Store] Checking collection: ${collectionId}`, {
-                  collectionId,
-                  normalizedCollectionId,
-                  hasCollection: !!collection,
-                  isEmpty: collection ? isEmpty(collection) : 'N/A',
-                });
-                if (!collection || isEmpty(collection)) {
-                  needsFetch = true;
-                  logger.debug(`🔍 [NFT Store] Collection needs fetch: ${collectionId}`);
-                  break;
-                }
+          if (!needsFetch) {
+            for (const collectionId of collectionIds) {
+              const normalizedCollectionId = collectionId.toLowerCase();
+              const collection = getNftsByCollection(normalizedCollectionId);
+              logger.debug(`🔍 [NFT Store] Checking collection: ${collectionId}`, {
+                collectionId,
+                normalizedCollectionId,
+                hasCollection: !!collection,
+                isEmpty: collection ? isEmpty(collection) : 'N/A',
+              });
+              if (!collection || isEmpty(collection)) {
+                needsFetch = true;
+                logger.debug(`🔍 [NFT Store] Collection needs fetch: ${collectionId}`);
+                break;
               }
             }
+          }
 
-            if (!needsFetch) {
-              logger.debug('🔍 [NFT Store] No fetch needed for showcase/hidden, returning existing nftsByCollection');
-              return Promise.resolve(nftsByCollection);
-            }
-          } else {
-            const collection = nftsByCollection.get(normalizedCollectionId);
-            logger.debug(`🔍 [NFT Store] Checking regular collection: ${normalizedCollectionId}`, {
-              normalizedCollectionId,
-              hasCollection: !!collection,
-              isEmpty: collection ? isEmpty(collection) : 'N/A',
-            });
-            if (collection && !isEmpty(collection)) {
-              logger.debug(`🔍 [NFT Store] Collection exists and not empty, returning existing nftsByCollection`);
-              return Promise.resolve(nftsByCollection);
-            }
+          if (!needsFetch) {
+            logger.debug('🔍 [NFT Store] No fetch needed for showcase/hidden, returning existing nftsByCollection');
+            return;
+          }
+        } else {
+          const collection = getNftsByCollection(normalizedCollectionId);
+          logger.debug(`🔍 [NFT Store] Checking regular collection: ${normalizedCollectionId}`, {
+            normalizedCollectionId,
+            hasCollection: !!collection,
+            isEmpty: collection ? isEmpty(collection) : 'N/A',
+          });
+          if (collection && !isEmpty(collection)) {
+            logger.debug(`🔍 [NFT Store] Collection exists and not empty, returning existing nftsByCollection`);
+            return;
           }
         }
 
-        const promise = fetch(
-          { collectionId: normalizedCollectionId, isMigration },
-          { skipStoreUpdates: true, updateQueryKey: false, cacheTime: time.infinity, staleTime: time.infinity }
-        )
-          .then(data => {
-            if (!data) return nftsByCollection;
+        const promise = (async () => {
+          for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+              const data = await fetch(
+                { collectionId: normalizedCollectionId },
+                { skipStoreUpdates: true, cacheTime: time.infinity, staleTime: time.infinity }
+              );
 
-            const now = Date.now();
+              if (!data) continue;
 
-            const newNftsByCollection = new Map([...nftsByCollection, ...data.nftsByCollection]);
-            set(state => ({
-              nftsByCollection: newNftsByCollection,
-              fetchedCollections: { ...state.fetchedCollections, [normalizedCollectionId]: now },
-            }));
-            return newNftsByCollection;
-          })
-          .catch(error => {
-            logger.error(new RainbowError(`Failed to fetch NFT collection: ${normalizedCollectionId}`, error));
-            return nftsByCollection;
-          })
-          .finally(() => {
-            // Clean up the promise when it's done
-            const addressPromises = collectionsPromises.get(address);
-            if (addressPromises) {
-              addressPromises.delete(normalizedCollectionId);
-              // Clean up the address entry if no more promises
-              if (addressPromises.size === 0) {
-                collectionsPromises.delete(address);
+              const now = Date.now();
+              set(state => ({
+                nftsByCollection: new Map([...state.nftsByCollection, ...data.nftsByCollection]),
+                fetchedCollections: { ...state.fetchedCollections, [normalizedCollectionId]: now },
+              }));
+            } catch (error) {
+              logger.error(new RainbowError(`Attempt ${attempt} failed to fetch NFT collection: ${normalizedCollectionId}`, error));
+              if (attempt === MAX_RETRIES) {
+                return;
               }
             }
-          });
+          }
+        })().finally(() => {
+          // Clean up the promise when it's done
+          const addressPromises = collectionsPromises.get(address);
+          if (addressPromises) {
+            addressPromises.delete(normalizedCollectionId);
+            // Clean up the address entry if no more promises
+            if (addressPromises.size === 0) {
+              collectionsPromises.delete(address);
+            }
+          }
+        });
 
         addressPromises.set(normalizedCollectionId, promise);
         return promise;
