@@ -24,17 +24,16 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { loadWallets, useWallets, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { loadWallets, useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const accountAddress = useAccountAddress();
-  const selectedWallet = useSelectedWallet();
   const wallets = useWallets();
 
-  const { getParent: dangerouslyGetParent, navigate, replace, setOptions } = useNavigation<typeof Routes.MODAL_SCREEN>();
+  const { navigate, goBack, getParent: dangerouslyGetParent } = useNavigation<typeof Routes.MODAL_SCREEN>();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
@@ -55,13 +54,13 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     return seedPhrase !== accountAddress && isValidWallet(seedPhrase);
   }, [accountAddress, seedPhrase]);
 
-  const handleSetImporting = useCallback(
-    (newImportingState: boolean) => {
-      setImporting(newImportingState);
-      setOptions({ gestureEnabled: !newImportingState });
-    },
-    [setOptions]
-  );
+  const resetOnFailure = useCallback(() => {
+    setImporting(false);
+    setBusy(false);
+    walletLoadingStore.setState({ loadingState: null });
+    // Return to previous screen on failure
+    goBack();
+  }, [goBack]);
 
   const handleSetSeedPhrase = useCallback(
     (text: string) => {
@@ -72,36 +71,39 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const startImportProfile = useCallback(
-    (name: string, forceColor: any, address: any = null, avatarUrl: any) => {
+    (name: string, forceColor: string | number | null | undefined, address: string, avatarUrl: string | null | undefined) => {
       const importWallet = (color: number | null, name: string, image?: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
           if (name) setName(name);
           if (image) setImage(image);
-          handleSetImporting(true);
+          setImporting(true);
         });
 
       if (showImportModal) {
-        android && Keyboard.dismiss();
+        if (IS_ANDROID) {
+          Keyboard.dismiss();
+        }
+
         navigate(Routes.MODAL_SCREEN, {
           actionType: 'Import',
           additionalPadding: true,
           address,
           asset: [],
-          forceColor,
+          forceColor: typeof forceColor === 'string' ? forceColor : null,
           isNewProfile: true,
           onCloseModal: ({ color, name, image }) => {
             importWallet(color, name, image);
           },
-          profile: { image: avatarUrl, name },
+          profile: { image: avatarUrl ?? undefined, name },
           type: 'wallet_profile',
           withoutStatusBar: true,
         });
       } else {
-        importWallet(forceColor, name, avatarUrl);
+        importWallet(typeof forceColor === 'number' ? forceColor : null, name, avatarUrl ?? undefined);
       }
     },
-    [handleSetImporting, navigate, showImportModal]
+    [navigate, showImportModal]
   );
 
   const handlePressImportButton = useCallback(
@@ -117,12 +119,18 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       type?: 'import' | 'watch';
     } = {}) => {
       setBusy(true);
+
       analytics.track(analytics.event.tappedImportButton);
+
+      if ((!isSecretValid || !seedPhrase) && !forceAddress) {
+        return null;
+      }
+
+      setBusy(true);
+
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
       const guardedForceColor = typeof forceColor === 'string' || typeof forceColor === 'number' ? forceColor : null;
-      if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
-      setBusy(true);
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
       let name: string | null = null;
 
@@ -152,7 +160,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             });
           }
 
-          startImportProfile(name, guardedForceColor, address, finalAvatarUrl);
+          startImportProfile(name, guardedForceColor, address, finalAvatarUrl || undefined);
           analytics.track(analytics.event.showWalletProfileModalForENSAddress, {
             address,
             input,
@@ -210,8 +218,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             input,
           });
         } catch (e) {
-          logger.error(new RainbowError(`[useImportingWallet]: Error resolving ENS during wallet import: ${e}`));
+          logger.error(new RainbowError(`[useImportingWallet]: Error resolving ENS during wallet import`, e));
         }
+
         setBusy(false);
 
         if (type === 'watch') {
@@ -224,41 +233,44 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         startImportProfile(name || '', guardedForceColor, input, finalAvatarUrl);
       } else {
         try {
-          setTimeout(async () => {
-            const walletResult = await deriveAccountFromWalletInput(input);
-            setCheckedWallet(walletResult);
-            if (!walletResult.address) {
-              logger.error(new RainbowError('[useImportingWallet]: walletResult address is undefined'));
-              return null;
-            }
-            const ens = await fetchReverseRecord(walletResult.address);
-            let finalAvatarUrl: string | null | undefined = avatarUrl;
-            if (ens && ens !== input) {
-              name = ens;
-              if (!finalAvatarUrl && profilesEnabled) {
-                const avatar = await fetchENSAvatar(name, {
-                  swallowError: true,
-                });
-                finalAvatarUrl = avatar?.imageUrl;
-              }
-            }
-            setBusy(false);
+          const walletResult = await deriveAccountFromWalletInput(input);
 
-            if (type === 'watch') {
-              analytics.track(analytics.event.watchWallet, {
-                addressOrEnsName: ens,
-                address: input,
+          setCheckedWallet(walletResult);
+
+          if (!walletResult.address) {
+            logger.error(new RainbowError('[useImportingWallet]: walletResult address is undefined'));
+            return null;
+          }
+
+          const ens = await fetchReverseRecord(walletResult.address);
+          let finalAvatarUrl: string | null | undefined = avatarUrl;
+          if (ens && ens !== input) {
+            name = ens;
+            if (!finalAvatarUrl && profilesEnabled) {
+              const avatar = await fetchENSAvatar(name, {
+                swallowError: true,
               });
+              finalAvatarUrl = avatar?.imageUrl;
             }
+          }
 
-            startImportProfile(name || '', guardedForceColor, walletResult.address, finalAvatarUrl);
-            analytics.track(analytics.event.showWalletProfileModalForImportedWallet, {
-              address: walletResult.address,
-              type: walletResult.type,
+          setBusy(false);
+
+          if (type === 'watch') {
+            analytics.track(analytics.event.watchWallet, {
+              addressOrEnsName: ens,
+              address: input,
             });
-          }, 100);
+          }
+
+          startImportProfile(name || '', guardedForceColor, walletResult.address, finalAvatarUrl);
+
+          analytics.track(analytics.event.showWalletProfileModalForImportedWallet, {
+            address: walletResult.address,
+            type: walletResult.type,
+          });
         } catch (error) {
-          logger.error(new RainbowError(`[useImportingWallet]: Error looking up ENS for imported HD type wallet: ${error}`));
+          logger.error(new RainbowError(`[useImportingWallet]: Error looking up ENS for imported HD type wallet`, error));
           setBusy(false);
         }
       }
@@ -269,9 +281,64 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!wasImporting && isImporting) {
-      const asyncFn = async () => {
+    if (wasImporting || !isImporting) {
+      return;
+    }
+
+    const handleImportSuccess = (input: string, isWalletEthZero: boolean, backupProvider: string | undefined, previousWalletCount = 0) => {
+      setImporting(false);
+      setBusy(false);
+      walletLoadingStore.setState({ loadingState: null });
+
+      // Navigate to wallet screen and dismiss the entire modal stack
+      try {
+        Navigation.handleAction(
+          Routes.SWIPE_LAYOUT,
+          {
+            screen: Routes.WALLET_SCREEN,
+            params: { initialized: true },
+          },
+          previousWalletCount === 0
+        );
+
+        // Dismiss the ADD_WALLET_NAVIGATOR modal stack
+        dangerouslyGetParent?.()?.goBack();
+      } catch (error) {
+        logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
+        try {
+          goBack();
+        } catch (fallbackError) {
+          logger.error(new RainbowError('[useImportingWallet]: Error with fallback navigation'), { fallbackError });
+        }
+      }
+
+      // Show backup prompt after navigation completes
+      InteractionManager.runAfterInteractions(() => {
+        if (
+          backupProvider === walletBackupTypes.cloud &&
+          !(
+            IS_TEST ||
+            isENSAddressFormat(input) ||
+            isUnstoppableAddressFormat(input) ||
+            isValidAddress(input) ||
+            isValidBluetoothDeviceId(input)
+          )
+        ) {
+          Navigation.handleAction(Routes.BACKUP_SHEET, {
+            step: WalletBackupStepTypes.backup_prompt_cloud,
+          });
+        }
+
+        analytics.track(analytics.event.importedSeedPhrase, {
+          isWalletEthZero,
+        });
+      });
+    };
+
+    const performImport = async () => {
+      try {
         const input = resolvedAddress ? resolvedAddress : sanitizeSeedPhrase(seedPhrase);
+
         walletLoadingStore.setState({
           loadingState: WalletLoadingStates.IMPORTING_WALLET,
         });
@@ -287,102 +354,63 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             silent: true,
           });
           await loadWallets();
-          handleSetImporting(false);
-        } else {
-          const previousWalletCount = keys(wallets).length;
-          initializeWallet({
-            seedPhrase: input,
-            color,
-            name: name ? name : '',
-            checkedWallet,
-            image,
-          })
-            .then(success => {
-              if (IS_IOS) {
-                handleSetImporting(false);
-              }
-              if (success) {
-                Navigation.handleAction(
-                  Routes.SWIPE_LAYOUT,
-                  {
-                    screen: Routes.WALLET_SCREEN,
-                    params: { initialized: true },
-                  },
-                  previousWalletCount === 0
-                );
-
-                if (android) {
-                  handleSetImporting(false);
-                }
-
-                if (
-                  backupProvider === walletBackupTypes.cloud &&
-                  !(
-                    IS_TEST ||
-                    isENSAddressFormat(input) ||
-                    isUnstoppableAddressFormat(input) ||
-                    isValidAddress(input) ||
-                    isValidBluetoothDeviceId(input)
-                  )
-                ) {
-                  Navigation.handleAction(Routes.BACKUP_SHEET, {
-                    step: WalletBackupStepTypes.backup_prompt_cloud,
-                  });
-                }
-
-                analytics.track(analytics.event.importedSeedPhrase, {
-                  isWalletEthZero,
-                });
-
-                walletLoadingStore.setState({
-                  loadingState: null,
-                });
-                dangerouslyGetParent?.()?.goBack();
-              } else {
-                if (android) {
-                  handleSetImporting(false);
-                }
-                // Wait for error messages then refocus
-                setTimeout(() => {
-                  inputRef.current?.focus();
-                  initializeWallet({});
-                }, 100);
-              }
-            })
-            .catch(error => {
-              handleSetImporting(false);
-              android && handleSetImporting(false);
-              logger.error(new RainbowError(`[useImportingWallet]: Error importing seed phrase: ${error}`));
-              setTimeout(() => {
-                inputRef.current?.focus();
-                initializeWallet({});
-              }, 100);
-            });
+          handleImportSuccess(input, isWalletEthZero, backupProvider, keys(wallets).length);
+          return;
         }
-      };
-      asyncFn();
-    }
+
+        const previousWalletCount = keys(wallets).length;
+
+        const success = await initializeWallet({
+          seedPhrase: input,
+          color,
+          name: name ? name : '',
+          checkedWallet,
+          image,
+        });
+
+        if (success) {
+          // Navigate to wallet screen
+          handleImportSuccess(input, isWalletEthZero, backupProvider, previousWalletCount);
+        } else {
+          // Import failed
+          logger.error(new RainbowError('[useImportingWallet]: Import failed'));
+          resetOnFailure();
+
+          // Refocus input for retry
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 100);
+        }
+      } catch (error) {
+        logger.error(new RainbowError(`[useImportingWallet]: Error importing wallet: ${error}`));
+        resetOnFailure();
+
+        // Refocus input for retry
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 100);
+      }
+    };
+
+    performImport();
   }, [
     checkedWallet,
     color,
     isWalletEthZero,
-    handleSetImporting,
     isImporting,
     name,
-    navigate,
-    replace,
     resolvedAddress,
     seedPhrase,
-    selectedWallet?.id,
-    selectedWallet?.type,
     wallets,
     wasImporting,
     image,
     dispatch,
     showImportModal,
     profilesEnabled,
-    dangerouslyGetParent,
     backupProvider,
+    resetOnFailure,
+    dangerouslyGetParent,
+    goBack,
   ]);
 
   return {
