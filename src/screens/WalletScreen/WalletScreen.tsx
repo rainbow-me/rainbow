@@ -8,7 +8,7 @@ import { Box } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
-import { useInitializeWalletAndSetParams } from '@/hooks/useInitiailizeWalletAndSetParams';
+import { useInitializeWalletAndSetParams } from '@/hooks/useInitializeWalletAndSetParams';
 import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
 import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
 import { useWalletCohort } from '@/hooks/useWalletCohort';

@@ -85,6 +85,15 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
         name: 'Ethereum',
         symbol: 'ETH',
         uniqueId,
+        mainnet_address: ETH_ADDRESS,
+        isNativeAsset: true,
+        icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+        networks: {
+          [ChainId.mainnet]: {
+            address: ETH_ADDRESS,
+            decimals: 18,
+          },
+        },
       };
     }
     Object.entries(newFavoritesMeta).forEach(([uniqueId, favorite]) => {

@@ -137,6 +137,7 @@ export interface ZerionAsset {
   is_verified?: boolean;
   price?: ZerionAssetPrice;
   network?: ChainName;
+  isNativeAsset?: boolean;
   bridging: {
     bridgeable: boolean;
     networks: { [id in ChainId]?: { bridgeable: boolean } };
