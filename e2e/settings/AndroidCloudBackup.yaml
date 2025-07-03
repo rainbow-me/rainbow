@@ -30,10 +30,13 @@ tags:
                   - tapOn: 'Settings'
             - tapOn:
                 id: backup-section
+
+            # Begin backup flow by tapping backup now button
             - tapOn:
                 id: backup-now-button
             - assertVisible: '(Sign in|Choose an account)'
 
+            # Sign in to Google Drive
             - tapOn: 'Email or phone'
             - tapOn:
                 id: 'identifierId'
@@ -42,12 +45,16 @@ tags:
                 id: 'identifierNext'
             - tapOn:
                 text: 'Enter your password'
-            - inputSecretText: ${CLOUD_BACKUP_PASSWORD}
+            - inputText: ${CLOUD_BACKUP_PASSWORD}
             - tapOn:
                 id: 'passwordNext'
+
+            # Accept TOS
             - tapOn: 'I agree'
             - tapOn: 'ACCEPT'
             - runFlow: ../utils/MaybeSetupPin.yaml
+
+            # Set up Rainbow Cloud password
             - tapOn:
                 id: password-input
             - inputText: 12345678
@@ -57,8 +64,12 @@ tags:
             - tapOn:
                 id: backup-button
             - runFlow: ../utils/MaybeSetupPin.yaml
+
+            # Check that backup is successful
             - assertVisible: '.*Up to Date.*'
             - assertVisible: 'Latest Backup:.*'
+
+            # Scroll down to see all backups settings buttons then check both menu items
             - scrollUntilVisible:
                 element:
                   id: cloud-backups-settings
@@ -77,4 +88,6 @@ tags:
             - assertVisible: '(Sign in|Choose an account)'
             - tapOn:
                 id: 'com.google.android.gms:id/account_display_name'
+
+            # Verify backsups are wiped
             - assertVisible: 'Not Enabled'
