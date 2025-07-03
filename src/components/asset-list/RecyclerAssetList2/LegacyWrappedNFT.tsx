@@ -39,19 +39,15 @@ export default React.memo(function LegacyWrappedNFT({
     [externalAddress]
   );
 
-  const placementProps: BoxProps = useMemo(
-    () =>
-      placement === 'left'
-        ? {
-            alignItems: 'flex-start',
-            paddingLeft: '19px (Deprecated)',
-          }
-        : {
-            alignItems: 'flex-end',
-            paddingRight: '19px (Deprecated)',
-          },
-    [placement]
-  );
+  const placementProps: BoxProps = placement === 'left'
+    ? {
+        alignItems: 'flex-start',
+        paddingLeft: '19px (Deprecated)',
+      }
+    : {
+        alignItems: 'flex-end',
+        paddingRight: '19px (Deprecated)',
+      };
 
   if (!nftsEnabled || !asset) return null;
 
