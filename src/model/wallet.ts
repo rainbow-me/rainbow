@@ -730,7 +730,9 @@ export const createWallet = async ({
 
     const colorIndexForWallet = color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
 
-    const label = name || '';
+    // Individual accounts should have empty labels by default
+    // The name parameter is for the wallet group, not the individual account
+    const label = '';
 
     addresses.push({
       address: walletAddress,

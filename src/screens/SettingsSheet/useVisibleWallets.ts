@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import * as i18n from '@/languages';
-
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import * as i18n from '@/languages';
 import { RainbowWallet } from '@/model/wallet';
 
 type WalletByKey = {
@@ -18,12 +18,27 @@ export type WalletCountPerType = {
   privateKey: number;
 };
 
-export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount: WalletCountPerType) => {
+export const getTitleForWalletType = ({
+  name,
+  type,
+  walletTypeCount,
+}: {
+  name: string;
+  type: EthereumWalletType;
+  walletTypeCount: WalletCountPerType;
+}) => {
   switch (type) {
-    case EthereumWalletType.mnemonic:
-      return walletTypeCount.phrase > 0
-        ? i18n.t(i18n.l.back_up.wallet_group_title_plural, { walletGroupNumber: walletTypeCount.phrase })
-        : i18n.t(i18n.l.back_up.wallet_group_title_singular);
+    case EthereumWalletType.mnemonic: {
+      const trimmedName = removeFirstEmojiFromString(name).trim();
+      const customWalletGroupName = trimmedName ? trimmedName : undefined;
+
+      return (
+        customWalletGroupName ??
+        (walletTypeCount.phrase > 0
+          ? i18n.t(i18n.l.back_up.wallet_group_title_plural, { walletGroupNumber: walletTypeCount.phrase })
+          : i18n.t(i18n.l.back_up.wallet_group_title_singular))
+      );
+    }
     case EthereumWalletType.privateKey:
       return walletTypeCount.privateKey > 0
         ? i18n.t(i18n.l.back_up.private_key_plural, { privateKeyNumber: walletTypeCount.privateKey })
@@ -53,7 +68,7 @@ export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWallet
 
         return {
           ...wallet,
-          name: getTitleForWalletType(wallet.type, walletTypeCount),
+          name: getTitleForWalletType({ name: wallet.name, type: wallet.type, walletTypeCount }),
           addresses: Object.values(wallet.addresses).filter(address => address.visible),
         };
       });
