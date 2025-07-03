@@ -28,14 +28,13 @@ import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { IS_TEST } from '@/env';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { loadWallets, useWallets, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { loadWallets, useWallets, useAccountAddress } from '@/state/wallets/walletsStore';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const accountAddress = useAccountAddress();
-  const selectedWallet = useSelectedWallet();
   const wallets = useWallets();
 
-  const { getParent: dangerouslyGetParent, navigate, replace, setOptions } = useNavigation<typeof Routes.MODAL_SCREEN>();
+  const { navigate, goBack, getParent: dangerouslyGetParent } = useNavigation<typeof Routes.MODAL_SCREEN>();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
@@ -58,13 +57,66 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     return seedPhrase !== accountAddress && isValidWallet(seedPhrase);
   }, [accountAddress, seedPhrase]);
 
-  const handleSetImporting = useCallback(
-    (newImportingState: boolean) => {
-      setImporting(newImportingState);
-      setOptions({ gestureEnabled: !newImportingState });
+  const handleImportSuccess = useCallback(
+    (previousWalletCount = 0, input: string, isWalletEthZero: boolean, backupProvider: any) => {
+      setImporting(false);
+      setBusy(false);
+      walletLoadingStore.setState({ loadingState: null });
+
+      // Navigate to wallet screen and dismiss the entire modal stack
+      try {
+        Navigation.handleAction(
+          Routes.SWIPE_LAYOUT,
+          {
+            screen: Routes.WALLET_SCREEN,
+            params: { initialized: true },
+          },
+          previousWalletCount === 0
+        );
+
+        // Dismiss the ADD_WALLET_NAVIGATOR modal stack
+        dangerouslyGetParent?.()?.goBack();
+      } catch (error) {
+        logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
+        try {
+          goBack();
+        } catch (fallbackError) {
+          logger.error(new RainbowError('[useImportingWallet]: Error with fallback navigation'), { fallbackError });
+        }
+      }
+
+      // Show backup prompt after navigation completes
+      InteractionManager.runAfterInteractions(() => {
+        if (
+          backupProvider === walletBackupTypes.cloud &&
+          !(
+            IS_TEST ||
+            isENSAddressFormat(input) ||
+            isUnstoppableAddressFormat(input) ||
+            isValidAddress(input) ||
+            isValidBluetoothDeviceId(input)
+          )
+        ) {
+          Navigation.handleAction(Routes.BACKUP_SHEET, {
+            step: WalletBackupStepTypes.backup_prompt_cloud,
+          });
+        }
+
+        analytics.track(analytics.event.importedSeedPhrase, {
+          isWalletEthZero,
+        });
+      });
     },
-    [setOptions]
+    [dangerouslyGetParent, goBack]
   );
+
+  const resetOnFailure = useCallback(() => {
+    setImporting(false);
+    setBusy(false);
+    walletLoadingStore.setState({ loadingState: null });
+    // Return to previous screen on failure
+    goBack();
+  }, [goBack]);
 
   const handleSetSeedPhrase = useCallback(
     (text: string) => {
@@ -81,7 +133,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           if (color !== null) setColor(color);
           if (name) setName(name);
           if (image) setImage(image);
-          handleSetImporting(true);
+          setImporting(true);
         });
 
       if (showImportModal) {
@@ -104,7 +156,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         importWallet(forceColor, name, avatarUrl);
       }
     },
-    [handleSetImporting, navigate, showImportModal]
+    [navigate, showImportModal]
   );
 
   const handlePressImportButton = useCallback(
@@ -273,119 +325,81 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
-      const asyncFn = async () => {
-        const input = resolvedAddress ? resolvedAddress : sanitizeSeedPhrase(seedPhrase);
-        walletLoadingStore.setState({
-          loadingState: WalletLoadingStates.IMPORTING_WALLET,
-        });
+      const performImport = async () => {
+        try {
+          const input = resolvedAddress ? resolvedAddress : sanitizeSeedPhrase(seedPhrase);
 
-        if (!showImportModal) {
-          await walletInit({
-            seedPhrase: input,
-            color,
-            name: name ? name : '',
-            overwrite: false,
-            checkedWallet,
-            image,
-            silent: true,
+          walletLoadingStore.setState({
+            loadingState: WalletLoadingStates.IMPORTING_WALLET,
           });
-          await loadWallets();
-          handleSetImporting(false);
-        } else {
-          const previousWalletCount = keys(wallets).length;
-          initializeWallet({
-            seedPhrase: input,
-            color,
-            name: name ? name : '',
-            checkedWallet,
-            image,
-          })
-            .then(success => {
-              ios && handleSetImporting(false);
-              if (success) {
-                InteractionManager.runAfterInteractions(async () => {
-                  Navigation.handleAction(
-                    Routes.SWIPE_LAYOUT,
-                    {
-                      screen: Routes.WALLET_SCREEN,
-                      params: { initialized: true },
-                    },
-                    previousWalletCount === 0
-                  );
 
-                  if (android) {
-                    handleSetImporting(false);
-                  }
+          if (!showImportModal) {
+            await walletInit({
+              seedPhrase: input,
+              color,
+              name: name ? name : '',
+              overwrite: false,
+              checkedWallet,
+              image,
+              silent: true,
+            });
+            await loadWallets();
+            handleImportSuccess(keys(wallets).length, input, isWalletEthZero, backupProvider);
+          } else {
+            const previousWalletCount = keys(wallets).length;
 
-                  if (
-                    backupProvider === walletBackupTypes.cloud &&
-                    !(
-                      IS_TEST ||
-                      isENSAddressFormat(input) ||
-                      isUnstoppableAddressFormat(input) ||
-                      isValidAddress(input) ||
-                      isValidBluetoothDeviceId(input)
-                    )
-                  ) {
-                    Navigation.handleAction(Routes.BACKUP_SHEET, {
-                      step: WalletBackupStepTypes.backup_prompt_cloud,
-                    });
-                  }
+            const success = await initializeWallet({
+              seedPhrase: input,
+              color,
+              name: name ? name : '',
+              checkedWallet,
+              image,
+            });
 
-                  analytics.track(analytics.event.importedSeedPhrase, {
-                    isWalletEthZero,
-                  });
+            if (success) {
+              // Navigate to wallet screen
+              handleImportSuccess(previousWalletCount, input, isWalletEthZero, backupProvider);
+            } else {
+              // Import failed
+              logger.error(new RainbowError('[useImportingWallet]: Import failed'));
+              resetOnFailure();
 
-                  walletLoadingStore.setState({
-                    loadingState: null,
-                  });
-                  dangerouslyGetParent?.()?.goBack();
-                });
-              } else {
-                if (android) {
-                  handleSetImporting(false);
-                }
-                // Wait for error messages then refocus
-                setTimeout(() => {
-                  inputRef.current?.focus();
-                  initializeWallet({});
-                }, 100);
-              }
-            })
-            .catch(error => {
-              handleSetImporting(false);
-              android && handleSetImporting(false);
-              logger.error(new RainbowError(`[useImportingWallet]: Error importing seed phrase: ${error}`));
+              // Refocus input for retry
               setTimeout(() => {
                 inputRef.current?.focus();
-                initializeWallet({});
               }, 100);
-            });
+            }
+          }
+        } catch (error) {
+          logger.error(new RainbowError(`[useImportingWallet]: Error importing wallet: ${error}`));
+          resetOnFailure();
+
+          // Refocus input for retry
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 100);
         }
       };
-      asyncFn();
+
+      performImport();
     }
   }, [
     checkedWallet,
     color,
     isWalletEthZero,
-    handleSetImporting,
     isImporting,
     name,
-    navigate,
-    replace,
     resolvedAddress,
     seedPhrase,
-    selectedWallet?.id,
-    selectedWallet?.type,
     wallets,
     wasImporting,
     image,
     dispatch,
     showImportModal,
     profilesEnabled,
-    dangerouslyGetParent,
     backupProvider,
+    handleImportSuccess,
+    resetOnFailure,
   ]);
 
   return {
