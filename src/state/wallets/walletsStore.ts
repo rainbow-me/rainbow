@@ -351,12 +351,24 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         };
       });
 
+      const { wallets: updatedWallets } = get();
+
+      const keychainPromise = Promise.all([
+        saveAllWallets(updatedWallets),
+        saveAddress(account.address),
+        setSelectedWalletInKeychain(updatedWallets[id]),
+      ]).then(() => {
+        return;
+      });
+
       store.dispatch(updateWebDataEnabled(true, account.address));
 
       setPreference(PreferenceActionType.init, 'profile', account.address, {
         accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
         accountSymbol: addressHashedEmoji(account.address),
       });
+
+      return keychainPromise;
     },
 
     setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {
