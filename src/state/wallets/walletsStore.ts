@@ -355,7 +355,15 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
         accountSymbol: addressHashedEmoji(account.address),
       });
 
-      return saveSelectedWalletInKeychain(get().wallets[id], account.address);
+      const persist = Promise.all([
+        // persist to keychain - not necessary to wait this in many cases
+        saveSelectedWalletInKeychain(get().wallets[id], account.address),
+        saveAllWallets(get().wallets),
+      ]).then(() => {
+        return;
+      });
+
+      return persist;
     },
 
     setAllWalletsWithIdsAsBackedUp: async (walletIds, method, backupFile) => {
