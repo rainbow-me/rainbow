@@ -18,8 +18,29 @@ export async function getHidden(address: string, isMigration = false) {
     if (!isDataComplete(tokens) && !isMigration) {
       useOpenCollectionsStore.getState(address).setCollectionOpen('hidden', false);
 
-      const tokens = await useNftsStore.getState(address).fetchNftCollection('hidden', true);
-      const flattenedTokens = Array.from(tokens.values()).flatMap(collection => Array.from(collection.keys()));
+      const { fetch } = useNftsStore.getState(address);
+
+      const data = await fetch(
+        { collectionId: 'hidden', isMigration: true },
+        {
+          force: true,
+          updateQueryKey: false,
+          cacheTime: time.infinity,
+          staleTime: time.infinity,
+        }
+      );
+
+      if (!data) return tokens;
+
+      useNftsStore.setState(state => {
+        const now = Date.now();
+        return {
+          nftsByCollection: new Map([...state.nftsByCollection, ...data.nftsByCollection]),
+          fetchedCollections: { ...state.fetchedCollections, ['hidden']: now },
+        };
+      });
+
+      const flattenedTokens = Array.from(data.nftsByCollection.values()).flatMap(collection => Array.from(collection.keys()));
 
       return flattenedTokens;
     }

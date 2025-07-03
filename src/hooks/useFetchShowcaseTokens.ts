@@ -20,12 +20,33 @@ export async function getShowcase(address: string, isMigration = false) {
     const tokens = showcaseTokens.showcase.ids;
     if (!isDataComplete(tokens) && !isMigration) {
       const previousState = useOpenCollectionsStore.getState(address).openCollections['showcase'] ?? false;
-
       // first, close the showcase collection so we don't show an empty collection to the user
       useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', false);
 
-      const tokens = await useNftsStore.getState(address).fetchNftCollection('showcase', true);
-      const flattenedTokens = Array.from(tokens.values()).flatMap(collection => Array.from(collection.keys()));
+      const { fetch } = useNftsStore.getState(address);
+
+      const data = await fetch(
+        { collectionId: 'showcase', isMigration: true },
+        {
+          force: true,
+          updateQueryKey: false,
+          cacheTime: time.infinity,
+          staleTime: time.infinity,
+        }
+      );
+
+      if (!data) return tokens;
+
+      useNftsStore.setState(state => {
+        const now = Date.now();
+        return {
+          nftsByCollection: new Map([...state.nftsByCollection, ...data.nftsByCollection]),
+          fetchedCollections: { ...state.fetchedCollections, ['showcase']: now },
+        };
+      });
+
+      const flattenedTokens = Array.from(data.nftsByCollection.values()).flatMap(collection => Array.from(collection.keys()));
+      // re-open the showcase collection if it was open before
       if (previousState) {
         useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', previousState);
       }
