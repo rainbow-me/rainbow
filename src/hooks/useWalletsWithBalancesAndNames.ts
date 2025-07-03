@@ -1,6 +1,6 @@
 import { convertAmountToNativeDisplay, subtract } from '@/helpers/utilities';
-import { useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useWallets } from '@/state/wallets/walletsStore';
 import mapValues from 'lodash/mapValues';
 import { useMemo } from 'react';
 import { Address } from 'viem';
@@ -8,9 +8,8 @@ import useWalletBalances from './useWalletBalances';
 
 export default function useWalletsWithBalancesAndNames() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const walletNames = useWalletsStore(state => state.walletNames);
   const wallets = useWallets();
-  const { balances } = useWalletBalances();
+  const { balances } = useWalletBalances(wallets);
   const hiddenBalances = userAssetsStoreManager(state => state.hiddenAssetBalances);
 
   const walletsWithBalancesAndNames = useMemo(
@@ -18,6 +17,7 @@ export default function useWalletsWithBalancesAndNames() {
       mapValues(wallets, wallet => {
         const updatedAccounts = (wallet.addresses || []).map(account => {
           const lowerCaseAddress = account.address.toLowerCase() as Address;
+
           return {
             ...account,
             balances: balances[lowerCaseAddress],
@@ -28,12 +28,11 @@ export default function useWalletsWithBalancesAndNames() {
                   nativeCurrency
                 )
               : undefined,
-            ens: walletNames[account.address],
           };
         });
         return { ...wallet, addresses: updatedAccounts };
       }),
-    [balances, hiddenBalances, nativeCurrency, walletNames, wallets]
+    [balances, hiddenBalances, nativeCurrency, wallets]
   );
 
   return walletsWithBalancesAndNames;

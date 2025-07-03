@@ -69,6 +69,7 @@ type ProfileModalProps = {
   handleCancel: () => void;
   submitButtonText: string;
   placeholder: string;
+  disableChangeAvatar?: boolean;
 };
 
 const ProfileModal = ({
@@ -84,6 +85,7 @@ const ProfileModal = ({
   handleCancel,
   submitButtonText,
   placeholder,
+  disableChangeAvatar,
 }: ProfileModalProps) => {
   const { colors, isDarkMode } = useTheme();
   const inputRef = useRef<any>(null);
@@ -99,6 +101,7 @@ const ProfileModal = ({
               image={imageAvatar}
               isAvatarPickerAvailable={false}
               onPress={null}
+              disableChangeAvatar={disableChangeAvatar}
               overlayStyles={null}
               showcaseAccountColor={isDarkMode ? colors.trueBlack : colors.dark}
               showcaseAccountSymbol={null}
@@ -110,6 +113,7 @@ const ProfileModal = ({
               isAvatarPickerAvailable={false}
               onPress={null}
               overlayStyles={null}
+              disableChangeAvatar={disableChangeAvatar}
               showcaseAccountColor={accentColor}
               showcaseAccountSymbol={emojiAvatar}
             />

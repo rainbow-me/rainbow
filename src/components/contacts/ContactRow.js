@@ -101,10 +101,10 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
     if (showcaseItem) {
       onPress(showcaseItem, nickname);
     } else {
-      const recipient = accountType === 'suggestions' && isENSAddressFormat(nickname) ? nickname : ensName || address;
+      const recipient = accountType === 'suggestions' && isENSAddressFormat(nickname) ? nickname : address;
       onPress(recipient, nickname ?? recipient);
     }
-  }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
+  }, [accountType, address, nickname, onPress, showcaseItem]);
 
   const imageAvatar = ensAvatar?.imageUrl ?? image;
 

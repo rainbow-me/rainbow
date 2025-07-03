@@ -186,7 +186,7 @@ const MenuItem = ({
 
   const Item = () => (
     <Box
-      height={size ? { custom: size } : 'full'}
+      height={size ? { custom: size } : undefined}
       justifyContent="center"
       paddingHorizontal={{ custom: 16 }}
       testID={disabled ? testID : undefined}
