@@ -58,7 +58,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   }, [accountAddress, seedPhrase]);
 
   const handleImportSuccess = useCallback(
-    (previousWalletCount = 0, input: string, isWalletEthZero: boolean, backupProvider: any) => {
+    (input: string, isWalletEthZero: boolean, backupProvider: string | undefined, previousWalletCount = 0) => {
       setImporting(false);
       setBusy(false);
       walletLoadingStore.setState({ loadingState: null });
@@ -127,7 +127,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const startImportProfile = useCallback(
-    (name: string, forceColor: any, address: any = null, avatarUrl: any) => {
+    (name: string, forceColor: string | number | null | undefined, address: string, avatarUrl: string | null | undefined) => {
       const importWallet = (color: number | null, name: string, image?: string) =>
         InteractionManager.runAfterInteractions(() => {
           if (color !== null) setColor(color);
@@ -143,17 +143,17 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           additionalPadding: true,
           address,
           asset: [],
-          forceColor,
+          forceColor: typeof forceColor === 'string' ? forceColor : null,
           isNewProfile: true,
           onCloseModal: ({ color, name, image }) => {
             importWallet(color, name, image);
           },
-          profile: { image: avatarUrl, name },
+          profile: { image: avatarUrl ?? undefined, name },
           type: 'wallet_profile',
           withoutStatusBar: true,
         });
       } else {
-        importWallet(forceColor, name, avatarUrl);
+        importWallet(typeof forceColor === 'number' ? forceColor : null, name, avatarUrl ?? undefined);
       }
     },
     [navigate, showImportModal]
@@ -207,7 +207,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             });
           }
 
-          startImportProfile(name, guardedForceColor, address, finalAvatarUrl);
+          startImportProfile(name, guardedForceColor, address, finalAvatarUrl || undefined);
           analytics.track(analytics.event.showWalletProfileModalForENSAddress, {
             address,
             input,
@@ -344,7 +344,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               silent: true,
             });
             await loadWallets();
-            handleImportSuccess(keys(wallets).length, input, isWalletEthZero, backupProvider);
+            handleImportSuccess(input, isWalletEthZero, backupProvider, keys(wallets).length);
           } else {
             const previousWalletCount = keys(wallets).length;
 
@@ -358,7 +358,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
             if (success) {
               // Navigate to wallet screen
-              handleImportSuccess(previousWalletCount, input, isWalletEthZero, backupProvider);
+              handleImportSuccess(input, isWalletEthZero, backupProvider, previousWalletCount);
             } else {
               // Import failed
               logger.error(new RainbowError('[useImportingWallet]: Import failed'));
