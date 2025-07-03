@@ -20,8 +20,6 @@ import { ATOMIC_SWAPS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { encodeDelegateCalldata, executeBatchedTransaction, getCanDelegate } from 'rainbow-delegation';
 
-const MAX_UINT = 2n ** 256n - 1n;
-
 export const walletExecuteWithDelegate = async ({
   walletClient,
   publicClient,
@@ -91,10 +89,11 @@ export const useShouldDelegate = (chainId: number, quote: Quote | CrosschainQuot
 export const getApproveAndSwapCalls = async (quote: Quote | CrosschainQuote) => {
   const provider = getProvider({ chainId: quote.chainId });
   const wallet = await loadWallet({ provider });
+  const approvalAmount = BigInt(quote.sellAmount.toString());
   const approvalCalldata = encodeFunctionData({
     abi: erc20Abi,
     functionName: 'approve',
-    args: [quote.allowanceTarget as Address, MAX_UINT],
+    args: [quote.allowanceTarget as Address, approvalAmount],
   });
 
   let swapCalldata;
