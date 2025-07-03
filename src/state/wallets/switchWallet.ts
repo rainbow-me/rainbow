@@ -19,7 +19,7 @@ export const switchWallet = async (address: string): Promise<string | null> => {
     return null;
   }
 
-  setSelectedWallet(wallets[walletKey], validAddress);
+  await setSelectedWallet(wallets[walletKey], validAddress);
 
   return initializeWallet({
     shouldRunMigrations: false,

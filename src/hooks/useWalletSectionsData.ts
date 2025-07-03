@@ -97,7 +97,7 @@ export default function useWalletSectionsData({
   const accountWithBalance = useMemo(() => {
     if (!selectedWallet) return null;
     return walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
-      address => address.address.toLowerCase() === accountAddress.toLowerCase()
+      account => account.address.toLowerCase() === accountAddress.toLowerCase()
     );
   }, [walletsWithBalancesAndNames, selectedWallet, accountAddress]);
 
@@ -147,7 +147,7 @@ export default function useWalletSectionsData({
     return {
       hasNFTs,
       isEmpty,
-      isLoadingBalance: !accountWithBalance?.balances,
+      isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingUserAssets,
       isWalletEthZero,
       briefSectionsData,

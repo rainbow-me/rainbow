@@ -4,8 +4,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '@/theme/ThemeContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import ConditionalWrap from 'conditional-wrap';
-import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon, globalColors } from '@/design-system';
-import { AddressItem, AddressMenuAction, AddressMenuActionData } from '@/screens/change-wallet/ChangeWalletSheet';
+import { Box, Inline, Stack, Text, useForegroundColor, useColorMode, TextIcon } from '@/design-system';
+import { AddressItem, AddressMenuAction } from '@/screens/change-wallet/ChangeWalletSheet';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -74,7 +74,7 @@ interface AddressRowProps {
 }
 
 export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem }: AddressRowProps) {
-  const { address, color, balance, isSelected, isReadOnly, isLedger, label, image } = data;
+  const { address, color, emoji, balance, isSelected, isReadOnly, isLedger, label, image } = data;
 
   const walletName = useMemo(() => {
     return removeFirstEmojiFromString(label) || abbreviateAddress(address, 4, 6);
@@ -136,6 +136,7 @@ export function AddressRow({ data, editMode, onPress, menuItems, onPressMenuItem
             borderRadius={20}
             address={address}
             color={color}
+            emoji={emoji}
             label={label}
             shadow="12px"
             background="surfaceSecondaryElevated"
