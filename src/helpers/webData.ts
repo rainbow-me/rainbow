@@ -50,8 +50,10 @@ export const updateWebShowcase = async (address: string, assetIds: string[], for
 };
 
 export const wipeWebData = async (address: string) => {
-  await setPreference(PreferenceActionType.wipe, 'showcase', address);
-  await setPreference(PreferenceActionType.wipe, 'profile', address);
+  return Promise.all([
+    setPreference(PreferenceActionType.wipe, 'showcase', address),
+    setPreference(PreferenceActionType.wipe, 'profile', address),
+  ]);
 };
 
 export const updateWebProfile = async (address: string, name: string, accountColorHex: string, accountSymbol: string | null) => {
@@ -59,7 +61,7 @@ export const updateWebProfile = async (address: string, name: string, accountCol
   if (!wallet || wallet.type === WalletTypes.readOnly) return;
   const data = {
     accountColor: accountColorHex,
-    accountSymbol: (name ? getFirstEmoji(name) : getValidatedEmoji(accountSymbol as string)) || null,
+    accountSymbol: (name ? getFirstEmoji(name) : accountSymbol ? getValidatedEmoji(accountSymbol) : null) || null,
   };
   await setPreference(PreferenceActionType.update, 'profile', address, data);
 };
@@ -72,16 +74,14 @@ export const initializeShowcaseIfNeeded = async (
   accountSymbol: string | null
 ) => {
   try {
-    if (showcaseTokens?.length > 0) {
-      const response = await getPreference('showcase', address);
-      if (!response || !response.showcase.ids.length) {
-        await initWebData(address, showcaseTokens, hiddenTokens, accountColorHex, accountSymbol);
-        logger.debug('[webData]: showcase initialized!');
-        return;
-      }
-
-      logger.debug('[webData]: showcase already initialized. skipping');
+    const response = await getPreference('showcase', address);
+    if (!response || !response.showcase.ids.length) {
+      await initWebData(address, showcaseTokens, hiddenTokens, accountColorHex, accountSymbol);
+      logger.debug('[webData]: showcase initialized!');
+      return;
     }
+
+    logger.debug('[webData]: showcase already initialized. skipping');
   } catch (e) {
     logger.error(new RainbowError(`[webData]: error while trying to initialize showcase: ${e}`));
   }

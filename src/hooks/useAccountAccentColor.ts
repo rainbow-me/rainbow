@@ -23,7 +23,7 @@ export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
 };
 
 export function useAccountAccentColor() {
-  const { accountColor, accountImage, accountSymbol } = useAccountProfileInfo();
+  const { accountAddress, accountColor, accountImage, accountSymbol } = useAccountProfileInfo();
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
 
@@ -40,15 +40,13 @@ export function useAccountAccentColor() {
     }
   }, [accountImage, dominantColor, fallbackColor, accountColor, colors.avatarBackgrounds]);
 
-  const highContrastAccentColor = useMemo(() => {
-    return getHighContrastColor(accentColor, isDarkMode);
-  }, [accentColor, isDarkMode]);
+  const hasLoaded = Boolean(accountAddress && (accountSymbol || accountImage));
 
-  const hasLoaded = Boolean(accountImage || accountSymbol);
-
-  return {
-    accentColor,
-    highContrastAccentColor,
-    loaded: hasLoaded,
-  };
+  return useMemo(() => {
+    return {
+      accentColor: hasLoaded ? accentColor : fallbackColor,
+      highContrastAccentColor: hasLoaded ? getHighContrastColor(accentColor, isDarkMode) : fallbackColor,
+      loaded: hasLoaded,
+    };
+  }, [accentColor, fallbackColor, hasLoaded, isDarkMode]);
 }

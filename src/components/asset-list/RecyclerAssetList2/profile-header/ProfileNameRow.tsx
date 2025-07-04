@@ -7,9 +7,9 @@ import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { haptics } from '@/utils';
-import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
+import { abbreviateEnsForDisplay, address } from '@/utils/abbreviations';
 import Routes from '@rainbow-me/routes';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
@@ -59,7 +59,15 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
     Clipboard.setString(accountAddress);
   }, [accountAddress, disableOnPress, isToastActive, setToastActive]);
 
-  const name = accountENS ? abbreviateEnsForDisplay(accountENS, 20) : accountName;
+  const name = React.useMemo(() => {
+    return (
+      formatAccountLabel({
+        address: accountAddress,
+        ens: abbreviateEnsForDisplay(accountENS, 20),
+        label: accountName,
+      }) || address(accountAddress, 4, 4)
+    );
+  }, [accountAddress, accountENS, accountName]);
 
   // ////////////////////////////////////////////////////
   // Colors

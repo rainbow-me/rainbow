@@ -7,7 +7,9 @@ export const ensAvatarQueryKey = (name: string) => ['ens-avatar', name];
 
 const STALE_TIME = 10000;
 
-export async function fetchENSAvatar(name: string, { cacheFirst, swallowError }: { cacheFirst?: boolean; swallowError?: boolean } = {}) {
+type FetchENSAvatarOptions = { cacheFirst?: boolean; swallowError?: boolean };
+
+export async function fetchENSAvatar(name: string, { cacheFirst, swallowError }: FetchENSAvatarOptions = {}) {
   try {
     const cachedAvatar = await getENSData('avatar', name);
     if (cachedAvatar) {
@@ -21,6 +23,18 @@ export async function fetchENSAvatar(name: string, { cacheFirst, swallowError }:
     if (swallowError) return undefined;
     throw err;
   }
+}
+
+export async function fetchENSAvatarWithRetry(name: string, options: FetchENSAvatarOptions = {}) {
+  for (let i = 0; i < 3; i++) {
+    try {
+      return await fetchENSAvatar(name, options);
+      // eslint-disable-next-line no-empty
+    } catch (err) {
+      console.log('error fetching', err);
+    }
+  }
+  return null;
 }
 
 export async function prefetchENSAvatar(name: string, { cacheFirst }: { cacheFirst?: boolean } = {}) {

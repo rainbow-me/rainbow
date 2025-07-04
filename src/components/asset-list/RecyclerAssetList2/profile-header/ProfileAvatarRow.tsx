@@ -4,7 +4,6 @@ import ContextMenu from '@/components/native-context-menu/contextMenu';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { AccentColorProvider, Box, Cover, useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { useLatestCallback, useOnAvatarPress } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -24,7 +23,7 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
   // ////////////////////////////////////////////////////
   // Account
 
-  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
+  const { accountAddress, accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
 
   const { avatarContextMenuConfig, onAvatarPressProfile, onSelectionCallback } = useOnAvatarPress({ screenType: 'wallet' });
 
@@ -62,28 +61,28 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
   const animatedStyle = React.useMemo(
     () => ({
       opacity: position!.interpolate({
-        inputRange: [-insets.top, IS_ANDROID ? 0 : -insets.top + 1, navbarHeight],
+        inputRange: [0, 1, navbarHeight + insets.top],
         outputRange: [1, 1, 0],
       }),
       transform: [
         {
           translateY: position!.interpolate({
-            inputRange: [-insets.top, -insets.top + 1, navbarHeight],
+            inputRange: [0, 1, navbarHeight + insets.top],
             outputRange: [0, 0, 12],
           }),
         },
         {
           scale: position!.interpolate({
-            inputRange: [-insets.top, IS_ANDROID ? 0 : -insets.top + 1, navbarHeight],
+            inputRange: [0, 1, navbarHeight + insets.top],
             outputRange: [1, 1, 0.5],
           }),
         },
       ],
     }),
-    [position]
+    [insets.top, position]
   );
 
-  const hasLoaded = accountSymbol || accountImage;
+  const hasLoaded = Boolean(accountAddress && (accountSymbol || accountImage));
 
   const opacity = useDerivedValue(() => {
     return hasLoaded ? 1 : 0;
@@ -115,7 +114,7 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
     };
   });
 
-  return (
+  return hasLoaded ? (
     <AccentColorProvider color={accentColor}>
       <RNAnimated.View style={[animatedStyle, { zIndex: 500 }]}>
         <Animated.View style={expandStyle}>
@@ -161,37 +160,32 @@ export const ProfileAvatarRow = React.memo(function ProfileAvatarRow({ size = Pr
                 }}
                 width={{ custom: size }}
               >
-                <>
-                  {!hasLoaded && (
-                    <Cover alignHorizontal="center">
-                      <Box height={{ custom: size }} width="full">
-                        <Skeleton animated>
-                          <Box background="body (Deprecated)" borderRadius={size / 2} height={{ custom: size }} width={{ custom: size }} />
-                        </Skeleton>
-                      </Box>
-                    </Cover>
+                <Animated.View style={[fadeInStyle]}>
+                  {accountImage ? (
+                    <Box
+                      as={ImgixImage}
+                      borderRadius={size / 2}
+                      height={{ custom: size }}
+                      source={{ uri: accountImage }}
+                      width={{ custom: size }}
+                      size={100}
+                    />
+                  ) : (
+                    <EmojiAvatar size={size} />
                   )}
-                  <Animated.View style={[fadeInStyle]}>
-                    {accountImage ? (
-                      <Box
-                        as={ImgixImage}
-                        borderRadius={size / 2}
-                        height={{ custom: size }}
-                        source={{ uri: accountImage }}
-                        width={{ custom: size }}
-                        size={100}
-                      />
-                    ) : (
-                      <EmojiAvatar size={size} />
-                    )}
-                  </Animated.View>
-                </>
+                </Animated.View>
               </Box>
             </ButtonPressAnimation>
           </ContextMenuButton>
         </Animated.View>
       </RNAnimated.View>
     </AccentColorProvider>
+  ) : (
+    <Box height={{ custom: size }} width={{ custom: size }}>
+      <Skeleton animated width={size}>
+        <Box background="body (Deprecated)" borderRadius={size / 2} height={{ custom: size }} width={{ custom: size }} />
+      </Skeleton>
+    </Box>
   );
 });
 

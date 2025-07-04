@@ -113,7 +113,8 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
-  ens?: string;
+  emoji?: string;
+  ens?: string | null;
   image?: string | null;
 }
 
@@ -188,11 +189,6 @@ export function ensureEthereumWallet(wallet: EthereumWallet): asserts wallet is 
   if ('signTransaction' in wallet) {
     return wallet as any;
   }
-  // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
-  console.log(
-    // @ts-expect-error using property types to log errors better
-    `Not expected: ReadOnly not Wallet (signTransaction: ${typeof wallet['signTransaction']}) (getPrivateKey: ${typeof wallet['getPrivateKey']})`
-  );
 }
 
 export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWallet {
@@ -203,10 +199,6 @@ export function ensureLibWallet(wallet: EthereumWallet): asserts wallet is LibWa
   if (typeof wallet.getPrivateKey !== 'function') {
     return wallet as any;
   }
-  // TODO this is a partial fix - at least we log the error now, next is a bigger cleanup
-  console.log(
-    `Not expected: ReadOnly not LibWallet: ${'address' in wallet ? wallet.address : wallet.getAddressString()} ${new Error().stack}`
-  );
 }
 
 const isHardwareWalletKey = (key: string | null) => {
@@ -230,6 +222,7 @@ export const getHdPath = ({ type, index }: { type: WalletLibraryType; index: num
 export type InitializeWalletParams = CreateWalletParams & {
   network?: string;
   seedPhrase?: string;
+  shouldCreateFirstWallet?: boolean;
   shouldRunMigrations?: boolean;
   switching?: boolean;
 };
@@ -274,7 +267,7 @@ export const walletInit = async (props: InitializeWalletParams): Promise<WalletI
   walletAddress = await loadAddress();
 
   if (!walletAddress) {
-    const wallet = await createWallet({});
+    const wallet = await createWallet();
     ensureEthereumWallet(wallet!);
     if (!wallet?.address) {
       throw new RainbowError('Error creating wallet address');
@@ -649,7 +642,7 @@ export const createWallet = async ({
   silent = false,
   clearCallbackOnStartCreation = false,
   userPin,
-}: CreateWalletParams): Promise<null | EthereumWallet> => {
+}: CreateWalletParams = {}): Promise<null | EthereumWallet> => {
   if (clearCallbackOnStartCreation) {
     callbackAfterSeeds?.();
     callbackAfterSeeds = null;
@@ -860,6 +853,10 @@ export const createWallet = async ({
     let walletName = DEFAULT_WALLET_NAME;
     if (name) {
       walletName = name;
+    } else if (!isImported && type === EthereumWalletType.mnemonic) {
+      // For new wallet groups (mnemonics), generate "Wallet Group X" name
+      const mnemonicWalletCount = Object.values(allWallets).filter(w => w.type === EthereumWalletType.mnemonic).length;
+      walletName = `Wallet Group ${mnemonicWalletCount + 1}`;
     }
 
     let primary = false;
@@ -1127,6 +1124,10 @@ export const setSelectedWallet = async (wallet: RainbowWallet): Promise<void> =>
   };
 
   return keychain.saveObject(selectedWalletKey, val, keychain.publicAccessControlOptions);
+};
+
+export const resetSelectedWallet = async (): Promise<void> => {
+  return keychain.saveObject(selectedWalletKey, {}, keychain.publicAccessControlOptions);
 };
 
 export const getSelectedWallet = async (): Promise<null | RainbowSelectedWalletData> => {

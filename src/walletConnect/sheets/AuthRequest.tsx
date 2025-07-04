@@ -35,9 +35,7 @@ export function AuthRequest({
   const [address, setAddress] = React.useState(accountAddress);
 
   const { accountSymbol, accountColor, accountImage, accountName, isHardwareWallet } = React.useMemo(() => {
-    const profileInfo = getAccountProfileInfo({
-      address,
-    });
+    const profileInfo = getAccountProfileInfo(address);
     return {
       ...profileInfo,
       isHardwareWallet: !!selectedWallet?.deviceId,

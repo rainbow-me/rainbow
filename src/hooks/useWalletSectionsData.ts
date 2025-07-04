@@ -143,7 +143,7 @@ export default function useWalletSectionsData({
     return {
       hasNFTs,
       isEmpty,
-      isLoadingBalance: !accountWithBalance?.balances,
+      isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingUserAssets,
       isWalletEthZero,
       briefSectionsData,
@@ -158,7 +158,6 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sortedAssets,
     accountWithBalance?.balancesMinusHiddenBalances,
-    accountWithBalance?.balances,
     isWalletEthZero,
     hiddenTokens,
     isReadOnlyWallet,

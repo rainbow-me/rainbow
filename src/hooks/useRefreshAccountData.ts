@@ -29,13 +29,13 @@ export const refreshAccountData = async () => {
 
   await Promise.all([
     delay(MIN_REFRESH_DURATION),
-    refreshWalletInfo(),
+    refreshWalletInfo({ addresses: [accountAddress] }),
     userAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
     useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
     useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) }),
-  ]);
+  ]).then(() => refreshWalletInfo({ useCachedENS: true }));
 };
 
 export default function useRefreshAccountData() {
