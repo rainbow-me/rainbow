@@ -73,10 +73,10 @@ export type NftsRouter = NftsStoreType & {
 
 export interface OpenCollectionsState {
   openCollections: Record<CollectionId, boolean>;
-  insertionOrder: CollectionId[]; // Track the order in which collections were opened
-  toggleCollection: (collectionId: CollectionId) => void;
-  isCollectionOpen: (collectionId: CollectionId) => boolean;
-  setCollectionOpen: (collectionId: CollectionId, isOpen: boolean) => void;
+  insertionOrder: CollectionId[]; // Tracks the order in which collections were opened
+  toggleCollection: (collectionIdOrLegacyName: CollectionId | CollectionName) => void;
+  isCollectionOpen: (collectionIdOrLegacyName: CollectionId | CollectionName) => boolean;
+  setCollectionOpen: (collectionIdOrLegacyName: CollectionId | CollectionName, isOpen: boolean) => void;
 }
 
 export type OpenCollectionsStoreType = OptionallyPersistedRainbowStore<OpenCollectionsState, Partial<OpenCollectionsState>>;

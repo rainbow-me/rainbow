@@ -1,6 +1,7 @@
-import { Address } from 'viem';
+import { Address, isAddress } from 'viem';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { OpenCollectionsState, OpenCollectionsStoreType, CollectionId } from './types';
+import { OpenCollectionsState, OpenCollectionsStoreType } from './types';
+import { parseUniqueId } from '@/resources/nfts/utils';
 
 const MAX_OPEN_COLLECTIONS = 20;
 
@@ -10,18 +11,33 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
       openCollections: { showcase: true },
       insertionOrder: ['showcase'],
 
-      toggleCollection: (collectionName: CollectionId) => {
+      toggleCollection: collectionIdOrLegacyName => {
         set(state => {
-          const lowerCaseCollectionName = collectionName.toLowerCase();
-          const isCurrentlyOpen = state.openCollections[lowerCaseCollectionName];
+          const normalizedKey = collectionIdOrLegacyName.toLowerCase();
+          const { network, contractAddress } = parseUniqueId(normalizedKey);
+          const isNewFormat = !!network && isAddress(contractAddress);
+
+          // Skip all insertion order logic for legacy collections
+          if (!isNewFormat) {
+            return {
+              ...state,
+              openCollections: {
+                ...state.openCollections,
+                [normalizedKey]: !state.openCollections[normalizedKey],
+              },
+            };
+          }
+
+          const isCurrentlyOpen = state.openCollections[normalizedKey];
 
           if (isCurrentlyOpen) {
             const newOpenCollections = { ...state.openCollections };
-            delete newOpenCollections[lowerCaseCollectionName];
+            delete newOpenCollections[normalizedKey];
 
-            const newInsertionOrder = state.insertionOrder.filter(id => id !== lowerCaseCollectionName);
+            const newInsertionOrder = state.insertionOrder.filter(id => id !== normalizedKey);
 
             return {
+              ...state,
               openCollections: newOpenCollections,
               insertionOrder: newInsertionOrder,
             };
@@ -31,16 +47,17 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
 
             const nonShowcaseOrder = newInsertionOrder.filter(id => id !== 'showcase');
 
-            if (nonShowcaseOrder.length >= MAX_OPEN_COLLECTIONS && lowerCaseCollectionName !== 'showcase') {
+            if (nonShowcaseOrder.length >= MAX_OPEN_COLLECTIONS && normalizedKey !== 'showcase') {
               const oldestNonShowcase = nonShowcaseOrder[0];
               delete newOpenCollections[oldestNonShowcase];
               newInsertionOrder = newInsertionOrder.filter(id => id !== oldestNonShowcase);
             }
 
-            newOpenCollections[lowerCaseCollectionName] = true;
-            newInsertionOrder.push(lowerCaseCollectionName);
+            newOpenCollections[normalizedKey] = true;
+            newInsertionOrder.push(normalizedKey);
 
             return {
+              ...state,
               openCollections: newOpenCollections,
               insertionOrder: newInsertionOrder,
             };
@@ -48,15 +65,28 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
         });
       },
 
-      setCollectionOpen: (collectionName: CollectionId, isOpen: boolean) => {
+      setCollectionOpen: (collectionIdOrLegacyName, isOpen) => {
         set(state => {
-          const lowerCaseCollectionName = collectionName.toLowerCase();
+          const normalizedKey = collectionIdOrLegacyName.toLowerCase();
+          const { network, contractAddress } = parseUniqueId(normalizedKey);
+          const isNewFormat = !!network && isAddress(contractAddress);
+
+          // Skip all insertion order logic for legacy collections
+          if (!isNewFormat) {
+            return {
+              ...state,
+              openCollections: {
+                ...state.openCollections,
+                [normalizedKey]: isOpen,
+              },
+            };
+          }
 
           if (!isOpen) {
             const newOpenCollections = { ...state.openCollections };
-            delete newOpenCollections[lowerCaseCollectionName];
+            delete newOpenCollections[normalizedKey];
 
-            const newInsertionOrder = state.insertionOrder.filter(id => id !== lowerCaseCollectionName);
+            const newInsertionOrder = state.insertionOrder.filter(id => id !== normalizedKey);
 
             return {
               openCollections: newOpenCollections,
@@ -64,7 +94,7 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
             };
           }
 
-          if (state.openCollections[lowerCaseCollectionName]) {
+          if (state.openCollections[normalizedKey]) {
             return state;
           }
 
@@ -73,14 +103,14 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
 
           const nonShowcaseOrder = newInsertionOrder.filter(id => id !== 'showcase');
 
-          if (nonShowcaseOrder.length >= MAX_OPEN_COLLECTIONS && lowerCaseCollectionName !== 'showcase') {
+          if (nonShowcaseOrder.length >= MAX_OPEN_COLLECTIONS && normalizedKey !== 'showcase') {
             const oldestNonShowcase = nonShowcaseOrder[0];
             delete newOpenCollections[oldestNonShowcase];
             newInsertionOrder = newInsertionOrder.filter(id => id !== oldestNonShowcase);
           }
 
-          newOpenCollections[lowerCaseCollectionName] = isOpen;
-          newInsertionOrder.push(lowerCaseCollectionName);
+          newOpenCollections[normalizedKey] = isOpen;
+          newInsertionOrder.push(normalizedKey);
 
           return {
             openCollections: newOpenCollections,
@@ -89,8 +119,8 @@ export const createOpenCollectionsStore = (address: Address | string): OpenColle
         });
       },
 
-      isCollectionOpen: (collectionName: CollectionId) => {
-        return get().openCollections[collectionName.toLowerCase()] ?? false;
+      isCollectionOpen: collectionIdOrLegacyName => {
+        return get().openCollections[collectionIdOrLegacyName.toLowerCase()] ?? false;
       },
     }),
     {
