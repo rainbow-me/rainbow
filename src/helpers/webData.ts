@@ -1,25 +1,8 @@
-import GraphemeSplitter from 'grapheme-splitter';
+import { getFirstEmoji, getValidatedEmoji } from './emojiHandler';
 import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
-import { containsEmoji } from '@/helpers/strings';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
-import { getAccountProfileInfo, getWalletWithAccount } from '@/state/wallets/walletsStore';
-
-const getAccountSymbol = (name: string) => {
-  if (!name) {
-    return null;
-  }
-  const accountSymbol = new GraphemeSplitter().splitGraphemes(name)[0];
-  return accountSymbol;
-};
-
-const wipeNotEmoji = (text: string) => {
-  const characters = new GraphemeSplitter().splitGraphemes(text);
-  if (characters.length !== 1) {
-    return null;
-  }
-  return containsEmoji(text) ? text : null;
-};
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
 export const getWebProfile = async (address: string) => {
   if (!address) return null;
@@ -34,18 +17,17 @@ export const initWebData = async (
   accountColorHex: string,
   accountSymbol: string | null
 ) => {
-  await setPreference(PreferenceActionType.init, 'showcase', address, showcaseTokens);
-
-  await setPreference(PreferenceActionType.init, 'hidden', address, hiddenTokens);
-
-  await setPreference(PreferenceActionType.init, 'profile', address, {
-    accountColor: accountColorHex,
-    accountSymbol: wipeNotEmoji(accountSymbol as string),
-  });
+  return Promise.all([
+    setPreference(PreferenceActionType.init, 'showcase', address, showcaseTokens),
+    setPreference(PreferenceActionType.init, 'hidden', address, hiddenTokens),
+    setPreference(PreferenceActionType.init, 'profile', address, {
+      accountColor: accountColorHex,
+      accountSymbol: getValidatedEmoji(accountSymbol as string),
+    }),
+  ]);
 };
 
 export const updateWebHidden = async (address: string, assetIds: string[], forceInit = false) => {
-  // fullUniqueId[]
   const response = await getPreference('hidden', address);
   if (forceInit || !response || !response.hidden.ids.length) {
     await setPreference(PreferenceActionType.init, 'hidden', address, assetIds);
@@ -57,7 +39,6 @@ export const updateWebHidden = async (address: string, assetIds: string[], force
 };
 
 export const updateWebShowcase = async (address: string, assetIds: string[], forceInit = false) => {
-  // uniqueId[]
   const response = await getPreference('showcase', address);
   if (forceInit || !response || !response.showcase.ids.length) {
     await setPreference(PreferenceActionType.init, 'showcase', address, assetIds);
@@ -78,7 +59,7 @@ export const updateWebProfile = async (address: string, name: string, accountCol
   if (!wallet || wallet.type === WalletTypes.readOnly) return;
   const data = {
     accountColor: accountColorHex,
-    accountSymbol: wipeNotEmoji(name ? getAccountSymbol(name)! : (accountSymbol as string)),
+    accountSymbol: (name ? getFirstEmoji(name) : getValidatedEmoji(accountSymbol as string)) || null,
   };
   await setPreference(PreferenceActionType.update, 'profile', address, data);
 };
@@ -91,7 +72,6 @@ export const initializeShowcaseIfNeeded = async (
   accountSymbol: string | null
 ) => {
   try {
-    // If local showcase is not empty
     if (showcaseTokens?.length > 0) {
       const response = await getPreference('showcase', address);
       if (!response || !response.showcase.ids.length) {

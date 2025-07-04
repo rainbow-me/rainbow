@@ -10,9 +10,9 @@ export function parseCollectionSlugFromUrl(url: string) {
   const urlObj = new URL(url);
   const paths = urlObj.pathname.split('/');
   let slug = '';
-  for (const path of paths) {
+  for (const [index, path] of paths.entries()) {
     if (path.toLowerCase() === 'collection') {
-      slug = paths[paths.indexOf(path) + 1];
+      slug = paths[index + 1];
       break;
     }
   }

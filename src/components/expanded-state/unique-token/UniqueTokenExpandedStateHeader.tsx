@@ -314,7 +314,7 @@ const UniqueTokenExpandedStateHeader = ({
   }, [asset.tokenId, asset.chainId, isModificationActionsEnabled, isHiddenAsset, isPhotoDownloadAvailable, isSupportedOnRainbowWeb]);
 
   const handlePressFamilyMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: any) => {
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceUrl) {
         openInBrowser(asset.marketplaceUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
@@ -332,7 +332,7 @@ const UniqueTokenExpandedStateHeader = ({
   );
 
   const handlePressAssetMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: any) => {
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer({
           contractAddress: asset.contractAddress,
@@ -434,9 +434,9 @@ const UniqueTokenExpandedStateHeader = ({
       <Columns space="24px">
         <Heading containsEmoji color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
           {buildUniqueTokenName({
-            collectionName: asset.collectionName ?? '',
+            collectionName: asset.collectionName || '',
             tokenId: asset.tokenId,
-            name: asset.name ?? '',
+            name: asset.name,
             uniqueId: asset.uniqueId,
           })}
         </Heading>
@@ -489,7 +489,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             menuConfig={familyMenuConfig}
-            {...(android ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
+            {...(IS_ANDROID ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}

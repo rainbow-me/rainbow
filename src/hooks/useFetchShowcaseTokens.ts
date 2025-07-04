@@ -40,6 +40,7 @@ export async function getShowcase(address: string, isMigration = false) {
       useNftsStore.setState(state => {
         const now = Date.now();
         return {
+          ...state,
           nftsByCollection: new Map([...state.nftsByCollection, ...data.nftsByCollection]),
           fetchedCollections: { ...state.fetchedCollections, ['showcase']: now },
         };

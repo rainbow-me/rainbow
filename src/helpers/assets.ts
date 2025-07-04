@@ -344,7 +344,7 @@ export const buildBriefUniqueTokenList = (
       }
 
       result.push({
-        image: imageUrl ?? undefined,
+        image: imageUrl || undefined,
         name,
         total: adjustedTotalCount,
         type: CellType.FAMILY_HEADER,
