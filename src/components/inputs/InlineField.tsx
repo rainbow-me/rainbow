@@ -69,16 +69,14 @@ export default function InlineField({
     }
   }, []);
 
-  const valueRef = useRef(value);
   const style = useMemo(
     () => ({
       ...textStyle,
-      lineHeight: android ? textStyle.lineHeight : undefined,
       marginBottom: 0,
       marginTop: 0,
-      minHeight: inputHeight + paddingVertical * 2 + (android ? 2 : 0),
-      paddingBottom: inputProps?.multiline ? (ios ? 15 : 7) : 0,
-      paddingTop: inputProps?.multiline ? (android ? 11 : 15) : android ? (valueRef.current ? 16 : 11) : 0,
+      minHeight: inputHeight + paddingVertical * 2,
+      paddingBottom: inputProps?.multiline ? (ios ? 15 : 10) : 0,
+      paddingTop: inputProps?.multiline ? (ios ? 15 : 10) : 0,
       width: startsWith ? (ios ? 0.55 * width : 0.56 * width) : ios ? 0.6 * width : 0.61 * width,
     }),
     [textStyle, inputHeight, inputProps?.multiline, startsWith, width]
@@ -134,7 +132,6 @@ export default function InlineField({
             selectionColor={selectionColor}
             spellCheck={false}
             style={style}
-            textAlignVertical="top"
             value={value}
             {...inputProps}
             keyboardType={keyboardType}

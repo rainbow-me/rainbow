@@ -1,7 +1,7 @@
 import React, { ForwardedRef } from 'react';
 import { TextInput as TextInputPrimitive, TextInputProps, StyleProp, TextStyle } from 'react-native';
 import { useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import styled from '@/styled-thing';
 import { buildTextStyles, fonts } from '@/styles';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -50,7 +50,7 @@ const Input = (
       ref={ref}
       selectionColor={selectionColor || defaultSelectionColor}
       spellCheck={spellCheck}
-      style={[{ fontFamily: fonts.family.SFProRounded }, style]}
+      style={[IS_ANDROID && { padding: 0, includeFontPadding: false }, style]}
       testID={testID}
       textContentType={textContentType}
     />

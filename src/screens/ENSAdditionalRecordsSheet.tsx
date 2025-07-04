@@ -30,9 +30,9 @@ export default function ENSAdditionalRecordsSheet() {
 
   const boxStyle = useMemo(
     () => ({
-      height: params.longFormHeight || ENSAdditionalRecordsSheetHeight,
+      height: params?.longFormHeight || ENSAdditionalRecordsSheetHeight,
     }),
-    [params.longFormHeight]
+    [params?.longFormHeight]
   );
 
   const androidTop = deviceHeight - boxStyle.height - recordLineHeight;
