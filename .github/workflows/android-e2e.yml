@@ -6,8 +6,9 @@ on:
   push:
     branches:
       - develop
+      - 'e2e-baseline-test'
 jobs:
-  android-e2e-build:
+  build:
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 30
@@ -109,14 +110,14 @@ jobs:
           rnef-build-extra-params: '--extra-params="--no-daemon --build-cache --no-scan"'
           comment-bot: false
 
-  android-e2e-tests:
+  e2e-tests:
     strategy:
       fail-fast: false
       matrix:
         shard-index: [1, 2, 3, 4]
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: app-e2e-runner
-    needs: android-e2e-build
+    needs: build
     timeout-minutes: 30
     concurrency:
       group: e2e-android-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
@@ -160,7 +161,7 @@ jobs:
 
       - name: Download and Unpack APK artifact
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.android-e2e-build.outputs.artifact-id }}/zip"
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
           APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
@@ -198,3 +199,58 @@ jobs:
         with:
           name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}
+
+  perf-tests:
+    if: github.event.pull_request.draft == false
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    needs: build
+    timeout-minutes: 30
+    concurrency:
+      group: e2e-android-${{ github.workflow }}-${{ github.ref }}-perf
+      cancel-in-progress: true
+
+    env:
+      ARTIFACTS_FOLDER: e2e-artifacts
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Download and Unpack APK artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          ls -l downloaded-artifacts
+          APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
+          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Run tests
+        run: ./scripts/e2e-android-perf-ci-aws.sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEVICE_FARM_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEVICE_FARM_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-2
+          PROJECT_ARN: ${{ secrets.AWS_DEVICE_FARM_PROJECT_ARN }}
+          DEVICE_POOL_ARN: ${{ secrets.AWS_DEVICE_FARM_DEVICE_POOL_ARN }}
+          ARTIFACT_PATH_FOR_E2E: ${{ env.ARTIFACT_PATH_FOR_E2E }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Install Flashlight
+        if: github.event_name == 'pull_request'
+        run: |
+          curl https://get.flashlight.dev | bash
+
+      - name: Generate Report
+        if: github.event_name == 'pull_request'
+        run: ./scripts/e2e-android-perf-ci-report.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_COMMIT: ${{ github.sha }}
+
+      - name: Upload Current Perf JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-results-${{ github.event.pull_request.number || github.ref_name }}
+          path: ${{ env.ARTIFACTS_FOLDER }}/perf
