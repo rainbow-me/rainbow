@@ -33,7 +33,7 @@ const ScannerContainer = styled(Centered).attrs({
 
 export default function QRScannerScreen() {
   const { width: deviceWidth } = useDimensions();
-  const { addListener, dispatch } = useNavigation();
+  const { addListener } = useNavigation();
   const scrollPosition = usePagerPosition();
   const { top: topInset } = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -69,12 +69,12 @@ export default function QRScannerScreen() {
       setCameraActive(false);
       setFlashEnabled(false);
       setTimeout(() => {
-        dispatch(e.data.action);
+        Navigation.dispatch(e.data.action);
       }, 0);
     });
 
     return unsubscribeBeforeRemove;
-  }, [addListener, dispatch]);
+  }, [addListener]);
 
   // cleanup for using the back button
   const handleCloseScanner = useCallback(() => {

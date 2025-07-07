@@ -1,9 +1,8 @@
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 
 export function useRemoveNextToLast() {
-  const { dispatch } = useNavigation();
   return () =>
-    dispatch({
+    Navigation.dispatch({
       type: '@RAINBOW/REMOVE_NEXT_TO_LAST',
     });
 }
