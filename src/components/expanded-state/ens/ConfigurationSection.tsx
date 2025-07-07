@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { Navigation } from '@/navigation';
 import lang from 'i18n-js';
 import React from 'react';
 import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
@@ -35,7 +35,6 @@ export default function ConfigurationSection({
   externalAvatarUrl?: string | null;
 }) {
   const { startRegistration } = useENSRegistration();
-  const { navigate } = useNavigation();
 
   return (
     <Stack space="15px (Deprecated)">
@@ -52,7 +51,7 @@ export default function ConfigurationSection({
               label={lang.t('expanded_state.unique_expanded.set_primary_name')}
               onSwitchChange={() => {
                 startRegistration(name, REGISTRATION_MODES.SET_NAME);
-                navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+                Navigation.handleAction(Routes.ENS_CONFIRM_REGISTER_SHEET, {
                   externalAvatarUrl,
                   longFormHeight: ENSConfirmUpdateSheetHeight + (externalAvatarUrl ? 70 : 0),
                   mode: REGISTRATION_MODES.SET_NAME,

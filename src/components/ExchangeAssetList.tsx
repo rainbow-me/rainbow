@@ -30,7 +30,7 @@ import { SwappableAsset } from '@/entities';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import ConditionalWrap from 'conditional-wrap';
 import { EasingGradient } from './easing-gradient/EasingGradient';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -144,7 +144,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
   const sectionListRef = ref as MutableRefObject<SectionList>;
   useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
-  const { getParent: dangerouslyGetParent } = useNavigation();
   const { copiedText, copyCount, onCopySwapDetailsText } = useSwapDetailsClipboardState();
 
   // Scroll to top once the query is cleared
@@ -178,9 +177,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
     [itemProps]
   );
 
-  const { onScroll } = useAndroidScrollViewGestureHandler({
-    navigation: dangerouslyGetParent?.(),
-  });
+  const { onScroll } = useAndroidScrollViewGestureHandler();
 
   const FooterSpacer = useCallback(() => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null), [footerSpacer]);
 

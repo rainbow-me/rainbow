@@ -17,7 +17,7 @@ import SecretDisplayCard from './SecretDisplayCard';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
 import { SecretDisplayStates, SecretDisplayStatesType } from '@/components/secret-display/states';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
@@ -57,7 +57,6 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const wallets = useWallets();
   const backupProvider = backupsStore(state => state.backupProvider);
   const { onManuallyBackupWalletId } = useWalletManualBackup();
-  const { navigate } = useNavigation();
 
   const { isBackingUp, backupType, privateKeyAddress } = params;
 
@@ -120,9 +119,9 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       if (!backupProvider) {
         backupsStore.getState().setBackupProvider(WalletBackupTypes.manual);
       }
-      navigate(Routes.SETTINGS_SECTION_BACKUP);
+      Navigation.handleAction(Routes.SETTINGS_SECTION_BACKUP);
     }
-  }, [backupType, onManuallyBackupWalletId, walletId, backupProvider, navigate]);
+  }, [backupType, onManuallyBackupWalletId, walletId, backupProvider]);
 
   const getIconForBackupType = useCallback(() => {
     if (isBackingUp) {

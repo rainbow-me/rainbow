@@ -5,7 +5,7 @@ import { useTheme } from '@/theme';
 import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
 import { RequestVendorLogoIcon } from '../coin-icon';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
@@ -60,12 +60,10 @@ export const PositionCard = ({ position }: PositionCardProps) => {
   const totalPositions =
     (position.borrows.length || 0) + (position.deposits.length || 0) + (position.claimables.length || 0) + (position.stakes.length || 0);
 
-  const { navigate } = useNavigation();
-
   const onPressHandler = useCallback(() => {
     analytics.track(analytics.event.positionsOpenedSheet, { dapp: position.type });
-    navigate(Routes.POSITION_SHEET, { position });
-  }, [navigate, position]);
+    Navigation.handleAction(Routes.POSITION_SHEET, { position });
+  }, [position]);
 
   const depositTokens: PositionAsset[] = useMemo(() => {
     const tokens: PositionAsset[] = [];

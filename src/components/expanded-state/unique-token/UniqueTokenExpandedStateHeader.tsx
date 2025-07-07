@@ -11,7 +11,7 @@ import { Bleed, Column, Columns, Heading, Inline, Inset, Space, Stack, Text } fr
 import { UniqueAsset } from '@/entities';
 import { useClipboard, useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -198,7 +198,6 @@ const UniqueTokenExpandedStateHeader = ({
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
   const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.fullUniqueId) as boolean, [hiddenTokens, asset.fullUniqueId]);
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(asset.uniqueId) as boolean, [showcaseTokens, asset.uniqueId]);
-  const { goBack } = useNavigation();
 
   const formattedCollectionUrl = useMemo(() => {
     // @ts-expect-error external_link could be null or undefined?
@@ -383,7 +382,7 @@ const UniqueTokenExpandedStateHeader = ({
           }
         }
 
-        goBack();
+        Navigation.goBack();
       } else if (actionKey === AssetActionsEnum.refresh) {
         refreshNFTContractMetadata(asset).then(onRefresh);
       } else if (actionKey === AssetActionsEnum.report) {
@@ -395,7 +394,6 @@ const UniqueTokenExpandedStateHeader = ({
       rainbowWebUrl,
       setClipboard,
       isHiddenAsset,
-      goBack,
       removeHiddenToken,
       addHiddenToken,
       isShowcaseAsset,

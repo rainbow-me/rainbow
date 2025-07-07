@@ -1,7 +1,7 @@
 import { getContacts } from '@/handlers/localstorage/contacts';
 import { isHexString } from '@/handlers/web3';
 import { useImportingWallet } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { colors, padding } from '@/styles';
@@ -78,7 +78,6 @@ function hashCode(text) {
 }
 
 export function Header() {
-  const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
   const isReadOnlyWallet = useIsReadOnlyWallet();
 
@@ -110,7 +109,8 @@ export function Header() {
       (isHexString(contextValue?.addressOrDomain)
         ? abbreviations.address(contextValue?.addressOrDomain, 4, 4)
         : contextValue?.addressOrDomain);
-    navigate(Routes.MODAL_SCREEN, {
+
+    Navigation.handleAction(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
       color: currentContact?.color || color,
       contact: currentContact || {
@@ -121,17 +121,17 @@ export function Header() {
       },
       type: 'contact_profile',
     });
-  }, [color, contextValue?.address, contextValue?.addressOrDomain, contextValue?.data?.reverseEns, emoji, navigate]);
+  }, [color, contextValue?.address, contextValue?.addressOrDomain, contextValue?.data?.reverseEns, emoji]);
 
   const onSend = useCallback(async () => {
-    goBack();
-    navigate(Routes.SEND_FLOW, {
+    Navigation.goBack();
+    Navigation.handleAction(Routes.SEND_FLOW, {
       params: {
         address: contextValue?.addressOrDomain || contextValue?.address,
       },
       screen: Routes.SEND_SHEET,
     });
-  }, [contextValue?.address, contextValue?.addressOrDomain, goBack, navigate]);
+  }, [contextValue?.address, contextValue?.addressOrDomain]);
 
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 

@@ -8,10 +8,10 @@ import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
 import { useDimensions } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 import TouchableBackdrop from '../TouchableBackdrop';
 
 const AndroidBackground = styled.View({
@@ -90,7 +90,6 @@ export default forwardRef(function SlackSheet(
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yPosition = givenYPosition || useSharedValue(0);
   const { height: deviceHeight } = useDimensions();
-  const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const bottomInset = useMemo(() => (insets.bottom || scrollEnabled ? 42 : 30), [insets.bottom, scrollEnabled]);
   const { colors } = useTheme();
@@ -139,8 +138,8 @@ export default forwardRef(function SlackSheet(
 
   return (
     <Fragment>
-      {IS_ANDROID ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
-      <TouchableBackdrop onPress={goBack} />
+      {IS_ANDROID ? <Pressable onPress={Navigation.goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
+      <TouchableBackdrop onPress={Navigation.goBack} />
 
       <Container
         additionalTopPadding={additionalTopPadding}

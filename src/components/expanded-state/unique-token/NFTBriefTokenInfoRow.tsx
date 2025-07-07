@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
@@ -24,8 +24,6 @@ const formatPrice = (price: number | null | undefined, tokenSymbol: string | nul
 export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) {
   const [hasDispatchedAction, setHasDispatchedAction] = useState(false);
   const { colors } = useTheme();
-
-  const { navigate } = useNavigation();
 
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
@@ -79,10 +77,10 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
   }, [showFloorInNative, setShowFloorInNative, hasDispatchedAction, setHasDispatchedAction]);
 
   const handlePressCollectionFloor = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'floor_price',
     });
-  }, [navigate]);
+  }, []);
 
   const lastSalePrice = formatPrice(asset?.lastPrice, asset?.lastSalePaymentToken);
 

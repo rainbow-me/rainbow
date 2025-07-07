@@ -25,7 +25,7 @@ import {
   useDimensions,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -217,14 +217,12 @@ export default function ChartExpandedState({ asset }) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
-  const { navigate } = useNavigation();
-
   const handleL2DisclaimerPress = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'network',
       chainId: assetWithPrice.chainId,
     });
-  }, [assetWithPrice.chainId, navigate]);
+  }, [assetWithPrice.chainId]);
 
   const { layout } = useContext(ModalContext) || {};
 

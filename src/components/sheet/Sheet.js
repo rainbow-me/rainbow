@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '../../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { useTheme } from '../../theme/ThemeContext';
 
 import TouchableBackdrop from '../TouchableBackdrop';
@@ -12,13 +12,12 @@ import { borders } from '@/styles';
 
 const Sheet = ({ borderRadius, children, hideHandle, noInsets = false, paddingBottom = 7, paddingTop = 6 }) => {
   const { width } = useDimensions();
-  const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
     <Column height="100%" justify="end" width={width}>
-      <TouchableBackdrop onPress={goBack} />
+      <TouchableBackdrop onPress={Navigation.goBack} />
       <Column
         backgroundColor={colors.white}
         paddingBottom={noInsets ? 0 : insets.bottom}

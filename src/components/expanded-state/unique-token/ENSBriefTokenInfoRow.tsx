@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { Navigation } from '@/navigation';
 import { format, formatDistanceStrict } from 'date-fns';
 import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
@@ -29,7 +29,6 @@ export default function ENSBriefTokenInfoRow({
   externalAvatarUrl?: string | null;
 }) {
   const { colors } = useTheme();
-  const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { data: avatar } = useENSAvatar(ensName, { enabled: profilesEnabled });
@@ -42,14 +41,14 @@ export default function ENSBriefTokenInfoRow({
     InteractionManager.runAfterInteractions(() => {
       const cleanENSName = ensName?.split(' ')?.[0] ?? ensName;
       startRegistration(cleanENSName, REGISTRATION_MODES.RENEW);
-      navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+      Navigation.handleAction(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         ensName: cleanENSName,
         externalAvatarUrl,
         longFormHeight: ENSConfirmRenewSheetHeight + (avatar?.imageUrl ? 70 : 0),
         mode: REGISTRATION_MODES.RENEW,
       });
     });
-  }, [ensName, startRegistration, navigate, externalAvatarUrl, avatar?.imageUrl]);
+  }, [ensName, startRegistration, externalAvatarUrl, avatar?.imageUrl]);
 
   return (
     <Columns space="10px">

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
 import useContacts from './useContacts';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
@@ -95,12 +95,10 @@ export default function useAccountTransactions() {
 
   const { contacts } = useContacts();
   const theme = useTheme();
-  const { navigate } = useNavigation();
 
   const accountState = {
     accountAddress,
     contacts,
-    navigate,
     requests: walletConnectRequests,
     theme,
     transactions: slicedTransaction,

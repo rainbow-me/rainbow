@@ -17,7 +17,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Chain } from '@/handlers/web3';
 import { add, convertAmountToNativeDisplayWorklet, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { useColorForAsset, useGas, usePrevious } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
@@ -169,7 +169,6 @@ const GasSpeedButton = ({
   loading = false,
 }: GasSpeedButtonProps) => {
   const { colors } = useTheme();
-  const { navigate, goBack } = useNavigation();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const rawColorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
 
@@ -220,7 +219,7 @@ const GasSpeedButton = ({
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
-    navigate(Routes.CUSTOM_GAS_SHEET, {
+    Navigation.handleAction(Routes.CUSTOM_GAS_SHEET, {
       asset,
       fallbackColor,
       focusTo: shouldOpenCustomGasSheet.focusTo,
@@ -228,7 +227,7 @@ const GasSpeedButton = ({
       speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
-  }, [gasIsNotReady, navigate, asset, shouldOpenCustomGasSheet.focusTo, speeds, fallbackColor]);
+  }, [gasIsNotReady, asset, shouldOpenCustomGasSheet.focusTo, speeds, fallbackColor]);
 
   const openCustomOptions = useCallback(
     (focusTo: string) => {
@@ -303,12 +302,12 @@ const GasSpeedButton = ({
   const openGasHelper = useCallback(async () => {
     Keyboard.dismiss();
     const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       chainId,
       type: 'gas',
       nativeAsset,
     });
-  }, [chainId, navigate]);
+  }, [chainId]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: GasSpeed } }) => handlePressSpeedOption(actionKey),
@@ -373,11 +372,11 @@ const GasSpeedButton = ({
 
   const onDonePress = useCallback(() => {
     if (canGoBack) {
-      goBack();
+      Navigation.goBack();
     } else {
-      validateGasParams?.current?.(goBack);
+      validateGasParams?.current?.(Navigation.goBack);
     }
-  }, [canGoBack, goBack, validateGasParams]);
+  }, [canGoBack, validateGasParams]);
 
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;

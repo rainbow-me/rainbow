@@ -13,7 +13,7 @@ import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
 import { useKeyboardHeight } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
@@ -75,7 +75,6 @@ export default function SendContactList({
   watchedAccounts,
 }) {
   const accountAddress = useAccountAddress();
-  const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { isDarkMode } = useTheme();
 
@@ -91,19 +90,16 @@ export default function SendContactList({
     touchedContact.current = address.toLowerCase();
   }, []);
 
-  const handleEditContact = useCallback(
-    ({ address, color, ens, nickname }) => {
-      navigate(Routes.MODAL_SCREEN, {
-        additionalPadding: true,
-        address,
-        color,
-        ens,
-        nickname,
-        type: 'contact_profile',
-      });
-    },
-    [navigate]
-  );
+  const handleEditContact = useCallback(({ address, color, ens, nickname }) => {
+    Navigation.handleAction(Routes.MODAL_SCREEN, {
+      additionalPadding: true,
+      address,
+      color,
+      ens,
+      nickname,
+      type: 'contact_profile',
+    });
+  }, []);
 
   const renderItemCallback = useCallback(
     ({ item, section }) => {

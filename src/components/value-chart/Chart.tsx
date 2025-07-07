@@ -20,7 +20,7 @@ import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { IS_IOS } from '@/env';
@@ -131,10 +131,9 @@ export default function Chart({
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
 
-  const { setOptions } = useNavigation();
   useEffect(
     () =>
-      setOptions({
+      Navigation.setOptions({
         onWillDismiss: () => {
           cancelAnimation(progress);
           cancelAnimation(spinnerRotation);
@@ -142,7 +141,7 @@ export default function Chart({
           nativeStackConfig.screenOptions.onWillDismiss();
         },
       }),
-    [setOptions, progress, spinnerRotation, spinnerScale]
+    [progress, spinnerRotation, spinnerScale]
   );
 
   const showLoadingState = useShowLoadingState(fetchingCharts);
