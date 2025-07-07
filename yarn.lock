@@ -8064,6 +8064,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@walletconnect/react-native-compat@npm:2.17.0":
+  version: 2.17.0
+  resolution: "@walletconnect/react-native-compat@npm:2.17.0"
+  dependencies:
+    events: "npm:3.3.0"
+    fast-text-encoding: "npm:1.0.6"
+    react-native-url-polyfill: "npm:2.0.0"
+  peerDependencies:
+    "@react-native-async-storage/async-storage": "*"
+    "@react-native-community/netinfo": "*"
+    expo-application: "*"
+    react-native-get-random-values: "*"
+  peerDependenciesMeta:
+    expo-application:
+      optional: true
+  checksum: 10c0/936f93b2f96fcd4f0eb4df4de19c20f76b0daec5568c49fe7e346157b9486e2c4a8f538d9094e5902a9eae736eb64d42e6be77009fbed1364e63ff22fca67743
+  languageName: node
+  linkType: hard
+
 "@walletconnect/relay-api@npm:1.0.11":
   version: 1.0.11
   resolution: "@walletconnect/relay-api@npm:1.0.11"
@@ -8632,6 +8651,7 @@ __metadata:
     "@wagmi/chains": "npm:1.8.0"
     "@walletconnect/client": "npm:1.8.0"
     "@walletconnect/core": "npm:2.17.0"
+    "@walletconnect/react-native-compat": "npm:2.17.0"
     "@walletconnect/types": "npm:2.17.0"
     "@walletconnect/utils": "npm:2.17.0"
     assert: "npm:1.5.0"
@@ -14332,6 +14352,13 @@ __metadata:
   version: 1.0.4
   resolution: "fast-text-encoding@npm:1.0.4"
   checksum: 10c0/7358726685a2378562c929e4be5acba4597e3677d1f2d30be5804da5863ae0926e1725b1af6270698752aad3c3647f5b97278c2f9e73751f3d3184cd4f931d9c
+  languageName: node
+  linkType: hard
+
+"fast-text-encoding@npm:1.0.6":
+  version: 1.0.6
+  resolution: "fast-text-encoding@npm:1.0.6"
+  checksum: 10c0/e1d0381bda229c92c7906f63308f3b9caca8c78b732768b1ee16f560089ed21bc159bbe1434138ccd3815931ec8d4785bdade1ad1c45accfdf27ac6606ac67d2
   languageName: node
   linkType: hard
 

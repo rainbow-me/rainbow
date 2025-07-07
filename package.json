@@ -135,6 +135,7 @@
     "@wagmi/chains": "1.8.0",
     "@walletconnect/client": "1.8.0",
     "@walletconnect/core": "2.17.0",
+    "@walletconnect/react-native-compat": "2.17.0",
     "@walletconnect/types": "2.17.0",
     "@walletconnect/utils": "2.17.0",
     "assert": "1.5.0",
