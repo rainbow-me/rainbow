@@ -180,13 +180,7 @@ function createSelector<T>(
   ) => T
 ): () => T {
   let cachedResult: T | typeof uninitialized = uninitialized;
-  let memoizedFn:
-    | ((
-        collections: Map<CollectionId, Collection>,
-        nftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>>,
-        pagination: PaginationInfo | null
-      ) => T)
-    | null = null;
+  let memoizedFn: typeof selectorFn | null = null;
   let lastCollections: Map<CollectionId, Collection> | null = null;
   let lastNftsByCollection: Map<CollectionId, Map<UniqueId, UniqueAsset>> | null = null;
   let lastPagination: PaginationInfo | null = null;
