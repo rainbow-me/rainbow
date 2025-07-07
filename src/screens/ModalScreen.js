@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ContactProfileState, WalletProfileState, NewWalletGroupState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { DevTestBackupState } from '@/components/expanded-state/DevTestBackupState';
@@ -23,12 +23,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ insets }) =
 
 export default function ModalScreen(props) {
   const insets = useSafeAreaInsets();
-  const { goBack } = useNavigation();
   const { params } = useRoute();
 
   return (
     <Container insets={insets}>
-      <TouchableBackdrop onPress={goBack} />
+      <TouchableBackdrop onPress={Navigation.goBack} />
       {createElement(ModalTypes[params.type], {
         ...params,
         ...props,

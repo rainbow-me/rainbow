@@ -2,7 +2,7 @@ import * as lang from '@/languages';
 import React, { useCallback, useState } from 'react';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 
 type NewWalletGroupStateProps = {
   onCloseModal: ({ name }: { name: string }) => void;
@@ -10,8 +10,6 @@ type NewWalletGroupStateProps = {
 };
 
 export default function NewWalletGroupState({ onCloseModal, numWalletGroups }: NewWalletGroupStateProps) {
-  const { goBack } = useNavigation();
-
   const [value, setValue] = useState('');
 
   const handleSubmit = useCallback(() => {
@@ -21,12 +19,12 @@ export default function NewWalletGroupState({ onCloseModal, numWalletGroups }: N
     onCloseModal({
       name: value,
     });
-    goBack();
-  }, [goBack, onCloseModal, value]);
+    Navigation.goBack();
+  }, [onCloseModal, value]);
 
   return (
     <ProfileModal
-      handleCancel={goBack}
+      handleCancel={Navigation.goBack}
       handleSubmit={handleSubmit}
       inputValue={value}
       onChange={setValue}

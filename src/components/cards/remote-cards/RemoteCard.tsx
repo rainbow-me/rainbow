@@ -5,7 +5,7 @@ import { get } from 'lodash';
 import { Border, Box, Column, Columns, Cover, IconContainer, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { IS_IOS } from '@/env';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { Language } from '@/languages';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { BackgroundColor, ForegroundColor, TextColor } from '@/design-system/color/palettes';
@@ -63,7 +63,6 @@ type RemoteCardProps = {
 
 export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carouselRef }) => {
   const { isDarkMode } = useColorMode();
-  const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
   const card = remoteCardsStore(state => state.getCard(id));
@@ -79,9 +78,9 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
     if (card?.primaryButton && card?.primaryButton.url) {
       openInBrowser(card?.primaryButton.url);
     } else if (card?.primaryButton && card?.primaryButton.route) {
-      navigate(card?.primaryButton.route, card?.primaryButton.props);
+      Navigation.handleAction(card?.primaryButton.route, card?.primaryButton.props);
     }
-  }, [card?.cardKey, card?.primaryButton, navigate]);
+  }, [card?.cardKey, card?.primaryButton]);
 
   const onDismiss = useCallback(() => {
     analytics.track(analytics.event.remoteCardDismissed, {

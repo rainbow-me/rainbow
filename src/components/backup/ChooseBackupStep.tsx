@@ -3,7 +3,6 @@ import React, { useCallback } from 'react';
 import { Text as RNText } from '../text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { useDimensions } from '@/hooks';
-import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { Box, Stack } from '@/design-system';
@@ -13,6 +12,7 @@ import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
 import Menu from '@/screens/SettingsSheet/components/Menu';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import Routes from '@/navigation/routesNames';
+import { Navigation } from '@/navigation';
 import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
 import { Source } from 'react-native-fast-image';
 import { IS_ANDROID } from '@/env';
@@ -60,16 +60,12 @@ export function ChooseBackupStep() {
 
   const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
-  const { navigate } = useNavigation();
 
-  const onSelectCloudBackup = useCallback(
-    (selectedBackup: BackupFile) => {
-      navigate(Routes.RESTORE_CLOUD_SHEET, {
-        selectedBackup,
-      });
-    },
-    [navigate]
-  );
+  const onSelectCloudBackup = useCallback((selectedBackup: BackupFile) => {
+    Navigation.handleAction(Routes.RESTORE_CLOUD_SHEET, {
+      selectedBackup,
+    });
+  }, []);
 
   const height = IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
   return (

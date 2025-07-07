@@ -5,7 +5,7 @@ import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
 import { NativeCurrencyKey, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
 import { ThemeContextProps } from '@/theme';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
@@ -428,13 +428,12 @@ export default React.memo(function TransactionCoinRow({
   theme: ThemeContextProps;
 }) {
   const { colors } = theme;
-  const { navigate } = useNavigation();
 
   const onPress = useCallback(() => {
-    navigate(Routes.TRANSACTION_DETAILS, {
+    Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
       transaction: item,
     });
-  }, [item, navigate]);
+  }, [item]);
 
   const [topValue] = activityValues(item, nativeCurrency) ?? [];
 

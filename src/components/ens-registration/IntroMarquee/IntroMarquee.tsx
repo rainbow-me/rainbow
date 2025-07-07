@@ -5,7 +5,7 @@ import { MarqueeList } from '../../list';
 import { Box, Stack, Text } from '@/design-system';
 import { ensRecordsQueryKey, useENSRecords } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { queryClient } from '@/react-query';
 import Routes from '@/navigation/routesNames';
 import { useEnsMarquee } from '@/resources/metadata/ensMarqueeQuery';
@@ -35,22 +35,17 @@ const estimateDescriptionProfilePreviewHeight = (description?: string) => {
 };
 
 export default function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }) {
-  const { navigate } = useNavigation();
-
   const { data, isLoading } = useEnsMarquee();
 
-  const handlePressENS = useCallback(
-    (ensName: string) => {
-      const data = queryClient.getQueryData<ReturnType<typeof useENSRecords>['data']>(ensRecordsQueryKey({ name: ensName }));
-      const description = data?.records?.description || '';
-      navigate(Routes.PROFILE_PREVIEW_SHEET, {
-        address: ensName,
-        descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(description),
-        fromRoute: Routes.DISCOVER_SCREEN,
-      });
-    },
-    [navigate]
-  );
+  const handlePressENS = useCallback((ensName: string) => {
+    const data = queryClient.getQueryData<ReturnType<typeof useENSRecords>['data']>(ensRecordsQueryKey({ name: ensName }));
+    const description = data?.records?.description || '';
+    Navigation.handleAction(Routes.PROFILE_PREVIEW_SHEET, {
+      address: ensName,
+      descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(description),
+      fromRoute: Routes.DISCOVER_SCREEN,
+    });
+  }, []);
 
   const renderItem = useCallback(
     ({

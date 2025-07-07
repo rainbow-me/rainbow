@@ -8,7 +8,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ERROR_RED, FIELD_BORDER_COLOR, FIELD_BORDER_WIDTH, INPUT_HEIGHT } from '../constants';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
@@ -22,7 +22,6 @@ export function NetworkField() {
     state => state.hasSufficientChainNativeAssetForTransactionGas
   );
   const networkLabel = useBackendNetworksStore.getState().getChainsLabel()[chainId];
-  const navigation = useNavigation();
   const chainNativeAsset = useUserAssetsStore(state => state.getNativeAssetForChain(chainId));
   const allowedNetworks = useBackendNetworksStore.getState().getTokenLauncherSupportedChainIds();
 
@@ -53,7 +52,7 @@ export function NetworkField() {
         <Bleed right={{ custom: 7 }}>
           <ButtonPressAnimation
             onPress={() => {
-              navigation.navigate(Routes.NETWORK_SELECTOR, {
+              Navigation.handleAction(Routes.NETWORK_SELECTOR, {
                 selected: chainId,
                 setSelected: onChainSelected,
                 goBackOnSelect: true,

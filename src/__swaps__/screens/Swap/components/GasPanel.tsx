@@ -1,7 +1,7 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { LayoutChangeEvent } from 'react-native';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
 import { ACTION_BUTTON_HEIGHT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -24,7 +24,6 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
@@ -34,6 +33,7 @@ import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hoo
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
+import { Navigation } from '@/navigation';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -163,7 +163,6 @@ const selectBaseFee = (s: string | undefined = '0') => formatNumber(weiToGwei(s)
 
 function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: string; gasTrend?: keyof typeof GAS_TRENDS }) {
   const { isDarkMode } = useColorMode();
-  const { navigate } = useNavigation();
 
   const label = useForegroundColor('label');
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -177,7 +176,7 @@ function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: strin
       currentBaseFee: baseFee,
       currentGasTrend: gasTrend,
     };
-    navigate(Routes.EXPLAIN_SHEET, params);
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, params);
   };
 
   return (
@@ -295,8 +294,6 @@ function Warning({ children }: { children: string }) {
 }
 
 function EditMaxBaseFee() {
-  const { navigate } = useNavigation();
-
   const maxBaseFee = useGasPanelState('maxBaseFee');
 
   const warning = useMaxBaseFeeWarning(maxBaseFee);
@@ -304,7 +301,7 @@ function EditMaxBaseFee() {
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between">
       <Box gap={8} style={{ marginTop: warning ? -10 : 0, marginBottom: warning ? -10 : 0 }}>
-        <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
+        <PressableLabel onPress={() => Navigation.handleAction(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
           {i18n.t(i18n.l.gas.max_base_fee)}
         </PressableLabel>
         {warning && <Warning>{warning}</Warning>}
@@ -315,12 +312,11 @@ function EditMaxBaseFee() {
 }
 
 function EditPriorityFee() {
-  const { navigate } = useNavigation();
   const maxPriorityFee = useGasPanelState('maxPriorityFee');
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
+      <PressableLabel onPress={() => Navigation.handleAction(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
         {i18n.t(i18n.l.gas.miner_tip)}
       </PressableLabel>
       <GasSettingInput value={maxPriorityFee} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={'0'} />
@@ -329,13 +325,11 @@ function EditPriorityFee() {
 }
 
 function EditGasPrice() {
-  const { navigate } = useNavigation();
-
   const gasPrice = useGasPanelState('gasPrice');
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
+      <PressableLabel onPress={() => Navigation.handleAction(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
         {i18n.t(i18n.l.gas.gas_price)}
       </PressableLabel>
       <GasSettingInput value={gasPrice} onChange={gasPrice => setGasPanelState({ gasPrice })} />

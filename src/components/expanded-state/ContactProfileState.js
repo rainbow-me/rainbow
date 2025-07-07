@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useNavigation } from '../../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
@@ -14,7 +14,6 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const contactNickname = contact?.nickname || nickname;
-  const { goBack } = useNavigation();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
 
@@ -28,15 +27,15 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
     const nickname = profilesEnabled ? value : (emoji ? `${emoji} ${value}` : value).trim();
     if (value?.length > 0) {
       onAddOrUpdateContacts(address, nickname, colors.avatarBackgrounds[colorIndex || 0], ens);
-      goBack();
+      Navigation.goBack();
     }
     android && Keyboard.dismiss();
-  }, [address, colorIndex, colors.avatarBackgrounds, emoji, ens, goBack, onAddOrUpdateContacts, profilesEnabled, value]);
+  }, [address, colorIndex, colors.avatarBackgrounds, emoji, ens, onAddOrUpdateContacts, profilesEnabled, value]);
 
   const handleCancel = useCallback(() => {
-    goBack();
+    Navigation.goBack();
     android && Keyboard.dismiss();
-  }, [goBack]);
+  }, []);
 
   const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
   const avatarUrl = profilesEnabled ? avatar?.imageUrl : undefined;

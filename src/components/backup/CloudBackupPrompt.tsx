@@ -2,7 +2,7 @@ import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import * as lang from '@/languages';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
@@ -17,7 +17,6 @@ import { useCreateBackup } from './useCreateBackup';
 const imageSize = 72;
 
 export default function CloudBackupPrompt() {
-  const { navigate, goBack } = useNavigation();
   const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
   const selectedWallet = useSelectedWallet();
   const createBackup = useCreateBackup();
@@ -26,10 +25,9 @@ export default function CloudBackupPrompt() {
     if (!selectedWallet) return;
 
     // pop the bottom sheet, and navigate to the backup section inside settings sheet
-    goBack();
-    navigate(Routes.SETTINGS_SHEET, {
+    Navigation.goBack();
+    Navigation.handleAction(Routes.SETTINGS_SHEET, {
       screen: Routes.SETTINGS_SECTION_BACKUP,
-      initial: false,
     });
 
     executeFnIfCloudBackupAvailable({
@@ -40,9 +38,9 @@ export default function CloudBackupPrompt() {
         }),
       logout: true,
     });
-  }, [createBackup, goBack, navigate, selectedWallet]);
+  }, [createBackup, selectedWallet]);
 
-  const onMaybeLater = useCallback(() => goBack(), [goBack]);
+  const onMaybeLater = useCallback(() => Navigation.goBack(), []);
 
   return (
     <Inset horizontal={'24px'} vertical={'44px'}>

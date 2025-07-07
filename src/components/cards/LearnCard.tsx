@@ -4,7 +4,7 @@ import { CardType, GenericCard } from './GenericCard';
 import { getLearnCardColorway } from './utils/constants';
 import { LearnCardDetails } from './utils/types';
 import { IconOrb } from './reusables/IconOrb';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
@@ -18,7 +18,6 @@ type LearnCardProps = {
 };
 
 export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
   const { category, emoji, url, key } = cardDetails;
   const { name: routeName } = useRoute();
@@ -30,7 +29,7 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
       routeName,
       cardType: type,
     });
-    navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
+    Navigation.handleAction(Routes.LEARN_WEB_VIEW_SCREEN, {
       category,
       url,
       displayType: type,

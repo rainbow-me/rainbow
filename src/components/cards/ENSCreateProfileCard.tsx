@@ -9,7 +9,7 @@ import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
-import { useNavigation } from '../../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import ImgixImage from '../images/ImgixImage';
 import { GenericCard, Gradient } from './GenericCard';
@@ -25,7 +25,6 @@ const GRADIENT: Gradient = {
 };
 
 export const ENSCreateProfileCard = () => {
-  const { navigate } = useNavigation();
   const { width: deviceWidth } = useDimensions();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
@@ -47,11 +46,11 @@ export const ENSCreateProfileCard = () => {
         routeName,
         cardType,
       });
-      navigate(Routes.REGISTER_ENS_NAVIGATOR);
+      Navigation.handleAction(Routes.REGISTER_ENS_NAVIGATOR);
     } else {
       watchingAlert();
     }
-  }, [navigate, routeName, uniqueDomain?.name]);
+  }, [routeName, uniqueDomain?.name]);
 
   return (
     <ColorModeProvider value="lightTinted">

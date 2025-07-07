@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { Box } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -16,7 +16,6 @@ import { openInBrowser } from '@/utils/openInBrowser';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
-  const { navigate } = useNavigation();
 
   const radialGradientProps = {
     center: [0, 1],
@@ -35,13 +34,13 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 
   }, []);
 
   const handleAvailableNetworksPress = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       chainIds: availableChainIds,
       onClose: linkToHop,
       tokenSymbol: asset.symbol,
       type: 'availableNetworks',
     });
-  }, [navigate, availableChainIds, linkToHop, asset.symbol]);
+  }, [availableChainIds, linkToHop, asset.symbol]);
 
   return (
     <>

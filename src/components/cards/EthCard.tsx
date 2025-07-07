@@ -9,7 +9,7 @@ import { useChartThrottledPoints, useColorForAsset } from '@/hooks';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
 import { ETH_ADDRESS } from '@/references';
@@ -33,7 +33,6 @@ export const ETH_CARD_HEIGHT = 284.3;
 export const EthCard = () => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { colors, isDarkMode } = useTheme();
-  const { navigate } = useNavigation();
   const { data: externalEthAsset } = useExternalToken({
     address: ETH_ADDRESS,
     chainId: ChainId.mainnet,
@@ -65,19 +64,19 @@ export const EthCard = () => {
         return;
       }
 
-      navigate(Routes.ADD_CASH_SHEET);
+      Navigation.handleAction(Routes.ADD_CASH_SHEET);
 
       analytics.track(analytics.event.buyButtonPressed, {
         componentName: 'EthCard',
         routeName,
       });
     },
-    [navigate, routeName]
+    [routeName]
   );
 
   const handleAssetPress = useCallback(() => {
     if (ethAsset.native == null) return;
-    navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: ethAsset as FormattedExternalAsset,
       address: ETH_ADDRESS,
       chainId: ChainId.mainnet,
@@ -87,7 +86,7 @@ export const EthCard = () => {
       routeName,
       cardType,
     });
-  }, [ethAsset, navigate, routeName]);
+  }, [ethAsset, routeName]);
 
   let colorForAsset = useColorForAsset(
     {

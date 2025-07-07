@@ -5,7 +5,7 @@ import { BlurGradient } from '@/components/blur/BlurGradient';
 import { Box, Text, TextIcon } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -21,7 +21,6 @@ export const TOKEN_LAUNCHER_HEADER_HEIGHT = 20 + 36 + 4 + 12 + 12;
 export const TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS = { bottom: 42, top: TOKEN_LAUNCHER_HEADER_HEIGHT };
 
 export function TokenLauncherHeader() {
-  const navigation = useNavigation();
   const { width: deviceWidth } = useDimensions();
   const { accountColorHex, accountImage, accountAddress, accountSymbol } = useAccountProfileInfo();
   const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
@@ -40,7 +39,7 @@ export function TokenLauncherHeader() {
 
   const handlePressExit = useCallback(() => {
     if (!hasEnteredAnyInfo()) {
-      navigation.goBack();
+      Navigation.goBack();
       return;
     }
 
@@ -52,14 +51,14 @@ export function TokenLauncherHeader() {
       },
       buttonIndex => {
         if (buttonIndex === 0) {
-          navigation.goBack();
+          Navigation.goBack();
           analytics.track(analytics.event.tokenLauncherAbandoned, {
             ...getAnalyticsParams(),
           });
         }
       }
     );
-  }, [navigation, hasEnteredAnyInfo, getAnalyticsParams]);
+  }, [hasEnteredAnyInfo, getAnalyticsParams]);
 
   return (
     <Box position="absolute" top="0px" width={'full'} height={TOKEN_LAUNCHER_HEADER_HEIGHT} pointerEvents="box-none" zIndex={2}>
@@ -74,7 +73,7 @@ export function TokenLauncherHeader() {
         <Box flexDirection="row" alignItems="center" justifyContent="space-between" padding="2px" pointerEvents="box-none">
           {step === NavigationSteps.INFO && (
             <ButtonPressAnimation
-              onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}
+              onPress={() => Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}
               scaleTo={0.8}
             >
               {accountAddress && (

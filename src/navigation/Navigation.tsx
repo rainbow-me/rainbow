@@ -342,5 +342,8 @@ export default {
   handleAction,
   setParams,
   setTopLevelNavigator,
+  reset: (...args: Parameters<NavigationContainerRef<RootStackParamList>['reset']>) => TopLevelNavigationRef?.reset(...args),
+  getParent: () => TopLevelNavigationRef?.getParent(),
+  setOptions: (options: Partial<ExtendedSetOptionsFunction>) => TopLevelNavigationRef?.setOptions(options),
   goBack,
 };

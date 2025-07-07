@@ -9,7 +9,7 @@ import { Navbar } from '@/components/navbar/Navbar';
 import { CameraDimmer, EmulatorPasteUriButton, QRCodeScanner } from '@/components/qrcode-scanner';
 import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
 import { useDimensions, useHardwareBack, useScanner } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
@@ -44,7 +44,6 @@ const ScannerHeader = styled(Header).attrs({
 export default function QRScannerScreen() {
   const { width: deviceWidth } = useDimensions();
   const { result: isEmulator } = useIsEmulator();
-  const { navigate } = useNavigation();
   const scrollPosition = usePagerPosition();
   const { top: topInset } = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -93,9 +92,9 @@ export default function QRScannerScreen() {
     setFlashEnabled(false);
     setCameraActive(false);
     setTimeout(() => {
-      navigate(Routes.WALLET_SCREEN);
+      Navigation.handleAction(Routes.WALLET_SCREEN);
     }, 0);
-  }, [navigate]);
+  }, []);
 
   const containerStyle = useAnimatedStyle(() => {
     // const scale = interpolate(scrollPosition.value, [0, 1], [1, 0.8]);

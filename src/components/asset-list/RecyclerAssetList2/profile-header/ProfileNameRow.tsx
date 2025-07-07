@@ -5,7 +5,7 @@ import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { haptics } from '@/utils';
@@ -38,13 +38,12 @@ export function ProfileNameRow({
   // ////////////////////////////////////////////////////
   // Name & press handler
 
-  const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const accountAddress = useAccountAddress();
 
   const onPressName = () => {
     if (disableOnPress) return;
-    navigate(Routes.CHANGE_WALLET_SHEET);
+    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
   };
   const onLongPressName = React.useCallback(() => {
     if (disableOnPress) return;

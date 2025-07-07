@@ -9,7 +9,6 @@ import walletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { backupsStore, CloudBackupState } from '@/state/backups/backups';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
@@ -19,12 +18,12 @@ import React, { useCallback, useMemo } from 'react';
 import { Source } from 'react-native-fast-image';
 import { ButtonPressAnimation } from '../animations';
 import { ImgixImage } from '../images';
+import { Navigation } from '@/navigation';
 
 const imageSize = 72;
 
 export default function BackupSheetSectionNoProvider() {
   const { colors } = useTheme();
-  const { navigate, goBack } = useNavigation();
   const selectedWallet = useSelectedWallet();
   const createBackup = useCreateBackup();
   const status = backupsStore(state => state.status);
@@ -33,10 +32,9 @@ export default function BackupSheetSectionNoProvider() {
     if (!selectedWallet) return;
 
     // pop the bottom sheet, and navigate to the backup section inside settings sheet
-    goBack();
-    navigate(Routes.SETTINGS_SHEET, {
+    Navigation.goBack();
+    Navigation.handleAction(Routes.SETTINGS_SHEET, {
       screen: Routes.SETTINGS_SECTION_BACKUP,
-      initial: false,
     });
 
     executeFnIfCloudBackupAvailable({
@@ -46,7 +44,7 @@ export default function BackupSheetSectionNoProvider() {
         }),
       logout: true,
     });
-  }, [createBackup, goBack, navigate, selectedWallet]);
+  }, [createBackup, selectedWallet]);
 
   const onManualBackup = useCallback(async () => {
     if (!selectedWallet) return;
@@ -56,8 +54,8 @@ export default function BackupSheetSectionNoProvider() {
         ? (selectedWallet.addresses || [])[0].label
         : selectedWallet.name;
 
-    goBack();
-    navigate(Routes.SETTINGS_SHEET, {
+    Navigation.goBack();
+    Navigation.handleAction(Routes.SETTINGS_SHEET, {
       screen: Routes.SECRET_WARNING,
       params: {
         isBackingUp: true,
@@ -66,7 +64,7 @@ export default function BackupSheetSectionNoProvider() {
         walletId: selectedWallet.id,
       },
     });
-  }, [goBack, navigate, selectedWallet]);
+  }, [selectedWallet]);
 
   const isCloudBackupDisabled = useMemo(() => {
     return status !== CloudBackupState.Ready && status !== CloudBackupState.NotAvailable;

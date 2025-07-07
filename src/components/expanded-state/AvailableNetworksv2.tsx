@@ -7,7 +7,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { Box, Column, Columns, Inline, Text } from '@/design-system';
 import { RainbowToken } from '@/entities';
 import { implementation } from '@/entities/dispersion';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -46,8 +46,6 @@ const AvailableNetworksv2 = ({
     },
   };
 
-  const { goBack } = useNavigation();
-
   const convertAssetAndNavigate = useCallback(
     (chainId: ChainId) => {
       if (getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet) {
@@ -62,7 +60,7 @@ const AvailableNetworksv2 = ({
       newAsset.address = networks?.[chainId].address;
       newAsset.chainId = chainId;
 
-      goBack();
+      Navigation.goBack();
 
       const uniqueId = `${newAsset.address}_${asset.chainId}`;
       const chainsName = useBackendNetworksStore.getState().getChainsName();
@@ -109,7 +107,7 @@ const AvailableNetworksv2 = ({
         navigateToSwaps({ inputAsset: null, outputAsset: parsedAsset });
       }
     },
-    [asset, goBack, networks]
+    [asset, networks]
   );
 
   const handlePressContextMenu = useCallback((chainId: string) => convertAssetAndNavigate(+chainId), [convertAssetAndNavigate]);

@@ -9,7 +9,7 @@ import { Column } from '@/components/layout';
 import { SlackSheet } from '@/components/sheet';
 import { getTrendKey } from '@/helpers/gas';
 import { useColorForAsset, useDimensions, useGas, useKeyboardHeight } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
@@ -34,7 +34,6 @@ const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
 // send sheet gas panel
 export default function CustomGasState({ asset }) {
-  const { setParams } = useNavigation();
   const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {} } = useRoute();
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
@@ -53,8 +52,8 @@ export default function CustomGasState({ asset }) {
   const currentGasTrend = useMemo(() => getTrendKey(currentBlockParams?.trend), [currentBlockParams?.trend]);
 
   useEffect(() => {
-    setParams({ longFormHeight: sheetHeightWithKeyboard });
-  }, [sheetHeightWithKeyboard, setParams]);
+    Navigation.setParams({ longFormHeight: sheetHeightWithKeyboard });
+  }, [sheetHeightWithKeyboard]);
 
   return (
     <SlackSheet

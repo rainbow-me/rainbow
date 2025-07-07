@@ -7,7 +7,7 @@ import More from '../MoreButton/MoreButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useClipboard, useContacts, useWatchWallet } from '@/hooks';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
@@ -27,7 +27,6 @@ const ACTIONS = {
 export default function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
   const selectedWallet = useSelectedWallet();
   const { isWatching } = useWatchWallet({ address });
-  const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
@@ -107,7 +106,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         if (!isSelectedWallet) {
           switchWallet(address!);
         }
-        navigate(Routes.WALLET_SCREEN);
+        Navigation.handleAction(Routes.WALLET_SCREEN);
       }
       if (actionKey === ACTIONS.COPY_ADDRESS) {
         setClipboard(address!);
@@ -116,7 +115,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         ethereumUtils.openAddressInBlockExplorer({ address, chainId: ChainId.mainnet });
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
-        navigate(Routes.MODAL_SCREEN, {
+        Navigation.handleAction(Routes.MODAL_SCREEN, {
           address,
           contact,
           ens: ensName,
@@ -138,7 +137,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         Share.share(IS_ANDROID ? { message: shareLink } : { url: shareLink });
       }
     },
-    [address, contact, ensName, isSelectedWallet, navigate, onRemoveContact, setClipboard]
+    [address, contact, ensName, isSelectedWallet, onRemoveContact, setClipboard]
   );
 
   const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }), [menuItems]);

@@ -3,7 +3,7 @@ import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Inline, Inset, Row, Rows, Separator, Text } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 
@@ -18,9 +18,8 @@ const EditContent = ({
   setSendReverseRecord: React.Dispatch<React.SetStateAction<boolean>> | null;
   showReverseRecordSwitch?: boolean;
 }) => {
-  const { navigate } = useNavigation();
   const openPrimaryENSNameHelper = () => {
-    navigate(Routes.EXPLAIN_SHEET, { type: 'ens_primary_name' });
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, { type: 'ens_primary_name' });
   };
 
   if (!showReverseRecordSwitch)

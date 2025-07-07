@@ -21,7 +21,6 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
@@ -43,6 +42,7 @@ import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGas
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { Navigation } from '@/navigation';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -125,7 +125,6 @@ function EstimatedArrivalTime() {
 }
 
 export const SlippageRow = () => {
-  const { navigate } = useNavigation();
   const { SwapSettings } = useSwapContext();
 
   const labelTertiary = useForegroundColor('labelTertiary');
@@ -142,10 +141,10 @@ export const SlippageRow = () => {
   };
 
   const openSlippageExplainer = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'slippage',
     });
-  }, [navigate]);
+  }, []);
 
   return (
     <Box height={{ custom: REVIEW_SHEET_ROW_HEIGHT }} justifyContent="center">
@@ -243,7 +242,6 @@ export const SlippageRow = () => {
 };
 
 export function ReviewPanel() {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
@@ -284,12 +282,12 @@ export function ReviewPanel() {
   const openGasExplainer = useCallback(async () => {
     const chainsNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset();
     const nativeAsset = chainsNativeAsset[swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet];
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet,
       type: 'gas',
       nativeAsset,
     });
-  }, [navigate]);
+  }, []);
 
   const styles = useAnimatedStyle(() => {
     return {

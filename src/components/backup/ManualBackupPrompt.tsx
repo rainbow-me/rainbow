@@ -3,7 +3,7 @@ import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-syst
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import walletTypes from '@/helpers/walletTypes';
 import * as lang from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import React, { useCallback } from 'react';
@@ -14,7 +14,6 @@ import { ImgixImage } from '../images';
 const imageSize = 72;
 
 export default function ManualBackupPrompt() {
-  const { navigate, goBack } = useNavigation();
   const selectedWallet = useSelectedWallet();
 
   const onManualBackup = async () => {
@@ -26,8 +25,8 @@ export default function ManualBackupPrompt() {
         ? (selectedWallet.addresses || [])[0].label
         : selectedWallet.name;
 
-    goBack();
-    navigate(Routes.SETTINGS_SHEET, {
+    Navigation.goBack();
+    Navigation.handleAction(Routes.SETTINGS_SHEET, {
       screen: Routes.SECRET_WARNING,
       params: {
         isBackingUp: true,
@@ -38,7 +37,7 @@ export default function ManualBackupPrompt() {
     });
   };
 
-  const onMaybeLater = useCallback(() => goBack(), [goBack]);
+  const onMaybeLater = useCallback(() => Navigation.goBack(), []);
 
   return (
     <Inset horizontal={'24px'} vertical={'44px'}>

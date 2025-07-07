@@ -10,7 +10,7 @@ import { logger } from '@/logger';
 import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
 import { KeyboardArea } from 'react-native-keyboard-area';
 
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
@@ -31,7 +31,6 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { PasswordField } from '../fields';
 import { ImgixImage } from '../images';
 import { Text } from '../text';
-import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 
 type ComponentProps = {
@@ -82,13 +81,14 @@ export default function RestoreCloudStep() {
 
   const { selectedBackup } = params;
   const { isDarkMode } = useTheme();
-  const { canGoBack, goBack } = useNavigation();
 
   const onRestoreSuccess = useCallback(() => {
-    while (canGoBack()) {
-      goBack();
+    // @ts-expect-error TODO: Verify this works still
+    const routes = Navigation.getState()?.routes;
+    while (routes && routes.length > 1) {
+      Navigation.goBack();
     }
-  }, [canGoBack, goBack]);
+  }, []);
 
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const [validPassword, setValidPassword] = useState(false);

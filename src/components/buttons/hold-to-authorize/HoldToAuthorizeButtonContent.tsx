@@ -27,7 +27,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { haptics } from '@/utils';
 import ShadowStack from 'react-native-shadow-stack';
 import * as lang from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useDimensions } from '@/hooks';
 
@@ -103,7 +103,6 @@ function HoldToAuthorizeButtonContent2({
   onLongPress,
   ...props
 }: Props) {
-  const { navigate } = useNavigation();
   const { colors: _colors } = useTheme();
   const { width: _width } = useDimensions();
   const [isAuthorizingState, setIsAuthorizing] = useState(false);
@@ -149,7 +148,7 @@ function HoldToAuthorizeButtonContent2({
   const handlePress = () => {
     if (!isAuthorizingState && onLongPress) {
       if (isHardwareWallet && !ignoreHardwareWallet) {
-        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onLongPress });
+        Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onLongPress });
       } else {
         onLongPress();
       }

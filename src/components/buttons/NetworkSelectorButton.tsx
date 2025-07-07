@@ -5,7 +5,7 @@ import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { RouteProp } from '@react-navigation/native';
@@ -42,7 +42,6 @@ export const NetworkSelectorButton = ({
   },
   ...networkSelectorProps
 }: NetworkSelectorButtonProps) => {
-  const { navigate } = useNavigation();
   const {
     iconColor = 'labelSecondary',
     iconSize = 'icon 13px',
@@ -60,13 +59,13 @@ export const NetworkSelectorButton = ({
   );
 
   const navigateToNetworkSelector = useCallback(() => {
-    navigate(Routes.NETWORK_SELECTOR, {
+    Navigation.handleAction(Routes.NETWORK_SELECTOR, {
       ...networkSelectorProps,
       actionButton,
       selected: selectedChainId,
       setSelected: handleSelectChain,
     });
-  }, [handleSelectChain, navigate, networkSelectorProps, selectedChainId]);
+  }, [handleSelectChain, networkSelectorProps, selectedChainId, actionButton]);
 
   const displayName = useMemo(() => {
     if (!selectedChainId) return actionButton.label;

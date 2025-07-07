@@ -35,7 +35,7 @@ import {
 } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
-import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
+import { Navigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -226,7 +226,6 @@ const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
 const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenExpandedStateProps) => {
   const accountAddress = useAccountAddress();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const collectible = useCollectible(passedAsset?.uniqueId);
@@ -310,9 +309,9 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   useFocusEffect(
     useCallback(() => {
       if (uniqueTokenType === 'ENS') {
-        setOptions({ limitActiveModals: false });
+        Navigation.setOptions({ limitActiveModals: false });
       }
-    }, [setOptions, uniqueTokenType])
+    }, [uniqueTokenType])
   );
 
   const profileInfoSectionAvailable = useMemo(() => {
@@ -340,11 +339,11 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   const ensCoverOpacity = useDerivedValue(() => 1 - animationProgress.value);
 
   const handleL2DisclaimerPress = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'network',
       chainId: asset.chainId,
     });
-  }, [asset.chainId, navigate]);
+  }, [asset.chainId]);
 
   const isHiddenAsset = useMemo(() => hiddenTokens.includes(fullUniqueId) as boolean, [hiddenTokens, fullUniqueId]);
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId) as boolean, [showcaseTokens, uniqueId]);
@@ -393,14 +392,14 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     if (isENS) {
       InteractionManager.runAfterInteractions(() => {
         startRegistration(uniqueId, REGISTRATION_MODES.EDIT);
-        navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+        Navigation.handleAction(Routes.REGISTER_ENS_NAVIGATOR, {
           ensName: uniqueId,
           externalAvatarUrl: asset?.lowResUrl,
           mode: REGISTRATION_MODES.EDIT,
         });
       });
     }
-  }, [isENS, navigate, startRegistration, uniqueId, asset?.lowResUrl]);
+  }, [isENS, startRegistration, uniqueId, asset?.lowResUrl]);
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -570,7 +569,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                             price: offerValue,
                           })}`}
                           nftShadows
-                          onPress={() => navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer })}
+                          onPress={() => Navigation.handleAction(Routes.NFT_SINGLE_OFFER_SHEET, { offer })}
                           textColor={textColor}
                           weight="heavy"
                         />

@@ -5,10 +5,10 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ImageBackground } from 'react-native';
 import OpRewardsCardBackgroundImage from '../../assets/opRewardsCardBackgroundImage.png';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { Navigation } from '@/navigation';
 
 const GRADIENT: Gradient = {
   colors: ['#520907', '#B22824'],
@@ -17,13 +17,12 @@ const GRADIENT: Gradient = {
 };
 
 export const OpRewardsCard: React.FC = () => {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
 
   const color = useBackendNetworksStore.getState().getColorsForChainId(ChainId.optimism, isDarkMode);
 
   const navigateToRewardsSheet = () => {
-    navigate(Routes.OP_REWARDS_SHEET);
+    Navigation.handleAction(Routes.OP_REWARDS_SHEET);
   };
 
   return (

@@ -26,7 +26,7 @@ import { globalColors } from '@/design-system/color/palettes';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { useCleanup } from '@/hooks/useCleanup';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
@@ -85,7 +85,6 @@ const CARD_PROPS: Partial<SkiaCardProps> = {
 };
 
 export const AirdropsCard = memo(function AirdropsCard() {
-  const { navigate } = useNavigation();
   const [coinIconPath] = useState(() => getCoinIconPath());
 
   const url = useAirdropsStore(state => state.getFirstCoinIconUrl(COIN_ICON_SIZE));
@@ -112,12 +111,12 @@ export const AirdropsCard = memo(function AirdropsCard() {
     if (getNumberOfAirdrops() === 1) {
       const claimable = getAirdrops()?.[0];
       if (claimable) {
-        navigate(Routes.CLAIM_AIRDROP_SHEET, { claimable });
+        Navigation.handleAction(Routes.CLAIM_AIRDROP_SHEET, { claimable });
       }
     } else {
-      navigate(Routes.AIRDROPS_SHEET);
+      Navigation.handleAction(Routes.AIRDROPS_SHEET);
     }
-  }, [navigate]);
+  }, []);
 
   const setBadgePosition = useCallback(
     (paragraph: SkParagraph) => {

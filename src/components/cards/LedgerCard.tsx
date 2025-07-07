@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React from 'react';
-import { useNavigation } from '../../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { analytics } from '@/analytics';
 import { Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
 import Routes from '@/navigation/routesNames';
@@ -23,7 +23,6 @@ const GRADIENT: Gradient = {
 const LEDGER_CONTAINER_HEIGHT = 108;
 
 export const LedgerCard = () => {
-  const { navigate } = useNavigation();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
 
@@ -33,7 +32,7 @@ export const LedgerCard = () => {
       routeName,
       cardType,
     });
-    navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
+    Navigation.handleAction(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR);
   };
 
   return (

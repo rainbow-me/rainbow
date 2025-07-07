@@ -1,7 +1,7 @@
 import { AddWalletList } from '@/components/add-wallet/AddWalletList';
 import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import React from 'react';
 import * as i18n from '@/languages';
@@ -32,8 +32,6 @@ export const AddWalletSheet = () => {
     params: { isFirstWallet },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.ADD_WALLET_SHEET>>();
 
-  const { goBack, navigate } = useNavigation();
-
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
 
   const onPressCreate = async () => {
@@ -44,7 +42,7 @@ export const AddWalletSheet = () => {
       });
       analytics.track(analytics.event.tappedCreateNewWallet);
 
-      navigate(Routes.CHOOSE_WALLET_GROUP);
+      Navigation.handleAction(Routes.CHOOSE_WALLET_GROUP);
     } catch (e) {
       logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', e));
     }
@@ -56,7 +54,7 @@ export const AddWalletSheet = () => {
       isFirstWallet,
       type: 'seed',
     });
-    navigate(Routes.ADD_WALLET_NAVIGATOR, {
+    Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
       params: { type: 'import', isFirstWallet },
     });
@@ -68,7 +66,7 @@ export const AddWalletSheet = () => {
       isFirstWallet,
       type: 'watch',
     });
-    navigate(Routes.ADD_WALLET_NAVIGATOR, {
+    Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
       params: { type: 'watch', isFirstWallet },
     });
@@ -81,7 +79,7 @@ export const AddWalletSheet = () => {
     });
 
     executeFnIfCloudBackupAvailable({
-      fn: () => navigate(Routes.RESTORE_SHEET),
+      fn: () => Navigation.handleAction(Routes.RESTORE_SHEET),
       logout: true,
     });
   };
@@ -95,9 +93,9 @@ export const AddWalletSheet = () => {
       isFirstWallet: false,
       type: 'ledger_nano_x',
     });
-    goBack();
+    Navigation.goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+      Navigation.handleAction(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
         entryPoint: Routes.ADD_WALLET_SHEET,
         isFirstWallet,
       });
@@ -155,7 +153,7 @@ export const AddWalletSheet = () => {
     iconColor: globalColors.yellow60,
     onPress: () => {
       InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.MODAL_SCREEN, {
+        Navigation.handleAction(Routes.MODAL_SCREEN, {
           type: 'dev_test_backup',
         });
       });
