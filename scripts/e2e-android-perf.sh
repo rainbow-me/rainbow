@@ -14,10 +14,12 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-maestro test -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
-
 npx @perf-profiler/maestro@latest start-session &
 SESSION_PID=$!
+
+sleep 5
+
+npx @perf-profiler/maestro@latest test -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
 
 mkdir -p e2e-artifacts/perf/results
 flashlight test --bundleId "$APP_ID" \
