@@ -2,8 +2,8 @@ import lang from 'i18n-js';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { AccentColorProvider, Box, Inset, Text } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
+import { IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 type Props = {
   type: 'availability' | 'expiration' | 'price';
@@ -15,7 +15,6 @@ type Props = {
 
 const SearchResultGradientIndicator = ({ type, isRegistered = false, price, expirationDate, testID }: Props) => {
   const { colors } = useTheme();
-  const { isSmallPhone } = useDimensions();
   let text: string | undefined, gradient: string[];
   switch (type) {
     case 'availability':
@@ -55,7 +54,7 @@ const SearchResultGradientIndicator = ({ type, isRegistered = false, price, expi
           <Text
             color={type === 'availability' ? 'accent' : 'secondary80 (Deprecated)'}
             containsEmoji
-            size={isSmallPhone ? '18px / 27px (Deprecated)' : '20px / 24px (Deprecated)'}
+            size={IS_SMALL_PHONE ? '18px / 27px (Deprecated)' : '20px / 24px (Deprecated)'}
             testID={testID}
             weight="heavy"
           >

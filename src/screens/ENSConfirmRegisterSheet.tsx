@@ -2,7 +2,6 @@ import { ImgixImage } from '@/components/images';
 import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
 import { accentColorAtom, ENS_DOMAIN, ENS_SECONDS_WAIT, REGISTRATION_MODES, REGISTRATION_STEPS } from '@/helpers/ens';
 import {
-  useDimensions,
   useENSModifiedRegistration,
   useENSRegistration,
   useENSRegistrationActionHandler,
@@ -41,6 +40,7 @@ import {
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
+import { IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -98,7 +98,6 @@ export default function ENSConfirmRegisterSheet() {
     changedRecords,
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration();
-  const { isSmallPhone } = useDimensions();
 
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
@@ -363,7 +362,7 @@ export default function ENSConfirmRegisterSheet() {
               </Box>
             </Row>
             <Row>
-              <Box flexGrow={1} paddingHorizontal={isSmallPhone ? '24px' : '30px (Deprecated)'}>
+              <Box flexGrow={1} paddingHorizontal={IS_SMALL_PHONE ? '24px' : '30px (Deprecated)'}>
                 {stepContent[step]}
               </Box>
             </Row>

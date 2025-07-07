@@ -6,6 +6,9 @@ import { TokenToSellList } from '@/__swaps__/screens/Swap/components/TokenList/T
 import { TokenToBuyList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuyList';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
+const height = EXPANDED_INPUT_HEIGHT - 77;
+const width = DEVICE_WIDTH - 24;
+
 export const TokenList = ({
   handleExitSearchWorklet,
   handleFocusSearchWorklet,
@@ -25,9 +28,7 @@ export const TokenList = ({
         />
         <Separator color="separatorTertiary" thickness={1} />
       </Stack>
-      <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
-        {output ? <TokenToBuyList /> : <TokenToSellList />}
-      </Box>
+      <Box style={{ height, width }}>{output ? <TokenToBuyList /> : <TokenToSellList />}</Box>
     </Stack>
   );
 };

@@ -9,10 +9,11 @@ import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 import { AssetTypes } from '@/entities';
-import { useDimensions, useKeyboardHeight } from '@/hooks';
+import { useKeyboardHeight } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { DEVICE_WIDTH, IS_TINY_PHONE } from '@/utils/deviceUtils';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],
@@ -60,7 +61,6 @@ export default function SendAssetForm({
   txSpeedRenderer,
   ...props
 }) {
-  const { isTinyPhone, width: deviceWidth } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const [showNativeValue, setShowNativeValue] = useState(true);
 
@@ -91,11 +91,11 @@ export default function SendAssetForm({
           backgroundColor={colors.white}
           borderRadius={20}
           height={SendCoinRow.selectedHeight}
-          overflow={isTinyPhone ? 'visible' : 'hidden'}
-          shadows={isTinyPhone ? noShadows : shadows}
-          width={deviceWidth - 38}
+          overflow={IS_TINY_PHONE ? 'visible' : 'hidden'}
+          shadows={IS_TINY_PHONE ? noShadows : shadows}
+          width={DEVICE_WIDTH - 38}
         >
-          {isTinyPhone ? null : <AssetRowGradient />}
+          {IS_TINY_PHONE ? null : <AssetRowGradient />}
           <AssetRowElement disablePressAnimation item={selected} selected showNativeValue={showNativeValue} testID="send-asset-form">
             <Text align="center" color={colorForAsset || colors.dark} size="large" weight="heavy">
               􀁴

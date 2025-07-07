@@ -2,7 +2,6 @@ import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Ro
 import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '@/handlers/localstorage/ens';
 import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
 import {
-  useDimensions,
   useENSModifiedRegistration,
   useENSRecords,
   useENSRegistration,
@@ -37,15 +36,16 @@ import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
+import { IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 const BottomActionHeight = ios ? 281 : 250;
 const BottomActionHeightSmall = 215;
 const ExtraBottomPadding = 55;
+const bottomActionHeight = IS_SMALL_PHONE ? BottomActionHeightSmall : BottomActionHeight;
 
 export default function ENSAssignRecordsSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.REGISTER_ENS_NAVIGATOR>>();
   const { colors } = useTheme();
-  const { isSmallPhone } = useDimensions();
   const { name } = useENSRegistration();
   const { hasNFTs } = useWalletSectionsData();
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
@@ -92,8 +92,6 @@ export default function ENSAssignRecordsSheet() {
 
   const avatarImage = avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
   const dominantColor = usePersistentDominantColorFromImage(avatarImage);
-
-  const bottomActionHeight = isSmallPhone ? BottomActionHeightSmall : BottomActionHeight;
 
   useFocusEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
@@ -204,7 +202,6 @@ export function ENSAssignRecordsBottomActions({
   currentRouteName: string;
 }) {
   const { navigate, goBack } = useNavigation();
-  const { isSmallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const { accountENS } = useAccountProfileInfo();
   const { colors } = useTheme();
@@ -267,8 +264,6 @@ export function ENSAssignRecordsBottomActions({
     }
   }, [defaultVisible, mode, isSuccess]);
 
-  const bottomActionHeight = isSmallPhone ? BottomActionHeightSmall : BottomActionHeight;
-
   const animatedStyle = useAnimatedStyle(() => {
     return {
       bottom: withSpring(visible ? 0 : -bottomActionHeight - 10, {
@@ -301,7 +296,7 @@ export function ENSAssignRecordsBottomActions({
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
-                <Inset horizontal="19px (Deprecated)" top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
+                <Inset horizontal="19px (Deprecated)" top={IS_SMALL_PHONE ? '19px (Deprecated)' : '30px (Deprecated)'}>
                   <SelectableAttributesButtons
                     navigateToAdditionalRecords={navigateToAdditionalRecords}
                     onAddField={onAddField}
@@ -319,7 +314,7 @@ export function ENSAssignRecordsBottomActions({
                       }
                     : {
                         ignorePaddingBottom: true,
-                        paddingBottom: isSmallPhone ? 0 : 36,
+                        paddingBottom: IS_SMALL_PHONE ? 0 : 36,
                       })}
                 >
                   {hasBackButton && <TintButton onPress={handlePressBack}>{lang.t('profiles.create.back')}</TintButton>}

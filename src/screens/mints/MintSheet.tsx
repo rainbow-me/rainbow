@@ -22,7 +22,7 @@ import {
   isZero,
   multiply,
 } from '@/helpers/utilities';
-import { useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
+import { useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
@@ -58,6 +58,7 @@ import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { QuantityButton } from './components/QuantityButton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -92,12 +93,6 @@ const BlurWrapper = styled(View).attrs({
   ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
-interface MintSheetProps {
-  collection: ReservoirCollection;
-  pricePerMint: string;
-  chainId: number;
-}
-
 function MintInfoRow({ symbol, label, value }: { symbol: string; label: string; value: React.ReactNode }) {
   return (
     <Box alignItems="center">
@@ -131,7 +126,6 @@ const MintSheet = () => {
   const chainId = mintCollection.chainId;
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -515,13 +509,13 @@ const MintSheet = () => {
   return (
     <>
       {ios && (
-        <BlurWrapper height={deviceHeight} width={deviceWidth}>
+        <BlurWrapper height={DEVICE_HEIGHT} width={DEVICE_WIDTH}>
           <BackgroundImage>
             <ImgixImage
               source={{ uri: imageUrl }}
               resizeMode="cover"
               size={CardSize}
-              style={{ height: deviceHeight, width: deviceWidth }}
+              style={{ height: DEVICE_HEIGHT, width: DEVICE_WIDTH }}
             />
             <BackgroundBlur />
           </BackgroundImage>
@@ -587,7 +581,7 @@ const MintSheet = () => {
                 </Box>
 
                 <Stack space={'20px'}>
-                  <Box style={{ width: deviceWidth - INSET_OFFSET }}>
+                  <Box style={{ width: DEVICE_WIDTH - INSET_OFFSET }}>
                     <Separator color={'divider40 (Deprecated)'} thickness={1} />
                   </Box>
 
@@ -640,7 +634,7 @@ const MintSheet = () => {
                     showBiometryIcon={!insufficientEth}
                   />
 
-                  <Box width={{ custom: deviceWidth - INSET_OFFSET }}>
+                  <Box width={{ custom: DEVICE_WIDTH - INSET_OFFSET }}>
                     <GasSpeedButton
                       fallbackColor={imageColor}
                       marginTop={0}

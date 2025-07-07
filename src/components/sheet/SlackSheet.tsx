@@ -8,12 +8,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
-import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ScrollView } from 'react-native-gesture-handler';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 interface AndroidBackgroundProps {
   backgroundColor: string;
@@ -29,12 +29,11 @@ interface ContainerProps {
   additionalTopPadding?: boolean | number;
   contentHeight?: number;
   deferredHeight?: boolean;
-  deviceHeight: number;
 }
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight }: ContainerProps) => ({
+})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight }: ContainerProps) => ({
   ...(deferredHeight || IS_IOS
     ? {}
     : {
@@ -42,7 +41,7 @@ const Container = styled(Centered).attrs({
           typeof additionalTopPadding === 'number'
             ? additionalTopPadding
             : contentHeight && additionalTopPadding
-              ? deviceHeight - contentHeight
+              ? DEVICE_HEIGHT - contentHeight
               : 0,
       }),
   ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
@@ -57,7 +56,6 @@ const Container = styled(Centered).attrs({
 interface ContentProps {
   limitScrollViewContent?: boolean;
   contentHeight?: number;
-  deviceHeight: number;
   backgroundColor: string;
   removeTopPadding?: boolean;
 }
@@ -67,9 +65,9 @@ const Content = styled(ScrollView).attrs(({ limitScrollViewContent }: ContentPro
   directionalLockEnabled: true,
   keyboardShouldPersistTaps: 'always',
   scrollEventThrottle: 16,
-}))(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding }: ContentProps) => ({
+}))(({ contentHeight, backgroundColor, removeTopPadding }: ContentProps) => ({
   backgroundColor: backgroundColor,
-  ...(contentHeight ? { height: deviceHeight + contentHeight } : { height: '100%' }),
+  ...(contentHeight ? { height: DEVICE_HEIGHT + contentHeight } : { height: '100%' }),
   paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
   width: '100%',
 }));
@@ -81,13 +79,12 @@ const ContentWrapper = styled(View)({
 
 interface WhitespaceProps {
   backgroundColor: string;
-  deviceHeight: number;
 }
 
 const Whitespace = styled(View)({
   backgroundColor: ({ backgroundColor }: WhitespaceProps) => backgroundColor,
   flex: 1,
-  height: ({ deviceHeight }: WhitespaceProps) => deviceHeight,
+  height: DEVICE_HEIGHT,
   zIndex: -1,
 });
 
@@ -147,7 +144,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
 ) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yPosition = givenYPosition || useSharedValue(0);
-  const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const bottomInset = useMemo(() => (insets.bottom || scrollEnabled ? 42 : 30), [insets.bottom, scrollEnabled]);
@@ -204,7 +200,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
         backgroundColor={bg}
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
-        deviceHeight={deviceHeight}
         testID={testID}
         {...props}
       >
@@ -221,7 +216,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
-            deviceHeight={deviceHeight}
             limitScrollViewContent={limitScrollViewContent}
             onContentSizeChange={onContentSizeChange}
             ref={sheet}
@@ -240,7 +234,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
                 })}
           >
             {children}
-            {!scrollEnabled && <Whitespace backgroundColor={bg} deviceHeight={deviceHeight} />}
+            {!scrollEnabled && <Whitespace backgroundColor={bg} />}
           </Content>
         </ContentWrapper>
       </Container>

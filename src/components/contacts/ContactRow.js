@@ -10,12 +10,13 @@ import ImageAvatar from './ImageAvatar';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ENS_DOMAIN } from '@/helpers/ens';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
+import { useContacts, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import { StyleSheet } from 'react-native';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({
   align: 'left',
@@ -45,7 +46,7 @@ const ContactName = styled(TruncatedText).attrs(({ lite }) => ({
   weight: lite ? 'regular' : 'medium',
 }))({
   height: ios ? 22 : 26,
-  width: ({ deviceWidth }) => deviceWidth - 90,
+  width: DEVICE_WIDTH - 90,
 });
 
 const css = {
@@ -60,7 +61,6 @@ const sx = StyleSheet.create({
 });
 
 const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, ref) => {
-  const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
   const { accountType, balances, ens, image, label, onPress, showcaseItem, testID } = props;
@@ -131,11 +131,9 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
           {accountType === 'accounts' || accountType === 'watching' ? (
             <Fragment>
               {cleanedUpLabel || ens ? (
-                <ContactName deviceWidth={deviceWidth}>{cleanedUpLabel || ens}</ContactName>
+                <ContactName>{cleanedUpLabel || ens}</ContactName>
               ) : (
-                <ContactName deviceWidth={deviceWidth}>
-                  {isValidDomainFormat(address) ? address : abbreviations.address(address, 4, 6)}
-                </ContactName>
+                <ContactName>{isValidDomainFormat(address) ? address : abbreviations.address(address, 4, 6)}</ContactName>
               )}
               <BottomRowText
                 style={sx.bottomRowText}
@@ -148,9 +146,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
             </Fragment>
           ) : (
             <Fragment>
-              <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
-                {removeFirstEmojiFromString(nickname)}
-              </ContactName>
+              <ContactName lite={!!showcaseItem}>{removeFirstEmojiFromString(nickname)}</ContactName>
               {isValidDomainFormat(address) ? <ContactENS ens={address} /> : <ContactAddress address={address} lite={!!showcaseItem} />}
             </Fragment>
           )}

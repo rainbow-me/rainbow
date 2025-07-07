@@ -3,10 +3,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
-import { useDimensions, useImageMetadata } from '@/hooks';
+import { useImageMetadata } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { IS_ANDROID } from '@/env';
+import { DEVICE_WIDTH, DEVICE_HEIGHT, IS_TALL_PHONE, IS_TINY_PHONE } from '@/utils/deviceUtils';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
@@ -31,9 +32,9 @@ const NFTWrapper = styled(Column).attrs({
   width: '100%',
 });
 
-const Gradient = styled(LinearGradient).attrs(({ isTallPhone, theme: { colors } }) => ({
+const Gradient = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.sendBackground,
-  end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
+  end: { x: 0.5, y: IS_TALL_PHONE ? 0.2 : 0.4 },
   pointerEvents: 'none',
   start: { x: 0.5, y: 0 },
 }))({
@@ -45,9 +46,10 @@ const GradientToggler = styled(OpacityToggler).attrs({
   tension: 500,
 })(position.coverAsObject);
 
-export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpeedRenderer, ...props }) {
-  const { height: deviceHeight, isTallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
+const defaultWidth = DEVICE_WIDTH - 38;
+const calculatedHeight = DEVICE_HEIGHT - (IS_TALL_PHONE ? 440 : IS_TINY_PHONE ? 360 : 420);
 
+export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpeedRenderer, ...props }) {
   const [containerHeight, setContainerHeight] = useState();
   const [containerWidth, setContainerWidth] = useState();
   const [isGradientVisible, setIsGradientVisible] = useState(false);
@@ -57,12 +59,9 @@ export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpee
   const { height: imageHeight, width: imageWidth } = useMemo(() => {
     const imgDims = cachedImageDimensions || defaultImageDimensions;
 
-    const defaultWidth = deviceWidth - 38;
     const defaultHeight = (defaultWidth * imgDims.height) / imgDims.width;
     let width = defaultWidth;
     let height = defaultHeight;
-
-    const calculatedHeight = deviceHeight - (isTallPhone ? 440 : isTinyPhone ? 360 : 420);
 
     if (height > calculatedHeight) {
       height = calculatedHeight;
@@ -74,7 +73,7 @@ export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpee
     }
 
     return { height, width };
-  }, [cachedImageDimensions, deviceHeight, deviceWidth, isTallPhone, isTinyPhone]);
+  }, [cachedImageDimensions]);
 
   const handleLayout = useCallback(
     ({ nativeEvent: { layout } }) => {
@@ -102,13 +101,13 @@ export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpee
         )}
       </NFTWrapper>
       <Footer>
-        <ButtonWrapper isTallPhone={isTallPhone}>
+        <ButtonWrapper>
           {buttonRenderer}
           {txSpeedRenderer}
         </ButtonWrapper>
         {!IS_ANDROID && (
           <GradientToggler isVisible={!isGradientVisible}>
-            <Gradient isTallPhone={isTallPhone} />
+            <Gradient />
           </GradientToggler>
         )}
       </Footer>

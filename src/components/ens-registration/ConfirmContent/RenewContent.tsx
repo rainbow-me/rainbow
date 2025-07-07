@@ -3,8 +3,9 @@ import React from 'react';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Inset, Separator, Stack } from '@/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
-import { useDimensions, useENSRegistrant } from '@/hooks';
+import { useENSRegistrant } from '@/hooks';
 import { timeUnits } from '@/references';
+import { IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 const RenewContent = ({
   yearsDuration,
@@ -17,16 +18,14 @@ const RenewContent = ({
   setDuration: React.Dispatch<React.SetStateAction<number>>;
   name: string;
 }) => {
-  const { isSmallPhone } = useDimensions();
-
   const { data: { registration } = {} } = useENSRegistrant(name + ENS_DOMAIN);
   const expiryDate = registration?.expiryDate || 0;
 
   const newExpiryDateFormatted = format(new Date(Number(expiryDate * 1000) + yearsDuration * timeUnits.secs.year * 1000), 'MMM d, yyyy');
 
   return (
-    <Inset vertical={isSmallPhone ? '12px' : '30px (Deprecated)'}>
-      <Stack space={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
+    <Inset vertical={IS_SMALL_PHONE ? '12px' : '30px (Deprecated)'}>
+      <Stack space={IS_SMALL_PHONE ? '19px (Deprecated)' : '30px (Deprecated)'}>
         <Separator color="divider60 (Deprecated)" />
         <RegistrationReviewRows
           duration={yearsDuration}

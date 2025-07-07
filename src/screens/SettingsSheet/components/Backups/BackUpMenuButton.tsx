@@ -4,8 +4,8 @@ import * as i18n from '@/languages';
 import MenuItem from '../MenuItem';
 import Spinner from '@/components/Spinner';
 import { FloatingEmojis } from '@/components/floating-emojis';
-import { useDimensions } from '@/hooks';
 import { CloudBackupState } from '@/state/backups/backups';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const BackUpMenuItem = ({
   icon = '􀊯',
@@ -21,7 +21,6 @@ export const BackUpMenuItem = ({
   disabled?: boolean;
 }) => {
   const { colors } = useTheme();
-  const { width: deviceWidth } = useDimensions();
   const [emojiTrigger, setEmojiTrigger] = useState<null | (() => void)>(null);
 
   useEffect(() => {
@@ -76,7 +75,7 @@ export const BackUpMenuItem = ({
       emojis={['check_mark_button']}
       marginTop={-10}
       fadeOut={false}
-      range={[deviceWidth / 2 - 100, deviceWidth / 2 + 100]}
+      range={[DEVICE_WIDTH / 2 - 100, DEVICE_WIDTH / 2 + 100]}
       gravityEnabled
       scaleTo={0}
       size={100}

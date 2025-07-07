@@ -15,10 +15,10 @@ import vstyled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
 import { StatusBarHelper } from '@/helpers';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { safeAreaInsetValues } from '@/utils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const adjustConfig = {
   duration: 300,
@@ -101,14 +101,12 @@ export const ZoomableWrapper = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
-
-  let deviceHeightWithMaybeHiddenStatusBar = deviceHeight;
+  let deviceHeightWithMaybeHiddenStatusBar = DEVICE_HEIGHT;
   if (!hideStatusBar) {
-    deviceHeightWithMaybeHiddenStatusBar = deviceHeight - safeAreaInsetValues.top;
+    deviceHeightWithMaybeHiddenStatusBar = DEVICE_HEIGHT - safeAreaInsetValues.top;
   }
 
-  const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
+  const maxImageWidth = width || DEVICE_WIDTH - horizontalPadding * 2;
   const maxImageHeight = height || deviceHeightWithMaybeHiddenStatusBar / 2;
   const [containerWidth = maxImageWidth, containerHeight = maxImageWidth] = useMemo(() => {
     const isSquare = aspectRatio === 1;
@@ -156,8 +154,8 @@ export const ZoomableWrapper = ({
     }
   }, [isZoomed, onZoomIn, onZoomOut]);
 
-  const fullSizeHeight = Math.min(deviceHeightWithMaybeHiddenStatusBar, deviceWidth / aspectRatio);
-  const fullSizeWidth = Math.min(deviceWidth, deviceHeightWithMaybeHiddenStatusBar * aspectRatio);
+  const fullSizeHeight = Math.min(deviceHeightWithMaybeHiddenStatusBar, DEVICE_WIDTH / aspectRatio);
+  const fullSizeWidth = Math.min(DEVICE_WIDTH, deviceHeightWithMaybeHiddenStatusBar * aspectRatio);
   const zooming = fullSizeHeight / containerHeightValue.value;
 
   const xOffset = givenXOffset || (width - containerWidth) / 2 || 0;
@@ -165,7 +163,7 @@ export const ZoomableWrapper = ({
   const containerStyle = useAnimatedStyle(() => {
     const scale = 1 + animationProgress.value * (fullSizeHeight / (containerHeightValue.value ?? 1) - 1);
 
-    const maxWidth = (deviceWidth - containerWidth) / 2;
+    const maxWidth = (DEVICE_WIDTH - containerWidth) / 2;
     return {
       opacity: opacity?.value ?? 1,
       transform: [
@@ -211,15 +209,15 @@ export const ZoomableWrapper = ({
       : Math.min(scale.value * (containerWidth / fullSizeWidth), MAX_IMAGE_SCALE);
 
     // determine whether to snap to screen edges
-    let breakingScaleX = deviceWidth / fullSizeWidth;
+    let breakingScaleX = DEVICE_WIDTH / fullSizeWidth;
     let breakingScaleY = deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight;
     if (isZoomedValue.value === false) {
-      breakingScaleX = deviceWidth / containerWidth;
+      breakingScaleX = DEVICE_WIDTH / containerWidth;
       breakingScaleY = deviceHeightWithMaybeHiddenStatusBar / containerHeight;
     }
     const zooming = fullSizeHeight / containerHeightValue.value;
 
-    const maxDisplacementX = (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2 / zooming;
+    const maxDisplacementX = (DEVICE_WIDTH * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2 / zooming;
     const maxDisplacementY = (deviceHeightWithMaybeHiddenStatusBar * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2 / zooming;
 
     let targetTranslateX = translateX.value;
@@ -271,7 +269,7 @@ export const ZoomableWrapper = ({
 
     if (!isZoomedValue.value) {
       // handle entering zoom state by pinching
-      if (scale.value * containerWidthValue.value >= deviceWidth) {
+      if (scale.value * containerWidthValue.value >= DEVICE_WIDTH) {
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
@@ -472,15 +470,15 @@ export const ZoomableWrapper = ({
           translateY.value = withTiming(0, adjustConfig);
         } else {
           // zoom to tapped coordinates and prevent detachment from screen edges
-          const centerX = deviceWidth / 2;
+          const centerX = DEVICE_WIDTH / 2;
           const centerY = deviceHeightWithMaybeHiddenStatusBar / 2;
           const scaleTo = Math.min(Math.max(deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight, 2.5), MAX_IMAGE_SCALE);
           const zoomToX = ((centerX - event.absoluteX) * scaleTo) / zooming;
           const zoomToY = ((centerY - event.absoluteY) * scaleTo) / zooming;
 
-          const breakingScaleX = deviceWidth / fullSizeWidth;
+          const breakingScaleX = DEVICE_WIDTH / fullSizeWidth;
           const breakingScaleY = deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight;
-          const maxDisplacementX = (deviceWidth * (Math.max(1, scaleTo / breakingScaleX) - 1)) / 2 / zooming;
+          const maxDisplacementX = (DEVICE_WIDTH * (Math.max(1, scaleTo / breakingScaleX) - 1)) / 2 / zooming;
           const maxDisplacementY = (deviceHeightWithMaybeHiddenStatusBar * (Math.max(1, scaleTo / breakingScaleY) - 1)) / 2 / zooming;
 
           if (scaleTo > breakingScaleX) {
@@ -557,7 +555,7 @@ export const ZoomableWrapper = ({
                   containerWidth={containerWidth}
                   height={deviceHeightWithMaybeHiddenStatusBar}
                   pointerEvents={isZoomed ? 'auto' : 'none'}
-                  width={deviceWidth}
+                  width={DEVICE_WIDTH}
                   xOffset={xOffset}
                   yOffset={yOffset}
                 />

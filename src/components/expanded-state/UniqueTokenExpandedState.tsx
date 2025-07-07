@@ -24,15 +24,7 @@ import { buildUniqueTokenName } from '@/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import {
-  useBooleanState,
-  useCollectible,
-  useDimensions,
-  useENSProfile,
-  useENSRegistration,
-  useHiddenTokens,
-  useShowcaseTokens,
-} from '@/hooks';
+import { useBooleanState, useCollectible, useENSProfile, useENSRegistration, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { useNavigation, useUntrustedUrlOpener } from '@/navigation';
@@ -42,7 +34,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { lightModeThemeColors, position } from '@/styles';
-import { useTheme } from '@/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { getUniqueTokenType, magicMemo, safeAreaInsetValues } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
@@ -69,6 +61,7 @@ import ProfileInfoSection from './ens/ProfileInfoSection';
 import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -81,21 +74,15 @@ const BackgroundImage = styled(View)({
   ...position.coverAsObject,
 });
 
-interface BlurWrapperProps {
-  height: number;
-  width: number;
-}
-
 const BlurWrapper = styled(View).attrs({
   shouldRasterizeIOS: true,
 })({
-  // @ts-expect-error missing theme types
-  backgroundColor: ({ theme: { colors } }) => colors.trueBlack,
-  height: ({ height }: BlurWrapperProps) => height,
+  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.trueBlack,
+  height: DEVICE_HEIGHT,
   left: 0,
   overflow: 'hidden',
   position: 'absolute',
-  width: ({ width }: BlurWrapperProps) => width,
+  width: DEVICE_WIDTH,
   ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
 });
 
@@ -225,7 +212,6 @@ const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
 
 const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenExpandedStateProps) => {
   const accountAddress = useAccountAddress();
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -364,7 +350,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   }, [colors.whiteLabel, imageColor]);
 
   const handlePressMarketplaceName = useCallback(() => openInBrowser(asset.permalink), [asset.permalink]);
-  const handlePressParty = useCallback(() => openInBrowser(asset.external_link!), [asset.external_link]);
+  const handlePressParty = useCallback(() => openInBrowser(asset.external_link ?? ''), [asset.external_link]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -433,7 +419,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   return (
     <>
       {IS_IOS && (
-        <BlurWrapper height={deviceHeight} width={deviceWidth}>
+        <BlurWrapper>
           <BackgroundImage>
             <UniqueTokenImage
               collectionName={asset.collection?.name ?? ''}
@@ -455,7 +441,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
         backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${IS_IOS ? 0.4 : 1})` : `rgba(26, 26, 26, ${IS_IOS ? 0.4 : 1})`}
         bottomInset={42}
         hideHandle
-        {...(IS_IOS ? { height: '100%' } : { additionalTopPadding: true, contentHeight: deviceHeight })}
+        {...(IS_IOS ? { height: '100%' } : { additionalTopPadding: true, contentHeight: DEVICE_HEIGHT })}
         ref={sheetRef}
         scrollEnabled
         showsVerticalScrollIndicator={!contentFocused}
@@ -538,7 +524,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                               textColor={textColor}
                               weight="heavy"
                             >
-                              <ImgixImage resizeMode="contain" source={partyLogo as any} size={20} style={{ height: 25, width: 25 }} />
+                              <ImgixImage resizeMode="contain" source={partyLogo} size={20} style={{ height: 25, width: 25 }} />
                               <Text weight="heavy" size="20pt" color={{ custom: textColor }}>
                                 Party
                               </Text>

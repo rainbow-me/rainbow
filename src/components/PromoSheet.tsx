@@ -6,10 +6,10 @@ import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type SheetActionButtonProps = {
   label: string;
@@ -53,7 +53,6 @@ export function PromoSheet({
   items,
 }: PromoSheetProps) {
   const { colors } = useTheme();
-  const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const labelTertiary = useForegroundColor('labelTertiary');
   const renderedAt = Date.now();
   const [activated, activate] = useReducer(() => true, false);
@@ -81,7 +80,7 @@ export function PromoSheet({
     primaryButtonProps.onPress();
   }, [activate, campaignKey, primaryButtonProps, renderedAt]);
 
-  const contentHeight = deviceHeight - safeAreaInsetValues.top;
+  const contentHeight = DEVICE_HEIGHT - safeAreaInsetValues.top;
 
   return (
     <SlackSheet
@@ -100,7 +99,7 @@ export function PromoSheet({
               <Box
                 as={ImageBackground}
                 height={{
-                  custom: deviceWidth / headerImageAspectRatio,
+                  custom: DEVICE_WIDTH / headerImageAspectRatio,
                 }}
                 source={headerImage}
                 width="full"
@@ -108,7 +107,7 @@ export function PromoSheet({
                 <SheetHandle color={sheetHandleColor} style={{ alignSelf: 'center', marginTop: 5 }} />
               </Box>
             </Box>
-            <Box paddingVertical="28px" height={{ custom: deviceHeight - deviceWidth / headerImageAspectRatio - 58 }} flexGrow={1}>
+            <Box paddingVertical="28px" height={{ custom: DEVICE_HEIGHT - DEVICE_WIDTH / headerImageAspectRatio - 58 }} flexGrow={1}>
               <Box alignItems="center" paddingHorizontal="20px" paddingBottom="20px" gap={14}>
                 <Text color="labelSecondary" size="15pt" align="center" weight="heavy">
                   {subHeader}

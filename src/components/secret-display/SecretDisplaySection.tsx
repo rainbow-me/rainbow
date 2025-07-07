@@ -2,7 +2,7 @@ import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { useDimensions, useWalletManualBackup } from '@/hooks';
+import { useWalletManualBackup } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
@@ -27,8 +27,11 @@ import { InteractionManager } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import { ImgixImage } from '../images';
 import { SheetActionButton } from '../sheet';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const MIN_HEIGHT = 740;
+const isSmallPhone = DEVICE_HEIGHT < MIN_HEIGHT;
+const contentHeight = DEVICE_HEIGHT - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -50,7 +53,6 @@ type Props = {
 };
 
 export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }: Props) {
-  const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SHOW_SECRET>>();
   const selectedWallet = useSelectedWallet();
@@ -150,9 +152,6 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       typeName: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
     });
   }, [isBackingUp, isSecretPhrase]);
-
-  const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
   switch (sectionState) {
     case SecretDisplayStates.loading:

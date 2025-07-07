@@ -4,7 +4,6 @@ import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
 import React, { useCallback } from 'react';
 
-import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 
 import WalletTypes from '@/helpers/walletTypes';
@@ -14,11 +13,13 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useWallets } from '@/state/wallets/walletsStore';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const MIN_HEIGHT = 740;
+const isSmallPhone = DEVICE_HEIGHT < MIN_HEIGHT;
+const contentHeight = DEVICE_HEIGHT - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
 const SecretWarningPage = () => {
-  const { height: deviceHeight } = useDimensions();
   const wallets = useWallets();
   const { navigate } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SECRET_WARNING>>();
@@ -41,11 +42,6 @@ const SecretWarningPage = () => {
       secretText,
     });
   }, [navigate, privateKeyAddress, title, secretText, walletId, isBackingUp, backupType]);
-
-  // We are not using `isSmallPhone` from `useDimensions` here as we
-  // want to explicitly set a min height.
-  const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
   const items: {
     icon: string;

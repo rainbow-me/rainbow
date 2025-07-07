@@ -3,7 +3,8 @@ import { KeyboardAvoidingView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box } from '@/design-system';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { useDimensions, useKeyboardHeight } from '@/hooks';
+import { useKeyboardHeight } from '@/hooks';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 interface KeyboardFixedOpenLayoutProps {
   additionalPadding?: number;
@@ -19,10 +20,9 @@ export default function KeyboardFixedOpenLayout({
   ...props
 }: KeyboardFixedOpenLayoutProps) {
   const insets = useSafeAreaInsets();
-  const { height: screenHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight({ keyboardType });
 
-  const containerHeight = screenHeight - keyboardHeight - additionalPadding;
+  const containerHeight = DEVICE_HEIGHT - keyboardHeight - additionalPadding;
 
   return (
     <Box height={{ custom: containerHeight }} left="0px" position={position} right="0px" top="0px">

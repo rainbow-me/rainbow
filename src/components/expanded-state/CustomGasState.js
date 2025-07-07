@@ -8,7 +8,7 @@ import { GasSpeedButton } from '@/components/gas';
 import { Column } from '@/components/layout';
 import { SlackSheet } from '@/components/sheet';
 import { getTrendKey } from '@/helpers/gas';
-import { useColorForAsset, useDimensions, useGas, useKeyboardHeight } from '@/hooks';
+import { useColorForAsset, useGas, useKeyboardHeight } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
@@ -16,6 +16,7 @@ import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import FeesPanel from '@/components/FeesPanel';
 import FeesPanelTabs from '@/components/FeesPanelTabs';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const FOOTER_HEIGHT = 120;
 const CONTENT_HEIGHT = 310;
@@ -37,7 +38,6 @@ export default function CustomGasState({ asset }) {
   const { setParams } = useNavigation();
   const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {} } = useRoute();
   const { colors } = useTheme();
-  const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const colorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
   const { selectedGasFee, currentBlockParams, chainId } = useGas();
@@ -62,7 +62,7 @@ export default function CustomGasState({ asset }) {
       hideHandle
       {...(ios && {
         borderBottomRadius: 0,
-        deviceHeight,
+        deviceHeight: DEVICE_HEIGHT,
         removeTopPadding: true,
       })}
       backgroundColor={colors.transparent}

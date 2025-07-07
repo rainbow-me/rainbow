@@ -9,11 +9,10 @@ import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
 import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
-import { deviceUtils } from '../utils';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const AvatarCircleHeight = 60;
 const AvatarCircleMarginTop = 2;
@@ -21,14 +20,14 @@ const AvatarBuilderTopPoint = HeaderHeightWithStatusBar + AvatarCircleHeight + A
 
 const Container = styled(Column)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
-  height: ({ height }) => height,
-  width: ({ width }) => width,
+  height: DEVICE_HEIGHT,
+  width: DEVICE_WIDTH,
 });
 
 const SheetContainer = styled(Column)({
   backgroundColor: ({ theme: { colors } }) => colors.white,
   borderRadius: 20,
-  height: ({ deviceHeight }) => (deviceHeight ? Math.floor((deviceHeight / 13) ** 1.5) : 420),
+  height: Math.floor((DEVICE_HEIGHT / 13) ** 1.5),
   overflow: 'hidden',
   width: '100%',
 });
@@ -61,7 +60,6 @@ const springConfig = {
 
 const AvatarBuilder = () => {
   const { params } = useRoute();
-  const { height, width } = useDimensions();
   const { colors } = useTheme();
   const selectedRingPosition = useSharedValue(params.initialAccountColor * 40);
   const { goBack } = useNavigation();
@@ -84,8 +82,8 @@ const AvatarBuilder = () => {
   }));
 
   const selectedOffset = useMemo(() => {
-    const maxOffset = colors.avatarBackgrounds.length * 40 - width + 20;
-    const rawOffset = params.initialAccountColor * 40 - width / 2 + width ** 0.5 * 1.5;
+    const maxOffset = colors.avatarBackgrounds.length * 40 - DEVICE_WIDTH + 20;
+    const rawOffset = params.initialAccountColor * 40 - DEVICE_WIDTH / 2 + DEVICE_WIDTH ** 0.5 * 1.5;
     let finalOffset = rawOffset;
     if (rawOffset < 0) {
       finalOffset = 0;
@@ -96,10 +94,10 @@ const AvatarBuilder = () => {
     return {
       x: finalOffset, // curve to have selected color in middle of scrolling colorpicker
     };
-  }, [params.initialAccountColor, width, colors.avatarBackgrounds.length]);
+  }, [params.initialAccountColor, colors.avatarBackgrounds.length]);
 
   return (
-    <Container height={deviceUtils.dimensions.height} testID="avatar-builder" width={deviceUtils.dimensions.width}>
+    <Container testID="avatar-builder">
       <TouchableBackdrop onPress={goBack} />
       <Column align="center" pointerEvents="box-none" top={AvatarBuilderTopPoint + AVATAR_CIRCLE_TOP_MARGIN}>
         <Row justify="center" paddingBottom={16} paddingTop={15} width="100%">
@@ -121,7 +119,7 @@ const AvatarBuilder = () => {
             ))}
           </ScrollableColorPicker>
         </Row>
-        <SheetContainer deviceHeight={height}>
+        <SheetContainer>
           <EmojiSelector columns={7} onEmojiSelected={onChangeEmoji} showHistory={false} showSearchBar={false} />
         </SheetContainer>
       </Column>

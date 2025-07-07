@@ -3,7 +3,7 @@ import { GasFeeType, GasFeeTypes, LegacyTransactionGasParamAmounts, TransactionG
 import { getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { greaterThan } from '@/helpers/utilities';
-import { useAccountSettings, useDimensions, useGas } from '@/hooks';
+import { useAccountSettings, useGas } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { sendTransaction } from '@/model/wallet';
@@ -37,6 +37,8 @@ import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
 import { SheetActionButton, SheetActionButtonRow, SheetHandleFixedToTop, SheetKeyboardAnimation, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -116,7 +118,6 @@ export default function SpeedUpAndCancelSheet() {
   const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
   const dispatch = useDispatch();
-  const { height: deviceHeight } = useDimensions();
   const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas({
     enableTracking: true,
   });
@@ -414,9 +415,9 @@ export default function SpeedUpAndCancelSheet() {
     offset.value = withSpring(0, springConfig);
   }, [offset]);
 
-  const sheetHeight = ios ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom : 850 + safeAreaInsetValues.bottom;
+  const sheetHeight = IS_IOS ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom : 850 + safeAreaInsetValues.bottom;
 
-  const marginTop = android ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340) : null;
+  const marginTop = IS_ANDROID ? DEVICE_HEIGHT - sheetHeight + (type === CANCEL_TX ? 290 : 340) : null;
 
   const { colors, isDarkMode } = useTheme();
 

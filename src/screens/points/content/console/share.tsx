@@ -1,7 +1,6 @@
 import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
@@ -14,11 +13,11 @@ import { NeonButton } from '../../components/NeonButton';
 import { Paragraph } from '../../components/Paragraph';
 import { RainbowPointsFlowSteps, textColors } from '../../constants';
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const Share = () => {
   const { intent, setAnimationKey, setStep } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfileInfo();
-  const { width: deviceWidth } = useDimensions();
 
   const [showShareButtons, setShowShareButtons] = useState(false);
 
@@ -82,7 +81,7 @@ export const Share = () => {
                 }, 1000);
                 return () => clearTimeout(beginNextPhase);
               }}
-              width={deviceWidth - 76 - 115 - 4}
+              width={DEVICE_WIDTH - 76 - 115 - 4}
             />
           </Inline>
         </Bleed>

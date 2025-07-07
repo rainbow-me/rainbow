@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback, ViewProps, ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   SharedValue,
@@ -19,13 +19,22 @@ import { globalColors } from '@/design-system';
 
 import { useTheme } from '@/theme';
 
-import { useDimensions } from '@/hooks';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FadeGradient } from '@/components/FadeGradient';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
-
 const CARD_BORDER_WIDTH = 1.5;
+
+const backdropStyle: ViewStyle = {
+  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  height: DEVICE_HEIGHT * 3,
+  left: -DEVICE_WIDTH * 0.5,
+  position: 'absolute',
+  top: -DEVICE_HEIGHT,
+  width: DEVICE_WIDTH * 2,
+  zIndex: -1,
+};
 
 const timingConfig = {
   duration: 300,
@@ -59,7 +68,6 @@ export const FadedScrollCard = ({
   onPressCollapsedCard,
   skipCollapsedState,
 }: FadedScrollCardProps) => {
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { isDarkMode } = useTheme();
 
   const cardRef = useAnimatedRef<Animated.View>();
@@ -69,7 +77,7 @@ export const FadedScrollCard = ({
 
   const yPosition = useSharedValue(0);
 
-  const maxExpandedHeight = deviceHeight - (expandedCardBottomInset + expandedCardTopInset);
+  const maxExpandedHeight = DEVICE_HEIGHT - (expandedCardBottomInset + expandedCardTopInset);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -86,7 +94,7 @@ export const FadedScrollCard = ({
     };
   });
 
-  const backdropStyle = useAnimatedStyle(() => {
+  const animatedBackdropStyle = useAnimatedStyle(() => {
     const totalHeight = contentHeight.value + headerHeight + CARD_BORDER_WIDTH * 2;
     const canExpandFully = totalHeight > MAX_CARD_HEIGHT;
     return {
@@ -103,12 +111,12 @@ export const FadedScrollCard = ({
 
     const yPos = -yPosition.value;
     const offset =
-      deviceHeight - (expandedCardBottomInset + expandedCardTopInset) - expandedCardHeight - (yPosition.value + expandedCardHeight);
+      DEVICE_HEIGHT - (expandedCardBottomInset + expandedCardTopInset) - expandedCardHeight - (yPosition.value + expandedCardHeight);
 
-    if (yPos + expandedCardTopInset + offset >= deviceHeight - expandedCardBottomInset) {
+    if (yPos + expandedCardTopInset + offset >= DEVICE_HEIGHT - expandedCardBottomInset) {
       outputRange.push(0);
     } else {
-      outputRange.push(deviceHeight - expandedCardBottomInset - yPosition.value - expandedCardHeight);
+      outputRange.push(DEVICE_HEIGHT - expandedCardBottomInset - yPosition.value - expandedCardHeight);
     }
 
     return {
@@ -219,18 +227,7 @@ export const FadedScrollCard = ({
           }
         }}
         pointerEvents={isFullyExpanded ? 'auto' : 'none'}
-        style={[
-          {
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            height: deviceHeight * 3,
-            left: -deviceWidth * 0.5,
-            position: 'absolute',
-            top: -deviceHeight,
-            width: deviceWidth * 2,
-            zIndex: -1,
-          },
-          backdropStyle,
-        ]}
+        style={[backdropStyle, animatedBackdropStyle]}
       />
       <Animated.View
         style={[

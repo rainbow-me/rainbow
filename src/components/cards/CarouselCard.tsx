@@ -3,13 +3,14 @@ import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundCo
 import React, { useEffect, useRef, useState } from 'react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useDimensions } from '@/hooks';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
 import { ScrollView, View } from 'react-native';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const HORIZONTAL_PADDING = 20;
+const estimatedListSizeWidth = DEVICE_WIDTH * 2;
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -57,8 +58,6 @@ export function CarouselCard<T>({
   dataUpdatedAt?: number;
   isRefreshing?: boolean;
 }) {
-  const { width: deviceWidth } = useDimensions();
-
   const actualItemHeight = carouselItem.height + (carouselItem.verticalOverflow ?? 0) * 2;
 
   return (
@@ -94,7 +93,7 @@ export function CarouselCard<T>({
               ref={carouselItem.carouselRef}
               estimatedListSize={{
                 height: actualItemHeight,
-                width: deviceWidth * 2,
+                width: estimatedListSizeWidth,
               }}
               style={{ flex: 1 }}
               renderItem={info => (

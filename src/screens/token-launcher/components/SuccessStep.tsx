@@ -7,8 +7,8 @@ import { TokenImageBadge } from './TokenImageBadge';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { Easing, useDerivedValue, withRepeat, withTiming, useSharedValue, runOnUI } from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
-import { useDimensions } from '@/hooks';
 import { TextSize } from '@/design-system/components/Text/Text';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 function Cone({ height, baseWidth, headWidth }: { height: number; baseWidth: number; headWidth: number }) {
   const path = Skia.Path.Make();
@@ -136,13 +136,11 @@ function SuccessHero({ width, height }: { width: number; height: number }) {
   );
 }
 
+const heroHeight = Math.min(DEVICE_HEIGHT * 0.7, 500);
+
 export function SuccessStep() {
   const symbol = useTokenLauncherStore(state => state.symbol);
   const name = useTokenLauncherStore(state => state.name);
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
-
-  const heroHeight = Math.min(deviceHeight * 0.7, 500);
-  const heroWidth = deviceWidth;
 
   const titleFontSize: TextSize = useMemo(() => {
     if (symbol.length > 22) {
@@ -160,7 +158,7 @@ export function SuccessStep() {
   return (
     <Box style={{ flex: 1, alignItems: 'center' }}>
       <Box height={'full'} width={'full'} position={'absolute'} top={'0px'}>
-        <SuccessHero width={heroWidth} height={heroHeight} />
+        <SuccessHero width={DEVICE_WIDTH} height={heroHeight} />
       </Box>
       <Box style={{ position: 'absolute', bottom: 40 }} paddingHorizontal={'44px'} gap={20} alignItems="center">
         <TextShadow blur={10} color="rgba(255, 255, 255, 0.12)">

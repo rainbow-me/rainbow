@@ -1,13 +1,11 @@
 import React from 'react';
 import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
-import { useDimensions } from '@/hooks';
 import { FloatingEmojisTapper } from '@/components/floating-emojis';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export function PlaceholderContent() {
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
-
   return (
     <>
       <Box alignItems="center" position="absolute" height="full" width="full" style={{ zIndex: -1 }} justifyContent="center">
@@ -40,8 +38,8 @@ export function PlaceholderContent() {
         <Box
           position="absolute"
           style={{
-            height: deviceHeight,
-            width: deviceWidth,
+            height: DEVICE_HEIGHT,
+            width: DEVICE_WIDTH,
           }}
         />
       </Box>

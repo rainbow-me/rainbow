@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
 import * as i18n from '@/languages';
-import { useDimensions } from '@/hooks';
 import { SkiaCard } from './SkiaCard';
 import { Blur, Group, Image, Paint, useImage } from '@shopify/react-native-skia';
 import { AnimatedText, Box, ColorModeProvider, globalColors, Inline, Text, TextShadow } from '@/design-system';
@@ -12,6 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useAnimatedCountdown } from '@/hooks/reanimated/useAnimatedCountdown';
 import { KingOfTheHillToken } from '@/graphql/__generated__/metadata';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const CARD_HEIGHT = 84;
 const startingNextRoundText = i18n.t(i18n.l.king_of_hill.starting_next_round);
@@ -34,12 +34,12 @@ function AnimatedCountdownText({ targetUnixTimestamp, color }: { targetUnixTimes
   );
 }
 
+const cardWidth = DEVICE_WIDTH - 20 * 2;
+
 export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
   const { token } = king;
   const coinIconImage = useImage(token.iconUrl);
 
-  const { width } = useDimensions();
-  const cardWidth = width - 20 * 2;
   const hasTokenPriceIncreased = Number(token.price.relativeChange24h) > 0;
   const priceColor = hasTokenPriceIncreased ? 'green' : 'red';
   const sizedIconUrl = getSizedImageUrl(token.iconUrl, 40);

@@ -3,9 +3,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { IS_ANDROID } from '@/env';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',
@@ -30,7 +31,6 @@ const Content = styled(Column).attrs({ shrink: 0 })({
 });
 
 export default function Modal({ containerPadding = 15, fixedToTop, height, onCloseModal, radius = 12, fullScreenOnAndroid, ...props }) {
-  const { height: deviceHeight } = useDimensions();
   const { top: insetTop } = useSafeAreaInsets();
   const { colors } = useTheme();
 
@@ -41,7 +41,7 @@ export default function Modal({ containerPadding = 15, fixedToTop, height, onClo
         {...props}
         backgroundColor={colors.white}
         fixedToTop={fixedToTop}
-        height={(fullScreenOnAndroid && android ? '100%' : height) || deviceHeight - 220}
+        height={(fullScreenOnAndroid && IS_ANDROID ? '100%' : height) || DEVICE_HEIGHT - 220}
         radius={radius}
       />
     </Container>

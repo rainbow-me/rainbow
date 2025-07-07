@@ -6,9 +6,9 @@ import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position, shadow } from '@/styles';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const springConfig: WithSpringConfig = {
   damping: 14,
@@ -22,14 +22,13 @@ const springConfig: WithSpringConfig = {
 interface ContainerParams {
   color: string;
   insets: Insets;
-  deviceWidth: number;
   theme: ThemeContextProps;
 }
 
 const Container = styled(RowWithMargins).attrs({
   margin: 5,
   self: 'center',
-})(({ color, insets, deviceWidth, theme: { colors } }: ContainerParams) => ({
+})(({ color, insets, theme: { colors } }: ContainerParams) => ({
   ...shadow.buildAsObject(0, 6, 10, colors.shadow, 0.14),
 
   ...padding.object(9, 10, 11, 10),
@@ -37,7 +36,7 @@ const Container = styled(RowWithMargins).attrs({
   backgroundColor: color,
   borderRadius: 20,
   bottom: (insets.bottom || 40) + 60,
-  maxWidth: deviceWidth - 38,
+  maxWidth: DEVICE_WIDTH - 38,
   position: 'absolute',
   zIndex: 100,
 }));
@@ -55,7 +54,6 @@ type Props = PropsWithChildren<{
 
 function Toast({ children, color, distance = 90, targetTranslate = 0, icon, isVisible, testID, text, textColor }: Props) {
   const { colors, isDarkMode } = useTheme();
-  const { width: deviceWidth } = useDimensions();
   const insets = useSafeAreaInsets();
   const animation = useSharedValue(isVisible ? 1 : 0);
 
@@ -76,7 +74,7 @@ function Toast({ children, color, distance = 90, targetTranslate = 0, icon, isVi
 
   return (
     <Animated.View pointerEvents="none" style={animatedStyle}>
-      <Container color={currentColor} deviceWidth={deviceWidth} insets={insets} testID={testID}>
+      <Container color={currentColor} insets={insets} testID={testID}>
         {children ?? (
           <Fragment>
             {icon && <Icon color={textColor ?? colors.whiteLabel} marginTop={3} name={icon} />}

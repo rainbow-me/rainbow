@@ -6,12 +6,12 @@ import { CarouselCard } from '../CarouselCard';
 import { RemoteCard } from '@/components/cards/remote-cards';
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import { Separator, useColorMode } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import Routes from '@/navigation/routesNames';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { FlashList } from '@shopify/flash-list';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type RenderItemProps = {
   item: string;
@@ -31,7 +31,6 @@ export const RemoteCardCarousel = () => {
   const carouselRef = useRef<FlashList<string>>(null);
   const { name } = useRoute();
   const config = useRemoteConfig();
-  const { width } = useDimensions();
 
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen(name as keyof typeof Routes));
@@ -57,7 +56,7 @@ export const RemoteCardCarousel = () => {
           renderItem: _renderItem,
           keyExtractor: item => item,
           placeholder: null,
-          width: width - gutterSize,
+          width: DEVICE_WIDTH - gutterSize,
           height: 80,
           padding: 16,
           verticalOverflow: 12,

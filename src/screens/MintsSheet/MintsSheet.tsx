@@ -18,7 +18,6 @@ import {
   useColorMode,
 } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -29,6 +28,7 @@ import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import { TabBar } from './TabBar';
 import { Card } from './card/Card';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -41,7 +41,6 @@ export function MintsSheet() {
   } = useMints({
     walletAddress: accountAddress,
   });
-  const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
 
@@ -103,8 +102,8 @@ export function MintsSheet() {
                   data={data}
                   estimatedItemSize={222}
                   estimatedListSize={{
-                    height: deviceHeight,
-                    width: deviceWidth,
+                    height: DEVICE_HEIGHT,
+                    width: DEVICE_WIDTH,
                   }}
                   renderItem={({ item }) => <Card collection={item} />}
                   ItemSeparatorComponent={() => <Separator thickness={1} color="separatorTertiary" />}

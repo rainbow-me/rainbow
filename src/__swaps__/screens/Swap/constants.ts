@@ -2,8 +2,8 @@ import { StatusBar } from 'react-native';
 import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
+import { safeAreaInsetValues } from '@/utils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 // /---- 🔒 Constants 🔒 ----/ //
 //
@@ -25,7 +25,7 @@ export const ACTION_BUTTON_HEIGHT = 45;
 export const GAS_SHEET_HEIGHT = 274;
 export const BOTTOM_ACTION_BAR_HEIGHT = IS_ANDROID ? 48 + 32 + safeAreaInsetValues.bottom : 114;
 export const BASE_INPUT_HEIGHT = 104;
-export const BASE_INPUT_WIDTH = deviceUtils.dimensions.width - 24;
+export const BASE_INPUT_WIDTH = DEVICE_WIDTH - 24;
 export const EXPANDED_REVIEW_SECTION = 408;
 export const EXPANDED_INPUT_HEIGHT =
   DEVICE_HEIGHT -
@@ -34,14 +34,14 @@ export const EXPANDED_INPUT_HEIGHT =
   BASE_INPUT_HEIGHT -
   SPACE_BETWEEN_SWAP_BUBBLES -
   Math.max(IS_IOS ? safeAreaInsetValues.bottom : NAVIGATION_BAR_HEIGHT, SPACE_BETWEEN_SWAP_BUBBLES);
-export const FOCUSED_INPUT_HEIGHT = deviceUtils.dimensions.height - safeAreaInsetValues.top - 20 - NATIVE_KEYBOARD_HEIGHT;
+export const FOCUSED_INPUT_HEIGHT = DEVICE_HEIGHT - safeAreaInsetValues.top - 20 - NATIVE_KEYBOARD_HEIGHT;
 export const THICK_BORDER_WIDTH = 4 / 3;
 export const INPUT_PADDING = 20 - THICK_BORDER_WIDTH;
 export const INPUT_INNER_WIDTH = BASE_INPUT_WIDTH - THICK_BORDER_WIDTH * 2;
 
 export const SLIDER_HEIGHT = 16;
 export const SLIDER_COLLAPSED_HEIGHT = 10;
-export const SLIDER_WIDTH = deviceUtils.dimensions.width - 40;
+export const SLIDER_WIDTH = DEVICE_WIDTH - 40;
 export const INITIAL_SLIDER_POSITION = 0.5;
 export const SCRUBBER_WIDTH = 16;
 

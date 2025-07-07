@@ -2,10 +2,11 @@ import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { Column } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
-import { useDimensions } from '@/hooks';
 import { supportedNativeCurrencies } from '@/references';
 import styled from '@/styled-thing';
 import { removeLeadingZeros } from '@/utils';
+import { IS_ANDROID } from '@/env';
+import { IS_SMALL_PHONE, IS_TINY_PHONE } from '@/utils/deviceUtils';
 
 const footerMargin = getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(Column).attrs({
@@ -21,12 +22,12 @@ const FormContainer = styled(Column).attrs({
   justify: 'center',
 })({
   flex: 1,
-  minHeight: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 104 : android || isSmallPhone ? 134 : 167),
+  minHeight: IS_TINY_PHONE ? 104 : IS_ANDROID || IS_SMALL_PHONE ? 134 : 167,
   width: '100%',
 });
 
 const Spacer = styled.View({
-  height: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 8 : isSmallPhone ? 12 : 15),
+  height: IS_TINY_PHONE ? 8 : IS_SMALL_PHONE ? 12 : 15,
   width: '100%',
 });
 
@@ -47,14 +48,13 @@ export default function SendAssetFormToken({
   txSpeedRenderer,
   ...props
 }) {
-  const { isSmallPhone, isTinyPhone } = useDimensions();
   const { colors } = useTheme();
 
   const { mask: nativeMask, placeholder: nativePlaceholder } = supportedNativeCurrencies[nativeCurrency];
 
   return (
     <Fragment>
-      <FormContainer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} {...props}>
+      <FormContainer {...props}>
         <SendAssetFormField
           colorForAsset={colorForAsset}
           format={removeLeadingZeros}
@@ -67,7 +67,7 @@ export default function SendAssetFormToken({
           testID="selected-asset-field"
           value={assetAmount}
         />
-        <Spacer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} />
+        <Spacer />
         <SendAssetFormField
           autoFocus
           colorForAsset={colors.alpha(colors.blueGreyDark, 0.8)}

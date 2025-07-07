@@ -3,12 +3,11 @@ import { StyleSheet, Text as RNText } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const NeonButton = ({ color, label, onPress, width }: { color?: string; label: string; onPress?: () => void; width?: number }) => {
-  const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const green = useForegroundColor('green');
 
@@ -22,7 +21,7 @@ export const NeonButton = ({ color, label, onPress, width }: { color?: string; l
             justifyContent: 'center',
             borderColor: color || green,
             shadowColor: color || green,
-            width: width ?? deviceWidth - 64,
+            width: width ?? DEVICE_WIDTH - 64,
           },
         ]}
       >
@@ -36,7 +35,7 @@ export const NeonButton = ({ color, label, onPress, width }: { color?: string; l
                 backgroundColor: colors.alpha(color || green, 0.1),
               },
             ]}
-            width={{ custom: width ? width - 2 : deviceWidth - 66 }}
+            width={{ custom: width ? width - 2 : DEVICE_WIDTH - 66 }}
           />
         </Cover>
         <RNText

@@ -15,7 +15,6 @@ import {
 } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useMints } from '@/resources/mints';
@@ -28,8 +27,10 @@ import { useAccountAddress } from '../../state/wallets/walletsStore';
 import { ButtonPressAnimation } from '../animations';
 import { ImgixImage } from '../images';
 import { Media } from '../Media';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const IMAGE_SIZE = 111;
+const imageWidth = DEVICE_WIDTH - 40;
 
 const BlurWrapper = styled(View).attrs({
   shouldRasterizeIOS: true,
@@ -45,7 +46,6 @@ const BlurWrapper = styled(View).attrs({
 
 export function FeaturedMintCard() {
   const accountAddress = useAccountAddress();
-  const { width: deviceWidth } = useDimensions();
 
   const {
     data: { featuredMint },
@@ -132,7 +132,7 @@ export function FeaturedMintCard() {
                           width: '100%',
                         }}
                         source={{ uri: imageUrl }}
-                        size={deviceWidth - 40}
+                        size={imageWidth}
                         fm="png"
                       />
                     </Cover>

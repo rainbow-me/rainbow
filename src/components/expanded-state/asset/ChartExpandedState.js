@@ -17,13 +17,7 @@ import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
 import { isL2Chain, isTestnetChain } from '@/handlers/web3';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import {
-  useAccountSettings,
-  useAdditionalAssetData,
-  useChartThrottledPoints,
-  useDelayedValueWithLayoutAnimation,
-  useDimensions,
-} from '@/hooks';
+import { useAccountSettings, useAdditionalAssetData, useChartThrottledPoints, useDelayedValueWithLayoutAnimation } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
@@ -41,6 +35,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (IS_ANDROID && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -184,8 +179,6 @@ export default function ChartExpandedState({ asset }) {
     currency: nativeCurrency,
   });
 
-  const { height: screenHeight } = useDimensions();
-
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(data?.description?.replace(/\s+/g, ''));
 
   const { chart, chartType, color, fetchingCharts, updateChartType, initialChartDataLabels, showChart, throttledData } =
@@ -193,14 +186,14 @@ export default function ChartExpandedState({ asset }) {
       asset: assetWithPrice,
       heightWithChart: Math.min(
         carouselHeight + heightWithChart - (!hasBalance && 68) + additionalContentHeight + (additionalContentHeight === 0 ? 0 : true),
-        screenHeight
+        DEVICE_HEIGHT
       ),
       heightWithoutChart: Math.min(
         carouselHeight + heightWithoutChart - (!hasBalance && 68) + additionalContentHeight + (additionalContentHeight === 0 ? 0 : true),
-        screenHeight
+        DEVICE_HEIGHT
       ),
-      shortHeightWithChart: Math.min(carouselHeight + heightWithChart - (!hasBalance && 68), screenHeight),
-      shortHeightWithoutChart: Math.min(carouselHeight + heightWithoutChart - (!hasBalance && 68), screenHeight),
+      shortHeightWithChart: Math.min(carouselHeight + heightWithChart - (!hasBalance && 68), DEVICE_HEIGHT),
+      shortHeightWithoutChart: Math.min(carouselHeight + heightWithoutChart - (!hasBalance && 68), DEVICE_HEIGHT),
     });
 
   const needsEth = asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
@@ -266,7 +259,7 @@ export default function ChartExpandedState({ asset }) {
       additionalTopPadding={IS_ANDROID}
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled
-      {...(IS_IOS ? { height: '100%' } : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+      {...(IS_IOS ? { height: '100%' } : { additionalTopPadding: true, contentHeight: DEVICE_HEIGHT - 80 })}
     >
       <ChartPathProvider data={throttledData}>
         <Chart

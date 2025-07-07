@@ -2,7 +2,6 @@ import { analytics } from '@/analytics';
 import Divider from '@/components/Divider';
 import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from '@/components/animations';
 import { Icon } from '@/components/icons';
-import { useDimensions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Network } from '@/state/backendNetworks/types';
@@ -22,10 +21,11 @@ import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../utils';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
+import { IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 const ContainerWidth = 261;
 
-const Container = styled(Centered).attrs({ direction: 'column' })(({ isSmallPhone }) => ({
+const Container = styled(Centered).attrs({ direction: 'column' })(({ isSmallPhone = IS_SMALL_PHONE }) => ({
   ...(isSmallPhone && { bottom: 80 }),
   position: 'absolute',
   top: 60,
@@ -96,7 +96,7 @@ const Title = styled(Text).attrs(({ theme: { colors } }) => ({
 const Subtitle = styled(Title).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
 }))({
-  marginTop: ({ isSmallPhone }) => (isSmallPhone ? 19 : 42),
+  marginTop: ({ isSmallPhone = IS_SMALL_PHONE }) => (isSmallPhone ? 19 : 42),
 });
 
 const AmountText = styled(Text).attrs(({ children }) => ({
@@ -173,7 +173,6 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 
 const AddFundsInterstitial = ({ network }) => {
   const onAddFromFaucet = accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
-  const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const { colors } = useTheme();
@@ -212,7 +211,7 @@ const AddFundsInterstitial = ({ network }) => {
   }, [navigate]);
 
   return (
-    <Container isSmallPhone={isSmallPhone}>
+    <Container>
       {network === Network.mainnet ? (
         <Fragment>
           <Title>{ios ? lang.t('add_funds.to_get_started_ios') : lang.t('add_funds.to_get_started_android')}</Title>
@@ -230,8 +229,8 @@ const AddFundsInterstitial = ({ network }) => {
               </InterstitialButtonContent>
             </InterstitialButton>
           </InterstitialButtonRow>
-          {!isSmallPhone && <InterstitialDivider />}
-          <Subtitle isSmallPhone={isSmallPhone}>{lang.t('add_funds.eth.or_send_eth')}</Subtitle>
+          {!IS_SMALL_PHONE && <InterstitialDivider />}
+          <Subtitle>{lang.t('add_funds.eth.or_send_eth')}</Subtitle>
 
           <Paragraph>{lang.t('add_funds.eth.send_from_another_source')}</Paragraph>
         </Fragment>
@@ -249,8 +248,8 @@ const AddFundsInterstitial = ({ network }) => {
               </Text>
             </InterstitialButton>
           </Row>
-          {!isSmallPhone && <InterstitialDivider />}
-          <Subtitle isSmallPhone={isSmallPhone}>{lang.t('add_funds.test_eth.or_send_test_eth')}</Subtitle>
+          {!IS_SMALL_PHONE && <InterstitialDivider />}
+          <Subtitle>{lang.t('add_funds.test_eth.or_send_test_eth')}</Subtitle>
           <Paragraph>
             {lang.t('add_funds.test_eth.send_test_eth_from_another_source', {
               testnetName: networkInfo[network]?.name,

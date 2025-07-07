@@ -8,12 +8,12 @@ import { RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import RainbowButtonBackground from './RainbowButtonBackground';
 import RainbowButtonTypes from './RainbowButtonTypes';
-import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position, shadow } from '@/styles';
 import ShadowView from '@/react-native-shadow-stack/ShadowView';
 import { View } from 'react-native';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const AddCashIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
@@ -87,6 +87,8 @@ const Shadow = styled(ShadowView)(({ height, strokeWidth, isDarkMode, disabled, 
   width,
 }));
 
+const maxButtonWidth = DEVICE_WIDTH - 30;
+
 type MaybePromise<T> = T | Promise<T>;
 
 type RainbowButtonProps = {
@@ -115,9 +117,6 @@ const RainbowButton = ({
   ...props
 }: RainbowButtonProps) => {
   const { isDarkMode } = useTheme();
-
-  const { width: deviceWidth } = useDimensions();
-  const maxButtonWidth = deviceWidth - 30;
 
   height = type === RainbowButtonTypes.small ? 46 : height;
   strokeWidth = disabled ? 0.5 : strokeWidth;

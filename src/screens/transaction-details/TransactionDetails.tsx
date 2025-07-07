@@ -12,10 +12,10 @@ import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
-import { useDimensions } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 export const TransactionDetails = () => {
   const {
@@ -26,7 +26,6 @@ export const TransactionDetails = () => {
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
-  const { height: deviceHeight } = useDimensions();
   const { bottom } = useSafeAreaInsets();
 
   // Dynamic sheet height based on content height
@@ -35,10 +34,10 @@ export const TransactionDetails = () => {
   const onSheetContentLayout = useCallback(
     (event: LayoutChangeEvent) => {
       const contentHeight = event.nativeEvent.layout.height;
-      if (contentHeight > deviceHeight) setStatusIconHidden(true);
+      if (contentHeight > DEVICE_HEIGHT) setStatusIconHidden(true);
       setSheetHeight(contentHeight + (IS_ANDROID ? bottom : 0));
     },
-    [bottom, deviceHeight]
+    [bottom]
   );
 
   const presentAddressToast = useCallback(() => {

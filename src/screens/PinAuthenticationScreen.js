@@ -14,12 +14,13 @@ import {
 } from '../handlers/localstorage/globalSettings';
 import { useNavigation } from '../navigation/Navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useDimensions, useShakeAnimation } from '@/hooks';
+import { useShakeAnimation } from '@/hooks';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { haptics } from '@/utils';
+import { IS_NARROW_PHONE, IS_SMALL_PHONE, IS_TALL_PHONE } from '@/utils/deviceUtils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
@@ -37,8 +38,6 @@ const PinAuthenticationScreen = () => {
   useBlockBackButton(!params.validPin);
   const { goBack, setParams } = useNavigation();
   const [errorAnimation, onShake] = useShakeAnimation();
-
-  const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
 
   const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS);
   const [value, setValue] = useState('');
@@ -207,8 +206,8 @@ const PinAuthenticationScreen = () => {
           align="center"
           height="25%"
           justify="center"
-          margin={isSmallPhone ? 0 : 28}
-          style={padding.object(0, 24, isNarrowPhone ? 12 : 24)}
+          margin={IS_SMALL_PHONE ? 0 : 28}
+          style={padding.object(0, 24, IS_NARROW_PHONE ? 12 : 24)}
         >
           <Logo />
           <SheetTitle>
@@ -221,9 +220,9 @@ const PinAuthenticationScreen = () => {
           <PinValue translateX={errorAnimation} value={value} />
         </ColumnWithMargins>
       </Centered>
-      <ColumnWithMargins align="center" margin={isTallPhone ? 27 : 12}>
+      <ColumnWithMargins align="center" margin={IS_TALL_PHONE ? 27 : 12}>
         <Centered maxWidth={313}>
-          <Numpad decimal={false} onPress={handleNumpadPress} width={isNarrowPhone ? 275 : '100%'} />
+          <Numpad decimal={false} onPress={handleNumpadPress} width={IS_NARROW_PHONE ? 275 : '100%'} />
         </Centered>
       </ColumnWithMargins>
     </Column>

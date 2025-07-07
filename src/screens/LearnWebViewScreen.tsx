@@ -2,7 +2,6 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Share, StatusBar, View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import Spinner from '@/components/Spinner';
@@ -17,15 +16,16 @@ import * as i18n from '@/languages';
 import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { DEVICE_HEIGHT, IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 const HEADER_HEIGHT = 60;
+const contentHeight = DEVICE_HEIGHT - HEADER_HEIGHT - (!IS_SMALL_PHONE ? sharedCoolModalTopOffset : 0);
 
 export default function LearnWebViewScreen() {
   const {
     params: { key, displayType, category, url, routeName },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.LEARN_WEB_VIEW_SCREEN>>();
   const { isDarkMode } = useTheme();
-  const { height: deviceHeight, isSmallPhone } = useDimensions();
   const [webViewHeight, setWebViewHeight] = useState(0);
   const startTime = useRef(Date.now());
 
@@ -77,8 +77,6 @@ export default function LearnWebViewScreen() {
       </Box>
     </Box>
   );
-
-  const contentHeight = deviceHeight - HEADER_HEIGHT - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 

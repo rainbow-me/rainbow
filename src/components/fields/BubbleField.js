@@ -3,18 +3,19 @@ import { useTheme } from '../../theme/ThemeContext';
 import { MiniButton } from '../buttons';
 import ExchangeInput from '@/components/ExchangeInput';
 import { Column, Row } from '../layout';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
+import { IS_ANDROID } from '@/env';
+import { IS_SMALL_PHONE, IS_TINY_PHONE } from '@/utils/deviceUtils';
 
-const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
+const BubbleInput = styled(ExchangeInput).attrs(({ theme: { isDarkMode } }) => ({
   disableTabularNums: true,
   keyboardAppearance: isDarkMode ? 'dark' : 'light',
   letterSpacing: 'roundedTightest',
-  size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
+  size: IS_TINY_PHONE ? 'big' : IS_SMALL_PHONE ? 'bigger' : 'h3',
   weight: 'semibold',
-}))(({ isTinyPhone }) => ({
-  ...(android ? (isTinyPhone ? { height: 40 } : { height: 46 }) : {}),
-  ...(android ? { paddingBottom: 0, paddingTop: 0 } : {}),
+}))(() => ({
+  ...(IS_ANDROID ? (IS_TINY_PHONE ? { height: 40 } : { height: 46 }) : {}),
+  ...(IS_ANDROID ? { paddingBottom: 0, paddingTop: 0 } : {}),
   marginRight: 10,
 }));
 
@@ -41,8 +42,6 @@ const BubbleField = (
   },
   ref
 ) => {
-  const { isSmallPhone, isTinyPhone } = useDimensions();
-
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
@@ -103,8 +102,8 @@ const BubbleField = (
           autoFocus={autoFocus}
           color={colorForAsset}
           isDarkMode={isDarkMode}
-          isSmallPhone={android || isSmallPhone}
-          isTinyPhone={isTinyPhone}
+          isSmallPhone={IS_ANDROID || IS_SMALL_PHONE}
+          isTinyPhone={IS_TINY_PHONE}
           keyboardType={keyboardType}
           mask={mask}
           maxLength={maxLength}

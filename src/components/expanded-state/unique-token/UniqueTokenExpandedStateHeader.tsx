@@ -9,7 +9,7 @@ import saveToCameraRoll from './saveToCameraRoll';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Column, Columns, Heading, Inline, Inset, Space, Stack, Text } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { useClipboard, useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
+import { useClipboard, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
@@ -23,6 +23,7 @@ import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChainId } from '@/state/backendNetworks/types';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -157,6 +158,7 @@ const FamilyActions = {
 } as const;
 
 const paddingHorizontal = 24;
+const maxWidth = DEVICE_WIDTH - paddingHorizontal * 6;
 
 const FamilyImageWrapper = styled(View)({
   height: 20,
@@ -193,7 +195,6 @@ const UniqueTokenExpandedStateHeader = ({
   onReport,
 }: UniqueTokenExpandedStateHeaderProps) => {
   const { setClipboard } = useClipboard();
-  const { width: deviceWidth } = useDimensions();
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
   const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.fullUniqueId) as boolean, [hiddenTokens, asset.fullUniqueId]);
@@ -531,7 +532,7 @@ const UniqueTokenExpandedStateHeader = ({
                   <Inline space="4px" wrap={false}>
                     <View
                       style={{
-                        maxWidth: deviceWidth - paddingHorizontal * 6,
+                        maxWidth,
                       }}
                     >
                       <Text color="secondary50 (Deprecated)" numberOfLines={1} size="16px / 22px (Deprecated)" weight="bold">

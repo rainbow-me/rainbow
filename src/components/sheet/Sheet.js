@@ -7,17 +7,16 @@ import { useTheme } from '../../theme/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
-import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const Sheet = ({ borderRadius, children, hideHandle, noInsets = false, paddingBottom = 7, paddingTop = 6 }) => {
-  const { width } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
-    <Column height="100%" justify="end" width={width}>
+    <Column height="100%" justify="end" width={DEVICE_WIDTH}>
       <TouchableBackdrop onPress={goBack} />
       <Column
         backgroundColor={colors.white}

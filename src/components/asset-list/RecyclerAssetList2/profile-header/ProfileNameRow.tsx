@@ -4,7 +4,6 @@ import { Icon } from '@/components/icons';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { formatAccountLabel, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -14,11 +13,14 @@ import Routes from '@rainbow-me/routes';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
 import { useRecoilState } from 'recoil';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const ProfileNameRowHeight = 16;
 const CARET_ICON_WIDTH = 22;
 const HIT_SLOP = 16;
 const GAP = 4;
+
+const maxWidth = DEVICE_WIDTH - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP;
 
 export function ProfileNameRow({
   disableOnPress,
@@ -76,10 +78,6 @@ export function ProfileNameRow({
 
   // ////////////////////////////////////////////////////
   // Spacings
-
-  const { width: deviceWidth } = useDimensions();
-
-  const maxWidth = deviceWidth - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP;
 
   return (
     <Box

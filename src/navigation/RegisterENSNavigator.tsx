@@ -11,12 +11,13 @@ import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box } from '@/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
-import { useDimensions, useENSRegistration, useENSRegistrationForm, usePrevious } from '@/hooks';
+import { useENSRegistration, useENSRegistrationForm, usePrevious } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { RootStackParamList } from './types';
+import { DEVICE_HEIGHT, IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -42,6 +43,8 @@ export const defaultScreenOptions = {
   },
 };
 
+const contentHeight = DEVICE_HEIGHT - SheetHandleFixedToTopHeight - (!IS_SMALL_PHONE ? sharedCoolModalTopOffset : 0);
+
 export type ENSRoutes = keyof typeof defaultScreenOptions;
 
 export default function RegisterENSNavigator() {
@@ -49,14 +52,10 @@ export default function RegisterENSNavigator() {
 
   const sheetRef = useRef<any>();
 
-  const { height: deviceHeight, isSmallPhone } = useDimensions();
-
   const setAccentColor = useSetRecoilState(accentColorAtom);
   const setAvatarMetadata = useSetRecoilState(avatarMetadataAtom);
 
   const { colors } = useTheme();
-
-  const contentHeight = deviceHeight - SheetHandleFixedToTopHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
 

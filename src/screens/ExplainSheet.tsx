@@ -9,7 +9,6 @@ import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box, Text as DSText, Separator } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
@@ -18,6 +17,7 @@ import { cloudPlatformAccountName } from '@/utils/platform';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import Routes from '@/navigation/routesNames';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -625,7 +625,6 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
 }
 
 const ExplainSheet = () => {
-  const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPLAIN_SHEET>>();
 
@@ -734,7 +733,7 @@ const ExplainSheet = () => {
   }
 
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
+    <Container deviceHeight={DEVICE_HEIGHT} height={sheetHeight} insets={insets}>
       <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={sheetHeight} scrollEnabled={false}>
         <Centered direction="column" height={sheetHeight} testID={`explain-sheet-${params.type}`} width="100%">
           <ColumnWithMargins

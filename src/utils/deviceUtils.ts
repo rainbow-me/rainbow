@@ -57,5 +57,10 @@ export function getAndroidBottomInset() {
 export const ANDROID_BOTTOM_INSET = getAndroidBottomInset();
 export const DEVICE_WIDTH = deviceUtils.dimensions.width;
 export const DEVICE_HEIGHT = deviceUtils.dimensions.height;
+export const IS_SMALL_PHONE = deviceUtils.isSmallPhone;
+export const IS_TINY_PHONE = deviceUtils.isTinyPhone;
+export const IS_TALL_PHONE = deviceUtils.isTallPhone;
+export const IS_LARGE_PHONE = deviceUtils.isLargePhone;
+export const IS_NARROW_PHONE = deviceUtils.isNarrowPhone;
 export const PIXEL_RATIO = PixelRatio.get();
 export default deviceUtils;

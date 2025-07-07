@@ -5,7 +5,7 @@ import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
 import SearchInputGradientBackground from './SearchInputGradientBackground';
 import { Box, Column, Columns, Cover, Heading, Inset, useHeadingStyle } from '@/design-system';
-import { useDimensions, useMagicAutofocus } from '@/hooks';
+import { useMagicAutofocus } from '@/hooks';
 
 export type SearchInputProps = {
   isLoading?: boolean;
@@ -18,7 +18,6 @@ export type SearchInputProps = {
 };
 
 const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', selectionColor, state, testID }: SearchInputProps) => {
-  const { width: deviceWidth } = useDimensions();
   const headingStyle = useHeadingStyle({
     color: 'primary (Deprecated)',
     size: '30px / 34px (Deprecated)',
@@ -47,7 +46,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
           // @ts-ignore overloaded props
           style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
-          <SearchInputGradientBackground height={height} state={state} variant={variant} width={deviceWidth} />
+          <SearchInputGradientBackground height={height} state={state} variant={variant} />
         </Box>
       </Cover>
       <Cover>
@@ -61,7 +60,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
           // @ts-ignore overloaded props
           style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
-          <SearchInputGradientBackground height={height} state={state} type="tint" variant={variant} width={deviceWidth} />
+          <SearchInputGradientBackground height={height} state={state} type="tint" variant={variant} />
         </Box>
       </Cover>
       <Box height={`${height}px`} justifyContent="center" width="full">
@@ -85,7 +84,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
                 }
                 style={useMemo(() => ({ height, width: 42 }), [])}
               >
-                <SearchInputGradientBackground height={height} state={state} variant={variant} width={deviceWidth} />
+                <SearchInputGradientBackground height={height} state={state} variant={variant} />
               </MaskedView>
             </Column>
             <Input

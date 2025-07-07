@@ -1,10 +1,10 @@
 import React from 'react';
 import { Row } from '../layout';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { safeAreaInsetValues } from '@/utils';
 import { StatusBar } from 'react-native';
 import { IS_IOS } from '@/env';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const StatusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
 export const HeaderHeight = 44;
@@ -15,11 +15,10 @@ const Container = styled(Row).attrs(({ align = 'end' }) => ({
 }))({
   height: HeaderHeightWithStatusBar,
   paddingTop: StatusBarHeight,
-  width: ({ width }) => width,
+  width: DEVICE_WIDTH,
   zIndex: 1,
 });
 
 export default function Header(props) {
-  const { width: deviceWidth } = useDimensions();
-  return <Container {...props} width={deviceWidth} />;
+  return <Container {...props} />;
 }

@@ -3,9 +3,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { isHexString } from '../../handlers/web3';
 import { Input } from '../inputs';
 import { Row } from '../layout';
-import { useClipboard, useDimensions } from '@/hooks';
+import { useClipboard } from '@/hooks';
 import styled from '@/styled-thing';
 import { abbreviations, addressUtils } from '@/utils';
+import { IS_TINY_PHONE } from '@/utils/deviceUtils';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',
@@ -25,7 +26,6 @@ const AddressInput = styled(Input).attrs({
 const formatValue = value => (isHexString(value) && value.length === addressUtils.maxLength ? abbreviations.address(value, 4, 4) : value);
 
 const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeText, onFocus, testID, ...props }, ref) => {
-  const { isTinyPhone } = useDimensions();
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
   const [inputValue, setInputValue] = useState(address ?? '');
@@ -65,7 +65,7 @@ const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeTex
         ref={ref}
         testID={testID}
         value={formatValue(inputValue)}
-        placeholder={android || isTinyPhone ? lang.t('fields.address.short_placeholder') : lang.t('fields.address.long_placeholder')}
+        placeholder={android || IS_TINY_PHONE ? lang.t('fields.address.short_placeholder') : lang.t('fields.address.long_placeholder')}
         placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
       />
     </Row>

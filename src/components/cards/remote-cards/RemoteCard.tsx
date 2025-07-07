@@ -7,7 +7,7 @@ import { ImgixImage } from '@/components/images';
 import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import { useAccountSettings } from '@/hooks';
 import { BackgroundColor, ForegroundColor, TextColor } from '@/design-system/color/palettes';
 import { maybeSignUri } from '@/handlers/imgix';
 import { colors } from '@/styles';
@@ -17,6 +17,7 @@ import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const ICON_SIZE = 36;
 const CARD_BORDER_RADIUS = 20;
@@ -65,7 +66,6 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
-  const { width } = useDimensions();
   const card = remoteCardsStore(state => state.getCard(id));
 
   const accent = useForegroundColor(getColorFromString(card?.accentColor || undefined));
@@ -137,11 +137,11 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const imageUri = imageForPlatform() ? maybeSignUri(imageForPlatform(), { w: 40, h: 40 }) : undefined;
 
   // device width - gutter - icon size
-  const contentWidth = width - gutterSize - 16 * 2 - ICON_SIZE - 12;
+  const contentWidth = DEVICE_WIDTH - gutterSize - 16 * 2 - ICON_SIZE - 12;
   return (
     <Box
       testID={`remote-card-${card?.cardKey}`}
-      width={{ custom: width - gutterSize }}
+      width={{ custom: DEVICE_WIDTH - gutterSize }}
       overflow="visible"
       justifyContent="center"
       height={'full'}
@@ -153,7 +153,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
       <Columns alignVertical="top">
         <Column>
           <GestureHandlerButton scaleTo={0.94} onPressJS={onPress}>
-            <Box flexDirection="row" width={{ custom: width - gutterSize - 16 * 2 }} gap={12} padding="16px">
+            <Box flexDirection="row" width={{ custom: DEVICE_WIDTH - gutterSize - 16 * 2 }} gap={12} padding="16px">
               <Box
                 as={LinearGradient}
                 style={{

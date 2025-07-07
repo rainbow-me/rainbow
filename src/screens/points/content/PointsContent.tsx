@@ -31,7 +31,7 @@ import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
-import { useAccountAccentColor, useAccountSettings, useClipboard, useDimensions } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useClipboard } from '@/hooks';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
@@ -609,7 +609,6 @@ export function PointsContent() {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const { name } = useRoute();
-  const { width: deviceWidth } = useDimensions();
   const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
   const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
@@ -863,10 +862,10 @@ export function PointsContent() {
                       ) : (
                         <Columns space="12px">
                           <Column width="1/2">
-                            <Skeleton width={(deviceWidth - 40 - 12) / 2} height={48} />
+                            <Skeleton width={(DEVICE_WIDTH - 40 - 12) / 2} height={48} />
                           </Column>
                           <Column width="1/2">
-                            <Skeleton width={(deviceWidth - 40 - 12) / 2} height={48} />
+                            <Skeleton width={(DEVICE_WIDTH - 40 - 12) / 2} height={48} />
                           </Column>
                         </Columns>
                       )}
@@ -918,7 +917,7 @@ export function PointsContent() {
                       </Box>
                     </Box>
                   ) : (
-                    <Skeleton width={deviceWidth - 40} height={51} />
+                    <Skeleton width={DEVICE_WIDTH - 40} height={51} />
                   )}
                   {canDisplayLeaderboard ? (
                     <Box
@@ -944,7 +943,7 @@ export function PointsContent() {
                       <Border borderRadius={20} />
                     </Box>
                   ) : (
-                    <Skeleton height={400} width={deviceWidth - 40} />
+                    <Skeleton height={400} width={DEVICE_WIDTH - 40} />
                   )}
                 </Box>
               </Box>

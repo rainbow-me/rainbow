@@ -5,12 +5,12 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { RowWithMargins } from '@/components/layout';
 import { Text } from '@/components/text';
 import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow } from '@/styles';
 import ShadowView from '@/react-native-shadow-stack/ShadowView';
 import BackupRainbowButtonBackground from './BackupRainbowButtonBackground';
 import { View } from 'react-native';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const ButtonContainer = styled(MaskedView).attrs({
   pointerEvents: 'none',
@@ -56,6 +56,8 @@ const Shadow = styled(ShadowView)(({ height, strokeWidth, isDarkMode, disabled, 
   width,
 }));
 
+const maxButtonWidth = DEVICE_WIDTH - 30;
+
 type BackupRainbowButtonProps = {
   disabled?: boolean;
   height?: number;
@@ -79,9 +81,6 @@ const BackupRainbowButton = ({
   ...props
 }: BackupRainbowButtonProps) => {
   const { isDarkMode } = useTheme();
-
-  const { width: deviceWidth } = useDimensions();
-  const maxButtonWidth = deviceWidth - 30;
 
   const btnStrokeWidth = disabled ? 0.5 : strokeWidth;
   const btnWidth = width || maxButtonWidth;

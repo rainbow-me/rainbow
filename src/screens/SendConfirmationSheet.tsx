@@ -17,7 +17,7 @@ import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getPro
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
+import { useColorForAsset, useContacts, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -60,6 +60,7 @@ import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { DEVICE_HEIGHT, DEVICE_WIDTH, IS_SMALL_PHONE, IS_TINY_PHONE } from '@/utils/deviceUtils';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -184,7 +185,6 @@ export const SendConfirmationSheet = () => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
   const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
-  const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeAreaInsets();
   const { contacts } = useContacts();
@@ -426,7 +426,7 @@ export const SendConfirmationSheet = () => {
       return svgToPngIfNeeded(asset.image_thumbnail_url || asset.image_url, true);
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const contentHeight = getSheetHeight({
     checkboxes,
@@ -442,14 +442,14 @@ export const SendConfirmationSheet = () => {
       return `${amountDetails.assetAmount} ${asset.symbol}`;
     }
     return '';
-  }, [asset, isNft, amountDetails]);
+  }, [asset, amountDetails]);
 
   const assetSymbolForDisclaimer = useMemo(() => {
     if (assetIsParsedAddressAsset(asset)) {
       return asset.symbol;
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const getMessage = () => {
     let message;
@@ -466,7 +466,7 @@ export const SendConfirmationSheet = () => {
   };
 
   return (
-    <Container deviceHeight={deviceHeight} height={contentHeight} insets={insets}>
+    <Container deviceHeight={DEVICE_HEIGHT} height={contentHeight} insets={insets}>
       {IS_IOS && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
@@ -474,7 +474,7 @@ export const SendConfirmationSheet = () => {
         <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
-              <Column justify="center" width={deviceWidth - 117}>
+              <Column justify="center" width={DEVICE_WIDTH - 117}>
                 <Heading numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
                   {isNft ? asset?.name : nativeDisplayAmount}
                 </Heading>
@@ -661,14 +661,14 @@ export const SendConfirmationSheet = () => {
           <SendButtonWrapper>
             {/* @ts-expect-error JavaScript component */}
             <SendButton
-              androidWidth={deviceWidth - 60}
+              androidWidth={DEVICE_WIDTH - 60}
               backgroundColor={color}
               disabled={!canSubmit}
               insufficientEth={insufficientEth}
               isAuthorizing={isAuthorizing}
               onLongPress={handleSubmit}
               requiresChecks={shouldShowChecks}
-              smallButton={!isTinyPhone && (android || isSmallPhone)}
+              smallButton={!IS_TINY_PHONE && (IS_ANDROID || IS_SMALL_PHONE)}
               testID="send-confirmation-button"
             />
           </SendButtonWrapper>

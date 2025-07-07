@@ -5,9 +5,9 @@ import { Column } from '../layout';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Box } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const Footer = styled(Column)({
   ...padding.object(0, 24, 0),
@@ -38,6 +38,8 @@ type BackupSheetKeyboardLayout = {
 };
 
 const MIN_HEIGHT = 740;
+const isSmallPhone = DEVICE_HEIGHT < MIN_HEIGHT;
+const contentHeight = DEVICE_HEIGHT - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
 export default function BackupSheetKeyboardLayout({
   children,
@@ -45,11 +47,6 @@ export default function BackupSheetKeyboardLayout({
   footerButtonLabel,
   onSubmit,
 }: BackupSheetKeyboardLayoutProps) {
-  const { height: deviceHeight } = useDimensions();
-
-  const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
-
   return (
     <Box height={{ custom: contentHeight }}>
       {children}

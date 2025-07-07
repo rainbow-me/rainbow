@@ -12,12 +12,13 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useAccountENSDomains, useDimensions, useENSAvatar, useENSRecords, useENSRegistration } from '@/hooks';
+import { useAccountENSDomains, useENSAvatar, useENSRecords, useENSRegistration } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import ContextMenu from '@/components/context-menu/ContextMenu.android';
 import { RootStackParamList } from '@/navigation/types';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -107,7 +108,6 @@ const ContextMenuRenderer = ({ children, handleSelectExistingName, handleNavigat
 };
 
 export default function ENSIntroSheet() {
-  const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.ENS_INTRO_SHEET>>();
 
@@ -121,10 +121,10 @@ export default function ENSIntroSheet() {
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
-  const isSmallPhone = deviceHeight < minHeight;
+  const isSmallPhone = DEVICE_HEIGHT < minHeight;
 
   const contentHeight = params?.contentHeight;
-  const contentWidth = Math.min(deviceWidth - 72, 300);
+  const contentWidth = Math.min(DEVICE_WIDTH - 72, 300);
 
   const profileExists = useMemo(
     () =>

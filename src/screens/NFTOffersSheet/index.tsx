@@ -17,7 +17,6 @@ import {
 } from '@/design-system';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
@@ -26,6 +25,7 @@ import { useTheme } from '@/theme';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
 import { FakeOfferRow, OfferRow } from './OfferRow';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const PROFILE_AVATAR_SIZE = 36;
 
@@ -33,7 +33,6 @@ export const NFTOffersSheet = () => {
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const { accountColorHex, accountImage, accountSymbol, accountAddress } = useAccountProfileInfo();
   const { isDarkMode } = useTheme();
-  const { width: deviceWidth, height: deviceHeight } = useDimensions();
 
   const {
     data: { nftOffers },
@@ -155,8 +154,8 @@ export const NFTOffersSheet = () => {
                     }
                     estimatedItemSize={70}
                     estimatedListSize={{
-                      height: 2 * deviceHeight,
-                      width: deviceWidth,
+                      height: 2 * DEVICE_HEIGHT,
+                      width: DEVICE_WIDTH,
                     }}
                     renderItem={({ item }) => <OfferRow offer={item} />}
                     keyExtractor={offer => offer.nft.uniqueId + offer.createdAt}

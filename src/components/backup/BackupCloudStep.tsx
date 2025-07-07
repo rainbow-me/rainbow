@@ -11,7 +11,7 @@ import { Text } from '@/components/text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { analytics } from '@/analytics';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
-import { useDimensions, useMagicAutofocus } from '@/hooks';
+import { useMagicAutofocus } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Box, Inset, Stack } from '@/design-system';
@@ -25,6 +25,7 @@ import { useTheme } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type NativeEvent = {
   nativeEvent: {
@@ -32,10 +33,12 @@ type NativeEvent = {
   };
 };
 
+const containerHeight = DEVICE_HEIGHT - sharedCoolModalTopOffset - 48;
+const buttonWidth = DEVICE_WIDTH - 48;
+
 export function BackupCloudStep() {
   const { isDarkMode } = useTheme();
   const { goBack } = useNavigation();
-  const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -99,7 +102,7 @@ export function BackupCloudStep() {
   }, []);
 
   return (
-    <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>
+    <Box height={{ custom: containerHeight }}>
       <Inset horizontal={'24px'}>
         <Stack alignHorizontal="left" space="8px">
           <Masthead>
@@ -165,7 +168,7 @@ export function BackupCloudStep() {
           {validPassword && (
             <RainbowButton
               height={46}
-              width={deviceWidth - 48}
+              width={buttonWidth}
               disabled={!validPassword}
               type={RainbowButtonTypes.backup}
               label={`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {

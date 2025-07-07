@@ -4,7 +4,6 @@ import { IS_ANDROID } from '@/env';
 import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { useDimensions } from '@/hooks';
 import * as lang from '@/languages';
 import { logger } from '@/logger';
 import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
@@ -33,6 +32,7 @@ import { ImgixImage } from '../images';
 import { Text } from '../text';
 import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type ComponentProps = {
   theme: ThemeContextProps;
@@ -75,6 +75,9 @@ const KeyboardSizeView = styled(KeyboardArea)({
   backgroundColor: ({ theme: { colors } }: ComponentProps) => colors.transparent,
 });
 
+const containerHeight = DEVICE_HEIGHT - sharedCoolModalTopOffset - 48;
+const buttonWidth = DEVICE_WIDTH - 48;
+
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
   const password = backupsStore(state => state.password);
@@ -90,7 +93,6 @@ export default function RestoreCloudStep() {
     }
   }, [canGoBack, goBack]);
 
-  const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const passwordRef = useRef<TextInput | null>(null);
@@ -199,7 +201,7 @@ export default function RestoreCloudStep() {
   }, [onSubmit, validPassword]);
 
   return (
-    <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>
+    <Box height={{ custom: containerHeight }}>
       <Inset horizontal={'24px'}>
         <Stack alignHorizontal="left" space="8px">
           <Masthead>
@@ -239,7 +241,7 @@ export default function RestoreCloudStep() {
           {validPassword && (
             <RainbowButton
               height={46}
-              width={deviceWidth - 48}
+              width={buttonWidth}
               disabled={!validPassword || !!loadingState}
               type={RainbowButtonTypes.backup}
               label={

@@ -16,15 +16,14 @@ import WalletNotificationsSettings from './components/WalletNotificationsSetting
 import { settingsOptions, sharedCoolModalTopOffset } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { useDimensions } from '@/hooks';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Routes from '@/navigation/routesNames';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const Stack = createStackNavigator();
 
 export function SettingsSheet() {
-  const { height: deviceHeight } = useDimensions();
   const { goBack, navigate } = useNavigation();
   const { top } = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -46,7 +45,7 @@ export function SettingsSheet() {
         <SimpleSheet
           testID="settings-sheet"
           backgroundColor={backgroundColor as string}
-          customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
+          customHeight={IS_ANDROID ? DEVICE_HEIGHT - top : DEVICE_HEIGHT - sharedCoolModalTopOffset}
           scrollEnabled={false}
           useAdditionalTopPadding={IS_ANDROID && !!StatusBar.currentHeight}
         >

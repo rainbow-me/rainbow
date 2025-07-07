@@ -3,7 +3,6 @@ import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { Box, Text, TextIcon } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -14,6 +13,7 @@ import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -22,7 +22,6 @@ export const TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS = { bottom: 42, top: TOKEN_L
 
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
-  const { width: deviceWidth } = useDimensions();
   const { accountColorHex, accountImage, accountAddress, accountSymbol } = useAccountProfileInfo();
   const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
   const step = useTokenLauncherStore(state => state.step);
@@ -66,7 +65,7 @@ export function TokenLauncherHeader() {
       <Box paddingHorizontal="20px" paddingTop="20px" paddingBottom="12px" pointerEvents="box-none" style={{ flex: 1 }}>
         <BlurGradient
           height={TOKEN_LAUNCHER_HEADER_HEIGHT}
-          width={deviceWidth}
+          width={DEVICE_WIDTH}
           fadeTo="top"
           intensity={12}
           style={StyleSheet.absoluteFill}

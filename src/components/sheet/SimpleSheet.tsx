@@ -1,9 +1,9 @@
 import { IS_ANDROID } from '@/env';
-import { useDimensions } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
 import React from 'react';
 import { ScrollView, StatusBar } from 'react-native';
 import SlackSheet from './SlackSheet';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 type SimpleSheetProps = {
   children: React.ReactNode;
@@ -15,6 +15,8 @@ type SimpleSheetProps = {
   testID?: string;
 };
 
+const fullSheetHeight = DEVICE_HEIGHT - safeAreaInsetValues.top;
+
 export const SimpleSheet = ({
   children,
   backgroundColor,
@@ -24,13 +26,10 @@ export const SimpleSheet = ({
   testID,
   useAdditionalTopPadding = false,
 }: SimpleSheetProps) => {
-  const { height: deviceHeight } = useDimensions();
-  const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
-
   return (
     <SlackSheet
       additionalTopPadding={IS_ANDROID && (!customHeight || useAdditionalTopPadding) ? StatusBar.currentHeight : false}
-      contentHeight={customHeight ?? deviceHeight}
+      contentHeight={customHeight ?? DEVICE_HEIGHT}
       height="100%"
       removeTopPadding
       scrollEnabled={scrollEnabled}

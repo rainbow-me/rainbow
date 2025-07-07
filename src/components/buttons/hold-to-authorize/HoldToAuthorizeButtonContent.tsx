@@ -29,7 +29,7 @@ import ShadowStack from 'react-native-shadow-stack';
 import * as lang from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useDimensions } from '@/hooks';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const { ACTIVE, BEGAN, END, FAILED } = GestureHandlerState;
 
@@ -81,7 +81,6 @@ function HoldToAuthorizeButtonContent2({
   backgroundColor,
   colors,
   children,
-  deviceDimensions,
   disabled = false,
   disabledBackgroundColor,
   disableShimmerAnimation = false,
@@ -105,10 +104,7 @@ function HoldToAuthorizeButtonContent2({
 }: Props) {
   const { navigate } = useNavigation();
   const { colors: _colors } = useTheme();
-  const { width: _width } = useDimensions();
   const [isAuthorizingState, setIsAuthorizing] = useState(false);
-
-  const deviceWidth = deviceDimensions?.width ?? _width;
   const themeColors = colors ?? _colors;
 
   const longPressProgress = useSharedValue(0);
@@ -144,7 +140,7 @@ function HoldToAuthorizeButtonContent2({
 
   const height = tinyButton ? TINY_BUTTON_HEIGHT : smallButton ? SMALL_BUTTON_HEIGHT : BUTTON_HEIGHT;
 
-  const width = deviceWidth - parentHorizontalPadding * 2;
+  const width = DEVICE_WIDTH - parentHorizontalPadding * 2;
 
   const handlePress = () => {
     if (!isAuthorizingState && onLongPress) {

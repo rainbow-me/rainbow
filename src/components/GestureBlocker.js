@@ -2,8 +2,8 @@ import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { PanGestureHandler, TapGestureHandler } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const NOOP = () => null;
 
@@ -16,7 +16,6 @@ const Container = styled.View(({ type, height }) => ({
 }));
 
 export default function GestureBlocker({ onTouchEnd = NOOP, type }) {
-  const { height: screenHeight } = useDimensions();
   const tab = useRef(null);
   const pan = useRef(null);
 
@@ -27,7 +26,7 @@ export default function GestureBlocker({ onTouchEnd = NOOP, type }) {
   });
 
   return (
-    <Container height={screenHeight} type={type}>
+    <Container height={DEVICE_HEIGHT} type={type}>
       <PanGestureHandler minDeltaX={1} minDeltaY={1} ref={pan} simultaneousHandlers={tab}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
           <TapGestureHandler onHandlerStateChange={onHandlerStateChange} ref={tab} simultaneousHandlers={pan}>

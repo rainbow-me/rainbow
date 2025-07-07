@@ -14,9 +14,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { StatusBarHelper } from '@/helpers';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const adjustConfig = {
   duration: 300,
@@ -90,10 +90,8 @@ export const ZoomableWrapper = ({
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yDisplacement = givenYDisplacement || useSharedValue(0);
 
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
-
-  const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
-  const maxImageHeight = height || deviceHeight / 2;
+  const maxImageWidth = width || DEVICE_WIDTH - horizontalPadding * 2;
+  const maxImageHeight = height || DEVICE_HEIGHT / 2;
   const [containerWidth = maxImageWidth, containerHeight = maxImageWidth] = useMemo(() => {
     const isSquare = aspectRatio === 1;
     const isLandscape = aspectRatio > 1;
@@ -132,20 +130,20 @@ export const ZoomableWrapper = ({
     }
   }, [isZoomed, onZoomIn, onZoomOut]);
 
-  const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
-  const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
+  const fullSizeHeight = Math.min(DEVICE_HEIGHT, DEVICE_WIDTH / aspectRatio);
+  const fullSizeWidth = Math.min(DEVICE_WIDTH, DEVICE_HEIGHT * aspectRatio);
 
   const xOffset = givenXOffset || (width - containerWidth) / 2 || 0;
 
   const containerStyle = useAnimatedStyle(() => {
     const scale = 1 + animationProgress.value * (fullSizeHeight / (containerHeightValue.value ?? 1) - 1);
 
-    const maxWidth = (deviceWidth - containerWidth) / 2;
+    const maxWidth = (DEVICE_WIDTH - containerWidth) / 2;
     return {
       opacity: opacity?.value ?? 1,
       transform: [
         {
-          translateY: animationProgress.value * (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 85),
+          translateY: animationProgress.value * (yDisplacement.value + (DEVICE_HEIGHT - fullSizeHeight) / 2 - 85),
         },
         {
           translateY: (animationProgress.value * (fullSizeHeight - containerHeightValue.value)) / 2,
@@ -176,8 +174,8 @@ export const ZoomableWrapper = ({
   const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
     state.value = 1;
-    const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
-    const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
+    const fullSizeHeight = Math.min(DEVICE_HEIGHT, DEVICE_WIDTH / aspectRatio);
+    const fullSizeWidth = Math.min(DEVICE_WIDTH, DEVICE_HEIGHT * aspectRatio);
     const zooming = fullSizeHeight / containerHeightValue.value;
     ctx.startVelocityX = undefined;
     ctx.startVelocityY = undefined;
@@ -186,11 +184,11 @@ export const ZoomableWrapper = ({
     let targetScale = Math.min(scale.value, MAX_IMAGE_SCALE);
 
     // determine whether to snap to screen edges
-    const breakingScaleX = deviceWidth / fullSizeWidth;
-    const breakingScaleY = deviceHeight / fullSizeHeight;
+    const breakingScaleX = DEVICE_WIDTH / fullSizeWidth;
+    const breakingScaleY = DEVICE_HEIGHT / fullSizeHeight;
 
-    const maxDisplacementX = (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2 / zooming;
-    const maxDisplacementY = (deviceHeight * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2 / zooming;
+    const maxDisplacementX = (DEVICE_WIDTH * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2 / zooming;
+    const maxDisplacementY = (DEVICE_HEIGHT * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2 / zooming;
 
     let targetTranslateX = translateX.value;
     let targetTranslateY = translateY.value;
@@ -265,7 +263,7 @@ export const ZoomableWrapper = ({
     // handle dismiss gesture
     if (
       Math.abs(translateY.value) + (Math.abs(event?.velocityY) ?? 0) - (Math.abs(event?.velocityX / 2) ?? 0) > THRESHOLD * targetScale &&
-      fullSizeHeight * scale.value <= deviceHeight
+      fullSizeHeight * scale.value <= DEVICE_HEIGHT
     ) {
       isZoomedValue.value = false;
       runOnJS(setIsZoomed)(false);
@@ -405,8 +403,8 @@ export const ZoomableWrapper = ({
         animationProgress.value = withSpring(1, enterConfig);
       } else if (
         scale.value === MIN_IMAGE_SCALE &&
-        ((event.absoluteY > 0 && event.absoluteY < (deviceHeight - fullSizeHeight) / 2) ||
-          (event.absoluteY <= deviceHeight && event.absoluteY > deviceHeight - (deviceHeight - fullSizeHeight) / 2))
+        ((event.absoluteY > 0 && event.absoluteY < (DEVICE_HEIGHT - fullSizeHeight) / 2) ||
+          (event.absoluteY <= DEVICE_HEIGHT && event.absoluteY > DEVICE_HEIGHT - (DEVICE_HEIGHT - fullSizeHeight) / 2))
       ) {
         // dismiss if tap was outside image bounds
         isZoomedValue.value = false;
@@ -462,9 +460,9 @@ export const ZoomableWrapper = ({
                 <ZoomContainer height={containerHeight} width={containerWidth}>
                   <PanGestureHandler>
                     <GestureBlocker
-                      height={deviceHeight}
+                      height={DEVICE_HEIGHT}
                       pointerEvents={isZoomed ? 'auto' : 'none'}
-                      width={deviceWidth}
+                      width={DEVICE_WIDTH}
                       xOffset={xOffset}
                       yOffset={yOffset}
                     />

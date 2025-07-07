@@ -3,7 +3,7 @@ import React from 'react';
 import { ButtonPressAnimation, HourglassAnimation } from '../../../components/animations';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import { Box, Heading, Inset, Row, Rows, Stack, Text } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import { IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 const WaitCommitmentConfirmationContent = ({
   accentColor,
@@ -14,7 +14,6 @@ const WaitCommitmentConfirmationContent = ({
   action: () => void;
   secondsSinceCommitConfirmed: number;
 }) => {
-  const { isSmallPhone } = useDimensions();
   const speedUpEnabled = secondsSinceCommitConfirmed === -1;
 
   return (
@@ -26,7 +25,7 @@ const WaitCommitmentConfirmationContent = ({
         <Row>
           <Box flexGrow={1} justifyContent="center">
             <Inset horizontal="12px">
-              <Stack space={isSmallPhone ? '24px' : '34px (Deprecated)'}>
+              <Stack space={IS_SMALL_PHONE ? '24px' : '34px (Deprecated)'}>
                 <HourglassAnimation />
                 <Stack alignHorizontal="center" space="19px (Deprecated)">
                   <Heading align="center" color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
@@ -41,7 +40,7 @@ const WaitCommitmentConfirmationContent = ({
           </Box>
         </Row>
       </Rows>
-      <Inset bottom={isSmallPhone ? '30px (Deprecated)' : undefined}>
+      <Inset bottom={IS_SMALL_PHONE ? '30px (Deprecated)' : undefined}>
         <ButtonPressAnimation onPress={speedUpEnabled ? action : () => null}>
           <Text align="center" color={{ custom: accentColor }} containsEmoji size="16px / 22px (Deprecated)" weight="heavy">
             {`🚀 ${lang.t('profiles.confirm.speed_up')}`}

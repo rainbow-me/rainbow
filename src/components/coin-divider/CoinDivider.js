@@ -9,12 +9,13 @@ import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditAction from '@/helpers/EditAction';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions } from '@/hooks';
+import { useCoinListEditOptions, useCoinListFinishEditingOptions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;
@@ -26,7 +27,7 @@ const Container = styled(Row).attrs({
   ...padding.object(4, 19, 5, 0),
   backgroundColor: ({ isCoinListEdited, theme: { colors } }) => (isCoinListEdited ? colors.white : colors.transparent),
   height: CoinDividerContainerHeight,
-  width: ({ deviceWidth }) => deviceWidth,
+  width: DEVICE_WIDTH,
 });
 
 const CoinDividerButtonRow = styled(RowWithMargins).attrs(({ isCoinListEdited }) => ({
@@ -92,8 +93,6 @@ export default function CoinDivider({ balancesSum, defaultToEditButton, extended
   const interpolation = useInterpolationRange(isCoinListEdited);
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
-  const { width: deviceWidth } = useDimensions();
-
   const { clearSelectedCoins } = useCoinListEditOptions();
 
   const { currentAction, setHiddenCoins, setPinnedCoins } = useCoinListFinishEditingOptions();
@@ -108,7 +107,7 @@ export default function CoinDivider({ balancesSum, defaultToEditButton, extended
 
   return (
     <Animated.View {...interpolation}>
-      <Container deviceWidth={deviceWidth} isCoinListEdited={isCoinListEdited}>
+      <Container isCoinListEdited={isCoinListEdited}>
         <Row>
           <View
             opacity={defaultToEditButton || isCoinListEdited ? 0 : 1}

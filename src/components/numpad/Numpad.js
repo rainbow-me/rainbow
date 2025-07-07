@@ -3,9 +3,9 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { IS_TINY_PHONE } from '@/utils/deviceUtils';
 
 const KeyboardButtonContent = styled(Centered)({
   height: ({ height }) => height,
@@ -20,10 +20,9 @@ const KeyboardRow = styled(Row).attrs({
   width: '100%',
 });
 
-const KeyboardButton = ({ children, ...props }) => {
-  const { isTinyPhone } = useDimensions();
-  const keyHeight = isTinyPhone ? 60 : 64;
+const keyHeight = IS_TINY_PHONE ? 60 : 64;
 
+const KeyboardButton = ({ children, ...props }) => {
   return (
     <ButtonPressAnimation {...props} duration={35} pressOutDuration={75} scaleTo={1.6} transformOrigin={[0.5, 0.5 + 8 / keyHeight]}>
       <KeyboardButtonContent height={keyHeight}>{children}</KeyboardButtonContent>

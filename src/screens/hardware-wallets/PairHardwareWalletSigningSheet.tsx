@@ -5,7 +5,7 @@ import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
-import { useDimensions, useImportingWallet } from '@/hooks';
+import { useImportingWallet } from '@/hooks';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { useRecoilValue } from 'recoil';
 import { RainbowError, logger } from '@/logger';
@@ -17,6 +17,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { RootStackParamList } from '@/navigation/types';
+import { DEVICE_WIDTH, IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 const NUMBER_BOX_SIZE = 28;
 const HORIZONTAL_INSET = 36;
@@ -53,7 +54,6 @@ type ItemProps = {
 };
 
 const Item = ({ item, rank }: ItemProps) => {
-  const { width: deviceWidth } = useDimensions();
   return (
     <Columns space={{ custom: COLUMNS_PADDING }}>
       <Column width="content">
@@ -62,7 +62,7 @@ const Item = ({ item, rank }: ItemProps) => {
       <Column
         // sorry for this hack, but it's seemingly the only way to make the
         // text wrap properly while being confined to the horizontal inset
-        width={{ custom: deviceWidth - 2 * HORIZONTAL_INSET - COLUMNS_PADDING }}
+        width={{ custom: DEVICE_WIDTH - 2 * HORIZONTAL_INSET - COLUMNS_PADDING }}
       >
         <Stack space="12px">
           <Text weight="heavy" size="17pt" color="label">
@@ -80,7 +80,6 @@ const Item = ({ item, rank }: ItemProps) => {
 export function PairHardwareWalletSigningSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET>>();
   const { navigate, goBack } = useNavigation();
-  const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({ showImportModal: true });
 
@@ -160,7 +159,7 @@ export function PairHardwareWalletSigningSheet() {
   return (
     <Layout>
       <Inset horizontal={{ custom: HORIZONTAL_INSET }}>
-        <Stack space={isSmallPhone ? '36px' : '80px'}>
+        <Stack space={IS_SMALL_PHONE ? '36px' : '80px'}>
           <Stack alignHorizontal="center" space="20px">
             <Text align="center" color="label" weight="bold" size="26pt">
               {i18n.t(TRANSLATIONS.enable_blind_signing)}
@@ -179,7 +178,7 @@ export function PairHardwareWalletSigningSheet() {
               </ButtonPressAnimation>
             </Stack>
           </Stack>
-          <Stack space={isSmallPhone ? '32px' : '44px'}>
+          <Stack space={IS_SMALL_PHONE ? '32px' : '44px'}>
             {items.map((item, index) => (
               <Item item={item} rank={index + 1} key={index} />
             ))}

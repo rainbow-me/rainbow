@@ -10,8 +10,6 @@ import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { GestureHandlerButton } from './GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { StyleSheet } from 'react-native';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const ExchangeRateBubble = () => {
@@ -202,16 +200,3 @@ export const ExchangeRateBubble = () => {
     </GestureHandlerButton>
   );
 };
-
-const styles = StyleSheet.create({
-  buttonPadding: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-  },
-  buttonPosition: {
-    alignSelf: 'center',
-    minWidth: DEVICE_WIDTH * 0.6,
-    position: 'absolute',
-    top: 4,
-  },
-});

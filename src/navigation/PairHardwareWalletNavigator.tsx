@@ -5,13 +5,13 @@ import { PairHardwareWalletIntroSheet } from '@/screens/hardware-wallets/PairHar
 import { PairHardwareWalletSearchSheet } from '@/screens/hardware-wallets/PairHardwareWalletSearchSheet';
 import { PairHardwareWalletSigningSheet } from '@/screens/hardware-wallets/PairHardwareWalletSigningSheet';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
-import { useDimensions } from '@/hooks';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { analytics } from '@/analytics';
 import { RootStackParamList } from './types';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -23,7 +23,6 @@ export const LedgerImportDeviceIdAtom = atom({
 
 export function PairHardwareWalletNavigator() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET>>();
-  const { height, width } = useDimensions();
 
   const [currentRouteName, setCurrentRouteName] = useState<string>(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);
 
@@ -57,7 +56,7 @@ export function PairHardwareWalletNavigator() {
             />
           )}
           <Swipe.Navigator
-            initialLayout={{ height, width }}
+            initialLayout={{ height: DEVICE_HEIGHT, width: DEVICE_WIDTH }}
             initialRouteName={currentRouteName}
             sceneContainerStyle={{ backgroundColor: 'transparent' }}
             screenOptions={{ swipeEnabled: false, lazy: true }}

@@ -5,8 +5,8 @@ import brain from '../../../assets/brain.png';
 import { RegistrationReviewRows } from '../../../components/ens-registration';
 import { Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
+import { IS_SMALL_PHONE } from '@/utils/deviceUtils';
 
 const CommitContent = ({
   duration,
@@ -17,11 +17,9 @@ const CommitContent = ({
   registrationCostsData: any;
   setDuration: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-  const { isSmallPhone } = useDimensions();
-
   return (
-    <Inset vertical={isSmallPhone ? '24px' : '30px (Deprecated)'}>
-      <Stack space={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
+    <Inset vertical={IS_SMALL_PHONE ? '24px' : '30px (Deprecated)'}>
+      <Stack space={IS_SMALL_PHONE ? '19px (Deprecated)' : '30px (Deprecated)'}>
         <Separator color="divider60 (Deprecated)" />
         <Inline alignHorizontal="center" alignVertical="center" space="6px" wrap={false}>
           <Box>

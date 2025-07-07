@@ -3,20 +3,16 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Text } from '../text';
-import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { ThemeContextProps } from '@/theme';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const FontSizeMultiple = 0.24;
 const HeightMultiple = 0.288;
+const radius = DEVICE_WIDTH - 48;
+const height = Math.round(DEVICE_WIDTH * HeightMultiple);
 
-interface WidthParams {
-  width: number;
-}
-
-const GradientBackground = styled(RadialGradient).attrs(({ width }: WidthParams) => {
-  const radius = width - 48;
-
+const GradientBackground = styled(RadialGradient).attrs(() => {
   return {
     center: [radius, 53.5],
     colors: ['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF'],
@@ -24,7 +20,7 @@ const GradientBackground = styled(RadialGradient).attrs(({ width }: WidthParams)
     stops: [0.2049, 0.6354, 0.8318, 0.9541],
   };
 })({
-  height: ({ width }: WidthParams) => Math.round(width * HeightMultiple),
+  height,
   width: '100%',
 });
 
@@ -37,14 +33,14 @@ const StyledMaskedView = styled(MaskedView)({
   width: '100%',
 });
 
-type ValueTextParams = WidthParams & { theme: ThemeContextProps };
+type ValueTextParams = { theme: ThemeContextProps };
 
-const ValueText = styled(Text).attrs(({ width, theme: { colors } }: ValueTextParams) => ({
+const ValueText = styled(Text).attrs(({ theme: { colors } }: ValueTextParams) => ({
   align: 'center',
   color: colors.white,
   letterSpacing: 'roundedTightest',
-  lineHeight: Math.round(width * HeightMultiple),
-  size: Math.round(width * FontSizeMultiple),
+  lineHeight: Math.round(DEVICE_WIDTH * HeightMultiple),
+  size: Math.round(DEVICE_WIDTH * FontSizeMultiple),
   weight: 'bold',
 }))({});
 
@@ -55,8 +51,6 @@ interface Props {
 }
 
 const NumpadValue = ({ scale, translateX, value }: Props) => {
-  const { width } = useDimensions();
-
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }, { translateX: translateX.value }],
@@ -65,13 +59,13 @@ const NumpadValue = ({ scale, translateX, value }: Props) => {
 
   const maskElement = (
     <TextMask style={animatedStyle}>
-      <ValueText width={width}>{'$' + (value ? value : '0')}</ValueText>
+      <ValueText>{'$' + (value ? value : '0')}</ValueText>
     </TextMask>
   );
 
   return (
     <StyledMaskedView maskElement={maskElement}>
-      <GradientBackground width={width} />
+      <GradientBackground />
     </StyledMaskedView>
   );
 };

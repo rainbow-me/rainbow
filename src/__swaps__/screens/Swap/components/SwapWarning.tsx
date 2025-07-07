@@ -1,10 +1,12 @@
 import React from 'react';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, Inline } from '@/design-system';
+import { AnimatedText, Box } from '@/design-system';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapWarningType } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+
+const maxWidth = DEVICE_WIDTH - 120 - 40;
 
 export const SwapWarning = () => {
   const {
@@ -63,7 +65,7 @@ export const SwapWarning = () => {
       as={Animated.View}
       gap={12}
       justifyContent="center"
-      style={[{ maxWidth: DEVICE_WIDTH - 120 - 40 }, AnimatedSwapStyles.hideWhenInputsExpanded, warningAlignment]}
+      style={[{ maxWidth }, AnimatedSwapStyles.hideWhenInputsExpanded, warningAlignment]}
     >
       <AnimatedText style={warningTitleStyles} size="15pt" weight="heavy">
         {warningTitle}

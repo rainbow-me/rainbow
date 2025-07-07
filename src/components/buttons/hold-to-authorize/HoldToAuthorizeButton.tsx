@@ -3,7 +3,7 @@ import React from 'react';
 import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import { BiometryTypes } from '@/helpers';
-import { useBiometryType, useDimensions } from '@/hooks';
+import { useBiometryType } from '@/hooks';
 import { useTheme } from '@/theme';
 
 interface WrapperProps extends HoldToAuthorizeBaseProps {
@@ -14,7 +14,6 @@ interface WrapperProps extends HoldToAuthorizeBaseProps {
 const HoldToAuthorizeButtonWithBiometrics = ({ disableLongPress, label, ...props }: WrapperProps) => {
   const biometryType = useBiometryType();
   const { colors } = useTheme();
-  const deviceDimensions = useDimensions();
 
   const isLongPressAvailableForBiometryType =
     biometryType === BiometryTypes.FaceID || biometryType === BiometryTypes.Face || biometryType === BiometryTypes.none;
@@ -23,7 +22,6 @@ const HoldToAuthorizeButtonWithBiometrics = ({ disableLongPress, label, ...props
     <HoldToAuthorizeButtonContent
       {...props}
       colors={colors}
-      deviceDimensions={deviceDimensions}
       enableLongPress={!disableLongPress && isLongPressAvailableForBiometryType}
       label={
         isLongPressAvailableForBiometryType

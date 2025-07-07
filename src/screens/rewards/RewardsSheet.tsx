@@ -2,7 +2,6 @@ import { analytics } from '@/analytics';
 import { DynamicHeightSheet } from '@/components/sheet';
 import { BackgroundProvider, Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useDimensions } from '@/hooks';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -10,9 +9,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 export const RewardsSheet: React.FC = () => {
-  const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
   const accountAddress = useAccountAddress();
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +55,7 @@ export const RewardsSheet: React.FC = () => {
           limitScrollViewContent
           // sheetHeightRatio={0.67}
           sheetHeight={568}
-          contentHeight={height - top}
+          contentHeight={DEVICE_HEIGHT - top}
           scrollEnabled={false}
         >
           <Box width="full" height="full" padding="20px">

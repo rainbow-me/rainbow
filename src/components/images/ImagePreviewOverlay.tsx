@@ -8,11 +8,12 @@ import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper'
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
 import { BackgroundProvider, Box, BoxProps, Cover, useColorMode } from '@/design-system';
-import { useDimensions, usePersistentAspectRatio } from '@/hooks';
+import { usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { colors, position } from '@/styles';
 import { safeAreaInsetValues } from '@/utils';
 import { FULL_NFT_IMAGE_SIZE } from '@/utils/handleNFTImages';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const idsAtom = atom<string[]>({
   default: [],
@@ -152,7 +153,6 @@ type ImagePreviewProps = {
 
 function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPosition }: ImagePreviewProps) {
   const { useBackgroundOverlay } = useContext(ImageOverlayConfigContext);
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
   const aspectRatio = useRecoilValue(aspectRatioAtom(id));
   const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
@@ -242,7 +242,7 @@ function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPo
                 <Box
                   as={View}
                   height={{
-                    custom: hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top,
+                    custom: hideStatusBar ? DEVICE_HEIGHT : DEVICE_HEIGHT - safeAreaInsetValues.top,
                   }}
                   left="0px"
                   position="absolute"
@@ -251,7 +251,7 @@ function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPo
                     backgroundColor: colors.trueBlack,
                     overflow: 'hidden',
                   }}
-                  width={{ custom: deviceWidth }}
+                  width={{ custom: DEVICE_WIDTH }}
                 >
                   <Box style={position.coverAsObject}>
                     <Box as={ImgixImage} height="full" source={{ uri: imageUrl }} width="full" size={FULL_NFT_IMAGE_SIZE} />
@@ -261,7 +261,7 @@ function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPo
               )}
               <Box
                 height={{
-                  custom: hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top,
+                  custom: hideStatusBar ? DEVICE_HEIGHT : DEVICE_HEIGHT - safeAreaInsetValues.top,
                 }}
                 style={{
                   backgroundColor: colorMode === 'dark' ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})` : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,

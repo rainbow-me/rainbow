@@ -3,16 +3,23 @@ import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import RadialGradientBackground, { RadialGradientBackgroundProps } from '../../RadialGradientBackground';
 import { SearchInputProps } from './SearchInput';
 import { useTheme } from '@/theme';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type SearchInputGradientBackgroundProps = {
   variant: SearchInputProps['variant'];
-  width: number;
+  width?: number;
   height: number;
   state: SearchInputProps['state'];
   type?: 'default' | 'tint';
 };
 
-const SearchInputGradientBackground = ({ variant, width, height, state, type = 'default' }: SearchInputGradientBackgroundProps) => {
+const SearchInputGradientBackground = ({
+  variant,
+  width = DEVICE_WIDTH,
+  height,
+  state,
+  type = 'default',
+}: SearchInputGradientBackgroundProps) => {
   const { colors } = useTheme();
 
   const gradientSets = useMemo(

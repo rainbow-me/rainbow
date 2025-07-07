@@ -13,6 +13,9 @@ import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
 
 const DEFAULT_BACKGROUND_COLOR = getTintedBackgroundColor({ dark: ETH_COLOR_DARK, light: ETH_COLOR });
 
+const startVector = vec(DEVICE_WIDTH / 2, 0);
+const endVector = vec(DEVICE_WIDTH / 2, DEVICE_HEIGHT);
+
 export const SwapBackground = () => {
   const { isDarkMode } = useColorMode();
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
@@ -45,7 +48,7 @@ export const SwapBackground = () => {
     <Canvas style={styles.background}>
       <Rect height={DEVICE_HEIGHT + (IS_ANDROID ? 24 : 0)} width={DEVICE_WIDTH} x={0} y={0}>
         <Paint antiAlias dither>
-          <LinearGradient colors={gradientColors} end={vec(DEVICE_WIDTH / 2, DEVICE_HEIGHT)} start={vec(DEVICE_WIDTH / 2, 0)} />
+          <LinearGradient colors={gradientColors} end={endVector} start={startVector} />
         </Paint>
       </Rect>
     </Canvas>

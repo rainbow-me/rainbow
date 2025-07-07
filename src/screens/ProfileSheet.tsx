@@ -6,7 +6,7 @@ import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
-import { useDimensions, useENSAvatar, useExternalWalletSectionsData } from '@/hooks';
+import { useENSAvatar, useExternalWalletSectionsData } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -16,6 +16,7 @@ import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { RootStackParamList } from '@/navigation/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -23,13 +24,12 @@ export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: false,
 });
 
+const contentHeight = DEVICE_HEIGHT - sharedCoolModalTopOffset;
+
 export default function ProfileSheet() {
   const { params, name } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET | typeof Routes.PROFILE_PREVIEW_SHEET>>();
   const { colors } = useTheme();
   const accountAddress = useAccountAddress();
-
-  const { height: deviceHeight } = useDimensions();
-  const contentHeight = deviceHeight - sharedCoolModalTopOffset;
 
   const ensName = params?.address;
   const { data: profileAddress, isSuccess: isAddressSuccess } = useENSAddress({

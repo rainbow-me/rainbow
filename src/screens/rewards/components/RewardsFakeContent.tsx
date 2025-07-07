@@ -1,7 +1,7 @@
 import React from 'react';
 import Skeleton from '@/components/skeleton/Skeleton';
 import { Box, BoxProps, useForegroundColor } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const BORDER_RADIUS = 18;
 
@@ -27,10 +27,9 @@ const FakeElement: React.FC<BoxProps> = props => (
 
 export const RewardsFakeContent: React.FC = () => {
   const shimmerColor = useForegroundColor('fillSecondary');
-  const { height } = useDimensions();
 
   return (
-    <Box width="full" height={{ custom: height }}>
+    <Box width="full" height={DEVICE_HEIGHT}>
       <Skeleton shimmerColor={shimmerColor} skeletonColor={shimmerColor}>
         <>
           <FakeElement width="4/5" height={{ custom: SHEET_TITLE_HEIGHT }} marginBottom={{ custom: SHEET_TITLE_BOTTOM_MARGIN }} />

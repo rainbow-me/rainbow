@@ -17,28 +17,24 @@ import { Label, Text } from '../text';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useClipboard, useDimensions, useContacts } from '@/hooks';
+import { useClipboard, useContacts } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { profileUtils, showActionSheetWithOptions } from '@/utils';
 import { RainbowAccount } from '@/model/wallet';
-import { Contact } from '@/redux/contacts';
+import { IS_SMALL_PHONE, IS_TINY_PHONE } from '@/utils/deviceUtils';
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;
-  isSmallPhone: boolean;
-  isTinyPhone: boolean;
 };
 
-const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
-  ({ isSmallPhone, theme: { colors }, isTinyPhone }: ComponentPropsWithTheme) => ({
-    ...(isTinyPhone ? padding.object(23, 15, 10) : isSmallPhone ? padding.object(11, 19, 15) : padding.object(18, 19, 19)),
-    backgroundColor: colors.white,
-    overflow: 'hidden',
-    width: '100%',
-  })
-);
+const AddressInputContainer = styled(Row).attrs({ align: 'center' })(({ theme: { colors } }: ComponentPropsWithTheme) => ({
+  ...(IS_TINY_PHONE ? padding.object(23, 15, 10) : IS_SMALL_PHONE ? padding.object(11, 19, 15) : padding.object(18, 19, 19)),
+  backgroundColor: colors.white,
+  overflow: 'hidden',
+  width: '100%',
+}));
 
 const AddressFieldLabel = styled(Label).attrs({
   size: 'large',
@@ -105,7 +101,6 @@ export default function SendHeader({
 }: SendHeaderProps) {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { setClipboard } = useClipboard();
-  const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
   const [hexAddress, setHexAddress] = useState('');
@@ -218,8 +213,8 @@ export default function SendHeader({
   return (
     <Fragment>
       <SheetHandleFixedToTop />
-      {isTinyPhone ? null : <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>}
-      <AddressInputContainer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone}>
+      {IS_TINY_PHONE ? null : <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>}
+      <AddressInputContainer>
         <AddressFieldLabel>{lang.t('contacts.to_header')}:</AddressFieldLabel>
         <AddressField
           address={recipient}
@@ -249,7 +244,7 @@ export default function SendHeader({
         {isValidAddress && !hexAddress && isEmpty(contact?.address) && <LoadingSpinner />}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
-      {hideDivider && !isTinyPhone ? null : <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />}
+      {hideDivider && !IS_TINY_PHONE ? null : <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />}
     </Fragment>
   );
 }

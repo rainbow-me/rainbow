@@ -14,7 +14,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
-import { useDimensions } from '@/hooks';
 import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -33,17 +32,18 @@ import Spinner from '@/components/Spinner';
 import { ScrollView } from 'react-native';
 import { DiscoverSeparator } from '@/components/Discover/DiscoverSeparator';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const CARD_HEIGHT = 250;
 const OFFER_CELL_HEIGHT = NFT_IMAGE_SIZE + 60;
 const OFFER_CELL_WIDTH = NFT_IMAGE_SIZE + CELL_HORIZONTAL_PADDING * 2;
+const estimatedListSizeWidth = DEVICE_WIDTH * 2;
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
 export const NFTOffersCard = () => {
   const borderColor = useForegroundColor('separator');
   const buttonColor = useForegroundColor('fillSecondary');
-  const { width: deviceWidth } = useDimensions();
   const accountAddress = useAccountAddress();
   const { colors } = useTheme();
   const {
@@ -150,7 +150,7 @@ export const NFTOffersCard = () => {
                       horizontal
                       estimatedListSize={{
                         height: OFFER_CELL_HEIGHT,
-                        width: deviceWidth * 2,
+                        width: estimatedListSizeWidth,
                       }}
                       style={{ flex: 1 }}
                       renderItem={({ item }) => <Offer offer={item} />}

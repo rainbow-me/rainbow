@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
-import { prefetchENSAvatar, prefetchENSRecords, useAccountENSDomains, useDimensions } from '@/hooks';
+import { prefetchENSAvatar, prefetchENSRecords, useAccountENSDomains } from '@/hooks';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
@@ -14,6 +14,7 @@ import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import ImgixImage from '../images/ImgixImage';
 import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const ASPECT_RATIO = 112 / 350;
 const ARBITRARILY_LARGE_NUMBER = 1000;
@@ -24,14 +25,13 @@ const GRADIENT: Gradient = {
   end: { x: 1, y: 0 },
 };
 
+// 40 represents the horizontal padding outside the card
+const imageWidth = DEVICE_WIDTH - 40;
+
 export const ENSCreateProfileCard = () => {
   const { navigate } = useNavigation();
-  const { width: deviceWidth } = useDimensions();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
-
-  // 40 represents the horizontal padding outside the card
-  const imageWidth = deviceWidth - 40;
 
   const { uniqueDomain } = useAccountENSDomains();
 

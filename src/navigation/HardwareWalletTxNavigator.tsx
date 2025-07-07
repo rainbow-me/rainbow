@@ -1,6 +1,5 @@
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { BackgroundProvider } from '@/design-system';
-import { useDimensions } from '@/hooks';
 import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { logger } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -15,6 +14,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { MMKV } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import { RootStackParamList } from './types';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const ledgerStorage = new MMKV({
   id: 'ledgerStorage',
@@ -47,7 +47,6 @@ export const triggerPollerCleanupAtom = atom({
 });
 
 export const HardwareWalletTxNavigator = () => {
-  const { width, height } = useDimensions();
   const selectedWallet = useSelectedWallet();
   const {
     params: { submit },
@@ -110,7 +109,7 @@ export const HardwareWalletTxNavigator = () => {
           scrollEnabled={false}
         >
           <Swipe.Navigator
-            initialLayout={{ width, height }}
+            initialLayout={{ width: DEVICE_WIDTH, height: DEVICE_HEIGHT }}
             initialRouteName={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET}
             screenOptions={{ swipeEnabled: false }}
             sceneContainerStyle={{ backgroundColor: backgroundColor }}

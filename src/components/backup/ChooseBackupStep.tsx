@@ -2,7 +2,6 @@ import * as lang from '@/languages';
 import React, { useCallback } from 'react';
 import { Text as RNText } from '../text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
-import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
@@ -23,6 +22,7 @@ import ActivityIndicator from '@/components/ActivityIndicator';
 import { useTheme } from '@/theme';
 import { backupsStore, CloudBackupState, LoadingStates } from '@/state/backups/backups';
 import { dateFormatter, titleForBackupState } from '@/screens/SettingsSheet/utils';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const Title = styled(RNText).attrs({
   align: 'left',
@@ -59,7 +59,6 @@ export function ChooseBackupStep() {
   const isLoading = LoadingStates.includes(status);
 
   const { top } = useSafeAreaInsets();
-  const { height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
 
   const onSelectCloudBackup = useCallback(
@@ -71,7 +70,7 @@ export function ChooseBackupStep() {
     [navigate]
   );
 
-  const height = IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
+  const height = IS_ANDROID ? DEVICE_HEIGHT - top : DEVICE_HEIGHT - sharedCoolModalTopOffset - 48;
   return (
     <Box height={{ custom: height }}>
       <MenuContainer>

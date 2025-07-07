@@ -7,12 +7,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
-import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 import TouchableBackdrop from '../TouchableBackdrop';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const AndroidBackground = styled.View({
   ...position.coverAsObject,
@@ -46,10 +46,10 @@ const Content = styled.ScrollView.attrs(({ limitScrollViewContent }) => ({
   directionalLockEnabled: true,
   keyboardShouldPersistTaps: 'always',
   scrollEventThrottle: 16,
-}))(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding, sheetHeightRatio = 0.67 }) => ({
+}))(({ contentHeight, backgroundColor, removeTopPadding, sheetHeightRatio = 0.67 }) => ({
   // Default to 2/3 of the screen
   backgroundColor: backgroundColor,
-  ...(contentHeight ? { height: deviceHeight * sheetHeightRatio + contentHeight } : {}), // Set height to a ratio of the device height
+  ...(contentHeight ? { height: DEVICE_HEIGHT * sheetHeightRatio + contentHeight } : {}), // Set height to a ratio of the device height
   paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
   width: '100%',
 }));
@@ -89,7 +89,6 @@ export default forwardRef(function SlackSheet(
 ) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const yPosition = givenYPosition || useSharedValue(0);
-  const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const bottomInset = useMemo(() => (insets.bottom || scrollEnabled ? 42 : 30), [insets.bottom, scrollEnabled]);
@@ -148,7 +147,6 @@ export default forwardRef(function SlackSheet(
         contentHeight={contentHeight}
         borderRadius={borderRadius}
         deferredHeight={deferredHeight}
-        deviceHeight={deviceHeight}
         sheetHeightRatio={sheetHeightRatio}
         sheetHeight={sheetHeight}
         testID={testID}
@@ -167,7 +165,6 @@ export default forwardRef(function SlackSheet(
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
-            deviceHeight={deviceHeight}
             sheetHeightRatio={sheetHeightRatio}
             limitScrollViewContent={limitScrollViewContent}
             onContentSizeChange={onContentSizeChange}

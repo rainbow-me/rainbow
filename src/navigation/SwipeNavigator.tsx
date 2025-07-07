@@ -10,7 +10,7 @@ import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, Stack, useForegroundColor, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useCoinListEdited } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
@@ -77,7 +77,6 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const { highContrastAccentColor: accentColor } = useAccountAccentColor();
   const { extraWebViewHeight, tabViewProgress } = useBrowserTabBarContext();
   const { isDarkMode } = useColorMode();
-  const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const recyclerList = useRecyclerListViewScrollToTopContext();
   const mainList = useMainList();
@@ -96,7 +95,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
   const numberOfTabs = 3 + (showPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const horizontalInset = numberOfTabs > 4 ? HORIZONTAL_TAB_BAR_INSET_5_TABS : HORIZONTAL_TAB_BAR_INSET;
-  const tabWidth = (deviceWidth - horizontalInset * 2) / numberOfTabs;
+  const tabWidth = (DEVICE_WIDTH - horizontalInset * 2) / numberOfTabs;
   const tabPillStartPosition = (tabWidth - TAB_BAR_PILL_WIDTH) / 2 + horizontalInset;
 
   const reanimatedPosition = useSharedValue(0);

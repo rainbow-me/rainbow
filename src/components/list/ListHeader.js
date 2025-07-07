@@ -1,5 +1,5 @@
 import Divider from '@/components/Divider';
-import { useDimensions, useWebData } from '@/hooks';
+import { useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -13,6 +13,7 @@ import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
 import { H1 } from '../text';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const ListHeaderHeight = 48;
 
@@ -46,11 +47,10 @@ const StickyBackgroundBlocker = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,
   height: ({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0),
   top: ({ isEditMode }) => (isEditMode ? -40 : 0),
-  width: ({ deviceDimensions }) => deviceDimensions.width,
+  width: DEVICE_WIDTH,
 });
 
-export default function ListHeader({ children, contextMenuOptions, isCoinListEdited, showDivider = true, title, totalValue }) {
-  const deviceDimensions = useDimensions();
+export default function ListHeader({ children, contextMenuOptions, isCoinListEdited, showDivider = true, title }) {
   const { colors, isDarkMode } = useTheme();
   const accountAddress = useAccountAddress();
   const { accountENS } = useAccountProfileInfo();
@@ -98,7 +98,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
         */
         showDivider && !(android && isDarkMode) && <Divider color={colors.rowDividerLight} />
       }
-      <StickyBackgroundBlocker deviceDimensions={deviceDimensions} isEditMode={isCoinListEdited} />
+      <StickyBackgroundBlocker isEditMode={isCoinListEdited} />
     </Fragment>
   );
 }

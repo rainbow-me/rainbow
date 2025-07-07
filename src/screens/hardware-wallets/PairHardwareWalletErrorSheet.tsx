@@ -3,7 +3,6 @@ import React, { useCallback } from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { useDimensions } from '@/hooks';
 import { Source } from 'react-native-fast-image';
 import ledgerNanoUnlock from '@/assets/ledger-nano-unlock.png';
 import ledgerNanoEthApp from '@/assets/ledger-nano-eth-app.png';
@@ -14,16 +13,16 @@ import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const IMAGE_ASPECT_RATIO = 1.547;
 const IMAGE_LEFT_OFFSET = 36;
 
 export const PairHardwareWalletErrorSheet = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET>>();
-  const { width: deviceWidth } = useDimensions();
   const { goBack, navigate } = useNavigation();
 
-  const imageWidth = deviceWidth - IMAGE_LEFT_OFFSET;
+  const imageWidth = DEVICE_WIDTH - IMAGE_LEFT_OFFSET;
   const imageHeight = imageWidth / IMAGE_ASPECT_RATIO;
 
   const errorType = params?.errorType;

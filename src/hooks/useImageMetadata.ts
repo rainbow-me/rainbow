@@ -1,23 +1,22 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import useDimensions from './useDimensions';
 import { ImageMetadata, updateImageMetadataCache } from '@/redux/imageMetadata';
 import { AppState } from '@/redux/store';
 import { position } from '@/styles';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export default function useImageMetadata(imageUrl: string | null) {
   const dispatch = useDispatch();
-  const { width: deviceWidth } = useDimensions();
 
-  const imageMetadataSelector = useCallback((state: AppState) => state.imageMetadata.imageMetadata[imageUrl!], [imageUrl]);
+  const imageMetadataSelector = useCallback((state: AppState) => state.imageMetadata.imageMetadata[imageUrl ?? ''], [imageUrl]);
 
   const selectorMeta = useSelector(imageMetadataSelector);
   const metadata = selectorMeta || null;
   const defaultMetadata = useMemo(
     () => ({
-      dimensions: position.sizeAsObject(deviceWidth - 30),
+      dimensions: position.sizeAsObject(DEVICE_WIDTH - 30),
     }),
-    [deviceWidth]
+    []
   );
 
   const isCached = !!metadata && !!(metadata as ImageMetadata)?.color;

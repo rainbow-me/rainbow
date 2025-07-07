@@ -7,7 +7,6 @@ import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import { useDimensions } from '@/hooks';
 import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { formatURLForDisplay } from '@/utils';
@@ -15,6 +14,8 @@ import { IS_ANDROID } from '@/env';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+
 export const ExternalLinkWarningSheetHeight = 380 + (IS_ANDROID ? 20 : 0);
 
 const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }) => ({
@@ -23,7 +24,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
 }));
 
 const ExternalLinkWarningSheet = () => {
-  const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
   const {
     params: { url, onClose },
@@ -43,7 +43,7 @@ const ExternalLinkWarningSheet = () => {
   }, [goBack, onClose, url]);
 
   return (
-    <Container deviceHeight={deviceHeight} height={ExternalLinkWarningSheetHeight} insets={insets}>
+    <Container deviceHeight={DEVICE_HEIGHT} height={ExternalLinkWarningSheetHeight} insets={insets}>
       <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={ExternalLinkWarningSheetHeight} scrollEnabled={false}>
         <Centered direction="column" height={ExternalLinkWarningSheetHeight} width="100%">
           <ColumnWithMargins

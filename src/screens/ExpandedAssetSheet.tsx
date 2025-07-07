@@ -4,12 +4,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CustomGasState, ChartExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,
@@ -31,13 +31,12 @@ const Container = styled(Centered).attrs({
 }));
 
 export default function ExpandedAssetSheet(props: any) {
-  const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
   const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET>>();
 
   return (
-    <Container deviceHeight={deviceHeight} height={params.longFormHeight} insets={insets}>
+    <Container deviceHeight={DEVICE_HEIGHT} height={params.longFormHeight} insets={insets}>
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {createElement(ScreenTypes[params.type], {

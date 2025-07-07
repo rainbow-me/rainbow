@@ -1,5 +1,4 @@
 import { IS_TEST } from '@/env';
-import { useDimensions } from '@/hooks';
 import * as lang from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -19,6 +18,7 @@ import { ListHeader, ListHeaderHeight } from '../list';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { H1, TruncatedText } from '../text';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -118,7 +118,6 @@ type AssetListHeaderProps = {
 } & Partial<ComponentProps<typeof ListHeader>>;
 
 const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalValue, isSticky = true, ...props }: AssetListHeaderProps) => {
-  const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfileInfo();
   const { navigate } = useNavigation();
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
@@ -130,7 +129,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
   const [textWidth, setTextWidth] = useState(0);
 
   const amountWidth = isLoadingUserAssets ? placeholderWidth + 16 : totalValue?.length * 15;
-  const maxWidth = deviceWidth - dropdownArrowWidth - amountWidth - 32;
+  const maxWidth = DEVICE_WIDTH - dropdownArrowWidth - amountWidth - 32;
 
   useEffect(() => {
     async function measure() {
@@ -157,7 +156,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
           <WalletSelectButtonWrapper>
             <WalletSelectButton
               accountName={accountName}
-              deviceWidth={deviceWidth}
+              deviceWidth={DEVICE_WIDTH}
               maxWidth={maxWidth}
               onChangeWallet={onChangeWallet}
               textWidth={textWidth}
@@ -178,7 +177,6 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
   }, [
     accountName,
     contextMenuOptions,
-    deviceWidth,
     isCoinListEdited,
     isLoadingUserAssets,
     maxWidth,

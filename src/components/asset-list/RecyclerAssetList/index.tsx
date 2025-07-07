@@ -15,10 +15,10 @@ import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@/entities';
 import { useCoinListEdited, useOpenFamilies, usePrevious, useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
-import { deviceUtils } from '@/utils';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -162,7 +162,7 @@ function RecyclerAssetList({
   sections,
   paddingBottom = 0,
   hideHeader,
-  renderAheadOffset = deviceUtils.dimensions.height,
+  renderAheadOffset = DEVICE_HEIGHT,
   showcase,
   disableStickyHeaders,
   disableAutoScrolling,
@@ -256,7 +256,7 @@ function RecyclerAssetList({
       // used in LayoutItemAnimator and auto-scroll logic above 👇
       const topMargin = nativeEvent.layout.y;
       const additionalPadding = 10;
-      setGlobalDeviceDimensions(deviceUtils.dimensions.height - topMargin - AssetListHeaderHeight - additionalPadding);
+      setGlobalDeviceDimensions(DEVICE_HEIGHT - topMargin - AssetListHeaderHeight - additionalPadding);
     },
     [setGlobalDeviceDimensions]
   );
@@ -429,7 +429,7 @@ function RecyclerAssetList({
         };
         const { visibleDuringCoinEdit, height } = element;
         // Set height of element using object created above 👇
-        dim.width = deviceUtils.dimensions.width;
+        dim.width = DEVICE_WIDTH;
         dim.height = isCoinListEdited && !visibleDuringCoinEdit ? 0 : height;
       }
     );

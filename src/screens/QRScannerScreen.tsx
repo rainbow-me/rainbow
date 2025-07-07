@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useIsEmulator } from 'react-native-device-info';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Header } from '@/components/header';
 import { Centered } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import { CameraDimmer, EmulatorPasteUriButton, QRCodeScanner } from '@/components/qrcode-scanner';
+import { CameraDimmer, QRCodeScanner } from '@/components/qrcode-scanner';
 import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
-import { useDimensions, useHardwareBack, useScanner } from '@/hooks';
+import { useHardwareBack, useScanner } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
@@ -18,6 +16,7 @@ import { useTheme } from '@/theme';
 import { useIsFocused } from '@react-navigation/native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import { useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const Background = styled(View)({
   backgroundColor: 'black',
@@ -33,17 +32,7 @@ const ScannerContainer = styled(Centered).attrs({
   overflow: 'hidden',
 });
 
-const ScannerHeader = styled(Header).attrs({
-  justify: 'space-between',
-  testID: 'scanner-header',
-})({
-  position: 'absolute',
-  top: 48,
-});
-
 export default function QRScannerScreen() {
-  const { width: deviceWidth } = useDimensions();
-  const { result: isEmulator } = useIsEmulator();
   const { navigate } = useNavigation();
   const scrollPosition = usePagerPosition();
   const { top: topInset } = useSafeAreaInsets();
@@ -104,7 +93,7 @@ export default function QRScannerScreen() {
       // @ts-expect-error Javascript Context
       scrollPosition?.value || 0,
       [0, 1],
-      [0, deviceWidth - 72]
+      [0, DEVICE_WIDTH - 72]
     );
 
     return {

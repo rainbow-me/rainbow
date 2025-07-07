@@ -1,11 +1,12 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { TextInputProps } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import Input from './Input';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Bleed, Column, Columns, Inline, Inset, Text, TextProps, useTextStyle } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import { IS_IOS } from '@/env';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const textSize: TextProps['size'] = '16px / 22px (Deprecated)';
 const textSizeNumeric = 16;
@@ -50,7 +51,6 @@ export default function InlineField({
   testID,
 }: InlineFieldProps) {
   const { colors } = useTheme();
-  const { width } = useDimensions();
 
   const paddingVertical = 17;
   const textStyle = useTextStyle({
@@ -77,9 +77,9 @@ export default function InlineField({
       minHeight: inputHeight + paddingVertical * 2,
       paddingBottom: inputProps?.multiline ? (ios ? 15 : 10) : 0,
       paddingTop: inputProps?.multiline ? (ios ? 15 : 10) : 0,
-      width: startsWith ? (ios ? 0.55 * width : 0.56 * width) : ios ? 0.6 * width : 0.61 * width,
+      width: startsWith ? (IS_IOS ? 0.55 * DEVICE_WIDTH : 0.56 * DEVICE_WIDTH) : IS_IOS ? 0.6 * DEVICE_WIDTH : 0.61 * DEVICE_WIDTH,
     }),
-    [textStyle, inputHeight, inputProps?.multiline, startsWith, width]
+    [textStyle, inputHeight, inputProps?.multiline, startsWith]
   );
 
   let keyboardType = inputProps?.keyboardType;

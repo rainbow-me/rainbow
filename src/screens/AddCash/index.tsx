@@ -5,8 +5,6 @@ import { useQuery } from '@tanstack/react-query';
 import wait from 'w2t';
 
 import { SheetHandle } from '@/components/sheet';
-import { deviceUtils } from '@/utils';
-import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
 import { IS_IOS } from '@/env';
 import { Box, Text, Separator, useForegroundColor, useBackgroundColor } from '@/design-system';
@@ -22,8 +20,8 @@ import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
 import { FiatProviderName } from '@/entities/f2c';
 import * as lang from '@/languages';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { DEVICE_HEIGHT, IS_NARROW_PHONE } from '@/utils/deviceUtils';
 
-const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = StatusBar.currentHeight || 0;
 
 const providerComponents = {
@@ -33,12 +31,11 @@ const providerComponents = {
 };
 
 export function AddCashSheet() {
-  const { isNarrowPhone } = useDimensions();
   const insets = useSafeAreaInsets();
   const accountAddress = useAccountAddress();
   const borderColor = useForegroundColor('separatorTertiary');
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
-  const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;
+  const sheetHeight = IS_IOS ? DEVICE_HEIGHT - insets.top : DEVICE_HEIGHT + statusBarHeight;
 
   const {
     isLoading,
@@ -108,7 +105,7 @@ export function AddCashSheet() {
           ...borders.buildRadiusAsObject('top', 30),
         }}
       >
-        <Box width="full" paddingTop="52px" paddingHorizontal="20px" paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}>
+        <Box width="full" paddingTop="52px" paddingHorizontal="20px" paddingBottom={{ custom: IS_NARROW_PHONE ? 15 : insets.bottom + 11 }}>
           <Box paddingHorizontal="20px">
             <Text size="26pt" weight="heavy" color="label" align="center">
               {lang.t(lang.l.wallet.add_cash_v2.sheet_title)}

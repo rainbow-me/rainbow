@@ -6,7 +6,6 @@ import { UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { arcClient } from '@/graphql';
 import { maybeSignUri } from '@/handlers/imgix';
-import { useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
@@ -30,6 +29,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import ImgixImage from '../../components/images/ImgixImage';
 import { SheetActionButton, SheetActionButtonRow, SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurIntensity: 100,
@@ -64,7 +64,6 @@ type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 
 const PoapSheet = () => {
   const accountAddress = useAccountAddress();
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -211,13 +210,13 @@ const PoapSheet = () => {
   return (
     <>
       {IS_IOS && (
-        <BlurWrapper height={deviceHeight} width={deviceWidth}>
+        <BlurWrapper height={DEVICE_HEIGHT} width={DEVICE_WIDTH}>
           <BackgroundImage>
             <ImgixImage
               source={{ uri: imageUrl }}
               resizeMode="cover"
               size={CardSize}
-              style={{ height: deviceHeight - 200, width: deviceWidth }}
+              style={{ height: DEVICE_HEIGHT - 200, width: DEVICE_WIDTH }}
             />
             <BackgroundBlur />
           </BackgroundImage>
@@ -235,7 +234,7 @@ const PoapSheet = () => {
           <Box
             width="full"
             height={{
-              custom: deviceHeight - (IS_IOS ? 100 : 50) - (errorCode ? 24 : 0),
+              custom: DEVICE_HEIGHT - (IS_IOS ? 100 : 50) - (errorCode ? 24 : 0),
             }}
             justifyContent="center"
             alignItems="center"

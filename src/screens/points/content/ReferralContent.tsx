@@ -19,7 +19,7 @@ import { IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { useAccountAccentColor, useDimensions, useKeyboardHeight } from '@/hooks';
+import { useAccountAccentColor, useKeyboardHeight } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { useNavigation } from '@/navigation';
@@ -36,6 +36,7 @@ import { Keyboard, TextInput } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 const keyboardSpringConfig = {
   damping: 500,
@@ -65,7 +66,6 @@ export function ReferralContent() {
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const { width: deviceWidth } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const { data: externalReferralCode } = usePointsReferralCode();
 
@@ -235,7 +235,7 @@ export function ReferralContent() {
             justifyContent="center"
             paddingHorizontal={{ custom: 60 }}
             style={{ flex: 1 }}
-            width={{ custom: deviceWidth }}
+            width={{ custom: DEVICE_WIDTH }}
           >
             <Stack space="16px" alignHorizontal="center">
               <Stack space="32px" alignHorizontal="center">
