@@ -447,7 +447,7 @@ export const createNftsStore = (address: Address | string) =>
         if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
           logger.debug(`🔍 [NFT Store] Processing showcase/hidden collection: ${normalizedCollectionId}`);
           let needsFetch = false;
-          const { collectionIds } = getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
+          const { collectionIds } = await getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
           logger.debug(`🔍 [NFT Store] Collection IDs for showcase/hidden: ${collectionIds}`);
 
           if (!collectionIds) {

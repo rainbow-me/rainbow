@@ -185,7 +185,7 @@ export async function pruneStaleAndClosedCollections({
     logger.debug(`[🔓 pruneStaleAndClosedCollections] Open collections: ${Object.keys(openCollections)}`);
   }
 
-  const { showcaseCollectionIds, hiddenCollectionIds } = getHiddenAndShowcaseCollectionIds(address);
+  const { showcaseCollectionIds, hiddenCollectionIds } = await getHiddenAndShowcaseCollectionIds(address);
 
   if (ENABLE_DEEPER_DEBUG_LOGS) {
     logger.debug(`[⭐ pruneStaleAndClosedCollections] Showcase collection IDs: ${Array.from(showcaseCollectionIds)}`);
