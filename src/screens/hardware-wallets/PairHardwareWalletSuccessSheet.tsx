@@ -2,15 +2,13 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { Box, Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { CheckmarkAnimation } from '@/components/animations/CheckmarkAnimation';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 
 export const PairHardwareWalletSuccessSheet = () => {
-  const { navigate } = useNavigation();
-
   return (
     <Layout>
       <Inset horizontal="36px">
@@ -28,7 +26,7 @@ export const PairHardwareWalletSuccessSheet = () => {
       <Box paddingBottom="36px">
         <CheckmarkAnimation />
       </Box>
-      <ActionButton label={i18n.t(i18n.l.button.next)} onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)} />
+      <ActionButton label={i18n.t(i18n.l.button.next)} onPress={() => Navigation.handleAction(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)} />
     </Layout>
   );
 };

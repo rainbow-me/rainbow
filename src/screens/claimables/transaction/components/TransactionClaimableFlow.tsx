@@ -1,8 +1,8 @@
 import { Box } from '@/design-system';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { ClaimableType } from '@/resources/addys/claimables/types';
-import { useWalletsStore, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { watchingAlert } from '@/utils';
 import React, { useCallback, useMemo } from 'react';
 import { ClaimButton } from '../../shared/components/ClaimButton';
@@ -25,7 +25,6 @@ export function TransactionClaimableFlow() {
     swapEnabled,
     requiresSwap,
   } = useTransactionClaimableContext();
-  const { goBack } = useNavigation();
   const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const type = claimable.type.replaceAll('_', '-');
@@ -98,10 +97,10 @@ export function TransactionClaimableFlow() {
         setClaimStatus('claiming');
         claim();
       } else if (claimStatus === 'success' || claimStatus === 'pending' || claimStatus === 'unrecoverableError') {
-        goBack();
+        Navigation.goBack();
       }
     }
-  }, [claim, claimStatus, goBack, isReadOnlyWallet, setClaimStatus]);
+  }, [claim, claimStatus, isReadOnlyWallet, setClaimStatus]);
 
   const title = useMemo(() => {
     switch (type) {

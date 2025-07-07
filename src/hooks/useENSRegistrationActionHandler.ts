@@ -1,5 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { useNavigation } from '@react-navigation/native';
+import { Navigation } from '@/navigation';
 import { useCallback, useEffect, useRef } from 'react';
 import { Image } from 'react-native-image-crop-picker';
 import { useRecoilValue } from 'recoil';
@@ -94,7 +94,6 @@ const formatENSActionParams = (registrationParameters: RegistrationParameters): 
 };
 
 const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step, sendReverseRecord = false, yearsDuration = 1 }) => {
-  const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
   const isHardwareWallet = useIsHardwareWallet();
   const accountAddress = useAccountAddress();
@@ -160,12 +159,12 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       await executeENSRap(wallet, ENSRapActionType.commitENS, commitEnsRegistrationParameters, () => {
         if (isHardwareWallet) {
-          goBack();
+          Navigation.goBack();
         }
         callback();
       });
     },
-    [registrationParameters, duration, accountAddress, isHardwareWallet, goBack]
+    [registrationParameters, duration, accountAddress, isHardwareWallet]
   );
 
   const speedUpCommitAction: ActionTypes[typeof REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION] = useCallback(
@@ -175,13 +174,13 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
       const tx = getPendingTransactionByHash(commitTransactionHash || '');
       if (commitTransactionHash && tx) {
         if (IS_IOS) {
-          navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+          Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_SHEET, {
             accentColor,
             tx: tx as PendingTransaction,
             type: 'speed_up',
           });
         } else {
-          navigate(Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET, {
+          Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET, {
             accentColor,
             tx: tx as PendingTransaction,
             type: 'speed_up',
@@ -189,7 +188,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
         }
       }
     },
-    [getPendingTransactionByHash, navigate, registrationParameters?.commitTransactionHash]
+    [getPendingTransactionByHash, registrationParameters?.commitTransactionHash]
   );
 
   const registerAction: ActionTypes[typeof REGISTRATION_STEPS.REGISTER] = useCallback(

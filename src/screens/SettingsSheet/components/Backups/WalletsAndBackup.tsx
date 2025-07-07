@@ -19,7 +19,7 @@ import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RainbowAccount, createWallet } from '@/model/wallet';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
@@ -84,7 +84,6 @@ const WalletPill = ({ account }: WalletPillProps) => {
 };
 
 export const WalletsAndBackup = () => {
-  const { navigate } = useNavigation();
   const wallets = useWallets();
   const { name: routeName } = useRoute();
 
@@ -145,14 +144,14 @@ export const WalletsAndBackup = () => {
   }, [createBackup]);
 
   const onViewCloudBackups = useCallback(async () => {
-    navigate(Routes.VIEW_CLOUD_BACKUPS, {
+    Navigation.handleAction(Routes.VIEW_CLOUD_BACKUPS, {
       backups,
       title: 'My Cloud Backups',
     });
-  }, [backups, navigate]);
+  }, [backups]);
 
   const onCreateNewSecretPhrase = useCallback(async () => {
-    navigate(Routes.MODAL_SCREEN, {
+    Navigation.handleAction(Routes.MODAL_SCREEN, {
       type: 'new_wallet_group',
       numWalletGroups: walletTypeCount.phrase,
       onCloseModal: async ({ name }: { name: string }) => {
@@ -187,15 +186,15 @@ export const WalletsAndBackup = () => {
         }
       },
     });
-  }, [navigate, walletTypeCount.phrase, backupProvider]);
+  }, [walletTypeCount.phrase, backupProvider]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
-    navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
+    Navigation.handleAction(Routes.LEARN_WEB_VIEW_SCREEN, {
       ...backupsCard,
       displayType: 'square',
       routeName,
     });
-  }, [navigate, routeName]);
+  }, [routeName]);
 
   const onNavigateToWalletView = useCallback(
     (walletId: string, name: string) => {
@@ -211,13 +210,13 @@ export const WalletsAndBackup = () => {
           }) || abbreviations.address(wallet.addresses[0].address, 4, 4);
       }
 
-      navigate(Routes.VIEW_WALLET_BACKUP, {
+      Navigation.handleAction(Routes.VIEW_WALLET_BACKUP, {
         imported: wallet?.imported ?? false,
         title,
         walletId,
       });
     },
-    [navigate, wallets]
+    [wallets]
   );
 
   const { status: iconStatusType, text } = useMemo<{ status: StatusType; text: string }>(() => {
@@ -716,7 +715,7 @@ export const WalletsAndBackup = () => {
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="⚠️" isLink />}
               onPress={() => {
-                navigate(Routes.MODAL_SCREEN, {
+                Navigation.handleAction(Routes.MODAL_SCREEN, {
                   type: 'dev_test_backup',
                 });
               }}

@@ -5,7 +5,7 @@ import { StatusBar } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
 import WiewWalletBackup from './components/Backups/ViewWalletBackup';
@@ -25,17 +25,16 @@ const Stack = createStackNavigator();
 
 export function SettingsSheet() {
   const { height: deviceHeight } = useDimensions();
-  const { goBack, navigate } = useNavigation();
   const { top } = useSafeAreaInsets();
   const { colors } = useTheme();
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
-    navigate(section);
+    Navigation.handleAction(section);
   };
 
   const renderHeaderRight = useCallback(
-    () => <ModalHeaderButton label={lang.t('settings.done')} onPress={goBack} side="right" />,
-    [goBack]
+    () => <ModalHeaderButton label={lang.t('settings.done')} onPress={Navigation.goBack} side="right" />,
+    []
   );
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
@@ -65,7 +64,7 @@ export function SettingsSheet() {
             >
               {() => (
                 <SettingsSection
-                  onCloseModal={goBack}
+                  onCloseModal={Navigation.goBack}
                   onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon.key)}
                   onPressBackup={sectionOnPressFactory(SettingsPages.backup.key)}
                   onPressCurrency={sectionOnPressFactory(SettingsPages.currency.key)}

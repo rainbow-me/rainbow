@@ -3,9 +3,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
 import { useChartDataLabels, useColorForAsset } from '@/hooks';
 import { RouteProp, useRoute } from '@react-navigation/native';
-
-import { useNavigation } from '@/navigation';
-
+import { Navigation } from '@/navigation';
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 import { DEFAULT_CHART_TYPE } from '@/redux/charts';
 import { ChartData, usePriceChart } from './useChartInfo';
@@ -40,14 +38,12 @@ function useJumpingForm(
   shortHeightWithChart?: number,
   shortHeightWithoutChart?: number
 ) {
-  const { setOptions } = useNavigation();
-
   const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
 
   useEffect(() => {
     if (!isLong) {
       if (typeof heightWithoutChart === 'number' && !isNaN(heightWithoutChart)) {
-        setOptions({
+        Navigation.setOptions({
           longFormHeight: heightWithoutChart,
           ...(shortHeightWithoutChart && {
             shortFormHeight: shortHeightWithoutChart,
@@ -56,7 +52,7 @@ function useJumpingForm(
       }
     } else {
       if (typeof heightWithChart === 'number' && !isNaN(heightWithChart)) {
-        setOptions({
+        Navigation.setOptions({
           longFormHeight: heightWithChart,
           ...(shortHeightWithChart && {
             shortFormHeight: shortHeightWithChart,
@@ -64,7 +60,7 @@ function useJumpingForm(
         });
       }
     }
-  }, [heightWithChart, heightWithoutChart, isLong, setOptions, jumpToShort, jumpToLong, shortHeightWithoutChart, shortHeightWithChart]);
+  }, [heightWithChart, heightWithoutChart, isLong, jumpToShort, jumpToLong, shortHeightWithoutChart, shortHeightWithChart]);
 }
 
 export default function useChartThrottledPoints({

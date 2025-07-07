@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Stack } from '@/design-system';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import React, { useState } from 'react';
@@ -16,7 +16,6 @@ import { textColors } from '../../constants';
 export const Review = () => {
   const { accountENS } = useAccountProfileInfo();
   const accountAddress = useAccountAddress();
-  const { goBack } = useNavigation();
 
   const [showDoneButton, setShowDoneButton] = useState(false);
 
@@ -74,7 +73,7 @@ export const Review = () => {
             label={i18n.t(i18n.l.points.console.complete_onboarding)}
             onPress={() => {
               analytics.track(analytics.event.pointsOnboardingScreenPressedDoneButton);
-              goBack();
+              Navigation.goBack();
             }}
           />
         </Bleed>

@@ -1,4 +1,4 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useEffect } from 'react';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import { SheetHandle } from '../components/sheet';
@@ -8,10 +8,10 @@ import { UniqueAsset } from '@/entities';
 import { useWalletSectionsData } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { Navigation } from '@/navigation';
 
 export default function SelectUniqueTokenSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_UNIQUE_TOKEN_SHEET>>();
-  const { goBack } = useNavigation();
   const { layout } = useContext(ModalContext) || {};
 
   useEffect(() => {
@@ -21,9 +21,9 @@ export default function SelectUniqueTokenSheet() {
   const handlePressUniqueToken = useCallback(
     (asset: UniqueAsset) => {
       params.onSelect?.(asset);
-      goBack();
+      Navigation.goBack();
     },
-    [goBack, params]
+    [params]
   );
   const { briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({
     type: 'select-nft',

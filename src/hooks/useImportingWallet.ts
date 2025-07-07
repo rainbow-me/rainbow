@@ -15,7 +15,7 @@ import { fetchReverseRecord } from '@/handlers/ens';
 import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
 import { walletInit } from '@/model/wallet';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
@@ -33,7 +33,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const accountAddress = useAccountAddress();
   const wallets = useWallets();
 
-  const { navigate, goBack, getParent: dangerouslyGetParent } = useNavigation<typeof Routes.MODAL_SCREEN>();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState('');
@@ -59,8 +58,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     setBusy(false);
     walletLoadingStore.setState({ loadingState: null });
     // Return to previous screen on failure
-    goBack();
-  }, [goBack]);
+    Navigation.goBack();
+  }, []);
 
   const handleSetSeedPhrase = useCallback(
     (text: string) => {
@@ -85,7 +84,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           Keyboard.dismiss();
         }
 
-        navigate(Routes.MODAL_SCREEN, {
+        Navigation.handleAction(Routes.MODAL_SCREEN, {
           actionType: 'Import',
           additionalPadding: true,
           address,
@@ -103,7 +102,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         importWallet(typeof forceColor === 'number' ? forceColor : null, name, avatarUrl ?? undefined);
       }
     },
-    [navigate, showImportModal]
+    [showImportModal]
   );
 
   const handlePressImportButton = useCallback(
@@ -301,12 +300,11 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           previousWalletCount === 0
         );
 
-        // Dismiss the ADD_WALLET_NAVIGATOR modal stack
-        dangerouslyGetParent?.()?.goBack();
+        Navigation.getParent()?.goBack();
       } catch (error) {
         logger.error(new RainbowError('[useImportingWallet]: Error navigating to wallet screen'), { error });
         try {
-          goBack();
+          Navigation.goBack();
         } catch (fallbackError) {
           logger.error(new RainbowError('[useImportingWallet]: Error with fallback navigation'), { fallbackError });
         }
@@ -409,8 +407,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
     profilesEnabled,
     backupProvider,
     resetOnFailure,
-    dangerouslyGetParent,
-    goBack,
   ]);
 
   return {

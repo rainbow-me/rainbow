@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Border, Box, Text, TextShadow, globalColors } from '@/design-system';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { AirdropClaimable, BalancePill } from '@/screens/Airdrops/AirdropsSheet';
@@ -20,10 +20,9 @@ const COIN_ROW_HEIGHT = 40;
 
 export const ClaimContent = memo(function ClaimContent({ claimable }: { claimable: RainbowClaimable }) {
   const { accentColors } = useExpandedAssetSheetContext();
-  const { navigate } = useNavigation();
 
   const onPressClaim = () => {
-    navigate(Routes.CLAIM_AIRDROP_SHEET, {
+    Navigation.handleAction(Routes.CLAIM_AIRDROP_SHEET, {
       claimable,
       hideViewTokenButton: true,
     });

@@ -1,4 +1,4 @@
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { RootStackParamList } from '@/navigation/types';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
@@ -16,7 +16,6 @@ enum WalletLoadingStates {
 
 export const useInitializeWalletAndSetParams = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_SCREEN>>();
-  const { setParams } = useNavigation<typeof Routes.WALLET_SCREEN>();
 
   const walletState = useRef(WalletLoadingStates.IDLE);
 
@@ -32,7 +31,7 @@ export const useInitializeWalletAndSetParams = () => {
       });
 
       walletState.current = WalletLoadingStates.INITIALIZED;
-      if (shouldCreateFirstWallet) setParams({ emptyWallet: false });
+      if (shouldCreateFirstWallet) Navigation.setParams<typeof Routes.WALLET_SCREEN>({ emptyWallet: false });
 
       setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {
@@ -49,5 +48,5 @@ export const useInitializeWalletAndSetParams = () => {
       // We run the migrations only once on app launch
       initializeAndSetParams();
     }
-  }, [params, setParams]);
+  }, [params]);
 };

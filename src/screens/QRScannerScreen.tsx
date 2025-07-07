@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useIsEmulator } from 'react-native-device-info';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Header } from '@/components/header';
 import { Centered } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import { CameraDimmer, EmulatorPasteUriButton, QRCodeScanner } from '@/components/qrcode-scanner';
+import { CameraDimmer, QRCodeScanner } from '@/components/qrcode-scanner';
 import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
 import { useDimensions, useHardwareBack, useScanner } from '@/hooks';
-import Navigation from '@/navigation/Navigation';
+import { useNavigation, Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
@@ -33,17 +31,9 @@ const ScannerContainer = styled(Centered).attrs({
   overflow: 'hidden',
 });
 
-const ScannerHeader = styled(Header).attrs({
-  justify: 'space-between',
-  testID: 'scanner-header',
-})({
-  position: 'absolute',
-  top: 48,
-});
-
 export default function QRScannerScreen() {
   const { width: deviceWidth } = useDimensions();
-  const { result: isEmulator } = useIsEmulator();
+  const { addListener, dispatch } = useNavigation();
   const scrollPosition = usePagerPosition();
   const { top: topInset } = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -52,7 +42,6 @@ export default function QRScannerScreen() {
   const isForeground = useIsForeground();
   const [cameraActive, setCameraActive] = useState(true);
   const isActive = isFocused && isForeground && hasPermission;
-  const navigation = useNavigation();
 
   const [flashEnabled, setFlashEnabled] = useState(false);
 
@@ -75,17 +64,17 @@ export default function QRScannerScreen() {
 
   // cleanup for swiping away
   useEffect(() => {
-    const unsubscribeBeforeRemove = navigation.addListener('beforeRemove', e => {
+    const unsubscribeBeforeRemove = addListener('beforeRemove', e => {
       e.preventDefault();
       setCameraActive(false);
       setFlashEnabled(false);
       setTimeout(() => {
-        navigation.dispatch(e.data.action);
+        dispatch(e.data.action);
       }, 0);
     });
 
     return unsubscribeBeforeRemove;
-  }, [navigation]);
+  }, [addListener, dispatch]);
 
   // cleanup for using the back button
   const handleCloseScanner = useCallback(() => {

@@ -22,7 +22,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountAccentColor, useDimensions, useKeyboardHeight } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { usePointsReferralCode } from '@/resources/points';
@@ -59,7 +59,6 @@ const parseReferralCodeFromLink = (code: string) => {
 export function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
-  const { goBack, navigate } = useNavigation();
   const isReadOnlyWallet = useIsReadOnlyWallet();
 
   const label = useForegroundColor('label');
@@ -316,7 +315,9 @@ export function ReferralContent() {
                 <ActionButton
                   color={accentColor}
                   label={i18n.t(i18n.l.points.referral.get_started)}
-                  onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked }))}
+                  onPress={() =>
+                    isReadOnlyWallet ? watchingAlert() : Navigation.handleAction(Routes.CONSOLE_SHEET, { referralCode, deeplinked })
+                  }
                 />
               </Box>
             </Row>
@@ -331,7 +332,7 @@ export function ReferralContent() {
                         setStatus('incomplete');
                         setDeeplinked(false);
                         setGoingBack(true);
-                        goBack();
+                        Navigation.goBack();
                       }}
                     >
                       <Text color={{ custom: accentColor }} size="20pt" weight="bold">

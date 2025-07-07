@@ -5,7 +5,7 @@ import { IS_ANDROID } from '@/env';
 import React, { useCallback } from 'react';
 
 import { useDimensions } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 
 import WalletTypes from '@/helpers/walletTypes';
 import * as i18n from '@/languages';
@@ -20,7 +20,6 @@ const MIN_HEIGHT = 740;
 const SecretWarningPage = () => {
   const { height: deviceHeight } = useDimensions();
   const wallets = useWallets();
-  const { navigate } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SECRET_WARNING>>();
 
   const { walletId, privateKeyAddress, isBackingUp, backupType, title } = params;
@@ -32,7 +31,7 @@ const SecretWarningPage = () => {
       : i18n.t(i18n.l.back_up.secret.private_key_title);
 
   const handleViewSecretPhrase = useCallback(() => {
-    navigate(Routes.SHOW_SECRET, {
+    Navigation.handleAction(Routes.SHOW_SECRET, {
       title,
       privateKeyAddress,
       isBackingUp,
@@ -40,7 +39,7 @@ const SecretWarningPage = () => {
       walletId,
       secretText,
     });
-  }, [navigate, privateKeyAddress, title, secretText, walletId, isBackingUp, backupType]);
+  }, [privateKeyAddress, title, secretText, walletId, isBackingUp, backupType]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.

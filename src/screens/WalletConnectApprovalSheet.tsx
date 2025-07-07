@@ -14,11 +14,11 @@ import { Box, Columns, Inline, Column as RDSColumn, Text, TextProps } from '@/de
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
-import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
+import { networksMenuItems } from '@/helpers/walletConnectNetworks';
 import { useAccountSettings } from '@/hooks';
 import * as lang from '@/languages';
 import { RainbowWallet } from '@/model/wallet';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useDappMetadata } from '@/resources/metadata/dapp';
@@ -125,11 +125,9 @@ const NetworkPill = ({ chainIds, onPress }: { chainIds: ChainId[]; onPress: () =
 
 export function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
-  const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_APPROVAL_SHEET>>();
   const { chainId: settingsChainId } = useAccountSettings();
   const accountAddress = useAccountAddress();
-  const { navigate } = useNavigation();
   const selectedWallet = useSelectedWallet();
   const handled = useRef(false);
   const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet | null }>(() => {
@@ -229,11 +227,6 @@ export function WalletConnectApprovalSheet() {
     };
   }, [approvalChainId, colors, isDarkMode]);
 
-  const handleOnPressNetworksMenuItem = useCallback(
-    (chainId: string) => setApprovalChainId(Number(chainId?.replace(NETWORK_MENU_ACTION_KEY_FILTER, ''))),
-    [setApprovalChainId]
-  );
-
   const handleSuccess = useCallback(
     (success = false) => {
       if (callback) {
@@ -267,15 +260,15 @@ export function WalletConnectApprovalSheet() {
 
   const handleConnect = useCallback(() => {
     handled.current = true;
-    goBack();
+    Navigation.goBack();
     handleSuccess(true);
-  }, [handleSuccess, goBack]);
+  }, [handleSuccess]);
 
   const handleCancel = useCallback(() => {
     handled.current = true;
-    goBack();
+    Navigation.goBack();
     handleSuccess(false);
-  }, [handleSuccess, goBack]);
+  }, [handleSuccess]);
 
   const handlePressChangeWallet = useCallback(() => {
     type === WalletConnectApprovalSheetType.connect &&
@@ -283,11 +276,11 @@ export function WalletConnectApprovalSheet() {
         currentAccountAddress: approvalAccount.address,
         onChangeWallet: (address, wallet) => {
           setApprovalAccount({ address, wallet });
-          goBack();
+          Navigation.goBack();
         },
         watchOnly: true,
       });
-  }, [approvalAccount.address, goBack, type]);
+  }, [approvalAccount.address, type]);
 
   useEffect(() => {
     const waitingTime = (Date.now() - receivedTimestamp) / 1000;
@@ -302,12 +295,12 @@ export function WalletConnectApprovalSheet() {
 
   useEffect(() => {
     if (!timedOut) return;
-    goBack();
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.goBack();
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'failed_wc_connection',
     });
     return;
-  }, [goBack, navigate, timedOut]);
+  }, [timedOut]);
 
   const menuItems = useMemo(() => networksMenuItems(), []);
   const sheetHeight = type === WalletConnectApprovalSheetType.connect ? 408 : 438;

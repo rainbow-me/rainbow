@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { Centered } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { Colors } from '../styles/colors';
@@ -25,7 +25,6 @@ const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: { colors: C
 
 const WalletConnectRedirectSheet = () => {
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_REDIRECT_SHEET>>();
 
   useEffect(() => {
@@ -37,8 +36,8 @@ const WalletConnectRedirectSheet = () => {
 
   const handleOnPress = useCallback(() => {
     params?.cb?.();
-    goBack();
-  }, [goBack, params]);
+    Navigation.goBack();
+  }, [params]);
 
   return (
     <Sheet hideHandle>

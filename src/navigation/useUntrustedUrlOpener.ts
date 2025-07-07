@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import URL from 'url-parse';
-import { useNavigation } from './Navigation';
+import { Navigation } from '@/navigation';
 import Routes from './routesNames';
 import { openInBrowser } from '@/utils/openInBrowser';
 
@@ -24,18 +24,13 @@ const trustedDomains = [
 ];
 
 export default function useUntrustedUrlOpener(): (url: string) => void {
-  const { navigate } = useNavigation();
+  return useCallback((url: string) => {
+    const { hostname } = new URL(url);
 
-  return useCallback(
-    (url: string) => {
-      const { hostname } = new URL(url);
-
-      if (trustedDomains.some(trustedDomain => hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`))) {
-        openInBrowser(url);
-      } else {
-        navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
-      }
-    },
-    [navigate]
-  );
+    if (trustedDomains.some(trustedDomain => hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`))) {
+      openInBrowser(url);
+    } else {
+      Navigation.handleAction(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
+    }
+  }, []);
 }

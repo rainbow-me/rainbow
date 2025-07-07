@@ -5,7 +5,7 @@ import Divider from '@/components/Divider';
 import { Row } from '@/components/layout';
 import { Sheet, SheetHandleFixedToTop, SheetTitle } from '@/components/sheet';
 import { WalletConnectV2ListItem, WALLET_CONNECT_LIST_ITEM_HEIGHT } from '@/components/walletconnect-list/WalletConnectV2ListItem';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 import { useFocusEffect } from '@react-navigation/native';
@@ -23,7 +23,6 @@ const SheetTitleWithPadding = styled(SheetTitle)({
 });
 
 export default function ConnectedDappsSheet() {
-  const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { sessions, reload } = useWalletConnectV2Sessions();
@@ -39,11 +38,11 @@ export default function ConnectedDappsSheet() {
 
   useEffect(() => {
     if (numOfRows === 0 && focused) {
-      goBack();
+      Navigation.goBack();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goBack, numOfRows]);
+  }, [numOfRows]);
 
   return (
     <Sheet borderRadius={30} hideHandle noInsets paddingBottom={0} paddingTop={0}>

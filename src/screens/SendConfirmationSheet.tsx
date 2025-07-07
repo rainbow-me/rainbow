@@ -20,7 +20,7 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useInteractionsCount } from '@/resources/addys/interactions';
@@ -183,7 +183,6 @@ export const SendConfirmationSheet = () => {
   const { isDarkMode } = useColorMode();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
-  const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
   const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeAreaInsets();
@@ -322,17 +321,17 @@ export const SendConfirmationSheet = () => {
   );
 
   const handleENSConfigurationPress = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'ens_configuration',
     });
-  }, [navigate]);
+  }, []);
 
   const handleL2DisclaimerPress = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'network',
       chainId,
     });
-  }, [chainId, navigate]);
+  }, [chainId]);
 
   const nativeDisplayAmount = useMemo(
     () => convertAmountToNativeDisplay(amountDetails.nativeAmount, nativeCurrency),
@@ -349,8 +348,8 @@ export const SendConfirmationSheet = () => {
   const shouldShowChecks = isL2 && !isSendingToUserAccount && lessThanThreeInteractions;
 
   useEffect(() => {
-    setParams({ shouldShowChecks });
-  }, [setParams, shouldShowChecks]);
+    Navigation.setParams<typeof Routes.SEND_SHEET>({ shouldShowChecks });
+  }, [shouldShowChecks]);
 
   const canSubmit =
     isSufficientGas && isValidGas && (!shouldShowChecks || checkboxes.filter(check => check.checked === false).length === 0);
@@ -442,14 +441,14 @@ export const SendConfirmationSheet = () => {
       return `${amountDetails.assetAmount} ${asset.symbol}`;
     }
     return '';
-  }, [asset, isNft, amountDetails]);
+  }, [asset, amountDetails]);
 
   const assetSymbolForDisclaimer = useMemo(() => {
     if (assetIsParsedAddressAsset(asset)) {
       return asset.symbol;
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const getMessage = () => {
     let message;
@@ -467,7 +466,7 @@ export const SendConfirmationSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={contentHeight} insets={insets}>
-      {IS_IOS && <TouchableBackdrop onPress={goBack} />}
+      {IS_IOS && <TouchableBackdrop onPress={Navigation.goBack} />}
 
       <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
         <SheetTitle>{lang.t('wallet.transaction.sending_title')}</SheetTitle>

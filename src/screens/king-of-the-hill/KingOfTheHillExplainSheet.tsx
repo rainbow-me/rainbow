@@ -12,7 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Extrapolation, interpolate, SharedValue, useDerivedValue } from 'react-native-reanimated';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import chroma from 'chroma-js';
 import { Canvas, LinearGradient as SkiaLinearGradient, RadialGradient, vec, Circle, Group, Blur } from '@shopify/react-native-skia';
 import { GradientText } from '@/components/text';
@@ -236,7 +236,6 @@ const Step = memo(function Step({
 
 const PanelContent = memo(function PanelContent() {
   const { goForward, ref } = usePagerNavigation();
-  const { goBack: dismissSheet } = useNavigation();
 
   const currentPageIndex = useDerivedValue(() => {
     return ref.current?.currentPageIndex.value ?? 0;
@@ -254,9 +253,9 @@ const PanelContent = memo(function PanelContent() {
     if (roundedCurrentPageIndex.value < STEPS.length - 1) {
       goForward();
     } else {
-      dismissSheet();
+      Navigation.goBack();
     }
-  }, [dismissSheet, goForward, roundedCurrentPageIndex]);
+  }, [goForward, roundedCurrentPageIndex]);
 
   return (
     <Box

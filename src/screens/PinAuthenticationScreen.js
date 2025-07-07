@@ -12,7 +12,7 @@ import {
   saveAuthTimelock,
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useDimensions, useShakeAnimation } from '@/hooks';
 import { useBlockBackButton } from '@/hooks/useBlockBackButton';
@@ -35,7 +35,6 @@ const TIMELOCK_INTERVAL_MINUTES = 5;
 const PinAuthenticationScreen = () => {
   const { params } = useRoute();
   useBlockBackButton(!params.validPin);
-  const { goBack, setParams } = useNavigation();
   const [errorAnimation, onShake] = useShakeAnimation();
 
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
@@ -70,7 +69,7 @@ const PinAuthenticationScreen = () => {
         params.onCancel();
       }
     };
-  }, [params, setParams]);
+  }, [params]);
 
   useEffect(() => {
     const checkTimelock = async () => {
@@ -95,7 +94,7 @@ const PinAuthenticationScreen = () => {
           );
           params.onCancel();
           finished.current = true;
-          goBack();
+          Navigation.goBack();
         } else {
           await saveAuthTimelock(null);
           await savePinAuthAttemptsLeft(null);
@@ -104,7 +103,7 @@ const PinAuthenticationScreen = () => {
     };
 
     checkTimelock();
-  }, [goBack, params]);
+  }, [params]);
 
   useEffect(() => {
     if (attemptsLeft === 0) {
@@ -118,9 +117,9 @@ const PinAuthenticationScreen = () => {
       saveAuthTimelock(Date.now() + TIMELOCK_INTERVAL_MINUTES * 60 * 1000);
       params.onCancel();
       finished.current = true;
-      goBack();
+      Navigation.goBack();
     }
-  }, [attemptsLeft, goBack, params]);
+  }, [attemptsLeft, params]);
 
   const handleNumpadPress = useCallback(
     newValue => {
@@ -160,7 +159,7 @@ const PinAuthenticationScreen = () => {
               params.onSuccess(nextValue);
               finished.current = true;
               setTimeout(() => {
-                goBack();
+                Navigation.goBack();
               }, 300);
             }
           } else if (actionType === 'creation') {
@@ -186,7 +185,7 @@ const PinAuthenticationScreen = () => {
               params.onSuccess(nextValue);
               finished.current = true;
               setTimeout(() => {
-                goBack();
+                Navigation.goBack();
               }, 300);
             }
           }
@@ -195,7 +194,7 @@ const PinAuthenticationScreen = () => {
         return nextValue;
       });
     },
-    [actionType, attemptsLeft, goBack, initialPin, onShake, params, isLoading]
+    [actionType, attemptsLeft, initialPin, onShake, params, isLoading]
   );
 
   const { colors } = useTheme();

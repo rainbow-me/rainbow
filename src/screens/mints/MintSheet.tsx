@@ -27,7 +27,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadPrivateKey } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
@@ -132,7 +132,6 @@ const MintSheet = () => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const isHardwareWallet = useIsHardwareWallet();
@@ -459,7 +458,7 @@ const MintSheet = () => {
                   quantity,
                   priceInEth: mintPriceAmount,
                 });
-                navigate(Routes.PROFILE_SCREEN);
+                Navigation.handleAction(Routes.PROFILE_SCREEN);
                 setMintStatus('minted');
               }
             });
@@ -489,7 +488,6 @@ const MintSheet = () => {
     mintCollection.publicMintInfo?.price?.currency?.decimals,
     mintCollection.publicMintInfo?.price?.currency?.name,
     mintPriceAmount,
-    navigate,
     quantity,
   ]);
 

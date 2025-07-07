@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useENSRegistration } from '.';
 import { ENSRegistrationState } from '@/entities';
 import { REGISTRATION_MODES } from '@/helpers/ens';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { removeExpiredRegistrations } from '@/redux/ensRegistration';
 import { AppState } from '@/redux/store';
 import Routes from '@/navigation/routesNames';
@@ -14,7 +14,6 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 export default function useENSPendingRegistrations() {
   const accountAddress = useAccountAddress();
   const { removeRegistrationByName, startRegistration } = useENSRegistration();
-  const { navigate } = useNavigation();
   const dispatch = useDispatch();
 
   const { pendingRegistrations, accountRegistrations } = useSelector(({ ensRegistration }: AppState) => {
@@ -57,10 +56,10 @@ export default function useENSPendingRegistrations() {
     (name: string) => {
       startRegistration(name, REGISTRATION_MODES.CREATE);
       setTimeout(() => {
-        navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, { name });
+        Navigation.handleAction(Routes.ENS_CONFIRM_REGISTER_SHEET, { name });
       }, 100);
     },
-    [navigate, startRegistration]
+    [startRegistration]
   );
 
   return {

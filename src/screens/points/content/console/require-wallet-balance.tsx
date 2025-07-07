@@ -1,7 +1,7 @@
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Stack } from '@/design-system';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
@@ -16,7 +16,6 @@ import { textColors } from '../../constants';
 export const RequireWalletBalance = () => {
   const [shouldShowButton, setShouldShowButton] = useState(false);
   const { accountENS, accountAddress } = useAccountProfileInfo();
-  const { navigate } = useNavigation();
   const accountName = abbreviateEnsForDisplay(accountENS, 10) || (accountAddress ? formatAddress(accountAddress, 4, 5) : '');
 
   return (
@@ -69,7 +68,7 @@ export const RequireWalletBalance = () => {
           <NeonButton
             color="#FEC101"
             label={i18n.t(i18n.l.points.console.fund_my_wallet)}
-            onPress={() => navigate(Routes.ADD_CASH_SHEET)}
+            onPress={() => Navigation.handleAction(Routes.ADD_CASH_SHEET)}
           />
         </Bleed>
       </AnimatePresence>

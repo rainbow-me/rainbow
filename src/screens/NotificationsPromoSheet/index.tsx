@@ -2,7 +2,7 @@ import React from 'react';
 import * as perms from 'react-native-permissions';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
 import useAppState from '@/hooks/useAppState';
-import { useNavigation } from '@/navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { PromoSheet } from '@/components/PromoSheet';
 import backgroundImage from '@/assets/notificationsPromoSheetBackground.png';
@@ -29,7 +29,6 @@ export function NotificationsPromoSheetInner({
   requestNotificationPermissions: () => Promise<perms.PermissionStatus>;
 }) {
   const { colors } = useTheme();
-  const { goBack, navigate } = useNavigation();
 
   const notificationsEnabled = isNotificationPermissionGranted(status);
   const notificationsDenied = status === perms.RESULTS.DENIED;
@@ -43,16 +42,16 @@ export function NotificationsPromoSheetInner({
   }, []);
 
   const navigateToNotifications = React.useCallback(() => {
-    goBack();
+    Navigation.goBack();
     delay(300).then(() => {
-      navigate(Routes.SETTINGS_SHEET);
+      Navigation.handleAction(Routes.SETTINGS_SHEET);
       delay(300).then(() =>
-        navigate(Routes.SETTINGS_SHEET, {
+        Navigation.handleAction(Routes.SETTINGS_SHEET, {
           screen: SettingsPages.notifications.key,
         })
       );
     });
-  }, [goBack, navigate]);
+  }, []);
 
   const primaryButtonOnPress = React.useCallback(async () => {
     if (notificationsDenied) {
@@ -60,7 +59,7 @@ export function NotificationsPromoSheetInner({
       const status = await requestNotificationPermissions();
       if (status === perms.RESULTS.BLOCKED) {
         analytics.track(analytics.event.notificationsPromoPermissionsBlocked);
-        goBack();
+        Navigation.goBack();
       } else if (isNotificationPermissionGranted(status)) {
         analytics.track(analytics.event.notificationsPromoPermissionsGranted);
       }
@@ -77,7 +76,7 @@ export function NotificationsPromoSheetInner({
         status,
       });
     }
-  }, [notificationsDenied, notificationsBlocked, notificationsEnabled, requestNotificationPermissions, goBack, navigateToNotifications]);
+  }, [notificationsDenied, notificationsBlocked, notificationsEnabled, requestNotificationPermissions, navigateToNotifications]);
 
   return (
     <PromoSheet
@@ -100,7 +99,7 @@ export function NotificationsPromoSheetInner({
       secondaryButtonProps={{
         label: i18n.t(TRANSLATIONS.secondary_button),
         textColor: colors.whiteLabel,
-        onPress: goBack,
+        onPress: Navigation.goBack,
       }}
       items={[
         {

@@ -34,7 +34,7 @@ import { RegistrationAvatar, RegistrationCover, TextRecordsForm } from '../compo
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { delayNext } from '../hooks/useMagicAutofocus';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
 
@@ -127,18 +127,16 @@ export default function ENSAssignRecordsSheet() {
     })();
   }, []);
 
-  const { navigate } = useNavigation();
-
   const handleFocus = useCallback(() => {
     if (!hasSeenExplainSheet) {
       android && Keyboard.dismiss();
-      navigate(Routes.EXPLAIN_SHEET, {
+      Navigation.handleAction(Routes.EXPLAIN_SHEET, {
         type: 'ensOnChainDataWarning',
       });
       setHasSeenExplainSheet(true);
       saveSeenOnchainDataDisclaimer(true);
     }
-  }, [hasSeenExplainSheet, navigate, setHasSeenExplainSheet]);
+  }, [hasSeenExplainSheet, setHasSeenExplainSheet]);
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -203,7 +201,6 @@ export function ENSAssignRecordsBottomActions({
   previousRouteName?: ENSRoutes;
   currentRouteName: string;
 }) {
-  const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const { accountENS } = useAccountProfileInfo();
@@ -226,10 +223,10 @@ export function ENSAssignRecordsBottomActions({
   const handlePressBack = useCallback(() => {
     delayNext();
     if (fromRoute) {
-      navigate(fromRoute);
+      Navigation.handleAction(fromRoute);
     }
     setAccentColor(colors.purple);
-  }, [colors.purple, fromRoute, navigate, setAccentColor]);
+  }, [colors.purple, fromRoute, setAccentColor]);
 
   const hasBackButton = useMemo(
     () => fromRoute === Routes.ENS_SEARCH_SHEET || fromRoute === Routes.ENS_INTRO_SHEET || fromRoute === Routes.ENS_ASSIGN_RECORDS_SHEET,
@@ -244,19 +241,19 @@ export function ENSAssignRecordsBottomActions({
 
   const handlePressContinue = useCallback(() => {
     submit(() => {
-      navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+      Navigation.handleAction(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         longFormHeight:
           mode === REGISTRATION_MODES.EDIT
             ? ENSConfirmUpdateSheetHeight + (accountENS !== name ? 50 : 0) + (values.avatar ? 70 : 0)
             : ENSConfirmRegisterSheetHeight + (values.avatar ? 70 : 0),
       });
     });
-  }, [accountENS, mode, name, navigate, submit, values.avatar]);
+  }, [accountENS, mode, name, submit, values.avatar]);
 
   const navigateToAdditionalRecords = useCallback(() => {
     android && Keyboard.dismiss();
-    navigate(Routes.ENS_ADDITIONAL_RECORDS_SHEET);
-  }, [navigate]);
+    Navigation.handleAction(Routes.ENS_ADDITIONAL_RECORDS_SHEET);
+  }, []);
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -340,7 +337,7 @@ export function ENSAssignRecordsBottomActions({
                           weight="heavy"
                         />
                       ) : (
-                        <TintButton onPress={() => goBack()} testID="ens-assign-records-cancel">
+                        <TintButton onPress={Navigation.goBack} testID="ens-assign-records-cancel">
                           {lang.t('profiles.create.cancel')}
                         </TintButton>
                       )}

@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 import React, { useCallback, useMemo } from 'react';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
@@ -9,7 +9,6 @@ import { ClaimValueDisplay } from '../../shared/components/ClaimValueDisplay';
 import { useSponsoredClaimableContext } from '../context/SponsoredClaimableContext';
 
 export function SponsoredClaimableFlow() {
-  const { goBack } = useNavigation();
   const { claim, claimable, claimStatus, setClaimStatus } = useSponsoredClaimableContext();
   const isReadOnlyWallet = useIsReadOnlyWallet();
 
@@ -43,10 +42,10 @@ export function SponsoredClaimableFlow() {
         setClaimStatus('claiming');
         claim();
       } else if (claimStatus === 'success' || claimStatus === 'pending') {
-        goBack();
+        Navigation.goBack();
       }
     }
-  }, [claim, claimStatus, goBack, isReadOnlyWallet, setClaimStatus]);
+  }, [claim, claimStatus, isReadOnlyWallet, setClaimStatus]);
 
   return (
     <ClaimPanel claimStatus={claimStatus} iconUrl={claimable.iconUrl}>

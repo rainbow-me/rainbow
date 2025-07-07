@@ -32,7 +32,7 @@ import { useCleanup } from '@/hooks';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
@@ -301,7 +301,6 @@ const PanelFooter = ({
   hideViewTokenButton: boolean;
   highContrastColor: string;
 }) => {
-  const { goBack } = useNavigation();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const { claimAirdropWorklet, claimStatus, gasInfo } = useClaimAirdrop(claimable);
 
@@ -314,9 +313,9 @@ const PanelFooter = ({
     if (claimStatus.value === ClaimStatus.READY || claimStatus.value === ClaimStatus.RECOVERABLE_ERROR) {
       claimAirdropWorklet();
     } else if (claimStatus.value === ClaimStatus.CONFIRMED) {
-      runOnJS(goBack)();
+      runOnJS(Navigation.goBack)();
     }
-  }, [claimAirdropWorklet, claimStatus, goBack, isReadOnlyWallet]);
+  }, [claimAirdropWorklet, claimStatus, isReadOnlyWallet]);
 
   return (
     <PanelFooterContent
@@ -348,8 +347,6 @@ const PanelFooterContent = ({
   hideViewTokenButton: boolean;
   highContrastColor: string;
 }) => {
-  const { goBack, navigate } = useNavigation();
-
   const labelTertiary = useForegroundColor('labelTertiary');
   const red = useForegroundColor('red');
 
@@ -389,17 +386,17 @@ const PanelFooterContent = ({
 
   const closeSheet = useCallback(() => {
     'worklet';
-    if (claimStatus.value === ClaimStatus.CONFIRMED) runOnJS(goBack)();
-  }, [claimStatus, goBack]);
+    if (claimStatus.value === ClaimStatus.CONFIRMED) runOnJS(Navigation.goBack)();
+  }, [claimStatus]);
 
   const viewToken = useCallback(() => {
-    navigate(Routes.EXPANDED_ASSET_SHEET_V2, {
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       address: claimable.asset.address,
       asset: claimable.asset,
       chainId: claimable.chainId,
       hideClaimSection: true,
     });
-  }, [navigate, claimable]);
+  }, [claimable]);
 
   return (
     <Box alignItems="center" gap={24} justifyContent="center" paddingBottom="28px" paddingTop="20px">

@@ -3,7 +3,7 @@ import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { RewardsStatsCard } from './RewardsStatsCard';
 import { RewardStatsAction, RewardStatsActionType } from '@/graphql/__generated__/metadata';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
@@ -17,7 +17,6 @@ type Props = {
 };
 
 export const RewardsStats: React.FC<Props> = ({ assetPrice, actions, color }) => {
-  const { navigate } = useNavigation();
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
 
   const swapsData = actions.find(action => action.type === RewardStatsActionType.Swap);
@@ -29,7 +28,7 @@ export const RewardsStats: React.FC<Props> = ({ assetPrice, actions, color }) =>
       case RewardStatsActionType.Bridge:
         return () => {
           analytics.track(analytics.event.rewardsPressedBridgedCard);
-          navigate(Routes.EXPLAIN_SHEET, {
+          Navigation.handleAction(Routes.EXPLAIN_SHEET, {
             type: 'op_rewards_bridge',
             percent: bridgeData?.rewardPercent || 0,
           });
@@ -37,7 +36,7 @@ export const RewardsStats: React.FC<Props> = ({ assetPrice, actions, color }) =>
       case RewardStatsActionType.Swap:
         return () => {
           analytics.track(analytics.event.rewardsPressedSwappedCard);
-          navigate(Routes.EXPLAIN_SHEET, {
+          Navigation.handleAction(Routes.EXPLAIN_SHEET, {
             type: 'op_rewards_swap',
             percent: swapsData?.rewardPercent || 0,
           });

@@ -4,7 +4,7 @@ import { Box, Row, Rows, Stack, Text, globalColors, useColorMode } from '@/desig
 import { useAccountAccentColor } from '@/hooks';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import { watchingAlert } from '@/utils';
@@ -17,7 +17,6 @@ import { POINTS_ROUTES } from '../PointsScreen';
 export function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
-  const { navigate } = useNavigation();
   const { rewards_enabled } = useRemoteConfig();
   const isReadOnlyWallet = useIsReadOnlyWallet();
 
@@ -55,7 +54,7 @@ export function ClaimContent() {
             <ActionButton
               color={accentColor}
               label={i18n.t(i18n.l.points.claim.get_started)}
-              onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET))}
+              onPress={() => (isReadOnlyWallet ? watchingAlert() : Navigation.handleAction(Routes.CONSOLE_SHEET))}
             />
           </Stack>
         </Box>
@@ -63,7 +62,7 @@ export function ClaimContent() {
           <ActionButton
             color={accentColor}
             label={i18n.t(i18n.l.points.claim.use_referral_code)}
-            onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(POINTS_ROUTES.REFERRAL_CONTENT))}
+            onPress={() => (isReadOnlyWallet ? watchingAlert() : Navigation.handleAction(POINTS_ROUTES.REFERRAL_CONTENT))}
             outline
             small
           />

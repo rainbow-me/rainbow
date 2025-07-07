@@ -6,7 +6,7 @@ import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useClipboard, useContacts, useWatchWallet } from '@/hooks';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -47,7 +47,6 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   const selectedWallet = useSelectedWallet();
   const { isWatching } = useWatchWallet({ address });
   const { colors } = useTheme();
-  const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
@@ -125,7 +124,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
         if (!isSelectedWallet) {
           switchWallet(address);
         }
-        navigate(Routes.WALLET_SCREEN);
+        Navigation.handleAction(Routes.WALLET_SCREEN);
       }
       if (actionKey === ACTIONS.COPY_ADDRESS) {
         setClipboard(address);
@@ -134,7 +133,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
         ethereumUtils.openAddressInBlockExplorer({ address: address, chainId: ChainId.mainnet });
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
-        navigate(Routes.MODAL_SCREEN, {
+        Navigation.handleAction(Routes.MODAL_SCREEN, {
           address,
           contact,
           ens,
@@ -156,7 +155,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
         Share.share(IS_ANDROID ? { message: shareLink } : { url: shareLink });
       }
     },
-    [address, contact, ens, isSelectedWallet, navigate, onRemoveContact, setClipboard]
+    [address, contact, ens, isSelectedWallet, onRemoveContact, setClipboard]
   );
 
   const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }), [menuItems]);

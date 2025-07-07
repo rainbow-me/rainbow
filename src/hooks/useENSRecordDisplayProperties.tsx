@@ -6,7 +6,7 @@ import useClipboard from './useClipboard';
 import useENSRegistration from './useENSRegistration';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '@/helpers/ens';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -160,7 +160,6 @@ export default function useENSRecordDisplayProperties({
     ].filter(Boolean);
   }, [allowEdit, displayUrl, isUrlValue, label, recordKey, recordValue, type, url]);
 
-  const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const { startRegistration } = useENSRegistration();
 
@@ -175,14 +174,14 @@ export default function useENSRecordDisplayProperties({
       }
       if (actionKey === 'edit' && ensName) {
         startRegistration(ensName, REGISTRATION_MODES.EDIT);
-        navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+        Navigation.handleAction(Routes.REGISTER_ENS_NAVIGATOR, {
           autoFocusKey: recordKey,
           ensName,
           mode: REGISTRATION_MODES.EDIT,
         });
       }
     },
-    [ensName, navigate, recordKey, recordValue, setClipboard, startRegistration, url]
+    [ensName, recordKey, recordValue, setClipboard, startRegistration, url]
   );
 
   const Button = useCallback(

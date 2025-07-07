@@ -344,6 +344,7 @@ export default {
   setTopLevelNavigator,
   reset: (...args: Parameters<NavigationContainerRef<RootStackParamList>['reset']>) => TopLevelNavigationRef?.reset(...args),
   getParent: () => TopLevelNavigationRef?.getParent(),
+  // @ts-expect-error - this is valid but react-navigation isn't recognizing it
   setOptions: (options: Partial<ExtendedSetOptionsFunction>) => TopLevelNavigationRef?.setOptions(options),
   goBack,
 };

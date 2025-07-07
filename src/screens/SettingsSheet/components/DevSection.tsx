@@ -10,7 +10,7 @@ import { logger, RainbowError } from '@/logger';
 import { serialize } from '@/logger/logDump';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
@@ -37,7 +37,6 @@ import { analyzeEnvVariables } from '@/utils/analyzeEnvVariables';
 import FastImage from 'react-native-fast-image';
 
 const DevSection = () => {
-  const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
@@ -68,8 +67,8 @@ const DevSection = () => {
       setConnectedToAnvil(false);
       logger.error(new RainbowError(`[DevSection] error connecting to anvil: ${e}`));
     }
-    navigate(Routes.PROFILE_SCREEN);
-  }, [navigate, setConnectedToAnvil]);
+    Navigation.handleAction(Routes.PROFILE_SCREEN);
+  }, [setConnectedToAnvil]);
 
   const checkAlert = useCallback(async () => {
     try {
@@ -177,7 +176,7 @@ const DevSection = () => {
       }
     }
     // we need to navigate back to the welcome screen
-    navigate(Routes.WELCOME_SCREEN);
+    Navigation.handleAction(Routes.WELCOME_SCREEN);
   };
 
   const wipeKeychainWithAlert = async () => {
@@ -190,13 +189,13 @@ const DevSection = () => {
         await clearMMKVStorage();
 
         // we need to navigate back to the welcome screen
-        navigate(Routes.WELCOME_SCREEN);
+        Navigation.handleAction(Routes.WELCOME_SCREEN);
       }
     }
   };
 
   const onPressNavigationEntryPoint = () =>
-    navigate(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
+    Navigation.handleAction(Routes.PAIR_HARDWARE_WALLET_NAVIGATOR, {
       screen: Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET,
     });
 

@@ -13,7 +13,7 @@ import { openInBrowser } from '@/utils/openInBrowser';
 import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import useAccountAsset from './useAccountAsset';
 import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';
 import { prefetchENSCover } from './useENSCover';
@@ -29,7 +29,6 @@ type UseOnAvatarPressProps = {
 };
 
 export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
-  const { navigate } = useNavigation();
   const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfileInfo();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const accountAsset = useAccountAsset(ETH_ADDRESS);
@@ -78,11 +77,11 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   );
 
   const onAvatarPickEmoji = useCallback(() => {
-    navigate(screenType === 'wallet' ? Routes.AVATAR_BUILDER_WALLET : Routes.AVATAR_BUILDER, {
+    Navigation.handleAction(screenType === 'wallet' ? Routes.AVATAR_BUILDER_WALLET : Routes.AVATAR_BUILDER, {
       initialAccountColor: accountColor,
       initialAccountName: accountName || '',
     });
-  }, [accountColor, accountName, navigate, screenType]);
+  }, [accountColor, accountName, screenType]);
 
   const onAvatarChooseImage = useCallback(async () => {
     const image = await openPicker({
@@ -94,8 +93,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [openPicker, processPhoto]);
 
   const onAvatarCreateProfile = useCallback(() => {
-    navigate(Routes.REGISTER_ENS_NAVIGATOR);
-  }, [navigate]);
+    Navigation.handleAction(Routes.REGISTER_ENS_NAVIGATOR);
+  }, []);
 
   const onAvatarWebProfile = useCallback(() => {
     const rainbowURL = buildRainbowUrl(null, accountENS || '', accountAddress);
@@ -110,19 +109,19 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       ens: accountENS || '',
       from: 'Transaction list',
     });
-    navigate(Routes.PROFILE_SHEET, {
+    Navigation.handleAction(Routes.PROFILE_SHEET, {
       address: accountENS || '',
       fromRoute: 'ProfileAvatar',
     });
-  }, [accountENS, navigate]);
+  }, [accountENS]);
 
   const onAvatarEditProfile = useCallback(() => {
     startRegistration(accountENS || '', REGISTRATION_MODES.EDIT);
-    navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+    Navigation.handleAction(Routes.REGISTER_ENS_NAVIGATOR, {
       ensName: accountENS,
       mode: REGISTRATION_MODES.EDIT,
     });
-  }, [accountENS, navigate, startRegistration]);
+  }, [accountENS, startRegistration]);
 
   const isReadOnly = getIsReadOnlyWallet() && !enableActionsOnReadOnlyWallet;
 
@@ -247,11 +246,11 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const onAvatarPressProfile = useCallback(() => {
     if (!accountENS) return;
-    navigate(Routes.PROFILE_SHEET, {
+    Navigation.handleAction(Routes.PROFILE_SHEET, {
       address: accountENS,
       fromRoute: 'ProfileAvatar',
     });
-  }, [accountENS, navigate]);
+  }, [accountENS]);
 
   const onAvatarPress = useCallback(() => {
     if (accountENS) {

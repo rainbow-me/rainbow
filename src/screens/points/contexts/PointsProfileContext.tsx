@@ -12,7 +12,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet, signPersonalMessage } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { queryClient } from '@/react-query';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
@@ -82,7 +82,6 @@ export const usePointsProfileContext = () => useContext(PointsProfileContext);
 export const PointsProfileProvider = ({ children }: { children: React.ReactNode }) => {
   const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
-  const { navigate, goBack } = useNavigation();
 
   const [step, setStep] = useState<RainbowPointsFlowSteps>(RainbowPointsFlowSteps.Initialize);
   const [profile, setProfile] = useState<OnboardPointsMutation | undefined>();
@@ -139,7 +138,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
       }
       const signatureResponse = await signPersonalMessage(challenge, provider, wallet);
       if (signatureResponse && isHardwareWallet) {
-        goBack();
+        Navigation.goBack();
       }
       const signature = signatureResponse?.result;
       if (!signature) {
@@ -200,15 +199,15 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
       });
       logger.error(new RainbowError('[PointsProfileContext]: signIn error'), { error });
     }
-  }, [accountAddress, deeplinked, goBack, isHardwareWallet, referralCode]);
+  }, [accountAddress, deeplinked, isHardwareWallet, referralCode]);
 
   const signInHandler = useCallback(async () => {
     if (isHardwareWallet) {
-      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: signIn });
+      Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: signIn });
     } else {
       signIn();
     }
-  }, [isHardwareWallet, navigate, signIn]);
+  }, [isHardwareWallet, signIn]);
 
   const intent = useMemo(() => {
     return buildTwitterIntentMessage(profile, metamaskSwaps);

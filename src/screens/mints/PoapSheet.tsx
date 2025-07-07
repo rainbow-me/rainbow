@@ -9,7 +9,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLegacyNFTs } from '@/resources/nfts';
@@ -65,7 +65,6 @@ type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 const PoapSheet = () => {
   const accountAddress = useAccountAddress();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.POAP_SHEET>>();
@@ -164,7 +163,7 @@ const PoapSheet = () => {
   const actionOnPress = useCallback(async () => {
     if (claimStatus === 'claimed') {
       if (nft) {
-        navigate(Routes.EXPANDED_ASSET_SHEET, {
+        Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
           asset: nft,
           backgroundOpacity: 1,
           cornerRadius: 'device',
@@ -182,7 +181,7 @@ const PoapSheet = () => {
         await claimPoapByQrHash();
       }
     }
-  }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, navigate, nft, poapMintType]);
+  }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, nft, poapMintType]);
 
   useEffect(() => {
     const nft = nfts.find(item => item.image_original_url === poapEvent.imageUrl);

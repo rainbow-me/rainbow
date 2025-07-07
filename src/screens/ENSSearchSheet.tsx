@@ -8,7 +8,7 @@ import dice from '../assets/dice.png';
 import TintButton from '../components/buttons/TintButton';
 import { PendingRegistrations, SearchInput, SearchResultGradientIndicator } from '../components/ens-registration';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { Box, Heading, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { ENS_DOMAIN, REGISTRATION_MODES } from '@/helpers/ens';
 import {
@@ -24,8 +24,6 @@ import { colors } from '@/styles';
 import { normalizeENS } from '@/utils';
 
 export default function ENSSearchSheet() {
-  const { navigate } = useNavigation();
-
   const topPadding = android ? 29 : 19;
 
   const { startRegistration, name } = useENSRegistration();
@@ -63,8 +61,8 @@ export default function ENSSearchSheet() {
   const handlePressContinue = useCallback(() => {
     startRegistration(`${searchQuery}${ENS_DOMAIN}`, REGISTRATION_MODES.CREATE);
     Keyboard.dismiss();
-    navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
-  }, [navigate, searchQuery, startRegistration]);
+    Navigation.handleAction(Routes.ENS_ASSIGN_RECORDS_SHEET);
+  }, [searchQuery, startRegistration]);
 
   const handlePressFinish = useCallback(() => {
     finishRegistration(`${searchQuery}${ENS_DOMAIN}`);

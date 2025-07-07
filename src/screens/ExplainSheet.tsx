@@ -6,7 +6,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box, Text as DSText, Separator } from '@/design-system';
 import { useDimensions } from '@/hooks';
@@ -630,7 +630,6 @@ const ExplainSheet = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPLAIN_SHEET>>();
 
   const theme = useTheme();
-  const { goBack, navigate } = useNavigation();
 
   const explainSheetConfig = useMemo(() => {
     return getExplainSheetConfig(params, theme);
@@ -659,9 +658,9 @@ const ExplainSheet = () => {
   }, [params]);
 
   const handleClose = useCallback(() => {
-    goBack();
+    Navigation.goBack();
     params.onClose?.();
-  }, [goBack, params]);
+  }, [params]);
 
   const handleReadMore = useCallback(() => {
     if (explainSheetConfig?.readMoreLink) {
@@ -676,17 +675,17 @@ const ExplainSheet = () => {
 
     const onSecondaryPress = () => {
       if (explainSheetConfig?.secondaryButton?.onPress) {
-        return explainSheetConfig.secondaryButton.onPress(navigate, goBack, handleClose);
+        return explainSheetConfig.secondaryButton.onPress(Navigation.handleAction, Navigation.goBack, handleClose);
       }
       if (explainSheetConfig?.readMoreLink) {
         return handleReadMore();
       }
-      return goBack();
+      return Navigation.goBack();
     };
 
     const onPrimaryPress = () => {
       if (explainSheetConfig?.button?.onPress) {
-        return explainSheetConfig.button.onPress(navigate, goBack, handleClose);
+        return explainSheetConfig.button.onPress(Navigation.handleAction, Navigation.goBack, handleClose);
       }
       handleClose();
     };
@@ -727,7 +726,7 @@ const ExplainSheet = () => {
       buttonArray.reverse();
     }
     return buttonArray;
-  }, [theme.colors, explainSheetConfig, params.type, goBack, handleClose, handleReadMore, navigate, insets.bottom]);
+  }, [theme.colors, explainSheetConfig, params.type, handleClose, handleReadMore, insets.bottom]);
 
   if (!explainSheetConfig) {
     return null;

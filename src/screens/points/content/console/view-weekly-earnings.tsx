@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import { Bleed, Box, Stack } from '@/design-system';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { usePoints } from '@/resources/points';
 import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
@@ -19,7 +19,6 @@ export const ViewWeeklyEarnings = () => {
   const [showCloseButton, setShowCloseButton] = useState(false);
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
 
-  const { goBack } = useNavigation();
   const { accountENS } = useAccountProfileInfo();
   const accountAddress = useAccountAddress();
   const { data: points } = usePoints({
@@ -260,7 +259,7 @@ export const ViewWeeklyEarnings = () => {
             label={i18n.t(i18n.l.points.console.view_weekly_earnings_close_button)}
             onPress={() => {
               analytics.track(analytics.event.pointsViewedWeeklyEarningsScreenPressedCloseButton);
-              goBack();
+              Navigation.goBack();
             }}
           />
         </Bleed>

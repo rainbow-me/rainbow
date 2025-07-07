@@ -6,7 +6,7 @@ import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import { BackupFile, parseTimestampFromFilename } from '@/model/backup';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Page } from '@/components/layout';
@@ -31,22 +31,17 @@ const LoadingText = styled(RNText).attrs(({ theme: { colors } }: LoadingTextProp
 });
 
 const ViewCloudBackups = () => {
-  const { navigate } = useNavigation();
-
   const { colors } = useTheme();
   const status = backupsStore(state => state.status);
   const backups = backupsStore(state => state.backups);
   const mostRecentBackup = backupsStore(state => state.mostRecentBackup);
 
-  const onSelectCloudBackup = useCallback(
-    async (selectedBackup: BackupFile) => {
-      navigate(Routes.BACKUP_SHEET, {
-        step: walletBackupStepTypes.restore_from_backup,
-        selectedBackup,
-      });
-    },
-    [navigate]
-  );
+  const onSelectCloudBackup = useCallback(async (selectedBackup: BackupFile) => {
+    Navigation.handleAction(Routes.BACKUP_SHEET, {
+      step: walletBackupStepTypes.restore_from_backup,
+      selectedBackup,
+    });
+  }, []);
 
   const renderNoBackupsState = () => (
     <>

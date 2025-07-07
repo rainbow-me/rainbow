@@ -21,7 +21,7 @@ import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignifica
 import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
@@ -88,7 +88,6 @@ function Row({ symbol, label, value }: { symbol: string; label: string; value: R
 
 export function NFTSingleOfferSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.NFT_SINGLE_OFFER_SHEET>>();
-  const { navigate, setParams } = useNavigation<typeof Routes.NFT_SINGLE_OFFER_SHEET>();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -172,8 +171,8 @@ export function NFTSingleOfferSheet() {
   const royaltiesPercentage = Math.floor(offer.royaltiesPercentage * 10) / 10;
 
   useEffect(() => {
-    setParams({ longFormHeight: height });
-  }, [height, setParams]);
+    Navigation.setParams<typeof Routes.NFT_SINGLE_OFFER_SHEET>({ longFormHeight: height });
+  }, [height]);
 
   useEffect(() => {
     if (offer.validUntil) {
@@ -407,7 +406,7 @@ export function NFTSingleOfferSheet() {
         ...analyticsEventObject,
       });
 
-      navigate(Routes.PROFILE_SCREEN);
+      Navigation.handleAction(Routes.PROFILE_SCREEN);
     } catch (e) {
       logger.error(
         new RainbowError(
@@ -420,7 +419,7 @@ export function NFTSingleOfferSheet() {
       });
       Alert.alert(i18n.t(i18n.l.nft_offers.single_offer_sheet.error.title), i18n.t(i18n.l.nft_offers.single_offer_sheet.error.message), [
         {
-          onPress: () => navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer }),
+          onPress: () => Navigation.handleAction(Routes.NFT_SINGLE_OFFER_SHEET, { offer }),
           text: i18n.t(i18n.l.button.go_back),
         },
         {
@@ -430,7 +429,7 @@ export function NFTSingleOfferSheet() {
     } finally {
       setIsAccepting(false);
     }
-  }, [offer, rainbowFeeDecimal, accountAddress, offerChainId, feeParam, navigate, nft]);
+  }, [offer, rainbowFeeDecimal, accountAddress, offerChainId, feeParam, nft]);
 
   let buttonLabel = '';
   if (!isAccepting) {
@@ -476,7 +475,7 @@ export function NFTSingleOfferSheet() {
                 <ButtonPressAnimation
                   disabled={!nft}
                   onPress={() =>
-                    navigate(Routes.EXPANDED_ASSET_SHEET, {
+                    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
                       asset: nft,
                       backgroundOpacity: 1,
                       cornerRadius: 'device',
