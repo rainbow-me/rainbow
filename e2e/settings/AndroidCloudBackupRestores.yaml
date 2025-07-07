@@ -1,0 +1,75 @@
+appId: ${APP_ID}
+env:
+  CLOUD_BACKUP_EMAIL: rainbowtestuserone@gmail.com
+  CLOUD_BACKUP_PASSWORD: TesterOfShit567@$$
+tags:
+  - backup
+  - parallel
+---
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - retry:
+          maxRetries: 3
+          commands:
+            - launchApp:
+                clearState: true
+                clearKeychain: true
+                arguments:
+                  isE2ETest: true
+            - runFlow: ../utils/Prepare.yaml
+            - runFlow: ../utils/ImportWalletWithKey.yaml
+
+            # Navigate to settings and backup section
+            - retry:
+                maxRetries: 3
+                commands:
+                  - tapOn:
+                      id: settings-menu
+                  - tapOn: 'Settings'
+            - tapOn:
+                id: backup-section
+
+            # Begin backup flow by tapping backup now button
+            - tapOn:
+                id: backup-now-button
+            - assertVisible: '(Sign in|Choose an account)'
+
+            # Sign in to Google Drive
+            - tapOn: 'Email or phone'
+            - tapOn:
+                id: 'identifierId'
+            - inputText: ${CLOUD_BACKUP_EMAIL}
+            - tapOn:
+                id: 'identifierNext'
+            - tapOn:
+                text: 'Enter your password'
+            - inputText: ${CLOUD_BACKUP_PASSWORD}
+            - tapOn:
+                id: 'passwordNext'
+
+            # Accept TOS
+            - tapOn: 'I agree'
+            - tapOn: 'ACCEPT'
+            - runFlow: ../utils/MaybeSetupPin.yaml
+
+            # # Set up Rainbow Cloud password
+            # - tapOn:
+            #     id: password-input
+            # - inputText: 12345678
+            # - tapOn:
+            #     id: confirm-password-input
+            # - inputText: 12345678
+
+            # Check that backup is successful
+            - assertVisible: '.*Up to Date.*'
+            - assertVisible: 'Latest Backup:.*'
+
+            # Scroll down to see all backups settings buttons then check both menu items
+            - scrollUntilVisible:
+                element:
+                  id: cloud-backups-settings
+            - tapOn:
+                id: view-cloud-backups
+            - assertVisible: '.*Most Recent Backup.*'
