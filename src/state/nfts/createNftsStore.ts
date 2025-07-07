@@ -432,10 +432,13 @@ export const createNftsStore = (address: Address | string) =>
           prunePromise = {
             address,
             lastPruneAt: now,
-            promise: pruneStaleAndClosedCollections({ address, set }).finally(() => {
-              logger.debug(`🔍 [NFT Store] Prune operation completed for address: ${address}`);
-              prunePromise = null;
-            }),
+            promise: pruneStaleAndClosedCollections({ address, set })
+              .then(prunedCount => {
+                logger.debug(`🔍 [NFT Store] Prune operation completed for address: ${address}. Pruned ${prunedCount} stale collections`);
+              })
+              .finally(() => {
+                prunePromise = null;
+              }),
           };
         }
 

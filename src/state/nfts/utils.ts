@@ -1,6 +1,6 @@
 import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
-import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
-import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
+import { getShowcase, showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
+import { getHidden, hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
 import { queryClient } from '@/react-query';
 import { Address } from 'viem';
 import { useNftsStore } from '@/state/nfts/nfts';
@@ -13,6 +13,7 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { UniqueAsset } from '@/entities';
 import { fetchNFTData, NFTData, nftsQueryKey } from '@/resources/nfts';
 import { isENSAddressFormat } from '@/helpers/validators';
+import { IS_DEV } from '@/env';
 
 export function isDataComplete(tokens: string[]) {
   if (!tokens.length) return true;
@@ -120,23 +121,20 @@ export function getShowcaseAndHiddenTokenIds(address: Address | string, category
   return new Set([...showcaseTokens, ...hiddenTokens]);
 }
 
-export function getHiddenAndShowcaseCollectionIds(
+export async function getHiddenAndShowcaseCollectionIds(
   address: Address | string,
   category: 'showcase' | 'hidden'
-): { collectionIds: Set<string> };
-export function getHiddenAndShowcaseCollectionIds(address: Address | string): {
+): Promise<{ collectionIds: Set<string> }>;
+export async function getHiddenAndShowcaseCollectionIds(address: Address | string): Promise<{
   showcaseCollectionIds: Set<string>;
   hiddenCollectionIds: Set<string>;
-};
-export function getHiddenAndShowcaseCollectionIds(
+}>;
+export async function getHiddenAndShowcaseCollectionIds(
   address: Address | string,
   category?: 'showcase' | 'hidden'
-): { collectionIds: Set<string> } | { showcaseCollectionIds: Set<string>; hiddenCollectionIds: Set<string> } {
+): Promise<{ collectionIds: Set<string> } | { showcaseCollectionIds: Set<string>; hiddenCollectionIds: Set<string> }> {
   if (category) {
-    const tokens =
-      category === 'showcase'
-        ? queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? []
-        : queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? [];
+    const tokens = category === 'showcase' ? await getShowcase(address) : await getHidden(address);
 
     return {
       collectionIds: new Set(
@@ -148,8 +146,7 @@ export function getHiddenAndShowcaseCollectionIds(
     };
   }
 
-  const showcaseTokens = queryClient.getQueryData<string[]>(showcaseTokensQueryKey({ address })) ?? [];
-  const hiddenTokens = queryClient.getQueryData<string[]>(hiddenTokensQueryKey({ address })) ?? [];
+  const [showcaseTokens, hiddenTokens] = await Promise.all([getShowcase(address), getHidden(address)]);
 
   return {
     showcaseCollectionIds: new Set(
@@ -167,7 +164,7 @@ export function getHiddenAndShowcaseCollectionIds(
   };
 }
 
-const ENABLE_DEEPER_DEBUG_LOGS = false;
+const ENABLE_DEEPER_DEBUG_LOGS = IS_DEV && false;
 
 export async function pruneStaleAndClosedCollections({
   address,
@@ -261,4 +258,6 @@ export async function pruneStaleAndClosedCollections({
   }
 
   set({ nftsByCollection: newNftsByCollection });
+
+  return prunedCount;
 }
