@@ -12,7 +12,7 @@ export MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true
 : "${GITHUB_PR_NUMBER:?Missing GITHUB_PR_NUMBER}"
 GITHUB_REPOSITORY=rainbow-me/rainbow
 PERF_DIR=e2e-artifacts/perf
-RESULT_DIR="$PERF_DIR/results"
+RESULTS_DIR="$PERF_DIR/results"
 REPORT_DIR="$PERF_DIR/report"
 
 # Install the app
