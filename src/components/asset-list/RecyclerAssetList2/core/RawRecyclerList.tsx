@@ -6,7 +6,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useTheme } from '@/theme';
+import { ThemeContextProps, useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
@@ -24,6 +24,7 @@ import { CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { useAccountAddress } from '../../../../state/wallets/walletsStore';
+import { NavigateFunction } from '@/navigation/Navigation';
 
 const dimensions = {
   height: deviceUtils.dimensions.height,
@@ -35,10 +36,10 @@ const dataProvider = new DataProvider((r1: CellTypes, r2: CellTypes) => {
 });
 
 export type ExtendedState = {
-  theme: any;
+  theme: ThemeContextProps;
   nativeCurrencySymbol: string;
   nativeCurrency: NativeCurrencyKey;
-  navigate: any;
+  navigate: NavigateFunction;
   isCoinListEdited: boolean;
   hiddenAssets: Set<UniqueId>;
   pinnedCoins: BooleanMap;
@@ -68,7 +69,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const experimentalConfig = useExperimentalConfig();
   const currentDataProvider = useMemoOne(() => dataProvider.cloneWithRows(briefSectionsData), [briefSectionsData]);
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
-  const y = useRecyclerAssetListPosition()!;
+  const y = useRecyclerAssetListPosition();
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
 
   const layoutProvider = useMemo(
@@ -104,12 +105,12 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     // We need to clear this scheduled event with `clearTimeout` method.
     // Then, in case the event was not emitted, we want to emit this anyway (`scrollToOffset`)
     // to make headers located in `0` position.
-    // @ts-ignore
+    // @ts-expect-error - accessing private property
     ref.current?._virtualRenderer?.getViewabilityTracker?.()?.updateOffset?.(0, true, 0);
-    // @ts-ignore
+    // @ts-expect-error - accessing private property
     clearTimeout(ref.current?._processInitialOffsetTimeout);
     ref.current?.scrollToOffset(0, 0);
-    y.setValue(0);
+    y?.setValue(0);
   }, [y, accountAddress]);
 
   useEffect(() => {
@@ -165,7 +166,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       automaticallyAdjustScrollIndicatorInsets={true}
       dataProvider={currentDataProvider}
       extendedState={mergedExtendedState}
-      // @ts-ignore
+      // @ts-expect-error - scrollview refs are typed differently
       externalScrollView={
         type === 'ens-profile'
           ? ExternalENSProfileScrollViewWithRef

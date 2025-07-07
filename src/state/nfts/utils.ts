@@ -12,7 +12,6 @@ import { isLowerCaseMatch } from '@/utils';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { UniqueAsset } from '@/entities';
 import { fetchNFTData, NFTData, nftsQueryKey } from '@/resources/nfts';
-import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { isENSAddressFormat } from '@/helpers/validators';
 
 export function isDataComplete(tokens: string[]) {
@@ -50,8 +49,6 @@ export async function migrateTokens(accountAddress: string, tokens: string[]): P
 
   const queryKey = nftsQueryKey({
     address: accountAddress,
-    sortBy: NftCollectionSortCriterion.MostRecent,
-    sortDirection: SortDirection.Asc,
   });
 
   const data = await queryClient.fetchQuery<NFTData>({ queryKey, queryFn: () => fetchNFTData({ queryKey, meta: undefined }) });

@@ -109,4 +109,4 @@ const CollectiblesHeader = () => {
 
 CollectiblesHeader.height = TokenFamilyHeaderHeight;
 
-export default CollectiblesHeader;
+export default React.memo(CollectiblesHeader);

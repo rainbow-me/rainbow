@@ -25,7 +25,7 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
   testIDPrefix,
   variant,
 }: {
-  disableOnPress?: any;
+  disableOnPress?: boolean;
   testIDPrefix?: string;
   variant?: string;
 }) {
