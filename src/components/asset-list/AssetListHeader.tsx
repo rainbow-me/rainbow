@@ -128,7 +128,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
 
   const [textWidth, setTextWidth] = useState(0);
 
-  const amountWidth = isLoadingUserAssets ? placeholderWidth + 16 : totalValue?.length * 15;
+  const amountWidth = isLoadingUserAssets ? placeholderWidth + 16 : (totalValue?.length ?? 0) * 15;
   const maxWidth = DEVICE_WIDTH - dropdownArrowWidth - amountWidth - 32;
 
   useEffect(() => {
@@ -145,13 +145,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
 
   const children = useMemo(() => {
     return (
-      <ListHeader
-        contextMenuOptions={contextMenuOptions}
-        isCoinListEdited={isCoinListEdited}
-        title={title}
-        totalValue={totalValue}
-        {...props}
-      >
+      <ListHeader contextMenuOptions={contextMenuOptions} isCoinListEdited={isCoinListEdited} title={title} {...props}>
         {!title && !!accountName && (
           <WalletSelectButtonWrapper>
             <WalletSelectButton
