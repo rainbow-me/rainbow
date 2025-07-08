@@ -83,11 +83,10 @@ export default function RestoreCloudStep() {
   const { isDarkMode } = useTheme();
 
   const onRestoreSuccess = useCallback(() => {
-    // @ts-expect-error TODO: Verify this works still
-    const routes = Navigation.getState()?.routes;
-    while (routes && routes.length > 1) {
-      Navigation.goBack();
-    }
+    Navigation.reset({
+      routes: [{ name: Routes.WALLET_SCREEN }],
+      index: 0,
+    });
   }, []);
 
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
