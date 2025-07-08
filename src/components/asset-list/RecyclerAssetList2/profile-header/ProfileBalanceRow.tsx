@@ -1,6 +1,4 @@
-import { Button } from '@/components/buttons';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
-import { showToast } from '@/components/rainbow-toast/useRainbowToasts';
 import { Box, Text } from '@/design-system';
 import * as React from 'react';
 
@@ -14,25 +12,6 @@ type ProfileBalanceRowProps = {
 };
 
 export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalanceRowProps) {
-  return (
-    <>
-      <Button
-        onPress={() => {
-          console.log('press');
-          showToast({
-            type: 'swap',
-            fromToken: 'ETH',
-            state: 'swapping',
-            toToken: 'ZUMI',
-            id: '',
-          });
-        }}
-        label="estes"
-      >
-        test
-      </Button>
-    </>
-  );
   return (
     <>
       {isLoadingBalance ? (

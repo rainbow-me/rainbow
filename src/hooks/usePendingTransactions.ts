@@ -19,3 +19,8 @@ export default function usePendingTransactions() {
     pendingTransactions,
   };
 }
+
+export const usePendingTransactionByHash = (transactionHash: string) => {
+  const accountAddress = useAccountAddress();
+  return usePendingTransactionsStore(state => state.pendingTransactions[accountAddress].find(tx => tx.hash === transactionHash));
+};
