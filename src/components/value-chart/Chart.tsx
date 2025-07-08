@@ -20,7 +20,7 @@ import TimespanSelector from './TimespanSelector';
 import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import { ImgixImage } from '@/components/images';
-import { Navigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { IS_IOS } from '@/env';
@@ -122,6 +122,7 @@ export default function Chart({
   latestPrice,
   asset,
 }: ChartProps) {
+  const { setOptions } = useNavigation();
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [chartType]);
 
   const { progress, color } = useChartData();
@@ -133,7 +134,7 @@ export default function Chart({
 
   useEffect(
     () =>
-      Navigation.setOptions({
+      setOptions({
         onWillDismiss: () => {
           cancelAnimation(progress);
           cancelAnimation(spinnerRotation);
@@ -141,7 +142,7 @@ export default function Chart({
           nativeStackConfig.screenOptions.onWillDismiss();
         },
       }),
-    [progress, spinnerRotation, spinnerScale]
+    [progress, setOptions, spinnerRotation, spinnerScale]
   );
 
   const showLoadingState = useShowLoadingState(fetchingCharts);

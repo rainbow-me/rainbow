@@ -35,7 +35,7 @@ import {
 } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
-import { Navigation, useUntrustedUrlOpener } from '@/navigation';
+import { Navigation, useNavigation, useUntrustedUrlOpener } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -225,6 +225,7 @@ const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
 
 const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenExpandedStateProps) => {
   const accountAddress = useAccountAddress();
+  const { setOptions } = useNavigation();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -309,9 +310,9 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   useFocusEffect(
     useCallback(() => {
       if (uniqueTokenType === 'ENS') {
-        Navigation.setOptions({ limitActiveModals: false });
+        setOptions({ limitActiveModals: false });
       }
-    }, [uniqueTokenType])
+    }, [setOptions, uniqueTokenType])
   );
 
   const profileInfoSectionAvailable = useMemo(() => {
