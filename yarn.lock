@@ -8667,6 +8667,7 @@ __metadata:
     babel-plugin-rewire: "npm:1.2.0"
     babel-plugin-styled-components: "npm:1.11.1"
     babel-plugin-transform-remove-console: "npm:6.9.4"
+    big-integer: "npm:1.6.51"
     bignumber.js: "npm:9.0.1"
     bip39: "npm:3.0.2"
     browserify-zlib: "npm:0.1.4"
@@ -10138,6 +10139,13 @@ __metadata:
   version: 1.6.36
   resolution: "big-integer@npm:1.6.36"
   checksum: 10c0/6a8b1b46d903738a50479527c6fdd5ddea4ef98228e7c5f66ca04e32acb0a1f5e7793a35eb50e91c34e6453d4c94f99df4391973cd665b52923d0e2aeef6aa2f
+  languageName: node
+  linkType: hard
+
+"big-integer@npm:1.6.51":
+  version: 1.6.51
+  resolution: "big-integer@npm:1.6.51"
+  checksum: 10c0/c8139662d57f8833a44802f4b65be911679c569535ea73c5cfd3c1c8994eaead1b84b6f63e1db63833e4d4cacb6b6a9e5522178113dfdc8e4c81ed8436f1e8cc
   languageName: node
   linkType: hard
 
