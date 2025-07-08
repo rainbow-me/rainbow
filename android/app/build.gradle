@@ -31,17 +31,12 @@ def getPassword(String currentUser, String keyChain) {
 
 import com.android.build.OutputFile
 
-def isE2E = project.getProperties().get("isE2E") == "true"
-
 apply plugin: "com.facebook.react"
 
-if (!isE2E) {
-    apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
-}
+apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 apply plugin: "io.sentry.android.gradle"
 
 sentry {
-    ignoredBuildTypes = isE2E ? ["debug", "release"] : ["debug"]
     // Enables or disables the automatic configuration of Native Symbols
     // for Sentry. This executes sentry-cli automatically so
     // you don't need to do it manually.
