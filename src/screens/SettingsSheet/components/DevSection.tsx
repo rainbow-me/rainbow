@@ -188,6 +188,7 @@ const DevSection = () => {
       if (shouldWipeKeychain) {
         await wipeKeychain();
         await clearMMKVStorage();
+        await clearWalletState({ resetKeychain: true });
 
         // we need to navigate back to the welcome screen
         navigate(Routes.WELCOME_SCREEN);
