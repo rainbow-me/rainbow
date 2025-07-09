@@ -13,7 +13,7 @@ const UP_ARROW = IS_ANDROID ? '' : '↑';
 type ChartPercentChangeLabelProps = {
   backgroundColor: string;
   isChartGestureActive: SharedValue<boolean>;
-  percentageChange: SharedValue<number | string | undefined>;
+  percentageChange: SharedValue<string | number | undefined>;
 };
 
 export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({

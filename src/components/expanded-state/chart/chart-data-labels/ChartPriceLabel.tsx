@@ -1,7 +1,7 @@
 import React from 'react';
 import * as i18n from '@/languages';
 import { useAccountSettings } from '@/hooks';
-import { SharedValue, useDerivedValue } from 'react-native-reanimated';
+import { DerivedValue, SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 
@@ -12,7 +12,7 @@ const translations = {
 type ChartPriceLabelProps = {
   price: SharedValue<string | number | undefined>;
   backgroundColor: string;
-  isChartGestureActive: SharedValue<boolean>;
+  isChartGestureActive: SharedValue<boolean> | DerivedValue<boolean>;
 };
 
 export function ChartPriceLabel({ price, backgroundColor, isChartGestureActive }: ChartPriceLabelProps) {

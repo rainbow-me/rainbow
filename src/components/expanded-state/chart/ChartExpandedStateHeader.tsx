@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { SharedValue } from 'react-native-reanimated';
+import { DerivedValue, SharedValue } from 'react-native-reanimated';
 import { Stack, Bleed, Box, AnimatedText } from '@/design-system';
 import { ChartPercentChangeLabel } from './chart-data-labels';
 import { ChartPriceLabel } from '@/components/expanded-state/chart/chart-data-labels/ChartPriceLabel';
@@ -7,8 +7,8 @@ import { View } from 'react-native';
 
 type ChartExpandedStateHeaderProps = {
   backgroundColor: string;
-  isChartGestureActive: SharedValue<boolean>;
-  displayDate: SharedValue<string>;
+  isChartGestureActive: SharedValue<boolean> | DerivedValue<boolean>;
+  displayDate: SharedValue<string> | DerivedValue<string>;
   priceRelativeChange: SharedValue<string | number | undefined>;
   price: SharedValue<string | number | undefined>;
 };

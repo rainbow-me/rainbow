@@ -4,18 +4,28 @@ import { Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { SheetSeparator } from '../shared/Separator';
-import Animated from 'react-native-reanimated';
+import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useAccountSettings } from '@/hooks';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+import { useAppSettingsStore } from '@/state/appSettings/appSettingsStore';
+import { useExperimentalConfig } from '@/config/experimentalHooks';
+import { ChartTypes } from '@/components/value-chart/Chart';
+import { useCandlestickStore } from '@/components/candlestick-charts/candlestickStore';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
+import { greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
+import { useStableValue } from '@/hooks/useStableValue';
+import { useListen } from '@/state/internal/hooks/useListen';
 
 export function BalanceSection() {
   const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
+  const { 'Candlestick Charts': enableCandlestickCharts } = useExperimentalConfig();
   const balanceAmount = asset?.balance?.amount ?? '0';
+  const tokenId = asset?.uniqueId ?? '';
 
   const tokenBalanceSelector = useCallback(
     (token: TokenData) => {
@@ -25,10 +35,50 @@ export function BalanceSection() {
   );
 
   const liveTokenBalance = useLiveTokenValue({
-    tokenId: asset?.uniqueId ?? '',
+    tokenId,
     initialValue: asset?.native?.balance?.display ?? '0',
     initialValueLastUpdated: asset?.price?.changed_at ?? 0,
     selector: tokenBalanceSelector,
+  });
+  const liveTokenLiquidityCap = useLiveTokenValue({
+    tokenId,
+    initialValue: '',
+    selector: token => token.reliability.metadata.liquidityCap,
+  });
+
+  const chartType = useAppSettingsStore(state => (enableCandlestickCharts ? state.chartType : ChartTypes.LINE));
+  const initialCandlestickPrice = useStableValue(() => useCandlestickStore.getState().getPrice());
+  const currentCandlestickPrice = useSharedValue(initialCandlestickPrice);
+
+  useListen(
+    useCandlestickStore,
+    state => state.getPrice(),
+    price => {
+      currentCandlestickPrice.value = price;
+    },
+    (previousPrice, price) => {
+      if (!price) return true;
+      if (!previousPrice) return false;
+      return price.price === previousPrice.price && price.percentChange === previousPrice.percentChange;
+    }
+  );
+
+  const tokenBalance = useDerivedValue(() => {
+    if (chartType === ChartTypes.CANDLESTICK) {
+      const priceToUse = currentCandlestickPrice.value?.price ?? asset?.price?.value;
+      if (!priceToUse) {
+        return liveTokenBalance;
+      }
+
+      const balanceValue = mulWorklet(balanceAmount, priceToUse);
+
+      if (liveTokenLiquidityCap !== '' && greaterThanWorklet(balanceValue, liveTokenLiquidityCap)) {
+        return convertAmountToNativeDisplayWorklet(liveTokenLiquidityCap, nativeCurrency);
+      }
+      return convertAmountToNativeDisplayWorklet(balanceValue, nativeCurrency);
+    }
+
+    return liveTokenBalance;
   });
 
   if (!isOwnedAsset || !asset?.balance || !asset?.native?.balance) return null;
@@ -69,7 +119,7 @@ export function BalanceSection() {
             </Text>
           </TextShadow>
           <AnimatedNumber
-            value={liveTokenBalance}
+            value={tokenBalance}
             easingMaskColor={backgroundColor}
             color="label"
             numberOfLines={1}
