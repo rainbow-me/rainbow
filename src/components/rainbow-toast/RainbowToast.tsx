@@ -1,19 +1,18 @@
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { IconOrb } from '@/components/cards/reusables/IconOrb';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
-import { removeToast, useRainbowToasts } from '@/components/rainbow-toast/useRainbowToasts';
+import { removeToast, startRemoveToast, useRainbowToasts } from '@/components/rainbow-toast/useRainbowToasts';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
-import React, { PropsWithChildren, useEffect, useMemo } from 'react';
+import { fonts } from '@/styles';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, WithSpringConfig } from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { TruncatedText } from '../text';
-import { fonts } from '@/styles';
 
 export function RainbowToastDisplay() {
   const toasts = useRainbowToasts();
@@ -24,8 +23,8 @@ export function RainbowToastDisplay() {
 
   return (
     <Box zIndex={100_000} position="absolute" top="0px" left="0px" width={deviceWidth} bottom="0px" pointerEvents="box-none">
-      {toasts.map((toast, index) => {
-        return <RainbowToast onDismiss={() => removeToast(toast.id)} insets={insets} index={index} key={toast.id} toast={toast} />;
+      {toasts.map(toast => {
+        return <RainbowToast insets={insets} key={toast.id} toast={toast} />;
       })}
     </Box>
   );
@@ -40,37 +39,43 @@ const springConfig: WithSpringConfig = {
   stiffness: 121.6,
 };
 
+const DISMISS_THRESHOLD_PERCENTAGE = 0.75;
+
 type Props = PropsWithChildren<{
   testID?: string;
   toast: RainbowToast;
   insets: EdgeInsets;
-  index: number;
-  onDismiss: () => void;
 }>;
 
 const sfSymbols = {
   check: '􀆅',
 };
 
-const colors = {
-  green: {
-    background: '#3ECF5BE5',
-  },
-};
+// const colors = {
+//   green: {
+//     background: '#3ECF5BE5',
+//   },
+// };
 
-function RainbowToast({ toast, index, testID, insets, onDismiss }: Props) {
+function RainbowToast({ toast, testID, insets }: Props) {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const visible = useSharedValue(0);
   const translateX = useSharedValue(0);
+
   const height = 60;
+  const { index, id } = toast;
   const gap = index * 4;
   const distance = index * height + gap + insets.top;
 
   useEffect(() => {
     visible.value = withSpring(1, springConfig);
   }, [visible]);
+
+  const removeToastFinish = useCallback(() => {
+    removeToast(id);
+  }, [id]);
 
   const { panHandlers } = useMemo(
     () =>
@@ -80,12 +85,13 @@ function RainbowToast({ toast, index, testID, insets, onDismiss }: Props) {
           translateX.value = gestureState.dx;
         },
         onPanResponderRelease: (_, gestureState) => {
-          const swipeThreshold = deviceWidth / 4;
-          if (Math.abs(gestureState.dx) > swipeThreshold || Math.abs(gestureState.vx) > 0.8) {
+          const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
+          if (Math.abs(gestureState.dx) > dismissThreshold || Math.abs(gestureState.vx) > 0.8) {
             const toValue = gestureState.dx > 0 ? deviceWidth : -deviceWidth;
+            startRemoveToast(id);
             translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
               if (finished) {
-                runOnJS(onDismiss)();
+                runOnJS(removeToastFinish);
               }
             });
           } else {
@@ -93,7 +99,7 @@ function RainbowToast({ toast, index, testID, insets, onDismiss }: Props) {
           }
         },
       }),
-    [deviceWidth, onDismiss, translateX]
+    [deviceWidth, id, removeToastFinish, translateX]
   );
 
   const animatedStyle = useAnimatedStyle(() => {

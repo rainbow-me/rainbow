@@ -24,7 +24,7 @@ export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalan
             fromToken: 'ETH',
             state: 'swapping',
             toToken: 'ZUMI',
-            id: '',
+            id: `${Math.random()}`,
           });
           console.log('pressdone');
         }}
