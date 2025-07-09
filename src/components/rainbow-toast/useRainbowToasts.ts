@@ -1,10 +1,10 @@
-import { RainbowToast } from '@/components/rainbow-toast/types';
+import { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type ToastState = {
-  toasts: (RainbowToast & { removed?: boolean })[];
-  showToast: (toast: Omit<RainbowToast, 'index'>) => void;
-  updateToast: (id: string, updates: Partial<RainbowToast>) => void;
+  toasts: RainbowToastWithIndex[];
+  showToast: <T extends RainbowToast>(toast: T) => void;
+  updateToast: <T extends RainbowToast>(id: string, updates: Partial<T>) => void;
   startRemoveToast: (id: string) => void;
   removeToast: (id: string) => void;
 };

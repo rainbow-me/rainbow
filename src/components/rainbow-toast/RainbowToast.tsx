@@ -1,6 +1,6 @@
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import type { RainbowToast } from '@/components/rainbow-toast/types';
+import type { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import { removeToast, showToast, startRemoveToast, updateToast, useRainbowToasts } from '@/components/rainbow-toast/useRainbowToasts';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
@@ -88,7 +88,7 @@ const DISMISS_VELOCITY_THRESHOLD = 5;
 
 type Props = PropsWithChildren<{
   testID?: string;
-  toast: RainbowToast;
+  toast: RainbowToastWithIndex;
   insets: EdgeInsets;
 }>;
 
