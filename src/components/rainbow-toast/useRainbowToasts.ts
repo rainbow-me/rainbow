@@ -4,6 +4,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 export type ToastState = {
   toasts: (RainbowToast & { removed?: boolean })[];
   showToast: (toast: RainbowToast) => void;
+  updateToast: (id: string, updates: Partial<RainbowToast>) => void;
   startRemoveToast: (id: string) => void;
   removeToast: (id: string) => void;
 };
@@ -16,6 +17,12 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
       const nonRemovedToasts = state.toasts.filter(t => !t.removed);
       return { toasts: [...state.toasts, { ...toast, index: nonRemovedToasts.length }] };
     });
+  },
+
+  updateToast: (id, updates) => {
+    set(state => ({
+      toasts: state.toasts.map(toast => (toast.id === id ? { ...toast, ...updates } : toast)),
+    }));
   },
 
   startRemoveToast: id => {
@@ -50,4 +57,4 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
 
 export const useRainbowToasts = () => useToastStore(state => state.toasts);
 
-export const { showToast, startRemoveToast, removeToast } = useToastStore.getState();
+export const { showToast, updateToast, startRemoveToast, removeToast } = useToastStore.getState();

@@ -1,12 +1,13 @@
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
-import { removeToast, startRemoveToast, useRainbowToasts } from '@/components/rainbow-toast/useRainbowToasts';
+import { removeToast, showToast, startRemoveToast, updateToast, useRainbowToasts } from '@/components/rainbow-toast/useRainbowToasts';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
+import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { fonts } from '@/styles';
-import React, { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -22,13 +23,47 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { TruncatedText } from '../text';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { throttle } from 'lodash';
 
 export function RainbowToastDisplay() {
   const toasts = useRainbowToasts();
   const insets = useSafeAreaInsets();
   const { width: deviceWidth } = useDimensions();
+  const pendingTransactions = usePendingTransactions();
+  const processedTxs = useRef(new Set<string>());
 
   console.log('toasts', toasts);
+
+  // Watch for new pending transactions and create toasts
+  useEffect(() => {
+    if (Array.isArray(pendingTransactions)) {
+      pendingTransactions.forEach(tx => {
+        if (!processedTxs.current.has(tx.hash) && tx.type === 'swap') {
+          processedTxs.current.add(tx.hash);
+
+          showToast({
+            id: tx.hash,
+            index: 0, // Will be set by showToast
+            type: 'swap',
+            state: 'swapping',
+            fromToken: tx.from?.symbol || 'Unknown',
+            toToken: tx.to?.symbol || 'Unknown',
+          });
+        }
+      });
+    }
+  }, [pendingTransactions]);
+
+  // Watch for transaction completions
+  useEffect(() => {
+    if (Array.isArray(pendingTransactions)) {
+      pendingTransactions.forEach(tx => {
+        if (processedTxs.current.has(tx.hash) && tx.status === 'confirmed') {
+          updateToast(tx.hash, { state: 'swapped' });
+        }
+      });
+    }
+  }, [pendingTransactions]);
 
   return (
     <Box zIndex={100_000} position="absolute" top="0px" left="0px" width={deviceWidth} bottom="0px" pointerEvents="box-none">
@@ -48,8 +83,8 @@ const springConfig: WithSpringConfig = {
   stiffness: 121.6,
 };
 
-const DISMISS_THRESHOLD_PERCENTAGE = 0.15;
-const DISMISS_VELOCITY_THRESHOLD = 3;
+const DISMISS_THRESHOLD_PERCENTAGE = 0.1;
+const DISMISS_VELOCITY_THRESHOLD = 5;
 
 type Props = PropsWithChildren<{
   testID?: string;
@@ -74,6 +109,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
   const visible = useSharedValue(0);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const lastChangeX = useSharedValue(0);
 
   const height = 60;
   const { index, id } = toast;
@@ -98,12 +134,23 @@ function RainbowToast({ toast, testID, insets }: Props) {
       .onUpdate(event => {
         translateX.value = event.translationX;
       })
+      .onChange(event => {
+        // at least on iOS simulator velocityX is always 0 so using this
+        lastChangeX.value = event.changeX;
+      })
       .onEnd(event => {
-        const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
+        const velocityX = lastChangeX.value;
+        lastChangeX.value = 0;
 
-        if (Math.abs(event.translationX) > dismissThreshold && Math.abs(event.velocityX) > DISMISS_VELOCITY_THRESHOLD) {
+        const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
+        const isDraggedFarEnough = Math.abs(event.translationX) > dismissThreshold;
+        const isDraggedFastEnough = Math.abs(velocityX) >= DISMISS_VELOCITY_THRESHOLD;
+
+        if (isDraggedFarEnough && isDraggedFastEnough) {
           const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
-          startRemoveToast(id);
+          runOnJS(() => {
+            startRemoveToast(id);
+          });
           translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
             if (finished) {
               runOnJS(removeToastFinish)();
@@ -113,7 +160,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
           translateX.value = withSpring(0, springConfig);
         }
       });
-  }, [deviceWidth, id, removeToastFinish, translateX]);
+  }, [deviceWidth, id, lastChangeX, removeToastFinish, translateX]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;
@@ -133,15 +180,12 @@ function RainbowToast({ toast, testID, insets }: Props) {
     return Gesture.Tap()
       .maxDuration(2000)
       .onTouchesDown(() => {
-        console.log('touch down');
         isPressed.value = true;
       })
       .onTouchesUp(() => {
-        console.log('touch up');
         isPressed.value = false;
       })
       .onFinalize(() => {
-        console.log('finalize');
         isPressed.value = false;
       });
   }, [isPressed]);
@@ -163,7 +207,6 @@ function RainbowToast({ toast, testID, insets }: Props) {
     case 'swap': {
       contents = (
         <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-          {/* <Icon color={colors.whiteLabel} marginTop={3} name="checkmark" /> */}
           <View
             style={{
               width: 28,
