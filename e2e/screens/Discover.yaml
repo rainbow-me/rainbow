@@ -73,9 +73,5 @@ tags:
       - tapOn:
           id: profile-sheet-watch-button
       - runFlow: ../utils/MaybeSetupPin.yaml
-      #   - swipe:
-      #       direction: DOWN
-      #   - tapOn:
-      #       id: done-button
       - assertVisible:
           id: wallet-screen
