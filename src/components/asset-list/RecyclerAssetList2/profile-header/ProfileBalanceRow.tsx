@@ -23,8 +23,8 @@ export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalan
           showToast({
             type: 'swap',
             status: TransactionStatus.swapping,
-            fromChainId: 0,
-            toChainId: 1,
+            fromChainId: 1,
+            toChainId: 2,
             id: `${Math.random()}`,
           });
           console.log('pressdone');

@@ -38,6 +38,71 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { TruncatedText } from '../text';
 
+export function RainbowToastDisplay() {
+  const toasts = useRainbowToasts();
+  const insets = useSafeAreaInsets();
+  const { width: deviceWidth } = useDimensions();
+  const { pendingTransactions } = usePendingTransactions();
+  const processedTxs = useRef(new Set<string>());
+
+  console.log('toasts', toasts);
+  console.log('pendingTransactions', pendingTransactions);
+
+  useEffect(() => {
+    pendingTransactions.forEach(tx => {
+      if (!processedTxs.current.has(tx.hash)) {
+        processedTxs.current.add(tx.hash);
+
+        const toast = getToastFromTransaction(tx);
+        if (toast) {
+          showToast(toast);
+        }
+      }
+    });
+  }, [pendingTransactions]);
+
+  useEffect(() => {
+    pendingTransactions.forEach(tx => {
+      if (processedTxs.current.has(tx.hash)) {
+        const value = getToastFromTransaction(tx);
+        if (value) {
+          updateToast(value);
+        }
+      }
+    });
+  }, [pendingTransactions]);
+
+  return (
+    <Box zIndex={1_000_000} position="absolute" top="0px" left="0px" width={deviceWidth} bottom="0px" pointerEvents="box-none">
+      {toasts.map(toast => {
+        return <RainbowToast insets={insets} key={toast.id} toast={toast} />;
+      })}
+    </Box>
+  );
+}
+
+const springConfig: WithSpringConfig = {
+  damping: 14,
+  mass: 1,
+  overshootClamping: false,
+  restDisplacementThreshold: 0.001,
+  restSpeedThreshold: 0.001,
+  stiffness: 121.6,
+};
+
+const DISMISS_THRESHOLD_PERCENTAGE = 0.1;
+const DISMISS_VELOCITY_THRESHOLD = 5;
+
+type Props = PropsWithChildren<{
+  testID?: string;
+  toast: RainbowToastWithIndex;
+  insets: EdgeInsets;
+}>;
+
+const sfSymbols = {
+  check: '􀆅',
+};
+
 function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | null {
   if (tx.swap) {
     const toastState = getSwapToastStatus(tx.status);
@@ -95,71 +160,6 @@ function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | null {
 
   return null;
 }
-
-export function RainbowToastDisplay() {
-  const toasts = useRainbowToasts();
-  const insets = useSafeAreaInsets();
-  const { width: deviceWidth } = useDimensions();
-  const { pendingTransactions } = usePendingTransactions();
-  const processedTxs = useRef(new Set<string>());
-
-  console.log('toasts', toasts);
-  console.log('pendingTransactions', pendingTransactions);
-
-  useEffect(() => {
-    pendingTransactions.forEach(tx => {
-      if (!processedTxs.current.has(tx.hash)) {
-        processedTxs.current.add(tx.hash);
-
-        const toast = getToastFromTransaction(tx);
-        if (toast) {
-          showToast(toast);
-        }
-      }
-    });
-  }, [pendingTransactions]);
-
-  useEffect(() => {
-    pendingTransactions.forEach(tx => {
-      if (processedTxs.current.has(tx.hash)) {
-        const value = getToastFromTransaction(tx);
-        if (value) {
-          updateToast(value);
-        }
-      }
-    });
-  }, [pendingTransactions]);
-
-  return (
-    <Box zIndex={100_000} position="absolute" top="0px" left="0px" width={deviceWidth} bottom="0px" pointerEvents="box-none">
-      {toasts.map(toast => {
-        return <RainbowToast insets={insets} key={toast.id} toast={toast} />;
-      })}
-    </Box>
-  );
-}
-
-const springConfig: WithSpringConfig = {
-  damping: 14,
-  mass: 1,
-  overshootClamping: false,
-  restDisplacementThreshold: 0.001,
-  restSpeedThreshold: 0.001,
-  stiffness: 121.6,
-};
-
-const DISMISS_THRESHOLD_PERCENTAGE = 0.1;
-const DISMISS_VELOCITY_THRESHOLD = 5;
-
-type Props = PropsWithChildren<{
-  testID?: string;
-  toast: RainbowToastWithIndex;
-  insets: EdgeInsets;
-}>;
-
-const sfSymbols = {
-  check: '􀆅',
-};
 
 function RainbowToast({ toast, testID, insets }: Props) {
   const { isDarkMode } = useColorMode();
@@ -223,7 +223,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
       });
   }, [deviceWidth, lastChangeX, removeToastFinish, removeToastStart, translateX]);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const dragStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;
     const opacityX = interpolate(Math.abs(translateX.value), [0, deviceWidth / 2], [1, 0], 'clamp');
 
@@ -258,9 +258,14 @@ function RainbowToast({ toast, testID, insets }: Props) {
     return Gesture.Exclusive(pressGesture, panGesture);
   }, [pressGesture, panGesture]);
 
-  const pressStyle = useAnimatedStyle(() => {
+  const pressStyleContainer = useAnimatedStyle(() => {
     return {
       transform: [{ scale: withSpring(isPressed.value ? 0.9 : 1) }],
+    };
+  });
+
+  const pressStyleContent = useAnimatedStyle(() => {
+    return {
       opacity: withTiming(isPressed.value ? 0.6 : 0.9),
     };
   });
@@ -281,7 +286,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
 
   return (
     <GestureDetector gesture={combinedGesture}>
-      <Animated.View style={animatedStyle}>
+      <Animated.View style={dragStyle}>
         <Animated.View
           style={[
             {
@@ -292,7 +297,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
               shadowColor: 'rgba(0,0,0,0.25)',
               shadowOffset: { height: 4, width: 0 },
             },
-            pressStyle,
+            pressStyleContainer,
           ]}
         >
           <Box
@@ -302,11 +307,9 @@ function RainbowToast({ toast, testID, insets }: Props) {
             pointerEvents="auto"
             position="absolute"
             top="0px"
-            borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.72)' }}
+            // borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.72)' }}
             testID={testID}
           >
-            <View style={{ zIndex: 100 }}>{contents}</View>
-
             {IS_IOS ? (
               <>
                 <BlurGradient
@@ -343,6 +346,8 @@ function RainbowToast({ toast, testID, insets }: Props) {
                 style={StyleSheet.absoluteFill}
               />
             )}
+
+            <Animated.View style={pressStyleContent}>{contents}</Animated.View>
           </Box>
         </Animated.View>
       </Animated.View>
