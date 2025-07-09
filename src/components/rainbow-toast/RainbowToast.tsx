@@ -39,7 +39,8 @@ const springConfig: WithSpringConfig = {
   stiffness: 121.6,
 };
 
-const DISMISS_THRESHOLD_PERCENTAGE = 0.75;
+const DISMISS_THRESHOLD_PERCENTAGE = 0.15;
+const DISMISS_VELOCITY_THRESHOLD = 4;
 
 type Props = PropsWithChildren<{
   testID?: string;
@@ -63,6 +64,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
   const { width: deviceWidth } = useDimensions();
   const visible = useSharedValue(0);
   const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
 
   const height = 60;
   const { index, id } = toast;
@@ -72,6 +74,10 @@ function RainbowToast({ toast, testID, insets }: Props) {
   useEffect(() => {
     visible.value = withSpring(1, springConfig);
   }, [visible]);
+
+  useEffect(() => {
+    translateY.value = withSpring(distance, springConfig);
+  }, [distance, translateY]);
 
   const removeToastFinish = useCallback(() => {
     removeToast(id);
@@ -86,7 +92,8 @@ function RainbowToast({ toast, testID, insets }: Props) {
         },
         onPanResponderRelease: (_, gestureState) => {
           const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
-          if (Math.abs(gestureState.dx) > dismissThreshold || Math.abs(gestureState.vx) > 0.8) {
+
+          if (Math.abs(gestureState.dx) > dismissThreshold && Math.abs(gestureState.vx) > DISMISS_VELOCITY_THRESHOLD) {
             const toValue = gestureState.dx > 0 ? deviceWidth : -deviceWidth;
             startRemoveToast(id);
             translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
@@ -104,12 +111,11 @@ function RainbowToast({ toast, testID, insets }: Props) {
 
   const animatedStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;
-    const translateY = interpolate(visible.value, [0, 1], [0, distance], 'extend');
     const opacityX = interpolate(Math.abs(translateX.value), [0, deviceWidth / 2], [1, 0], 'clamp');
 
     return {
       opacity: opacityY * opacityX,
-      transform: [{ translateY }, { translateX: translateX.value }],
+      transform: [{ translateY: translateY.value }, { translateX: translateX.value }],
     };
   });
 

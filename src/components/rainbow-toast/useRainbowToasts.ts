@@ -19,14 +19,31 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 
   startRemoveToast: id => {
-    set(state => ({
-      toasts: state.toasts.map(toast => (toast.id === id ? { ...toast, removed: true } : toast)),
-    }));
+    set(state => {
+      const updatedToasts = state.toasts.map(toast => (toast.id === id ? { ...toast, removed: true } : toast));
+
+      // Recalculate indices for non-removed toasts
+      const reindexedToasts = updatedToasts.map((toast, originalIndex) => {
+        if (toast.removed) return toast;
+        const newIndex = updatedToasts.slice(0, originalIndex).filter(t => !t.removed).length;
+        return { ...toast, index: newIndex };
+      });
+
+      return { toasts: reindexedToasts };
+    });
   },
 
   removeToast: id => {
     set(state => ({
-      toasts: state.toasts.filter(t => t.id !== id),
+      toasts: state.toasts
+        .filter(t => t.id !== id)
+        .map((toast, index) => {
+          const nonRemovedIndex = state.toasts.filter(t => !t.removed && t.id !== id).findIndex(t => t.id === toast.id);
+          return {
+            ...toast,
+            index: nonRemovedIndex === -1 ? index : nonRemovedIndex,
+          };
+        }),
     }));
   },
 }));
