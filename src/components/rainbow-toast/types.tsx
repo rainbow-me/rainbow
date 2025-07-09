@@ -5,6 +5,7 @@ export type RainbowToast = {
   state: 'swapping' | 'swapped';
   fromToken: string;
   toToken: string;
+  action?: () => void;
 };
 
 export interface RainbowToastState {

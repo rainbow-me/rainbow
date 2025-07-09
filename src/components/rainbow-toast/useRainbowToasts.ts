@@ -3,7 +3,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type ToastState = {
   toasts: (RainbowToast & { removed?: boolean })[];
-  showToast: (toast: RainbowToast) => void;
+  showToast: (toast: Omit<RainbowToast, 'index'>) => void;
   updateToast: (id: string, updates: Partial<RainbowToast>) => void;
   startRemoveToast: (id: string) => void;
   removeToast: (id: string) => void;
@@ -26,6 +26,7 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 
   startRemoveToast: id => {
+    console.log('start');
     set(state => {
       const updatedToasts = state.toasts.map(toast => (toast.id === id ? { ...toast, removed: true } : toast));
 

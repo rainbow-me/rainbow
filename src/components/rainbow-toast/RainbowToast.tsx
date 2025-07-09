@@ -6,9 +6,12 @@ import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { fonts } from '@/styles';
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   interpolate,
@@ -22,47 +25,44 @@ import Animated, {
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { TruncatedText } from '../text';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { throttle } from 'lodash';
 
 export function RainbowToastDisplay() {
   const toasts = useRainbowToasts();
   const insets = useSafeAreaInsets();
   const { width: deviceWidth } = useDimensions();
-  const pendingTransactions = usePendingTransactions();
+  const { pendingTransactions } = usePendingTransactions();
   const processedTxs = useRef(new Set<string>());
 
   console.log('toasts', toasts);
+  console.log('pendingTransactions', pendingTransactions);
 
-  // Watch for new pending transactions and create toasts
   useEffect(() => {
-    if (Array.isArray(pendingTransactions)) {
-      pendingTransactions.forEach(tx => {
-        if (!processedTxs.current.has(tx.hash) && tx.type === 'swap') {
-          processedTxs.current.add(tx.hash);
+    pendingTransactions.forEach(tx => {
+      if (!processedTxs.current.has(tx.hash) && tx.type === 'swap') {
+        processedTxs.current.add(tx.hash);
 
-          showToast({
-            id: tx.hash,
-            index: 0, // Will be set by showToast
-            type: 'swap',
-            state: 'swapping',
-            fromToken: tx.from?.symbol || 'Unknown',
-            toToken: tx.to?.symbol || 'Unknown',
-          });
-        }
-      });
-    }
+        showToast({
+          id: tx.hash,
+          type: 'swap',
+          state: 'swapping',
+          fromToken: tx.from || 'Unknown',
+          toToken: tx.to || 'Unknown',
+          action: () => {
+            Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+              transaction: tx,
+            });
+          },
+        });
+      }
+    });
   }, [pendingTransactions]);
 
-  // Watch for transaction completions
   useEffect(() => {
-    if (Array.isArray(pendingTransactions)) {
-      pendingTransactions.forEach(tx => {
-        if (processedTxs.current.has(tx.hash) && tx.status === 'confirmed') {
-          updateToast(tx.hash, { state: 'swapped' });
-        }
-      });
-    }
+    pendingTransactions.forEach(tx => {
+      if (processedTxs.current.has(tx.hash) && tx.status === 'confirmed') {
+        updateToast(tx.hash, { state: 'swapped' });
+      }
+    });
   }, [pendingTransactions]);
 
   return (
@@ -125,7 +125,12 @@ function RainbowToast({ toast, testID, insets }: Props) {
   }, [distance, translateY]);
 
   const removeToastFinish = useCallback(() => {
+    console.log('wt');
     removeToast(id);
+  }, [id]);
+
+  const removeToastStart = useCallback(() => {
+    startRemoveToast(id);
   }, [id]);
 
   const panGesture = useMemo(() => {
@@ -148,9 +153,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
 
         if (isDraggedFarEnough && isDraggedFastEnough) {
           const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
-          runOnJS(() => {
-            startRemoveToast(id);
-          });
+          runOnJS(removeToastStart)();
           translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
             if (finished) {
               runOnJS(removeToastFinish)();
@@ -160,7 +163,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
           translateX.value = withSpring(0, springConfig);
         }
       });
-  }, [deviceWidth, id, lastChangeX, removeToastFinish, translateX]);
+  }, [deviceWidth, lastChangeX, removeToastFinish, removeToastStart, translateX]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;
@@ -187,8 +190,13 @@ function RainbowToast({ toast, testID, insets }: Props) {
       })
       .onFinalize(() => {
         isPressed.value = false;
+      })
+      .onEnd(() => {
+        if (toast.action) {
+          runOnJS(toast.action)();
+        }
       });
-  }, [isPressed]);
+  }, [isPressed, toast]);
 
   const combinedGesture = useMemo(() => {
     return Gesture.Exclusive(pressGesture, panGesture);
@@ -221,7 +229,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
             }}
           >
             {/* background at 90% */}
-            <Animated.View
+            <View
               style={[
                 StyleSheet.absoluteFillObject,
                 {
@@ -232,7 +240,6 @@ function RainbowToast({ toast, testID, insets }: Props) {
                   alignItems: 'center',
                   justifyContent: 'center',
                 },
-                // pressStyle,
               ]}
             >
               <Text
@@ -241,14 +248,13 @@ function RainbowToast({ toast, testID, insets }: Props) {
               >
                 {sfSymbols.check}
               </Text>
-            </Animated.View>
+            </View>
           </View>
 
           <View style={{ gap: 4 }}>
             <TruncatedText color={foregroundColor} size="smedium" weight="bold">
-              Swapped
+              {toast.state === 'swapping' ? 'Swapping...' : 'Swapped'}
             </TruncatedText>
-
             <TruncatedText color={foregroundColor} opacity={0.5} size={12} weight="bold">
               {toast.fromToken} <Text style={{ fontWeight: '200' }}>􀄫</Text> {toast.toToken}
             </TruncatedText>
