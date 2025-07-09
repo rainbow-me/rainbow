@@ -482,6 +482,23 @@ export function useSwapInputsController({
       equalWorklet(inputValues.value.outputAmount, '0') &&
       equalWorklet(inputValues.value.outputNativeValue, '0');
 
+    console.log(
+      '[fetchQuote conditions]',
+      JSON.stringify(
+        {
+          inputAssetId: internalSelectedInputAsset.value?.uniqueId,
+          outputAssetId: internalSelectedOutputAsset.value?.uniqueId,
+          inputAsset: internalSelectedInputAsset.value,
+          outputAsset: internalSelectedOutputAsset.value,
+          isQuoteStale: isQuoteStale.value,
+          isFetching: isFetching.value,
+          areAllInputsZero,
+        },
+        null,
+        2
+      )
+    );
+
     // If both inputs are 0 or the assets aren't set, return early
     if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || areAllInputsZero) {
       if (isQuoteStale.value !== 0) isQuoteStale.value = 0;

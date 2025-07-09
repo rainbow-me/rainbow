@@ -142,6 +142,12 @@ export interface ZerionAsset {
     bridgeable: boolean;
     networks: { [id in ChainId]?: { bridgeable: boolean } };
   };
+  networks?: {
+    [chainId in ChainId]?: {
+      address: chainId extends ChainId.mainnet ? AddressOrEth : Address;
+      decimals: number;
+    };
+  };
   defi_position?: boolean;
 }
 
