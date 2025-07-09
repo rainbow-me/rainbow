@@ -85,7 +85,7 @@ const ChartTimespanLabels: Record<ChartTimespan, { short: string; long: string }
 };
 
 const TOTAL_CHART_HEIGHT = 288;
-const CHART_VERTICAL_PADDING = 32;
+const CHART_VERTICAL_PADDING = 30;
 
 export const NoChartData = ({ height }: { height: number }) => {
   return (
