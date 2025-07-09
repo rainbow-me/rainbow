@@ -1179,12 +1179,12 @@ class CandlestickChartManager {
     return this.offset.value + this.pendingOffsetAdjustment;
   }
 
-  public toRawOffset(adjustedOffset: number): number {
-    return adjustedOffset - this.pendingOffsetAdjustment;
-  }
-
   public toAdjustedOffset(rawOffset: number): number {
     return rawOffset + this.pendingOffsetAdjustment;
+  }
+
+  public toRawOffset(adjustedOffset: number): number {
+    return adjustedOffset - this.pendingOffsetAdjustment;
   }
 
   public rebuildChart(animate = true, forceRebuildBounds = false): void {
@@ -1419,9 +1419,10 @@ class CandlestickChartManager {
 
       if (currentOffset === clampedOffset) {
         const minOffset = this.getMinOffset();
+        if (minOffset > 0) return;
         const atLeftBoundary = currentOffset === 0;
         const atRightBoundary = currentOffset === minOffset;
-        const isBlockedByBoundary = (atLeftBoundary && velocityX < 0) || (atRightBoundary && velocityX > 0);
+        const isBlockedByBoundary = (atLeftBoundary && velocityX > 0) || (atRightBoundary && velocityX < 0);
         if (isBlockedByBoundary) return;
       }
 
@@ -2146,7 +2147,7 @@ function isCandlestickDataEqual(previousData: CandlestickResponse, currentData: 
   if (Object.is(previousData, currentData)) return true;
 
   const candles = currentData?.candles;
-  if (!candles) return false;
+  if (!candles) return true;
 
   const previousCandles = previousData?.candles;
   if (!previousCandles) return false;
