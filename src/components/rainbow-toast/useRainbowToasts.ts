@@ -4,7 +4,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 export type ToastState = {
   toasts: RainbowToastWithIndex[];
   showToast: <T extends RainbowToast>(toast: T) => void;
-  updateToast: <T extends RainbowToast>(id: string, updates: Partial<T>) => void;
+  updateToast: <T extends RainbowToast>(update: T) => void;
   startRemoveToast: (id: string) => void;
   removeToast: (id: string) => void;
 };
@@ -19,9 +19,9 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
     });
   },
 
-  updateToast: (id, updates) => {
+  updateToast: update => {
     set(state => ({
-      toasts: state.toasts.map(toast => (toast.id === id ? { ...toast, ...updates } : toast)),
+      toasts: state.toasts.map(toast => (toast.id === id ? { ...toast, ...update } : toast)),
     }));
   },
 

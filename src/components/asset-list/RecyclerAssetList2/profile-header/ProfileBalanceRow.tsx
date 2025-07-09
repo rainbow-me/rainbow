@@ -1,7 +1,8 @@
 import { Button } from '@/components/buttons';
-import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { showToast } from '@/components/rainbow-toast/useRainbowToasts';
+import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Text } from '@/design-system';
+import { TransactionStatus } from '@/entities';
 import * as React from 'react';
 
 export const ProfileBalanceRowHeight = 24;
@@ -15,15 +16,15 @@ type ProfileBalanceRowProps = {
 
 export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalanceRowProps) {
   return (
-    <>
+    <Box flexDirection="row">
       <Button
         onPress={() => {
           console.log('press');
           showToast({
             type: 'swap',
-            fromToken: 'ETH',
-            state: 'swapping',
-            toToken: 'ZUMI',
+            status: TransactionStatus.swapping,
+            fromChainId: 0,
+            toChainId: 1,
             id: `${Math.random()}`,
           });
           console.log('pressdone');
@@ -32,7 +33,24 @@ export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalan
       >
         test
       </Button>
-    </>
+
+      <Button
+        onPress={() => {
+          console.log('press');
+          showToast({
+            type: 'swap',
+            status: TransactionStatus.swapped,
+            fromChainId: 0,
+            toChainId: 1,
+            id: `${Math.random()}`,
+          });
+          console.log('pressdone');
+        }}
+        label="estes"
+      >
+        test
+      </Button>
+    </Box>
   );
   return (
     <>

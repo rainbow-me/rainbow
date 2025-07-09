@@ -1,13 +1,25 @@
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import type { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-toast/types';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import {
+  type RainbowToast,
+  type RainbowToastMint,
+  type RainbowToastSend,
+  type RainbowToastSwap,
+  type RainbowToastWithIndex,
+  getMintToastStatus,
+  getSendToastStatus,
+  getSwapToastStatus,
+} from '@/components/rainbow-toast/types';
 import { removeToast, showToast, startRemoveToast, updateToast, useRainbowToasts } from '@/components/rainbow-toast/useRainbowToasts';
 import { Box, globalColors, useColorMode } from '@/design-system';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { fonts } from '@/styles';
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -26,6 +38,64 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { TruncatedText } from '../text';
 
+function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | null {
+  if (tx.swap) {
+    const toastState = getSwapToastStatus(tx.status);
+    if (toastState) {
+      return {
+        id: tx.hash,
+        type: 'swap',
+        status: toastState,
+        fromChainId: tx.swap.fromChainId,
+        toChainId: tx.swap.toChainId,
+        action: () => {
+          Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+            transaction: tx,
+          });
+        },
+      };
+    }
+  }
+
+  if (tx.type === 'send') {
+    const toastState = getSendToastStatus(tx.status);
+    if (toastState) {
+      return {
+        id: tx.hash,
+        type: 'send',
+        status: toastState,
+        amount: parseFloat(tx.value?.toString() || '0'),
+        token: tx.symbol || 'ETH',
+        action: () => {
+          Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+            transaction: tx,
+          });
+        },
+      };
+    }
+  }
+
+  if (tx.type === 'mint') {
+    const toastState = getMintToastStatus(tx.status);
+    if (toastState) {
+      return {
+        id: tx.hash,
+        type: 'mint',
+        status: toastState,
+        name: tx.title || 'NFT',
+        image: tx.description || '',
+        action: () => {
+          Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+            transaction: tx,
+          });
+        },
+      };
+    }
+  }
+
+  return null;
+}
+
 export function RainbowToastDisplay() {
   const toasts = useRainbowToasts();
   const insets = useSafeAreaInsets();
@@ -38,29 +108,24 @@ export function RainbowToastDisplay() {
 
   useEffect(() => {
     pendingTransactions.forEach(tx => {
-      if (!processedTxs.current.has(tx.hash) && tx.type === 'swap') {
+      if (!processedTxs.current.has(tx.hash)) {
         processedTxs.current.add(tx.hash);
 
-        showToast({
-          id: tx.hash,
-          type: 'swap',
-          state: 'swapping',
-          fromToken: tx.from || 'Unknown',
-          toToken: tx.to || 'Unknown',
-          action: () => {
-            Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
-              transaction: tx,
-            });
-          },
-        });
+        const toast = getToastFromTransaction(tx);
+        if (toast) {
+          showToast(toast);
+        }
       }
     });
   }, [pendingTransactions]);
 
   useEffect(() => {
     pendingTransactions.forEach(tx => {
-      if (processedTxs.current.has(tx.hash) && tx.status === 'confirmed') {
-        updateToast(tx.hash, { state: 'swapped' });
+      if (processedTxs.current.has(tx.hash)) {
+        const value = getToastFromTransaction(tx);
+        if (value) {
+          updateToast(value);
+        }
       }
     });
   }, [pendingTransactions]);
@@ -96,15 +161,8 @@ const sfSymbols = {
   check: '􀆅',
 };
 
-// const colors = {
-//   green: {
-//     background: '#3ECF5BE5',
-//   },
-// };
-
 function RainbowToast({ toast, testID, insets }: Props) {
   const { isDarkMode } = useColorMode();
-  const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const visible = useSharedValue(0);
   const translateX = useSharedValue(0);
@@ -175,8 +233,6 @@ function RainbowToast({ toast, testID, insets }: Props) {
     };
   });
 
-  const foregroundColor = isDarkMode ? colors.whiteLabel : colors.dark;
-
   const isPressed = useSharedValue(false);
 
   const pressGesture = useMemo(() => {
@@ -212,56 +268,15 @@ function RainbowToast({ toast, testID, insets }: Props) {
   let contents: React.ReactNode = null;
 
   switch (toast.type) {
-    case 'swap': {
-      contents = (
-        <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-          <View
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 100,
-              borderWidth: 2,
-              borderColor: colors.green,
-              shadowColor: colors.green,
-              shadowRadius: 12,
-              shadowOpacity: 1,
-              shadowOffset: { height: 4, width: 0 },
-            }}
-          >
-            {/* background at 90% */}
-            <View
-              style={[
-                StyleSheet.absoluteFillObject,
-                {
-                  backgroundColor: colors.green,
-                  borderRadius: 100,
-                  overflow: 'hidden',
-                  opacity: 0.9,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                },
-              ]}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: foregroundColor, fontWeight: '800' }}
-              >
-                {sfSymbols.check}
-              </Text>
-            </View>
-          </View>
-
-          <View style={{ gap: 4 }}>
-            <TruncatedText color={foregroundColor} size="smedium" weight="bold">
-              {toast.state === 'swapping' ? 'Swapping...' : 'Swapped'}
-            </TruncatedText>
-            <TruncatedText color={foregroundColor} opacity={0.5} size={12} weight="bold">
-              {toast.fromToken} <Text style={{ fontWeight: '200' }}>􀄫</Text> {toast.toToken}
-            </TruncatedText>
-          </View>
-        </View>
-      );
-    }
+    case 'swap':
+      contents = <SwapToastContent toast={toast} />;
+      break;
+    case 'send':
+      contents = <SendToastContent toast={toast} />;
+      break;
+    case 'mint':
+      contents = <MintToastContent toast={toast} />;
+      break;
   }
 
   return (
@@ -333,4 +348,216 @@ function RainbowToast({ toast, testID, insets }: Props) {
       </Animated.View>
     </GestureDetector>
   );
+}
+
+interface ToastContentProps {
+  icon: React.ReactNode;
+  title: string;
+  subtitle: React.ReactNode;
+}
+
+function ToastContent({ icon, title, subtitle }: ToastContentProps) {
+  const colors = useToastColors();
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+      {icon}
+      <View style={{ gap: 4 }}>
+        <TruncatedText color={colors.foreground} size="smedium" weight="bold">
+          {title}
+        </TruncatedText>
+        <TruncatedText color={colors.foreground} opacity={0.5} size={12} weight="bold">
+          {subtitle}
+        </TruncatedText>
+      </View>
+    </View>
+  );
+}
+
+interface SwapToastContentProps {
+  toast: RainbowToastSwap;
+}
+
+const useChainsLabel = () => useBackendNetworksStore.getState().getChainsLabel();
+
+function SwapToastContent({ toast }: SwapToastContentProps) {
+  const chainsLabel = useChainsLabel();
+
+  const icon =
+    toast.status === TransactionStatus.swapped ? (
+      <SFSymbolIcon name="check" />
+    ) : (
+      <View style={{ flexDirection: 'row' }}>
+        <ChainImage chainId={toast.fromChainId} size={20} />
+        <View style={{ marginLeft: -8 }}>
+          <ChainImage chainId={toast.toChainId} size={20} />
+        </View>
+      </View>
+    );
+
+  const title = toast.status === 'swapping' ? 'Swapping...' : 'Swapped';
+  const fromNetwork = chainsLabel[toast.fromChainId] || '';
+  const toNetwork = chainsLabel[toast.toChainId] || '';
+  const subtitle = (
+    <>
+      {fromNetwork} <Text style={{ fontWeight: '200' }}>􀄫</Text> {toNetwork}
+    </>
+  );
+
+  return <ToastContent icon={icon} title={title} subtitle={subtitle} />;
+}
+
+const SFSymbolIcon = ({ name }: { name: keyof typeof sfSymbols }) => {
+  const colors = useToastColors();
+
+  return (
+    <View
+      style={{
+        width: 28,
+        height: 28,
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: colors.green,
+        shadowColor: colors.green,
+        shadowRadius: 12,
+        shadowOpacity: 1,
+        shadowOffset: { height: 4, width: 0 },
+      }}
+    >
+      {/* background at 90% */}
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: colors.green,
+            borderRadius: 100,
+            overflow: 'hidden',
+            opacity: 0.9,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        ]}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: colors.foreground, fontWeight: '800' }}
+        >
+          {sfSymbols[name]}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+interface SendToastContentProps {
+  toast: RainbowToastSend;
+}
+
+function SendToastContent({ toast }: SendToastContentProps) {
+  const colors = useToastColors();
+
+  const icon = (
+    <View
+      style={{
+        width: 28,
+        height: 28,
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: colors.clearBlue,
+        shadowColor: colors.clearBlue,
+        shadowRadius: 12,
+        shadowOpacity: 1,
+        shadowOffset: { height: 4, width: 0 },
+      }}
+    >
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: colors.clearBlue,
+            borderRadius: 100,
+            overflow: 'hidden',
+            opacity: 0.9,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        ]}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: foregroundColor, fontWeight: '800' }}
+        >
+          {toast.status === 'failed' ? '!' : '↗'}
+        </Text>
+      </View>
+    </View>
+  );
+
+  const title = toast.status === 'sending' ? 'Sending...' : toast.status === 'sent' ? 'Sent' : 'Failed';
+  const subtitle = `${toast.amount} ${toast.token}`;
+
+  return <ToastContent icon={icon} title={title} subtitle={subtitle} />;
+}
+
+interface MintToastContentProps {
+  toast: RainbowToastMint;
+}
+
+const useToastColors = () => {
+  const { isDarkMode } = useColorMode();
+  const { colors } = useTheme();
+  const foreground = isDarkMode ? colors.whiteLabel : colors.dark;
+
+  return {
+    foreground,
+    green: colors.green,
+    purple: colors.purple,
+    clearBlue: colors.clearBlue,
+  };
+};
+
+function MintToastContent({ toast }: MintToastContentProps) {
+  const colors = useToastColors();
+
+  const icon = (
+    <View
+      style={{
+        width: 28,
+        height: 28,
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: colors.purple,
+        shadowColor: colors.purple,
+        shadowRadius: 12,
+        shadowOpacity: 1,
+        shadowOffset: { height: 4, width: 0 },
+      }}
+    >
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: colors.purple,
+            borderRadius: 100,
+            overflow: 'hidden',
+            opacity: 0.9,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        ]}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: colors.foreground, fontWeight: '800' }}
+        >
+          ✨
+        </Text>
+      </View>
+    </View>
+  );
+
+  const title = toast.status === 'minting' ? 'Minting...' : 'Minted';
+  const subtitle = toast.name;
+
+  return <ToastContent icon={icon} title={title} subtitle={subtitle} />;
 }
