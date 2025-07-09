@@ -41,8 +41,8 @@ export enum CandleResolution {
   D7 = 'RESOLUTION_7_DAY',
 }
 
-export type GetCandleChartRequest = {
-  /** Pricing currency code (e.g., "usd") */
+export type GetCandlestickChartRequest = {
+  /** Pricing currency code (e.g., `'usd'`) */
   currency: string;
   /** Number of candles to request */
   requested_candles: number;
@@ -50,11 +50,11 @@ export type GetCandleChartRequest = {
   resolution: CandleResolution;
   /** Inclusive start of the time window, as epoch-seconds */
   start_time?: number;
-  /** Token identifier in the form "<address>:<chain_id>" (e.g., "0xtoken..address:1") */
+  /** Token identifier in the form `'address:chainId'` (e.g., `'0x123…:1'`) */
   token_id: string;
 };
 
-export type CandleChartMetadata = {
+export type CandlestickChartMetadata = {
   /** EVM chain ID part of the token identifier */
   chainId: number;
   /** Number of candles in the payload arrays */
@@ -73,7 +73,7 @@ export type CandleChartMetadata = {
   responseTime: string;
   /** UTC Start timestamp of the first candle */
   startTime: string;
-  /** Token identifier in the form "<address>:<chain_id>" */
+  /** Token identifier in the form `'address:chainId'` (e.g., `'0x123…:1'`) */
   tokenId: string;
 };
 
@@ -111,6 +111,6 @@ export type CandlestickChartResult = {
 };
 
 export type CandlestickChartResponse = {
-  metadata: CandleChartMetadata;
+  metadata: CandlestickChartMetadata;
   result: CandlestickChartResult;
 };

@@ -39,10 +39,12 @@ export function BalanceSection() {
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
       <Box
-        padding="16px"
+        backgroundColor={accentColors.opacity6}
+        borderColor={{ custom: accentColors.opacity6 }}
         borderRadius={20}
-        style={{ backgroundColor: backgroundColor, borderColor: accentColors.opacity6, borderWidth: 1 }}
+        borderWidth={1}
         gap={12}
+        padding="16px"
       >
         <Box flexDirection="row" justifyContent="space-between">
           <Text color="labelTertiary" size="15pt" weight="bold">

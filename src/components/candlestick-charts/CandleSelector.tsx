@@ -1,10 +1,11 @@
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { runOnJS, SharedValue, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { SharedValue, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useChartsStore } from '@/components/candlestick-charts/candlestickStore';
 import { CandleResolution } from '@/components/candlestick-charts/types';
 import { AnimatedText, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { opacity } from '@/__swaps__/utils/swaps';
 
@@ -71,10 +72,15 @@ const Button = ({
 }) => {
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const textStyle = useAnimatedStyle(() => ({
-    color: selectedIndex.value === index ? color : labelQuaternary,
-    fontWeight: selectedIndex.value === index ? '800' : '700',
-  }));
+  const textStyle = useAnimatedStyle(() => {
+    const isSelected = selectedIndex.value === index;
+    const textColor = isSelected ? color : labelQuaternary;
+    if (!IS_IOS) return { color: textColor };
+    return {
+      color: textColor,
+      fontWeight: isSelected ? '800' : '700',
+    };
+  });
 
   return (
     <GestureHandlerButton

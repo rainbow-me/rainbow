@@ -294,10 +294,8 @@ export async function getAllKeys(): Promise<UserCredentials[] | undefined> {
     logger.debug(`[keychain]: getAllKeys`, {}, logger.DebugContext.keychain);
     const res = await getAllInternetCredentials();
     return res ? res.results : [];
-  } catch (e: any) {
-    logger.error(new RainbowError(`[keychain]: getAllKeys() failed`), {
-      message: e.toString(),
-    });
+  } catch (e) {
+    logger.error(new RainbowError(`[keychain]: getAllKeys() failed`, e));
     return undefined;
   }
 }

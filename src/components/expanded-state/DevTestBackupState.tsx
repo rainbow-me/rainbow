@@ -13,7 +13,8 @@ import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedU
 import { clearWalletState } from '@/state/wallets/walletsStore';
 import Clipboard from '@react-native-clipboard/clipboard';
 import React, { useEffect, useState } from 'react';
-import { Alert, DevSettings, Pressable, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
+import { resetInternetCredentials } from 'react-native-keychain';
 
 export const DevTestBackupState = () => {
   const [exported, setExported] = useState('test123');
@@ -123,8 +124,10 @@ export const DevTestBackupState = () => {
             clearWalletState({ resetKeychain: true }),
             clearAllStorages(),
             clear(),
+            resetInternetCredentials({}),
             rainbowStorage.clearAll(),
           ]);
+
           Navigation.handleAction(Routes.WELCOME_SCREEN);
         }}
       >

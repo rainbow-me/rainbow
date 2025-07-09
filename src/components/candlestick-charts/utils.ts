@@ -1,7 +1,7 @@
 import { Bar, CandleResolution, CandlestickChartResponse } from '@/components/candlestick-charts/types';
 
 export function transformApiResponseToBars(response: CandlestickChartResponse, filterEmptyVolumes = false): Bar[] {
-  const { payload } = response.result;
+  const payload = response.result.payload;
   const length = payload.t.length;
   const bars: Bar[] = [];
   for (let i = 0; i < length; i++) {
