@@ -6,7 +6,6 @@ import {
   Picture,
   SkCanvas,
   SkColor,
-  SkPaint,
   SkParagraph,
   SkPicture,
   Skia,
@@ -43,11 +42,11 @@ import {
   useChartsStore,
 } from '@/components/candlestick-charts/candlestickStore';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { Inline, SkiaText, Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { Inline, Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { NativeCurrencyKey } from '@/entities';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import { convertAmountToNativeDisplayWorklet as formatPrice } from '@/helpers/utilities';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useChangeEffect } from '@/hooks/useChangeEffect';
@@ -363,7 +362,6 @@ class CandlestickChartManager {
   private isLoadingHistoricalCandles: SharedValue<boolean>;
   private maxDisplayedVolume: SharedValue<number>;
   private offset: SharedValue<number>;
-  private xAxisLabels: SharedValue<string[]>;
 
   private lastCrosshairPosition = { x: 0, y: 0 };
   private lastVisibleRange = { startIndex: -1, endIndex: -1 };
@@ -434,7 +432,6 @@ class CandlestickChartManager {
     isLoadingHistoricalCandles,
     maxDisplayedVolume,
     nativeCurrency,
-    xAxisLabels,
   }: {
     activeCandle: SharedValue<Bar | undefined>;
     buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
@@ -457,7 +454,6 @@ class CandlestickChartManager {
     isLoadingHistoricalCandles: SharedValue<boolean>;
     maxDisplayedVolume: SharedValue<number>;
     nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
-    xAxisLabels: SharedValue<string[]>;
   }) {
     // ========== Core State ==========
     this.backgroundColor = Skia.Color(config.chart.backgroundColor);
@@ -488,7 +484,6 @@ class CandlestickChartManager {
     this.isLoadingHistoricalCandles = isLoadingHistoricalCandles;
     this.maxDisplayedVolume = maxDisplayedVolume;
     this.offset = chartXOffset;
-    this.xAxisLabels = xAxisLabels;
 
     // ========== Colors ==========
     this.colors.crosshairDot = Skia.Color(this.config.crosshair.dotColor);
@@ -622,25 +617,8 @@ class CandlestickChartManager {
     const endIndex = Math.min(this.candles.length - 1, rawEnd);
 
     if (hasCandles && (startIndex !== this.lastVisibleRange.startIndex || endIndex !== this.lastVisibleRange.endIndex)) {
-      const startCandle = this.candles[startIndex];
-      const startDate = startCandle ? this.timeFormatter.format(startCandle.t) : undefined;
-      const endCandle = this.candles[endIndex];
-      const endDate = endCandle ? this.timeFormatter.format(endCandle.t) : undefined;
-
-      this.xAxisLabels.modify(labels => {
-        if (startDate) labels[0] = startDate;
-        if (endDate) labels[1] = endDate;
-        return labels;
-      });
-
       this.lastVisibleRange.startIndex = startIndex;
       this.lastVisibleRange.endIndex = endIndex;
-    } else if (!hasCandles) {
-      this.xAxisLabels.modify(labels => {
-        labels[0] = '';
-        labels[1] = '';
-        return labels;
-      });
     }
 
     return { startIndex, endIndex };
@@ -730,17 +708,49 @@ class CandlestickChartManager {
   // ============ Chart Drawing Methods ======================================== //
 
   private buildBaseCandlesPicture(): void {
+    const heightWithXAxis = this.chartHeight + this.config.chart.xAxisHeight + this.config.chart.xAxisGap * 2;
     const canvas = this.pictureRecorder.beginRecording({
-      height: this.chartHeight,
+      height: heightWithXAxis,
       width: this.chartWidth,
       x: 0,
       y: 0,
     });
 
+    const buildParagraph = this.buildParagraph;
     const candleWidth = this.candleWidth;
     const chartHeight = this.chartHeight;
     const chartWidth = this.chartWidth;
     const currentOffset = this.getOffsetX();
+    const hasCandles = this.candles.length > 0;
+    const { startIndex, endIndex } = this.getVisibleIndices();
+
+    // ========== X-Axis Labels ==========
+    if (hasCandles) {
+      const xAxisWidth = chartWidth - this.config.chart.xAxisInset * 2;
+      const xAxisY = chartHeight + this.config.chart.xAxisGap;
+      const color = this.colors.labelQuinary;
+      const foregroundPaint = this.paints.text;
+      const startCandle = this.candles[startIndex];
+      const startDate = startCandle ? this.timeFormatter.format(startCandle.t) : undefined;
+      const endCandle = this.candles[endIndex];
+      const endDate = endCandle ? this.timeFormatter.format(endCandle.t) : undefined;
+
+      if (startDate) {
+        const leftParagraph = buildParagraph({ color, foregroundPaint, text: startDate });
+        if (leftParagraph) {
+          leftParagraph.layout(xAxisWidth / 2);
+          leftParagraph.paint(canvas, this.config.chart.xAxisInset, xAxisY);
+        }
+      }
+      if (endDate) {
+        const rightParagraph = buildParagraph({ color, foregroundPaint, text: endDate });
+        if (rightParagraph) {
+          rightParagraph.layout(xAxisWidth / 2);
+          const textWidth = rightParagraph.getLineMetrics()[0].width;
+          rightParagraph.paint(canvas, chartWidth - this.config.chart.xAxisInset - textWidth, xAxisY);
+        }
+      }
+    }
 
     canvas.clipRect({ x: 0, y: 0, width: chartWidth, height: chartHeight }, ClipOp.Intersect, true);
 
@@ -756,7 +766,6 @@ class CandlestickChartManager {
 
     // ========== Grid Lines and Price Labels ==========
     const stride = this.getStride(candleWidth);
-    const { startIndex, endIndex } = this.getVisibleIndices();
     const visibleCandles = chartWidth / stride;
     const rawInterval = visibleCandles / 6;
     const candleInterval = Math.max(1, Math.round(this.getNiceInterval(rawInterval)));
@@ -767,8 +776,6 @@ class CandlestickChartManager {
       canvas.drawLine(gx, 0, gx, chartHeight, this.paints.grid);
     }
 
-    const buildParagraph = this.buildParagraph;
-    const hasCandles = this.candles.length > 0;
     const labelX = chartWidth - this.yAxisWidth + this.config.chart.yAxisPaddingLeft;
     let labelHeight: number | undefined = undefined;
 
@@ -1206,6 +1213,7 @@ class CandlestickChartManager {
 
   public setBuildParagraph(buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null): void {
     this.buildParagraph = buildParagraph;
+    this.buildBaseCandlesPicture();
   }
 
   public setCandles(
@@ -1509,14 +1517,13 @@ function useCandlestickChart({
   isLoadingHistoricalCandles: SharedValue<boolean>;
   providedConfig: CandlestickChartProps['config'];
 }) {
-  const { candles, config, hasPreviousCandles, initialPicture, nativeCurrency, xAxisLabelPaint, xAxisWidth } = useStableValue(() =>
+  const { candles, config, hasPreviousCandles, initialPicture, nativeCurrency } = useStableValue(() =>
     buildChartConfig({
       address,
       backgroundColor,
       chainId,
       chartHeight,
       chartWidth,
-      isDarkMode,
       providedConfig,
     })
   );
@@ -1535,7 +1542,6 @@ function useCandlestickChart({
   const chartXOffset = useSharedValue(getInitialOffset(candles, chartWidth, config));
   const isDecelerating = useSharedValue(false);
   const maxDisplayedVolume = useSharedValue(0);
-  const xAxisLabels = useSharedValue<string[]>([]);
 
   const chartPicture = useSharedValue(initialPicture);
   const crosshairPicture = useSharedValue(initialPicture);
@@ -1591,7 +1597,6 @@ function useCandlestickChart({
       isLoadingHistoricalCandles,
       maxDisplayedVolume,
       nativeCurrency,
-      xAxisLabels,
     });
   }, true);
 
@@ -1652,8 +1657,10 @@ function useCandlestickChart({
   );
 
   useChangeEffect(() => {
-    handleThemeChange({ backgroundColor, chartManager, isDarkMode, providedConfig, xAxisLabelPaint, xAxisLabels });
-  }, [backgroundColor, chartManager, isDarkMode, providedConfig, xAxisLabelPaint, xAxisLabels]);
+    runOnUI(() => {
+      chartManager.value?.setColorMode?.(isDarkMode ? 'dark' : 'light', backgroundColor, providedConfig);
+    })();
+  }, [backgroundColor, chartManager, isDarkMode, providedConfig]);
 
   useChangeEffect(() => {
     if (IS_IOS) return;
@@ -1664,7 +1671,6 @@ function useCandlestickChart({
 
   useCleanup(() => {
     initialPicture.dispose();
-    xAxisLabelPaint.dispose();
     runOnUI(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;
@@ -1686,9 +1692,6 @@ function useCandlestickChart({
         crosshair: crosshairPicture,
         indicator: indicatorPicture,
       },
-      xAxisLabelPaint,
-      xAxisLabels,
-      xAxisWidth,
     }),
     [
       activeCandle,
@@ -1701,37 +1704,8 @@ function useCandlestickChart({
       fetchAdditionalCandles,
       indicatorPicture,
       isDecelerating,
-      xAxisLabelPaint,
-      xAxisLabels,
-      xAxisWidth,
     ]
   );
-}
-
-function handleThemeChange({
-  backgroundColor,
-  chartManager,
-  isDarkMode,
-  providedConfig,
-  xAxisLabelPaint,
-  xAxisLabels,
-}: {
-  backgroundColor: string;
-  chartManager: SharedValue<CandlestickChartManager | undefined>;
-  isDarkMode: boolean;
-  providedConfig: CandlestickChartProps['config'];
-  xAxisLabelPaint: SkPaint;
-  xAxisLabels: SharedValue<string[]>;
-}): void {
-  runOnUI(() => {
-    xAxisLabelPaint.setColor(Skia.Color(getColorForTheme('labelQuinary', isDarkMode ? 'dark' : 'light')));
-    xAxisLabels.modify(labels => {
-      labels[0] = `${labels[0]}\u200B`;
-      labels[1] = `\u200B${labels[1]}`;
-      return labels;
-    });
-    chartManager.value?.setColorMode?.(isDarkMode ? 'dark' : 'light', backgroundColor, providedConfig);
-  })();
 }
 
 const SPINNER_SIZE = 24;
@@ -1756,18 +1730,7 @@ export const CandlestickChart = memo(function CandlestickChart({
   const isLoadingHistoricalCandles = useSharedValue(false);
   const chartHeight = providedChartHeight - 13 - 10 - 16;
 
-  const {
-    activeCandle,
-    chartManager,
-    chartXOffset,
-    config,
-    fetchAdditionalCandles,
-    isDecelerating,
-    pictures,
-    xAxisLabelPaint,
-    xAxisLabels,
-    xAxisWidth,
-  } = useCandlestickChart({
+  const { activeCandle, chartManager, chartXOffset, config, fetchAdditionalCandles, isDecelerating, pictures } = useCandlestickChart({
     address,
     backgroundColor,
     chainId,
@@ -1778,9 +1741,6 @@ export const CandlestickChart = memo(function CandlestickChart({
     isLoadingHistoricalCandles,
     providedConfig,
   });
-
-  const leftXAxisLabel = useDerivedValue(() => xAxisLabels.value?.[0] ?? '');
-  const rightXAxisLabel = useDerivedValue(() => xAxisLabels.value?.[1] ?? '');
 
   const showLeftFade = useDerivedValue(() => !_WORKLET || chartManager.value?.toAdjustedOffset?.(chartXOffset.value) !== 0);
   const leftFadeStyle = useAnimatedStyle(() => ({
@@ -1855,36 +1815,6 @@ export const CandlestickChart = memo(function CandlestickChart({
     return Gesture.Race(panGesture, pinchGesture, crosshairGesture);
   }, [chartManager]);
 
-  const xAxisLabelsRow = useMemo(() => {
-    if (IS_ANDROID) return <></>;
-    return (
-      <>
-        <SkiaText
-          foregroundPaint={xAxisLabelPaint}
-          size="11pt"
-          weight="bold"
-          width={xAxisWidth / 2}
-          x={config.chart.xAxisInset}
-          y={chartHeight + config.chart.xAxisGap}
-        >
-          {leftXAxisLabel}
-        </SkiaText>
-
-        <SkiaText
-          align="right"
-          foregroundPaint={xAxisLabelPaint}
-          size="11pt"
-          weight="bold"
-          width={xAxisWidth / 2}
-          x={chartWidth - config.chart.xAxisInset - xAxisWidth / 2}
-          y={chartHeight + config.chart.xAxisGap}
-        >
-          {rightXAxisLabel}
-        </SkiaText>
-      </>
-    );
-  }, [chartHeight, chartWidth, config, leftXAxisLabel, rightXAxisLabel, xAxisLabelPaint, xAxisWidth]);
-
   const chartCanvas = useMemo(
     () => (
       <GestureDetector gesture={chartGestures}>
@@ -1892,11 +1822,10 @@ export const CandlestickChart = memo(function CandlestickChart({
           <Picture picture={pictures.chart} />
           <Picture picture={pictures.indicator} />
           <Picture picture={pictures.crosshair} />
-          {xAxisLabelsRow}
         </Canvas>
       </GestureDetector>
     ),
-    [chartGestures, pictures, xAxisLabelsRow]
+    [chartGestures, pictures]
   );
 
   const chartBottomPadding = config.chart.xAxisHeight + config.chart.xAxisGap * 2 + (showChartControls ? 56 : 0);
@@ -2107,7 +2036,6 @@ function buildChartConfig({
   backgroundColor,
   chartHeight,
   chartWidth,
-  isDarkMode,
   providedConfig,
 }: {
   address: string;
@@ -2115,7 +2043,6 @@ function buildChartConfig({
   backgroundColor: string;
   chartHeight: number;
   chartWidth: number;
-  isDarkMode: boolean;
   providedConfig: CandlestickChartProps['config'];
 }): {
   candles: Bar[];
@@ -2123,8 +2050,6 @@ function buildChartConfig({
   hasPreviousCandles: boolean;
   initialPicture: SkPicture;
   nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
-  xAxisLabelPaint: SkPaint;
-  xAxisWidth: number;
 } {
   const { candles, hasPreviousCandles, nativeCurrency } = prepareCandlestickData({ address, chainId });
 
@@ -2132,23 +2057,13 @@ function buildChartConfig({
   if (providedConfig) mergedConfig = merge(mergedConfig, providedConfig);
   mergedConfig.chart.backgroundColor = backgroundColor;
 
-  const xAxisWidth = chartWidth - mergedConfig.chart.xAxisInset * 2;
-
   return {
     candles,
     config: mergedConfig,
     hasPreviousCandles,
     initialPicture: createBlankPicture(chartWidth, chartHeight),
     nativeCurrency,
-    xAxisLabelPaint: getXAxisLabelPaint(isDarkMode),
-    xAxisWidth,
   };
-}
-
-function getXAxisLabelPaint(isDarkMode: boolean): SkPaint {
-  const paint = Skia.Paint();
-  paint.setColor(Skia.Color(getColorForTheme('labelQuinary', isDarkMode ? 'dark' : 'light')));
-  return paint;
 }
 
 /**
@@ -2231,7 +2146,7 @@ function isCandlestickDataEqual(previousData: CandlestickResponse, currentData: 
   if (Object.is(previousData, currentData)) return true;
 
   const candles = currentData?.candles;
-  if (!candles) return true;
+  if (!candles) return false;
 
   const previousCandles = previousData?.candles;
   if (!previousCandles) return false;
@@ -2246,8 +2161,8 @@ function isCandlestickDataEqual(previousData: CandlestickResponse, currentData: 
 
   if (Object.is(candles, previousCandles)) return true;
 
-  const didFirstCandleChange = candles[0]?.t !== previousCandles[0]?.t;
-  if (didFirstCandleChange) return false;
+  const didFirstTimestampChange = candles[0]?.t !== previousCandles[0]?.t;
+  if (didFirstTimestampChange) return false;
 
   const lastCandle = candles[candles.length - 1];
   const previousLastCandle = previousCandles[previousCandles.length - 1];
