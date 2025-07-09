@@ -216,7 +216,7 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
   },
 
   chart: {
-    activeCandleCardGap: 16,
+    activeCandleCardGap: 20,
     backgroundColor: '#141619',
     candlesPaddingRatioVertical: 0.1,
     panGestureDeceleration: 0.9975,
@@ -1742,7 +1742,7 @@ export const CandlestickChart = memo(function CandlestickChart({
   address,
   backgroundColor = DEFAULT_CANDLESTICK_CONFIG.chart.backgroundColor,
   chainId,
-  chartHeight = 480,
+  chartHeight: providedChartHeight = 480,
   chartWidth = DEVICE_WIDTH,
   config: providedConfig,
   showChartControls = false,
@@ -1754,6 +1754,7 @@ export const CandlestickChart = memo(function CandlestickChart({
   const { currency } = getNativeCurrency();
 
   const isLoadingHistoricalCandles = useSharedValue(false);
+  const chartHeight = providedChartHeight - 13 - 10 - 16;
 
   const {
     activeCandle,

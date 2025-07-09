@@ -11,10 +11,12 @@ import { colors } from '@/styles';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { formatTimestamp } from '@/worklets/dates';
 import { useAppSettingsStore } from '@/state/appSettings/appSettingsStore';
-import { useExperimentalFlag } from '@/config';
 import { CandleResolution } from '@/components/candlestick-charts/types';
 import { setCandleResolution } from '@/components/candlestick-charts/CandleSelector';
-import { useChartsStore } from '@/components/candlestick-charts/candlestickStore';
+import { useCandlestickStore, useChartsStore } from '@/components/candlestick-charts/candlestickStore';
+import { useStableValue } from '@/hooks/useStableValue';
+import { useListen } from '@/state/internal/hooks/useListen';
+import { useExperimentalConfig } from '@/config/experimentalHooks';
 
 const translations = {
   noChartData: i18n.t(i18n.l.expanded_state.chart.no_chart_data),
@@ -82,8 +84,8 @@ const ChartTimespanLabels: Record<ChartTimespan, { short: string; long: string }
   },
 };
 
-const TOTAL_CHART_HEIGHT = 300;
-const CHART_VERTICAL_PADDING = 30;
+const TOTAL_CHART_HEIGHT = 288;
+const CHART_VERTICAL_PADDING = 32;
 
 export const NoChartData = ({ height }: { height: number }) => {
   return (
@@ -106,31 +108,44 @@ type ChartProps = {
 
 export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
   const { isDarkMode } = useColorMode();
+  const { width: screenWidth } = useWindowDimensions();
+  const { 'Candlestick Charts': enableCandlestickCharts, 'Candlestick Data Monitor': showDataMonitor } = useExperimentalConfig();
+
   const priceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
   const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
   const chartGestureUnixTimestamp = useSharedValue<number>(0);
   const isChartGestureActive = useSharedValue(false);
-  const { width: screenWidth } = useWindowDimensions();
-  const enableCandlestickCharts = useExperimentalFlag('Candlestick Charts');
 
-  const chartType = useAppSettingsStore(state => state.chartType);
+  const initialCandlestickPrice = useStableValue(() => useCandlestickStore.getState().getPrice());
+  const currentCandlestickPrice = useSharedValue(initialCandlestickPrice);
+
+  const chartType = useAppSettingsStore(state => (enableCandlestickCharts ? state.chartType : ChartTypes.LINE));
+
   const [selectedTimespan, setSelectedTimespan] = useState<ChartTimespan>(() =>
     chartType === ChartTypes.LINE ? 'hour' : convertToChartTimespan(useChartsStore.getState().candleResolution)
   );
+  const selectedTimespanLabel = useMemo(() => formatSelectedTimespan(selectedTimespan), [selectedTimespan]);
 
-  const selectedTimespanLabel = useMemo(() => {
-    return i18n.t(i18n.l.expanded_state.chart.past_timespan, {
-      formattedTimespan: ChartTimespanLabels[selectedTimespan].long,
-    });
-  }, [selectedTimespan]);
+  const displayDate = useDerivedValue(() =>
+    isChartGestureActive.value ? formatTimestamp(chartGestureUnixTimestamp.value) : selectedTimespanLabel
+  );
+  const price = useDerivedValue(() =>
+    isChartGestureActive.value ? chartGesturePrice.value : currentCandlestickPrice.value?.price ?? asset.price.value ?? undefined
+  );
+  const relativeChange = useDerivedValue(() => currentCandlestickPrice.value?.percentChange ?? asset.price.relativeChange24h ?? undefined);
 
-  const displayDate = useDerivedValue(() => {
-    return isChartGestureActive.value ? formatTimestamp(chartGestureUnixTimestamp.value) : selectedTimespanLabel;
-  });
-
-  const price = useDerivedValue(() => {
-    return isChartGestureActive.value ? chartGesturePrice.value : asset.price.value ?? undefined;
-  });
+  useListen(
+    useCandlestickStore,
+    state => state.getPrice(),
+    price => {
+      currentCandlestickPrice.value = price;
+    },
+    (previousPrice, price) => {
+      if (!price) return true;
+      if (!previousPrice) return false;
+      return price.price === previousPrice.price && price.percentChange === previousPrice.percentChange;
+    }
+  );
 
   const timespans = useMemo(() => {
     if (chartType === ChartTypes.LINE) {
@@ -205,13 +220,14 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   );
 
   return (
-    <Box>
-      <Box as={Animated.View} style={chartHeaderStyle} paddingHorizontal={'24px'}>
-        <ChartExpandedStateHeader priceRelativeChange={priceRelativeChange} price={price} displayDate={displayDate} />
+    <Box gap={28}>
+      <Box as={Animated.View} paddingHorizontal="24px" style={chartHeaderStyle}>
+        <ChartExpandedStateHeader displayDate={displayDate} priceRelativeChange={relativeChange} price={price} />
       </Box>
+
       <Box gap={20}>
         {chartType === ChartTypes.LINE && (
-          <Box alignItems="center" justifyContent="center" height={TOTAL_CHART_HEIGHT}>
+          <Box alignItems="center" height={TOTAL_CHART_HEIGHT} justifyContent="center">
             <LineChart
               strokeColor={accentColors.color}
               backgroundColor={accentColors.background}
@@ -226,27 +242,32 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
             />
           </Box>
         )}
+
         {chartType === ChartTypes.CANDLESTICK && (
-          <Box height={TOTAL_CHART_HEIGHT}>
+          <Box alignItems="center" height={TOTAL_CHART_HEIGHT} justifyContent="center">
             <CandlestickChart
               address={asset.address}
               backgroundColor={backgroundColor}
               chainId={asset.chainId}
-              chartHeight={TOTAL_CHART_HEIGHT - 13 - 10 - 16}
+              chartHeight={TOTAL_CHART_HEIGHT}
+              chartWidth={screenWidth}
               config={candleConfig}
               isChartGestureActive={isChartGestureActive}
-              showChartControls={false}
+              showDataMonitor={showDataMonitor}
             />
           </Box>
         )}
-        <Box>
+
+        <Box width="full">
           <ScrollView
             horizontal
             contentOffset={{ x: -timespanScrollViewOffset, y: 0 }}
             contentContainerStyle={{
-              paddingLeft: timespanScrollViewOffset,
-              height: 34,
+              alignItems: 'center',
               gap: 12,
+              height: 34,
+              justifyContent: 'center',
+              paddingLeft: timespanScrollViewOffset,
             }}
             showsHorizontalScrollIndicator={false}
           >
@@ -272,6 +293,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
               </ButtonPressAnimation>
             ))}
           </ScrollView>
+
           {enableCandlestickCharts && (
             <Box position="absolute" right={{ custom: 12 }}>
               <ButtonPressAnimation onPress={onPresschartType}>
@@ -322,4 +344,10 @@ function convertToChartTimespan(candleResolution: CandleResolution): ChartTimesp
     default:
       return 'hour';
   }
+}
+
+function formatSelectedTimespan(timespan: ChartTimespan): string {
+  return i18n.t(i18n.l.expanded_state.chart.past_timespan, {
+    formattedTimespan: ChartTimespanLabels[timespan].long,
+  });
 }
