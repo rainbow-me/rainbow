@@ -7,12 +7,21 @@ import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import { fonts } from '@/styles';
 import React, { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
-import { PanResponder, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring, WithSpringConfig } from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  WithSpringConfig,
+  withTiming,
+} from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { TruncatedText } from '../text';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 export function RainbowToastDisplay() {
   const toasts = useRainbowToasts();
@@ -83,31 +92,28 @@ function RainbowToast({ toast, testID, insets }: Props) {
     removeToast(id);
   }, [id]);
 
-  const { panHandlers } = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderMove: (_, gestureState) => {
-          translateX.value = gestureState.dx;
-        },
-        onPanResponderRelease: (_, gestureState) => {
-          const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
+  const panGesture = useMemo(() => {
+    return Gesture.Pan()
+      .minDistance(10)
+      .onUpdate(event => {
+        translateX.value = event.translationX;
+      })
+      .onEnd(event => {
+        const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
 
-          if (Math.abs(gestureState.dx) > dismissThreshold && Math.abs(gestureState.vx) > DISMISS_VELOCITY_THRESHOLD) {
-            const toValue = gestureState.dx > 0 ? deviceWidth : -deviceWidth;
-            startRemoveToast(id);
-            translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
-              if (finished) {
-                runOnJS(removeToastFinish);
-              }
-            });
-          } else {
-            translateX.value = withSpring(0, springConfig);
-          }
-        },
-      }),
-    [deviceWidth, id, removeToastFinish, translateX]
-  );
+        if (Math.abs(event.translationX) > dismissThreshold && Math.abs(event.velocityX) > DISMISS_VELOCITY_THRESHOLD) {
+          const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
+          startRemoveToast(id);
+          translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
+            if (finished) {
+              runOnJS(removeToastFinish)();
+            }
+          });
+        } else {
+          translateX.value = withSpring(0, springConfig);
+        }
+      });
+  }, [deviceWidth, id, removeToastFinish, translateX]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;
@@ -120,6 +126,36 @@ function RainbowToast({ toast, testID, insets }: Props) {
   });
 
   const foregroundColor = isDarkMode ? colors.whiteLabel : colors.dark;
+
+  const isPressed = useSharedValue(false);
+
+  const pressGesture = useMemo(() => {
+    return Gesture.Tap()
+      .maxDuration(2000)
+      .onTouchesDown(() => {
+        console.log('touch down');
+        isPressed.value = true;
+      })
+      .onTouchesUp(() => {
+        console.log('touch up');
+        isPressed.value = false;
+      })
+      .onFinalize(() => {
+        console.log('finalize');
+        isPressed.value = false;
+      });
+  }, [isPressed]);
+
+  const combinedGesture = useMemo(() => {
+    return Gesture.Exclusive(pressGesture, panGesture);
+  }, [pressGesture, panGesture]);
+
+  const pressStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: withSpring(isPressed.value ? 0.9 : 1) }],
+      opacity: withTiming(isPressed.value ? 0.6 : 0.9),
+    };
+  });
 
   let contents: React.ReactNode = null;
 
@@ -142,7 +178,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
             }}
           >
             {/* background at 90% */}
-            <View
+            <Animated.View
               style={[
                 StyleSheet.absoluteFillObject,
                 {
@@ -153,6 +189,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
                   alignItems: 'center',
                   justifyContent: 'center',
                 },
+                // pressStyle,
               ]}
             >
               <Text
@@ -161,7 +198,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
               >
                 {sfSymbols.check}
               </Text>
-            </View>
+            </Animated.View>
           </View>
 
           <View style={{ gap: 4 }}>
@@ -179,69 +216,72 @@ function RainbowToast({ toast, testID, insets }: Props) {
   }
 
   return (
-    <Animated.View style={animatedStyle}>
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowRadius: 10,
-          shadowOpacity: 1,
-          shadowColor: 'rgba(0,0,0,0.25)',
-          shadowOffset: { height: 4, width: 0 },
-        }}
-      >
-        <Box
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...panHandlers}
-          paddingVertical="8px"
-          borderRadius={100}
-          paddingHorizontal="12px"
-          pointerEvents="auto"
-          position="absolute"
-          top="0px"
-          borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.72)' }}
-          testID={testID}
+    <GestureDetector gesture={combinedGesture}>
+      <Animated.View style={animatedStyle}>
+        <Animated.View
+          style={[
+            {
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowRadius: 10,
+              shadowOpacity: 1,
+              shadowColor: 'rgba(0,0,0,0.25)',
+              shadowOffset: { height: 4, width: 0 },
+            },
+            pressStyle,
+          ]}
         >
-          <View style={{ zIndex: 100 }}>{contents}</View>
+          <Box
+            paddingVertical="8px"
+            borderRadius={100}
+            paddingHorizontal="12px"
+            pointerEvents="auto"
+            position="absolute"
+            top="0px"
+            borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.72)' }}
+            testID={testID}
+          >
+            <View style={{ zIndex: 100 }}>{contents}</View>
 
-          {IS_IOS ? (
-            <>
-              <BlurGradient
-                gradientPoints={[
-                  { x: 0.5, y: 1.2 },
-                  { x: 0.5, y: 0 },
-                ]}
-                height={height}
-                intensity={16}
-                saturation={1.5}
-                style={StyleSheet.absoluteFill}
-                width={200}
-              />
+            {IS_IOS ? (
+              <>
+                <BlurGradient
+                  gradientPoints={[
+                    { x: 0.5, y: 1.2 },
+                    { x: 0.5, y: 0 },
+                  ]}
+                  height={height}
+                  intensity={16}
+                  saturation={1.5}
+                  style={StyleSheet.absoluteFill}
+                  width={200}
+                />
+                <LinearGradient
+                  start={{ x: 0.5, y: 0 }}
+                  end={{ x: 0.5, y: 1 }}
+                  colors={
+                    isDarkMode
+                      ? ['rgba(57, 58, 64, 0.36)', 'rgba(57, 58, 64, 0.32)']
+                      : ['rgba(255, 255, 255, 0.36)', 'rgba(255, 255, 255, 0.32)']
+                  }
+                  style={StyleSheet.absoluteFill}
+                />
+              </>
+            ) : (
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : globalColors.white100 }]} />
+            )}
+
+            {isDarkMode && (
               <LinearGradient
-                start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
-                colors={
-                  isDarkMode
-                    ? ['rgba(57, 58, 64, 0.36)', 'rgba(57, 58, 64, 0.32)']
-                    : ['rgba(255, 255, 255, 0.36)', 'rgba(255, 255, 255, 0.32)']
-                }
+                colors={['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0)']}
+                start={{ x: 0.5, y: 0 }}
                 style={StyleSheet.absoluteFill}
               />
-            </>
-          ) : (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : globalColors.white100 }]} />
-          )}
-
-          {isDarkMode && (
-            <LinearGradient
-              end={{ x: 0.5, y: 1 }}
-              colors={['rgba(255, 255, 255, 0.02)', 'rgba(255, 255, 255, 0)']}
-              start={{ x: 0.5, y: 0 }}
-              style={StyleSheet.absoluteFill}
-            />
-          )}
-        </Box>
-      </View>
-    </Animated.View>
+            )}
+          </Box>
+        </Animated.View>
+      </Animated.View>
+    </GestureDetector>
   );
 }
