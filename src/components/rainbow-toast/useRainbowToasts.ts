@@ -15,14 +15,16 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 
   removeToast: id => {
-    set(state => ({
-      toasts: state.toasts
-        .filter(t => t.id !== id)
-        .map((toast, index) => ({
-          ...toast,
-          index,
-        })),
-    }));
+    set(state => {
+      return {
+        toasts: state.toasts
+          .filter(t => t.id !== id)
+          .map((toast, index) => ({
+            ...toast,
+            index,
+          })),
+      };
+    });
   },
 }));
 
