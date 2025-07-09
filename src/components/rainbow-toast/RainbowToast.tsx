@@ -40,7 +40,7 @@ const springConfig: WithSpringConfig = {
 };
 
 const DISMISS_THRESHOLD_PERCENTAGE = 0.15;
-const DISMISS_VELOCITY_THRESHOLD = 4;
+const DISMISS_VELOCITY_THRESHOLD = 3;
 
 type Props = PropsWithChildren<{
   testID?: string;
