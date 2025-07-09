@@ -100,7 +100,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
                 () => ({
                   ...headingStyle,
                   height,
-                  top: ios ? 1.5 : 8,
+                  top: ios ? 1.5 : 0,
                 }),
                 [headingStyle]
               )}
