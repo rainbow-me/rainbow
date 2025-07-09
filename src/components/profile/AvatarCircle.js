@@ -41,6 +41,7 @@ export default function AvatarCircle({
   showcaseAccountColor,
   menuOptions = [],
   newProfile = false,
+  disableChangeAvatar = false,
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
@@ -82,7 +83,7 @@ export default function AvatarCircle({
         disabled={!isAvatarPickerAvailable}
         enableHapticFeedback={isAvatarPickerAvailable}
         marginTop={2}
-        onPress={onAvatarPressProfile}
+        onPress={disableChangeAvatar ? null : onAvatarPressProfile}
         onLongPress={() => null}
         overflowMargin={30}
         pressOutDuration={200}

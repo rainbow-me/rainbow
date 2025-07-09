@@ -46,9 +46,7 @@ export const AddWalletSheet = () => {
 
       navigate(Routes.CHOOSE_WALLET_GROUP);
     } catch (e) {
-      logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
-        error: e,
-      });
+      logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', e));
     }
   };
 

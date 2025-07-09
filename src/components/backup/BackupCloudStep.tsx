@@ -139,6 +139,7 @@ export function BackupCloudStep() {
               ref={passwordRef}
               returnKeyType="next"
               textContentType="newPassword"
+              testID="password-input"
             />
             {isCloudBackupPasswordValid(password) && (
               <PasswordField
@@ -154,6 +155,7 @@ export function BackupCloudStep() {
                 password={confirmPassword}
                 placeholder={lang.t(lang.l.back_up.cloud.password.confirm_placeholder)}
                 ref={confirmPasswordRef}
+                testID="confirm-password-input"
               />
             )}
 
@@ -172,6 +174,7 @@ export function BackupCloudStep() {
                 cloudPlatformName: cloudPlatform,
               })}`}
               onPress={() => onSuccessAndNavigateBack(password)}
+              testID="backup-button"
             />
           )}
 

@@ -4,7 +4,7 @@ import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegrou
 import { IS_ANDROID } from '@/env';
 import { useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
@@ -18,7 +18,7 @@ const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 export const ImportOrWatchWalletSheet = () => {
   const { params: { type = 'watch' } = {} } = useRoute<RouteProp<RootStackParamList, typeof Routes.IMPORT_OR_WATCH_WALLET_SHEET>>();
 
-  const { busy, handleFocus, handlePressImportButton, handleSetSeedPhrase, inputRef, isSecretValid, seedPhrase } = useImportingWallet();
+  const { busy, handlePressImportButton, handleSetSeedPhrase, inputRef, isSecretValid, seedPhrase } = useImportingWallet();
   const keyboardHeight = useKeyboardHeight();
 
   const textStyle = useTextStyle({
@@ -28,8 +28,24 @@ export const ImportOrWatchWalletSheet = () => {
     weight: 'semibold',
   });
   const labelTertiary = useForegroundColor('labelTertiary');
+  const hasRefocused = useRef(false);
 
-  useFocusEffect(useCallback(() => inputRef.current?.focus(), [inputRef]));
+  useFocusEffect(
+    useCallback(() => {
+      setTimeout(() => {
+        inputRef.current?.focus();
+        // lower value than this seems to cause a bug where it de-focuses immediately
+      }, 500);
+    }, [inputRef])
+  );
+
+  const refocusOnce = () => {
+    // given we are using rough timing, for slow devices we can ensure it doesn't de-focus here
+    if (!hasRefocused.current) {
+      hasRefocused.current = true;
+      inputRef.current?.focus();
+    }
+  };
 
   const buttonDisabled = seedPhrase && !isSecretValid;
 
@@ -58,13 +74,12 @@ export const ImportOrWatchWalletSheet = () => {
         >
           <Input
             autoCorrect={false}
-            autoFocus={false}
             autoCapitalize="none"
             textContentType="none"
             enablesReturnKeyAutomatically
+            onBlur={refocusOnce}
             keyboardType={IS_ANDROID ? 'visible-password' : 'default'}
             onChangeText={handleSetSeedPhrase}
-            onFocus={handleFocus}
             multiline
             numberOfLines={3}
             onSubmitEditing={() => {

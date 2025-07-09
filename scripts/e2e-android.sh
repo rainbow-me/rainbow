@@ -1,6 +1,17 @@
 #!/bin/bash
 
-source .env
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="$SCRIPT_DIR/../.env"
+
+# Load env
+if [ -f "$ENV_FILE" ]; then
+  set -a
+  source "$ENV_FILE"
+  set +a
+else
+  echo "ERROR: .env file not found at $ENV_FILE"
+  exit 1
+fi
 
 FLOW=e2e
 ARGS=()
@@ -45,7 +56,7 @@ if [[ $FLOW == *"transaction"* || $FLOW == "e2e" ]]; then
 fi
 
 # Run the Maestro test
-maestro $DEVICE -p Android test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" "${ARGS[@]}" "$FLOW"
+maestro $DEVICE -p Android test -e DEV_PKEY="$DEV_PKEY" -e APP_ID="me.rainbow" -e CLOUD_BACKUP_EMAIL="$CLOUD_BACKUP_EMAIL" -e CLOUD_BACKUP_PASSWORD="$CLOUD_BACKUP_PASSWORD" "${ARGS[@]}" "$FLOW"
 
 # Store the exit code
 EXIT_CODE=$?

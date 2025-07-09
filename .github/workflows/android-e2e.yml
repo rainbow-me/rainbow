@@ -3,13 +3,17 @@ name: Android e2e tests
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - develop
 jobs:
   android-e2e:
-    if: github.event.pull_request.draft == false
-    runs-on: blacksmith-8vcpu-ubuntu-2404
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: app-e2e-runner
     timeout-minutes: 60
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      # For pushes on develop run for every commit, but for PRs cancel in-progress runs.
+      group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
       cancel-in-progress: true
 
     env:
@@ -33,7 +37,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Java environment
-        uses: useblacksmith/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -79,7 +83,7 @@ jobs:
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - name: Cache Yarn dependencies
-        uses: useblacksmith/cache@v5
+        uses: actions/cache@v4
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -90,7 +94,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Cache Gradle build
-        uses: useblacksmith/setup-gradle/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v3
         with:
           cache-read-only: false
 
