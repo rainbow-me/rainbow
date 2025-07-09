@@ -35,7 +35,7 @@ function ExpandedAssetSheetContent() {
           top: safeAreaInsets.top + 32,
         }}
       >
-        <SheetContent />
+        <SheetContent accentColor={accentColors.color} />
       </SlackSheet>
       <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
         <Box backgroundColor={accentColors.background} height={safeAreaInsets.top + (IS_ANDROID ? 24 : 12)} width="full">

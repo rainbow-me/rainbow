@@ -163,7 +163,11 @@ export const LineChart = memo(function LineChart({
         />
       )}
       {!shouldShowChart && <NoChartData height={height} />}
-      {shouldShowLoadingSpinner && <AnimatedSpinner color={strokeColor} isLoading size={30} />}
+      {shouldShowLoadingSpinner && (
+        <Box alignItems="center" justifyContent="center" height={height} position="absolute" width={width}>
+          <AnimatedSpinner color={strokeColor} isLoading size={30} />
+        </Box>
+      )}
     </ChartPathProvider>
   );
 });

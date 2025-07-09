@@ -117,7 +117,7 @@ export async function executeAirdropClaim({
       );
     }
 
-    logger.log('[claimAirdrop]: Transaction successfully submitted', { chainId, hash: receipt.hash });
+    logger.debug('[claimAirdrop]: Transaction successfully submitted', { chainId, hash: receipt.hash });
 
     analytics.track(analytics.event.claimClaimableSucceeded, {
       assets: [{ address: to, symbol, amount }],

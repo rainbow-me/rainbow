@@ -25,9 +25,11 @@ const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, 
 
 export default function useChartThrottledPoints({
   asset,
+  refetchInterval,
   timespan,
 }: {
   asset: any;
+  refetchInterval?: number;
   // TODO: update type
   timespan: ChartTime;
 }) {
@@ -38,12 +40,14 @@ export default function useChartThrottledPoints({
     chainId: asset.chainId,
     mainnetAddress: asset.mainnet_address ?? asset.mainnetAddress,
     currency: nativeCurrency,
+    refetchInterval,
     timespan,
   });
+
   const [throttledPoints, setThrottledPoints] = useState(() => traverseData({ nativePoints: [], points: [] }, chart));
 
   useEffect(() => {
-    setThrottledPoints((prev: any) => traverseData(prev, chart));
+    setThrottledPoints(prev => traverseData(prev, chart));
   }, [chart]);
 
   // Only show the chart if we have chart data, or if chart data is still loading

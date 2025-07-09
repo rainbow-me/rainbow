@@ -7,6 +7,7 @@ import { convertAmountToNativeDisplayWorklet as formatPrice } from '@/helpers/ut
 import { Bar } from './types';
 import { NativeCurrencyKey } from '@/entities';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 export const ActiveCandleCard = memo(function ActiveCandleCard({
   activeCandle,
@@ -52,9 +53,11 @@ export const ActiveCandleCard = memo(function ActiveCandleCard({
       textAlign: 'right',
     },
     priceChangeContainer: {
+      borderCurve: 'continuous',
       borderWidth: 1,
       paddingVertical: 5,
       borderRadius: 8,
+      overflow: 'hidden',
       paddingHorizontal: 4.5,
     },
     priceAndChangeContainer: {
@@ -96,7 +99,7 @@ export const ActiveCandleCard = memo(function ActiveCandleCard({
 
   const priceChangeContainerStyle = useAnimatedStyle(() => {
     return {
-      borderColor: priceChangeColor.value,
+      borderColor: opacityWorklet(priceChangeColor.value, 0.28),
     };
   });
 
@@ -105,7 +108,9 @@ export const ActiveCandleCard = memo(function ActiveCandleCard({
       style={[
         config.activeCandleCard.style,
         {
+          borderCurve: 'continuous',
           height: config.activeCandleCard.height,
+          overflow: 'hidden',
         },
       ]}
     >

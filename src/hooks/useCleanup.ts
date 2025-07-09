@@ -1,5 +1,7 @@
 import { DependencyList, useEffect } from 'react';
 
+const EMPTY_DEPS: DependencyList = [];
+
 /**
  * #### `🧹 useCleanup 🧹`
  *
@@ -9,7 +11,7 @@ import { DependencyList, useEffect } from 'react';
  * @param cleanup - Function to run on cleanup (unmount or dependency change)
  * @param deps - Optional dependencies array. Defaults to [] (only runs cleanup on unmount).
  */
-export function useCleanup(cleanup: () => void, deps: DependencyList = []): void {
+export function useCleanup(cleanup: () => void, deps: DependencyList = EMPTY_DEPS): void {
   useEffect(() => {
     return cleanup;
     // eslint-disable-next-line react-hooks/exhaustive-deps

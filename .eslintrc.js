@@ -59,7 +59,7 @@ module.exports = {
       'warn',
       {
         additionalHooks:
-          '(useDeepCompareEffect|useDeepCompareCallback|useDeepCompareMemo|useDeepCompareImperativeHandle|useDeepCompareLayoutEffect)',
+          '(useDeepCompareEffect|useDeepCompareCallback|useDeepCompareMemo|useDeepCompareImperativeHandle|useDeepCompareLayoutEffect|useChangeEffect)',
       },
     ],
   },

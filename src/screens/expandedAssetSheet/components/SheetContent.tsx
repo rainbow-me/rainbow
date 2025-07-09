@@ -1,5 +1,4 @@
-import React from 'react';
-import { useExpandedAssetSheetContext } from '../context/ExpandedAssetSheetContext';
+import React, { memo } from 'react';
 import { AccentColorProvider, Box, ColorModeProvider, useColorMode } from '@/design-system';
 import { AboutSection, BalanceSection, BuySection, MarketStatsSection, ChartSection, ClaimSection, HistorySection } from './sections';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
@@ -7,13 +6,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Placement } from './sections/BuySection';
 import { NameAndLogoSection } from './sections/NameAndLogoSection';
 
-export function SheetContent() {
+export const SheetContent = memo(function SheetContent({ accentColor }: { accentColor: string }) {
   const { colorMode } = useColorMode();
-  const { accentColors } = useExpandedAssetSheetContext();
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
-    <AccentColorProvider color={accentColors.color}>
+    <AccentColorProvider color={accentColor}>
       <ColorModeProvider value={colorMode}>
         <Box
           height="full"
@@ -45,4 +43,4 @@ export function SheetContent() {
       </ColorModeProvider>
     </AccentColorProvider>
   );
-}
+});
