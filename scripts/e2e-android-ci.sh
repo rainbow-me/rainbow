@@ -16,7 +16,7 @@ echo "Running on devices: $DEVICES_LIST"
 # Install the app
 for DEVICE in $DEVICES; do
   echo "Install app on $DEVICE"
-  $ANDROID_HOME/platform-tools/adb -s "$DEVICE" install -r ./android/app/build/outputs/apk/release/app-release.apk &
+  adb -s "$DEVICE" install -r ./android/app/build/outputs/apk/release/app-release.apk &
 done
 wait
 
