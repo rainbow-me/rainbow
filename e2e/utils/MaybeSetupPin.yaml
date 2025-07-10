@@ -5,6 +5,7 @@ appId: ${APP_ID}
       visible: 'Choose your PIN'
       platform: Android
     commands:
+      - hideKeyboard
       - tapOn:
           text: '1'
           repeat: 4
