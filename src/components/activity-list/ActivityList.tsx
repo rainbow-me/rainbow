@@ -3,7 +3,7 @@ import { FastTransactionCoinRow } from '@/components/coin-row';
 import { lazyMount } from '@/helpers/lazyMount';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList, LegendListRef } from '@legendapp/list';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
@@ -135,20 +135,36 @@ const ActivityList = lazyMount(() => {
     [nativeCurrency, theme]
   );
 
+  const listRef = useRef<LegendListRef | null>(null);
+
+  const scrollToTopRef = useMemo(() => {
+    return {
+      scrollToTop() {
+        if (!listRef.current) {
+          return;
+        }
+        if (listRef.current.getState().isAtStart) {
+          return;
+        }
+        listRef.current.scrollToIndex({
+          index: 0,
+          animated: true,
+        });
+      },
+    };
+  }, []);
+
+  useEffect(() => {
+    setScrollToTopRef?.(scrollToTopRef);
+  }, [scrollToTopRef, setScrollToTopRef]);
+
   return (
     <LegendList
       data={flatData}
-      ref={list => {
-        if (list) {
-          setScrollToTopRef?.({
-            scrollToTop() {
-              list.scrollToIndex({
-                index: 0,
-                animated: true,
-              });
-            },
-          });
-        }
+      // changing key
+      key={accountAddress}
+      ref={ref => {
+        listRef.current = ref;
       }}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
