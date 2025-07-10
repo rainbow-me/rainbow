@@ -34,24 +34,7 @@ tags:
             # Begin backup flow by tapping backup now button
             - tapOn:
                 id: backup-now-button
-            - assertVisible: '(Sign in|Choose an account)'
-
-            # Sign in to Google Drive
-            - tapOn: 'Email or phone'
-            - tapOn:
-                id: 'identifierId'
-            - inputText: ${CLOUD_BACKUP_EMAIL}
-            - tapOn:
-                id: 'identifierNext'
-            - tapOn:
-                text: 'Enter your password'
-            - inputText: ${CLOUD_BACKUP_PASSWORD}
-            - tapOn:
-                id: 'passwordNext'
-
-            # Accept TOS
-            - tapOn: 'I agree'
-            - tapOn: 'ACCEPT'
+            - runFlow: ../utils/GoogleSignIn.yaml
             - runFlow: ../utils/MaybeSetupPin.yaml
 
             # Set up Rainbow Cloud password
@@ -86,8 +69,7 @@ tags:
                 repeat: 4
                 delay: 1000
             - assertVisible: '(Sign in|Choose an account)'
-            - tapOn:
-                id: 'com.google.android.gms:id/account_display_name'
+            - tapOn: ${CLOUD_BACKUP_EMAIL}
 
             # Verify backsups are wiped
             - assertVisible: 'Not Enabled'
