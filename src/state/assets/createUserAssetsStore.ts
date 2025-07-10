@@ -4,12 +4,11 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { time } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { UserAssetsStateToPersist, deserializeUserAssetsState, serializeUserAssetsState } from './persistence';
-import { FetchedUserAssetsData, TransformedUserAssetsData, UserAssetsParams, UserAssetsState } from './types';
+import { FetchedUserAssetsData, UserAssetsParams, UserAssetsState } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 import {
   calculateHiddenAssetsBalance,
@@ -24,24 +23,14 @@ const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
 
 export const createUserAssetsStore = (address: Address | string) =>
-  createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, TransformedUserAssetsData, UserAssetsStateToPersist>(
+  createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
     {
       fetcher: fetchUserAssets,
-      setData: ({ data, set }) =>
-        data?.userAssets
-          ? set(state => setUserAssets({ address, chainIdsWithErrors: data.chainIdsWithErrors, state, userAssets: data.userAssets }))
-          : null,
-      transform: data =>
-        data?.parsedAssetsDict
-          ? {
-              chainIdsWithErrors: data.chainIdsWithErrors,
-              userAssets: selectorFilterByUserChains({
-                data: data.parsedAssetsDict,
-                selector: selectUserAssetsList,
-              }) as ParsedSearchAsset[],
-            }
-          : null,
-
+      setData: ({ data, set }) => {
+        if (data?.userAssets) {
+          set(state => setUserAssets({ address, state, userAssets: data.userAssets }));
+        }
+      },
       keepPreviousData: true,
       params: {
         address,
@@ -163,13 +152,15 @@ export const createUserAssetsStore = (address: Address | string) =>
         });
       },
 
-      setUserAssets: ({ address, chainIdsWithErrors, state, userAssets }) => {
-        if (!state) {
-          set(state => setUserAssets({ address, chainIdsWithErrors, state, userAssets }));
-          return null;
-        }
-        return setUserAssets({ address, chainIdsWithErrors, state, userAssets });
-      },
+      // TODO (kane): As far as I can tell, this is only ever used in the migration file.
+      // Need to confirm that we do not actually need this migration and it can be safely removed.
+      // setUserAssets: ({ address, chainIdsWithErrors, state, userAssets }) => {
+      //   if (!state) {
+      //     set(state => setUserAssets({ address, chainIdsWithErrors, state, userAssets }));
+      //     return null;
+      //   }
+      //   return setUserAssets({ address, chainIdsWithErrors, state, userAssets });
+      // },
 
       getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
 
@@ -219,7 +210,7 @@ export const createUserAssetsStore = (address: Address | string) =>
             }) satisfies Required<UserAssetsStateToPersist>,
           serializer: serializeUserAssetsState,
           storageKey: `userAssets_${address}`,
-          version: 1,
+          version: 2,
         }
       : undefined
   );
