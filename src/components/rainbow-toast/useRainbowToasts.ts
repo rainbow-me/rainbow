@@ -59,9 +59,6 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 }));
 
-export const useRainbowToasts = () => {
-  const toasts = useToastStore(state => state.toasts);
-  return toasts.slice(0, 3); // Show max 3 toasts
-};
+export const useRainbowToasts = () => useToastStore(state => state.toasts.slice(0, 3)); // Show max 3 toasts
 
 export const { showToast, updateToast, startRemoveToast, removeToast } = useToastStore.getState();

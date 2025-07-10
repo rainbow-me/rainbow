@@ -1,19 +1,17 @@
-import React from 'react';
-import { ScrollView, Button } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Sheet } from '@/components/sheet';
 import { Box, Text } from '@/design-system';
 import { NewTransaction, TransactionStatus } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
-import { addNewTransaction, updateTransaction } from '@/state/pendingTransactions';
+import { addNewTransaction, updateTransaction, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { toHex } from 'viem';
 import { SwapType } from '@rainbow-me/swaps';
+import React from 'react';
+import { Button, ScrollView } from 'react-native';
+import { toHex } from 'viem';
 
 const MOCK_HASH = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
 
 export function DevActionsSheet() {
-  const insets = useSafeAreaInsets();
   const accountAddress = useAccountAddress();
 
   const createMockSendTransaction = (status: TransactionStatus): NewTransaction => {
@@ -64,31 +62,38 @@ export function DevActionsSheet() {
     };
   };
 
-  const addSendTransaction = () => {
-    const transaction = createMockSendTransaction(TransactionStatus.pending);
+  function addThenUpdate(transaction: NewTransaction) {
     addNewTransaction({
       address: accountAddress,
       chainId: ChainId.mainnet,
       transaction,
     });
+
+    const { pendingTransactions } = usePendingTransactionsStore.getState();
+    usePendingTransactionsStore.getState().setPendingTransactions({
+      address: accountAddress,
+      pendingTransactions: pendingTransactions[accountAddress].map(px => {
+        if (px.hash === transaction.hash) {
+          return {
+            ...px,
+            status: transaction.status,
+          };
+        }
+        return px;
+      }),
+    });
+  }
+
+  const addSendTransaction = () => {
+    addThenUpdate(createMockSendTransaction(TransactionStatus.sending));
   };
 
   const addSwapTransaction = () => {
-    const transaction = createMockSwapTransaction(TransactionStatus.pending);
-    addNewTransaction({
-      address: accountAddress,
-      chainId: ChainId.mainnet,
-      transaction,
-    });
+    addThenUpdate(createMockSwapTransaction(TransactionStatus.swapping));
   };
 
   const addMintTransaction = () => {
-    const transaction = createMockMintTransaction(TransactionStatus.pending);
-    addNewTransaction({
-      address: accountAddress,
-      chainId: ChainId.mainnet,
-      transaction,
-    });
+    addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
   };
 
   const updateLastSendTo = (status: TransactionStatus) => {
@@ -120,13 +125,23 @@ export function DevActionsSheet() {
 
   return (
     <Sheet>
-      <Box paddingHorizontal="20px" paddingTop="20px" paddingBottom={{ custom: insets.bottom + 20 }}>
+      <Box paddingHorizontal="20px" paddingTop="44px">
         <Text size="20pt" weight="bold" color="label" align="center">
-          Dev Actions
+          Toast Actions
         </Text>
 
         <ScrollView style={{ marginTop: 20 }} showsVerticalScrollIndicator={false}>
           <Box gap={12}>
+            <Button
+              onPress={() => {
+                usePendingTransactionsStore.getState().setPendingTransactions({
+                  address: accountAddress,
+                  pendingTransactions: [],
+                });
+              }}
+              title="Clear All"
+            />
+
             <Text size="17pt" weight="semibold" color="label">
               Add New Transactions
             </Text>
@@ -139,7 +154,7 @@ export function DevActionsSheet() {
               Update Send Status
             </Text>
 
-            <Button onPress={() => updateLastSendTo(TransactionStatus.pending)} title="Update Send → Pending" />
+            <Button onPress={() => updateLastSendTo(TransactionStatus.sending)} title="Update Send → Sending" />
             <Button onPress={() => updateLastSendTo(TransactionStatus.confirmed)} title="Update Send → Confirmed" />
             <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="Update Send → Failed" />
 
@@ -147,7 +162,7 @@ export function DevActionsSheet() {
               Update Swap Status
             </Text>
 
-            <Button onPress={() => updateLastSwapTo(TransactionStatus.pending)} title="Update Swap → Pending" />
+            <Button onPress={() => updateLastSwapTo(TransactionStatus.swapping)} title="Update Swap → Swapping" />
             <Button onPress={() => updateLastSwapTo(TransactionStatus.confirmed)} title="Update Swap → Confirmed" />
             <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="Update Swap → Failed" />
 
@@ -155,8 +170,8 @@ export function DevActionsSheet() {
               Update Mint Status
             </Text>
 
-            <Button onPress={() => updateLastMintTo(TransactionStatus.pending)} title="Update Mint → Pending" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.confirmed)} title="Update Mint → Confirmed" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.minting)} title="Update Mint → Minting" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="Update Mint → Minted" />
             <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" />
           </Box>
         </ScrollView>

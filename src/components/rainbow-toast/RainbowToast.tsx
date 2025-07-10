@@ -45,34 +45,47 @@ export function RainbowToastDisplay() {
   const { pendingTransactions } = usePendingTransactions();
   const processedTxs = useRef(new Set<string>());
 
+  console.log('pendingTransactions', pendingTransactions.length);
   console.log('toasts', toasts.length);
 
   useEffect(() => {
-    pendingTransactions.forEach(tx => {
-      if (!processedTxs.current.has(tx.hash)) {
-        processedTxs.current.add(tx.hash);
+    const activePendingTxHashes: Record<string, boolean> = {};
 
-        const toast = getToastFromTransaction(tx);
+    for (const tx of pendingTransactions) {
+      activePendingTxHashes[tx.hash] = true;
 
-        console.log('toast', toast, tx);
-
-        if (toast) {
-          showToast(toast);
-        }
-      }
-    });
-  }, [pendingTransactions]);
-
-  useEffect(() => {
-    pendingTransactions.forEach(tx => {
+      // update
       if (processedTxs.current.has(tx.hash)) {
         const value = getToastFromTransaction(tx);
         if (value) {
           updateToast(value);
         }
       }
-    });
-  }, [pendingTransactions]);
+
+      // add
+      if (!processedTxs.current.has(tx.hash)) {
+        processedTxs.current.add(tx.hash);
+
+        const toast = getToastFromTransaction(tx);
+
+        console.log('got toast from transaction', JSON.stringify({ toast, tx }, null, 2));
+
+        if (toast) {
+          showToast(toast);
+        }
+      }
+    }
+
+    for (const toast of toasts) {
+      if (!activePendingTxHashes[toast.id]) {
+        removeToast(toast.id);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // we dont want to loop toasts here
+    pendingTransactions,
+  ]);
 
   return (
     <FullWindowOverlay>
@@ -408,6 +421,8 @@ const useChainsLabel = () => useBackendNetworksStore.getState().getChainsLabel()
 
 function SwapToastContent({ toast }: SwapToastContentProps) {
   const chainsLabel = useChainsLabel();
+
+  console.log('toast', toast);
 
   const icon =
     toast.status === TransactionStatus.swapped ? (
