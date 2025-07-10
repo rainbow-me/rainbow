@@ -8,6 +8,7 @@ type BaseToast = {
 };
 
 export const RainbowToastSwapStatuses = {
+  [TransactionStatus.pending]: TransactionStatus.swapping,
   [TransactionStatus.swapping]: TransactionStatus.swapping,
   [TransactionStatus.swapped]: TransactionStatus.swapped,
 } as const;

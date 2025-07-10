@@ -37,6 +37,11 @@ const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
     actionTitle: lang.t(lang.l.wallet.connected_apps),
     icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
   },
+  {
+    actionKey: Routes.DEV_ACTION_SHEET,
+    actionTitle: 'Dev Actions',
+    icon: { iconType: 'SYSTEM', iconValue: 'ladybug' },
+  },
 ];
 
 export interface RecyclerAssetList2Props {

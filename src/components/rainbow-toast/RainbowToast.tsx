@@ -1,6 +1,7 @@
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { FullWindowOverlay } from 'react-native-screens';
 import {
   type RainbowToast,
   type RainbowToastMint,
@@ -41,12 +42,10 @@ import { TruncatedText } from '../text';
 export function RainbowToastDisplay() {
   const toasts = useRainbowToasts();
   const insets = useSafeAreaInsets();
-  const { width: deviceWidth } = useDimensions();
   const { pendingTransactions } = usePendingTransactions();
   const processedTxs = useRef(new Set<string>());
 
-  console.log('toasts', toasts);
-  console.log('pendingTransactions', pendingTransactions);
+  console.log('toasts', toasts.length);
 
   useEffect(() => {
     pendingTransactions.forEach(tx => {
@@ -54,6 +53,9 @@ export function RainbowToastDisplay() {
         processedTxs.current.add(tx.hash);
 
         const toast = getToastFromTransaction(tx);
+
+        console.log('toast', toast, tx);
+
         if (toast) {
           showToast(toast);
         }
@@ -72,12 +74,16 @@ export function RainbowToastDisplay() {
     });
   }, [pendingTransactions]);
 
+  const hasToasts = toasts.length > 0;
+
   return (
-    <Box zIndex={1_000_000} position="absolute" top="0px" left="0px" width={deviceWidth} bottom="0px" pointerEvents="box-none">
-      {toasts.map(toast => {
-        return <RainbowToast insets={insets} key={toast.id} toast={toast} />;
-      })}
-    </Box>
+    <FullWindowOverlay>
+      <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
+        {toasts.map(toast => {
+          return <RainbowToast insets={insets} key={toast.id} toast={toast} />;
+        })}
+      </Box>
+    </FullWindowOverlay>
   );
 }
 
@@ -171,8 +177,8 @@ function RainbowToast({ toast, testID, insets }: Props) {
 
   const height = 60;
   const { index, id } = toast;
-  const gap = index * 4;
-  const distance = index * height + gap + insets.top;
+  const gap = 4;
+  const distance = index * gap + insets.top;
 
   useEffect(() => {
     visible.value = withSpring(1, springConfig);
@@ -183,17 +189,19 @@ function RainbowToast({ toast, testID, insets }: Props) {
   }, [distance, translateY]);
 
   const removeToastFinish = useCallback(() => {
-    console.log('wt');
     removeToast(id);
   }, [id]);
 
-  const removeToastStart = useCallback(() => {
+  const startRemoveToastCallback = useCallback(() => {
     startRemoveToast(id);
   }, [id]);
 
   const panGesture = useMemo(() => {
     return Gesture.Pan()
       .minDistance(10)
+      .onStart(() => {
+        runOnJS(startRemoveToastCallback)();
+      })
       .onUpdate(event => {
         translateX.value = event.translationX;
       })
@@ -211,7 +219,6 @@ function RainbowToast({ toast, testID, insets }: Props) {
 
         if (isDraggedFarEnough && isDraggedFastEnough) {
           const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
-          runOnJS(removeToastStart)();
           translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
             if (finished) {
               runOnJS(removeToastFinish)();
@@ -221,15 +228,16 @@ function RainbowToast({ toast, testID, insets }: Props) {
           translateX.value = withSpring(0, springConfig);
         }
       });
-  }, [deviceWidth, lastChangeX, removeToastFinish, removeToastStart, translateX]);
+  }, [deviceWidth, lastChangeX, removeToastFinish, startRemoveToastCallback, translateX]);
 
   const dragStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;
     const opacityX = interpolate(Math.abs(translateX.value), [0, deviceWidth / 2], [1, 0], 'clamp');
+    const scale = interpolate(index, [0, 2], [1, 0.96], 'clamp');
 
     return {
       opacity: opacityY * opacityX,
-      transform: [{ translateY: translateY.value }, { translateX: translateX.value }],
+      transform: [{ translateY: translateY.value }, { translateX: translateX.value }, { scale }],
     };
   });
 
@@ -265,8 +273,11 @@ function RainbowToast({ toast, testID, insets }: Props) {
   });
 
   const pressStyleContent = useAnimatedStyle(() => {
+    const stackOpacity = interpolate(index, [0, 2], [1, 0.8], 'clamp') * interpolate(index, [2, 3], [1, 0], 'clamp');
+    const pressOpacity = isPressed.value ? 0.6 : 0.9;
+
     return {
-      opacity: withTiming(isPressed.value ? 0.6 : 0.9),
+      opacity: withTiming(pressOpacity * stackOpacity),
     };
   });
 
@@ -286,14 +297,14 @@ function RainbowToast({ toast, testID, insets }: Props) {
 
   return (
     <GestureDetector gesture={combinedGesture}>
-      <Animated.View style={dragStyle}>
+      <Animated.View style={[dragStyle, { zIndex: 3 - index }]}>
         <Animated.View
           style={[
             {
               alignItems: 'center',
               justifyContent: 'center',
               shadowRadius: 10,
-              shadowOpacity: 1,
+              shadowOpacity: interpolate(index, [0, 2], [1, 0.3], 'clamp'),
               shadowColor: 'rgba(0,0,0,0.25)',
               shadowOffset: { height: 4, width: 0 },
             },
@@ -490,7 +501,7 @@ function SendToastContent({ toast }: SendToastContentProps) {
       >
         <Text
           allowFontScaling={false}
-          style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: foregroundColor, fontWeight: '800' }}
+          style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: colors.foreground, fontWeight: '800' }}
         >
           {toast.status === 'failed' ? '!' : '↗'}
         </Text>
