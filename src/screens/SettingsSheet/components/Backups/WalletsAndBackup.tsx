@@ -7,13 +7,14 @@ import { backupsCard } from '@/components/cards/utils/constants';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_DEV } from '@/env';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { useENSAvatar, useManageCloudBackups } from '@/hooks';
+import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
@@ -22,15 +23,14 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { loadWallets, useWallets } from '@/state/wallets/walletsStore';
-import { useTheme } from '@/theme';
-import { abbreviations, deviceUtils } from '@/utils';
+import { formatAccountLabel, loadWallets, useWallets } from '@/state/wallets/walletsStore';
+import { abbreviations } from '@/utils';
 import { cloudPlatform } from '@/utils/platform';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { FlatList, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { checkLocalWalletsForBackupStatus, isWalletBackedUpForCurrentAccount } from '../../utils';
 import Menu from '../Menu';
@@ -39,59 +39,45 @@ import MenuHeader, { StatusType } from '../MenuHeader';
 import MenuItem from '../MenuItem';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type WalletPillProps = {
   account: RainbowAccount;
 };
 
-// constants for the account section
-const menuContainerPadding = 19.5; // 19px is the padding on the left and right of the container but we need 1px more to account for the shadows on each container
-const accountsContainerWidth = deviceUtils.dimensions.width - menuContainerPadding * 4;
-const spaceBetweenAccounts = 4;
-const accountsItemWidth = accountsContainerWidth / 3;
-const basePadding = 16;
-const rowHeight = 36;
-
-const getAccountSectionHeight = (numAccounts: number) => {
-  const rows = Math.ceil(Math.max(1, numAccounts) / 3);
-  const paddingBetween = (rows - 1) * 4;
-
-  return basePadding + rows * rowHeight - paddingBetween;
-};
+const CARD_INNER_PADDING_HORIZONTAL = 16;
+const CARD_INSET_HORIZONTAL = 20;
+const WALLET_PILL_SECTION_WIDTH = DEVICE_WIDTH - CARD_INSET_HORIZONTAL * 2 - CARD_INNER_PADDING_HORIZONTAL * 2;
+const WALLET_PILL_GAP = 4;
 
 const WalletPill = ({ account }: WalletPillProps) => {
   const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
+  const accountImage = account.emoji || addressHashedEmoji(account.address);
 
   const { data: ENSAvatar } = useENSAvatar(label);
-  const { colors, isDarkMode } = useTheme();
-
-  const accountImage = addressHashedEmoji(account.address);
 
   return (
     <Box
       key={account.address}
       flexDirection="row"
       alignItems="center"
-      backgroundColor={colors.alpha(colors.grey, 0.24)}
-      borderRadius={23}
-      shadowColor={isDarkMode ? colors.shadow : colors.alpha(colors.blueGreyDark, 0.1)}
-      elevation={12}
-      shadowOpacity={IS_IOS ? 0.4 : 1}
-      shadowRadius={6}
+      background="fillQuaternary"
+      borderRadius={20}
       paddingLeft={{ custom: 4 }}
       paddingRight={{ custom: 8 }}
       padding={{ custom: 4 }}
-      width={{ custom: accountsItemWidth }}
     >
       {ENSAvatar?.imageUrl ? (
-        <ImageAvatar image={ENSAvatar.imageUrl} marginRight={4} size="smaller_shadowless" />
+        <ImageAvatar image={ENSAvatar.imageUrl} marginRight={6} size="smaller_shadowless" />
       ) : (
-        <ContactAvatar alignSelf="center" color={account.color} marginRight={4} size="smaller" value={accountImage} />
+        <ContactAvatar alignSelf="center" color={account.color} marginRight={6} size="smaller" value={accountImage} />
       )}
-      <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
-        {label.endsWith('.eth')
-          ? abbreviations.abbreviateEnsForDisplay(label, 8, 4) ?? ''
-          : abbreviations.address(label !== '' ? label : account.address, 3, 5) ?? ''}
+      <Text color="labelSecondary" size="11pt" weight="bold">
+        {formatAccountLabel({
+          address: account.address,
+          ens: abbreviations.abbreviateEnsForDisplay(account.ens ?? undefined, 8, 4),
+          label: account.label,
+        }) || abbreviations.address(account.address, 4, 4)}
       </Text>
     </Box>
   );
@@ -112,10 +98,10 @@ export const WalletsAndBackup = () => {
 
   const { manageCloudBackups } = useManageCloudBackups();
 
-  const walletTypeCount: WalletCountPerType = {
+  const walletTypeCount: WalletCountPerType = useStableValue(() => ({
     phrase: 0,
     privateKey: 0,
-  };
+  }));
 
   const { allBackedUp } = useMemo(() => checkLocalWalletsForBackupStatus(backups), [backups]);
 
@@ -168,7 +154,7 @@ export const WalletsAndBackup = () => {
   const onCreateNewSecretPhrase = useCallback(async () => {
     navigate(Routes.MODAL_SCREEN, {
       type: 'new_wallet_group',
-      numWalletGroups: walletTypeCount.phrase + 1,
+      numWalletGroups: walletTypeCount.phrase,
       onCloseModal: async ({ name }: { name: string }) => {
         const nameValue = name.trim() !== '' ? name.trim() : '';
         try {
@@ -214,8 +200,17 @@ export const WalletsAndBackup = () => {
   const onNavigateToWalletView = useCallback(
     (walletId: string, name: string) => {
       const wallet = wallets?.[walletId];
+      let title = name;
 
-      const title = wallet?.imported && wallet.type === WalletTypes.privateKey ? (wallet.addresses || [])[0].label : name;
+      if (wallet?.imported && wallet.type === WalletTypes.privateKey) {
+        title =
+          formatAccountLabel({
+            address: wallet.addresses[0].address,
+            ens: abbreviations.abbreviateEnsForDisplay(wallet.addresses[0].ens ?? undefined, 8, 4),
+            label: wallet.addresses[0].label,
+          }) || abbreviations.address(wallet.addresses[0].address, 4, 4);
+      }
+
       navigate(Routes.VIEW_WALLET_BACKUP, {
         imported: wallet?.imported ?? false,
         title,
@@ -311,24 +306,6 @@ export const WalletsAndBackup = () => {
               />
             </Menu>
 
-            {IS_DEV && (
-              <Box>
-                <Menu description="Dev Only: Quick Import/Export Backup">
-                  <MenuItem
-                    hasSfSymbol
-                    leftComponent={<MenuItem.TextIcon icon="⚠️" isLink />}
-                    onPress={() => {
-                      navigate(Routes.MODAL_SCREEN, {
-                        type: 'dev_test_backup',
-                      });
-                    }}
-                    size={52}
-                    titleComponent={<MenuItem.Title isLink text="Dev Only: Quick Import/Export Backup" />}
-                  />
-                </Menu>
-              </Box>
-            )}
-
             <Box>
               <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
                 <BackUpMenuItem
@@ -388,19 +365,22 @@ export const WalletsAndBackup = () => {
                     />
                     <MenuItem
                       key={`${id}-accounts`}
-                      size={getAccountSectionHeight(addresses.length)}
                       disabled
                       width="full"
                       titleComponent={
-                        <FlatList
-                          data={addresses}
-                          columnWrapperStyle={{ gap: spaceBetweenAccounts }}
-                          contentContainerStyle={{ gap: spaceBetweenAccounts }}
-                          renderItem={({ item }) => <WalletPill account={item} />}
-                          keyExtractor={item => item.address}
-                          numColumns={3}
-                          scrollEnabled={false}
-                        />
+                        <Box
+                          paddingVertical="12px"
+                          style={{
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            gap: WALLET_PILL_GAP,
+                          }}
+                          width={{ custom: WALLET_PILL_SECTION_WIDTH }}
+                        >
+                          {addresses.map(account => (
+                            <WalletPill key={account.address} account={account} />
+                          ))}
+                        </Box>
                       }
                     />
                   </Menu>
@@ -530,19 +510,22 @@ export const WalletsAndBackup = () => {
                     />
                     <MenuItem
                       key={`${id}-accounts`}
-                      size={getAccountSectionHeight(addresses.length)}
                       disabled
                       width="full"
                       titleComponent={
-                        <FlatList
-                          data={addresses}
-                          columnWrapperStyle={{ gap: spaceBetweenAccounts }}
-                          contentContainerStyle={{ gap: spaceBetweenAccounts }}
-                          renderItem={({ item }) => <WalletPill account={item} />}
-                          keyExtractor={item => item.address}
-                          numColumns={3}
-                          scrollEnabled={false}
-                        />
+                        <Box
+                          paddingVertical="12px"
+                          style={{
+                            flexDirection: 'row',
+                            flexWrap: 'wrap',
+                            gap: WALLET_PILL_GAP,
+                          }}
+                          width={{ custom: WALLET_PILL_SECTION_WIDTH }}
+                        >
+                          {addresses.map(account => (
+                            <WalletPill key={account.address} account={account} />
+                          ))}
+                        </Box>
                       }
                     />
                   </Menu>
@@ -573,6 +556,7 @@ export const WalletsAndBackup = () => {
                       })}
                     />
                   }
+                  testID="view-cloud-backups"
                 />
                 <MenuItem
                   hasSfSymbol
@@ -587,6 +571,7 @@ export const WalletsAndBackup = () => {
                       })}
                     />
                   }
+                  testID="cloud-backups-settings"
                 />
               </Menu>
             </Stack>
@@ -643,19 +628,22 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={`${id}-accounts`}
-                    size={getAccountSectionHeight(addresses.length)}
                     disabled
                     width="full"
                     titleComponent={
-                      <FlatList
-                        data={addresses}
-                        columnWrapperStyle={{ gap: spaceBetweenAccounts }}
-                        contentContainerStyle={{ gap: spaceBetweenAccounts }}
-                        renderItem={({ item }) => <WalletPill account={item} />}
-                        keyExtractor={item => item.address}
-                        numColumns={3}
-                        scrollEnabled={false}
-                      />
+                      <Box
+                        paddingVertical="12px"
+                        style={{
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          gap: WALLET_PILL_GAP,
+                        }}
+                        width={{ custom: WALLET_PILL_SECTION_WIDTH }}
+                      >
+                        {addresses.map(account => (
+                          <WalletPill key={account.address} account={account} />
+                        ))}
+                      </Box>
                     }
                   />
                 </Menu>
@@ -722,6 +710,24 @@ export const WalletsAndBackup = () => {
   return (
     <MenuContainer scrollviewRef={scrollviewRef}>
       <AbsolutePortalRoot style={{ zIndex: 100 }} />
+
+      {IS_DEV && (
+        <Box>
+          <Menu description="Dev Only: Quick Import/Export Backup">
+            <MenuItem
+              hasSfSymbol
+              leftComponent={<MenuItem.TextIcon icon="⚠️" isLink />}
+              onPress={() => {
+                navigate(Routes.MODAL_SCREEN, {
+                  type: 'dev_test_backup',
+                });
+              }}
+              size={52}
+              titleComponent={<MenuItem.Title isLink text="Dev Only: Quick Import/Export Backup" />}
+            />
+          </Menu>
+        </Box>
+      )}
       {renderView()}
     </MenuContainer>
   );

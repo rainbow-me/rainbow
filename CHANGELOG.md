@@ -15,6 +15,49 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.71] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.71)
+
+### Added
+
+- Added execution and validation to L1 swaps test (#6636)
+- Added search bar to network selector (#6660)
+- Execute swap on iOS e2e + Gas mocking (#6670)
+- Added wrap test and go through settings flows (#6700)
+
+### Changed
+
+- Wallet state refactor from Redux to Zustand (#6564)
+- Bump sentry (#6676)
+- Bump fastlane version (#6682)
+- Small swap input caret improvement + SafeMath optimizations (#6693)
+- RainbowImage - unified image component for faster image loads (#6653)
+- Bump iOS and Android to v1.9.71 (#6722)
+- Cleanup wallet store further, improve types, speed and correctness (#6642)
+- Disable react native performance in dev (#6715)
+
+### Fixed
+
+- Fixed incorrect ask of rainbow pin when backing up new wallet (#6675)
+- Fixed adding to backup when creating a new secret phrase (#6673)
+- Fixed backup when using rainbow PIN (#6679)
+- Fixed token over fetching on position card (#6688)
+- Fixed RN keychain crash on android api <= 29 (#6702)
+- Fixed wallet loading bug on migration to new wallet store (#6705)
+- Fixed incorrect rainbow pin prompt on backup restore (#6717)
+- Nate/christian wallet store fixes (#6729)
+- Fixed import bugs - blur after focusing seed input (#6733)
+- Fixed keychain reset not resetting wallet state (#6740)
+
+## [1.9.70] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.70)
+
+### Changed
+
+- Bump iOS and Android to v1.9.70 (#6701)
+
+### Fixed
+
+- Change removed private api access for button gesture (#6718)
+
 ## [1.9.69] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.69)
 
 ### Changed

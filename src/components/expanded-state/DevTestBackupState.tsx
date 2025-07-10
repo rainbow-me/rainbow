@@ -1,19 +1,22 @@
 import CopyTooltip from '@/components/copy-tooltip';
 import { Box, Text } from '@/design-system';
+import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { clear } from '@/keychain';
+import { logger, RainbowError } from '@/logger';
 import { createBackup, restoreBackup } from '@/model/backup';
+import { clearAllStorages } from '@/model/mmkv';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { rainbowStorage } from '@/state/internal/rainbowStorage';
+import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
+import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
+import { clearWalletState } from '@/state/wallets/walletsStore';
+import Clipboard from '@react-native-clipboard/clipboard';
 import React, { useEffect, useState } from 'react';
 import { Alert, Pressable, View } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { wipeKeychain } from '@/model/keychain';
-import { clearAllStorages } from '@/model/mmkv';
-import { navigate, useNavigation } from '@/navigation/Navigation';
-import Routes from '@/navigation/Routes';
-import { clearWalletState, loadWallets, useWalletsStore } from '@/state/wallets/walletsStore';
-import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
+import { resetInternetCredentials } from 'react-native-keychain';
 
 export const DevTestBackupState = () => {
-  const { goBack } = useNavigation();
   const [exported, setExported] = useState('test123');
 
   useEffect(() => {
@@ -38,7 +41,7 @@ export const DevTestBackupState = () => {
       >
         <CopyTooltip textToCopy={exported} tooltipText="Copy">
           <Text color="base" size="15pt">
-            Copy Backup!
+            📋 Copy Backup!
           </Text>
         </CopyTooltip>
       </Box>
@@ -59,13 +62,16 @@ export const DevTestBackupState = () => {
               loadingState: WalletLoadingStates.IMPORTING_WALLET,
             });
             const restored = await restoreBackup(backup);
+            logger.log(`restored: ${restored}`);
 
             if (restored) {
-              await loadWallets();
-              goBack();
+              await updateWalletsBackedUpState();
+              Navigation.handleAction(Routes.WELCOME_SCREEN);
             } else {
               Alert.alert(`invalid backup`);
             }
+          } catch (err) {
+            logger.error(new RainbowError(`Error restoring`, err));
           } finally {
             walletLoadingStore.setState({
               loadingState: null,
@@ -87,18 +93,12 @@ export const DevTestBackupState = () => {
         </Box>
       </Pressable>
 
-      <View style={{ height: 100 }} />
+      <View style={{ height: 50 }} />
 
       <Pressable
         onPress={async () => {
-          await wipeKeychain();
-          await clearAllStorages();
-          clearWalletState();
-          // we need to navigate back to the welcome screen
-          goBack();
-          setTimeout(() => {
-            navigate(Routes.WELCOME_SCREEN);
-          }, 500);
+          await clearWalletState({ resetKeychain: true });
+          Navigation.handleAction(Routes.WELCOME_SCREEN);
         }}
       >
         <Box
@@ -110,7 +110,37 @@ export const DevTestBackupState = () => {
           shadow="21px light (Deprecated)"
         >
           <Text color="base" size="15pt">
-            Clear All Wallets/State (‼️)
+            Clear All Wallets
+          </Text>
+        </Box>
+      </Pressable>
+
+      <View style={{ height: 20 }} />
+
+      <Pressable
+        onPress={async () => {
+          await Promise.all([
+            // attempt clearing as much as possible
+            clearWalletState({ resetKeychain: true }),
+            clearAllStorages(),
+            clear(),
+            resetInternetCredentials({}),
+            rainbowStorage.clearAll(),
+          ]);
+
+          Navigation.handleAction(Routes.WELCOME_SCREEN);
+        }}
+      >
+        <Box
+          background="card (Deprecated)"
+          borderRadius={25}
+          height={{ custom: 50 }}
+          paddingHorizontal="24px"
+          paddingVertical="19px (Deprecated)"
+          shadow="21px light (Deprecated)"
+        >
+          <Text color="base" size="15pt">
+            Clear All Storage ‼️
           </Text>
         </Box>
       </Pressable>

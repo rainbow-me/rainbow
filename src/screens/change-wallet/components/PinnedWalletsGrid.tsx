@@ -154,6 +154,7 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                           size={avatarSize}
                           address={account.address}
                           color={account.color}
+                          emoji={account.emoji}
                           label={account.label}
                         />
                       </Box>

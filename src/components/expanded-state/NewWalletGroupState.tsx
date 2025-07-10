@@ -31,7 +31,7 @@ export default function NewWalletGroupState({ onCloseModal, numWalletGroups }: N
       inputValue={value}
       onChange={setValue}
       placeholder={lang.t(lang.l.wallet.action.create_wallet_group_placeholder, {
-        numWalletGroups,
+        numWalletGroups: numWalletGroups + 1,
       })}
       submitButtonText={lang.t(lang.l.wallet.action.create_wallet_group)}
     />

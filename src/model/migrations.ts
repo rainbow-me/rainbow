@@ -5,7 +5,7 @@ import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCh
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
@@ -45,7 +45,7 @@ import {
   signingWalletAddress,
 } from '../utils/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
-import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
+import { DEFAULT_WALLET_NAME, getAllWallets, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
 
 export default async function runMigrations() {
   // get current version
@@ -106,7 +106,7 @@ export default async function runMigrations() {
 
         logger.debug('[runMigrations]: v1 migration - update wallets and selected wallet');
         await updateWallets(wallets);
-        await setSelectedWallet(currentWallet);
+        setSelectedWallet(currentWallet);
       }
     }
   };
@@ -784,7 +784,38 @@ export default async function runMigrations() {
 
   migrations.push(v27);
 
-  logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
+  /**
+   *************** Migration v28 ******************
+   * Fix wallet group names that were set to "My Wallet"
+   * This updates them to "Wallet Group X" where X is the sequential number
+   */
+  const v28 = async () => {
+    const walletsFromKeychain = await getAllWallets();
+    if (!walletsFromKeychain) return;
+
+    const wallets = walletsFromKeychain.wallets;
+    const mnemonicWallets = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
+
+    if (!mnemonicWallets.length) return;
+    let hasUpdates = false;
+
+    mnemonicWallets.forEach((wallet, index) => {
+      const isDefaultWalletName = wallet.name === DEFAULT_WALLET_NAME;
+      const needsUpdate =
+        isDefaultWalletName || !removeFirstEmojiFromString(wallet.name).trim() || !!wallet.name.match(/^Wallet Group (\d+)$/);
+
+      if (needsUpdate) {
+        const newName = `Wallet Group ${index + 1}`;
+        wallets[wallet.id].name = newName;
+        hasUpdates = true;
+      }
+    });
+
+    if (hasUpdates) await updateWallets(wallets);
+  };
+
+  migrations.push(v28);
+
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
     logger.debug(`[runMigrations]: Nothing to run`);
