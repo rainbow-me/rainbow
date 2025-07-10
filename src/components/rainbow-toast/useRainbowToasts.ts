@@ -31,9 +31,25 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 
   startRemoveToast: id => {
-    set(state => ({
-      toasts: state.toasts.map(toast => (toast.id === id ? { ...toast, removing: true } : toast)),
-    }));
+    set(state => {
+      const updatedToasts = state.toasts.map(toast => (toast.id === id ? { ...toast, removing: true } : toast));
+
+      // Reindex non-removing toasts to animate them into new positions immediately
+      let nonRemovingIndex = 0;
+      const reindexedToasts = updatedToasts.map(toast => {
+        if (toast.removing) {
+          return toast; // Keep removing toast at current index for animation
+        } else {
+          const updatedToast = { ...toast, index: nonRemovingIndex };
+          nonRemovingIndex += 1;
+          return updatedToast;
+        }
+      });
+
+      return {
+        toasts: reindexedToasts,
+      };
+    });
   },
 
   removeToast: id => {
@@ -43,6 +59,9 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 }));
 
-export const useRainbowToasts = () => useToastStore(state => state.toasts.slice(0, 3)); // Show max 3 toasts
+export const useRainbowToasts = () => {
+  const toasts = useToastStore(state => state.toasts);
+  return toasts.slice(0, 3); // Show max 3 toasts
+};
 
 export const { showToast, updateToast, startRemoveToast, removeToast } = useToastStore.getState();

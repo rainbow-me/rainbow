@@ -4,7 +4,7 @@ type BaseToast = {
   id: string;
 
   action?: () => void;
-  removed?: boolean;
+  removing?: boolean;
 };
 
 export const RainbowToastSwapStatuses = {

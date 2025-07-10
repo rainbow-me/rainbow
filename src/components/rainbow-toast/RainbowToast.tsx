@@ -1,7 +1,6 @@
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { FullWindowOverlay } from 'react-native-screens';
 import {
   type RainbowToast,
   type RainbowToastMint,
@@ -36,6 +35,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FullWindowOverlay } from 'react-native-screens';
 import { useTheme } from '../../theme/ThemeContext';
 import { TruncatedText } from '../text';
 
@@ -73,8 +73,6 @@ export function RainbowToastDisplay() {
       }
     });
   }, [pendingTransactions]);
-
-  const hasToasts = toasts.length > 0;
 
   return (
     <FullWindowOverlay>
@@ -182,7 +180,21 @@ function RainbowToast({ toast, testID, insets }: Props) {
 
   useEffect(() => {
     visible.value = withSpring(1, springConfig);
-  }, [visible]);
+
+    // Initialize translateY based on toast position
+    if (translateY.value === 0) {
+      if (index === 0) {
+        // First toast starts from above
+        translateY.value = insets.top - 80;
+      } else if (index === 2) {
+        // Bottom toast starts from below
+        translateY.value = distance + 2;
+      } else {
+        // Middle toast starts at target position
+        translateY.value = distance;
+      }
+    }
+  }, [visible, translateY, distance, index, insets.top]);
 
   useEffect(() => {
     translateY.value = withSpring(distance, springConfig);
@@ -199,9 +211,6 @@ function RainbowToast({ toast, testID, insets }: Props) {
   const panGesture = useMemo(() => {
     return Gesture.Pan()
       .minDistance(10)
-      .onStart(() => {
-        runOnJS(startRemoveToastCallback)();
-      })
       .onUpdate(event => {
         translateX.value = event.translationX;
       })
@@ -218,6 +227,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
         const isDraggedFastEnough = Math.abs(velocityX) >= DISMISS_VELOCITY_THRESHOLD;
 
         if (isDraggedFarEnough && isDraggedFastEnough) {
+          runOnJS(startRemoveToastCallback)();
           const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
           translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
             if (finished) {
