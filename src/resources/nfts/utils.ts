@@ -72,6 +72,30 @@ export function parseUniqueId(uniqueId: string): {
   };
 }
 
+function buildMarketplaceData(nft: GetNftsByCollectionQuery['nftsByCollection'][number]):
+  | {
+      marketplaceUrl: string;
+      marketplaceName: string;
+    }
+  | undefined {
+  // if we have it already, return it
+  if (nft.marketplaceUrl && nft.marketplaceName) {
+    return {
+      marketplaceUrl: nft.marketplaceUrl,
+      marketplaceName: nft.marketplaceName,
+    };
+  }
+
+  const { network, contractAddress, tokenId } = parseUniqueId(nft.uniqueId);
+
+  if (network && contractAddress && tokenId) {
+    return {
+      marketplaceUrl: `https://opensea.io/item/${network}/${contractAddress}/${tokenId}`,
+      marketplaceName: 'OpenSea',
+    };
+  }
+}
+
 export function parseUniqueAsset(
   nft: GetNftsByCollectionQuery['nftsByCollection'][number],
   chainIds: Record<Network, ChainId>
@@ -84,8 +108,11 @@ export function parseUniqueAsset(
     mimeType: nft.images.mimeType,
   });
 
+  const marketplaceData = buildMarketplaceData(nft);
+
   return {
     ...nft,
+    ...(marketplaceData ? { marketplaceUrl: marketplaceData.marketplaceUrl, marketplaceName: marketplaceData.marketplaceName } : {}),
     type: nft.type as AssetType,
     standard: nft.standard,
     images: {
