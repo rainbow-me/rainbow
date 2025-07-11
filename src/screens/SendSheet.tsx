@@ -198,13 +198,12 @@ export default function SendSheet() {
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
-  const isNft = selected?.type === AssetTypes.nft;
   const isUniqueAsset = assetIsUniqueAsset(selected);
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
-  const nftColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
-  if (isNft) {
-    colorForAsset = nftColor;
+  const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
+  if (isUniqueAsset) {
+    colorForAsset = uniqueAssetColor;
   }
 
   const isENS = selected?.type === AssetType.ens;
@@ -326,7 +325,7 @@ export default function SendSheet() {
         setCurrentProvider(provider);
       }
     }
-  }, [currentChainId, isNft, chainId, prevChainId, selected?.chainId]);
+  }, [currentChainId, chainId, prevChainId, selected?.chainId]);
 
   const onChangeNativeAmount = useCallback(
     (newNativeAmount: string) => {
@@ -776,7 +775,7 @@ export default function SendSheet() {
       ensProfile,
       isENS,
       isL2,
-      isNft,
+      isUniqueAsset,
       chainId: currentChainId,
       profilesEnabled,
       to: recipient,
@@ -796,7 +795,6 @@ export default function SendSheet() {
     amountDetails,
     submitTransaction,
     isL2,
-    isNft,
     currentChainId,
     profilesEnabled,
   ]);
@@ -904,7 +902,6 @@ export default function SendSheet() {
     updateTxFee,
     updateTxFeeForOptimism,
     chainId,
-    isNft,
     currentChainId,
     isUniqueAsset,
   ]);

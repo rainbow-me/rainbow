@@ -197,7 +197,7 @@ export const SendConfirmationSheet = () => {
   }, []);
 
   const {
-    params: { amountDetails, asset, callback, ensProfile, isL2, isNft, chainId, to, toAddress },
+    params: { amountDetails, asset, callback, ensProfile, isL2, isUniqueAsset, chainId, to, toAddress },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_CONFIRMATION_SHEET>>();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -340,7 +340,7 @@ export const SendConfirmationSheet = () => {
 
   let color = useColorForAsset(asset);
 
-  if (isNft) {
+  if (isUniqueAsset) {
     color = theme.colors.appleBlue;
   }
 
@@ -475,15 +475,15 @@ export const SendConfirmationSheet = () => {
             <Row>
               <Column justify="center" width={deviceWidth - 117}>
                 <Heading numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
-                  {isNft ? asset?.name : nativeDisplayAmount}
+                  {isUniqueAsset ? asset?.name : nativeDisplayAmount}
                 </Heading>
                 <Row marginTop={12}>
                   <Text
                     color={{
-                      custom: isNft ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
+                      custom: isUniqueAsset ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
                     }}
                     size="16px / 22px (Deprecated)"
-                    weight={isNft ? 'bold' : 'heavy'}
+                    weight={isUniqueAsset ? 'bold' : 'heavy'}
                   >
                     {subHeadingText}
                   </Text>
