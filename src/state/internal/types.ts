@@ -192,6 +192,11 @@ export type RainbowPersistConfig<S, PersistedState = Partial<S>> = {
    * @default 0
    */
   version?: number;
+
+  /**
+   * A simple helper for logging out every set() in a store.
+   */
+  debug?: boolean;
 };
 
 export type LazyPersistParams<S, PersistedState extends Partial<S>> = {
