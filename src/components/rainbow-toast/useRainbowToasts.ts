@@ -1,4 +1,4 @@
-import { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-toast/types';
+import type { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type ToastState = {
