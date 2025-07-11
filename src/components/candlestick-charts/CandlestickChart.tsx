@@ -21,6 +21,7 @@ import { Gesture, GestureDetector, State as GestureState } from 'react-native-ge
 import Animated, {
   Easing,
   SharedValue,
+  executeOnUIRuntimeSync,
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -247,7 +248,7 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
 
   priceBubble: {
     height: 18,
-    hidden: true,
+    hidden: false,
     paddingHorizontal: 5,
   },
 
@@ -800,11 +801,14 @@ class CandlestickChartManager {
     }
 
     // ========== Volume Bars ==========
+    const maxBorderRadius = this.config.candles.maxBorderRadius;
+    const maxVolume = this.maxDisplayedVolume.value;
     for (let i = startIndex; i <= endIndex; i++) {
       const candle = this.candles[i];
-      const cornerRadius = Math.min(this.config.candles.maxBorderRadius, candleWidth / 3);
-      const fractionOfMax = candle.v / this.maxDisplayedVolume.value;
-      const height = fractionOfMax * volumeRegionHeight;
+      const cornerRadius = Math.min(maxBorderRadius, candleWidth / 3);
+      const rawFraction = candle.v / maxVolume;
+      const easedFraction = rawFraction <= 0 ? 0 : Math.pow(rawFraction, 0.8);
+      const height = easedFraction * volumeRegionHeight;
       const x = i * stride + currentOffset;
       const y = chartHeight - height;
       canvas.drawRRect({ rect: { height, width: candleWidth, x, y }, rx: cornerRadius, ry: cornerRadius }, this.paints.volume);
@@ -1004,11 +1008,12 @@ class CandlestickChartManager {
     const priceAtYPosition = this.getPriceAtYPosition(yWithOffset);
 
     if (newActiveCandle && !this.config.priceBubble.hidden) {
+      const labelX = this.chartWidth - this.yAxisWidth + this.config.chart.yAxisPaddingLeft;
       this.drawTextBubble({
         canvas,
         centerY: yWithOffset,
         color: this.colors.crosshairPriceBubble,
-        leftX: snappedX + 20,
+        leftX: labelX,
         priceOrLabel: priceAtYPosition,
         stabilizePriceWidth: true,
         strokeOpacity: 0.12,
@@ -1599,7 +1604,7 @@ function useCandlestickChart({
       maxDisplayedVolume,
       nativeCurrency,
     });
-  }, true);
+  });
 
   const resetHistoricalFetchState = useCallback(
     (hasPreviousCandles: boolean | undefined) => {
@@ -1672,11 +1677,11 @@ function useCandlestickChart({
 
   useCleanup(() => {
     initialPicture.dispose();
-    runOnUI(() => {
+    useChartsStore.getState().resetCandlestickToken();
+    executeOnUIRuntimeSync(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;
     })();
-    useChartsStore.getState().resetCandlestickToken();
   });
 
   return useMemo(
