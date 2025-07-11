@@ -79,10 +79,10 @@ export default class SendAssetList extends React.Component {
     const imageTokens = [];
     uniqueTokens.forEach(family => {
       family.data.forEach(token => {
-        if (token.image_thumbnail_url) {
+        if (token.images.lowResUrl) {
           imageTokens.push({
-            id: token.id,
-            uri: token.image_thumbnail_url,
+            id: token.tokenId,
+            uri: token.images.lowResUrl,
           });
         }
       });
@@ -186,7 +186,7 @@ export default class SendAssetList extends React.Component {
     collectibles.map(collectible => (
       <CollectiblesSendRow
         item={collectible}
-        key={collectible.id}
+        key={collectible.uniqueId}
         onPress={() => this.props.onSelectAsset(collectible)}
         testID="send-collectible"
       />

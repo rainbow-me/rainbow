@@ -33,8 +33,6 @@ import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDev
 import { createSignature } from '@/helpers/signingWallet';
 import showWalletErrorAlert from '@/helpers/support';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { deriveAccountFromBluetoothHardwareWallet, deriveAccountFromMnemonic, deriveAccountFromWalletInput } from '@/utils/wallet';
@@ -745,9 +743,6 @@ export const createWallet = async ({
       // Creating signature for this wallet
       logger.debug(`[wallet]: generating signature`, {}, DebugContext.wallet);
       await createSignature(walletAddress, pkey);
-      // Enable web profile
-      logger.debug(`[wallet]: enabling web profile`, {}, DebugContext.wallet);
-      store.dispatch(updateWebDataEnabled(true, walletAddress));
       // Save the color
       setPreference(PreferenceActionType.init, 'profile', address, {
         accountColor: lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
@@ -840,9 +835,6 @@ export const createWallet = async ({
             // Creating signature for this wallet
             logger.debug(`[wallet]: enabling web profile`, {}, DebugContext.wallet);
             await createSignature(nextWallet.address, nextWallet.privateKey);
-            // Enable web profile
-            store.dispatch(updateWebDataEnabled(true, nextWallet.address));
-
             // Save the color
             setPreference(PreferenceActionType.init, 'profile', nextWallet.address, {
               accountColor: lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],

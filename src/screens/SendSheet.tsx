@@ -2,11 +2,12 @@ import { analytics } from '@/analytics';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
+import { AssetType, AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
+  assetIsUniqueAsset,
   buildTransaction,
   createSignableTransaction,
   estimateGasLimit,
@@ -56,7 +57,7 @@ import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wall
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { deviceUtils, ethereumUtils, getUniqueTokenType, isLowerCaseMatch, safeAreaInsetValues } from '@/utils';
+import { deviceUtils, ethereumUtils, isLowerCaseMatch, safeAreaInsetValues } from '@/utils';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -197,19 +198,17 @@ export default function SendSheet() {
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
-  const isNft = selected?.type === AssetTypes.nft;
-  const isUniqueAsset = selected && 'collection' in selected;
+  const isUniqueAsset = assetIsUniqueAsset(selected);
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
-  const nftColor = usePersistentDominantColorFromImage(isUniqueAsset && isNft ? selected?.lowResUrl : null) ?? colors.appleBlue;
-  if (isNft) {
-    colorForAsset = nftColor;
+  const uniqueAssetColor = usePersistentDominantColorFromImage(isUniqueAsset ? selected?.images.lowResUrl : null) ?? colors.appleBlue;
+  if (isUniqueAsset) {
+    colorForAsset = uniqueAssetColor;
   }
 
-  const uniqueTokenType = isUniqueAsset && isNft ? getUniqueTokenType(selected) : undefined;
-  const isENS = uniqueTokenType === 'ENS';
+  const isENS = selected?.type === AssetType.ens;
 
-  const ensName = selected?.uniqueId ? selected.uniqueId?.split(' ')?.[0] : selected?.uniqueId ?? '';
+  const ensName = isENS ? selected?.name : '';
   const ensProfile = useENSProfile(ensName, {
     enabled: isENS,
     supportedRecordsOnly: false,
@@ -224,7 +223,7 @@ export default function SendSheet() {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : selected?.currentPrice ?? 0;
+        const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : selected?.floorPrice ?? 0;
         const { amount: convertedNativeAmount } = convertAmountAndPriceToNativeDisplay(_assetAmount, priceUnit, nativeCurrency);
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
@@ -244,20 +243,17 @@ export default function SendSheet() {
     (newSelected: ParsedAddressAsset | UniqueAsset | undefined) => {
       if (isEqual(newSelected, selected)) return;
       updateMaxInputBalance(newSelected);
-      if (newSelected?.type === AssetTypes.nft) {
+      if (assetIsUniqueAsset(newSelected)) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
           nativeAmount: '0',
         });
 
-        const isUniqueAsset = 'collection' in newSelected;
-
-        // Prevent a state update loop
-        if (selected?.uniqueId !== newSelected?.uniqueId && isUniqueAsset) {
+        if (selected?.uniqueId !== newSelected?.uniqueId) {
           setSelected({
             ...newSelected,
-            symbol: newSelected?.collection?.name,
+            symbol: newSelected.collectionName ?? undefined,
           });
         }
       } else {
@@ -329,7 +325,7 @@ export default function SendSheet() {
         setCurrentProvider(provider);
       }
     }
-  }, [currentChainId, isNft, chainId, prevChainId, selected?.chainId]);
+  }, [currentChainId, chainId, prevChainId, selected?.chainId]);
 
   const onChangeNativeAmount = useCallback(
     (newNativeAmount: string) => {
@@ -765,11 +761,9 @@ export default function SendSheet() {
       });
       return;
     }
-    const uniqueTokenType = isUniqueAsset ? getUniqueTokenType(selected) : undefined;
-    const isENS = uniqueTokenType === 'ENS';
     const checkboxes = getDefaultCheckboxes({
       ensProfile,
-      isENS: true,
+      isENS,
       chainId,
       toAddress: recipient,
     });
@@ -781,7 +775,7 @@ export default function SendSheet() {
       ensProfile,
       isENS,
       isL2,
-      isNft,
+      isUniqueAsset,
       chainId: currentChainId,
       profilesEnabled,
       to: recipient,
@@ -789,18 +783,18 @@ export default function SendSheet() {
     });
   }, [
     buttonDisabled,
+    selected,
     recipient,
     isUniqueAsset,
-    selected,
     assetInputRef,
     nativeCurrencyInputRef,
     ensProfile,
+    isENS,
     chainId,
     navigate,
     amountDetails,
     submitTransaction,
     isL2,
-    isNft,
     currentChainId,
     profilesEnabled,
   ]);
@@ -908,7 +902,6 @@ export default function SendSheet() {
     updateTxFee,
     updateTxFeeForOptimism,
     chainId,
-    isNft,
     currentChainId,
     isUniqueAsset,
   ]);

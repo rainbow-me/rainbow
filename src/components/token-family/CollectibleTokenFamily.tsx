@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
-import { useOpenFamilies } from '@/hooks';
 import { ThemeContextProps } from '@/theme';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 type Props = {
   childrenAmount: number;
@@ -15,15 +15,11 @@ type Props = {
 };
 
 const CollectibleTokenFamily = ({ childrenAmount, external, familyImage, familyName, showcase, item, theme }: Props) => {
-  const { openFamilies, updateOpenFamilies } = useOpenFamilies();
-  const isFamilyOpen = openFamilies[familyName + (showcase ? '-showcase' : '')];
+  const isFamilyOpen = useOpenCollectionsStore(state => state.isCollectionOpen(familyName + (showcase ? '-showcase' : '')));
 
   const handleToggle = useCallback(
-    () =>
-      updateOpenFamilies({
-        [familyName + (showcase ? '-showcase' : '')]: !isFamilyOpen,
-      }),
-    [familyName, isFamilyOpen, showcase, updateOpenFamilies]
+    () => useOpenCollectionsStore.getState().toggleCollection(familyName + (showcase ? '-showcase' : '')),
+    [familyName, showcase]
   );
 
   const renderChild = useCallback(

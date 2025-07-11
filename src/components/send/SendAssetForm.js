@@ -64,7 +64,7 @@ export default function SendAssetForm({
   const keyboardHeight = useKeyboardHeight();
   const [showNativeValue, setShowNativeValue] = useState(true);
 
-  const isNft = selected.type === AssetTypes.nft;
+  const isNft = selected.type === AssetTypes.nft || selected.type === AssetTypes.ens || selected.type === AssetTypes.poap;
 
   const AssetRowElement = isNft ? CollectiblesSendRow : SendCoinRow;
 

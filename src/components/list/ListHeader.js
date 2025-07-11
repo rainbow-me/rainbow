@@ -1,5 +1,5 @@
 import Divider from '@/components/Divider';
-import { useDimensions, useWebData } from '@/hooks';
+import { useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import * as i18n from '@/languages';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -13,6 +13,7 @@ import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
 import { H1 } from '../text';
+import { initializeShowcaseIfNeeded } from '@/helpers/webData';
 
 export const ListHeaderHeight = 48;
 
@@ -53,13 +54,14 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
   const accountAddress = useAccountAddress();
-  const { accountENS } = useAccountProfileInfo();
-  const { initializeShowcaseIfNeeded } = useWebData();
+  const { accountENS, accountColorHex, accountSymbol } = useAccountProfileInfo();
+  const { showcaseTokens } = useShowcaseTokens();
+  const { hiddenTokens } = useHiddenTokens();
 
-  const handleShare = useCallback(() => {
+  const handleShare = useCallback(async () => {
     const isReadOnly = getIsReadOnlyWallet();
     if (!isReadOnly) {
-      initializeShowcaseIfNeeded();
+      await initializeShowcaseIfNeeded(accountAddress, showcaseTokens, hiddenTokens, accountColorHex, accountSymbol);
     }
     const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountENS || accountAddress}`;
     const shareOptions = {
@@ -68,7 +70,7 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
         : lang.t('list.share.check_out_my_wallet', { showcaseUrl }),
     };
     Share.share(shareOptions);
-  }, [accountAddress, accountENS, initializeShowcaseIfNeeded]);
+  }, [accountAddress, accountColorHex, accountENS, accountSymbol, hiddenTokens, showcaseTokens]);
 
   return (
     <Fragment>

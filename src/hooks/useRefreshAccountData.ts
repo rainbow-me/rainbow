@@ -10,6 +10,10 @@ import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsSto
 import { time } from '@/utils';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { hiddenTokensQueryKey } from '@/hooks/useFetchHiddenTokens';
+import { showcaseTokensQueryKey } from '@/hooks/useFetchShowcaseTokens';
 
 // minimum duration we want the "Pull to Refresh" animation to last
 const MIN_REFRESH_DURATION = 1_250;
@@ -20,6 +24,8 @@ export const refreshAccountData = async () => {
   // These queries can take too long to fetch, so we do not wait for them
   refetchWalletSummary();
   queryClient.invalidateQueries(createQueryKey('nfts', { address: accountAddress }));
+  queryClient.invalidateQueries(showcaseTokensQueryKey({ address: accountAddress }));
+  queryClient.invalidateQueries(hiddenTokensQueryKey({ address: accountAddress }));
 
   await Promise.all([
     delay(MIN_REFRESH_DURATION),
@@ -28,6 +34,7 @@ export const refreshAccountData = async () => {
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
     useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
+    useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) }),
   ]).then(() => refreshWalletInfo({ useCachedENS: true }));
 };
 

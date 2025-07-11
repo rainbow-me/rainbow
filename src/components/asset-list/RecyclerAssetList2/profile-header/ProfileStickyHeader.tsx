@@ -8,7 +8,7 @@ import { IS_IOS } from '@/env';
 export const ProfileStickyHeaderHeight = 52;
 const visiblePosition = IS_IOS ? navbarHeight : navbarHeight + 80;
 
-export function ProfileStickyHeader() {
+export const ProfileStickyHeader = React.memo(function ProfileStickyHeader() {
   const { colors } = useTheme();
 
   return (
@@ -28,4 +28,4 @@ export function ProfileStickyHeader() {
       />
     </StickyHeader>
   );
-}
+});

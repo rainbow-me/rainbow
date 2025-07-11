@@ -46,7 +46,7 @@ const NFTItem = () => {
   );
 };
 
-const NFTLoadingSkeleton = ({ items = 5 }) => {
+const NFTLoadingSkeleton = React.memo(function NFTLoadingSkeleton({ items = 5 }: { items?: number }) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
@@ -55,11 +55,11 @@ const NFTLoadingSkeleton = ({ items = 5 }) => {
   return (
     <View style={sx.container}>
       {[...Array(items)].map((_, index) => (
-        <NFTItem key={index} />
+        <NFTItem key={`nft-loading-skeleton-${index}`} />
       ))}
     </View>
   );
-};
+});
 
 const sx = StyleSheet.create({
   container: {

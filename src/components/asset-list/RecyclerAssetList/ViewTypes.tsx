@@ -147,6 +147,7 @@ export const ViewTypes: {
     index: 2,
     renderComponent: ({ data }) => {
       const { item = { value: '', defaultToEditButton: false, extendedState: null } } = data;
+      // @ts-expect-error - untyped js file
       return <CoinDivider balancesSum={item.value} defaultToEditButton={item.defaultToEditButton} extendedState={item.extendedState} />;
     },
     visibleDuringCoinEdit: true,

@@ -21,7 +21,7 @@ import { useRecoilState } from 'recoil';
 
 export const ProfileActionButtonsRowHeight = 80;
 
-export function ProfileActionButtonsRow() {
+export const ProfileActionButtonsRow = React.memo(function ProfileActionButtonsRow() {
   const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
   const scale = useDerivedValue(() => (accentColorLoaded ? 1 : 0.9));
@@ -76,7 +76,7 @@ export function ProfileActionButtonsRow() {
       </Inset>
     </Box>
   );
-}
+});
 
 function ActionButton({
   children,

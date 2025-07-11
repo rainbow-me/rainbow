@@ -17,5 +17,5 @@ export default function useBooleanState(initialStateBoolean = false, duration?: 
     !!duration && startTimeout(setFalse, duration);
   }, [duration, setFalse, startTimeout, stopTimeout]);
 
-  return [bool, setTrue, setFalse];
+  return [bool, setTrue, setFalse] as const;
 }

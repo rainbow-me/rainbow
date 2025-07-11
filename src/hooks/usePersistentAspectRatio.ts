@@ -19,7 +19,7 @@ type Result = {
   result: number | undefined;
 };
 
-export default function usePersistentAspectRatio(url: string): Result {
+export default function usePersistentAspectRatio(url: string | null | undefined): Result {
   const [ratio, setAspectRatio] = useMMKVNumber((url || '') as string, storage);
   const [state, setState] = useState<State>(ratio ? State.loaded : State.init);
   useEffect(() => {

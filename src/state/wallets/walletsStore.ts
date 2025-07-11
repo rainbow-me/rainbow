@@ -22,8 +22,6 @@ import {
   saveAllWallets,
   setSelectedWallet as setSelectedWalletInKeychain,
 } from '@/model/wallet';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import store from '@/redux/store';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import { isLowerCaseMatch, time } from '@/utils';
@@ -347,8 +345,6 @@ export const useWalletsStore = createRainbowStore<WalletsState>(
           wallets: newWallets,
         };
       });
-
-      store.dispatch(updateWebDataEnabled(true, account.address));
 
       setPreference(PreferenceActionType.init, 'profile', account.address, {
         accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],

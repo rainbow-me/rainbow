@@ -2,7 +2,7 @@ import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolL
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Box } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useWalletSectionsData } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useFetchOpenCollectionsOnMount, useWalletSectionsData } from '@/hooks';
 import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
 import { useInitializeWalletAndSetParams } from '@/hooks/useInitializeWalletAndSetParams';
@@ -20,8 +20,9 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilValue } from 'recoil';
-import { AssetList } from '../../components/asset-list';
-import { Page } from '../../components/layout';
+import { AssetList } from '@/components/asset-list';
+import { Page } from '@/components/layout';
+import { useNftsStore } from '@/state/nfts/nfts';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -48,6 +49,7 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   useLoadDeferredWalletData();
   useWalletCohort();
   useAppIconIdentify();
+  useFetchOpenCollectionsOnMount();
   return null;
 });
 
@@ -90,6 +92,7 @@ function WalletScreen() {
           disableRefreshControl={disableRefreshControl}
           isWalletEthZero={isWalletEthZero}
           network={currentNetwork}
+          onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
           walletBriefSectionsData={walletBriefSectionsData}
         />
         <ToastComponent />
