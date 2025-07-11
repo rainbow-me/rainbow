@@ -1,23 +1,15 @@
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { getToastFromTransaction } from '@/components/rainbow-toast/getToastFromTransaction';
 import { MintToastContent } from '@/components/rainbow-toast/MintToastContent';
 import { SendToastContent } from '@/components/rainbow-toast/SendToastContent';
 import { SwapToastContent } from '@/components/rainbow-toast/SwapToastContent';
 import { type RainbowToast, type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
-import {
-  removeToast,
-  showToast,
-  startRemoveToast,
-  txIdToToastId,
-  updateToast,
-  useRainbowToasts,
-} from '@/components/rainbow-toast/useRainbowToasts';
+import { handleTransactions, removeToast, startRemoveToast, useToastStore } from '@/components/rainbow-toast/useRainbowToasts';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -34,69 +26,39 @@ import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 
 export function RainbowToastDisplay() {
-  const toasts = useRainbowToasts();
+  const { toasts } = useToastStore();
   const insets = useSafeAreaInsets();
   const { pendingTransactions } = usePendingTransactions();
-  const activeToastIds = useRef(new Set<string>());
+
+  useEffect(() => {
+    handleTransactions(pendingTransactions);
+  }, [pendingTransactions]);
+
+  // show all removing and 3 latest toasts
+  const toastsToShow: RainbowToastWithIndex[] = [];
+  const removingToasts: RainbowToastWithIndex[] = [];
+  for (const toast of toasts) {
+    if (toast.removing) {
+      removingToasts.push(toast);
+    } else {
+      if (toastsToShow.length > 2) {
+        break;
+      }
+      toastsToShow.push(toast);
+    }
+  }
+
+  const visibleToasts = [...removingToasts, ...toastsToShow];
 
   console.log('pendingTransactions', pendingTransactions.length);
   console.log('toasts', toasts.length);
-  console.log('activeToastIds', activeToastIds);
-
-  useEffect(() => {
-    const activePendingTxHashes: Record<string, boolean> = {};
-
-    for (const tx of pendingTransactions) {
-      const id = txIdToToastId(tx.hash);
-
-      activePendingTxHashes[id] = true;
-
-      // update
-      if (activeToastIds.current.has(id)) {
-        console.log('UPDATE', id, tx);
-        const value = getToastFromTransaction(tx);
-        if (value) {
-          updateToast(value);
-        }
-      }
-
-      // add
-      if (!activeToastIds.current.has(id)) {
-        console.log('ADD', tx);
-        activeToastIds.current.add(id);
-
-        const toast = getToastFromTransaction(tx);
-
-        console.log('got toast from transaction', JSON.stringify({ toast, tx }, null, 2));
-
-        if (toast) {
-          showToast(toast);
-        }
-      }
-    }
-
-    for (const toast of toasts) {
-      console.log('REMOVE', toast, 'active', JSON.stringify(activePendingTxHashes, null, 2));
-      if (!activePendingTxHashes[toast.id]) {
-        removeToast(toast.id);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    // we dont want to loop toasts here
-    pendingTransactions,
-  ]);
-
-  useEffect(() => {
-    return () => {
-      activeToastIds.current = new Set();
-    };
-  });
+  console.log('visibleToasts', visibleToasts.length);
+  console.log('removingToasts', removingToasts.length);
 
   return (
     <FullWindowOverlay>
       <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
-        {toasts.map(toast => {
+        {visibleToasts.map(toast => {
           return <RainbowToast insets={insets} key={toast.id} toast={toast} />;
         })}
       </Box>
@@ -157,6 +119,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
   }, [distance, translateY]);
 
   const removeToastFinish = useCallback(() => {
+    console.log('removeToastFinish', id);
     removeToast(id);
   }, [id]);
 
@@ -183,10 +146,12 @@ function RainbowToast({ toast, testID, insets }: Props) {
         const isDraggedFastEnough = Math.abs(velocityX) >= DISMISS_VELOCITY_THRESHOLD;
 
         if (isDraggedFarEnough && isDraggedFastEnough) {
+          console.log('startRemoveToastCallback', id);
           runOnJS(startRemoveToastCallback)();
           const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
           translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
             if (finished) {
+              console.log('finished', id);
               runOnJS(removeToastFinish)();
             }
           });
@@ -194,7 +159,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
           translateX.value = withSpring(0, springConfig);
         }
       });
-  }, [deviceWidth, lastChangeX, removeToastFinish, startRemoveToastCallback, translateX]);
+  }, [deviceWidth, id, lastChangeX, removeToastFinish, startRemoveToastCallback, translateX]);
 
   const dragStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;

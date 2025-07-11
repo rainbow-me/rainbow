@@ -1,53 +1,54 @@
-import type { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-toast/types';
+import { getToastFromTransaction } from '@/components/rainbow-toast/getToastFromTransaction';
+import type { RainbowToastWithIndex } from '@/components/rainbow-toast/types';
+import { RainbowTransaction } from '@/entities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type ToastState = {
   toasts: RainbowToastWithIndex[];
-  showToast: <T extends RainbowToast>(toast: T) => void;
-  updateToast: <T extends RainbowToast>(update: T) => void;
+  handleTransactions: (tx: RainbowTransaction[]) => void;
   startRemoveToast: (id: string) => void;
   removeToast: (id: string) => void;
+  dismissedToasts: Record<string, boolean>;
 };
 
-const useToastStore = createRainbowStore<ToastState>(set => ({
+export const useToastStore = createRainbowStore<ToastState>(set => ({
   toasts: [],
+  dismissedToasts: {},
 
-  showToast: toast => {
+  handleTransactions: txs => {
     set(state => {
-      const newToasts = [{ ...toast, index: 0 } as RainbowToastWithIndex, ...state.toasts].map((t, index) => ({
-        ...t,
-        index,
-      }));
+      const activeToastIds = new Set(state.toasts.map(t => t.id));
+      const transactionToasts = txs.map(tx => getToastFromTransaction(tx)).filter(Boolean);
+      const transactionToastsMap = new Map(transactionToasts.map(t => [t.id, t]));
+
+      // handle updates:
+      const updatedToasts = state.toasts.map(toast => {
+        const newToast = transactionToastsMap.get(toast.id);
+        if (newToast) {
+          return { ...toast, ...newToast };
+        }
+        return toast;
+      });
+
+      // additions:
+      const additions = transactionToasts.filter(t => !activeToastIds.has(t.id));
+
+      // todo removals but have to be careful as could be swiping one away
+
+      const toasts = [...additions, ...updatedToasts].map((t, index) => ({ ...t, index }));
+
       return {
-        toasts: newToasts,
+        toasts,
       };
     });
   },
 
-  updateToast: update => {
-    set(state => ({
-      toasts: state.toasts.map(toast => (toast.id === update.id ? { ...toast, ...update } : toast)),
-    }));
-  },
-
   startRemoveToast: id => {
+    console.log('startRemoveToast', id);
     set(state => {
-      const updatedToasts = state.toasts.map(toast => (toast.id === id ? { ...toast, removing: true } : toast));
-
-      // Reindex non-removing toasts to animate them into new positions immediately
-      let nonRemovingIndex = 0;
-      const reindexedToasts = updatedToasts.map(toast => {
-        if (toast.removing) {
-          return toast; // Keep removing toast at current index for animation
-        } else {
-          const updatedToast = { ...toast, index: nonRemovingIndex };
-          nonRemovingIndex += 1;
-          return updatedToast;
-        }
-      });
-
       return {
-        toasts: reindexedToasts,
+        dismissedToasts: { ...state.dismissedToasts, [id]: true },
+        toasts: state.toasts.map((toast, index) => (toast.id === id ? { ...toast, removing: true } : { ...toast, index: index - 1 })),
       };
     });
   },
@@ -61,6 +62,4 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
 
 export const txIdToToastId = (txId: string) => txId.replace(/_.*/, '');
 
-export const useRainbowToasts = () => useToastStore(state => state.toasts.slice(0, 3)); // Show max 3 toasts
-
-export const { showToast, updateToast, startRemoveToast, removeToast } = useToastStore.getState();
+export const { handleTransactions, startRemoveToast, removeToast } = useToastStore.getState();
