@@ -16,4 +16,4 @@ fi
 
 # Run anvil, passing through any flags from the calling script
 # might as well pin things where we can for stability and consistency
-anvil --fork-url "$ETHEREUM_MAINNET_RPC_DEV"  --fork-block-number 22000000 --block-base-fee-per-gas 100000000 --block-gas-limit 30000000 "$@"
+anvil --fork-url "$ETHEREUM_MAINNET_RPC_DEV" --fork-block-number 22000000 --block-base-fee-per-gas 100000000 --block-gas-limit 30000000 "$@"
