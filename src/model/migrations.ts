@@ -704,31 +704,10 @@ export default async function runMigrations() {
 
   /**
    *************** Migration v23 ******************
-   * Populate `legacyUserAssets` attribute in `userAssetsStore`
+   * Deleted migration that was used to populate `legacyUserAssets` attribute in `userAssetsStore`
    */
   const v23 = async () => {
-    // const state = store.getState();
-    // const wallets = getWallets();
-    // const { nativeCurrency } = state.settings;
-    // if (!wallets) return;
-    // for (const wallet of Object.values(wallets)) {
-    //   for (const { address } of (wallet as RainbowWallet).addresses || []) {
-    //     const { connectedToAnvil } = useConnectedToAnvilStore.getState();
-    //     const queryKey = userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToAnvil });
-    //     const queryData: ParsedAssetsDictByChain | undefined = queryClient.getQueryData(queryKey);
-    //     if (!queryData) continue;
-    //     const userAssets = selectorFilterByUserChains({
-    //       data: queryData,
-    //       selector: selectUserAssetsList,
-    //     });
-    //     userAssetsStore.getState(address).setUserAssets({
-    //       address,
-    //       chainIdsWithErrors: null,
-    //       state: undefined,
-    //       userAssets: userAssets as ParsedSearchAsset[],
-    //     });
-    //   }
-    // }
+    return;
   };
 
   migrations.push(v23);
