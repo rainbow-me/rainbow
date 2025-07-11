@@ -59,6 +59,8 @@ const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 }));
 
+export const txIdToToastId = (txId: string) => txId.replace(/_.*/, '');
+
 export const useRainbowToasts = () => useToastStore(state => state.toasts.slice(0, 3)); // Show max 3 toasts
 
 export const { showToast, updateToast, startRemoveToast, removeToast } = useToastStore.getState();

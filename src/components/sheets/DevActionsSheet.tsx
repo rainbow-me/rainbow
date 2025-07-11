@@ -2,7 +2,7 @@ import { Sheet } from '@/components/sheet';
 import { Box, Text } from '@/design-system';
 import { NewTransaction, TransactionStatus } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
-import { addNewTransaction, updateTransaction, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { addNewTransaction, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { SwapType } from '@rainbow-me/swaps';
 import React from 'react';
@@ -62,13 +62,8 @@ export function DevActionsSheet() {
     };
   };
 
-  function addThenUpdate(transaction: NewTransaction) {
-    addNewTransaction({
-      address: accountAddress,
-      chainId: ChainId.mainnet,
-      transaction,
-    });
-
+  // the stores own update doesn't change status so we force it this way
+  function updateTransaction(transaction: NewTransaction) {
     const { pendingTransactions } = usePendingTransactionsStore.getState();
     usePendingTransactionsStore.getState().setPendingTransactions({
       address: accountAddress,
@@ -84,6 +79,16 @@ export function DevActionsSheet() {
     });
   }
 
+  function addThenUpdate(transaction: NewTransaction) {
+    addNewTransaction({
+      address: accountAddress,
+      chainId: ChainId.mainnet,
+      transaction,
+    });
+    updateTransaction(transaction);
+    added.push(transaction);
+  }
+
   const addSendTransaction = () => {
     addThenUpdate(createMockSendTransaction(TransactionStatus.sending));
   };
@@ -96,31 +101,28 @@ export function DevActionsSheet() {
     addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
   };
 
+  const added: NewTransaction[] = [];
+
+  const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send', status: TransactionStatus) => {
+    const latest = added.findLast(px => px.type === type);
+    if (latest) {
+      updateTransaction({
+        ...latest,
+        status,
+      });
+    }
+  };
+
   const updateLastSendTo = (status: TransactionStatus) => {
-    const transaction = createMockSendTransaction(status);
-    updateTransaction({
-      address: accountAddress,
-      chainId: ChainId.mainnet,
-      transaction,
-    });
+    updateLatestTransactionOfType('send', status);
   };
 
   const updateLastSwapTo = (status: TransactionStatus) => {
-    const transaction = createMockSwapTransaction(status);
-    updateTransaction({
-      address: accountAddress,
-      chainId: ChainId.mainnet,
-      transaction,
-    });
+    updateLatestTransactionOfType('swap', status);
   };
 
   const updateLastMintTo = (status: TransactionStatus) => {
-    const transaction = createMockMintTransaction(status);
-    updateTransaction({
-      address: accountAddress,
-      chainId: ChainId.mainnet,
-      transaction,
-    });
+    updateLatestTransactionOfType('mint', status);
   };
 
   return (
@@ -155,7 +157,7 @@ export function DevActionsSheet() {
             </Text>
 
             <Button onPress={() => updateLastSendTo(TransactionStatus.sending)} title="Update Send → Sending" />
-            <Button onPress={() => updateLastSendTo(TransactionStatus.confirmed)} title="Update Send → Confirmed" />
+            <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="Update Send → Sent" />
             <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="Update Send → Failed" />
 
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
@@ -163,7 +165,7 @@ export function DevActionsSheet() {
             </Text>
 
             <Button onPress={() => updateLastSwapTo(TransactionStatus.swapping)} title="Update Swap → Swapping" />
-            <Button onPress={() => updateLastSwapTo(TransactionStatus.confirmed)} title="Update Swap → Confirmed" />
+            <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="Update Swap → Swapped" />
             <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="Update Swap → Failed" />
 
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>

@@ -11,7 +11,14 @@ import {
   getSendToastStatus,
   getSwapToastStatus,
 } from '@/components/rainbow-toast/types';
-import { removeToast, showToast, startRemoveToast, updateToast, useRainbowToasts } from '@/components/rainbow-toast/useRainbowToasts';
+import {
+  removeToast,
+  showToast,
+  startRemoveToast,
+  txIdToToastId,
+  updateToast,
+  useRainbowToasts,
+} from '@/components/rainbow-toast/useRainbowToasts';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { IS_IOS } from '@/env';
@@ -43,19 +50,23 @@ export function RainbowToastDisplay() {
   const toasts = useRainbowToasts();
   const insets = useSafeAreaInsets();
   const { pendingTransactions } = usePendingTransactions();
-  const processedTxs = useRef(new Set<string>());
+  const activeToastIds = useRef(new Set<string>());
 
   console.log('pendingTransactions', pendingTransactions.length);
   console.log('toasts', toasts.length);
+  console.log('activeToastIds', activeToastIds);
 
   useEffect(() => {
     const activePendingTxHashes: Record<string, boolean> = {};
 
     for (const tx of pendingTransactions) {
-      activePendingTxHashes[tx.hash] = true;
+      const id = txIdToToastId(tx.hash);
+
+      activePendingTxHashes[id] = true;
 
       // update
-      if (processedTxs.current.has(tx.hash)) {
+      if (activeToastIds.current.has(id)) {
+        console.log('UPDATE', id, tx);
         const value = getToastFromTransaction(tx);
         if (value) {
           updateToast(value);
@@ -63,8 +74,9 @@ export function RainbowToastDisplay() {
       }
 
       // add
-      if (!processedTxs.current.has(tx.hash)) {
-        processedTxs.current.add(tx.hash);
+      if (!activeToastIds.current.has(id)) {
+        console.log('ADD', tx);
+        activeToastIds.current.add(id);
 
         const toast = getToastFromTransaction(tx);
 
@@ -77,6 +89,7 @@ export function RainbowToastDisplay() {
     }
 
     for (const toast of toasts) {
+      console.log('REMOVE', toast, 'active', JSON.stringify(activePendingTxHashes, null, 2));
       if (!activePendingTxHashes[toast.id]) {
         removeToast(toast.id);
       }
@@ -86,6 +99,12 @@ export function RainbowToastDisplay() {
     // we dont want to loop toasts here
     pendingTransactions,
   ]);
+
+  useEffect(() => {
+    return () => {
+      activeToastIds.current = new Set();
+    };
+  });
 
   return (
     <FullWindowOverlay>
@@ -125,7 +144,7 @@ function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | null {
     const toastState = getSwapToastStatus(tx.status);
     if (toastState) {
       return {
-        id: tx.hash,
+        id: txIdToToastId(tx.hash),
         type: 'swap',
         status: toastState,
         fromChainId: tx.swap.fromChainId,
@@ -143,7 +162,7 @@ function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | null {
     const toastState = getSendToastStatus(tx.status);
     if (toastState) {
       return {
-        id: tx.hash,
+        id: txIdToToastId(tx.hash),
         type: 'send',
         status: toastState,
         amount: parseFloat(tx.value?.toString() || '0'),
@@ -161,7 +180,7 @@ function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | null {
     const toastState = getMintToastStatus(tx.status);
     if (toastState) {
       return {
-        id: tx.hash,
+        id: txIdToToastId(tx.hash),
         type: 'mint',
         status: toastState,
         name: tx.title || 'NFT',
@@ -422,7 +441,7 @@ const useChainsLabel = () => useBackendNetworksStore.getState().getChainsLabel()
 function SwapToastContent({ toast }: SwapToastContentProps) {
   const chainsLabel = useChainsLabel();
 
-  console.log('toast', toast);
+  console.log('SwapToast', toast);
 
   const icon =
     toast.status === TransactionStatus.swapped ? (
