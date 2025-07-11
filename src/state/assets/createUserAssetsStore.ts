@@ -152,16 +152,6 @@ export const createUserAssetsStore = (address: Address | string) =>
         });
       },
 
-      // TODO (kane): As far as I can tell, this is only ever used in the migration file.
-      // Need to confirm that we do not actually need this migration and it can be safely removed.
-      // setUserAssets: ({ address, chainIdsWithErrors, state, userAssets }) => {
-      //   if (!state) {
-      //     set(state => setUserAssets({ address, chainIdsWithErrors, state, userAssets }));
-      //     return null;
-      //   }
-      //   return setUserAssets({ address, chainIdsWithErrors, state, userAssets });
-      // },
-
       getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
 
       getTotalBalance: () => {

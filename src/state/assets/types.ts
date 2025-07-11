@@ -8,7 +8,7 @@ import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/
 import { UserAssetsStateToPersist } from './persistence';
 
 export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
-  QueryStoreState<TransformedUserAssetsData, UserAssetsParams, UserAssetsState>,
+  QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>,
   UserAssetsStateToPersist
 >;
 
@@ -27,11 +27,6 @@ export type UserAssetsRouter = UserAssetsStoreType & {
 export type FetchedUserAssetsData = {
   chainIdsWithErrors: ChainId[] | null;
   userAssets: UserAsset[] | null;
-} | null;
-
-export type TransformedUserAssetsData = {
-  chainIdsWithErrors: ChainId[] | null;
-  userAssets: ParsedSearchAsset[] | null;
 } | null;
 
 export type UserAssetsParams = {
@@ -70,18 +65,6 @@ export interface UserAssetsState {
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
-  // TODO (kane): confirm that this is safe to remove
-  // setUserAssets: ({
-  //   address,
-  //   chainIdsWithErrors,
-  //   userAssets,
-  //   state,
-  // }: {
-  //   address: Address | string;
-  //   chainIdsWithErrors: ChainId[] | null;
-  //   userAssets: ParsedSearchAsset[] | ParsedAssetsDictByChain | null;
-  //   state: UserAssetsState | undefined;
-  // }) => UserAssetsState | null;
 }
 
 export type Asset = {
