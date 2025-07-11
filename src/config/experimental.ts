@@ -1,5 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
-import { IS_TEST } from '@/env';
+import { IS_DEV, IS_TEST } from '@/env';
 import isTestFlight from '@/helpers/isTestFlight';
 import { STORAGE_IDS } from '@/model/mmkv';
 
