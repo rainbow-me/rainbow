@@ -2,7 +2,7 @@ import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
 import { lazyMount } from '@/helpers/lazyMount';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { LegendList, LegendListRef } from '@legendapp/list';
+import { LegendList } from '@legendapp/list';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ActivityIndicator from '../ActivityIndicator';

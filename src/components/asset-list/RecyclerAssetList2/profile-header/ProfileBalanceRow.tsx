@@ -1,6 +1,6 @@
-import * as React from 'react';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box, Text } from '@/design-system';
+import * as React from 'react';
 
 export const ProfileBalanceRowHeight = 24;
 const placeholderHeight = ProfileBalanceRowHeight;

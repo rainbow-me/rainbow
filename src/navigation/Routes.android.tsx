@@ -38,6 +38,7 @@ import {
   stackNavigationConfig,
   learnWebViewScreenConfig,
   backupSheetSizes,
+  devActionsModalSheetConfig,
 } from './config';
 import {
   addWalletNavigatorPreset,
@@ -100,6 +101,7 @@ import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
+import { DevActionsSheet } from '@/components/sheets/DevActionsSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -124,6 +126,7 @@ function MainNavigator() {
         }}
       />
       <Stack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
+      <Stack.Screen component={DevActionsSheet} name={Routes.DEV_ACTION_SHEET} {...devActionsModalSheetConfig} />
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
       <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
