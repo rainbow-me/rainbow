@@ -1,15 +1,9 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { useCallback } from 'react';
-import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { metadataClient } from '@/graphql';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils';
-import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
-import { RootStackParamList } from '@/navigation/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 export type ChartTime = (typeof chartTimes)[number];
@@ -45,32 +39,23 @@ export const usePriceChart = ({
   address,
   currency,
   chainId,
+  timespan,
 }: {
   mainnetAddress?: string;
   address: string;
   currency: SupportedCurrencyKey;
   chainId: ChainId;
+  timespan: ChartTime;
 }) => {
-  const { setParams } = useNavigation<typeof Routes.EXPANDED_ASSET_SHEET_V2>();
-  const updateChartType = useCallback(
-    (type: ChartTime) => {
-      setParams({ chartType: type });
-    },
-    [setParams]
-  );
-  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET_V2>>();
-  const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
-  const query = useQuery({
+  return useQuery({
     queryFn: async () => {
-      const chart = await fetchPriceChart({ address, chainId, currency, time: chartType });
-      if (!chart && mainnetAddress)
-        return fetchPriceChart({ address: mainnetAddress, chainId: ChainId.mainnet, currency, time: chartType });
+      const chart = await fetchPriceChart({ address, chainId, currency, time: timespan });
+      if (!chart && mainnetAddress) return fetchPriceChart({ address: mainnetAddress, chainId: ChainId.mainnet, currency, time: timespan });
       return chart || [];
     },
-    queryKey: createQueryKey('price chart', { address, chainId, chartType }),
+    queryKey: createQueryKey('price chart', { address, chainId, timespan }),
     keepPreviousData: true,
     refetchInterval: time.seconds(30),
     staleTime: time.zero,
   });
-  return { updateChartType, ...query };
 };

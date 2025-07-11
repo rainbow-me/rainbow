@@ -17,7 +17,7 @@ import {
 import { dequal } from 'dequal';
 import { cloneDeep, merge } from 'lodash';
 import React, { memo, useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -53,6 +53,7 @@ import { EmaIndicator, IndicatorBuilder, IndicatorKey } from './classes/Indicato
 import { TimeFormatter } from './classes/TimeFormatter';
 import { generateMockCandleData } from './mockData';
 import { Bar } from './types';
+import { ActiveCandleCard } from './ActiveCandleCard';
 
 type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -65,9 +66,15 @@ export type CandlestickChartProps = {
   chartWidth?: number;
   config?: DeepPartial<Omit<CandlestickConfig, 'chart'> & { chart: Omit<CandlestickConfig['chart'], 'backgroundColor'> }>;
   showChartControls?: boolean;
+  isChartGestureActive: SharedValue<boolean>;
 };
 
 export type CandlestickConfig = {
+  activeCandleCard: {
+    height: number;
+    style: StyleProp<ViewStyle>;
+  };
+
   animation: {
     enableCrosshairPulse: boolean;
     springConfig: WithSpringConfig;
@@ -88,6 +95,11 @@ export type CandlestickConfig = {
   };
 
   chart: {
+    /**
+     * Gap between the chart and the active candle card, in pixels.
+     * @default 16
+     */
+    activeCandleCardGap: number;
     backgroundColor: string;
     /**
      * Vertical padding percentage to apply to the candle region, from 0 to 1.
@@ -158,6 +170,16 @@ export type CandlestickConfig = {
 };
 
 export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
+  activeCandleCard: {
+    height: 75,
+    style: {
+      backgroundColor: '#141619',
+      borderRadius: 20,
+      height: 75,
+      width: 350,
+    },
+  },
+
   animation: {
     enableCrosshairPulse: false,
     springConfig: { mass: 0.1, stiffness: 50, damping: 50 },
@@ -174,6 +196,7 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
   },
 
   chart: {
+    activeCandleCardGap: 16,
     backgroundColor: '#141619',
     candlesPaddingRatioVertical: 0.1,
     panGestureDeceleration: 0.9975,
@@ -311,6 +334,7 @@ class CandlestickChartManager {
   private crosshairPicture: SharedValue<SkPicture>;
   private indicatorPicture: SharedValue<SkPicture>;
   private isDecelerating: SharedValue<boolean>;
+  private isChartGestureActive: SharedValue<boolean>;
   private maxDisplayedVolume: SharedValue<number>;
   private offset: SharedValue<number>;
   private xAxisLabels: SharedValue<string[]>;
@@ -378,6 +402,7 @@ class CandlestickChartManager {
     config,
     crosshairPicture,
     indicatorPicture,
+    isChartGestureActive,
     isDarkMode,
     isDecelerating,
     maxDisplayedVolume,
@@ -397,6 +422,7 @@ class CandlestickChartManager {
     config: CandlestickConfig;
     crosshairPicture: SharedValue<SkPicture>;
     indicatorPicture: SharedValue<SkPicture>;
+    isChartGestureActive: SharedValue<boolean>;
     isDarkMode: boolean;
     isDecelerating: SharedValue<boolean>;
     maxDisplayedVolume: SharedValue<number>;
@@ -426,6 +452,7 @@ class CandlestickChartManager {
     this.crosshairPicture = crosshairPicture;
     this.indicatorPicture = indicatorPicture;
     this.isDecelerating = isDecelerating;
+    this.isChartGestureActive = isChartGestureActive;
     this.maxDisplayedVolume = maxDisplayedVolume;
     this.offset = chartXOffset;
     this.xAxisLabels = xAxisLabels;
@@ -868,6 +895,7 @@ class CandlestickChartManager {
     const crosshairPicture = this.crosshairPicture;
 
     if (!active) {
+      this.isChartGestureActive.value = false;
       if (activeCandle.value) activeCandle.value = undefined;
       if (crosshairPicture.value !== this.blankPicture) {
         crosshairPicture.value = this.blankPicture;
@@ -928,6 +956,7 @@ class CandlestickChartManager {
     }
 
     activeCandle.value = newActiveCandle;
+    this.isChartGestureActive.value = true;
 
     const oldPicture = this.crosshairPicture.value;
     crosshairPicture.value = this.pictureRecorder.finishRecordingAsPicture();
@@ -1255,6 +1284,7 @@ function useCandlestickChart({
   candles,
   chartHeight,
   chartWidth,
+  isChartGestureActive,
   isDarkMode,
   providedConfig,
 }: {
@@ -1262,6 +1292,7 @@ function useCandlestickChart({
   candles: Bar[];
   chartHeight: number;
   chartWidth: number;
+  isChartGestureActive: SharedValue<boolean>;
   isDarkMode: boolean;
   providedConfig: CandlestickChartProps['config'];
 }) {
@@ -1316,6 +1347,7 @@ function useCandlestickChart({
       config,
       crosshairPicture,
       indicatorPicture,
+      isChartGestureActive,
       isDarkMode,
       isDecelerating,
       maxDisplayedVolume,
@@ -1379,6 +1411,7 @@ function useCandlestickChart({
 
   return useMemo(
     () => ({
+      activeCandle,
       chartManager,
       chartTransform,
       chartXOffset,
@@ -1394,6 +1427,7 @@ function useCandlestickChart({
       xAxisWidth,
     }),
     [
+      activeCandle,
       chartManager,
       chartPicture,
       chartTransform,
@@ -1442,18 +1476,22 @@ export const CandlestickChart = memo(function CandlestickChart({
   chartWidth = DEVICE_WIDTH,
   config: providedConfig,
   showChartControls = true,
+  isChartGestureActive,
 }: CandlestickChartProps) {
   const { isDarkMode } = useColorMode();
   const separatorTertiary = useForegroundColor('separatorTertiary');
+  const { currency } = getNativeCurrency();
 
-  const { chartManager, chartXOffset, config, isDecelerating, pictures, xAxisLabelPaint, xAxisLabels, xAxisWidth } = useCandlestickChart({
-    backgroundColor,
-    candles,
-    chartHeight,
-    chartWidth,
-    isDarkMode,
-    providedConfig,
-  });
+  const { activeCandle, chartManager, chartXOffset, config, isDecelerating, pictures, xAxisLabelPaint, xAxisLabels, xAxisWidth } =
+    useCandlestickChart({
+      backgroundColor,
+      candles,
+      chartHeight,
+      chartWidth,
+      isChartGestureActive,
+      isDarkMode,
+      providedConfig,
+    });
 
   const leftXAxisLabel = useDerivedValue(() => xAxisLabels.value[0]);
   const rightXAxisLabel = useDerivedValue(() => xAxisLabels.value[1]);
@@ -1573,67 +1611,78 @@ export const CandlestickChart = memo(function CandlestickChart({
 
   const chartBottomPadding = config.chart.xAxisHeight + config.chart.xAxisGap + (showChartControls ? 56 : 0);
 
+  const activeCandleCardStyle = useAnimatedStyle(() => {
+    return {
+      opacity: isChartGestureActive.value ? 1 : 0,
+    };
+  });
+
   return (
     <View
       style={{
-        backgroundColor: backgroundColor,
-        height: chartHeight + chartBottomPadding,
+        height: chartHeight + config.activeCandleCard.height + config.chart.activeCandleCardGap + chartBottomPadding,
         width: chartWidth,
+        marginTop: -config.activeCandleCard.height,
       }}
     >
-      {chartCanvas}
+      <Animated.View style={[activeCandleCardStyle, { marginBottom: config.chart.activeCandleCardGap }]}>
+        <ActiveCandleCard activeCandle={activeCandle} config={config} currency={currency} />
+      </Animated.View>
+      <View style={{ height: chartHeight + chartBottomPadding, backgroundColor, width: chartWidth }}>
+        {chartCanvas}
 
-      {showChartControls && (
-        <Inline alignHorizontal="center" alignVertical="center" horizontalSpace={{ custom: 13 }}>
-          <GestureHandlerButton hapticType="soft" onPressWorklet={shuffleData} style={styles.button}>
-            <Text align="center" color={{ custom: globalColors.grey100 }} size="17pt" weight="heavy">
-              Shuffle
-            </Text>
-          </GestureHandlerButton>
+        {showChartControls && (
+          <Inline alignHorizontal="center" alignVertical="center" horizontalSpace={{ custom: 13 }}>
+            <GestureHandlerButton hapticType="soft" onPressWorklet={shuffleData} style={styles.button}>
+              <Text align="center" color={{ custom: globalColors.grey100 }} size="17pt" weight="heavy">
+                Shuffle
+              </Text>
+            </GestureHandlerButton>
 
-          <GestureHandlerButton hapticType="soft" onPressWorklet={toggleIndicators} style={styles.button}>
-            <Text align="center" color={{ custom: globalColors.grey100 }} size="17pt" weight="heavy">
-              EMA
-            </Text>
-          </GestureHandlerButton>
+            <GestureHandlerButton hapticType="soft" onPressWorklet={toggleIndicators} style={styles.button}>
+              <Text align="center" color={{ custom: globalColors.grey100 }} size="17pt" weight="heavy">
+                EMA
+              </Text>
+            </GestureHandlerButton>
 
-          <GestureHandlerButton hapticType="soft" onPressWorklet={snapToEnd} style={styles.button}>
-            <Text align="center" color={{ custom: globalColors.grey100 }} size="17pt" weight="heavy">
-              Snap
-            </Text>
-          </GestureHandlerButton>
-        </Inline>
-      )}
+            <GestureHandlerButton hapticType="soft" onPressWorklet={snapToEnd} style={styles.button}>
+              <Text align="center" color={{ custom: globalColors.grey100 }} size="17pt" weight="heavy">
+                Snap
+              </Text>
+            </GestureHandlerButton>
+          </Inline>
+        )}
 
-      <EasingGradient
-        easing={Easing.in(Easing.sin)}
-        endColor={backgroundColor}
-        startColor={backgroundColor}
-        steps={8}
-        style={[styles.bottomFade, { bottom: chartBottomPadding, height: Math.round(config.volume.heightFactor * chartHeight * 0.5) }]}
-      />
-
-      <Animated.View style={[styles.leftFadeContainer, { bottom: chartBottomPadding }, leftFadeStyle]}>
         <EasingGradient
           easing={Easing.in(Easing.sin)}
           endColor={backgroundColor}
-          endPosition="left"
           startColor={backgroundColor}
-          startPosition="right"
           steps={8}
-          style={styles.leftFade}
+          style={[styles.bottomFade, { bottom: chartBottomPadding, height: Math.round(config.volume.heightFactor * chartHeight * 0.5) }]}
         />
-      </Animated.View>
 
-      <View
-        style={[
-          styles.bottomGridLine,
-          {
-            backgroundColor: (isDarkMode && providedConfig?.grid?.color) || opacity(separatorTertiary, isDarkMode ? 0.06 : 0.03),
-            bottom: chartBottomPadding,
-          },
-        ]}
-      />
+        <Animated.View style={[styles.leftFadeContainer, { bottom: chartBottomPadding }, leftFadeStyle]}>
+          <EasingGradient
+            easing={Easing.in(Easing.sin)}
+            endColor={backgroundColor}
+            endPosition="left"
+            startColor={backgroundColor}
+            startPosition="right"
+            steps={8}
+            style={[styles.bottomFade, { height: Math.round(config.volume.heightFactor * chartHeight * 0.5) }]}
+          />
+        </Animated.View>
+
+        <View
+          style={[
+            styles.bottomGridLine,
+            {
+              backgroundColor: (isDarkMode && providedConfig?.grid?.color) || opacity(separatorTertiary, isDarkMode ? 0.06 : 0.03),
+              bottom: chartBottomPadding,
+            },
+          ]}
+        />
+      </View>
     </View>
   );
 }, dequal);

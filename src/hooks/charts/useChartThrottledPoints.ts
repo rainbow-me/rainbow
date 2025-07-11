@@ -1,18 +1,8 @@
 import { debounce } from 'lodash';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
-import { useChartDataLabels, useColorForAsset } from '@/hooks';
-import { RouteProp, useRoute } from '@react-navigation/native';
-
-import { useNavigation } from '@/navigation';
-
-import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
-import { DEFAULT_CHART_TYPE } from '@/redux/charts';
-import { ChartData, usePriceChart } from './useChartInfo';
-import { RootStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-export const UniBalanceHeightDifference = 100;
+import { ChartData, ChartTime, usePriceChart } from './useChartInfo';
 
 const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, data: ChartData[]) => {
   if (!data || data.length === 0) {
@@ -33,77 +23,22 @@ const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, 
   };
 };
 
-function useJumpingForm(
-  isLong: boolean,
-  heightWithChart?: number,
-  heightWithoutChart?: number,
-  shortHeightWithChart?: number,
-  shortHeightWithoutChart?: number
-) {
-  const { setOptions } = useNavigation();
-
-  const { jumpToShort, jumpToLong } = useContext(ModalContext) || {};
-
-  useEffect(() => {
-    if (!isLong) {
-      if (typeof heightWithoutChart === 'number' && !isNaN(heightWithoutChart)) {
-        setOptions({
-          longFormHeight: heightWithoutChart,
-          ...(shortHeightWithoutChart && {
-            shortFormHeight: shortHeightWithoutChart,
-          }),
-        });
-      }
-    } else {
-      if (typeof heightWithChart === 'number' && !isNaN(heightWithChart)) {
-        setOptions({
-          longFormHeight: heightWithChart,
-          ...(shortHeightWithChart && {
-            shortFormHeight: shortHeightWithChart,
-          }),
-        });
-      }
-    }
-  }, [heightWithChart, heightWithoutChart, isLong, setOptions, jumpToShort, jumpToLong, shortHeightWithoutChart, shortHeightWithChart]);
-}
-
 export default function useChartThrottledPoints({
   asset,
-  heightWithChart,
-  heightWithoutChart,
-  isPool,
-  uniBalance = true,
-  shortHeightWithChart,
-  shortHeightWithoutChart,
+  timespan,
 }: {
   asset: any;
-  heightWithChart?: number;
-  heightWithoutChart?: number;
-  isPool?: boolean;
-  uniBalance?: boolean;
-  shortHeightWithChart?: number;
-  shortHeightWithoutChart?: number;
+  // TODO: update type
+  timespan: ChartTime;
 }) {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
-  let assetForColor = asset;
-  if (isPool) {
-    assetForColor = asset?.tokens?.[0] || asset;
-  }
-
-  const color = useColorForAsset(assetForColor);
-
-  const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET_V2>>();
-  const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
-  const {
-    data: chart = [],
-    isLoading: fetchingCharts,
-    updateChartType,
-  } = usePriceChart({
+  const { data: chart = [], isLoading: fetchingCharts } = usePriceChart({
     address: asset.address,
     chainId: asset.chainId,
-    mainnetAddress: asset?.mainnet_address || asset?.mainnetAddress,
+    mainnetAddress: asset.mainnet_address ?? asset.mainnetAddress,
     currency: nativeCurrency,
+    timespan,
   });
   const [throttledPoints, setThrottledPoints] = useState(() => traverseData({ nativePoints: [], points: [] }, chart));
 
@@ -111,25 +46,11 @@ export default function useChartThrottledPoints({
     setThrottledPoints((prev: any) => traverseData(prev, chart));
   }, [chart]);
 
-  const initialChartDataLabels = useChartDataLabels({
-    asset,
-    chartType,
-    points: throttledPoints.points ?? [],
-  });
-
   // Only show the chart if we have chart data, or if chart data is still loading
-  const showChart = useMemo(() => {
+  const shouldShowChart = useMemo(() => {
     const hasMinimumChartPoints = throttledPoints?.points.length > 5;
     return hasMinimumChartPoints || !!chart.length || fetchingCharts;
   }, [chart.length, fetchingCharts, throttledPoints?.points.length]);
-
-  useJumpingForm(
-    showChart,
-    heightWithChart ? heightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference) : undefined,
-    heightWithoutChart ? heightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference) : undefined,
-    shortHeightWithChart ? shortHeightWithChart - (uniBalance ? 0 : UniBalanceHeightDifference) : undefined,
-    shortHeightWithoutChart ? shortHeightWithoutChart - (uniBalance ? 0 : UniBalanceHeightDifference) : undefined
-  );
 
   const [throttledData, setThrottledData] = useState({
     nativePoints: throttledPoints.nativePoints,
@@ -151,12 +72,8 @@ export default function useChartThrottledPoints({
 
   return {
     chart,
-    chartType,
-    updateChartType,
-    color,
     fetchingCharts,
-    initialChartDataLabels,
-    showChart,
+    shouldShowChart,
     throttledData,
   };
 }
