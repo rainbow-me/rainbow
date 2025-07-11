@@ -16,7 +16,7 @@ import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
 import { CurrentBaseFeeTypeKey, ExplainSheetRouteParams, gasTrendToTrendType, RootStackParamList } from '@/navigation/types';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
@@ -60,7 +60,6 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   const {
     params: { type, focusTo },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET>>();
-  const { navigate, getState: dangerouslyGetState } = useNavigation<typeof Routes.EXPANDED_ASSET_SHEET>();
 
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
@@ -134,9 +133,9 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
         currentGasTrend,
         type,
       };
-      navigate(Routes.EXPLAIN_SHEET, params);
+      Navigation.handleAction(Routes.EXPLAIN_SHEET, params);
     },
-    [currentBaseFee, currentGasTrend, isL2, navigate]
+    [currentBaseFee, currentGasTrend, isL2]
   );
 
   const renderRowLabel = useCallback(
@@ -357,19 +356,19 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   );
 
   useEffect(() => {
-    const navigationRoutes = dangerouslyGetState()?.routes;
+    const navigationRoutes = Navigation.getState()?.routes;
     const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const lastRouteType = navigationRoutes?.[navigationRoutes.length - 1]?.params?.type;
     if (lastRouteName === 'ExplainSheet' && lastRouteType.includes('currentBaseFee')) {
-      navigate(Routes.EXPLAIN_SHEET, {
+      Navigation.handleAction(Routes.EXPLAIN_SHEET, {
         currentBaseFee: toFixedDecimals(currentBaseFee, 0),
         currentGasTrend,
         type: trendType,
       });
     }
-  }, [currentBaseFee, currentGasTrend, dangerouslyGetState, navigate, trendType, type]);
+  }, [currentBaseFee, currentGasTrend, trendType, type]);
 
   useEffect(() => {
     stopBaseFeeTimeout();

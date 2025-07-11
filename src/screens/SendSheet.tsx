@@ -39,7 +39,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { logger, RainbowError } from '@/logger';
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
-import { useNavigation } from '@/navigation/Navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers';
@@ -129,7 +129,6 @@ type OnSubmitProps = {
 };
 
 export default function SendSheet() {
-  const { goBack, navigate } = useNavigation();
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
   const {
@@ -670,10 +669,10 @@ export default function SendSheet() {
       });
 
       const goBackAndNavigate = () => {
-        goBack();
-        navigate(Routes.WALLET_SCREEN);
+        Navigation.goBack();
+        Navigation.handleAction(Routes.WALLET_SCREEN);
         InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.PROFILE_SCREEN);
+          Navigation.handleAction(Routes.PROFILE_SCREEN);
         });
       };
 
@@ -686,7 +685,7 @@ export default function SendSheet() {
         })();
       }
     },
-    [amountDetails, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
+    [amountDetails, isENS, isHardwareWallet, onSubmit, recipient, selected?.name, selected?.network]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
@@ -752,7 +751,7 @@ export default function SendSheet() {
     assetInputRef?.current?.blur();
     nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {
-      navigate(Routes.EXPLAIN_SHEET, {
+      Navigation.handleAction(Routes.EXPLAIN_SHEET, {
         onClose: () => {
           // Nasty workaround to take control over useMagicAutofocus :S
           InteractionManager.runAfterInteractions(() => {
@@ -773,7 +772,7 @@ export default function SendSheet() {
       chainId,
       toAddress: recipient,
     });
-    navigate(Routes.SEND_CONFIRMATION_SHEET, {
+    Navigation.handleAction(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
@@ -796,7 +795,6 @@ export default function SendSheet() {
     nativeCurrencyInputRef,
     ensProfile,
     chainId,
-    navigate,
     amountDetails,
     submitTransaction,
     isL2,

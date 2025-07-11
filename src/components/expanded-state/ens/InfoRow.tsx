@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { Switch } from 'react-native-gesture-handler';
-import { useNavigation } from '../../../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { useTheme } from '../../../theme/ThemeContext';
 import { ShimmerAnimation } from '../../animations';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
@@ -89,12 +89,11 @@ export default function InfoRow({
   const [isMultiline, setIsMultiline] = useState(false);
   const isSwitch = switchValue !== undefined;
 
-  const { navigate } = useNavigation();
   const handlePressExplain = useCallback(() => {
     if (explainSheetType) {
-      navigate(Routes.EXPLAIN_SHEET, { type: explainSheetType });
+      Navigation.handleAction(Routes.EXPLAIN_SHEET, { type: explainSheetType });
     }
-  }, [explainSheetType, navigate]);
+  }, [explainSheetType]);
 
   const explainer = explainSheetType ? (
     <ButtonPressAnimation onPress={handlePressExplain}>

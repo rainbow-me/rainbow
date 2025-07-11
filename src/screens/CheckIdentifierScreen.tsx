@@ -15,14 +15,13 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { ImgixImage } from '@/components/images';
 import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
 import { Source } from 'react-native-fast-image';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
 
 const imageSize = 40;
 
 export default function CheckIdentifierScreen() {
-  const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.CHECK_IDENTIFIER_SCREEN>>();
 
   const { onSuccess, onFailure } = params;
@@ -51,7 +50,7 @@ export default function CheckIdentifierScreen() {
     return true;
   });
 
-  const onMaybeLater = useCallback(() => goBack(), [goBack]);
+  const onMaybeLater = useCallback(() => Navigation.goBack(), []);
 
   const initAndRunKeychainChecks = useCallback(async () => {
     if (isChecking) return;

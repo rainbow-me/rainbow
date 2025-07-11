@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { Centered } from '@/components/layout';
 import { Sheet } from '@/components/sheet';
 import { Text } from '@/components/text';
-import { useNavigation } from '@/navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { useAppState } from '@/hooks';
 import styled from '@/styled-thing';
 import { ThemeContextProps, useTheme } from '@/theme';
@@ -42,7 +42,6 @@ const titlesMap = {
 
 function WalletConnectRedirectSheet() {
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
   const { appState } = useAppState();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.WALLET_CONNECT_REDIRECT_SHEET>>();
 
@@ -50,9 +49,9 @@ function WalletConnectRedirectSheet() {
 
   useEffect(() => {
     if (appState === 'background') {
-      goBack();
+      Navigation.goBack();
     }
-  }, [goBack, appState]);
+  }, [appState]);
 
   return (
     <Sheet hideHandle>

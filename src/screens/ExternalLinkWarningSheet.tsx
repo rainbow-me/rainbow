@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { useDimensions } from '@/hooks';
 import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme';
@@ -29,18 +29,17 @@ const ExternalLinkWarningSheet = () => {
     params: { url, onClose },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXTERNAL_LINK_WARNING_SHEET>>();
   const { colors } = useTheme();
-  const { goBack } = useNavigation();
 
   const handleClose = useCallback(() => {
-    goBack();
+    Navigation.goBack();
     onClose?.();
-  }, [onClose, goBack]);
+  }, [onClose]);
 
   const handleLink = useCallback(() => {
-    goBack();
+    Navigation.goBack();
     onClose?.();
     openInBrowser(url);
-  }, [goBack, onClose, url]);
+  }, [onClose, url]);
 
   return (
     <Container deviceHeight={deviceHeight} height={ExternalLinkWarningSheetHeight} insets={insets}>

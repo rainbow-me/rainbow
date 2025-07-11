@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
+import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
@@ -9,7 +9,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from 'react-native';
 import { getGradientColorsForRank } from '@/screens/rewards/helpers/getGradientColorsForRank';
 import { useTheme } from '@/theme';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
@@ -66,7 +66,6 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
   tokenSymbol,
   rank,
 }) => {
-  const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
   const formattedAmountEarned = formatTokenDisplayValue(amountEarnedInToken, tokenSymbol);
   const color = !avatarUrl ? addressHashedColorIndex(address) : undefined;
@@ -79,7 +78,7 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
     analytics.track(analytics.event.rewardsPressedLeaderboardItem, {
       ens,
     });
-    navigate(Routes.PROFILE_SHEET, {
+    Navigation.handleAction(Routes.PROFILE_SHEET, {
       address: ens ?? address,
       fromRoute: Routes.OP_REWARDS_SHEET,
     });

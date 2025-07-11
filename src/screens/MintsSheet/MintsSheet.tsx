@@ -20,7 +20,7 @@ import {
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { queryClient } from '@/react-query';
 import { mintsQueryKey, useMints } from '@/resources/mints';
@@ -42,7 +42,6 @@ export function MintsSheet() {
     walletAddress: accountAddress,
   });
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
 
   const data = mints ?? [];
@@ -60,7 +59,7 @@ export function MintsSheet() {
                   <Columns alignVertical="center">
                     <Column width="content">
                       <AccentColorProvider color={accountColorHex ?? globalColors.grey100}>
-                        <ButtonPressAnimation onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)} disabled={IS_ANDROID}>
+                        <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.CHANGE_WALLET_SHEET)} disabled={IS_ANDROID}>
                           {accountImage ? (
                             <Box
                               as={ImgixImage}

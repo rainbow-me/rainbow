@@ -21,7 +21,7 @@ import { RainbowsBackground } from '../../components/rainbows-background/Rainbow
 import { Text } from '../../components/text';
 import { analytics } from '@/analytics';
 
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -71,7 +71,6 @@ const animationColors = ['rgb(255,73,74)', 'rgb(255,170,0)', 'rgb(0,163,217)', '
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
-  const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -141,7 +140,7 @@ export default function WelcomeScreen() {
       contentAnimation.value = 1;
       colorAnimation.value = 0;
     };
-  }, [colorAnimation, contentAnimation, createWalletButtonAnimation, hideSplashScreen, shouldAnimateRainbows]);
+  }, [colorAnimation, contentAnimation, createWalletButtonAnimation, shouldAnimateRainbows]);
 
   const buttonStyle = useAnimatedStyle(() => {
     if (IS_TEST) {
@@ -180,12 +179,15 @@ export default function WelcomeScreen() {
 
   const onCreateWallet = useCallback(async () => {
     analytics.track(analytics.event.welcomeNewWallet);
-    const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
-    operation(Routes.SWIPE_LAYOUT, {
-      params: { emptyWallet: true },
-      screen: Routes.WALLET_SCREEN,
-    });
-  }, [dangerouslyGetState, navigate, replace]);
+    Navigation.handleAction(
+      Routes.SWIPE_LAYOUT,
+      {
+        params: { emptyWallet: true },
+        screen: Routes.WALLET_SCREEN,
+      },
+      Navigation.getState()?.index !== 1
+    );
+  }, []);
 
   const handlePressTerms = useCallback(() => {
     openInBrowser('https://rainbow.me/terms-of-use', false);
@@ -193,10 +195,10 @@ export default function WelcomeScreen() {
 
   const showRestoreSheet = useCallback(() => {
     analytics.track(analytics.event.welcomeAlreadyHave);
-    navigate(Routes.ADD_WALLET_NAVIGATOR, {
+    Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
       isFirstWallet: true,
     });
-  }, [navigate]);
+  }, []);
 
   useAndroidBackHandler(() => {
     return true;

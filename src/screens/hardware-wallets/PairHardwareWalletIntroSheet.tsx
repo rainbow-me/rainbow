@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { Inset, Stack, Text } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ActionButton } from '@/screens/hardware-wallets/components/ActionButton';
@@ -10,8 +10,6 @@ import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 export const PairHardwareWalletIntroSheet = () => {
-  const { navigate } = useNavigation();
-
   return (
     <Layout>
       <Inset horizontal="36px">
@@ -31,7 +29,10 @@ export const PairHardwareWalletIntroSheet = () => {
           </Stack>
         </Stack>
       </Inset>
-      <ActionButton onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET)} label={i18n.t(TRANSLATIONS.pair_a_new_ledger)} />
+      <ActionButton
+        onPress={() => Navigation.handleAction(Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET)}
+        label={i18n.t(TRANSLATIONS.pair_a_new_ledger)}
+      />
     </Layout>
   );
 };

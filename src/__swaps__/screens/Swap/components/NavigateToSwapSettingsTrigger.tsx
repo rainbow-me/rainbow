@@ -1,4 +1,4 @@
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { RootStackParamList } from '@/navigation/types';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
@@ -7,7 +7,6 @@ import Routes from '@/navigation/routesNames';
 
 export const NavigateToSwapSettingsTrigger = () => {
   const route = useRoute<RouteProp<RootStackParamList, typeof Routes.SWAP>>();
-  const { setParams } = useNavigation<typeof Routes.SWAP>();
   const { SwapNavigation } = useSwapContext();
 
   useAnimatedReaction(
@@ -17,13 +16,14 @@ export const NavigateToSwapSettingsTrigger = () => {
 
       if (current.action === 'open_swap_settings') {
         SwapNavigation.handleShowSettings();
-        runOnJS(setParams)({
+
+        runOnJS(Navigation.setParams<typeof Routes.SWAP>)({
           ...route.params,
           action: undefined,
         });
       }
     },
-    [route.params?.action, setParams]
+    [route.params?.action]
   );
 
   return null;

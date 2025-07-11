@@ -25,7 +25,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RainbowAccount } from '@/model/wallet';
-import { useNavigation } from '@/navigation/Navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { backupsStore } from '@/state/backups/backups';
@@ -132,7 +132,6 @@ const ViewWalletBackup = () => {
     backupFile: wallet?.backupFile,
   });
 
-  const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
   const backupWalletsToCloud = useCallback(async () => {
@@ -145,20 +144,20 @@ const ViewWalletBackup = () => {
   }, [createBackup, walletId]);
 
   const onNavigateToSecretWarning = useCallback(() => {
-    navigate(Routes.SECRET_WARNING, {
+    Navigation.handleAction(Routes.SECRET_WARNING, {
       walletId,
       title,
     });
-  }, [walletId, title, navigate]);
+  }, [walletId, title]);
 
   const onManualBackup = useCallback(() => {
-    navigate(Routes.SECRET_WARNING, {
+    Navigation.handleAction(Routes.SECRET_WARNING, {
       walletId,
       isBackingUp: true,
       title,
       backupType: walletBackupTypes.manual,
     });
-  }, [navigate, walletId, title]);
+  }, [walletId, title]);
 
   const onCreateNewWallet = useCallback(async () => {
     try {
@@ -172,7 +171,7 @@ const ViewWalletBackup = () => {
 
       InteractionManager.runAfterInteractions(() => {
         setTimeout(() => {
-          navigate(Routes.MODAL_SCREEN, {
+          Navigation.handleAction(Routes.MODAL_SCREEN, {
             actionType: 'Create',
             asset: [],
             isNewProfile: true,
@@ -219,7 +218,7 @@ const ViewWalletBackup = () => {
     } catch (e) {
       logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`, e));
     }
-  }, [navigate, wallet]);
+  }, [wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {
@@ -266,7 +265,7 @@ const ViewWalletBackup = () => {
             label: account.label,
           }) || abbreviations.address(account.address, 6, 4);
 
-        navigate(Routes.SECRET_WARNING, {
+        Navigation.handleAction(Routes.SECRET_WARNING, {
           walletId,
           isBackingUp: false,
           privateKeyAddress: account.address,

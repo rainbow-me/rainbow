@@ -19,7 +19,7 @@ import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { colors } from '@/styles';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -29,9 +29,8 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import { TOP_INSET } from '../DappBrowser/Dimensions';
 
 export const TapToDismiss = memo(function TapToDismiss() {
-  const { goBack } = useNavigation();
   return (
-    <TouchableWithoutFeedback onPress={goBack}>
+    <TouchableWithoutFeedback onPress={Navigation.goBack}>
       <View style={controlPanelStyles.cover} />
     </TouchableWithoutFeedback>
   );

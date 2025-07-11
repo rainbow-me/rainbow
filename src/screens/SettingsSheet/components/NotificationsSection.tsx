@@ -7,7 +7,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useAppState } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { RainbowAccount } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { isNotificationPermissionGranted, requestNotificationPermission } from '@/notifications/permissions';
 import {
@@ -91,33 +91,29 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
 };
 
 const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wallet }: WalletRowProps) => {
-  const { navigate } = useNavigation();
   const notificationSetting = notificationSettings?.find((x: WalletNotificationSettings) => x.address === wallet.address);
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(wallet.label), [wallet.label]);
 
   const displayAddress = useMemo(() => abbreviations.address(wallet.address, 4, 6), [wallet.address]);
   const walletName = cleanedUpLabel || ens || displayAddress || '';
 
-  const navigateToWalletSettings = useCallback(
-    (name: string, address: string) => {
-      const settingsForWallet = getNotificationSettingsForWalletWithAddress(address);
+  const navigateToWalletSettings = useCallback((name: string, address: string) => {
+    const settingsForWallet = getNotificationSettingsForWalletWithAddress(address);
 
-      if (settingsForWallet) {
-        navigate(Routes.WALLET_NOTIFICATIONS_SETTINGS, {
-          title: name,
-          notificationSettings: settingsForWallet,
-          address,
-        });
-      } else {
-        Alert.alert(
-          lang.t('settings.notifications_section.no_settings_for_address_title'),
-          lang.t('settings.notifications_section.no_settings_for_address_content'),
-          [{ text: 'OK' }]
-        );
-      }
-    },
-    [navigate]
-  );
+    if (settingsForWallet) {
+      Navigation.handleAction(Routes.WALLET_NOTIFICATIONS_SETTINGS, {
+        title: name,
+        notificationSettings: settingsForWallet,
+        address,
+      });
+    } else {
+      Alert.alert(
+        lang.t('settings.notifications_section.no_settings_for_address_title'),
+        lang.t('settings.notifications_section.no_settings_for_address_content'),
+        [{ text: 'OK' }]
+      );
+    }
+  }, []);
 
   const rowEnabled = useMemo(() => {
     const enabledTopics = notificationSetting ? Object.values(notificationSetting.topics).filter(topic => Boolean(topic)) : [];
@@ -156,7 +152,6 @@ const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wa
 
 const NotificationsSection = () => {
   const { justBecameActive } = useAppState();
-  const { navigate } = useNavigation();
   const { chainId } = useAccountSettings();
   const isTestnet = isTestnetChain({ chainId });
   const wallets = useWallets();
@@ -279,7 +274,7 @@ const NotificationsSection = () => {
   );
 
   const openSystemSettings = Linking.openSettings;
-  const openNetworkSettings = useCallback(() => navigate(Routes.NETWORK_SWITCHER), [navigate]);
+  const openNetworkSettings = useCallback(() => Navigation.handleAction(Routes.NETWORK_SWITCHER), []);
 
   const requestNotificationPermissions = useCallback(async () => {
     const status = await requestNotificationPermission();

@@ -17,7 +17,7 @@ import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
-import { useNavigation } from '@/navigation/Navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
@@ -95,7 +95,6 @@ export default function ChangeWalletSheet() {
 
   const { colors, isDarkMode } = useTheme();
   const { updateWebProfile } = useWebData();
-  const { goBack, navigate } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
@@ -212,7 +211,7 @@ export default function ChangeWalletSheet() {
           switching: true,
         });
         if (!fromDeletion) {
-          goBack();
+          Navigation.goBack();
         }
         remotePromoSheetsStore.setState({ isShown: false });
       } catch (e) {
@@ -221,7 +220,7 @@ export default function ChangeWalletSheet() {
         });
       }
     },
-    [accountAddress, editMode, goBack, onChangeWallet, wallets, watchOnly]
+    [accountAddress, editMode, onChangeWallet, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(
@@ -262,12 +261,12 @@ export default function ChangeWalletSheet() {
       const account = isValidHex(address) ? getAccountProfileInfo(address) : undefined;
 
       InteractionManager.runAfterInteractions(() => {
-        goBack();
+        Navigation.goBack();
       });
 
       InteractionManager.runAfterInteractions(() => {
         setTimeout(() => {
-          navigate(Routes.MODAL_SCREEN, {
+          Navigation.handleAction(Routes.MODAL_SCREEN, {
             address,
             asset: [],
             onCloseModal: async props => {
@@ -300,7 +299,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [wallets, goBack, navigate, updateWebProfile, colors.avatarBackgrounds]
+    [wallets, updateWebProfile, colors.avatarBackgrounds]
   );
 
   const onPressEdit = useCallback(
@@ -312,27 +311,24 @@ export default function ChangeWalletSheet() {
     [renameWallet]
   );
 
-  const onPressNotifications = useCallback(
-    (walletName: string, address: string) => {
-      analytics.track(analytics.event.tappedNotificationSettings);
-      const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(address);
-      if (walletNotificationSettings) {
-        navigate(Routes.SETTINGS_SHEET, {
-          params: {
-            address,
-            title: walletName,
-            notificationSettings: walletNotificationSettings,
-          },
-          screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
-        });
-      } else {
-        Alert.alert(i18n.t(i18n.l.wallet.action.notifications.alert_title), i18n.t(i18n.l.wallet.action.notifications.alert_message), [
-          { text: 'OK' },
-        ]);
-      }
-    },
-    [navigate]
-  );
+  const onPressNotifications = useCallback((walletName: string, address: string) => {
+    analytics.track(analytics.event.tappedNotificationSettings);
+    const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(address);
+    if (walletNotificationSettings) {
+      Navigation.handleAction(Routes.SETTINGS_SHEET, {
+        params: {
+          address,
+          title: walletName,
+          notificationSettings: walletNotificationSettings,
+        },
+        screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
+      });
+    } else {
+      Alert.alert(i18n.t(i18n.l.wallet.action.notifications.alert_title), i18n.t(i18n.l.wallet.action.notifications.alert_message), [
+        { text: 'OK' },
+      ]);
+    }
+  }, []);
 
   const onPressRemove = useCallback(
     (walletId: string, address: string) => {
@@ -365,8 +361,8 @@ export default function ChangeWalletSheet() {
             ReactNativeHapticFeedback.trigger('notificationSuccess');
             if (!isLastAvailableWallet) {
               await cleanUpWalletKeys();
-              goBack();
-              navigate(Routes.WELCOME_SCREEN);
+              Navigation.goBack();
+              Navigation.handleAction(Routes.WELCOME_SCREEN);
             } else {
               // If we're deleting the selected wallet
               // we need to switch to another one
@@ -385,7 +381,7 @@ export default function ChangeWalletSheet() {
         }
       );
     },
-    [accountAddress, deleteWallet, goBack, navigate, onChangeAccount, wallets]
+    [accountAddress, deleteWallet, onChangeAccount, wallets]
   );
 
   const onPressCopyAddress = useCallback((address: string) => {
@@ -404,7 +400,7 @@ export default function ChangeWalletSheet() {
       }
 
       InteractionManager.runAfterInteractions(() => {
-        navigate(Routes.SETTINGS_SHEET, {
+        Navigation.handleAction(Routes.SETTINGS_SHEET, {
           params: {
             walletId: wallet.id,
           },
@@ -412,7 +408,7 @@ export default function ChangeWalletSheet() {
         });
       });
     },
-    [navigate, walletsByAddress]
+    [walletsByAddress]
   );
 
   const onPressAddAnotherWallet = useCallback(() => {
@@ -420,13 +416,13 @@ export default function ChangeWalletSheet() {
       buttonName: 'AddAnotherWalletButton',
       action: 'Navigates from WalletList to AddWalletSheet',
     });
-    goBack();
+    Navigation.goBack();
     InteractionManager.runAfterInteractions(() => {
-      navigate(Routes.ADD_WALLET_NAVIGATOR, {
+      Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
         isFirstWallet: false,
       });
     });
-  }, [goBack, navigate]);
+  }, []);
 
   const onPressEditMode = useCallback(() => {
     analytics.track(analytics.event.tappedEdit);

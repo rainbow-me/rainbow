@@ -6,7 +6,7 @@ import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
 import { addDays, differenceInDays, differenceInHours, fromUnixTime } from 'date-fns';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
@@ -33,7 +33,6 @@ export const RewardsClaimed: React.FC<Props> = ({
 }) => {
   const infoIconColor = useInfoIconColor();
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
-  const { navigate } = useNavigation();
 
   if (remainingRewards <= 0) {
     const formattedTotalAvailableRewards = assetPrice
@@ -82,7 +81,7 @@ export const RewardsClaimed: React.FC<Props> = ({
 
     const navigateToAmountsExplainer = () => {
       analytics.track(analytics.event.rewardsPressedAvailableCard);
-      navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_amount_distributed' });
+      Navigation.handleAction(Routes.EXPLAIN_SHEET, { type: 'op_rewards_amount_distributed' });
     };
 
     return (

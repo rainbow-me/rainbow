@@ -19,7 +19,7 @@ import { useAccountAccentColor, useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters } from '@/raps/references';
 import { invalidatePointsQuery, usePoints } from '@/resources/points';
@@ -174,7 +174,6 @@ const ClaimingRewards = ({
   const { nativeCurrency: currency } = useAccountSettings();
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
-  const { goBack: closeClaimPanel } = useNavigation();
   const { data: points, refetch } = usePoints({ walletAddress: address });
   const { data: meteorologyData } = useMeteorologySuggestions({
     chainId: ChainId.optimism,
@@ -523,7 +522,7 @@ const ClaimingRewards = ({
                         setClaimStatus('claiming');
                         claimRewards();
                       } else if (claimStatus === 'success' || claimStatus === 'bridge-error') {
-                        closeClaimPanel();
+                        Navigation.goBack();
                       }
                     }
                   }}

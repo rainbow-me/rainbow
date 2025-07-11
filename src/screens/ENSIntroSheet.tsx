@@ -7,7 +7,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import ActivityIndicator from '../components/ActivityIndicator';
 import IntroMarquee from '../components/ens-registration/IntroMarquee/IntroMarquee';
 import { SheetActionButton } from '../components/sheet';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { Bleed, Box, Column, Columns, Heading, Inset, Row, Rows, Separator, Stack, Text } from '@/design-system';
@@ -135,26 +135,25 @@ export default function ENSIntroSheet() {
     [ensAvatar?.imageUrl, ensRecords?.coinAddresses, ensRecords?.contenthash, ensRecords?.records]
   );
 
-  const { navigate } = useNavigation();
   const { startRegistration } = useENSRegistration();
 
   const handleNavigateToSearch = useCallback(() => {
     params?.onSearchForNewName?.();
     InteractionManager.runAfterInteractions(() => {
       startRegistration('', REGISTRATION_MODES.CREATE);
-      navigate(Routes.ENS_SEARCH_SHEET);
+      Navigation.handleAction(Routes.ENS_SEARCH_SHEET);
     });
-  }, [navigate, params, startRegistration]);
+  }, [params, startRegistration]);
 
   const navigateToAssignRecords = useCallback(
     (ensName: string) => {
       startRegistration(ensName, REGISTRATION_MODES.EDIT);
       InteractionManager.runAfterInteractions(() => {
         params?.onSelectExistingName?.();
-        navigate(Routes.ENS_ASSIGN_RECORDS_SHEET);
+        Navigation.handleAction(Routes.ENS_ASSIGN_RECORDS_SHEET);
       });
     },
-    [navigate, params, startRegistration]
+    [params, startRegistration]
   );
 
   const handleSelectUniqueDomain = useCallback(() => {
@@ -164,12 +163,12 @@ export default function ENSIntroSheet() {
   }, [navigateToAssignRecords, uniqueDomain]);
 
   const handleSelectExistingName = useCallback(() => {
-    navigate(Routes.SELECT_ENS_SHEET, {
+    Navigation.handleAction(Routes.SELECT_ENS_SHEET, {
       onSelectENS: (ensName: string) => {
         navigateToAssignRecords(ensName);
       },
     });
-  }, [navigate, navigateToAssignRecords]);
+  }, [navigateToAssignRecords]);
 
   return (
     <Box background="body (Deprecated)" paddingTop={{ custom: topPadding }} style={{ height: contentHeight }} testID="ens-intro-sheet">

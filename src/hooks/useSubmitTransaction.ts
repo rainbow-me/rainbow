@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
 import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { SCREEN_FOR_REQUEST_SOURCE } from '@/components/Transactions/constants';
 import { logger, RainbowError } from '@/logger';
@@ -20,7 +20,6 @@ export const useTransactionSubmission = ({
   source: RequestSource;
 }) => {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const { navigate } = useNavigation();
 
   const onPressSend = useCallback(async () => {
     if (isAuthorizing) return;
@@ -39,11 +38,11 @@ export const useTransactionSubmission = ({
       performanceTracking.getState().executeFn({
         fn: async () => {
           if (!isBalanceEnough && !isMessageRequest) {
-            return navigate(Routes.ADD_CASH_SHEET);
+            return Navigation.handleAction(Routes.ADD_CASH_SHEET);
           }
 
           if (accountInfo.isHardwareWallet) {
-            return navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
+            return Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
           }
 
           return onPressSend();
@@ -51,7 +50,7 @@ export const useTransactionSubmission = ({
         operation: TimeToSignOperation.CallToAction,
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
       })(),
-    [accountInfo.isHardwareWallet, isBalanceEnough, isMessageRequest, navigate, onPressSend, source]
+    [accountInfo.isHardwareWallet, isBalanceEnough, isMessageRequest, onPressSend, source]
   );
 
   return { submitFn, isAuthorizing };

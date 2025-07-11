@@ -23,16 +23,14 @@ import chroma from 'chroma-js';
 import React, { useCallback, useRef } from 'react';
 import { Text as NativeText, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useNavigation } from '../navigation/Navigation';
 import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
   const isCreatingWallet = useRef(false);
   const blue = useForegroundColor('blue');
-  const { navigate } = useNavigation();
 
   const onNewWalletGroup = useCallback(() => {
-    navigate(Routes.MODAL_SCREEN, {
+    Navigation.handleAction(Routes.MODAL_SCREEN, {
       actionType: 'Create',
       numWalletGroups,
       onCloseModal: async ({ name }) => {
@@ -47,7 +45,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
           await createWallet({ name });
           await loadWallets();
           await initializeWallet();
-          navigate(Routes.WALLET_SCREEN, {}, true);
+          Navigation.handleAction(Routes.WALLET_SCREEN, {}, true);
         } catch (error) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', error));
         } finally {
@@ -68,7 +66,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
       profile: { color: null, name: '' },
       type: 'new_wallet_group',
     });
-  }, [navigate, numWalletGroups]);
+  }, [numWalletGroups]);
 
   return (
     <ButtonPressAnimation
@@ -127,10 +125,9 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
   const isCreatingWallet = useRef(false);
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const accounts = wallet.addresses;
-  const { navigate } = useNavigation();
 
   const onAddToGroup = useCallback(() => {
-    navigate(Routes.MODAL_SCREEN, {
+    Navigation.handleAction(Routes.MODAL_SCREEN, {
       actionType: 'Create',
       asset: [],
       isNewProfile: true,
@@ -150,7 +147,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
             color,
             name,
           });
-          navigate(Routes.WALLET_SCREEN, {}, true);
+          Navigation.handleAction(Routes.WALLET_SCREEN, {}, true);
         } catch (e) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', e));
           if (getIsDamagedWallet()) {
@@ -169,7 +166,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
       profile: { color: null, name: '' },
       type: 'wallet_profile',
     });
-  }, [navigate, wallet]);
+  }, [wallet]);
 
   return (
     <ButtonPressAnimation onPress={onAddToGroup} scaleTo={0.95} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -212,7 +209,6 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
 }
 
 export function ChooseWalletGroup() {
-  const { goBack } = useNavigation();
   const wallets = useWallets();
 
   const groups = Object.values(wallets || {}).filter(wallet => wallet.type === WalletTypes.mnemonic);
@@ -221,7 +217,7 @@ export function ChooseWalletGroup() {
     <Box background="surfaceSecondary" height="full" width="full" style={{ gap: 20, alignItems: 'center' }}>
       <View style={{ paddingHorizontal: 24, gap: 20, width: '100%' }}>
         <View style={{ paddingTop: 24, paddingBottom: 12 }}>
-          <ButtonPressAnimation scaleTo={0.9} onPress={goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
+          <ButtonPressAnimation scaleTo={0.9} onPress={Navigation.goBack} hitSlop={64} style={{ width: 20, height: 20 }}>
             <Text color="blue" size="22pt" weight="bold">
               􀆉
             </Text>

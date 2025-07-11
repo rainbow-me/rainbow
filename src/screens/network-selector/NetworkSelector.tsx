@@ -61,7 +61,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 import Routes from '@/navigation/routesNames';
 import { SEARCH_BAR_HEIGHT, SearchBar } from './components/SearchBar';
@@ -291,7 +291,6 @@ function AllNetworksOption({
 }: Pick<NetworkSwitcherProps, 'canSelect' | 'selected' | 'setSelected' | 'goBackOnSelect' | 'actionButton'>) {
   const { isDarkMode } = useColorMode();
   const color = useForegroundColor(actionButton?.color || 'blue');
-  const { goBack } = useNavigation();
 
   const isSelected = useDerivedValue(() => selected.value === undefined);
   const { animatedStyle } = useNetworkOptionStyle(isSelected, color, true);
@@ -317,9 +316,9 @@ function AllNetworksOption({
     }
 
     if (goBackOnSelect) {
-      runOnJS(goBack)();
+      runOnJS(Navigation.goBack)();
     }
-  }, [actionButton?.onPress]);
+  }, [actionButton?.onPress, goBackOnSelect, selected, setSelected]);
 
   return (
     <GestureHandlerButton

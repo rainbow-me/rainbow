@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadAllKeys } from '@/model/keychain';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
@@ -24,7 +24,6 @@ import { RootStackParamList } from '@/navigation/types';
 const encryptor = new AesEncryptor();
 
 export const WalletDiagnosticsSheet = () => {
-  const { navigate, goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.DIAGNOSTICS_SHEET>>();
 
   const [keys, setKeys] = useState<UserCredentials[] | undefined>();
@@ -122,8 +121,8 @@ export const WalletDiagnosticsSheet = () => {
   const oldSeed = useMemo(() => keys?.filter(key => key.username === seedPhraseKey) || [], [keys]);
 
   const handleClose = useCallback(() => {
-    goBack();
-  }, [goBack]);
+    Navigation.goBack();
+  }, []);
 
   const handleAuthenticateWithPIN = useCallback(async () => {
     try {
@@ -132,14 +131,14 @@ export const WalletDiagnosticsSheet = () => {
       // This is a hack because we currently don't
       // support showing the PIN screen on top of certain sheets
       setTimeout(() => {
-        navigate(Routes.DIAGNOSTICS_SHEET, {
+        Navigation.handleAction(Routes.DIAGNOSTICS_SHEET, {
           userPin: pin,
         });
       }, 500);
     } catch (e) {
       return null;
     }
-  }, [navigate]);
+  }, []);
 
   const copyUUID = () => {
     if (uuid) {

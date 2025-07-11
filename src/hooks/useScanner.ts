@@ -7,7 +7,6 @@ import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
 import { Alert } from '../components/alerts';
 import useExperimentalFlag, { PROFILES } from '../config/experimentalHooks';
-import { useNavigation } from '../navigation/Navigation';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { analytics } from '@/analytics';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
@@ -21,7 +20,6 @@ import { pair as pairWalletConnect } from '@/walletConnect';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 
 export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
-  const { navigate, goBack } = useNavigation();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const enabledVar = useRef<boolean>();
 
@@ -55,7 +53,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       analytics.track(analytics.event.qrCodeScannedAddress);
       const ensName = isENSAddressFormat(address) ? address : await fetchReverseRecordWithRetry(address);
       // First navigate to wallet screen
-      navigate(Routes.WALLET_SCREEN);
+      Navigation.handleAction(Routes.WALLET_SCREEN);
 
       // And then navigate to Profile sheet
       InteractionManager.runAfterInteractions(() => {
@@ -67,7 +65,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         setTimeout(onSuccess, 500);
       });
     },
-    [navigate, onSuccess, profilesEnabled]
+    [onSuccess, profilesEnabled]
   );
 
   const handleScanRainbowProfile = useCallback(
@@ -81,7 +79,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       if (isValid) {
         const ensName = isENSAddressFormat(addressOrENS) ? addressOrENS : await fetchReverseRecordWithRetry(addressOrENS);
         // First navigate to wallet screen
-        navigate(Routes.WALLET_SCREEN);
+        Navigation.handleAction(Routes.WALLET_SCREEN);
 
         // And then navigate to Profile sheet
         InteractionManager.runAfterInteractions(() => {
@@ -94,7 +92,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         });
       }
     },
-    [navigate, onSuccess, profilesEnabled]
+    [onSuccess, profilesEnabled]
   );
 
   const handleScanWalletConnect = useCallback(
@@ -102,7 +100,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
       haptics.notificationSuccess();
       analytics.track(analytics.event.qrCodeScannedWalletConnect);
       await checkPushNotificationPermissions();
-      goBack();
+      Navigation.goBack();
       onSuccess();
       try {
         const { version } = parseUri(uri);
@@ -113,7 +111,7 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         logger.error(new RainbowError(`[useScanner]: Error handling WalletConnect QR code: ${error}`));
       }
     },
-    [goBack, onSuccess]
+    [onSuccess]
   );
 
   const handleScanInvalid = useCallback(

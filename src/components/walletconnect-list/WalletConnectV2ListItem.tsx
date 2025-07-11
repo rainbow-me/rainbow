@@ -3,7 +3,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline } from '@/design-system';
 import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
 import * as lang from '@/languages';
-import { Navigation, useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -40,7 +40,6 @@ const rowStyle = padding.object(CONTAINER_PADDING, CONTAINER_PADDING, CONTAINER_
 const columnStyle = padding.object(0, 10, 0, 12);
 
 export function WalletConnectV2ListItem({ session, reload }: { session: SessionTypes.Struct; reload(): void }) {
-  const { goBack } = useNavigation();
   const { colors } = useTheme();
 
   const [address, setAddress] = useState<string | undefined>(undefined);
@@ -95,11 +94,11 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
           setAddress(address);
           reload();
         }
-        goBack();
+        Navigation.goBack();
       },
       watchOnly: true,
     });
-  }, [address, session, goBack, reload]);
+  }, [address, session, reload]);
 
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(

@@ -11,7 +11,7 @@ import { useRecoilValue } from 'recoil';
 import { RainbowError, logger } from '@/logger';
 import { LedgerImportDeviceIdAtom } from '@/navigation/PairHardwareWalletNavigator';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
@@ -79,7 +79,6 @@ const Item = ({ item, rank }: ItemProps) => {
 
 export function PairHardwareWalletSigningSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET>>();
-  const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
   const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({ showImportModal: true });
@@ -124,7 +123,7 @@ export function PairHardwareWalletSigningSheet() {
   const errorCallback = useCallback(
     async (errorType: LEDGER_ERROR_CODES) => {
       if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP || errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
-        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+        Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
           screen: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET,
           params: {
             errorType,
@@ -144,7 +143,7 @@ export function PairHardwareWalletSigningSheet() {
         });
       }
     },
-    [deviceId, navigate, successCallback]
+    [deviceId, successCallback]
   );
 
   const handleButtonPress = useCallback(async (): Promise<void> => {
@@ -188,7 +187,7 @@ export function PairHardwareWalletSigningSheet() {
       </Inset>
       <ActionButton
         label={params?.shouldGoBack ? i18n.t(TRANSLATIONS.blind_signing_enabled) : i18n.t(TRANSLATIONS.finish_importing)}
-        onPress={() => (params?.shouldGoBack ? goBack() : handleButtonPress())}
+        onPress={() => (params?.shouldGoBack ? Navigation.goBack() : handleButtonPress())}
       />
     </Layout>
   );

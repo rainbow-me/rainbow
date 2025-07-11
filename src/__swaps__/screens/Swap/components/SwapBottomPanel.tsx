@@ -23,7 +23,7 @@ import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { getIsHardwareWallet } from '@/state/wallets/walletsStore';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_TEST } from '@/env';
@@ -81,11 +81,10 @@ export function SwapBottomPanel() {
     return IS_TEST ? testModeOpacity.value : opacity.value;
   });
 
-  const { navigate } = useNavigation();
   const handleHwConnectionAndSwap = useCallback(() => {
     try {
       if (getIsHardwareWallet() && configProgress.value === NavigationSteps.SHOW_REVIEW) {
-        navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+        Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
           submit: SwapNavigation.handleSwapAction,
         });
       } else {
@@ -96,7 +95,7 @@ export function SwapBottomPanel() {
         message: (e as Error).message,
       });
     }
-  }, [configProgress.value, navigate, SwapNavigation]);
+  }, [configProgress.value, SwapNavigation]);
 
   return (
     <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>

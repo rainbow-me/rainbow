@@ -8,7 +8,7 @@ import { getIconColorAndGradientForTransactionStatus } from '@/screens/transacti
 import { useTheme } from '@/theme';
 import { haptics } from '@/utils';
 import Routes from '@rainbow-me/routes';
-import { useNavigation } from '@react-navigation/native';
+import { Navigation } from '@/navigation';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
@@ -23,7 +23,6 @@ type Props = {
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({ transaction, hideIcon }) => {
   const { minedAt, status, type, from } = transaction;
-  const { navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const date = formatTransactionDetailsDate(minedAt ?? undefined);
   const { colors } = useTheme();
@@ -75,20 +74,20 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
       haptics.selection();
       switch (actionKey) {
         case 'speedUp':
-          navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+          Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_SHEET, {
             tx: transaction as PendingTransaction,
             type: 'speed_up',
           });
           return;
         case 'cancel':
-          navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+          Navigation.handleAction(Routes.SPEED_UP_AND_CANCEL_SHEET, {
             tx: transaction as PendingTransaction,
             type: 'cancel',
           });
           return;
       }
     },
-    [navigate, transaction]
+    [transaction]
   );
 
   return (

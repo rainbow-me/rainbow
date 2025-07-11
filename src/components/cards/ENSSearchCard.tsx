@@ -9,7 +9,7 @@ import { watchingAlert } from '@/utils';
 import { useRoute } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useNavigation } from '../../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { GenericCard, Gradient } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
@@ -29,7 +29,6 @@ const springConfig = {
 
 export const ENSSearchCard = () => {
   const { pendingRegistrations } = useENSPendingRegistrations();
-  const { navigate } = useNavigation();
   const { name: routeName } = useRoute();
   const cardType = 'square';
 
@@ -53,7 +52,7 @@ export const ENSSearchCard = () => {
         routeName,
         cardType,
       });
-      navigate(Routes.REGISTER_ENS_NAVIGATOR, {
+      Navigation.handleAction(Routes.REGISTER_ENS_NAVIGATOR, {
         mode: REGISTRATION_MODES.SEARCH,
       });
     } else {

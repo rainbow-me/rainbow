@@ -6,7 +6,7 @@ import { AllocationBreakdown } from './AllocationBreakdown';
 import { AirdropSection } from './AirdropSection';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Keyboard } from 'react-native';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTokenLauncherStore } from '../state/tokenLauncherStore';
 import { convertAmountToPercentageDisplay } from '@/helpers/utilities';
@@ -16,13 +16,11 @@ import { opacity } from '@/__swaps__/utils/swaps';
 const LABEL_QUINARY = { custom: opacity(getColorForTheme('labelQuaternary', 'dark'), 0.3) };
 
 function TokenAllocationInfoButton() {
-  const { navigate } = useNavigation();
-
   const allocationBips = useTokenLauncherStore(state => state.allocationBips());
 
   const showTokenAllocationInfo = useCallback(async () => {
     Keyboard.dismiss();
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'token_allocation',
       sections: [
         {
@@ -47,7 +45,7 @@ function TokenAllocationInfoButton() {
         },
       ],
     });
-  }, [navigate, allocationBips]);
+  }, [allocationBips]);
 
   return (
     <ButtonPressAnimation onPress={showTokenAllocationInfo}>

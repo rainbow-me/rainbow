@@ -8,7 +8,7 @@ import { EmojiSelector } from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
 import useUpdateEmoji from '../hooks/useUpdateEmoji';
-import { useNavigation } from '../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { deviceUtils } from '../utils';
 import { AVATAR_CIRCLE_TOP_MARGIN } from '@/navigation/effects';
 import { useDimensions } from '@/hooks';
@@ -64,7 +64,6 @@ const AvatarBuilder = () => {
   const { height, width } = useDimensions();
   const { colors } = useTheme();
   const selectedRingPosition = useSharedValue(params.initialAccountColor * 40);
-  const { goBack } = useNavigation();
   const [currentAccountColor, setCurrentAccountColor] = useState(colors.avatarBackgrounds[params.initialAccountColor]);
   const [currentEmoji, setCurrentEmoji] = useState(null);
   const colorIndex = useRef(params.initialAccountColor);
@@ -100,7 +99,7 @@ const AvatarBuilder = () => {
 
   return (
     <Container height={deviceUtils.dimensions.height} testID="avatar-builder" width={deviceUtils.dimensions.width}>
-      <TouchableBackdrop onPress={goBack} />
+      <TouchableBackdrop onPress={Navigation.goBack} />
       <Column align="center" pointerEvents="box-none" top={AvatarBuilderTopPoint + AVATAR_CIRCLE_TOP_MARGIN}>
         <Row justify="center" paddingBottom={16} paddingTop={15} width="100%">
           <ScrollableColorPicker contentOffset={selectedOffset} horizontal showsHorizontalScrollIndicator={false}>

@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { get } from 'lodash';
 
-import { useNavigation } from '@/navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { PromoSheet } from '@/components/PromoSheet';
 import { useTheme } from '@/theme';
 import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
@@ -64,7 +64,6 @@ const getKeyForLanguage = (key: string, promoSheet: any, language: Language) => 
 
 export function RemotePromoSheet() {
   const { colors, isDarkMode } = useTheme();
-  const { goBack, navigate } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.REMOTE_PROMO_SHEET>>();
   const { campaignId, campaignKey } = params;
   const { language } = useAccountSettings();
@@ -101,17 +100,17 @@ export function RemotePromoSheet() {
   }, [data?.promoSheet?.primaryButtonProps.props.url]);
 
   const internalNavigation = useCallback(() => {
-    goBack();
+    Navigation.goBack();
 
     delay(300).then(() =>
-      navigate((Routes as any)[data?.promoSheet?.primaryButtonProps.props.route], {
+      Navigation.handleAction((Routes as any)[data?.promoSheet?.primaryButtonProps.props.route], {
         ...(data?.promoSheet?.primaryButtonProps.props.options || {}),
       })
     );
-  }, [goBack, navigate, data?.promoSheet]);
+  }, [data?.promoSheet]);
 
   if (!data?.promoSheet) {
-    goBack();
+    Navigation.goBack();
     return null;
   }
 
@@ -165,7 +164,7 @@ export function RemotePromoSheet() {
         color: secondaryButtonBgColor,
         textColor: secondaryButtonTextColor,
         label: getKeyForLanguage('secondaryButtonProps.label', data.promoSheet, language as Language),
-        onPress: goBack,
+        onPress: Navigation.goBack,
       }}
       items={items.map((item: Item) => {
         const title = getKeyForLanguage('title', item, language as Language);

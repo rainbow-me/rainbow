@@ -13,7 +13,7 @@ import {
 } from '@/hooks';
 import { ActionTypes } from '@/hooks/useENSRegistrationActionHandler';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -114,8 +114,6 @@ export default function ENSConfirmRegisterSheet() {
 
   const [duration, setDuration] = useState(1);
 
-  const { navigate, goBack } = useNavigation();
-
   const { blurFields, values } = useENSRegistrationForm();
   const accountProfile = useAccountProfileInfo();
 
@@ -147,9 +145,9 @@ export default function ENSConfirmRegisterSheet() {
 
   const goToProfileScreen = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      goBack();
+      Navigation.goBack();
       setTimeout(() => {
-        navigate(Routes.PROFILE_SCREEN);
+        Navigation.handleAction(Routes.PROFILE_SCREEN);
       }, 100);
 
       setTimeout(() => {
@@ -158,7 +156,7 @@ export default function ENSConfirmRegisterSheet() {
         });
       }, 500);
     });
-  }, [goBack, navigate]);
+  }, []);
 
   const stepLabel = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT) return lang.t('profiles.confirm.confirm_updates');

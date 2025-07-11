@@ -4,7 +4,7 @@ import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
 import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { doesWalletsContainAddress } from '@/utils';
-import { useNavigation } from '@react-navigation/native';
+import { Navigation } from '@/navigation';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
@@ -21,7 +21,6 @@ export default function useWatchWallet({
   avatarUrl?: string | null;
   showImportModal?: boolean;
 }) {
-  const { goBack, navigate } = useNavigation();
   const wallets = useWallets();
 
   const watchingWallet = useMemo(() => {
@@ -85,8 +84,8 @@ export default function useWatchWallet({
       ReactNativeHapticFeedback.trigger('notificationSuccess');
       if (!isLastAvailableWallet) {
         await cleanUpWalletKeys();
-        goBack();
-        navigate(Routes.WELCOME_SCREEN);
+        Navigation.goBack();
+        Navigation.handleAction(Routes.WELCOME_SCREEN);
       } else {
         // If we're deleting the selected wallet,
         // we need to switch to another one
@@ -110,8 +109,6 @@ export default function useWatchWallet({
     avatarUrl,
     deleteWallet,
     wallets,
-    goBack,
-    navigate,
     primaryAddress,
     accountAddress,
     changeAccount,

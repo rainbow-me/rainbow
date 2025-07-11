@@ -5,7 +5,7 @@ import { analytics } from '@/analytics';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { getWalletProfileMeta } from '@/helpers/walletProfileHandler';
 import { setCallbackAfterObtainingSeedsFromKeychainOrError } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
@@ -24,7 +24,6 @@ export default function WalletProfileState({
   isFromSettings = true,
 }) {
   const [webProfile, setWebProfile] = useState(null);
-  const { goBack, navigate } = useNavigation();
   const { getWebProfile } = useWebData();
 
   const {
@@ -49,12 +48,12 @@ export default function WalletProfileState({
 
   const handleCancel = useCallback(() => {
     onCancel?.();
-    goBack();
+    Navigation.goBack();
     analytics.track(analytics.event.walletProfileCancelled);
     if (actionType === 'Create' && !isFromSettings) {
-      navigate(Routes.CHANGE_WALLET_SHEET);
+      Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
     }
-  }, [actionType, goBack, navigate, onCancel, isFromSettings]);
+  }, [actionType, onCancel, isFromSettings]);
 
   const handleSubmit = useCallback(async () => {
     analytics.track(analytics.event.walletProfileSubmitted);
@@ -65,9 +64,9 @@ export default function WalletProfileState({
       name: value,
     });
     const callback = async () => {
-      goBack();
+      Navigation.goBack();
       if (actionType === 'Create' && isNewProfile && !isFromSettings) {
-        navigate(Routes.CHANGE_WALLET_SHEET);
+        Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
       }
     };
 
@@ -76,7 +75,7 @@ export default function WalletProfileState({
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
     }
-  }, [actionType, nameColor, goBack, isNewProfile, navigate, onCloseModal, profileImage, value, isFromSettings]);
+  }, [actionType, nameColor, isNewProfile, onCloseModal, profileImage, value, isFromSettings]);
 
   useEffect(() => {
     const getProfile = async () => {

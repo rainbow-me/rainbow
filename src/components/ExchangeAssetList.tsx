@@ -20,7 +20,6 @@ import { CopyToast, ToastPositionContainer } from '@/components/toasts';
 import contextMenuProps from '@/components/exchangeAssetRowContextMenuProps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useAndroidScrollViewGestureHandler, usePrevious } from '@/hooks';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { abbreviations, magicMemo } from '@/utils';
@@ -31,6 +30,7 @@ import { SwappableAsset } from '@/entities';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import ConditionalWrap from 'conditional-wrap';
 import { EasingGradient } from './easing-gradient/EasingGradient';
+import { Navigation } from '@/navigation';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -144,7 +144,6 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
   const sectionListRef = ref as MutableRefObject<SectionList>;
   useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
-  const { getParent: dangerouslyGetParent, navigate } = useNavigation();
   const { copiedText, copyCount, onCopySwapDetailsText } = useSwapDetailsClipboardState();
 
   // Scroll to top once the query is cleared
@@ -163,7 +162,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
   const handleUnverifiedTokenPress = useCallback(
     (item: SwappableAsset) => {
       Keyboard.dismiss();
-      navigate(Routes.EXPLAIN_SHEET, {
+      Navigation.handleAction(Routes.EXPLAIN_SHEET, {
         asset: item,
         onClose: () => {
           InteractionManager.runAfterInteractions(() => {
@@ -175,12 +174,10 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
         type: 'unverified',
       });
     },
-    [itemProps, navigate]
+    [itemProps]
   );
 
-  const { onScroll } = useAndroidScrollViewGestureHandler({
-    navigation: dangerouslyGetParent?.(),
-  });
+  const { onScroll } = useAndroidScrollViewGestureHandler();
 
   const FooterSpacer = useCallback(() => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null), [footerSpacer]);
 

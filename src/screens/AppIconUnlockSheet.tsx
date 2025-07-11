@@ -1,5 +1,5 @@
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import React, { useCallback, useEffect } from 'react';
 import { StatusBar, View } from 'react-native';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
@@ -22,7 +22,6 @@ const APP_ICON_SIZE = 64;
 
 export default function AppIconUnlockSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.APP_ICON_UNLOCK_SHEET>>();
-  const { goBack, navigate, setParams } = useNavigation<typeof Routes.APP_ICON_UNLOCK_SHEET>();
   const { colors } = useTheme();
 
   const { appIconKey } = params;
@@ -30,12 +29,12 @@ export default function AppIconUnlockSheet() {
   const { accentColor, image } = unlockableAppIcons[appIconKey];
 
   const navigateToAppIconSettings = useCallback(async () => {
-    goBack();
-    navigate(Routes.SETTINGS_SHEET);
+    Navigation.goBack();
+    Navigation.handleAction(Routes.SETTINGS_SHEET);
     await delay(500);
-    navigate(Routes.SETTINGS_SHEET, { screen: SettingsPages.appIcon.key });
+    Navigation.handleAction(Routes.SETTINGS_SHEET, { screen: SettingsPages.appIcon.key });
     analytics.track(analytics.event.appIconUnlockSheetCTAPressed, { appIcon: appIconKey });
-  }, [appIconKey, goBack, navigate]);
+  }, [appIconKey]);
 
   useEffect(() => {
     analytics.track(analytics.event.appIconUnlockSheetViewed, { appIcon: appIconKey });
@@ -46,7 +45,13 @@ export default function AppIconUnlockSheet() {
 
   return (
     <SimpleSheet backgroundColor={useBackgroundColor('surfacePrimary')} scrollEnabled={false}>
-      <View onLayout={e => setParams({ longFormHeight: e.nativeEvent.layout.height + (IS_ANDROID ? StatusBar.currentHeight ?? 0 : 0) })}>
+      <View
+        onLayout={e =>
+          Navigation.setParams<typeof Routes.APP_ICON_UNLOCK_SHEET>({
+            longFormHeight: e.nativeEvent.layout.height + (IS_ANDROID ? StatusBar.currentHeight ?? 0 : 0),
+          })
+        }
+      >
         <Inset top="36px" bottom="20px" horizontal="20px">
           <Stack space="36px">
             <Inset horizontal="20px">

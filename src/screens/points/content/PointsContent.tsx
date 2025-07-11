@@ -34,7 +34,7 @@ import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from 
 import { useAccountAccentColor, useAccountSettings, useClipboard, useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -201,7 +201,6 @@ const Card = ({ borderRadius = 32, children, padding = '12px' }: { borderRadius?
 
 const ClaimCard = memo(function ClaimCard({ claim, value }: { claim?: string; value?: string }) {
   const { isDarkMode } = useColorMode();
-  const { navigate } = useNavigation();
 
   return (
     <Card>
@@ -223,7 +222,7 @@ const ClaimCard = memo(function ClaimCard({ claim, value }: { claim?: string; va
         </Box>
       </Box>
       <ButtonPressAnimation
-        onPress={() => navigate(Routes.CLAIM_REWARDS_PANEL)}
+        onPress={() => Navigation.handleAction(Routes.CLAIM_REWARDS_PANEL)}
         scaleTo={0.925}
         style={{
           alignItems: 'center',

@@ -8,7 +8,7 @@ import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { time } from '@/utils';
 import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { RootStackParamList } from '@/navigation/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
@@ -51,13 +51,9 @@ export const usePriceChart = ({
   currency: SupportedCurrencyKey;
   chainId: ChainId;
 }) => {
-  const { setParams } = useNavigation<typeof Routes.EXPANDED_ASSET_SHEET_V2>();
-  const updateChartType = useCallback(
-    (type: ChartTime) => {
-      setParams({ chartType: type });
-    },
-    [setParams]
-  );
+  const updateChartType = useCallback((type: ChartTime) => {
+    Navigation.setParams<typeof Routes.EXPANDED_ASSET_SHEET_V2>({ chartType: type });
+  }, []);
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET_V2>>();
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
   const query = useQuery({

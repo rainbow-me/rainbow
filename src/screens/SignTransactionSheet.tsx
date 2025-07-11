@@ -12,7 +12,7 @@ import { delay } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useTheme } from '@/theme';
 import { deviceUtils, ethereumUtils } from '@/utils';
@@ -83,7 +83,6 @@ type SignTransactionSheetParams = {
 export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
 
 export const SignTransactionSheet = () => {
-  const { goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
@@ -230,9 +229,9 @@ export const SignTransactionSheet = () => {
           // we need to close the hw navigator too
           if (accountInfo.isHardwareWallet) {
             delay(300);
-            goBack();
+            Navigation.goBack();
           }
-          goBack();
+          Navigation.goBack();
           if (!isMessageRequest) {
             stopPollingGasFees();
           }
@@ -243,7 +242,7 @@ export const SignTransactionSheet = () => {
         operation: TimeToSignOperation.SheetDismissal,
         endOfOperation: true,
       })(),
-    [accountInfo.isHardwareWallet, goBack, isMessageRequest, onCloseScreenCallback, source, stopPollingGasFees]
+    [accountInfo.isHardwareWallet, isMessageRequest, onCloseScreenCallback, source, stopPollingGasFees]
   );
 
   const onCancel = useCallback(

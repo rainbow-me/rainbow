@@ -1,24 +1,22 @@
 import React from 'react';
 import { useRoute, RouteProp } from '@react-navigation/native';
 
-import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { Box } from '@/design-system';
 import { RootStackParamList } from '@/navigation/types';
 import { StyleSheet } from 'react-native';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { Panel, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 
 /**
  * The core Portal sheet
  */
 export function Portal() {
-  const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.PORTAL>>();
 
   if (!params) {
-    goBack();
+    Navigation.goBack();
     return null;
   }
 
@@ -57,10 +55,8 @@ const styles = StyleSheet.create({
  *    `open(() => <p.Title>...</p.Title>, { ...options })`
  */
 export function useOpen() {
-  const { navigate } = useNavigation();
-
   const open = React.useCallback((children: React.FC, options: Omit<RootStackParamList[typeof Routes.PORTAL], 'children'> = {}) => {
-    navigate(Routes.PORTAL, {
+    Navigation.handleAction(Routes.PORTAL, {
       children,
       ...options,
     });

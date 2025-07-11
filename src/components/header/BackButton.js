@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useNavigation } from '../../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import Text from '../text/Text';
@@ -18,17 +18,15 @@ const IconText = styled(Text).attrs(({ theme: { colors } }) => ({
 }))(fontWithWidth(fonts.weight.bold));
 
 export default function BackButton({ color, direction = 'left', onPress, throttle, testID, textChevron, ...props }) {
-  const navigation = useNavigation();
-
   const handlePress = useCallback(
     event => {
       if (onPress) {
         return onPress(event);
       }
 
-      return navigation.goBack();
+      return Navigation.goBack();
     },
-    [navigation, onPress]
+    [onPress]
   );
 
   return (

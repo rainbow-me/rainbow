@@ -3,7 +3,6 @@ import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { NativeCurrencyKey, UniqueAsset } from '@/entities';
 import { useAccountSettings, useCoinListEdited, useCoinListEditOptions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useNavigation } from '@/navigation';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useTheme } from '@/theme';
@@ -38,7 +37,6 @@ export type ExtendedState = {
   theme: any;
   nativeCurrencySymbol: string;
   nativeCurrency: NativeCurrencyKey;
-  navigate: any;
   isCoinListEdited: boolean;
   hiddenAssets: Set<UniqueId>;
   pinnedCoins: BooleanMap;
@@ -130,15 +128,12 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const { pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
 
-  const { navigate } = useNavigation();
-
   const mergedExtendedState = useMemo<ExtendedState>(() => {
     return {
       ...extendedState,
       isCoinListEdited,
       nativeCurrency,
       nativeCurrencySymbol,
-      navigate,
       hiddenAssets,
       pinnedCoins,
       setIsCoinListEdited,
@@ -150,7 +145,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     isCoinListEdited,
     nativeCurrency,
     nativeCurrencySymbol,
-    navigate,
     hiddenAssets,
     pinnedCoins,
     setIsCoinListEdited,

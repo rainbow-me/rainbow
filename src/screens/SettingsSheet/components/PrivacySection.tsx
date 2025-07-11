@@ -3,7 +3,7 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { useShowcaseTokens, useWebData } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { device } from '@/storage';
@@ -18,7 +18,6 @@ const TRANSLATIONS = i18n.l.settings.privacy_section;
 const PrivacySection = () => {
   const { showcaseTokens } = useShowcaseTokens();
   const { webDataEnabled, initWebData, wipeWebData } = useWebData();
-  const { navigate } = useNavigation();
   const { accountENS } = useAccountProfileInfo();
 
   const [publicShowCase, togglePublicShowcase] = useReducer(publicShowCase => !publicShowCase, webDataEnabled);
@@ -83,7 +82,7 @@ const PrivacySection = () => {
             hasSfSymbol
             leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
             onPress={() => {
-              navigate(Routes.PROFILE_SHEET, {
+              Navigation.handleAction(Routes.PROFILE_SHEET, {
                 address: accountENS,
                 fromRoute: 'PrivacySettings',
               });

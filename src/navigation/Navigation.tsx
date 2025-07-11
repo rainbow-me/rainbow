@@ -1,5 +1,6 @@
 import {
   CommonActions,
+  NavigationAction,
   useNavigation as oldUseNavigation,
   StackActions,
   useIsFocused,
@@ -342,5 +343,10 @@ export default {
   handleAction,
   setParams,
   setTopLevelNavigator,
+  reset: (...args: Parameters<NavigationContainerRef<RootStackParamList>['reset']>) => TopLevelNavigationRef?.reset(...args),
+  getParent: () => TopLevelNavigationRef?.getParent(),
+  // @ts-expect-error - this is valid but react-navigation isn't recognizing it
+  setOptions: (options: Partial<ExtendedSetOptionsFunction>) => TopLevelNavigationRef?.setOptions(options),
+  dispatch: (action: NavigationAction) => TopLevelNavigationRef?.dispatch(action),
   goBack,
 };

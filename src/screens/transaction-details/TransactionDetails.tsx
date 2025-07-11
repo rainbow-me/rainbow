@@ -14,15 +14,13 @@ import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/tr
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 import { useDimensions } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
 export const TransactionDetails = () => {
   const {
     params: { transaction },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.TRANSACTION_DETAILS>>();
-  const { setParams } = useNavigation<typeof Routes.TRANSACTION_DETAILS>();
-
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
@@ -30,7 +28,7 @@ export const TransactionDetails = () => {
   const { bottom } = useSafeAreaInsets();
 
   // Dynamic sheet height based on content height
-  useEffect(() => setParams({ longFormHeight: sheetHeight }), [setParams, sheetHeight]);
+  useEffect(() => Navigation.setParams<typeof Routes.TRANSACTION_DETAILS>({ longFormHeight: sheetHeight }), [sheetHeight]);
 
   const onSheetContentLayout = useCallback(
     (event: LayoutChangeEvent) => {

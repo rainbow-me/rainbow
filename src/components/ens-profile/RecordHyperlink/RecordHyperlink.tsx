@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { Navigation } from '@/navigation';
 import React, { useCallback } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Text } from '@/design-system';
@@ -8,19 +8,17 @@ import { openInBrowser } from '@/utils/openInBrowser';
 const ENS_REGEX = /[^\s]+.eth/g;
 
 export default function RecordHyperlink({ value }: { value: string }) {
-  const { goBack, navigate } = useNavigation();
-
   const navigateToProfile = useCallback(() => {
     if (value.match(ENS_REGEX)) {
-      goBack();
-      navigate(Routes.PROFILE_SHEET, {
+      Navigation.goBack();
+      Navigation.handleAction(Routes.PROFILE_SHEET, {
         address: value,
         fromRoute: 'RecordHyperlink',
       });
     } else {
       openInBrowser((value.match('https') ? '' : 'https://') + value);
     }
-  }, [value, goBack, navigate]);
+  }, [value]);
 
   return (
     <ButtonPressAnimation onPress={navigateToProfile}>

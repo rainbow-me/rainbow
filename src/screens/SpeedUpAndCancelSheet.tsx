@@ -7,7 +7,7 @@ import { useAccountSettings, useDimensions, useGas } from '@/hooks';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { sendTransaction } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { parseGasParamsForTransaction } from '@/parsers';
@@ -111,7 +111,6 @@ const calcGasParamRetryValue = (prevWeiValue: BigNumberish) => {
 };
 
 export default function SpeedUpAndCancelSheet() {
-  const { navigate, goBack } = useNavigation();
   const { chainId } = useAccountSettings();
   const accountAddress = useAccountAddress();
   const isHardwareWallet = useIsHardwareWallet();
@@ -202,9 +201,9 @@ export default function SpeedUpAndCancelSheet() {
     } finally {
       // if its a hardware wallet we need to close the hardware tx sheet
       if (isHardwareWallet) {
-        goBack();
+        Navigation.goBack();
       }
-      goBack();
+      Navigation.goBack();
     }
   }, [
     accountAddress,
@@ -212,7 +211,6 @@ export default function SpeedUpAndCancelSheet() {
     currentChainId,
     currentProvider,
     getNewTransactionGasParams,
-    goBack,
     isHardwareWallet,
     nonce,
     tx,
@@ -220,13 +218,13 @@ export default function SpeedUpAndCancelSheet() {
 
   const handleCancellationWrapperFn = useCallback(async () => {
     if (isHardwareWallet) {
-      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
+      Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
         submit: handleCancellation,
       });
     } else {
       handleCancellation();
     }
-  }, [handleCancellation, isHardwareWallet, navigate]);
+  }, [handleCancellation, isHardwareWallet]);
 
   const saveCommitTransactionHash = useCallback(
     (hash: string) => {
@@ -278,9 +276,9 @@ export default function SpeedUpAndCancelSheet() {
     } finally {
       // if its a hardware wallet we need to close the hardware tx sheet
       if (isHardwareWallet) {
-        goBack();
+        Navigation.goBack();
       }
-      goBack();
+      Navigation.goBack();
     }
   }, [
     accountAddress,
@@ -289,7 +287,6 @@ export default function SpeedUpAndCancelSheet() {
     data,
     gasLimit,
     getNewTransactionGasParams,
-    goBack,
     isHardwareWallet,
     nonce,
     saveCommitTransactionHash,
@@ -300,11 +297,11 @@ export default function SpeedUpAndCancelSheet() {
 
   const handleSpeedUpWrapperFn = useCallback(async () => {
     if (isHardwareWallet) {
-      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: handleSpeedUp });
+      Navigation.handleAction(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: handleSpeedUp });
     } else {
       handleSpeedUp();
     }
-  }, [handleSpeedUp, isHardwareWallet, navigate]);
+  }, [handleSpeedUp, isHardwareWallet]);
 
   // Set the network
   useEffect(() => {
@@ -385,7 +382,7 @@ export default function SpeedUpAndCancelSheet() {
           if (type === SPEED_UP) {
             Alert.alert(lang.t('wallet.speed_up.unable_to_speed_up'), lang.t('wallet.speed_up.problem_while_fetching_transaction_data'), [
               {
-                onPress: () => goBack(),
+                onPress: () => Navigation.goBack(),
               },
             ]);
           }
@@ -394,7 +391,7 @@ export default function SpeedUpAndCancelSheet() {
     };
 
     init();
-  }, [currentChainId, currentProvider, goBack, isL2, tx, tx?.gasLimit, tx.hash, type, updateGasFeeOption]);
+  }, [currentChainId, currentProvider, isL2, tx, tx?.gasLimit, tx.hash, type, updateGasFeeOption]);
 
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current) {
@@ -479,7 +476,7 @@ export default function SpeedUpAndCancelSheet() {
                         <SheetActionButton
                           color={colors.white}
                           label={lang.t('button.close')}
-                          onPress={goBack}
+                          onPress={Navigation.goBack}
                           size="big"
                           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
                           weight="bold"
@@ -492,7 +489,7 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButton
                         color={colors.white}
                         label={lang.t('button.cancel')}
-                        onPress={goBack}
+                        onPress={Navigation.goBack}
                         size="big"
                         textColor={colors.alpha(colors.blueGreyDark, 0.8)}
                         weight="bold"

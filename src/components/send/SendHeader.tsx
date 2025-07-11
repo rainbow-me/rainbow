@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Keyboard, TextInput } from 'react-native';
-import { useNavigation } from '../../navigation/Navigation';
+import { Navigation } from '@/navigation';
 import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
@@ -23,7 +23,6 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { profileUtils, showActionSheetWithOptions } from '@/utils';
 import { RainbowAccount } from '@/model/wallet';
-import { Contact } from '@/redux/contacts';
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;
@@ -106,7 +105,6 @@ export default function SendHeader({
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
-  const { navigate } = useNavigation();
   const { colors } = useTheme();
   const [hexAddress, setHexAddress] = useState('');
 
@@ -152,7 +150,7 @@ export default function SendHeader({
     }
 
     android && Keyboard.dismiss();
-    navigate(Routes.MODAL_SCREEN, {
+    Navigation.handleAction(Routes.MODAL_SCREEN, {
       additionalPadding: true,
       address: hexAddress,
       color,
@@ -162,7 +160,7 @@ export default function SendHeader({
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [contact, hexAddress, name, navigate, onRefocusInput, profilesEnabled, recipient]);
+  }, [contact, hexAddress, name, onRefocusInput, profilesEnabled, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(

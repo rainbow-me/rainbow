@@ -1,7 +1,6 @@
 import { IS_TEST } from '@/env';
 import { useDimensions } from '@/hooks';
 import * as lang from '@/languages';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
@@ -19,6 +18,7 @@ import { ListHeader, ListHeaderHeight } from '../list';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { H1, TruncatedText } from '../text';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
+import { Navigation } from '@/navigation';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -120,12 +120,11 @@ type AssetListHeaderProps = {
 const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalValue, isSticky = true, ...props }: AssetListHeaderProps) => {
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfileInfo();
-  const { navigate } = useNavigation();
   const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus().isInitialLoading);
 
   const onChangeWallet = useCallback(() => {
-    navigate(Routes.CHANGE_WALLET_SHEET);
-  }, [navigate]);
+    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
+  }, []);
 
   const [textWidth, setTextWidth] = useState(0);
 

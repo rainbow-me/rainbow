@@ -11,7 +11,7 @@ import { getAccountProfileInfo, useAccountAddress, useSelectedWallet } from '@/s
 import { useTheme } from '@/theme';
 import { initials } from '@/utils/formatters';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
-import { useNavigation } from '@react-navigation/native';
+import { Navigation } from '@/navigation';
 import { WalletKitTypes } from '@reown/walletkit';
 import { Verify } from '@walletconnect/types';
 import React from 'react';
@@ -29,7 +29,6 @@ export function AuthRequest({
   const accountAddress = useAccountAddress();
   const selectedWallet = useSelectedWallet();
 
-  const { navigate, goBack } = useNavigation();
   const { colors } = useTheme();
   const [loadError, setLoadError] = React.useState(false);
   const [address, setAddress] = React.useState(accountAddress);
@@ -60,14 +59,14 @@ export function AuthRequest({
           });
       }
     } else {
-      goBack(); // close
+      Navigation.goBack(); // close
 
       if (isHardwareWallet) {
         // Ledger flow sheets close, then we close AuthRequest sheet
-        goBack();
+        Navigation.goBack();
       }
     }
-  }, [address, authenticate, goBack, isHardwareWallet]);
+  }, [address, authenticate, isHardwareWallet]);
 
   const { icons, name, url } = requesterMeta;
 
@@ -137,12 +136,12 @@ export function AuthRequest({
         <Box paddingBottom={isScam ? '16px' : '36px'}>
           <ButtonPressAnimation
             onPress={() => {
-              navigate(Routes.CHANGE_WALLET_SHEET, {
+              Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
                 watchOnly: true,
                 currentAccountAddress: address,
                 onChangeWallet(address) {
                   setAddress(address as Address);
-                  goBack();
+                  Navigation.goBack();
                 },
               });
             }}

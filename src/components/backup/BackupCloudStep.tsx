@@ -22,9 +22,9 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
 import { TextInput } from 'react-native';
 import { useTheme } from '@/theme';
-import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
+import { Navigation } from '@/navigation';
 
 type NativeEvent = {
   nativeEvent: {
@@ -34,7 +34,6 @@ type NativeEvent = {
 
 export function BackupCloudStep() {
   const { isDarkMode } = useTheme();
-  const { goBack } = useNavigation();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
   const [password, setPassword] = useState('');
@@ -82,12 +81,12 @@ export function BackupCloudStep() {
   const onSuccessAndNavigateBack = useCallback(
     async (password: string) => {
       if (!isFromWalletReadyPrompt) {
-        goBack();
+        Navigation.goBack();
       }
 
       onSuccess?.(password);
     },
-    [goBack, isFromWalletReadyPrompt, onSuccess]
+    [isFromWalletReadyPrompt, onSuccess]
   );
 
   useEffect(() => {
@@ -96,7 +95,7 @@ export function BackupCloudStep() {
         onCancel?.();
       }
     };
-  }, []);
+  }, [onCancel, password]);
 
   return (
     <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>

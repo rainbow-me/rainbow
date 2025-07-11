@@ -48,6 +48,7 @@ import { discoverScrollToTopFnRef, discoverOpenSearchFnRef } from '@/components/
 import { ScrollPositionContext } from './ScrollPositionContext';
 import { MainListProvider, useMainList } from './MainListContext';
 import Routes from './routesNames';
+import Navigation from './Navigation';
 import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
@@ -229,10 +230,10 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
       });
 
       if (tabBarIcon === 'tabHome') {
-        navigation.navigate(Routes.CHANGE_WALLET_SHEET);
+        Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
       }
       if (tabBarIcon === 'tabDiscover') {
-        navigation.navigate(Routes.DISCOVER_SCREEN);
+        Navigation.handleAction(Routes.DISCOVER_SCREEN);
         InteractionManager.runAfterInteractions(() => {
           discoverOpenSearchFnRef?.();
         });

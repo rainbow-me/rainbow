@@ -17,11 +17,11 @@ import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
 import showWalletErrorAlert from '../helpers/support';
-import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../utils';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
+import { Navigation } from '@/navigation';
 
 const ContainerWidth = 261;
 
@@ -174,7 +174,6 @@ const AmountButton = ({ amount, backgroundColor, color, onPress }) => {
 const AddFundsInterstitial = ({ network }) => {
   const onAddFromFaucet = accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
   const { isSmallPhone } = useDimensions();
-  const { navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const { colors } = useTheme();
   const { name: routeName } = useRoute();
@@ -187,7 +186,7 @@ const AddFundsInterstitial = ({ network }) => {
         return;
       }
 
-      navigate(Routes.ADD_CASH_SHEET, {
+      Navigation.handleAction(Routes.ADD_CASH_SHEET, {
         params: !isNaN(amount) ? { amount } : null,
         screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
       });
@@ -198,7 +197,7 @@ const AddFundsInterstitial = ({ network }) => {
         routeName,
       });
     },
-    [navigate, routeName]
+    [routeName]
   );
 
   const addFundsToAccountAddress = useCallback(() => onAddFromFaucet(accountAddress), [accountAddress]);
@@ -208,8 +207,8 @@ const AddFundsInterstitial = ({ network }) => {
       showWalletErrorAlert();
       return;
     }
-    navigate(Routes.RECEIVE_MODAL);
-  }, [navigate]);
+    Navigation.handleAction(Routes.RECEIVE_MODAL);
+  }, []);
 
   return (
     <Container isSmallPhone={isSmallPhone}>

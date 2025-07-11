@@ -4,7 +4,7 @@ import { Switch } from 'react-native-gesture-handler';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Box, Inline, Row, Rows, Separator, Stack, Text } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 
@@ -17,10 +17,9 @@ const RegisterContent = ({
   sendReverseRecord: boolean;
   setSendReverseRecord: React.Dispatch<React.SetStateAction<boolean>> | null;
 }) => {
-  const { navigate } = useNavigation();
   const openPrimaryENSNameHelper = useCallback(() => {
-    navigate(Routes.EXPLAIN_SHEET, { type: 'ens_primary_name' });
-  }, [navigate]);
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, { type: 'ens_primary_name' });
+  }, []);
 
   return (
     <>

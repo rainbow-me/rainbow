@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { Bleed, Box, Column, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { NftOffer } from '@/graphql/__generated__/arc';
@@ -94,7 +94,6 @@ export const FakeOfferRow = () => {
 };
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
-  const { navigate } = useNavigation();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { colorMode } = useColorMode();
   const bgColor = useBackgroundColor('surfaceSecondaryElevated');
@@ -143,7 +142,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
             network: offer.network,
           },
         });
-        navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
+        Navigation.handleAction(Routes.NFT_SINGLE_OFFER_SHEET, { offer });
       }}
       style={{ marginVertical: 10, marginHorizontal: 20 }}
     >

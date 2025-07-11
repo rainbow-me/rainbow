@@ -4,7 +4,7 @@ import { AccentColorProvider, Box, Inline, Stack, Text } from '@/design-system';
 import { useClipboard } from '@/hooks';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -22,7 +22,6 @@ const TRANSLATIONS = i18n.l.cards.receive;
 
 export const ReceiveAssetsCard = () => {
   const accountAddress = useAccountAddress();
-  const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
@@ -45,7 +44,7 @@ export const ReceiveAssetsCard = () => {
     analytics.track(analytics.event.qrCodeViewed, {
       component: 'ReceiveAssetsCard',
     });
-    navigate(Routes.RECEIVE_MODAL);
+    Navigation.handleAction(Routes.RECEIVE_MODAL);
   };
 
   const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();

@@ -2,7 +2,7 @@ import React from 'react';
 import { CarouselCard } from '../CarouselCard';
 import { CollectionCell, NFT_IMAGE_SIZE, Placeholder } from './CollectionCell';
 import { Menu } from './Menu';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { mintsQueryKey, useMints, useMintsFilter } from '@/resources/mints';
 import { MintableCollection } from '@/graphql/__generated__/arc';
@@ -14,7 +14,6 @@ import * as i18n from '@/languages';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 export function MintsCard() {
-  const { navigate } = useNavigation();
   const accountAddress = useAccountAddress();
   const {
     data: { mints, featuredMint },
@@ -57,7 +56,7 @@ export function MintsCard() {
           }}
           onPress={() => {
             analytics.track(analytics.event.mintsPressedViewAllMintsButton);
-            navigate(Routes.MINTS_SHEET);
+            Navigation.handleAction(Routes.MINTS_SHEET);
           }}
         >
           <ShimmerAnimation color={fillSecondary} />

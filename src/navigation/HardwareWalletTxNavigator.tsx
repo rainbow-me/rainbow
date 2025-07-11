@@ -3,7 +3,7 @@ import { BackgroundProvider } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useLedgerConnect } from '@/hooks/useLedgerConnect';
 import { logger } from '@/logger';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { PairHardwareWalletAgainSheet } from '@/screens/hardware-wallets/PairHardwareWalletAgainSheet';
 import { PairHardwareWalletErrorSheet } from '@/screens/hardware-wallets/PairHardwareWalletErrorSheet';
@@ -53,8 +53,6 @@ export const HardwareWalletTxNavigator = () => {
     params: { submit },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET>>();
 
-  const { navigate } = useNavigation();
-
   const deviceId = selectedWallet?.deviceId ?? '';
   const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
   const [readyForPolling, setReadyForPolling] = useRecoilState(readyForPollingAtom);
@@ -63,7 +61,7 @@ export const HardwareWalletTxNavigator = () => {
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
       if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP || errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
-        navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
+        Navigation.handleAction(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
           errorType,
           deviceId,
         });
@@ -71,7 +69,7 @@ export const HardwareWalletTxNavigator = () => {
         // silent for now
       }
     },
-    [deviceId, navigate]
+    [deviceId]
   );
 
   const successCallback = useCallback(() => {

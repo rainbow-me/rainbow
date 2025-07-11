@@ -25,7 +25,7 @@ import {
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RainbowClaimable } from '@/resources/addys/claimables/types';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -87,11 +87,10 @@ export const AirdropsSheet = () => {
 };
 
 const CloseButton = () => {
-  const { goBack } = useNavigation();
   const separator = useForegroundColor('separator');
   return (
     <View style={styles.closeButtonContainer}>
-      <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={styles.closeButton}>
+      <ButtonPressAnimation onPress={Navigation.goBack} scaleTo={0.8} style={styles.closeButton}>
         <IconContainer
           background="fillQuaternary"
           borderColor={{ custom: opacity(separator, 0.025) }}
@@ -113,8 +112,6 @@ const CloseButton = () => {
 const EMPTY_LIST_DATA: RainbowClaimable[] = [];
 
 const AirdropsList = () => {
-  const { navigate } = useNavigation();
-
   const airdrops = useAirdropsStore(state => state.getAirdrops());
   const fetchNextPage = useAirdropsStore(state => state.fetchNextPage);
 
@@ -124,12 +121,9 @@ const AirdropsList = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onPressCoinRow = useCallback(
-    (claimable: RainbowClaimable) => {
-      navigate(Routes.CLAIM_AIRDROP_SHEET, { claimable });
-    },
-    [navigate]
-  );
+  const onPressCoinRow = useCallback((claimable: RainbowClaimable) => {
+    Navigation.handleAction(Routes.CLAIM_AIRDROP_SHEET, { claimable });
+  }, []);
 
   const renderItem = useCallback(
     ({ item }: { item: RainbowClaimable }) => {

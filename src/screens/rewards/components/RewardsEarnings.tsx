@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Image, ImageBackground } from 'react-native';
+import { ImageBackground } from 'react-native';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { AccentColorProvider, Box, Columns, Inline, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
@@ -7,7 +7,7 @@ import { RewardsAmount } from '@/graphql/__generated__/metadata';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 import { addDays, differenceInDays, differenceInHours, fromUnixTime, isPast } from 'date-fns';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
@@ -36,7 +36,6 @@ export const RewardsEarnings: React.FC<Props> = ({
   totalEarnings,
   nextAirdropTimestamp,
 }) => {
-  const { navigate } = useNavigation();
   const infoIconColor = useInfoIconColor();
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
 
@@ -67,7 +66,7 @@ export const RewardsEarnings: React.FC<Props> = ({
 
   const navigateToTimingExplainer = () => {
     analytics.track(analytics.event.rewardsPressedPendingEarningsCard);
-    navigate(Routes.EXPLAIN_SHEET, {
+    Navigation.handleAction(Routes.EXPLAIN_SHEET, {
       type: 'op_rewards_airdrop_timing',
     });
   };

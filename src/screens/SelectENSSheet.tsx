@@ -8,7 +8,7 @@ import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { AccentColorProvider, Bleed, Box, Heading, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { prefetchENSAvatar, prefetchENSCover, prefetchENSRecords, useAccountENSDomains, useENSAvatar } from '@/hooks';
 import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { ListRenderItem, View } from 'react-native';
@@ -28,7 +28,6 @@ export default function SelectENSSheet() {
 
   const secondary06 = useForegroundColor('secondary06 (Deprecated)');
 
-  const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_ENS_SHEET>>();
 
   const handleSelectENS = useCallback(
@@ -36,10 +35,10 @@ export default function SelectENSSheet() {
       prefetchENSAvatar(ensName);
       prefetchENSCover(ensName);
       prefetchENSRecords(ensName);
-      goBack();
+      Navigation.goBack();
       params?.onSelectENS(ensName);
     },
-    [goBack, params]
+    [params]
   );
 
   const controlledDomains = useMemo(() => {

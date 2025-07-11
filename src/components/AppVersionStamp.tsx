@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
 import { Text } from '@/design-system';
 import { useAppVersion, useTimeout } from '@/hooks';
-import { useNavigation } from '@/navigation';
+import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -20,7 +20,6 @@ export function AppVersionStamp() {
   const appVersion = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
   const [startTimeout, stopTimeout] = useTimeout();
-  const { navigate } = useNavigation();
 
   const handleVersionPress = useCallback(async () => {
     stopTimeout();
@@ -30,10 +29,10 @@ export function AppVersionStamp() {
     // Only show the WALLET_DIAGNOSTICS_SHEET if the
     // user has tapped this AppVersionStamp the secret amount of times
     if (tapCount === DEBUG_TAP_COUNT) {
-      navigate(Routes.DIAGNOSTICS_SHEET);
+      Navigation.handleAction(Routes.DIAGNOSTICS_SHEET);
     }
     startTimeout(() => setNumberOfTaps(0), 3000);
-  }, [navigate, numberOfTaps, startTimeout, stopTimeout]);
+  }, [numberOfTaps, startTimeout, stopTimeout]);
 
   return (
     <StyledButton testID="app-version-stamp" hitSlop={10} onPress={handleVersionPress}>

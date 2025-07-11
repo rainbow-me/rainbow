@@ -16,7 +16,7 @@ import { useTokenLauncher } from '@/hooks/useTokenLauncher';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
-import { useNavigation } from '@/navigation';
+import Navigation from '@/navigation/Navigation';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useAccountAddress, useIsHardwareWallet } from '@/state/wallets/walletsStore';
@@ -268,7 +268,6 @@ function TokenPreview() {
 }
 
 export function TokenLauncherFooter() {
-  const navigation = useNavigation();
   const chainId = useTokenLauncherStore(state => state.chainId);
   const step = useTokenLauncherStore(state => state.step);
   const stepSharedValue = useTokenLauncherStore(state => state.stepSharedValue);
@@ -394,7 +393,7 @@ export function TokenLauncherFooter() {
       <Animated.View style={[skipButtonAnimatedStyle, { paddingTop: 16 }]}>
         <ButtonPressAnimation
           onPress={() => {
-            navigation.goBack();
+            Navigation.goBack();
           }}
         >
           <Text align="center" color="labelTertiary" size="20pt" weight="heavy">
