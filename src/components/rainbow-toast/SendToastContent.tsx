@@ -1,3 +1,4 @@
+import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ToastContent } from '@/components/rainbow-toast/ToastContent';
 import type { RainbowToastSend } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
@@ -5,16 +6,21 @@ import { fonts } from '@/styles';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-const ICON_SIZE = 28;
-
 export function SendToastContent({ toast }: { toast: RainbowToastSend }) {
+  const icon = <SendToastIcon toast={toast} />;
+  const title = toast.status === 'sending' ? 'Sending...' : toast.status === 'sent' ? 'Sent' : 'Failed';
+  const subtitle = `${toast.amount} ${toast.token}`;
+  return <ToastContent icon={icon} title={title} subtitle={subtitle} />;
+}
+
+export const SendToastIcon = ({ toast }: { toast: RainbowToastSend }) => {
   const colors = useToastColors();
 
-  const icon = (
+  return (
     <View
       style={{
-        width: ICON_SIZE,
-        height: ICON_SIZE,
+        width: TOAST_ICON_SIZE,
+        height: TOAST_ICON_SIZE,
         borderRadius: 100,
         borderWidth: 2,
         borderColor: colors.clearBlue,
@@ -46,9 +52,4 @@ export function SendToastContent({ toast }: { toast: RainbowToastSend }) {
       </View>
     </View>
   );
-
-  const title = toast.status === 'sending' ? 'Sending...' : toast.status === 'sent' ? 'Sent' : 'Failed';
-  const subtitle = `${toast.amount} ${toast.token}`;
-
-  return <ToastContent icon={icon} title={title} subtitle={subtitle} />;
-}
+};

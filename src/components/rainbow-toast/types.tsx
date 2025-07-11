@@ -2,7 +2,7 @@ import { RainbowToastMintStatuses, RainbowToastSendStatuses, RainbowToastSwapSta
 
 type BaseToast = {
   id: string;
-
+  transactionHash: string;
   action?: () => void;
   removing?: boolean;
 };

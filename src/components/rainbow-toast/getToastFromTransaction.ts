@@ -49,6 +49,7 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
     if (toastState) {
       return {
         id: txIdToToastId(tx),
+        transactionHash: tx.hash,
         type: 'swap',
         status: toastState,
         fromChainId: tx.swap.fromChainId,
@@ -67,6 +68,7 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
     if (toastState) {
       return {
         id: txIdToToastId(tx),
+        transactionHash: tx.hash,
         type: 'send',
         status: toastState,
         amount: parseFloat(tx.value?.toString() || '0'),
@@ -85,6 +87,7 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
     if (toastState) {
       return {
         id: txIdToToastId(tx),
+        transactionHash: tx.hash,
         type: 'mint',
         status: toastState,
         name: tx.title || 'NFT',

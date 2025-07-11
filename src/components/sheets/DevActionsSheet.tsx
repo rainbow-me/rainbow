@@ -9,7 +9,15 @@ import React from 'react';
 import { Button, ScrollView } from 'react-native';
 import { toHex } from 'viem';
 
-const MOCK_HASH = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+const generateRandomHash = (): string => {
+  // Generate a random 64-character hex string (32 bytes)
+  const chars = '0123456789abcdef';
+  let hash = '0x';
+  for (let i = 0; i < 64; i++) {
+    hash += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return hash;
+};
 
 export function DevActionsSheet() {
   const accountAddress = useAccountAddress();
@@ -19,11 +27,11 @@ export function DevActionsSheet() {
       chainId: ChainId.mainnet,
       from: accountAddress,
       to: '0x742d35Cc6634C0532925a3b8D93c6C4cae6AaAaA',
-      hash: `${MOCK_HASH}_send_${Date.now()}`,
+      hash: generateRandomHash(),
       nonce: Math.floor(Math.random() * 1000),
       network: 'mainnet',
       type: 'send' as const,
-      value: toHex(MOCK_HASH), // 1 ETH
+      value: toHex(1000000000000000000n), // 1 ETH
       symbol: 'ETH',
       status,
     };
@@ -34,7 +42,7 @@ export function DevActionsSheet() {
       chainId: ChainId.mainnet,
       from: accountAddress,
       to: '0x1111111254fb6c44bAC0beD2854e76F90643097d',
-      hash: `${MOCK_HASH}_swap_${Date.now()}`,
+      hash: generateRandomHash(),
       nonce: Math.floor(Math.random() * 1000),
       network: 'mainnet',
       type: 'swap' as const,
@@ -53,7 +61,7 @@ export function DevActionsSheet() {
       chainId: ChainId.mainnet,
       from: accountAddress,
       to: '0x495f947276749ce646f68ac8c248420045cb7b5e',
-      hash: `${MOCK_HASH}_mint_${Date.now()}`,
+      hash: generateRandomHash(),
       nonce: Math.floor(Math.random() * 1000),
       network: 'mainnet',
       type: 'mint' as const,

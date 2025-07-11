@@ -8,6 +8,7 @@ export const useToastColors = () => {
 
   return {
     foreground,
+    foregroundDim: isDarkMode ? colors.whiteLabel : colors.darkGrey,
     green: colors.green,
     purple: colors.purple,
     clearBlue: colors.clearBlue,

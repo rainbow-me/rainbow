@@ -3,7 +3,13 @@ import { MintToastContent } from '@/components/rainbow-toast/MintToastContent';
 import { SendToastContent } from '@/components/rainbow-toast/SendToastContent';
 import { SwapToastContent } from '@/components/rainbow-toast/SwapToastContent';
 import { type RainbowToast, type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
-import { handleTransactions, removeToast, startRemoveToast, useToastStore } from '@/components/rainbow-toast/useRainbowToasts';
+import {
+  handleTransactions,
+  removeToast,
+  setShowExpanded,
+  startRemoveToast,
+  useToastStore,
+} from '@/components/rainbow-toast/useRainbowToasts';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
@@ -24,6 +30,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
+import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 
 export function RainbowToastDisplay() {
   const { toasts } = useToastStore();
@@ -58,6 +65,8 @@ export function RainbowToastDisplay() {
   return (
     <FullWindowOverlay>
       <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
+        <RainbowToastExpandedDisplay insets={insets} />
+
         {visibleToasts.map(toast => {
           return <RainbowToast insets={insets} key={toast.id} toast={toast} />;
         })}
@@ -187,11 +196,9 @@ function RainbowToast({ toast, testID, insets }: Props) {
         isPressed.value = false;
       })
       .onEnd(() => {
-        if (toast.action) {
-          runOnJS(toast.action)();
-        }
+        runOnJS(setShowExpanded)(true);
       });
-  }, [isPressed, toast]);
+  }, [isPressed]);
 
   const combinedGesture = useMemo(() => {
     return Gesture.Exclusive(pressGesture, panGesture);

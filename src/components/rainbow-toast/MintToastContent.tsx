@@ -4,8 +4,7 @@ import type { RainbowToastMint } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { fonts } from '@/styles';
 import { ToastContent } from '@/components/rainbow-toast/ToastContent';
-
-const ICON_SIZE = 28;
+import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 
 export function MintToastContent({ toast }: { toast: RainbowToastMint }) {
   const colors = useToastColors();
@@ -13,8 +12,8 @@ export function MintToastContent({ toast }: { toast: RainbowToastMint }) {
   const icon = (
     <View
       style={{
-        width: ICON_SIZE,
-        height: ICON_SIZE,
+        width: TOAST_ICON_SIZE,
+        height: TOAST_ICON_SIZE,
         borderRadius: 100,
         borderWidth: 2,
         borderColor: colors.purple,
