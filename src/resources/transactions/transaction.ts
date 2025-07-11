@@ -130,6 +130,7 @@ export const fetchTransaction = async ({
   }
   try {
     const url = `${ADDYS_BASE_URL}/${chainId}/${address}/transactions/${hash}`;
+    // TODO (kane): use the addys singleton
     const response = await rainbowFetch<{ payload: { transaction: TransactionApiResponse } }>(url, {
       method: 'get',
       params: {
@@ -149,9 +150,7 @@ export const fetchTransaction = async ({
     if (!parsedTx) throw new Error('Failed to parse transaction');
     return parsedTx;
   } catch (e) {
-    logger.error(new RainbowError('[transaction]: Failed to fetch transaction'), {
-      message: (e as Error)?.message,
-    });
+    logger.error(new RainbowError('[transaction]: Failed to fetch transaction', e));
     return null;
   }
 };
