@@ -1,6 +1,4 @@
-import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
-import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { UniqueId } from '@/__swaps__/types/assets';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
@@ -16,7 +14,6 @@ import { favoritesQueryKey } from '@/resources/favorites';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
@@ -710,32 +707,28 @@ export default async function runMigrations() {
    * Populate `legacyUserAssets` attribute in `userAssetsStore`
    */
   const v23 = async () => {
-    const state = store.getState();
-    const wallets = getWallets();
-    const { nativeCurrency } = state.settings;
-
-    if (!wallets) return;
-
-    for (const wallet of Object.values(wallets)) {
-      for (const { address } of (wallet as RainbowWallet).addresses || []) {
-        const { connectedToAnvil } = useConnectedToAnvilStore.getState();
-        const queryKey = userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToAnvil });
-        const queryData: ParsedAssetsDictByChain | undefined = queryClient.getQueryData(queryKey);
-
-        if (!queryData) continue;
-
-        const userAssets = selectorFilterByUserChains({
-          data: queryData,
-          selector: selectUserAssetsList,
-        });
-        userAssetsStore.getState(address).setUserAssets({
-          address,
-          chainIdsWithErrors: null,
-          state: undefined,
-          userAssets: userAssets as ParsedSearchAsset[],
-        });
-      }
-    }
+    // const state = store.getState();
+    // const wallets = getWallets();
+    // const { nativeCurrency } = state.settings;
+    // if (!wallets) return;
+    // for (const wallet of Object.values(wallets)) {
+    //   for (const { address } of (wallet as RainbowWallet).addresses || []) {
+    //     const { connectedToAnvil } = useConnectedToAnvilStore.getState();
+    //     const queryKey = userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToAnvil });
+    //     const queryData: ParsedAssetsDictByChain | undefined = queryClient.getQueryData(queryKey);
+    //     if (!queryData) continue;
+    //     const userAssets = selectorFilterByUserChains({
+    //       data: queryData,
+    //       selector: selectUserAssetsList,
+    //     });
+    //     userAssetsStore.getState(address).setUserAssets({
+    //       address,
+    //       chainIdsWithErrors: null,
+    //       state: undefined,
+    //       userAssets: userAssets as ParsedSearchAsset[],
+    //     });
+    //   }
+    // }
   };
 
   migrations.push(v23);
