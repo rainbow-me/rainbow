@@ -54,12 +54,11 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 
   removeToast: id => {
+    console.log('removing toast', id);
     set(state => ({
       toasts: state.toasts.filter(t => t.id !== id).map((t, index) => ({ ...t, index })),
     }));
   },
 }));
-
-export const txIdToToastId = (txId: string) => txId.replace(/_.*/, '');
 
 export const { handleTransactions, startRemoveToast, removeToast } = useToastStore.getState();

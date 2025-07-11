@@ -1,5 +1,4 @@
 import { type RainbowToast } from '@/components/rainbow-toast/types';
-import { txIdToToastId } from '@/components/rainbow-toast/useRainbowToasts';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -42,12 +41,14 @@ export function getMintToastStatus(status: TransactionStatus): keyof typeof Rain
   return null;
 }
 
+const txIdToToastId = (tx: RainbowTransaction) => tx.hash + tx.address + tx.chainId;
+
 export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | null {
   if (tx.swap) {
     const toastState = getSwapToastStatus(tx.status);
     if (toastState) {
       return {
-        id: txIdToToastId(tx.hash),
+        id: txIdToToastId(tx),
         type: 'swap',
         status: toastState,
         fromChainId: tx.swap.fromChainId,
@@ -65,7 +66,7 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
     const toastState = getSendToastStatus(tx.status);
     if (toastState) {
       return {
-        id: txIdToToastId(tx.hash),
+        id: txIdToToastId(tx),
         type: 'send',
         status: toastState,
         amount: parseFloat(tx.value?.toString() || '0'),
@@ -83,7 +84,7 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
     const toastState = getMintToastStatus(tx.status);
     if (toastState) {
       return {
-        id: txIdToToastId(tx.hash),
+        id: txIdToToastId(tx),
         type: 'mint',
         status: toastState,
         name: tx.title || 'NFT',
