@@ -2276,6 +2276,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@domir/react-native-measure-text@npm:0.1.8":
+  version: 0.1.8
+  resolution: "@domir/react-native-measure-text@npm:0.1.8"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/b02dfca887c20364b062e9bd0b1ebed1cbab92c0458ca4731972137350b417f593de02c5903f02b1892b87240ed4a6fe6d1384c4d026a47a4384a1404868ed62
+  languageName: node
+  linkType: hard
+
 "@egjs/hammerjs@npm:^2.0.17":
   version: 2.0.17
   resolution: "@egjs/hammerjs@npm:2.0.17"
@@ -8593,6 +8604,7 @@ __metadata:
     "@candlefinance/faster-image": "npm:1.6.2"
     "@capsizecss/core": "npm:3.0.0"
     "@coinbase/mobile-wallet-protocol-host": "npm:0.1.7"
+    "@domir/react-native-measure-text": "npm:0.1.8"
     "@ensdomains/address-encoder": "npm:0.2.16"
     "@ensdomains/content-hash": "npm:2.5.7"
     "@ensdomains/eth-ens-namehash": "npm:2.0.15"

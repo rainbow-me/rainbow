@@ -1,5 +1,4 @@
-import { CANDLE_TYPES, CandleType } from './candlestickStore';
-import { Bar } from './types';
+import { Bar, BarsResponse, CandleResolution } from './types';
 
 // Slight upward drift
 const DRIFT = 0.05;
@@ -11,26 +10,27 @@ const VOLATILITY = 1;
 /**
  * Maps the chosen candle interval to a millisecond step.
  */
-function candleTypeToTimeStep(interval: CandleType): number {
+function candleTypeToTimeStep(interval: CandleResolution): number {
   'worklet';
-  switch (interval || '1h') {
-    case '1m':
+  const normalizedInterval = interval === CandleResolution.UNSPECIFIED ? CandleResolution.M15 : interval;
+  switch (normalizedInterval) {
+    case CandleResolution.M1:
       return 60_000;
-    case '5m':
+    case CandleResolution.M5:
       return 300_000;
-    case '15m':
+    case CandleResolution.M15:
       return 900_000;
-    case '30m':
+    case CandleResolution.M30:
       return 1_800_000;
-    case '1h':
+    case CandleResolution.H1:
       return 3_600_000;
-    case '4h':
+    case CandleResolution.H4:
       return 14_400_000;
-    case '12h':
+    case CandleResolution.H12:
       return 43_200_000;
-    case '1d':
+    case CandleResolution.D1:
       return 86_400_000;
-    case '7d':
+    case CandleResolution.D7:
       return 604_800_000;
   }
 }
@@ -52,49 +52,76 @@ function getStartTimestamp(barCount: number, timeStepMs: number, startTimestampM
 /**
  * Returns a random candle type.
  */
-function getRandomCandleType(): CandleType {
+function getRandomCandleType(): CandleResolution {
   'worklet';
-  return CANDLE_TYPES[Math.floor(Math.random() * CANDLE_TYPES.length)];
+  const values = Object.values(CandleResolution);
+  return values[Math.floor(Math.random() * values.length)];
 }
 
-export function generateMockCandleData(
-  barCount = 1500,
-  candleType: CandleType | undefined = undefined,
-  startTimestampMs: number | undefined = undefined
-): Bar[] {
-  'worklet';
-  const bars: Bar[] = [];
-  const timeStepMs = candleTypeToTimeStep(candleType || getRandomCandleType());
+type MockCandleDataFormat = 'bars' | 'response';
 
+type GenerateMockCandleDataOptions = {
+  candleType?: CandleResolution;
+  startTimestampMs?: number;
+  format?: MockCandleDataFormat;
+};
+
+export function generateMockCandleData(barCount?: number, options?: GenerateMockCandleDataOptions & { format?: 'bars' }): Bar[];
+export function generateMockCandleData(barCount?: number, options?: GenerateMockCandleDataOptions & { format: 'response' }): BarsResponse;
+export function generateMockCandleData(barCount = 1500, options: GenerateMockCandleDataOptions = {}): Bar[] | BarsResponse {
+  'worklet';
+  const { candleType = undefined, startTimestampMs = undefined, format = 'bars' } = options;
+
+  const timeStepMs = candleTypeToTimeStep(candleType || getRandomCandleType());
   let currentOpen = Math.random() * 1500;
   let currentTimestampMs = getStartTimestamp(barCount, timeStepMs, startTimestampMs);
 
-  for (let i = 0; i < barCount; i++) {
+  // Shared candle generation logic
+  const genCandle = () => {
     const randomStep = Math.random() * (2 * VOLATILITY) - VOLATILITY;
     const close = currentOpen + DRIFT + randomStep;
-
     const bigWick = (v: number) => (Math.random() < 0.1 ? v * 2 : v);
     const highWick = bigWick(Math.random() * 0.6);
     const lowWick = bigWick(Math.random() * 0.6);
-
     const high = Math.max(currentOpen, close) + highWick;
     const low = Math.min(currentOpen, close) - lowWick;
     const volume = Math.floor(500 + Math.random() * 3500);
-
-    bars.push({
-      o: +currentOpen.toFixed(2),
-      h: +high.toFixed(2),
-      l: +low.toFixed(2),
-      c: +close.toFixed(2),
-      t: Math.floor(currentTimestampMs / 1000),
-      v: volume,
-    });
+    const open = +currentOpen.toFixed(2);
+    const highVal = +high.toFixed(2);
+    const lowVal = +low.toFixed(2);
+    const closeVal = +close.toFixed(2);
+    const ts = Math.floor(currentTimestampMs / 1000);
 
     currentOpen = close;
     currentTimestampMs += timeStepMs;
-  }
 
-  return bars;
+    return { o: open, h: highVal, l: lowVal, c: closeVal, t: ts, v: volume };
+  };
+
+  if (format === 'response') {
+    const o: number[] = [];
+    const h: number[] = [];
+    const l: number[] = [];
+    const c: number[] = [];
+    const t: number[] = [];
+    const v: number[] = [];
+    for (let i = 0; i < barCount; i++) {
+      const candle = genCandle();
+      o.push(candle.o);
+      h.push(candle.h);
+      l.push(candle.l);
+      c.push(candle.c);
+      t.push(candle.t);
+      v.push(candle.v);
+    }
+    return { o, h, l, c, t, v };
+  } else {
+    const bars: Bar[] = [];
+    for (let i = 0; i < barCount; i++) {
+      bars.push(genCandle());
+    }
+    return bars;
+  }
 }
 
 export const MOCK_CANDLE_DATA = generateMockCandleData();

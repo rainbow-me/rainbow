@@ -159,7 +159,7 @@ async function handleAndExecuteClaim({
   gasSettingsRef: MutableRefObject<MeteorologyGasSuggestions[typeof GAS_SPEED] | 'disabled' | undefined>;
 }): Promise<void> {
   try {
-    logger.log('[useClaimAirdrop]: Executing claim transaction', {
+    logger.debug('[useClaimAirdrop]: Executing claim transaction', {
       claimableId: claimable.uniqueId,
       chainId: claimable.chainId,
       symbol: claimable.asset.symbol,
@@ -176,7 +176,7 @@ async function handleAndExecuteClaim({
             claimStatus.value = ClaimStatus.CONFIRMED;
             triggerHaptics('notificationSuccess');
             useAirdropsStore.getState().markClaimed({ accountAddress, uniqueId: claimable.uniqueId });
-            logger.log('[useClaimAirdrop]: Claim transaction confirmed', { confirmations: receipt.confirmations });
+            logger.debug('[useClaimAirdrop]: Claim transaction confirmed', { confirmations: receipt.confirmations });
             return;
           case TransactionStatus.FAILED:
             gasSettingsRef.current = gasSettings;

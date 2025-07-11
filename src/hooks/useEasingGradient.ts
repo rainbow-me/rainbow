@@ -5,7 +5,7 @@ import { Easing, EasingFunction } from 'react-native-reanimated';
 type PositionObject = { x: number; y: number };
 type Position = 'bottom' | 'left' | 'right' | 'top' | PositionObject;
 
-export interface UseEasingGradientParams {
+export type UseEasingGradientParams = {
   easing?: EasingFunction;
   endColor: string;
   endOpacity?: number;
@@ -14,14 +14,14 @@ export interface UseEasingGradientParams {
   startOpacity?: number;
   startPosition?: Position;
   steps?: number;
-}
+};
 
-interface GradientOutput {
+type GradientOutput = {
   colors: string[];
   end: PositionObject;
   locations: number[];
   start: PositionObject;
-}
+};
 
 const getPositionCoordinates = (position: Position): PositionObject => {
   if (typeof position === 'object') {

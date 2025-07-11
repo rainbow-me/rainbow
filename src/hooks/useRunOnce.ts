@@ -14,7 +14,7 @@ import { useRef } from 'react';
 export function useRunOnce(fn: () => void): void {
   const didRun = useRef(false);
   if (didRun.current === false) {
-    fn();
     didRun.current = true;
+    fn();
   }
 }

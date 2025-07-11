@@ -18,7 +18,7 @@ type SmallBalancesWrapperProps = {
 export default function SmallBalancesWrapper({ assets = [] }: SmallBalancesWrapperProps) {
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const delayedIsSmallBalancesOpen = useFrameDelayedValue(isSmallBalancesOpen) && isSmallBalancesOpen;
-  const height = useMemo(() => assets.length * CoinRowHeight, [assets]);
+  const height = useMemo(() => assets.length * CoinRowHeight, [assets.length]);
 
   return (
     <OpacityToggler

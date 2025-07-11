@@ -61,6 +61,7 @@ export class Animator {
 
   private onFrame: () => void;
   private frameId: number | null = null;
+  private completionCallbacks = new Set<(wasRunning: boolean) => void>();
   private pendingCallbacks = new Set<AnimationCallback>();
 
   constructor(onFrame: () => void) {
@@ -92,6 +93,9 @@ export class Animator {
 
   private stopAnimationLoop(): void {
     this.frameId = null;
+    if (!this.completionCallbacks.size) return;
+    this.completionCallbacks.forEach(cb => cb(true));
+    this.completionCallbacks.clear();
   }
 
   private primeDisplayLink(): void {
@@ -238,6 +242,30 @@ export class Animator {
     this.runAnimations(values, onFinish, (sv, i, onComplete) => {
       sv.value = withTiming(targets[i], config, onComplete);
     });
+  }
+
+  // ============ Public Utility Methods ======================================= //
+
+  /**
+   * @returns `true` if the animation loop is currently running.
+   */
+  public isRunningAnimationLoop(): boolean {
+    return this.frameId !== null && this.pendingCallbacks.size > 0;
+  }
+
+  /**
+   * Register a function to be called as soon as the animation loop is idle.
+   *
+   * Calls the function immediately if no animations are running.
+   *
+   * @param fn - Receives `wasRunning`, indicating whether the loop was running.
+   */
+  public runAfterAnimations(fn: (wasRunning: boolean) => void): void {
+    if (!this.isRunningAnimationLoop()) {
+      fn(false);
+      return;
+    }
+    this.completionCallbacks.add(fn);
   }
 
   /**
