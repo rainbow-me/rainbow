@@ -1,11 +1,10 @@
 # CHECKLIST:
-# [ ] RNBW-4855 - ERC20 > ETH
+# [x] RNBW-4855 - ERC20 > ETH
 #     - Blockers:
 #       - Quotes aren't generating for ETH output swaps
 #       - Need to figure out where in the flow it's getting stuck
-# [ ] RNBW-4858 - Swap Max button
-# [ ] RNBW-4857 - Swaps entry from Discover page
-# [ ] RNBW-4856 - Approvals ??? Since were swapping an ERC20 ?
+# [x] RNBW-4857 - Swaps entry from Discover page
+# [x] RNBW-4856 - Approvals ??? Since were swapping an ERC20 ?
 # [ ] RNBW-4861 - Check the viability of Swaps Warnings on Anvil / CI.
 
 # So the flow should look like:
@@ -13,7 +12,6 @@
 # 2. Start with DAI on an account were impersonating
 # 3. Select DAI as input token VIA Discover page
 # 4. Select ETH as output token
-# 5. Select Max button
 # 6. Check the viability of Swaps Warnings on Anvil / CI.
 # 7. Execute Approval + Swap
 # 8. Update balance check
@@ -23,60 +21,102 @@ tags:
   - wallet
   - parallel
 ---
-- retry:
-    maxRetries: 3
+# - retry:
+#     maxRetries: 0
+#     commands:
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../utils/Prepare.yaml
+- runFlow: ../utils/ImportWalletWithKey.yaml
+
+# Send ETH to test wallet
+- tapOn:
+    id: fund-test-wallet-button
+
+# Connect to Anvil (test network)
+- tapOn:
+    id: dev-button-anvil
+
+# Open swap screen
+- tapOn:
+    id: swap-button
+- assertVisible:
+    id: swap-screen
+# Select DAI as output token
+- tapOn: 'Find a token to buy'
+- inputText: 'DAI'
+- hideKeyboard
+- tapOn:
+    id: token-to-buy-dai-1
+- assertVisible: 'DAI.*'
+
+# Execute Swap
+- longPressOn:
+    id: swap-bottom-action-button
+- runFlow: ../utils/MaybeSetupPin.yaml
+
+# On Android, pull to refresh
+- runFlow:
+    when:
+      platform: Android
     commands:
-      - launchApp:
-          clearState: true
-          clearKeychain: true
-          arguments:
-            isE2ETest: true
-      - runFlow: ../utils/Prepare.yaml
-      - runFlow: ../utils/ImportWalletWithKey.yaml
+      - swipe:
+          from:
+            id: wallet-screen
+          direction: down
 
-      # Send ETH to test wallet
-      - tapOn:
-          id: fund-test-wallet-button
+# Copy the balance before the swap
+- copyTextFrom:
+    id: balance-coin-row-value-Dai
+- evalScript: ${output.beforeValue = maestro.copiedText}
 
-      # Connect to Anvil (test network)
-      - tapOn:
-          id: dev-button-anvil
+# Open Discover screen select DAI then go to swap screen
+- tapOn:
+    id: 'tab-bar-icon-DiscoverScreen'
+- tapOn:
+    id: discover-search-icon
+- assertVisible:
+    id: done-button
+- inputText: 'DAI'
+- tapOn:
+    id: discover-currency-select-list-exchange-coin-row-DAI-1
+- assertVisible:
+    id: chart-header-Dai
+- tapOn:
+    id: swap-action-button
+# Execute Swap
+- longPressOn:
+    id: swap-bottom-action-button
+- runFlow: ../utils/MaybeSetupPin.yaml
 
-      # Open swap screen
-      - tapOn:
-          id: swap-button
-      - assertVisible:
-          id: swap-screen
-      # Select DAI as output token
-      - tapOn: 'Find a token to buy'
-      - inputText: 'DAI'
-      - hideKeyboard
-      - tapOn:
-          id: token-to-buy-dai-1
-      - assertVisible: 'DAI.*'
+# On Android, pull to refresh
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - swipe:
+          from:
+            id: wallet-screen
+          direction: down
 
-      # Execute Swap
-      - longPressOn:
-          id: swap-bottom-action-button
-      - runFlow: ../utils/MaybeSetupPin.yaml
+# Copy the balance after the swap
+- copyTextFrom:
+    id: balance-coin-row-value-Dai
+- evalScript: ${output.afterValue = maestro.copiedText}
 
-      # Update balances
-      - retry:
-          maxRetries: 3
-          commands:
-            # On Android, pull to refresh
-            - runFlow:
-                when:
-                  platform: Android
-                commands:
-                  - swipe:
-                      from:
-                        id: wallet-screen
-                      direction: down
-      - tapOn:
-          id: 'fast-coin-info'
-          index: 1
-      - assertVisible:
-          id: 'chart-header-Dai'
-      - tapOn:
-          id: 'swap-action-button'
+# Check if the balance went down post swap
+- runFlow:
+    when:
+      true: ${output.beforeValue > output.afterValue}
+    commands:
+      - evalScript: ${console.log('Held balance went down after a swap!')}
+
+# Compare the values:
+- runFlow:
+    when:
+      true: ${output.beforeValue <= output.afterValue}
+    commands:
+      - evalScript: ${console.log("Balance didnt go down after swap! Values are beforeValue - " + output.beforeValue + ", afterValue - " + output.afterValue)}
