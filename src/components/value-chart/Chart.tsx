@@ -18,7 +18,8 @@ import { setCandleResolution } from '@/components/candlestick-charts/CandleSelec
 import { useCandlestickStore, useChartsStore } from '@/components/candlestick-charts/candlestickStore';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { useExperimentalConfig } from '@/config/experimentalHooks';
+import { CANDLESTICK_CHARTS, CANDLESTICK_DATA_MONITOR, useExperimentalConfig } from '@/config/experimentalHooks';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 const translations = {
   noChartData: i18n.t(i18n.l.expanded_state.chart.no_chart_data),
@@ -111,7 +112,11 @@ type ChartProps = {
 export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
   const { isDarkMode } = useColorMode();
   const { width: screenWidth } = useWindowDimensions();
-  const { 'Candlestick Charts': enableCandlestickCharts, 'Candlestick Data Monitor': showDataMonitor } = useExperimentalConfig();
+
+  const { candlestick_charts_enabled } = useRemoteConfig('candlestick_charts_enabled');
+  const { [CANDLESTICK_CHARTS]: enableCandlestickChartsExperimental, [CANDLESTICK_DATA_MONITOR]: showDataMonitor } =
+    useExperimentalConfig();
+  const enableCandlestickCharts = candlestick_charts_enabled || enableCandlestickChartsExperimental;
 
   const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
   const chartGesturePriceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
