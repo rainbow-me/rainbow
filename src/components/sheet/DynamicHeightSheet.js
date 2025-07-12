@@ -101,7 +101,7 @@ export default forwardRef(function SlackSheet(
     [bottomInset]
   );
 
-  const sheet = useRef();
+  const sheet = useRef(undefined);
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
   useImperativeHandle(ref, () => sheet.current);

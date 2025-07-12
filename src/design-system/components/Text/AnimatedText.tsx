@@ -1,4 +1,4 @@
-import React, { ElementRef, ReactNode, Ref, RefAttributes, forwardRef, useMemo } from 'react';
+import React, { ComponentRef, useMemo } from 'react';
 import { StyleProp, TextStyle } from 'react-native';
 import AnimateableText from 'react-native-animateable-text';
 import { DerivedValue, SharedValue, useAnimatedProps } from 'react-native-reanimated';
@@ -26,6 +26,7 @@ export type AnimatedTextProps<T extends SharedValue | DerivedValue = SharedValue
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
+  ref?: ComponentRef<typeof AnimateableText>;
 } & (AnimatedTextChildProps | AnimatedTextSelectorProps<T>);
 
 export type AnimatedTextChildProps = {
@@ -41,28 +42,22 @@ export type AnimatedTextSelectorProps<T extends SharedValue | DerivedValue> = {
   selector: (sharedValue: T) => string | null | undefined;
 };
 
-const typedForwardRef: <T extends SharedValue | DerivedValue>(
-  render: (props: AnimatedTextProps<T>, ref: Ref<ElementRef<typeof AnimateableText>>) => ReactNode
-) => (props: AnimatedTextProps<T> & RefAttributes<ElementRef<typeof AnimateableText>>) => ReactNode = forwardRef;
-
-export const AnimatedText = typedForwardRef(function AnimatedText<T extends SharedValue | DerivedValue>(
-  {
-    align,
-    children,
-    color = 'label',
-    ellipsizeMode,
-    numberOfLines,
-    selectable,
-    selector,
-    size,
-    style,
-    tabularNumbers,
-    testID,
-    uppercase,
-    weight,
-  }: AnimatedTextProps<T>,
-  ref: Ref<ElementRef<typeof AnimateableText>>
-) {
+export function AnimatedText<T extends SharedValue | DerivedValue>({
+  align,
+  children,
+  color = 'label',
+  ellipsizeMode,
+  numberOfLines,
+  selectable,
+  selector,
+  size,
+  style,
+  tabularNumbers,
+  testID,
+  uppercase,
+  weight,
+  ref,
+}: AnimatedTextProps<T>) {
   const textStyle = useTextStyle({
     align,
     color,
@@ -92,4 +87,4 @@ export const AnimatedText = typedForwardRef(function AnimatedText<T extends Shar
       {lineHeightFixNode}
     </AnimateableText>
   );
-});
+}

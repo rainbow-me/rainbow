@@ -41,13 +41,13 @@ type Callback = () => void;
 export const NotificationsHandler = () => {
   const wallets = useWallets();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
-  const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
-  const onTokenRefreshListener = useRef<Callback>();
-  const foregroundNotificationListener = useRef<Callback>();
-  const notificationOpenedListener = useRef<Callback>();
-  const appStateListener = useRef<NativeEventSubscription>();
+  const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>(undefined);
+  const onTokenRefreshListener = useRef<Callback>(undefined);
+  const foregroundNotificationListener = useRef<Callback>(undefined);
+  const notificationOpenedListener = useRef<Callback>(undefined);
+  const appStateListener = useRef<NativeEventSubscription>(undefined);
   const appState = useRef<AppStateStatus>(null);
-  const notifeeForegroundEventListener = useRef<Callback>();
+  const notifeeForegroundEventListener = useRef<Callback>(undefined);
   const alreadyRanInitialization = useRef(false);
 
   const walletReady = useWalletsStore(state => state.walletReady);
