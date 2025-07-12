@@ -57,6 +57,7 @@ describe('createDerivedStore', () => {
 
       // Unsubscribe => watchers=0 => future updates won't notify watchers
       unsubscribe();
+      await flushMicrotasks();
       baseStore.setState({ count: 10 });
       await flushMicrotasks();
 
@@ -356,8 +357,8 @@ describe('createDerivedStore', () => {
       // Should have resulted in two useDerivedStore derivations
       expect(deriveCount).toBe(2);
 
-      // And four additional derivations for each pass-through derived store
-      expect(totalIntermediaryDerives / 2).toBe(6);
+      // And two additional derivations for each pass-through derived store
+      expect(totalIntermediaryDerives / 2).toBe(4);
 
       // But only a single watcher call
       expect(watcherCalls).toBe(1);
@@ -463,9 +464,9 @@ describe('createDerivedStore', () => {
   });
 
   // ──────────────────────────────────────────────
-  // Stable Subscriptions
+  // Fast Mode
   // ──────────────────────────────────────────────
-  describe('Stable Subscriptions', () => {
+  describe('Fast Mode', () => {
     it('should not rebuild subscriptions on each re-derive', async () => {
       const baseStore = createRainbowStore(() => ({ count: 0 }));
 
@@ -498,7 +499,7 @@ describe('createDerivedStore', () => {
           const value = $(baseStore).count * $(secondStore).nested.multiplier;
           return value;
         },
-        { stableSubscriptions: true }
+        { fastMode: true }
       );
 
       // No watchers => no derivation yet
