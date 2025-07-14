@@ -15,7 +15,7 @@ import { SupportedCurrencyKey } from '@/references';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
-const ASSET_DETECTION_TIMEOUT = time.seconds(20);
+const ASSET_DETECTION_TIMEOUT = time.seconds(30) / 1000;
 
 async function fetchTransaction({
   address,
@@ -51,9 +51,9 @@ async function fetchTransaction({
   return transaction;
 }
 
-function refetchUserAssets({ address }: { address: string }) {
-  userAssetsStore.getState().fetch(undefined, { force: true });
-  invalidateAddressNftsQueries(address);
+async function refetchUserAssets({ address }: { address: string }) {
+  // TODO: add claimables and positions here
+  await Promise.all([userAssetsStore.getState().fetch(undefined, { force: true }), invalidateAddressNftsQueries(address)]);
 }
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
@@ -118,7 +118,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     const newWaiting = newlyMinedTransactions.filter(tx => (tx.changes?.length || tx.asset) && !allExistingHashes.has(tx.hash));
 
     // Remove timed out waiting transactions
-    const now = Date.now();
+    const now = Math.floor(Date.now() / 1000);
     const validWaitingMindedTransactions = waitingMinedTransactions.filter(tx => now - tx.minedAt < ASSET_DETECTION_TIMEOUT);
 
     if (validWaitingMindedTransactions.length < waitingMinedTransactions.length) {
@@ -145,21 +145,22 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         }
       });
 
-      const oldestMinedTransactionTimestamp = Math.min(...updatedWaitingMinedTransactions.map(tx => tx.minedAt));
+      const oldestMinedTransactionTimestamp = Math.min(...updatedWaitingMinedTransactions.map(tx => tx.minedAt)) * 1000;
       const transactionChainIds = Array.from(new Set(updatedWaitingMinedTransactions.map(tx => tx.chainId)));
 
       try {
-        const res = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
+        const assetsUpdateResult = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
           params: {
             currency: nativeCurrency,
             chainIds: transactionChainIds.join(','),
             address,
-            timestamp: oldestMinedTransactionTimestamp.toString(),
+            timestamp: new Date(oldestMinedTransactionTimestamp).toISOString(),
           },
           timeout: time.seconds(20),
         });
 
-        const assetsMap: Record<string, UserAsset> = res.data.result;
+        const assetsMap: Record<string, UserAsset> = assetsUpdateResult.data.result;
+        // unique id -> legacy unique id
         const updatedUniqueIds = Object.keys(assetsMap).map(id => id.split(':').join('_'));
 
         const allExpectedUniqueIdsSeen = expectedUniqueIds.size === 0 || [...expectedUniqueIds].every(id => updatedUniqueIds.includes(id));

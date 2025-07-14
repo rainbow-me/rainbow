@@ -61,7 +61,6 @@ export async function fetchUserAssets(
 
   try {
     const chainIds = useBackendNetworksStore.getState().getSupportedChainIds();
-    // const now = performance.now();
     const res = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
       abortController,
       params: {
@@ -71,7 +70,6 @@ export async function fetchUserAssets(
       },
       timeout: USER_ASSETS_TIMEOUT_DURATION,
     });
-    // console.log('fetchUserAssets', ((performance.now() - now) / 1000).toFixed(2), 's');
 
     if (res.data.errors?.length > 0) {
       logger.error(new RainbowError('[🔴 userAssetsStore - fetchUserAssets 🔴]: Failed to fetch user assets'), {
@@ -212,7 +210,6 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
       relative_change_24h: asset.price?.relativeChange24h,
       value: asset.price?.value,
     },
-    // value: userAsset.value,
     smallBalance: userAsset.smallBalance,
     bridging: {
       isBridgeable: asset.bridging.bridgeable,
@@ -234,8 +231,7 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
     highLiquidity: true,
     isRainbowCurated: false,
 
-    // Optionals of the ParsedSearchAsset type that we don't have
-
+    // Optionals of the ParsedSearchAsset type that we don't have from backend. Are these ever used?
     // standard: 'erc-721' | 'erc-1155';
     // rainbowMetadataId?: number;
     // sectionId?: 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
@@ -389,6 +385,7 @@ function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {
   return assets.filter(asset => greaterThan(asset.value, 0));
 }
 
+// TODO (kane): ensure this is okay to remove
 // export function parseUserAssets({
 //   assets,
 //   chainIds,
