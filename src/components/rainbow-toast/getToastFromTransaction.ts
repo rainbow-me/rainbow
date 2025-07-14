@@ -74,7 +74,8 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
         type: 'send',
         status: toastState,
         amount: parseFloat(tx.value?.toString() || '0'),
-        token: tx.symbol || 'ETH',
+        token: tx.symbol || '',
+        tokenName: tx.name || '',
         action: () => {
           Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
             transaction: tx,

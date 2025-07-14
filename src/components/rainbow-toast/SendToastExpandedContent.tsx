@@ -1,4 +1,5 @@
 import { SendToastIcon } from '@/components/rainbow-toast/SendToastContent';
+import { TransactionStatus } from '@/entities';
 import { usePendingTransactionByHash } from '@/hooks/usePendingTransactions';
 import React from 'react';
 import { ToastExpandedAfterTransaction } from './ToastExpandedAfterTransaction';
@@ -9,15 +10,12 @@ export function SendToastExpandedContent({ toast }: { toast: RainbowToastSend })
   const { transactionHash } = toast;
   const tx = usePendingTransactionByHash(transactionHash);
 
-  console.log('/??', transactionHash, tx);
-
   if (!tx) {
     return null;
   }
 
-  const title = toast.status === 'sending' ? 'Sending...' : toast.status === 'sent' ? 'Sent' : 'Failed';
-  const subtitle = `${toast.amount} ${toast.token}`;
-  // const status = tx.status === 'pending' ? 'Pending' : 'Sent';
+  const title = `${toast.token}`;
+  const subtitle = toast.status === TransactionStatus.sending ? 'Sending...' : toast.status === TransactionStatus.sent ? 'Sent' : 'Failed';
 
   const icon = <SendToastIcon toast={toast} />;
   const after = <ToastExpandedAfterTransaction topLabel="0.05 ETH" bottomLabel="- $92.50" />;

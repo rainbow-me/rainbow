@@ -33,6 +33,7 @@ export function DevActionsSheet() {
       type: 'send' as const,
       value: toHex(1000000000000000000n), // 1 ETH
       symbol: 'ETH',
+      name: 'Etherum',
       status,
     };
   };

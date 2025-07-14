@@ -6,7 +6,7 @@ import { type RainbowToast, type RainbowToastWithIndex } from '@/components/rain
 import {
   finishRemoveToast,
   handleTransactions,
-  setShowExpanded,
+  setShowExpandedToasts,
   swipeRemoveToast,
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
@@ -217,7 +217,7 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
         isPressed.value = false;
       })
       .onEnd(() => {
-        runOnJS(setShowExpanded)(true);
+        runOnJS(setShowExpandedToasts)(true);
       });
   }, [isPressed]);
 

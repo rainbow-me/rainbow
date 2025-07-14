@@ -67,6 +67,9 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   );
 
   const watchPendingTransactions = useCallback(async () => {
+    // disabling to test
+    return;
+
     if (!pendingTransactions?.length) return;
     const updatedPendingTransactions = await Promise.all(
       pendingTransactions.map((tx: RainbowTransaction) => processPendingTransaction(tx))

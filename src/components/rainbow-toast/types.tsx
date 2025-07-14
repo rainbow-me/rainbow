@@ -20,6 +20,7 @@ export type RainbowToastSend = BaseToast & {
   status: keyof typeof RainbowToastSendStatuses;
   amount: number;
   token: string;
+  tokenName: string;
 };
 
 export type RainbowToastMint = BaseToast & {

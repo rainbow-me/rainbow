@@ -11,14 +11,14 @@ export type ToastState = {
   finishRemoveToast: (id: string) => void;
   dismissedToasts: Record<string, boolean>;
   showExpanded: boolean;
-  setShowExpanded: (show: boolean) => void;
+  setShowExpandedToasts: (show: boolean) => void;
 };
 
 export const useToastStore = createRainbowStore<ToastState>(set => ({
   toasts: [],
   dismissedToasts: {},
   showExpanded: false,
-  setShowExpanded: (show: boolean) => set({ showExpanded: show }),
+  setShowExpandedToasts: (show: boolean) => set({ showExpanded: show }),
 
   handleTransactions: ({ pendingTransactions, mints }) => {
     set(state => {
@@ -76,4 +76,4 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 }));
 
-export const { handleTransactions, swipeRemoveToast, finishRemoveToast, setShowExpanded } = useToastStore.getState();
+export const { handleTransactions, swipeRemoveToast, finishRemoveToast, setShowExpandedToasts } = useToastStore.getState();

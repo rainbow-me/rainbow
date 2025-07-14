@@ -6,11 +6,11 @@ export function ToastExpandedAfterTransaction({ topLabel, bottomLabel }: { topLa
   const colors = useToastColors();
 
   return (
-    <Stack space="4px" alignHorizontal="right">
+    <Stack space="8px" alignHorizontal="right">
       <Text color={{ custom: colors.foregroundDim }} size="13pt" weight="medium">
         {topLabel}
       </Text>
-      <Text color="label" size="15pt" weight="bold">
+      <Text color="label" size="15pt" weight="medium">
         {bottomLabel}
       </Text>
     </Stack>
