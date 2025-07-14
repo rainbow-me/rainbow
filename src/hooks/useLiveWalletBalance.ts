@@ -16,7 +16,18 @@ export const useLiveWalletBalance = createDerivedStore(
 
     const params = $(userAssetsStoreManager, state => ({ address: state.address, currency: state.currency }), shallowEqual);
     const claimablesBalance = $(useClaimablesStore, state => state.getData(params)?.totalValueAmount || '0');
-    const positionsBalance = $(usePositionsStore, state => state.getData(params)?.totals.total.amount || '0');
+    const positionsBalance = $(usePositionsStore, state => {
+      const data = state.getData(params);
+      if (!data) return '0';
+      return subtract(data.totals.total.amount, data.totals.totalLocked);
+    });
+    console.log('positionsBalance', positionsBalance);
+    // const positionsBalance = $(usePositionsStore, state => {
+    //   console.log('positionsBalance', JSON.stringify(state.getData(params), null, 2));
+    //   const data = state.getData(params);
+    //   if (!data) return '0';
+    //   return data.totals.totals.amount;
+    // });
 
     let valueDifference = '0';
     if (liveTokens) {
