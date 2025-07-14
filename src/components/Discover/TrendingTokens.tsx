@@ -468,9 +468,8 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                 </Text>
                 <LiveTokenText
                   tokenId={token.uniqueId}
-                  // TODO: not yet added to the token data by backend
                   initialValueLastUpdated={0}
-                  initialValue={price}
+                  initialValue={formatCurrency(token.price, { currency })}
                   selector={token => formatCurrency(token.price, { currency })}
                   color="label"
                   numberOfLines={1}
@@ -518,7 +517,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
               <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
                 <LiveTokenText
                   tokenId={token.uniqueId}
-                  initialValue={formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}
+                  initialValue={`${formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%`}
                   selector={token => `${formatNumber(token.change.change24hPct, { decimals: 2, useOrderSuffix: true })}%`}
                   color="label"
                   numberOfLines={1}
@@ -533,7 +532,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                 </Text>
                 <LiveTokenText
                   tokenId={token.uniqueId}
-                  initialValue={formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}
+                  initialValue={`${formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}%`}
                   selector={token => `${formatNumber(token.change.change1hPct, { decimals: 2, useOrderSuffix: true })}%`}
                   color="label"
                   size="11pt"
