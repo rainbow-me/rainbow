@@ -60,6 +60,11 @@ function formatPercentageString(percentString?: string) {
   return formatted.endsWith('%') ? formatted : `${formatted}%`;
 }
 
+function formatPercentChange(percentChange: string | undefined) {
+  if (!percentChange) return '-';
+  return formatPercentageString(toSignificantDigits({ value: percentChange, minDecimalPlaces: 2, minRepresentable: 0.01 }));
+}
+
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
   nativeCurrency: NativeCurrencyKey;
@@ -75,8 +80,7 @@ const MemoizedBalanceCoinRow = React.memo(
     const nativeBalanceDisplay = item?.balance?.display ?? '';
     const chainId = item?.chainId || ChainId.mainnet;
     const tokenBalanceAmount = item?.balance?.amount ?? '0';
-    const percentChange = item?.native?.change || undefined;
-    const percentageChangeDisplay = formatPercentageString(percentChange);
+    const percentChange = item?.native?.change?.replace('%', '') || undefined;
     const priceUpdatedAt = item?.price?.changed_at ?? 0;
 
     const handlePress = useCallback(() => {
@@ -96,7 +100,7 @@ const MemoizedBalanceCoinRow = React.memo(
     );
 
     const tokenPriceChangeSelector = useCallback((token: TokenData) => {
-      return formatPercentageString(toSignificantDigits(token.change.change24hPct, 3));
+      return formatPercentChange(token.change.change24hPct);
     }, []);
 
     return (
@@ -142,7 +146,7 @@ const MemoizedBalanceCoinRow = React.memo(
                   selector={tokenPriceChangeSelector}
                   tokenId={uniqueId}
                   initialValueLastUpdated={priceUpdatedAt}
-                  initialValue={percentageChangeDisplay}
+                  initialValue={formatPercentChange(percentChange)}
                   autoSubscriptionEnabled={false}
                   usePriceChangeColor
                   priceChangeChangeColors={{

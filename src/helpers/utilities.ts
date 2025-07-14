@@ -652,17 +652,32 @@ export const formatNumber = (value: string, options?: { decimals?: number }) => 
 
 /**
  * Formats a number to a specific number of significant digits with optional minimum decimal places
+ * and a minimum representable value threshold.
  */
-export function toSignificantDigits(value: BigNumberish, significantDigits = 3, minDecimalPlaces = 2): string {
+export function toSignificantDigits({
+  value,
+  significantDigits = 3,
+  minDecimalPlaces = 2,
+  minRepresentable = 0.001,
+}: {
+  value: BigNumberish;
+  significantDigits?: number;
+  minDecimalPlaces?: number;
+  minRepresentable?: number;
+}): string {
   const num = new BigNumber(value);
 
   if (num.isZero()) {
     return minDecimalPlaces > 0 ? '0.' + '0'.repeat(minDecimalPlaces) : '0';
   }
 
-  const sign = num.isNegative() ? '-' : '';
   const absNum = num.abs();
 
+  if (absNum.isLessThan(minRepresentable)) {
+    return `< ${minRepresentable}`;
+  }
+
+  const sign = num.isNegative() ? '-' : '';
   const withSigDigs = parseFloat(absNum.toPrecision(significantDigits));
 
   let result = withSigDigs.toString();
