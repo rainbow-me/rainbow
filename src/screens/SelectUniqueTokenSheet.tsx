@@ -5,9 +5,10 @@ import { SheetHandle } from '../components/sheet';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { Box } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { useWalletSectionsData } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { useWalletSectionsData } from '@/hooks';
 
 export default function SelectUniqueTokenSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_UNIQUE_TOKEN_SHEET>>();
@@ -44,6 +45,7 @@ export default function SelectUniqueTokenSheet() {
         onPressUniqueToken={handlePressUniqueToken}
         type="select-nft"
         walletBriefSectionsData={walletBriefSectionsData}
+        onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
       />
     </Box>
   );
