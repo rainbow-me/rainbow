@@ -35,14 +35,12 @@ appId: ${APP_ID}
       - tapOn:
           id: 'identifierId'
       - inputText: ${CLOUD_BACKUP_EMAIL}
-      - tapOn:
-          id: 'identifierNext'
+      - tapOn: 'NEXT'
       - tapOn:
           text: 'Enter your password'
           optional: true
       - inputText: ${CLOUD_BACKUP_PASSWORD}
-      - tapOn:
-          id: 'passwordNext'
+      - tapOn: 'NEXT'
 
       # Handle Google Password Manager prompt
       - runFlow:
