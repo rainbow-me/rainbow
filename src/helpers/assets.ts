@@ -323,7 +323,7 @@ export const buildBriefUniqueTokenList = (
     // Create a Map for O(1) lookups instead of filtering arrays
     const specialTokensByCollection = new Map<string, number>();
 
-    if (isShowcaseDataMigrated && isHiddenDataMigrated) {
+    if (isShowcaseDataMigrated && isHiddenDataMigrated && listType === 'wallet') {
       [...showcaseTokens, ...hiddenTokens].forEach(token => {
         const { network, contractAddress } = parseUniqueId(token);
         const collectionId = `${network}_${contractAddress}`.toLowerCase();

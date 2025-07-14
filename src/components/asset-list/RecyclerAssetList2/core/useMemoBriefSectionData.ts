@@ -11,7 +11,7 @@ import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 const FILTER_TYPES = {
   'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.LEGACY_NFT, CellType.LEGACY_FAMILY_HEADER],
-  'select-nft': [CellType.NFT_SPACE_AFTER, CellType.LEGACY_NFT, CellType.LEGACY_FAMILY_HEADER],
+  'select-nft': [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER],
 } as { [key in AssetListType]: CellType[] };
 
 export default function useMemoBriefSectionData({
