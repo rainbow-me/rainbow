@@ -1,6 +1,6 @@
 import { Canvas, Image, Mask, Rect, useImage } from '@shopify/react-native-skia';
 import React, { ReactNode } from 'react';
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   SharedValue,
@@ -11,13 +11,11 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useForegroundColor } from '@/design-system';
 import { useCleanup } from '@/hooks/useCleanup';
 
-export const spinnerExitConfig = {
-  duration: 400,
-  easing: Easing.bezier(0.22, 1, 0.36, 1),
-};
+export const spinnerExitConfig = TIMING_CONFIGS.slowerFadeConfig;
 
 const enterConfig = { duration: 300 };
 
@@ -28,6 +26,7 @@ const rotationConfig = {
 
 export const AnimatedSpinner = ({
   color,
+  containerStyle,
   idleComponent,
   isLoading,
   requireSrc = require('@/assets/chartSpinner.png'),
@@ -35,6 +34,7 @@ export const AnimatedSpinner = ({
   size = 28,
 }: {
   color?: string | SharedValue<string>;
+  containerStyle?: StyleProp<ViewStyle>;
   idleComponent?: ReactNode;
   isLoading: boolean | SharedValue<boolean>;
   requireSrc?: string;
@@ -89,7 +89,10 @@ export const AnimatedSpinner = ({
   useCleanup(() => spinnerImage?.dispose?.(), [spinnerImage]);
 
   return (
-    <View style={{ alignItems: 'center', height: size, justifyContent: 'center', position: 'relative', width: size }}>
+    <View
+      pointerEvents="box-none"
+      style={[{ alignItems: 'center', height: size, justifyContent: 'center', position: 'relative', width: size }, containerStyle]}
+    >
       <Animated.View pointerEvents="none" style={[spinnerStyle, { height: size, position: 'absolute', width: size }]}>
         <Canvas style={{ height: size, width: size }}>
           <Mask mask={<Image fit="contain" image={spinnerImage} height={size} width={size} />}>
@@ -98,7 +101,9 @@ export const AnimatedSpinner = ({
         </Canvas>
       </Animated.View>
       {idleComponent ? (
-        <Animated.View style={[componentStyle, { alignItems: 'center', height: size, justifyContent: 'center', width: size }]}>
+        <Animated.View
+          style={[componentStyle, { alignItems: 'center', height: size, justifyContent: 'center', pointerEvents: 'box-none', width: size }]}
+        >
           {idleComponent}
         </Animated.View>
       ) : null}
