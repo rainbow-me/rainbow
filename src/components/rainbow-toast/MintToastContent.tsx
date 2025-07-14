@@ -1,53 +1,43 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import type { RainbowToastMint } from '@/components/rainbow-toast/types';
-import { useToastColors } from '@/components/rainbow-toast/useToastColors';
-import { fonts } from '@/styles';
+import { RainbowImage } from '@/components/RainbowImage';
+import { ShimmerAnimation } from '@/components/animations';
 import { ToastContent } from '@/components/rainbow-toast/ToastContent';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import type { RainbowToastMint } from '@/components/rainbow-toast/types';
+import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import { TransactionStatus } from '@/entities';
+import React from 'react';
+import { View } from 'react-native';
 
 export function MintToastContent({ toast }: { toast: RainbowToastMint }) {
   const colors = useToastColors();
 
-  const icon = (
-    <View
-      style={{
-        width: TOAST_ICON_SIZE,
-        height: TOAST_ICON_SIZE,
-        borderRadius: 100,
-        borderWidth: 2,
-        borderColor: colors.purple,
-        shadowColor: colors.purple,
-        shadowRadius: 12,
-        shadowOpacity: 1,
-        shadowOffset: { height: 4, width: 0 },
-      }}
-    >
-      <View
-        style={[
-          StyleSheet.absoluteFillObject,
-          {
-            backgroundColor: colors.purple,
-            borderRadius: 100,
-            overflow: 'hidden',
-            opacity: 0.9,
-            alignItems: 'center',
-            justifyContent: 'center',
-          },
-        ]}
-      >
-        <Text
-          allowFontScaling={false}
-          style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: colors.foreground, fontWeight: '800' }}
-        >
-          ✨
-        </Text>
-      </View>
-    </View>
-  );
+  const icon = (() => {
+    if (toast.image) {
+      return <RainbowImage source={{ url: toast.image }} style={{ width: TOAST_ICON_SIZE, height: TOAST_ICON_SIZE }} />;
+    }
+    return <ShimmerAnimation color={colors.foreground} />;
+  })();
 
-  const title = toast.status === 'minting' ? 'Minting...' : 'Minted';
+  const title = toast.status === TransactionStatus.minting ? 'Minting' : 'Minted';
   const subtitle = toast.name;
 
-  return <ToastContent icon={icon} title={title} subtitle={subtitle} />;
+  return (
+    <ToastContent
+      icon={
+        <View
+          style={{
+            backgroundColor: colors.background,
+            borderRadius: 10,
+            overflow: 'hidden',
+            width: TOAST_ICON_SIZE,
+            height: TOAST_ICON_SIZE,
+          }}
+        >
+          {icon}
+        </View>
+      }
+      title={title}
+      subtitle={subtitle}
+    />
+  );
 }

@@ -1,11 +1,12 @@
 import { getToastFromTransaction } from '@/components/rainbow-toast/getToastFromTransaction';
 import type { RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import { RainbowTransaction } from '@/entities';
+import { Mints } from '@/resources/mints';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type ToastState = {
   toasts: RainbowToastWithIndex[];
-  handleTransactions: (tx: RainbowTransaction[]) => void;
+  handleTransactions: (props: { pendingTransactions: RainbowTransaction[]; mints?: Mints }) => void;
   swipeRemoveToast: (id: string) => void;
   finishRemoveToast: (id: string) => void;
   dismissedToasts: Record<string, boolean>;
@@ -19,10 +20,10 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
   showExpanded: false,
   setShowExpanded: (show: boolean) => set({ showExpanded: show }),
 
-  handleTransactions: txs => {
+  handleTransactions: ({ pendingTransactions, mints }) => {
     set(state => {
       const activeToastIds = new Set(state.toasts.map(t => t.id));
-      const transactionToasts = txs.map(tx => getToastFromTransaction(tx)).filter(Boolean);
+      const transactionToasts = pendingTransactions.map(tx => getToastFromTransaction(tx, mints)).filter(Boolean);
       const transactionToastsMap = new Map(transactionToasts.map(t => [t.id, t]));
 
       // handle updates:

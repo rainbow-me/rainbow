@@ -31,15 +31,24 @@ import Animated, {
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useMints } from '@/resources/mints';
 
 export function RainbowToastDisplay() {
   const { toasts } = useToastStore();
   const insets = useSafeAreaInsets();
   const { pendingTransactions } = usePendingTransactions();
 
+  const accountAddress = useAccountAddress();
+  const {
+    data: { mints },
+  } = useMints({
+    walletAddress: accountAddress,
+  });
+
   useEffect(() => {
-    handleTransactions(pendingTransactions);
-  }, [pendingTransactions]);
+    handleTransactions({ pendingTransactions, mints });
+  }, [mints, pendingTransactions]);
 
   // show all removing and 3 latest toasts
   const toastsToShow: RainbowToastWithIndex[] = [];

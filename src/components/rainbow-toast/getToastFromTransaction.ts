@@ -2,6 +2,7 @@ import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { Mints } from '@/resources/mints';
 
 export const RainbowToastSwapStatuses = {
   [TransactionStatus.pending]: TransactionStatus.swapping,
@@ -43,7 +44,7 @@ export function getMintToastStatus(status: TransactionStatus): keyof typeof Rain
 
 const txIdToToastId = (tx: RainbowTransaction) => tx.hash + tx.address + tx.chainId;
 
-export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | null {
+export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): RainbowToast | null {
   if (tx.swap) {
     const toastState = getSwapToastStatus(tx.status);
     if (toastState) {
@@ -84,6 +85,8 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
   }
 
   if (tx.type === 'mint') {
+    console.log('finding mint', mints, tx);
+    const mint = mints?.find(mint => mint.contractAddress === tx.hash);
     const toastState = getMintToastStatus(tx.status);
     if (toastState) {
       return {
@@ -93,7 +96,7 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
         type: 'mint',
         status: toastState,
         name: tx.title || 'NFT',
-        image: tx.description || '',
+        image: mint?.imageURL || '',
         action: () => {
           Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
             transaction: tx,
