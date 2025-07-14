@@ -1606,10 +1606,14 @@ function useCandlestickChart({
         candleResolution: useChartsStore.getState().candleResolution,
         candlesToFetch: 500,
         token: { address, chainId },
-      }).then(data => {
-        isLoadingHistoricalCandles.value = false;
-        fetchPromise.current = !data || data?.hasPreviousCandles === true ? undefined : null;
-      });
+      })
+        .then(data => {
+          if (!fetchPromise.current) return;
+          fetchPromise.current = !data || data?.hasPreviousCandles === true ? undefined : null;
+        })
+        .finally(() => {
+          isLoadingHistoricalCandles.value = false;
+        });
     },
     [address, chainId, isLoadingHistoricalCandles]
   );
@@ -1643,8 +1647,13 @@ function useCandlestickChart({
   });
 
   const resetHistoricalFetchState = useCallback(
-    (hasPreviousCandles: boolean | undefined) => {
-      const shouldEnableFetching = hasPreviousCandles !== false;
+    (data: CandlestickResponse, previousData: CandlestickResponse) => {
+      const didResolutionChange = data?.candleResolution !== previousData?.candleResolution;
+      const hasExceededMaxCandles = (data?.candles.length ?? 0) >= MAX_CANDLES_TO_LOAD;
+
+      if (!didResolutionChange && !hasExceededMaxCandles) return;
+
+      const shouldEnableFetching = data?.hasPreviousCandles !== false && !hasExceededMaxCandles;
       fetchPromise.current = shouldEnableFetching ? undefined : null;
       isLoadingHistoricalCandles.value = false;
     },
@@ -1658,17 +1667,17 @@ function useCandlestickChart({
         return;
       }
 
-      if ((data?.candles.length ?? 0) >= MAX_CANDLES_TO_LOAD) fetchPromise.current = null;
-
-      const didResolutionChange = !!data && !!previousData && data.candleResolution !== previousData.candleResolution;
-      if (didResolutionChange) resetHistoricalFetchState(data?.hasPreviousCandles);
+      resetHistoricalFetchState(data, previousData);
+      const hasData = data !== null;
+      const hasPreviousData = previousData !== null;
+      const didResolutionChange = hasData && hasPreviousData && data.candleResolution !== previousData.candleResolution;
 
       runOnUI(() => {
         chartStatus.value = data.candles.length ? ChartStatus.Loaded : ChartStatus.Empty;
         const newCandles = data.candles ?? EMPTY_CANDLES;
         const hasPreviousCandles = data.hasPreviousCandles === true && newCandles.length < MAX_CANDLES_TO_LOAD;
-        const wasEmptyDataReplaced = !!data && !previousData;
-        const shouldResetOffset = wasEmptyDataReplaced || didResolutionChange;
+        const wasEmptyDataReplaced = hasData && !hasPreviousData;
+        const shouldResetOffset = didResolutionChange || wasEmptyDataReplaced;
 
         chartManager.value?.setCandles?.(newCandles, {
           hasPreviousCandles,
@@ -1676,7 +1685,7 @@ function useCandlestickChart({
         });
       })();
     },
-    [chartStatus, chartManager, resetHistoricalFetchState]
+    [chartManager, chartStatus, resetHistoricalFetchState]
   );
 
   useListenerRouteGuard(
