@@ -7,7 +7,7 @@ import { FlexItem } from '@/components/layout';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { TAB_BAR_PILL_HEIGHT, TAB_BAR_PILL_WIDTH } from '@/components/tab-bar/dimensions';
 import { TestnetToast } from '@/components/toasts';
-import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
+import { DAPP_BROWSER, LAUNCHPAD_PAGE, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, Stack, useForegroundColor, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
@@ -53,6 +53,7 @@ import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { LaunchPadScreen } from '@/screens/LaunchPad';
 
 export const BASE_TAB_BAR_HEIGHT = 48;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
@@ -392,9 +393,14 @@ function SwipeNavigatorScreens() {
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
+  const { dapp_browser, points_enabled, enabled_launchpad_page } = useRemoteConfig(
+    'dapp_browser',
+    'points_enabled',
+    'enabled_launchpad_page'
+  );
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
+  const showLaunchpadPage = (useExperimentalFlag(LAUNCHPAD_PAGE) || enabled_launchpad_page) && !IS_TEST;
 
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }) => {
@@ -431,7 +437,11 @@ function SwipeNavigatorScreens() {
       {showDappBrowserTab && (
         <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}
-      <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: 'tabActivity' }} />
+      {showLaunchpadPage ? (
+        <Swipe.Screen component={LaunchPadScreen} name={Routes.LAUNCHPAD} options={{ title: 'tabLaunchpad' }} />
+      ) : (
+        <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: 'tabActivity' }} />
+      )}
       {showPointsTab && <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ title: 'tabPoints' }} />}
     </Swipe.Navigator>
   );
