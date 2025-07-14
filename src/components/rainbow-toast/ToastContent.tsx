@@ -16,7 +16,7 @@ export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_IC
   const colors = useToastColors();
 
   return (
-    <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+    <View style={{ flexDirection: 'row', gap: 11, alignItems: 'center', minWidth: 130 }}>
       <View
         style={{
           width: iconWidth,
@@ -27,7 +27,7 @@ export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_IC
         {icon}
       </View>
 
-      <View style={{ gap: 4, minWidth: 0, alignItems: 'center' }}>
+      <View style={{ gap: 4, minWidth: 0 }}>
         <TruncatedText color={colors.foreground} size="smedium" weight="bold">
           {title}
         </TruncatedText>

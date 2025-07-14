@@ -264,9 +264,9 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
           ]}
         >
           <Box
-            paddingVertical="8px"
             borderRadius={100}
-            paddingHorizontal="16px"
+            paddingVertical="8px"
+            paddingHorizontal="20px"
             pointerEvents="auto"
             position="absolute"
             top="0px"
