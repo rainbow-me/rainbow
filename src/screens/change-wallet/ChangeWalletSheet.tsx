@@ -13,6 +13,7 @@ import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
 import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -97,6 +98,7 @@ export default function ChangeWalletSheet() {
   const { updateWebProfile } = useWebData();
   const { goBack, navigate } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const { balances: liveWalletBalances } = useLiveWalletBalance();
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
   const initialPinnedAddressCount = useMemo(() => usePinnedWalletsStore.getState().pinnedAddresses.length, []);
@@ -137,6 +139,7 @@ export default function ChangeWalletSheet() {
       const visibleAccounts = (wallet.addresses || []).filter(account => account.visible);
 
       visibleAccounts.forEach(account => {
+        const isSelectedAddress = account.address === accountAddress;
         const balanceText = account.balancesMinusHiddenBalances
           ? account.balancesMinusHiddenBalances
           : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
@@ -148,7 +151,7 @@ export default function ChangeWalletSheet() {
           color: account.color,
           emoji: account.emoji,
           label: account.label,
-          balance: balanceText,
+          balance: isSelectedAddress ? liveWalletBalances.totalBalance.display : balanceText,
           isLedger: wallet.type === WalletTypes.bluetooth,
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected: account.address === accountAddress,
@@ -168,7 +171,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets]);
+  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalances]);
 
   // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {
