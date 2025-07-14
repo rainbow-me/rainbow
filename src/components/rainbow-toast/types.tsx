@@ -4,7 +4,7 @@ type BaseToast = {
   id: string;
   transactionHash: string;
   action?: () => void;
-  removing?: boolean;
+  removing?: boolean | 'swipe';
 };
 
 export type RainbowToastSwap = BaseToast & {
@@ -16,6 +16,7 @@ export type RainbowToastSwap = BaseToast & {
 
 export type RainbowToastSend = BaseToast & {
   type: 'send';
+  chainId: number;
   status: keyof typeof RainbowToastSendStatuses;
   amount: number;
   token: string;
@@ -23,6 +24,7 @@ export type RainbowToastSend = BaseToast & {
 
 export type RainbowToastMint = BaseToast & {
   type: 'mint';
+  chainId: number;
   status: keyof typeof RainbowToastMintStatuses;
   name: string;
   image: string;

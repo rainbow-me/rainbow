@@ -12,12 +12,13 @@ const ICON_INTERSECT = TOAST_ICON_SIZE * 0.3;
 
 export function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
   const chainsLabel = useChainsLabel();
+  const iconWidth = TOAST_ICON_SIZE * 2 - ICON_INTERSECT;
 
   const icon =
     toast.status === TransactionStatus.swapped ? (
       <SFSymbolIcon name="check" />
     ) : (
-      <View style={{ flexDirection: 'row', width: TOAST_ICON_SIZE * 2 - ICON_INTERSECT, height: TOAST_ICON_SIZE }}>
+      <View style={{ flexDirection: 'row', height: TOAST_ICON_SIZE }}>
         <ChainImage chainId={toast.fromChainId} size={TOAST_ICON_SIZE} />
         <View style={{ transform: [{ translateX: TOAST_ICON_SIZE - ICON_INTERSECT }] }}>
           <ChainImage chainId={toast.toChainId} size={TOAST_ICON_SIZE} />
@@ -25,7 +26,7 @@ export function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
       </View>
     );
 
-  const title = toast.status === 'swapping' ? 'Swapping...' : 'Swapped';
+  const title = toast.status === TransactionStatus.swapping ? 'Swapping' : 'Swapped';
   const fromNetwork = chainsLabel[toast.fromChainId]?.symbol || '';
   const toNetwork = chainsLabel[toast.toChainId]?.symbol || '';
   const subtitle = (
@@ -34,5 +35,5 @@ export function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
     </>
   );
 
-  return <ToastContent icon={icon} title={title} subtitle={subtitle} />;
+  return <ToastContent icon={icon} iconWidth={iconWidth} title={title} subtitle={subtitle} />;
 }

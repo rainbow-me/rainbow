@@ -5,12 +5,14 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 
 const sfSymbols = {
   check: '􀆅',
+  exclamationMark: '􀅎',
 };
 
 const ICON_SIZE = 28;
 
 export function SFSymbolIcon({ name }: { name: keyof typeof sfSymbols }) {
   const colors = useToastColors();
+  const bg = name === 'check' ? colors.green : colors.red;
 
   return (
     <View
@@ -19,19 +21,18 @@ export function SFSymbolIcon({ name }: { name: keyof typeof sfSymbols }) {
         height: ICON_SIZE,
         borderRadius: 100,
         borderWidth: 2,
-        borderColor: colors.green,
-        shadowColor: colors.green,
-        shadowRadius: 12,
-        shadowOpacity: 1,
-        shadowOffset: { height: 4, width: 0 },
+        borderColor: bg,
+        shadowColor: bg,
+        shadowRadius: 8,
+        shadowOpacity: 0.4,
+        shadowOffset: { height: 3, width: 0 },
       }}
     >
-      {/* background at 90% */}
       <View
         style={[
           StyleSheet.absoluteFillObject,
           {
-            backgroundColor: colors.green,
+            backgroundColor: bg,
             borderRadius: 100,
             overflow: 'hidden',
             opacity: 0.9,
@@ -42,7 +43,7 @@ export function SFSymbolIcon({ name }: { name: keyof typeof sfSymbols }) {
       >
         <Text
           allowFontScaling={false}
-          style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: colors.foreground, fontWeight: '800' }}
+          style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: colors.white, fontWeight: '800' }}
         >
           {sfSymbols[name]}
         </Text>

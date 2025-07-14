@@ -68,6 +68,7 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
     if (toastState) {
       return {
         id: txIdToToastId(tx),
+        chainId: tx.chainId,
         transactionHash: tx.hash,
         type: 'send',
         status: toastState,
@@ -87,6 +88,7 @@ export function getToastFromTransaction(tx: RainbowTransaction): RainbowToast | 
     if (toastState) {
       return {
         id: txIdToToastId(tx),
+        chainId: tx.chainId,
         transactionHash: tx.hash,
         type: 'mint',
         status: toastState,

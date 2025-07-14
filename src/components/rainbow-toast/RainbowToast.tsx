@@ -4,10 +4,10 @@ import { SendToastContent } from '@/components/rainbow-toast/SendToastContent';
 import { SwapToastContent } from '@/components/rainbow-toast/SwapToastContent';
 import { type RainbowToast, type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import {
+  finishRemoveToast,
   handleTransactions,
-  removeToast,
   setShowExpanded,
-  startRemoveToast,
+  swipeRemoveToast,
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
@@ -15,7 +15,7 @@ import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
-import React, { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -57,7 +57,7 @@ export function RainbowToastDisplay() {
 
   const visibleToasts = [...removingToasts, ...toastsToShow];
 
-  console.log('pendingTransactions', pendingTransactions.length);
+  console.log('pendingTransactions', JSON.stringify(pendingTransactions, null, 2));
   console.log('toasts', toasts.length);
   console.log('visibleToasts', visibleToasts.length);
   console.log('removingToasts', removingToasts.length);
@@ -93,7 +93,7 @@ type Props = PropsWithChildren<{
   insets: EdgeInsets;
 }>;
 
-function RainbowToast({ toast, testID, insets }: Props) {
+const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props) {
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const visible = useSharedValue(0);
@@ -127,14 +127,27 @@ function RainbowToast({ toast, testID, insets }: Props) {
     translateY.value = withSpring(distance, springConfig);
   }, [distance, translateY]);
 
-  const removeToastFinish = useCallback(() => {
-    console.log('removeToastFinish', id);
-    removeToast(id);
+  const finishRemoveToastCallback = useCallback(() => {
+    console.log('finishRemoveToastCallback', id);
+    finishRemoveToast(id);
   }, [id]);
 
-  const startRemoveToastCallback = useCallback(() => {
-    startRemoveToast(id);
+  const swipeRemoveToastCallback = useCallback(() => {
+    swipeRemoveToast(id);
   }, [id]);
+
+  // there's two ways to remove toasts - from a swipe, or from it being removed via pendingTransactions
+  // for swipe, we handle it internally here with swipeRemoveToast which sets `removing` to "swipe", but for state we just get `removing` true
+  // and we handle it here in an effect, animating it more simply just by fading it out downwards
+  const nonSwipeRemove = toast.removing === true;
+  useEffect(() => {
+    if (nonSwipeRemove) {
+      visible.value = withSpring(0, springConfig, () => {
+        runOnJS(finishRemoveToastCallback)();
+      });
+      translateY.value = withSpring(translateY.value - 10, springConfig);
+    }
+  }, [finishRemoveToastCallback, nonSwipeRemove, translateY, visible]);
 
   const panGesture = useMemo(() => {
     return Gesture.Pan()
@@ -155,20 +168,19 @@ function RainbowToast({ toast, testID, insets }: Props) {
         const isDraggedFastEnough = Math.abs(velocityX) >= DISMISS_VELOCITY_THRESHOLD;
 
         if (isDraggedFarEnough && isDraggedFastEnough) {
-          console.log('startRemoveToastCallback', id);
-          runOnJS(startRemoveToastCallback)();
+          runOnJS(swipeRemoveToastCallback)();
           const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
           translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
             if (finished) {
               console.log('finished', id);
-              runOnJS(removeToastFinish)();
+              runOnJS(finishRemoveToastCallback)();
             }
           });
         } else {
           translateX.value = withSpring(0, springConfig);
         }
       });
-  }, [deviceWidth, id, lastChangeX, removeToastFinish, startRemoveToastCallback, translateX]);
+  }, [deviceWidth, id, lastChangeX, finishRemoveToastCallback, swipeRemoveToastCallback, translateX]);
 
   const dragStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;
@@ -272,7 +284,7 @@ function RainbowToast({ toast, testID, insets }: Props) {
                   intensity={16}
                   saturation={1.5}
                   style={StyleSheet.absoluteFill}
-                  width={400}
+                  width={450}
                 />
                 <LinearGradient
                   start={{ x: 0.5, y: 0 }}
@@ -304,4 +316,4 @@ function RainbowToast({ toast, testID, insets }: Props) {
       </Animated.View>
     </GestureDetector>
   );
-}
+});

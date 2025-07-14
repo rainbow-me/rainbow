@@ -6,8 +6,8 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 export type ToastState = {
   toasts: RainbowToastWithIndex[];
   handleTransactions: (tx: RainbowTransaction[]) => void;
-  startRemoveToast: (id: string) => void;
-  removeToast: (id: string) => void;
+  swipeRemoveToast: (id: string) => void;
+  finishRemoveToast: (id: string) => void;
   dismissedToasts: Record<string, boolean>;
   showExpanded: boolean;
   setShowExpanded: (show: boolean) => void;
@@ -37,9 +37,20 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
       // additions:
       const additions = transactionToasts.filter(t => !activeToastIds.has(t.id));
 
-      // todo removals but have to be careful as could be swiping one away
+      const toasts = [...additions, ...updatedToasts]
+        .map((t, index) => ({ ...t, index }))
+        .map(toast => {
+          // removals:
+          if (
+            !transactionToastsMap.has(toast.id) &&
+            // already being handled / or by swipe
+            !toast.removing
+          ) {
+            return { ...toast, removing: true };
+          }
 
-      const toasts = [...additions, ...updatedToasts].map((t, index) => ({ ...t, index }));
+          return toast;
+        });
 
       return {
         toasts,
@@ -47,17 +58,16 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
     });
   },
 
-  startRemoveToast: id => {
-    console.log('startRemoveToast', id);
+  swipeRemoveToast: id => {
     set(state => {
       return {
         dismissedToasts: { ...state.dismissedToasts, [id]: true },
-        toasts: state.toasts.map((toast, index) => (toast.id === id ? { ...toast, removing: true } : { ...toast, index: index - 1 })),
+        toasts: state.toasts.map((toast, index) => (toast.id === id ? { ...toast, removing: 'swipe' } : { ...toast, index: index - 1 })),
       };
     });
   },
 
-  removeToast: id => {
+  finishRemoveToast: id => {
     console.log('removing toast', id);
     set(state => ({
       toasts: state.toasts.filter(t => t.id !== id).map((t, index) => ({ ...t, index })),
@@ -65,4 +75,4 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 }));
 
-export const { handleTransactions, startRemoveToast, removeToast, setShowExpanded } = useToastStore.getState();
+export const { handleTransactions, swipeRemoveToast, finishRemoveToast, setShowExpanded } = useToastStore.getState();
