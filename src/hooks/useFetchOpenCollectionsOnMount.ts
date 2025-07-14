@@ -7,6 +7,15 @@ import { isAddress } from '@ethersproject/address';
 import { useCallback, useEffect } from 'react';
 import { logger } from '@/logger';
 
+function shouldFetchCollections(collectionId: string, openCollections: Record<string, boolean>) {
+  const normalizedCollectionId = collectionId.toLowerCase();
+  if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
+    return true;
+  }
+  const { contractAddress } = parseUniqueId(collectionId);
+  return isAddress(contractAddress) && openCollections[collectionId];
+}
+
 export default function useFetchOpenCollectionsOnMount() {
   const address = useAccountAddress();
 
@@ -21,10 +30,7 @@ export default function useFetchOpenCollectionsOnMount() {
     const { openCollections } = useOpenCollectionsStore.getState(address);
     logger.debug('[useFetchOpenCollectionsOnMount] Open collections state:', openCollections);
 
-    const collections = Object.keys(openCollections).filter(collectionId => {
-      const { contractAddress } = parseUniqueId(collectionId);
-      return isAddress(contractAddress) && openCollections[collectionId];
-    });
+    const collections = Object.keys(openCollections).filter(collectionId => shouldFetchCollections(collectionId, openCollections));
     logger.debug(`[useFetchOpenCollectionsOnMount] Filtered open collections: ${collections.join(', ')}`);
 
     const { fetchNftCollection } = useNftsStore.getState(address);
