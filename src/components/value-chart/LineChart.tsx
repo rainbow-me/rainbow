@@ -1,14 +1,16 @@
 import React, { memo, useMemo } from 'react';
 import { Box, useColorMode } from '@/design-system';
-import { ExtremeLabels } from './ExtremeLabels';
+import { ExtremeLabels, LABEL_VERTICAL_EXTRA_OFFSET } from './ExtremeLabels';
 import { ChartDot, ChartPath, ChartPathProvider, useChartData } from '@/react-native-animated-charts/src';
 import { useTheme } from '@/theme';
 import { useChartThrottledPoints } from '@/hooks';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { LineChartTimespan, NoChartData } from './Chart';
 import { SharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { NoChartData } from '@/components/charts/components/NoChartData';
+import { useChartsStore } from '@/components/charts/state/chartsStore';
+import { toLineChartTimespan } from '@/components/charts/utils';
 
 const CHART_DOT_SIZE = 10;
 
@@ -80,11 +82,11 @@ const Chart = memo(function Chart({
     isActive => {
       isChartGestureActive.value = isActive;
     },
-    [isActive]
+    []
   );
 
   return (
-    <Box>
+    <Box style={{ alignItems: 'center', justifyContent: 'center' }}>
       <ExtremeLabels color={strokeColor} isCard={false} />
       <ChartPath
         fill="none"
@@ -120,7 +122,6 @@ type LineChartProps = {
   height: number;
   asset: any;
   isChartGestureActive: SharedValue<boolean>;
-  timespan: LineChartTimespan;
   chartGestureUnixTimestamp: SharedValue<number>;
   price: SharedValue<number | undefined>;
   priceRelativeChange: SharedValue<number | undefined>;
@@ -130,14 +131,15 @@ export const LineChart = memo(function LineChart({
   strokeColor,
   backgroundColor,
   width,
-  height,
+  height: providedHeight,
   asset,
   isChartGestureActive,
-  timespan,
   chartGestureUnixTimestamp,
   price,
   priceRelativeChange,
 }: LineChartProps) {
+  const height = providedHeight - LABEL_VERTICAL_EXTRA_OFFSET;
+  const timespan = useChartsStore(state => toLineChartTimespan(state.lineChartTimePeriod));
   const { throttledData, fetchingCharts, shouldShowChart } = useChartThrottledPoints({
     asset,
     timespan,

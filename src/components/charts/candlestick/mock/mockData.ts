@@ -1,4 +1,20 @@
-import { Bar, BarsResponse, CandleResolution } from './types';
+import { CandleResolution } from '../../types';
+import { Bar } from '../types';
+
+type BarsResponse = {
+  /** Close prices */
+  c: number[];
+  /** High prices */
+  h: number[];
+  /** Low prices */
+  l: number[];
+  /** Open prices */
+  o: number[];
+  /** Timestamps */
+  t: number[];
+  /** Volumes */
+  v: number[];
+};
 
 // Slight upward drift
 const DRIFT = 0.05;
@@ -12,16 +28,13 @@ const VOLATILITY = 1;
  */
 function candleTypeToTimeStep(interval: CandleResolution): number {
   'worklet';
-  const normalizedInterval = interval === CandleResolution.UNSPECIFIED ? CandleResolution.M15 : interval;
-  switch (normalizedInterval) {
+  switch (interval) {
     case CandleResolution.M1:
       return 60_000;
     case CandleResolution.M5:
       return 300_000;
     case CandleResolution.M15:
       return 900_000;
-    case CandleResolution.M30:
-      return 1_800_000;
     case CandleResolution.H1:
       return 3_600_000;
     case CandleResolution.H4:
@@ -76,8 +89,7 @@ export function generateMockCandleData(barCount = 1500, options: GenerateMockCan
   let currentOpen = Math.random() * 1500;
   let currentTimestampMs = getStartTimestamp(barCount, timeStepMs, startTimestampMs);
 
-  // Shared candle generation logic
-  const genCandle = () => {
+  const generateCandle = () => {
     const randomStep = Math.random() * (2 * VOLATILITY) - VOLATILITY;
     const close = currentOpen + DRIFT + randomStep;
     const bigWick = (v: number) => (Math.random() < 0.1 ? v * 2 : v);
@@ -106,7 +118,7 @@ export function generateMockCandleData(barCount = 1500, options: GenerateMockCan
     const t: number[] = [];
     const v: number[] = [];
     for (let i = 0; i < barCount; i++) {
-      const candle = genCandle();
+      const candle = generateCandle();
       o.push(candle.o);
       h.push(candle.h);
       l.push(candle.l);
@@ -118,10 +130,8 @@ export function generateMockCandleData(barCount = 1500, options: GenerateMockCan
   } else {
     const bars: Bar[] = [];
     for (let i = 0; i < barCount; i++) {
-      bars.push(genCandle());
+      bars.push(generateCandle());
     }
     return bars;
   }
 }
-
-export const MOCK_CANDLE_DATA = generateMockCandleData();

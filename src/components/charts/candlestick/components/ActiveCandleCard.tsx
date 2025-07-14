@@ -1,21 +1,20 @@
 import React, { memo, useCallback } from 'react';
-import { View, FontVariant } from 'react-native';
-import { AnimatedText, Text, useForegroundColor } from '@/design-system';
+import { View, FontVariant, StyleProp, ViewStyle } from 'react-native';
 import Animated, { SharedValue, useDerivedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { CandlestickConfig } from './CandlestickChart';
-import { convertAmountToNativeDisplayWorklet as formatPrice } from '@/helpers/utilities';
-import { Bar } from './types';
+import { AnimatedText, Text, useForegroundColor } from '@/design-system';
 import { NativeCurrencyKey } from '@/entities';
+import { convertAmountToNativeDisplayWorklet as formatPrice } from '@/helpers/utilities';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { Bar } from '../types';
 
 export const ActiveCandleCard = memo(function ActiveCandleCard({
   activeCandle,
-  config,
+  activeCandleCardConfig,
   currency,
 }: {
   activeCandle: SharedValue<Bar | undefined>;
-  config: CandlestickConfig;
+  activeCandleCardConfig: { height: number; style: StyleProp<ViewStyle> };
   currency: NativeCurrencyKey;
 }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
@@ -106,10 +105,10 @@ export const ActiveCandleCard = memo(function ActiveCandleCard({
   return (
     <View
       style={[
-        config.activeCandleCard.style,
+        activeCandleCardConfig.style,
         {
           borderCurve: 'continuous',
-          height: config.activeCandleCard.height,
+          height: activeCandleCardConfig.height,
           overflow: 'hidden',
         },
       ]}

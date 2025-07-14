@@ -130,4 +130,6 @@ const RoutesWithPlatformDifferences = {
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
 
+export type Route = (typeof Routes)[keyof typeof Routes];
+
 export default RoutesWithPlatformDifferences;

@@ -1,4 +1,12 @@
-import { Bar, CandleResolution, CandlestickChartResponse } from '@/components/candlestick-charts/types';
+import { CandleResolution } from '../types';
+import { Bar, CandlestickChartResponse, Price } from './types';
+
+/**
+ * Compares two candlestick `Price` objects for equality.
+ */
+export function arePricesEqual(previousPrice: Price | undefined, price: Price | undefined): boolean {
+  return price?.price === previousPrice?.price && price?.percentChange === previousPrice?.percentChange;
+}
 
 export function transformApiResponseToBars(response: CandlestickChartResponse, filterEmptyVolumes = false): Bar[] {
   const payload = response.result.payload;
@@ -29,10 +37,7 @@ export function getResolutionMinutes(resolution: CandleResolution): number {
     case CandleResolution.M5:
       return 5;
     case CandleResolution.M15:
-    case CandleResolution.UNSPECIFIED:
       return 15;
-    case CandleResolution.M30:
-      return 30;
     case CandleResolution.H1:
       return 60;
     case CandleResolution.H4:

@@ -1,6 +1,7 @@
-import { IS_TEST } from '@/env';
-import { STORAGE_IDS } from '@/model/mmkv';
 import { MMKV } from 'react-native-mmkv';
+import { IS_DEV, IS_TEST } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 /**
  * This file contains flags for enabling features which are still in development.
@@ -83,7 +84,7 @@ const config = {
   [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
   [PRINCE_OF_THE_HILL]: { settings: true, value: false },
   [LAZY_TABS]: { needsRestart: true, settings: true, value: false },
-  [CANDLESTICK_CHARTS]: { settings: true, value: false },
+  [CANDLESTICK_CHARTS]: { settings: true, value: IS_DEV || isTestFlight || false },
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
 } as const;
 

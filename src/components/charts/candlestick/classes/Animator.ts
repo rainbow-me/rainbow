@@ -31,7 +31,7 @@ const displayLinkPrimer = makeMutable(0);
  * 2. Call one of the public methods (`spring`, `timing`, or `decay`) to start an animation.
  * 3. `onFrame` will run once per frame until all animations have finished.
  *
- * 💡 *Note:* This class can only be used from the UI thread.
+ * 💡 **Note:** This class can only be used from the UI thread.
  *
  * ---
  * @example
@@ -274,6 +274,7 @@ export class Animator {
    * Clears and stops all pending animations and callbacks.
    */
   public dispose(resetOnFrame = true): void {
+    this.frameId = null;
     this.pendingCallbacks.clear();
     this.stopAnimationLoop();
     displayLinkPrimer.value = 0;
