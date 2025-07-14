@@ -35,12 +35,8 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import {
-  CandlestickResponse,
-  areCandlesEqual,
-  fetchHistoricalCandles,
-  useCandlestickStore,
-} from '@/components/charts/state/candlestickStore';
+import { areCandlesEqual } from '@/components/charts/candlestick/utils';
+import { CandlestickResponse, fetchHistoricalCandles, useCandlestickStore } from '@/components/charts/state/candlestickStore';
 import { chartsActions, useChartsStore } from '@/components/charts/state/chartsStore';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';

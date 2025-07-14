@@ -9,7 +9,7 @@ import { createQueryStore, getQueryKey } from '@/state/internal/createQueryStore
 import { CacheEntry, SetDataParams } from '@/state/internal/queryStore/types';
 import { time } from '@/utils';
 import { Bar, CandlestickChartMetadata, CandlestickChartResponse, GetCandlestickChartRequest, Price } from '../candlestick/types';
-import { getResolutionMinutes, transformApiResponseToBars } from '../candlestick/utils';
+import { areCandlesEqual, getResolutionMinutes, transformApiResponseToBars } from '../candlestick/utils';
 import { CandleResolution, ChartType, Token } from '../types';
 
 // ============ Constants ====================================================== //
@@ -388,18 +388,9 @@ function mergeOrReturnCached({
 // ============ Utilities ====================================================== //
 
 /**
- * Compares two candle `Bar` objects for equality.
- */
-export function areCandlesEqual(a: Bar | undefined, b: Bar | undefined): boolean {
-  if (!a && !b) return true;
-  if (!a || !b) return false;
-  return a.t === b.t && a.c === b.c && a.o === b.o && a.h === b.h && a.l === b.l && a.v === b.v;
-}
-
-/**
  * Returns a unique identifier for a token in the format `address:chainId`.
  */
-export function getTokenId({ address, chainId }: Token): string {
+function getTokenId({ address, chainId }: Token): string {
   return `${address}:${chainId}`;
 }
 

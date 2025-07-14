@@ -2,6 +2,15 @@ import { CandleResolution } from '../types';
 import { Bar, CandlestickChartResponse, Price } from './types';
 
 /**
+ * Compares two candle `Bar` objects for equality.
+ */
+export function areCandlesEqual(a: Bar | undefined, b: Bar | undefined): boolean {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+  return a.t === b.t && a.c === b.c && a.o === b.o && a.h === b.h && a.l === b.l && a.v === b.v;
+}
+
+/**
  * Compares two candlestick `Price` objects for equality.
  */
 export function arePricesEqual(previousPrice: Price | undefined, price: Price | undefined): boolean {
