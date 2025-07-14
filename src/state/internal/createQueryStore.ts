@@ -301,7 +301,7 @@ export function createQueryStore<
         lastHandledEnabled = newEnabled;
         subscriptionManager.setEnabled(newEnabled);
         if (newEnabled) {
-          api.getState().fetch(undefined, { updateQueryKey: true });
+          queueMicrotask(() => api.getState().fetch(undefined, { updateQueryKey: true }));
         } else if (activeRefetchTimeout || abortInterruptedFetches) {
           if (abortInterruptedFetches) abortActiveFetch();
           if (activeRefetchTimeout) {
@@ -408,7 +408,7 @@ export function createQueryStore<
               : // Manual fetch call default
                 !skipStoreUpdates;
 
-        const areParamsCurrent = isInternalFetch || shouldUpdateQueryKey || storeQueryKey === currentQueryKey;
+        const areParamsCurrent = isInternalFetch || (!skipStoreUpdates && (shouldUpdateQueryKey || storeQueryKey === currentQueryKey));
 
         if (activeFetch?.promise && activeFetch.key === currentQueryKey && isLoading) {
           if (enableLogs) console.log('[🔄 Using Active Fetch 🔄] for params:', JSON.stringify(effectiveParams));
@@ -644,14 +644,16 @@ export function createQueryStore<
             }
 
             const entry = disableCache ? undefined : get().queryCache[currentQueryKey];
-            const currentRetryCount = entry?.errorInfo?.retryCount ?? 0;
+            const existingRetryCount = entry?.errorInfo?.retryCount ?? 0;
+            const newRetryCount = existingRetryCount + 1;
 
-            onError?.(typedError, currentRetryCount);
+            onError?.(typedError, existingRetryCount);
 
-            if (currentRetryCount < maxRetries) {
+            if (existingRetryCount < maxRetries) {
               if (subscriptionManager.get().subscriptionCount > 0) {
-                const errorRetryDelay = typeof retryDelay === 'function' ? retryDelay(currentRetryCount, typedError) : retryDelay;
+                const errorRetryDelay = typeof retryDelay === 'function' ? retryDelay(newRetryCount, typedError) : retryDelay;
                 if (errorRetryDelay !== Infinity) {
+                  if (activeRefetchTimeout) clearTimeout(activeRefetchTimeout);
                   activeRefetchTimeout = setTimeout(() => {
                     const { enabled, subscriptionCount } = subscriptionManager.get();
                     if (enabled && subscriptionCount > 0) {
@@ -673,7 +675,7 @@ export function createQueryStore<
                     errorInfo: {
                       error: typedError,
                       lastFailedAt: Date.now(),
-                      retryCount: currentRetryCount + 1,
+                      retryCount: newRetryCount,
                     },
                   } satisfies CacheEntry<TData>,
                 },
@@ -893,7 +895,7 @@ export function createQueryStore<
   }
 
   isBuildingParams = false;
-  if (fetchAfterParamCreation) onParamChange();
+  if (fetchAfterParamCreation) queueMicrotask(onParamChange);
 
   return queryStore;
 }
@@ -925,7 +927,7 @@ function sortParamKeys<TParams extends Record<string, unknown>>(params: TParams)
     }, {}) as TParams;
 }
 
-export function defaultRetryDelay(retryCount: number) {
+export function defaultRetryDelay(retryCount: number): number {
   const baseDelay = time.seconds(5);
   const multiplier = Math.pow(2, retryCount);
   return Math.min(baseDelay * multiplier, time.minutes(5));
