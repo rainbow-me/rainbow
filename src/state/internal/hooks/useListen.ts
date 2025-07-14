@@ -1,6 +1,24 @@
 import { MutableRefObject, useLayoutEffect } from 'react';
 import { useLazyRef as useRef } from '@/hooks/useLazyRef';
-import { BaseRainbowStore } from '../types';
+import { BaseRainbowStore, EqualityFn, Selector } from '../types';
+
+// ============ Types ========================================================== //
+
+/**
+ * Options for resubscribing a listener.
+ */
+export type ResubscribeOptions = {
+  /**
+   * Whether to fire the callback immediately when resubscribing.
+   * @default false
+   */
+  fireImmediately?: boolean;
+  /**
+   * Whether to force a resubscription even if the listener is already active.
+   * @default false
+   */
+  forceResubscribe?: boolean;
+};
 
 /**
  * Handle returned by `useListen`.
@@ -12,8 +30,8 @@ import { BaseRainbowStore } from '../types';
 export type ListenHandle = {
   /** `true` while the listener is attached. */
   isActive: boolean;
-  /** Re-attach the listener. Pass `true` to force a fresh attach. */
-  resubscribe: (force?: boolean) => void;
+  /** Re-attach the listener. */
+  resubscribe: (options?: ResubscribeOptions) => void;
   /** Detach the listener. Safe to call more than once. */
   unsubscribe: () => void;
 };
@@ -28,11 +46,16 @@ export type UseListenOptions<Selected> = {
    */
   debugMode?: boolean;
   /**
+   * Whether to enable the listener.
+   * @default true
+   */
+  enabled?: boolean;
+  /**
    * Dictates whether `react` should be called on state slice changes.
    * Compares the previous and current selected values.
    * @default Object.is
    */
-  equalityFn?: (a: Selected, b: Selected) => boolean;
+  equalityFn?: EqualityFn<Selected>;
   /**
    * Whether to fire the callback immediately on mount. Note that if `true`,
    * the `react` callback will be called on mount regardless of whether the
@@ -43,16 +66,19 @@ export type UseListenOptions<Selected> = {
 };
 
 type ListenerRef<S, Selected> = {
-  selector: (state: S) => Selected;
+  selector: Selector<S, Selected>;
   react: (current: Selected, previous: Selected, unsubscribe: () => void) => void;
   options: UseListenOptions<Selected>;
 } & ListenHandle;
 
-const DEFAULT_OPTIONS: UseListenOptions<unknown> = {
+// ============ useListen ====================================================== //
+
+const DEFAULT_OPTIONS = Object.freeze({
   debugMode: false,
+  enabled: true,
   equalityFn: Object.is,
   fireImmediately: false,
-};
+}) satisfies Readonly<Required<UseListenOptions<unknown>>>;
 
 /**
  * ### `useListen`
@@ -67,16 +93,16 @@ const DEFAULT_OPTIONS: UseListenOptions<unknown> = {
  * only when you need to pause or resume the listener manually.
  *
  * ---
+ * 💡 **Note:** With the exception of `enabled`, changes in `options` are **not reactive**.
+ * They take effect only if a resubscription occurs.
+ *
+ * ---
  * @param store - Zustand store to listen to. Should be a stable reference.
  * @param selector - Selects the slice of the store state to listen to.
  * @param react - Triggered when the selected slice changes. Receives `(current, previous, unsubscribe)`.
  * @param optionsOrEqualityFn - Optional `equalityFn`, `fireImmediately` settings, forwarded to `store.subscribe`.
  *
  * ---
- * 💡 *Note:* Changes in `options` are **not reactive**. They take effect only if a resubscription occurs.
- *
- * ---
- *
  * @example
  * ```ts
  * useListen(
@@ -92,42 +118,50 @@ const DEFAULT_OPTIONS: UseListenOptions<unknown> = {
  */
 export function useListen<S, Selected>(
   store: BaseRainbowStore<S>,
-  selector: (state: S) => Selected,
+  selector: Selector<S, Selected>,
   react: (current: Selected, previous: Selected, unsubscribe: () => void) => void,
   optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn'] = DEFAULT_OPTIONS
 ): MutableRefObject<Readonly<ListenHandle>> {
   const listenerRef = useRef<ListenerRef<S, Selected>>(() => createListenerRef(selector, react, optionsOrEqualityFn));
+  const enabled = getEnabledOption(optionsOrEqualityFn);
 
   listenerRef.current.react = react;
   listenerRef.current.selector = selector;
   setOptions(listenerRef, optionsOrEqualityFn);
 
   useLayoutEffect(() => {
-    attachListener(store, listenerRef, false);
+    if (enabled === false) return;
+    attachListener(store, listenerRef);
     return () => detachListener(listenerRef);
-  }, [store]);
+  }, [enabled, store]);
 
   return listenerRef;
 }
 
 // ============ Listener Helpers =============================================== //
 
+const DEFAULT_RESUBSCRIBE_OPTIONS = Object.freeze({
+  fireImmediately: false,
+  forceResubscribe: false,
+}) satisfies Readonly<ResubscribeOptions>;
+
 function attachListener<S, Selected>(
   store: BaseRainbowStore<S>,
   listenerRef: MutableRefObject<ListenerRef<S, Selected>>,
-  force: boolean
+  resubscribeOptions: ResubscribeOptions = DEFAULT_RESUBSCRIBE_OPTIONS
 ): void {
   if (listenerRef.current.isActive) {
-    if (!force) return;
+    if (!resubscribeOptions?.forceResubscribe) return;
     listenerRef.current.unsubscribe();
   }
 
   if (listenerRef.current.options.debugMode) {
-    console.log('[useListen] Attaching listener', listenerRef.current.selector);
+    console.log('[📡 useListen 📡] Attaching listener');
   }
 
   listenerRef.current.isActive = true;
-  listenerRef.current.resubscribe = (force = false) => attachListener(store, listenerRef, force);
+  listenerRef.current.resubscribe = (options: ResubscribeOptions = DEFAULT_RESUBSCRIBE_OPTIONS) =>
+    attachListener(store, listenerRef, options);
 
   const unsubscribe = store.subscribe(
     state => listenerRef.current.selector(state),
@@ -136,7 +170,7 @@ function attachListener<S, Selected>(
         unsubscribe();
         listenerRef.current.isActive = false;
       }),
-    listenerRef.current.options
+    resubscribeOptions.fireImmediately ? { ...listenerRef.current.options, fireImmediately: true } : listenerRef.current.options
   );
 
   listenerRef.current.unsubscribe = () => {
@@ -148,9 +182,8 @@ function attachListener<S, Selected>(
 
 function detachListener<S, Selected>(listenerRef: MutableRefObject<ListenerRef<S, Selected>>): void {
   if (listenerRef.current.options.debugMode) {
-    console.log('[useListen] Detaching listener', listenerRef.current.selector);
+    console.log('[🗑️ useListen 🗑️] Detaching listener');
   }
-
   listenerRef.current.resubscribe = () => {
     return;
   };
@@ -162,7 +195,7 @@ function detachListener<S, Selected>(listenerRef: MutableRefObject<ListenerRef<S
 }
 
 function createListenerRef<S, Selected>(
-  selector: (state: S) => Selected,
+  selector: Selector<S, Selected>,
   react: (current: Selected, previous: Selected, unsubscribe: () => void) => void,
   optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']
 ): ListenerRef<S, Selected> {
@@ -180,10 +213,16 @@ function createListenerRef<S, Selected>(
   };
 }
 
+// ============ Utilities ====================================================== //
+
 function buildOptionsObject<Selected>(
   optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']
 ): UseListenOptions<Selected> {
   return typeof optionsOrEqualityFn === 'object' ? optionsOrEqualityFn : { equalityFn: optionsOrEqualityFn };
+}
+
+function getEnabledOption<Selected>(optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']): boolean {
+  return (typeof optionsOrEqualityFn === 'object' && optionsOrEqualityFn.enabled) || DEFAULT_OPTIONS.enabled;
 }
 
 function setOptions<S, Selected>(
