@@ -406,7 +406,7 @@ export const createNftsStore = (address: Address | string) =>
         }
       },
 
-      async fetchNftCollection(collectionId) {
+      async fetchNftCollection(collectionId, force = false) {
         const normalizedCollectionId = collectionId.toLowerCase();
 
         let addressPromises = collectionsPromises.get(address);
@@ -416,7 +416,7 @@ export const createNftsStore = (address: Address | string) =>
         }
 
         const existingPromise = addressPromises.get(normalizedCollectionId);
-        if (existingPromise) {
+        if (existingPromise && !force) {
           return existingPromise;
         }
 
@@ -438,49 +438,51 @@ export const createNftsStore = (address: Address | string) =>
 
         const { fetch, getNftsByCollection } = get();
 
-        if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
-          logger.debug(`🔍 [NFT Store] Processing showcase/hidden collection: ${normalizedCollectionId}`);
-          let needsFetch = false;
-          const { collectionIds } = await getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
-          logger.debug(`🔍 [NFT Store] Collection IDs for showcase/hidden: ${collectionIds}`);
+        if (!force) {
+          if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
+            logger.debug(`🔍 [NFT Store] Processing showcase/hidden collection: ${normalizedCollectionId}`);
+            let needsFetch = false;
+            const { collectionIds } = await getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
+            logger.debug(`🔍 [NFT Store] Collection IDs for showcase/hidden: ${collectionIds}`);
 
-          if (!collectionIds) {
-            logger.debug('🔍 [NFT Store] No collection IDs found, exiting early');
-            return;
-          }
+            if (!collectionIds) {
+              logger.debug('🔍 [NFT Store] No collection IDs found, exiting early');
+              return;
+            }
 
-          if (!needsFetch) {
-            for (const collectionId of collectionIds) {
-              const normalizedCollectionId = collectionId.toLowerCase();
-              const collection = getNftsByCollection(normalizedCollectionId);
-              logger.debug(`🔍 [NFT Store] Checking collection: ${collectionId}`, {
-                collectionId,
-                normalizedCollectionId,
-                hasCollection: !!collection,
-                isEmpty: collection ? isEmpty(collection) : 'N/A',
-              });
-              if (!collection || isEmpty(collection)) {
-                needsFetch = true;
-                logger.debug(`🔍 [NFT Store] Collection needs fetch: ${collectionId}`);
-                break;
+            if (!needsFetch) {
+              for (const collectionId of collectionIds) {
+                const normalizedCollectionId = collectionId.toLowerCase();
+                const collection = getNftsByCollection(normalizedCollectionId);
+                logger.debug(`🔍 [NFT Store] Checking collection: ${collectionId}`, {
+                  collectionId,
+                  normalizedCollectionId,
+                  hasCollection: !!collection,
+                  isEmpty: collection ? isEmpty(collection) : 'N/A',
+                });
+                if (!collection || isEmpty(collection)) {
+                  needsFetch = true;
+                  logger.debug(`🔍 [NFT Store] Collection needs fetch: ${collectionId}`);
+                  break;
+                }
               }
             }
-          }
 
-          if (!needsFetch) {
-            logger.debug('🔍 [NFT Store] No fetch needed for showcase/hidden, returning existing nftsByCollection');
-            return;
-          }
-        } else {
-          const collection = getNftsByCollection(normalizedCollectionId);
-          logger.debug(`🔍 [NFT Store] Checking regular collection: ${normalizedCollectionId}`, {
-            normalizedCollectionId,
-            hasCollection: !!collection,
-            isEmpty: collection ? isEmpty(collection) : 'N/A',
-          });
-          if (collection && !isEmpty(collection)) {
-            logger.debug(`🔍 [NFT Store] Collection exists and not empty, returning existing nftsByCollection`);
-            return;
+            if (!needsFetch) {
+              logger.debug('🔍 [NFT Store] No fetch needed for showcase/hidden, returning existing nftsByCollection');
+              return;
+            }
+          } else {
+            const collection = getNftsByCollection(normalizedCollectionId);
+            logger.debug(`🔍 [NFT Store] Checking regular collection: ${normalizedCollectionId}`, {
+              normalizedCollectionId,
+              hasCollection: !!collection,
+              isEmpty: collection ? isEmpty(collection) : 'N/A',
+            });
+            if (collection && !isEmpty(collection)) {
+              logger.debug(`🔍 [NFT Store] Collection exists and not empty, returning existing nftsByCollection`);
+              return;
+            }
           }
         }
 
@@ -489,7 +491,7 @@ export const createNftsStore = (address: Address | string) =>
             try {
               const data = await fetch(
                 { collectionId: normalizedCollectionId },
-                { skipStoreUpdates: true, cacheTime: time.infinity, staleTime: time.infinity }
+                { force, skipStoreUpdates: true, cacheTime: time.infinity, staleTime: time.infinity }
               );
 
               if (!data) continue;
