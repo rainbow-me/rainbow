@@ -10,6 +10,7 @@ import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { Collection, CollectionId } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { assetIsUniqueAsset } from '@/handlers/web3';
 
 const COINS_TO_SHOW = 5;
 
@@ -416,7 +417,7 @@ export const legacyBuildBriefUniqueTokenList = (
 
     if (listType === 'select-nft') {
       const notAnimated = !token.images.animatedUrl;
-      if (notAnimated && token.type === AssetType.nft) {
+      if (notAnimated && assetIsUniqueAsset(token)) {
         filteredUniqueTokens.push(token);
       }
     } else {
