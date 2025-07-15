@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt b/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
-index 8ec286a..db87d75 100644
+index 8ec286a..c5bef4a 100644
 --- a/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
 +++ b/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
 @@ -47,6 +47,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>(), RNCViewPa
@@ -23,10 +23,10 @@ index 66ad7b6..f3baa9a 100644
          //https://github.com/callstack/react-native-viewpager/issues/183
          vp.isSaveEnabled = false
 diff --git a/node_modules/react-native-pager-view/ios/RNCPagerView.m b/node_modules/react-native-pager-view/ios/RNCPagerView.m
-index 507b45d..58f0a85 100644
+index 19552ce..1c68235 100644
 --- a/node_modules/react-native-pager-view/ios/RNCPagerView.m
 +++ b/node_modules/react-native-pager-view/ios/RNCPagerView.m
-@@ -106,7 +106,7 @@ - (void)embed {
+@@ -103,7 +103,7 @@ - (void)embed {
  #if !TARGET_OS_VISION
              ((UIScrollView *)subview).keyboardDismissMode = _dismissKeyboard;
  #endif

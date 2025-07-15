@@ -1780,7 +1780,7 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.7.1):
+  - react-native-pager-view (6.8.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3307,7 +3307,7 @@ SPEC CHECKSUMS:
   react-native-minimizer: d6db020c36a58447adba28f969f70a7098cfadb8
   react-native-mmkv: c72597014b52bbbbeac6b996fe4199007bffefdb
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
-  react-native-pager-view: 9a5f74c91c2623082043a22b6978083d1c79b563
+  react-native-pager-view: 4a60c3b694a1cf20d0b2c94be89a713e7954a39a
   react-native-palette-full: d25c07e220328405154382094a6e933ad76f74dc
   react-native-quick-md5: 368e091d448aa3d32a0cbb5d3ce883ae85b72596
   react-native-randombytes: 4a00fba06ca0d80a7c02a6b73cfe58ffa4a093a0

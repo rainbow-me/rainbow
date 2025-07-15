@@ -4101,9 +4101,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gorhom/bottom-sheet@npm:4.6.1":
-  version: 4.6.1
-  resolution: "@gorhom/bottom-sheet@npm:4.6.1"
+"@gorhom/bottom-sheet@npm:5.1.6":
+  version: 5.1.6
+  resolution: "@gorhom/bottom-sheet@npm:5.1.6"
   dependencies:
     "@gorhom/portal": "npm:1.0.14"
     invariant: "npm:^2.2.4"
@@ -4112,14 +4112,14 @@ __metadata:
     "@types/react-native": "*"
     react: "*"
     react-native: "*"
-    react-native-gesture-handler: ">=1.10.1"
-    react-native-reanimated: ">=2.2.0"
+    react-native-gesture-handler: ">=2.16.1"
+    react-native-reanimated: ">=3.16.0"
   peerDependenciesMeta:
     "@types/react":
       optional: true
     "@types/react-native":
       optional: true
-  checksum: 10c0/a808d292f073b896e1722433ee982d43c83c89fcb440a5f79a61ed8600966d02a6ceaea647c6ba898736b714bd271a6de0f3de330cdadfe5310c12e333068a84
+  checksum: 10c0/2f5c7e4e0a8968a567f5dcac5553b85e09850be46755bcf10a6e44843705392dd71c701b551575d8ea7c6cda8678f4a04851e926b6bfa63e82198b88568a76d8
   languageName: node
   linkType: hard
 
@@ -9405,7 +9405,7 @@ __metadata:
     "@ethersproject/transactions": "npm:5.7.0"
     "@ethersproject/units": "npm:5.7.0"
     "@ethersproject/wallet": "npm:5.7.0"
-    "@gorhom/bottom-sheet": "npm:4.6.1"
+    "@gorhom/bottom-sheet": "npm:5.1.6"
     "@json-rpc-tools/utils": "npm:1.7.6"
     "@lavamoat/allow-scripts": "npm:3.0.1"
     "@lavamoat/preinstall-always-fail": "npm:2.0.0"
@@ -9600,7 +9600,7 @@ __metadata:
     react-native-minimizer: "rainbow-me/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0"
     react-native-mmkv: "npm:2.12.2"
     react-native-os: "rainbow-me/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c"
-    react-native-pager-view: "npm:6.7.1"
+    react-native-pager-view: "npm:6.8.1"
     react-native-palette-full: "npm:1.2.0"
     react-native-permissions: "npm:3.10.1"
     react-native-quick-md5: "npm:3.0.6"
@@ -9619,7 +9619,7 @@ __metadata:
     react-native-splash-screen: "npm:3.3.0"
     react-native-storage: "npm:1.0.1"
     react-native-svg: "npm:15.11.2"
-    react-native-tab-view: "npm:3.5.1"
+    react-native-tab-view: "npm:4.1.2"
     react-native-tcp: "npm:3.3.2"
     react-native-text-input-mask: "npm:2.0.0"
     react-native-text-size: "rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
@@ -23577,13 +23577,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-pager-view@npm:6.7.1":
-  version: 6.7.1
-  resolution: "react-native-pager-view@npm:6.7.1"
+"react-native-pager-view@npm:6.8.1":
+  version: 6.8.1
+  resolution: "react-native-pager-view@npm:6.8.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/1459f3c487d50b1ecba41a4b24c51ab9ad17026b30e66c109dd1df32afe7cc6726d8fcae8a3495f93a240e5781bbae7653c7d56d53e724e929312b30234616e9
+  checksum: 10c0/1b6f6bac77616adbe59f0b9b2f37c86c00c27b9fc8ebee7b769ffdbce88c235689deb53dca923e263ab0f97a9a1731362add4b1dff65467ce82889c8910f7186
   languageName: node
   linkType: hard
 
@@ -23793,16 +23793,16 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"react-native-tab-view@npm:3.5.1":
-  version: 3.5.1
-  resolution: "react-native-tab-view@npm:3.5.1"
+"react-native-tab-view@npm:4.1.2":
+  version: 4.1.2
+  resolution: "react-native-tab-view@npm:4.1.2"
   dependencies:
-    use-latest-callback: "npm:^0.1.5"
+    use-latest-callback: "npm:^0.2.4"
   peerDependencies:
-    react: "*"
+    react: ">= 18.2.0"
     react-native: "*"
-    react-native-pager-view: "*"
-  checksum: 10c0/a4b1a3c49618cbe0ee041fce03897e1ea4bf4cad9bdbbe3167ba74be5b1b0d495ee6376a1150ecb9be333ad692baf1877c79af37d2baea864ace1d30c98d0719
+    react-native-pager-view: ">= 6.0.0"
+  checksum: 10c0/f8ca46c6b1ad0cd3485273250396244ad28ba9519640de206df6395a74d55019086d2b086d87c6504150da99609ff19431e98b897478125508cb8355a2e519ff
   languageName: node
   linkType: hard
 
@@ -27888,7 +27888,7 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"use-latest-callback@npm:^0.1.5, use-latest-callback@npm:^0.1.9":
+"use-latest-callback@npm:^0.1.9":
   version: 0.1.11
   resolution: "use-latest-callback@npm:0.1.11"
   peerDependencies:
@@ -27903,6 +27903,15 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   peerDependencies:
     react: ">=16.8"
   checksum: 10c0/66debcd5ac30aa0198669314177c7b30902787131c98c8130695555655426b43c678f84acc98a49284d50257396ed1ac4e257f3a5fc1d2a0f09ec741c08bfda9
+  languageName: node
+  linkType: hard
+
+"use-latest-callback@npm:^0.2.4":
+  version: 0.2.4
+  resolution: "use-latest-callback@npm:0.2.4"
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 10c0/dcdcb4849225638100f662c82ae44eaa7c635ea3a2419f521b45e7f36ede28a49b77f324fa008dccb840acd41a377c0ca8ab36cf4903ee746e96c41c86a9eeb5
   languageName: node
   linkType: hard
 
