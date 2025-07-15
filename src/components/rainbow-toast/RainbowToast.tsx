@@ -279,7 +279,7 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
             pointerEvents="auto"
             position="absolute"
             top="0px"
-            // borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.72)' }}
+            borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.72)' }}
             testID={testID}
           >
             {IS_IOS ? (

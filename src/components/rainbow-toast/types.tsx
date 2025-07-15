@@ -1,8 +1,10 @@
+import { RainbowTransaction } from '@/entities';
 import { RainbowToastMintStatuses, RainbowToastSendStatuses, RainbowToastSwapStatuses } from './getToastFromTransaction';
 
 type BaseToast = {
   id: string;
   transactionHash: string;
+  transaction: RainbowTransaction;
   action?: () => void;
   removing?: boolean | 'swipe';
 };
@@ -12,13 +14,17 @@ export type RainbowToastSwap = BaseToast & {
   status: keyof typeof RainbowToastSwapStatuses;
   fromChainId: number;
   toChainId: number;
+  fromAssetSymbol: string;
+  toAssetSymbol: string;
+  fromAssetImage: string;
+  toAssetImage: string;
 };
 
 export type RainbowToastSend = BaseToast & {
   type: 'send';
   chainId: number;
   status: keyof typeof RainbowToastSendStatuses;
-  amount: number;
+  displayAmount: string;
   token: string;
   tokenName: string;
 };

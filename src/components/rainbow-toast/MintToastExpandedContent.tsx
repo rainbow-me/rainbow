@@ -8,5 +8,5 @@ export function MintToastExpandedContent({ toast }: { toast: RainbowToastMint })
   const icon = <MintToastIcon toast={toast} />;
   const title = toast.status === TransactionStatus.minting ? 'Minting' : 'Minted';
   const subtitle = toast.name;
-  return <ToastExpandedContent icon={icon} label={title} statusLabel={subtitle} />;
+  return <ToastExpandedContent icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />;
 }

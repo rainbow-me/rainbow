@@ -1,5 +1,6 @@
 import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
+import { logger } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Mints } from '@/resources/mints';
@@ -11,6 +12,7 @@ export const RainbowToastSwapStatuses = {
 } as const;
 
 export const RainbowToastSendStatuses = {
+  [TransactionStatus.pending]: TransactionStatus.pending,
   [TransactionStatus.sending]: TransactionStatus.sending,
   [TransactionStatus.sent]: TransactionStatus.sent,
   [TransactionStatus.failed]: TransactionStatus.failed,
@@ -46,15 +48,28 @@ const txIdToToastId = (tx: RainbowTransaction) => tx.hash + tx.address + tx.chai
 
 export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): RainbowToast | null {
   if (tx.swap) {
-    const toastState = getSwapToastStatus(tx.status);
-    if (toastState) {
+    const status = getSwapToastStatus(tx.status);
+    if (status) {
+      const outAsset = tx.changes?.find(c => c?.direction === 'out')?.asset;
+      const inAsset = tx.changes?.find(c => c?.direction === 'in')?.asset;
+
+      if (!outAsset || !inAsset) {
+        logger.warn(`Missing in or out asset for transaction ${tx.hash}`);
+        return null;
+      }
+
       return {
         id: txIdToToastId(tx),
+        transaction: tx,
         transactionHash: tx.hash,
         type: 'swap',
-        status: toastState,
+        status: status,
         fromChainId: tx.swap.fromChainId,
         toChainId: tx.swap.toChainId,
+        fromAssetSymbol: outAsset.symbol,
+        toAssetSymbol: inAsset.symbol,
+        fromAssetImage: outAsset.icon_url || '',
+        toAssetImage: inAsset.icon_url || '',
         action: () => {
           Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
             transaction: tx,
@@ -65,17 +80,19 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
   }
 
   if (tx.type === 'send') {
-    const toastState = getSendToastStatus(tx.status);
-    if (toastState) {
+    const status = getSendToastStatus(tx.status);
+    if (status) {
+      const symbol = tx.asset?.symbol || tx.symbol || '';
       return {
         id: txIdToToastId(tx),
+        transaction: tx,
         chainId: tx.chainId,
         transactionHash: tx.hash,
         type: 'send',
-        status: toastState,
-        amount: parseFloat(tx.value?.toString() || '0'),
-        token: tx.symbol || '',
-        tokenName: tx.name || '',
+        status: status,
+        displayAmount: tx.asset?.balance?.display || '0',
+        token: symbol,
+        tokenName: tx.asset?.name || tx.name || '',
         action: () => {
           Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
             transaction: tx,
@@ -88,14 +105,15 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
   if (tx.type === 'mint') {
     console.log('finding mint', mints, tx);
     const mint = mints?.find(mint => mint.contractAddress === tx.hash);
-    const toastState = getMintToastStatus(tx.status);
-    if (toastState) {
+    const status = getMintToastStatus(tx.status);
+    if (status) {
       return {
         id: txIdToToastId(tx),
+        transaction: tx,
         chainId: tx.chainId,
         transactionHash: tx.hash,
         type: 'mint',
-        status: toastState,
+        status: status,
         name: tx.title || 'NFT',
         image: mint?.imageURL || '',
         action: () => {

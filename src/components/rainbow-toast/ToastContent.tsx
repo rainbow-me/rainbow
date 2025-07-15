@@ -16,7 +16,7 @@ export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_IC
   const colors = useToastColors();
 
   return (
-    <View style={{ flexDirection: 'row', gap: 11, alignItems: 'center', minWidth: 130 }}>
+    <View style={{ flexDirection: 'row', gap: 13, alignItems: 'center', minWidth: 130 }}>
       <View
         style={{
           width: iconWidth,

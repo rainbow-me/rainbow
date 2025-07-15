@@ -1,23 +1,25 @@
+import { ToastExpandedAfterTransaction } from '@/components/rainbow-toast/ToastExpandedAfterTransaction';
 import { Box, Stack, Text } from '@/design-system';
+import { RainbowTransaction } from '@/entities';
 import React, { ReactNode } from 'react';
 import { View } from 'react-native';
 
 type Props = {
   icon: ReactNode;
   statusLabel: ReactNode;
+  transaction: RainbowTransaction;
   label: ReactNode;
-  after?: ReactNode;
   iconWidth?: number;
 };
 
 const EXPANDED_ICON_SIZE = 28;
 
-export function ToastExpandedContent({ icon, statusLabel, label, after }: Props) {
+export function ToastExpandedContent({ icon, statusLabel, label, transaction }: Props) {
   return (
     <View
       style={{
         flexDirection: 'row',
-        gap: 16,
+        gap: 24,
         alignItems: 'center',
         paddingHorizontal: 26,
         paddingVertical: 16,
@@ -44,7 +46,7 @@ export function ToastExpandedContent({ icon, statusLabel, label, after }: Props)
       </Stack>
 
       <Box flexGrow={1} alignItems="flex-end">
-        {after}
+        <ToastExpandedAfterTransaction transaction={transaction} />
       </Box>
     </View>
   );

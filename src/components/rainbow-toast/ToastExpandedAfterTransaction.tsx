@@ -1,18 +1,24 @@
-import { Stack, Text } from '@/design-system';
+import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
+import { Text } from '@/design-system';
+import { RainbowTransaction } from '@/entities';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import React from 'react';
+import { View } from 'react-native';
 import { useToastColors } from './useToastColors';
 
-export function ToastExpandedAfterTransaction({ topLabel, bottomLabel }: { topLabel: string; bottomLabel: string }) {
+export function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTransaction }) {
   const colors = useToastColors();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const [topValue, bottomValue] = activityValues(transaction, nativeCurrency) ?? [];
 
   return (
-    <Stack space="8px" alignHorizontal="right">
+    <View style={{ flexDirection: 'column', minHeight: '100%' }}>
       <Text color={{ custom: colors.foregroundDim }} size="13pt" weight="medium">
-        {topLabel}
+        {topValue}
       </Text>
       <Text color="label" size="15pt" weight="medium">
-        {bottomLabel}
+        {bottomValue}
       </Text>
-    </Stack>
+    </View>
   );
 }

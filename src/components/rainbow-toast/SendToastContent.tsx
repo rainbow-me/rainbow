@@ -8,15 +8,22 @@ import React from 'react';
 
 export function SendToastContent({ toast }: { toast: RainbowToastSend }) {
   const icon = <SendToastIcon toast={toast} />;
-  const title = toast.status === TransactionStatus.sending ? 'Sending' : toast.status === TransactionStatus.sent ? 'Sent' : 'Failed';
-  const subtitle = `${toast.amount} ${toast.token}`;
+  const title =
+    toast.status === TransactionStatus.sending || TransactionStatus.pending
+      ? 'Sending'
+      : toast.status === TransactionStatus.sent
+        ? 'Sent'
+        : 'Failed';
+
+  const subtitle = toast.displayAmount;
+
   return (
     <ToastContent icon={icon} title={title} subtitle={subtitle} type={toast.status === TransactionStatus.failed ? 'error' : undefined} />
   );
 }
 
 export const SendToastIcon = ({ toast }: { toast: RainbowToastSend }) => {
-  if (toast.status === TransactionStatus.sending) {
+  if (toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending) {
     return <ChainImage chainId={toast.chainId} size={TOAST_ICON_SIZE} />;
   }
 
