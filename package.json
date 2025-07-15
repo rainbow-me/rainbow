@@ -93,7 +93,7 @@
     "@ethersproject/transactions": "5.7.0",
     "@ethersproject/units": "5.7.0",
     "@ethersproject/wallet": "5.7.0",
-    "@gorhom/bottom-sheet": "5.1.6",
+    "@gorhom/bottom-sheet": "4.6.1",
     "@json-rpc-tools/utils": "1.7.6",
     "@lavamoat/preinstall-always-fail": "2.0.0",
     "@ledgerhq/hw-app-eth": "6.39.0",
