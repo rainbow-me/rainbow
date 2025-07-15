@@ -1,3 +1,29 @@
+diff --git a/node_modules/react-native-image-crop-picker/android/src/main/AndroidManifest.xml b/node_modules/react-native-image-crop-picker/android/src/main/AndroidManifest.xml
+index a08629b..43495a1 100644
+--- a/node_modules/react-native-image-crop-picker/android/src/main/AndroidManifest.xml
++++ b/node_modules/react-native-image-crop-picker/android/src/main/AndroidManifest.xml
+@@ -24,7 +24,7 @@
+ 
+         <activity
+             android:name="com.yalantis.ucrop.UCropActivity"
+-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
++            android:theme="@style/Theme.App.UCrop" />
+ 
+ 
+         <!-- Prompt Google Play services to install the backported photo picker module -->
+diff --git a/node_modules/react-native-image-crop-picker/android/src/main/res/values/styles.xml b/node_modules/react-native-image-crop-picker/android/src/main/res/values/styles.xml
+new file mode 100644
+index 0000000..5568f2f
+--- /dev/null
++++ b/node_modules/react-native-image-crop-picker/android/src/main/res/values/styles.xml
+@@ -0,0 +1,7 @@
++<resources>
++  <style name="Theme.App.UCrop" parent="Theme.MaterialComponents.Light.NoActionBar">
++      <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
++      <item name="android:fitsSystemWindows">true</item>
++      <item name="android:windowLightStatusBar">true</item>
++  </style>
++</resources>
 diff --git a/node_modules/react-native-image-crop-picker/ios/src/ImageCropPicker.m b/node_modules/react-native-image-crop-picker/ios/src/ImageCropPicker.m
 index 9f20973..fe557fa 100644
 --- a/node_modules/react-native-image-crop-picker/ios/src/ImageCropPicker.m
