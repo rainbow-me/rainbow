@@ -2,7 +2,7 @@ import { analytics } from '@/analytics';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { AssetType, AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
+import { AssetType, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
@@ -828,7 +828,7 @@ export default function SendSheet() {
   }, [updateDefaultGasLimit]);
 
   useEffect(() => {
-    if ((isValidAddress && showAssetList) || (isValidAddress && showAssetForm && selected?.type === AssetTypes.nft)) {
+    if ((isValidAddress && showAssetList) || (isValidAddress && showAssetForm && assetIsUniqueAsset(selected))) {
       Keyboard.dismiss();
     }
   }, [isValidAddress, selected, showAssetForm, showAssetList]);
