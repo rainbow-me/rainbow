@@ -57,7 +57,7 @@ import { getWallets, useAccountAddress, useIsHardwareWallet } from '@/state/wall
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { deviceUtils, ethereumUtils, isLowerCaseMatch, safeAreaInsetValues } from '@/utils';
+import { deviceUtils, ethereumUtils, isLowerCaseMatch, safeAreaInsetValues, time } from '@/utils';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -73,6 +73,8 @@ import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -674,6 +676,12 @@ export default function SendSheet() {
       };
 
       if (submitSuccessful) {
+        // if the user sent an NFT, we need to revalidate the NFT data
+        if (isUniqueAsset) {
+          const collectionId = `${selected.network}_${selected.contractAddress}`;
+          useNftsStore.getState(accountAddress).fetchNftCollection(collectionId, true);
+          useNftsStore.getState(accountAddress).fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
+        }
         performanceTracking.getState().executeFn({
           fn: goBackAndNavigate,
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,
@@ -682,7 +690,7 @@ export default function SendSheet() {
         })();
       }
     },
-    [amountDetails, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
+    [accountAddress, amountDetails, goBack, isENS, isHardwareWallet, isUniqueAsset, navigate, onSubmit, recipient, selected]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {

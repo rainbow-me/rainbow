@@ -535,8 +535,8 @@ export const createSignableTransaction = async (transaction: NewTransactionNonNu
   if (isNativeAsset(transaction.asset.address, transaction.chainId)) {
     return getTxDetails(transaction);
   }
-  const isNft = transaction.asset.type === AssetType.nft;
-  const result = isNft ? await getTransferNftTransaction(transaction) : await getTransferTokenTransaction(transaction);
+  const isUniqueAsset = assetIsUniqueAsset(transaction.asset);
+  const result = isUniqueAsset ? await getTransferNftTransaction(transaction) : await getTransferTokenTransaction(transaction);
 
   // `result` will conform to `TransactionDetailsInput`, except it will have
   // either { gasPrice: string } | { maxFeePerGas: string; maxPriorityFeePerGas: string }
@@ -552,7 +552,7 @@ export const createSignableTransaction = async (transaction: NewTransactionNonNu
  * @return The estimated portion.
  */
 const estimateAssetBalancePortion = (asset: ParsedAddressAsset | UniqueAsset): string => {
-  if (assetIsParsedAddressAsset(asset) && asset.type !== AssetType.nft && asset.balance?.amount) {
+  if (!assetIsUniqueAsset(asset) && asset.balance?.amount) {
     const assetBalance = asset.balance?.amount;
     const decimals = asset.decimals;
     const portion = multiply(assetBalance, 0.1);
@@ -652,7 +652,7 @@ export const buildTransaction = async (
     to: _recipient,
     value,
   };
-  if (assetIsUniqueAsset(asset) && asset.type === AssetType.nft) {
+  if (assetIsUniqueAsset(asset)) {
     const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,

@@ -27,7 +27,8 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
 
     // from closed -> open, let's fetch the inner nft metadata
     if (!isOpen) {
-      useNftsStore.getState().fetchNftCollection(uid.toLowerCase());
+      const force = (useNftsStore.getState().getNftsByCollection(uid.toLowerCase())?.size || 0) !== (total || 0);
+      useNftsStore.getState().fetchNftCollection(uid.toLowerCase(), force);
     }
   });
 
