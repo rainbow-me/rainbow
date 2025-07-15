@@ -135,6 +135,12 @@ const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
 const ENS_CONFIGURATION_EXPLAINER =
   "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name.";
 
+const missingRegex = /missing.*translation|translation.*missing/i;
+
+function hasMissingTranslation(str: string): boolean {
+  return missingRegex.test(str);
+}
+
 function getGasExplainerText(networkName: string): string {
   return lang.t(l.gas.text, { networkName });
 }
@@ -185,13 +191,14 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     case 'network': {
       const { chainId } = params;
       const chainName = chainsLabel[chainId];
-      let title = lang.t(`explain.default_network_explainer.title`, { chainName });
-      let text = lang.t(`explain.default_network_explainer.text`, { chainName });
-      try {
-        title = lang.t(`explain.${chainName.toLowerCase()}.title`);
-        text = lang.t(`explain.${chainName.toLowerCase()}.text`);
-      } catch (e) {
-        /* Do nothing, use defaults */
+      const chainNameLower = chainName.toLowerCase();
+      let title = lang.t(`explain.${chainNameLower}.title`);
+      let text = lang.t(`explain.${chainNameLower}.text`);
+      if (hasMissingTranslation(title)) {
+        title = lang.t(`explain.default_network_explainer.title`, { chainName });
+      }
+      if (hasMissingTranslation(text)) {
+        text = lang.t(`explain.default_network_explainer.text`, { chainName });
       }
       return {
         emoji: '⛽️',

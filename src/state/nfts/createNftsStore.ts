@@ -494,13 +494,15 @@ export const createNftsStore = (address: Address | string) =>
                 { force, skipStoreUpdates: true, cacheTime: time.infinity, staleTime: time.infinity }
               );
 
-              if (!data) continue;
+              // retry clause for if there are no nfts in the collection data
+              if (!data?.nftsByCollection.size) continue;
 
               const now = Date.now();
               set(state => ({
                 nftsByCollection: new Map([...state.nftsByCollection, ...data.nftsByCollection]),
                 fetchedCollections: { ...state.fetchedCollections, [normalizedCollectionId]: now },
               }));
+              return;
             } catch (error) {
               logger.error(new RainbowError(`Attempt ${attempt} failed to fetch NFT collection: ${normalizedCollectionId}`, error));
               if (attempt === MAX_RETRIES) {
