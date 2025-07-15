@@ -53,7 +53,7 @@ export type AddysAssetPrice = {
 
 export interface ParsedAsset {
   address: string;
-  color?: string | { light: string; dark: string };
+  color?: string;
   colors?: TokenColors;
   chainId: number;
   chainName?: string;
@@ -72,23 +72,6 @@ export interface ParsedAsset {
   symbol: string;
   type?: string;
   uniqueId: string;
-  isCoin?: boolean;
-  isSmall?: boolean;
-  balance?: {
-    amount: string;
-    display: string;
-  };
-  native?: {
-    balance: {
-      amount: string;
-      display: string;
-    };
-    change?: string;
-    price?: {
-      amount: string;
-      display: string;
-    };
-  };
 }
 
 export type RainbowAddressAssets = Record<string, ParsedAddressAsset>;

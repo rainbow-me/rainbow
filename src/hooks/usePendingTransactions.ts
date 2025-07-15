@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react';
-import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { useCallback, useMemo } from 'react';
 
 export default function usePendingTransactions() {
   const accountAddress = useAccountAddress();
@@ -19,8 +19,3 @@ export default function usePendingTransactions() {
     pendingTransactions,
   };
 }
-
-export const usePendingTransactionByHash = (transactionHash: string) => {
-  const accountAddress = useAccountAddress();
-  return usePendingTransactionsStore(state => state.pendingTransactions[accountAddress].find(tx => tx.hash === transactionHash));
-};

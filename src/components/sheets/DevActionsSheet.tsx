@@ -598,7 +598,7 @@ export function DevActionsSheet() {
   //   };
   // };
 
-  const current: RainbowTransaction[] = [];
+  let current: RainbowTransaction[] = [];
 
   function addThenUpdate(transaction: RainbowTransaction) {
     current.push(transaction);
@@ -658,6 +658,7 @@ export function DevActionsSheet() {
           <Box gap={12}>
             <Button
               onPress={() => {
+                current = [];
                 usePendingTransactionsStore.getState().clearPendingTransactions();
                 useToastStore.setState(() => ({
                   hiddenToasts: {},

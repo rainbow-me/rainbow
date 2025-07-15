@@ -9,6 +9,7 @@ export const RainbowToastSwapStatuses = {
   [TransactionStatus.pending]: TransactionStatus.swapping,
   [TransactionStatus.swapping]: TransactionStatus.swapping,
   [TransactionStatus.swapped]: TransactionStatus.swapped,
+  [TransactionStatus.failed]: TransactionStatus.failed,
 } as const;
 
 export const RainbowToastSendStatuses = {
@@ -90,6 +91,7 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
         transactionHash: tx.hash,
         type: 'send',
         status: status,
+        // @ts-expect-error it is there
         displayAmount: tx.asset?.balance?.display || '0',
         token: symbol,
         tokenName: tx.asset?.name || tx.name || '',
@@ -103,7 +105,6 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
   }
 
   if (tx.type === 'mint') {
-    console.log('finding mint', mints, tx);
     const mint = mints?.find(mint => mint.contractAddress === tx.hash);
     const status = getMintToastStatus(tx.status);
     if (status) {

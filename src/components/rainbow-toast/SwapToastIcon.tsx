@@ -13,11 +13,11 @@ const ICON_INTERSECT = TOAST_ICON_SIZE * 0.15;
 
 export const SWAP_ICON_WIDTH = TOAST_ICON_SIZE * 2 - ICON_INTERSECT;
 
-export const SwapToastIcon = ({ toast }: { toast: RainbowToastSwap }) => {
+export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastSwap; size?: number }) => {
   const chainImage = <ChainImage chainId={toast.fromChainId} size={16} />;
 
   return toast.status === TransactionStatus.swapped ? (
-    <SFSymbolIcon name="check" />
+    <SFSymbolIcon size={size} name="check" />
   ) : (
     <View style={{ position: 'relative', flexDirection: 'row', height: TOAST_ICON_SIZE, width: SWAP_ICON_WIDTH }}>
       <View style={{ position: 'absolute', bottom: -4, right: 10, zIndex: 10 }}>{chainImage}</View>

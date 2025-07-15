@@ -15,6 +15,8 @@ import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
+import { useMints } from '@/resources/mints';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -31,8 +33,6 @@ import Animated, {
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { useMints } from '@/resources/mints';
 
 export function RainbowToastDisplay() {
   const { toasts } = useToastStore();
@@ -65,14 +65,6 @@ export function RainbowToastDisplay() {
   }
 
   const visibleToasts = [...removingToasts, ...toastsToShow];
-
-  console.log(
-    'pendingTransactions',
-    pendingTransactions.map(p => `${p.type}${p.status}`)
-  );
-  console.log('toasts', toasts.length);
-  console.log('visibleToasts', visibleToasts.length);
-  console.log('removingToasts', removingToasts.length);
 
   return (
     <FullWindowOverlay>
@@ -140,12 +132,10 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
   }, [distance, translateY]);
 
   const finishRemoveToastCallback = useCallback(() => {
-    console.log('finishRemoveToastCallback', id);
     finishRemoveToast(id);
   }, [id]);
 
   const swipeRemoveToastCallback = useCallback(() => {
-    console.warn('???????', id);
     swipeRemoveToast(id);
   }, [id]);
 
@@ -187,7 +177,6 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
           const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
           translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
             if (finished) {
-              console.log('finished', id);
               runOnJS(finishRemoveToastCallback)();
             }
           });
@@ -195,7 +184,7 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
           translateX.value = withSpring(0, springConfig);
         }
       });
-  }, [deviceWidth, id, lastChangeX, finishRemoveToastCallback, swipeRemoveToastCallback, translateX]);
+  }, [deviceWidth, lastChangeX, finishRemoveToastCallback, swipeRemoveToastCallback, translateX]);
 
   const dragStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;

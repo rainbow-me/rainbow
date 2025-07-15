@@ -155,7 +155,9 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
 
   return (
     <>
-      <Animated.View style={[{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' }, blurAnimatedStyle]}>
+      <Animated.View
+        style={[{ zIndex: 100, position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' }, blurAnimatedStyle]}
+      >
         <BlurView blurIntensity={1} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         <TouchableWithoutFeedback onPress={hide}>
           <Box style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)' }} />

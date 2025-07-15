@@ -12,7 +12,10 @@ export function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
   const subtitle = useSwapToastNetworkLabel({ toast });
   return (
     <ToastContent
-      iconWidth={toast.status === TransactionStatus.swapping ? SWAP_ICON_WIDTH : TOAST_ICON_SIZE}
+      iconWidth={
+        toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.failed ? SWAP_ICON_WIDTH : TOAST_ICON_SIZE
+      }
+      type={toast.status === TransactionStatus.failed ? 'error' : undefined}
       icon={icon}
       title={title}
       subtitle={subtitle}
@@ -21,7 +24,7 @@ export function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
 }
 
 export const getSwapToastStatusLabel = ({ toast }: { toast: RainbowToastSwap }) => {
-  return toast.status === TransactionStatus.swapping ? 'Swapping' : 'Swapped';
+  return toast.status === TransactionStatus.failed ? 'Failed' : toast.status === TransactionStatus.swapping ? 'Swapping' : 'Swapped';
 };
 
 export const useSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap }) => {

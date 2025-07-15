@@ -51,7 +51,6 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
             // already being handled / or by swipe
             !toast.removing
           ) {
-            console.warn('starting to remove', toast.id);
             newlyHiddenToasts ||= {};
             newlyHiddenToasts[toast.id] = true;
             return { ...toast, removing: true };
