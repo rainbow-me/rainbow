@@ -1,6 +1,14 @@
 #!/bin/bash
-
 set -euo pipefail
+
+npm i -g @perf-profiler/maestro@latest
+
+curl https://get.flashlight.dev | bash
+
+export PATH="$PATH":"$HOME/.flashlight/bin"
+export MAESTRO_DISABLE_UPDATE_CHECK=true
+export MAESTRO_CLI_NO_ANALYTICS=true
+export MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true
 
 APP_ID="me.rainbow"
 
@@ -15,7 +23,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 LOG_FILE=$(mktemp)
-@perf-profiler/maestro@latest start-session > "$LOG_FILE" 2>&1 &
+maestro start-session > "$LOG_FILE" 2>&1 &
 SESSION_PID=$!
 
 echo "⏳ Waiting for Maestro session to start..."
@@ -30,11 +38,16 @@ while ! grep -q "Maestro session started. Keep this running in the background." 
 done
 echo "✅ Maestro session is ready."
 
-npx @perf-profiler/maestro@latest test -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
+echo "Running prepare step..."
+maestro test -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
 
-mkdir -p e2e-artifacts/perf/results
+mkdir -p e2e-artifacts
+
+echo "Running Flashlight performance test..."
 flashlight test --bundleId "$APP_ID" \
-  --testCommand "npx @perf-profiler/maestro@latest test -e APP_ID=\"$APP_ID\" e2e/perf/TTI.yaml" \
-  --duration 10000 \
-  --resultsFilePath e2e-artifacts/perf/results/tti.json \
+  --testCommand "maestro test -e APP_ID=\"$APP_ID\" e2e/perf/TTI.yaml" \
+  --duration 20000 \
+  --resultsFilePath e2e-artifacts/tti.json \
   "$@"
+
+ls -a e2e-artifacts
