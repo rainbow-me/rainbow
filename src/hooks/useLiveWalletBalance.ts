@@ -21,13 +21,6 @@ export const useLiveWalletBalance = createDerivedStore(
       if (!data) return '0';
       return subtract(data.totals.total.amount, data.totals.totalLocked);
     });
-    console.log('positionsBalance', positionsBalance);
-    // const positionsBalance = $(usePositionsStore, state => {
-    //   console.log('positionsBalance', JSON.stringify(state.getData(params), null, 2));
-    //   const data = state.getData(params);
-    //   if (!data) return '0';
-    //   return data.totals.totals.amount;
-    // });
 
     let valueDifference = '0';
     if (liveTokens) {
