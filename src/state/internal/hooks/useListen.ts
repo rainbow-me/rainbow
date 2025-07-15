@@ -222,7 +222,7 @@ function buildOptionsObject<Selected>(
 }
 
 function getEnabledOption<Selected>(optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']): boolean {
-  return (typeof optionsOrEqualityFn === 'object' && optionsOrEqualityFn.enabled) || DEFAULT_OPTIONS.enabled;
+  return (typeof optionsOrEqualityFn === 'object' && optionsOrEqualityFn.enabled) ?? DEFAULT_OPTIONS.enabled;
 }
 
 function setOptions<S, Selected>(

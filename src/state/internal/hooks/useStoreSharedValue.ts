@@ -79,7 +79,7 @@ export function useStoreSharedValue<S, Selected>(
 export function useStoreSharedValue<S, Selected>(
   store: BaseRainbowStore<S>,
   selector: Selector<S, Selected>,
-  options: UseListenOptions<Selected>['equalityFn']
+  equalityFn: UseListenOptions<Selected>['equalityFn']
 ): ReadOnlySharedValue<Selected>;
 
 export function useStoreSharedValue<S, Selected>(
@@ -88,7 +88,7 @@ export function useStoreSharedValue<S, Selected>(
   optionsOrEqualityFn?: UseStoreSharedValueOptions<Selected>
 ): ReadOnlySharedValue<Selected> | ListenHandleTuple<Selected> {
   const initial = useStableValue(() => buildInitialState(store, selector, optionsOrEqualityFn));
-  const sharedValue = useSharedValue<Selected>(initial.value);
+  const sharedValue = useSharedValue<Selected>(initial.selected);
 
   const listenHandle = useListen(
     store,
@@ -110,12 +110,12 @@ function buildInitialState<S, Selected>(
   optionsOrEqualityFn: UseStoreSharedValueOptions<Selected>
 ): {
   returnListenHandle: boolean;
-  value: Selected;
+  selected: Selected;
 } {
   const hasOptions = typeof optionsOrEqualityFn === 'object' && optionsOrEqualityFn !== null;
   const returnListenHandle = (hasOptions && 'returnListenHandle' in optionsOrEqualityFn && optionsOrEqualityFn.returnListenHandle) || false;
   return {
     returnListenHandle,
-    value: selector(store.getState()),
+    selected: selector(store.getState()),
   };
 }
