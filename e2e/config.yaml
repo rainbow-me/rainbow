@@ -1,4 +1,5 @@
 flows:
+  - dapp-connections/*
   - onboarding/*
   - screens/*
   - settings/*
