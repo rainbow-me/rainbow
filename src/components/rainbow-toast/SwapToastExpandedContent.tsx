@@ -3,7 +3,7 @@ import { SWAP_ICON_WIDTH, SwapToastIcon } from '@/components/rainbow-toast/SwapT
 import { RainbowToastSwap } from '@/components/rainbow-toast/types';
 import React from 'react';
 import { View } from 'react-native';
-import { ToastExpandedContent } from './ToastExpandedContent';
+import { EXPANDED_ICON_SIZE, ToastExpandedContent } from './ToastExpandedContent';
 
 export function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
   const { transaction } = toast;
@@ -12,7 +12,7 @@ export function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap })
   const subtitle = getSwapToastStatusLabel({ toast });
 
   const icon = (
-    <View style={{ marginLeft: -(SWAP_ICON_WIDTH - 28) / 2 }}>
+    <View style={{ marginLeft: -(SWAP_ICON_WIDTH - EXPANDED_ICON_SIZE) / 2 }}>
       <SwapToastIcon toast={toast} />
     </View>
   );

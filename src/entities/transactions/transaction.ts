@@ -54,6 +54,7 @@ export enum TransactionStatus {
 }
 
 export interface RainbowTransaction {
+  isMocked?: boolean;
   address?: string;
   asset?:
     | (ParsedAsset &

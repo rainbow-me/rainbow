@@ -1,24 +1,17 @@
+import { useToastStore } from '@/components/rainbow-toast/useRainbowToasts';
 import { Sheet } from '@/components/sheet';
 import { Box, Text } from '@/design-system';
-import { RainbowTransaction, TransactionStatus } from '@/entities';
-import { ChainId } from '@/state/backendNetworks/types';
+import { RainbowTransaction, TransactionDirection, TransactionStatus } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React from 'react';
 import { Button, ScrollView } from 'react-native';
 
-const generateRandomHash = (): string => {
-  // Generate a random 64-character hex string (32 bytes)
-  const chars = '0123456789abcdef';
-  let hash = '0x';
-  for (let i = 0; i < 64; i++) {
-    hash += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return hash;
-};
+// the RainbowTransaction type is off from real data so i'm casting them:
 
 const exampleSwaps: RainbowTransaction[] = [
   {
+    isMocked: true,
     chainId: 1,
     data: '0x3c2b9a7d00000000000000000000000005be1d4c307c19450a6fd7ce7307ce72a3829a6000000000000000000000000068b3465833fb72a70ecdf485e0e4c7bd8665fc450000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000007bb0f7b08000000000000000000000000000000000000000000000000000000000000000184ac9650d800000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e404e45aaf000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000005be1d4c307c19450a6fd7ce7307ce72a3829a600000000000000000000000000000000000000000000000000000000000000bb800000000000000000000000000000000009726632680fb29d3f7a9734e3010e2000000000000000000000000000000000000000000000000000385c3954b780000000000000000000000000000000000000000000000000019e40eccca027a3000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d7e44d53',
     from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
@@ -155,7 +148,7 @@ const exampleSwaps: RainbowTransaction[] = [
     },
     changes: [
       {
-        direction: 'out',
+        direction: TransactionDirection.OUT,
         asset: {
           address: 'eth',
           uniqueId: 'eth_1',
@@ -299,7 +292,7 @@ const exampleSwaps: RainbowTransaction[] = [
         value: '1000000000000000',
       },
       {
-        direction: 'in',
+        direction: TransactionDirection.IN,
         asset: {
           colors: {
             primary: '#5A92AB',
@@ -443,11 +436,12 @@ const exampleSwaps: RainbowTransaction[] = [
     title: 'swap.pending',
     description: 'Ethereum',
     timestamp: 1752607596729,
-  },
+  } as unknown as RainbowTransaction,
 ];
 
 const exampleSends: RainbowTransaction[] = [
   {
+    isMocked: true,
     amount: '0.0003255',
     asset: {
       isCoin: true,
@@ -506,8 +500,9 @@ const exampleSends: RainbowTransaction[] = [
     title: 'send.pending',
     description: 'Ethereum',
     timestamp: 1752606976389,
-  },
+  } as unknown as RainbowTransaction,
   {
+    isMocked: true,
     amount: '0.00065165',
     asset: {
       isCoin: true,
@@ -566,7 +561,7 @@ const exampleSends: RainbowTransaction[] = [
     title: 'send.pending',
     description: 'Ethereum',
     timestamp: 1752606363082,
-  },
+  } as unknown as RainbowTransaction,
 ];
 
 let lastSend = 0;
@@ -589,38 +584,21 @@ export function DevActionsSheet() {
     };
   };
 
-  const createMockMintTransaction = (status: TransactionStatus): RainbowTransaction => {
-    return {
-      chainId: ChainId.mainnet,
-      from: accountAddress,
-      to: '0x495f947276749ce646f68ac8c248420045cb7b5e',
-      hash: generateRandomHash(),
-      nonce: Math.floor(Math.random() * 1000),
-      network: 'mainnet',
-      type: 'mint' as const,
-      status,
-      description: 'A beautiful NFT',
-    };
-  };
+  // const createMockMintTransaction = (status: TransactionStatus): RainbowTransaction => {
+  //   return {
+  //     chainId: ChainId.mainnet,
+  //     from: accountAddress,
+  //     to: '0x495f947276749ce646f68ac8c248420045cb7b5e',
+  //     hash: generateRandomHash(),
+  //     nonce: Math.floor(Math.random() * 1000),
+  //     network: 'mainnet',
+  //     type: 'mint' as const,
+  //     status,
+  //     description: 'A beautiful NFT',
+  //   };
+  // };
 
-  // the stores own update doesn't change status so we force it this way
-  function updateTransaction(transaction: RainbowTransaction) {
-    const { pendingTransactions } = usePendingTransactionsStore.getState();
-    usePendingTransactionsStore.getState().setPendingTransactions({
-      address: accountAddress,
-      pendingTransactions: pendingTransactions[accountAddress].map(px => {
-        if (px.hash === transaction.hash) {
-          return {
-            ...px,
-            status: transaction.status,
-          };
-        }
-        return px;
-      }),
-    });
-  }
-
-  let current: RainbowTransaction[] = [];
+  const current: RainbowTransaction[] = [];
 
   function addThenUpdate(transaction: RainbowTransaction) {
     current.push(transaction);
@@ -641,17 +619,17 @@ export function DevActionsSheet() {
   };
 
   const addMintTransaction = () => {
-    addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
+    // TODO - disabling as i moved to real data
+    // addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
   };
 
   const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send', status: TransactionStatus) => {
     const latest = current.findLast(px => px.type === type);
     if (latest) {
-      Object.assign(latest, { status });
       pendingTransactionsStore.setState(state => ({
         ...state,
         pendingTransactions: {
-          [accountAddress]: current,
+          [accountAddress]: current.map(item => (item === latest ? { ...item, status } : item)),
         },
       }));
     }
@@ -673,52 +651,48 @@ export function DevActionsSheet() {
     <Sheet>
       <Box paddingHorizontal="20px" paddingTop="44px">
         <Text size="20pt" weight="bold" color="label" align="center">
-          Toast Actions
+          Transactions
         </Text>
 
         <ScrollView style={{ marginTop: 20 }} showsVerticalScrollIndicator={false}>
           <Box gap={12}>
             <Button
               onPress={() => {
-                usePendingTransactionsStore.getState().setPendingTransactions({
-                  address: accountAddress,
-                  pendingTransactions: [],
-                });
+                usePendingTransactionsStore.getState().clearPendingTransactions();
+                useToastStore.setState(() => ({
+                  hiddenToasts: {},
+                  toasts: [],
+                }));
               }}
               title="Clear All"
             />
 
-            <Text size="17pt" weight="semibold" color="label">
-              Add New Transactions
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Send
             </Text>
 
             <Button onPress={addSendTransaction} title="Add Send Transaction" />
-            <Button onPress={addSwapTransaction} title="Add Swap Transaction" />
-            <Button onPress={addMintTransaction} title="Add Mint Transaction" />
-
-            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
-              Update Send Status
-            </Text>
-
             <Button onPress={() => updateLastSendTo(TransactionStatus.sending)} title="Update Send → Sending" />
             <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="Update Send → Sent" />
             <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="Update Send → Failed" />
 
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
-              Update Swap Status
+              Swap
             </Text>
 
+            <Button onPress={addSwapTransaction} title="Add Swap Transaction" />
             <Button onPress={() => updateLastSwapTo(TransactionStatus.swapping)} title="Update Swap → Swapping" />
             <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="Update Swap → Swapped" />
             <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="Update Swap → Failed" />
 
-            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
-              Update Mint Status
+            {/* <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Mint
             </Text>
 
+            <Button onPress={addMintTransaction} title="Add Mint Transaction" />
             <Button onPress={() => updateLastMintTo(TransactionStatus.minting)} title="Update Mint → Minting" />
             <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="Update Mint → Minted" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" /> */}
           </Box>
         </ScrollView>
       </Box>

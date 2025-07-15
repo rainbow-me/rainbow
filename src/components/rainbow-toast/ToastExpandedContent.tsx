@@ -12,7 +12,7 @@ type Props = {
   iconWidth?: number;
 };
 
-const EXPANDED_ICON_SIZE = 28;
+export const EXPANDED_ICON_SIZE = 34;
 
 export function ToastExpandedContent({ icon, statusLabel, label, transaction }: Props) {
   return (

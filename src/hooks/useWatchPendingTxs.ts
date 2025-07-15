@@ -67,9 +67,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   );
 
   const watchPendingTransactions = useCallback(async () => {
-    // disabling to test
-    return;
-
     if (!pendingTransactions?.length) return;
     const updatedPendingTransactions = await Promise.all(
       pendingTransactions.map((tx: RainbowTransaction) => processPendingTransaction(tx))
@@ -93,40 +90,43 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       }
     );
 
-    if (minedTransactions.length) {
-      minedTransactions.forEach(tx => {
-        if (tx.changes?.length) {
-          tx.changes?.forEach(change => {
-            change?.asset && processStaleAsset({ asset: change.asset, address, transactionHash: tx?.hash });
-          });
-        } else if (tx.asset) {
-          processStaleAsset({ address, asset: tx.asset, transactionHash: tx?.hash });
-        }
-      });
+    if (newPendingTransactions.some(p => p.isMocked)) {
+      if (minedTransactions.length) {
+        minedTransactions.forEach(tx => {
+          if (tx.changes?.length) {
+            tx.changes?.forEach(change => {
+              change?.asset && processStaleAsset({ asset: change.asset, address, transactionHash: tx?.hash });
+            });
+          } else if (tx.asset) {
+            processStaleAsset({ address, asset: tx.asset, transactionHash: tx?.hash });
+          }
+        });
 
-      userAssetsStore.getState().fetch(undefined, { force: true });
+        userAssetsStore.getState().fetch(undefined, { force: true });
 
-      const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
+        const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
 
-      await queryClient.refetchQueries({
-        queryKey: consolidatedTransactionsQueryKey({
-          address,
-          currency: nativeCurrency,
-          chainIds: supportedMainnetChainIds,
-        }),
-      });
-
-      // in case balances are not updated immediately lets refetch a couple seconds later
-      setTimeout(() => {
-        queryClient.refetchQueries({
+        await queryClient.refetchQueries({
           queryKey: consolidatedTransactionsQueryKey({
             address,
             currency: nativeCurrency,
             chainIds: supportedMainnetChainIds,
           }),
         });
-      }, 2000);
+
+        // in case balances are not updated immediately lets refetch a couple seconds later
+        setTimeout(() => {
+          queryClient.refetchQueries({
+            queryKey: consolidatedTransactionsQueryKey({
+              address,
+              currency: nativeCurrency,
+              chainIds: supportedMainnetChainIds,
+            }),
+          });
+        }, 2000);
+      }
     }
+
     setPendingTransactions({
       address,
       pendingTransactions: newPendingTransactions,

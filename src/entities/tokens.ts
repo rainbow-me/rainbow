@@ -54,7 +54,7 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
     display?: string;
   };
   chainId: number;
-  color?: string;
+  color?: string | { light: string; dark: string };
   colors?: TokenColors;
   icon_url?: string;
   price?: {
@@ -118,13 +118,13 @@ export interface TokenSearchToken {
 
 export interface RainbowToken extends Asset {
   chainId: ChainId;
-  color?: string;
+  color?: string | { light: string; dark: string };
   highLiquidity?: boolean;
   totalLiquidity?: number;
   favorite?: boolean;
   isRainbowCurated?: boolean;
   isVerified?: boolean;
-  shadowColor?: string;
+  shadowColor?: string | { light: string; dark: string };
   uniqueId: string;
   type?: string;
   network: string;

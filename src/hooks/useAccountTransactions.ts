@@ -34,7 +34,7 @@ export default function useAccountTransactions() {
     const latestTransactions = data.pages
       .map(p => p.transactions)
       .flat()
-      .filter(t => t.from?.toLowerCase() === accountAddress?.toLowerCase())
+      .filter(t => t.from?.toLowerCase() === accountAddress?.toLowerCase() && !t.isMocked)
       .reduce(
         (latestTxMap, currentTx) => {
           const currentChainId = currentTx?.chainId;

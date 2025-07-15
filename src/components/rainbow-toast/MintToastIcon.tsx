@@ -6,12 +6,12 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import React from 'react';
 import { View } from 'react-native';
 
-export function MintToastIcon({ toast }: { toast: RainbowToastMint }) {
+export function MintToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastMint; size?: number }) {
   const colors = useToastColors();
 
   const content = (() => {
     if (toast.image) {
-      return <RainbowImage source={{ url: toast.image }} style={{ width: TOAST_ICON_SIZE, height: TOAST_ICON_SIZE }} />;
+      return <RainbowImage source={{ url: toast.image }} style={{ width: size, height: size }} />;
     }
     return <ShimmerAnimation color={colors.foreground} />;
   })();
@@ -22,8 +22,8 @@ export function MintToastIcon({ toast }: { toast: RainbowToastMint }) {
         backgroundColor: colors.background,
         borderRadius: 10,
         overflow: 'hidden',
-        width: TOAST_ICON_SIZE,
-        height: TOAST_ICON_SIZE,
+        width: size,
+        height: size,
       }}
     >
       {content}

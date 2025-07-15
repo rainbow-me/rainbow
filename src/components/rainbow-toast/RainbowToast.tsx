@@ -66,7 +66,10 @@ export function RainbowToastDisplay() {
 
   const visibleToasts = [...removingToasts, ...toastsToShow];
 
-  console.log('pendingTransactions', JSON.stringify(pendingTransactions, null, 2));
+  console.log(
+    'pendingTransactions',
+    pendingTransactions.map(p => `${p.type}${p.status}`)
+  );
   console.log('toasts', toasts.length);
   console.log('visibleToasts', visibleToasts.length);
   console.log('removingToasts', removingToasts.length);
@@ -120,7 +123,7 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
 
     if (translateY.value === 0) {
       if (index === 0) {
-        // first toast start from above
+        // first toast starts from above
         translateY.value = insets.top - 80;
       } else if (index === 2) {
         // bottom toast start from below
@@ -142,12 +145,15 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
   }, [id]);
 
   const swipeRemoveToastCallback = useCallback(() => {
+    console.warn('???????', id);
     swipeRemoveToast(id);
   }, [id]);
 
-  // there's two ways to remove toasts - from a swipe, or from it being removed via pendingTransactions
-  // for swipe, we handle it internally here with swipeRemoveToast which sets `removing` to "swipe", but for state we just get `removing` true
-  // and we handle it here in an effect, animating it more simply just by fading it out downwards
+  // there's two ways to remove toasts - from a swipe, or from it being removed
+  // via pendingTransactions for swipe, we handle it internally here with
+  // swipeRemoveToast which sets `removing` to "swipe", but for state we just
+  // get `removing` true and we handle it here in an effect, animating it more
+  // simply just by fading it out downwards
   const nonSwipeRemove = toast.removing === true;
   useEffect(() => {
     if (nonSwipeRemove) {

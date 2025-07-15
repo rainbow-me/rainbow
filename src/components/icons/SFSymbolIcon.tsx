@@ -1,24 +1,23 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { fonts } from '@/styles';
+import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import { fonts } from '@/styles';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const sfSymbols = {
   check: '􀆅',
   exclamationMark: '􀅎',
 };
 
-const ICON_SIZE = 28;
-
-export function SFSymbolIcon({ name }: { name: keyof typeof sfSymbols }) {
+export function SFSymbolIcon({ name, size = TOAST_ICON_SIZE }: { name: keyof typeof sfSymbols; size?: number }) {
   const colors = useToastColors();
   const bg = name === 'check' ? colors.green : colors.red;
 
   return (
     <View
       style={{
-        width: ICON_SIZE,
-        height: ICON_SIZE,
+        width: size,
+        height: size,
         borderRadius: 100,
         borderWidth: 2,
         borderColor: bg,

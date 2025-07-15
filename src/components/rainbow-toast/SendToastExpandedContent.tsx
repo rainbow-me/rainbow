@@ -1,7 +1,7 @@
 import { SendToastIcon } from '@/components/rainbow-toast/SendToastContent';
 import { TransactionStatus } from '@/entities';
 import React from 'react';
-import { ToastExpandedContent } from './ToastExpandedContent';
+import { EXPANDED_ICON_SIZE, ToastExpandedContent } from './ToastExpandedContent';
 import { RainbowToastSend } from './types';
 
 export function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
@@ -13,7 +13,7 @@ export function SendToastExpandedContent({ toast }: { toast: RainbowToastSend })
         ? 'Sent'
         : 'Failed';
 
-  const icon = <SendToastIcon toast={toast} />;
+  const icon = <SendToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
 
   return <ToastExpandedContent icon={icon} statusLabel={subtitle} label={title} transaction={toast.transaction} />;
 }

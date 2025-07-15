@@ -5,7 +5,7 @@ import React from 'react';
 import { View } from 'react-native';
 
 interface ToastContentProps {
-  title: string;
+  title: React.ReactNode;
   subtitle: React.ReactNode;
   icon: React.ReactNode;
   iconWidth?: number;
@@ -20,6 +20,9 @@ export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_IC
       <View
         style={{
           width: iconWidth,
+          // the ciruclar icons look further from the left edge than the text
+          // looks from the right edge, so adjusting it visually a bit here
+          marginLeft: -2,
           height: TOAST_ICON_SIZE,
           flexShrink: 0,
         }}

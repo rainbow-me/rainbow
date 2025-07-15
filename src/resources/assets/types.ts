@@ -53,7 +53,7 @@ export type AddysAssetPrice = {
 
 export interface ParsedAsset {
   address: string;
-  color?: string;
+  color?: string | { light: string; dark: string };
   colors?: TokenColors;
   chainId: number;
   chainName?: string;
@@ -83,8 +83,8 @@ export interface ParsedAsset {
       amount: string;
       display: string;
     };
-    change: string;
-    price: {
+    change?: string;
+    price?: {
       amount: string;
       display: string;
     };
