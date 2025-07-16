@@ -6,6 +6,7 @@ import React, { memo, useMemo } from 'react';
 import { SharedValue } from 'react-native-reanimated';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { TextSize } from '@/design-system/components/Text/Text';
+import { IS_TEST } from '@/env';
 
 export const ActivityTabIcon = memo(function ActivityTabIcon({
   accentColor,
@@ -32,7 +33,7 @@ export const ActivityTabIcon = memo(function ActivityTabIcon({
     }
   }, [pendingCount]);
 
-  return pendingCount > 0 ? (
+  return pendingCount > 0 && !IS_TEST ? (
     <Box
       testID="transactions-pending-tab-icon"
       width={{ custom: TAB_BAR_ICON_SIZE }}
