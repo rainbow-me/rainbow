@@ -3,7 +3,7 @@ import { SwapToastExpandedContent } from '@/components/rainbow-toast/SwapToastEx
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Box, useColorMode } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { Canvas, Path, point, Shadow } from '@shopify/react-native-skia';
+import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
 import { getSvgPath } from 'figma-squircle';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
