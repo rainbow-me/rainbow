@@ -164,6 +164,7 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
 
   return (
     <>
+      {/* backdrop */}
       <Animated.View
         style={[
           { zIndex: 100, position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' },
@@ -177,6 +178,7 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
         </TouchableWithoutFeedback>
       </Animated.View>
 
+      {/* content card */}
       <View style={{ zIndex: 100 }}>
         <GestureDetector gesture={pan}>
           <Animated.View

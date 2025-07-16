@@ -9,13 +9,6 @@ import { View } from 'react-native';
 export function MintToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastMint; size?: number }) {
   const colors = useToastColors();
 
-  const content = (() => {
-    if (toast.image) {
-      return <RainbowImage source={{ url: toast.image }} style={{ width: size, height: size }} />;
-    }
-    return <ShimmerAnimation color={colors.foreground} />;
-  })();
-
   return (
     <View
       style={{
@@ -26,7 +19,11 @@ export function MintToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
         height: size,
       }}
     >
-      {content}
+      {toast.image ? (
+        <RainbowImage source={{ url: toast.image }} style={{ width: size, height: size }} />
+      ) : (
+        <ShimmerAnimation color={colors.foreground} />
+      )}
     </View>
   );
 }

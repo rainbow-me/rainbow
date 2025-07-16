@@ -7,16 +7,13 @@ import { TransactionStatus } from '@/entities';
 import React from 'react';
 
 export function SendToastContent({ toast }: { toast: RainbowToastSend }) {
-  const icon = <SendToastIcon toast={toast} />;
-
   const title = toast.status === TransactionStatus.sent ? 'Sent' : toast.status === TransactionStatus.failed ? 'Failed' : 'Sending';
-
   const subtitle = toast.displayAmount;
 
   return (
     <ToastContent
       key={toast.status}
-      icon={icon}
+      icon={<SendToastIcon toast={toast} />}
       title={title}
       subtitle={subtitle}
       type={toast.status === TransactionStatus.failed ? 'error' : undefined}
