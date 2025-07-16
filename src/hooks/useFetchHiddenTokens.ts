@@ -3,6 +3,8 @@ import { getPreference } from '@/model/preferences';
 import { time } from '@/utils';
 import { isDataComplete } from '@/state/nfts/utils';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { EthereumWalletType } from '@/helpers/walletTypes';
 
 export const hiddenTokensQueryKey = ({ address }: { address: string }) => ['hidden-tokens', address];
 
@@ -15,6 +17,9 @@ export async function getHidden(address: string, isMigration = false) {
   if (hiddenTokens?.hidden?.ids?.length) {
     const tokens = hiddenTokens.hidden.ids;
     if (!isDataComplete(tokens) && !isMigration) {
+      const isReadOnlyWallet = getWalletWithAccount(address)?.type === EthereumWalletType.readOnly;
+      if (isReadOnlyWallet) return STABLE_ARRAY;
+
       const { fetch } = useNftsStore.getState(address);
 
       const data = await fetch(

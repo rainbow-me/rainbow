@@ -4,6 +4,8 @@ import { time } from '@/utils';
 import { queryClient } from '@/react-query';
 import { isDataComplete } from '@/state/nfts/utils';
 import { useNftsStore } from '@/state/nfts/nfts';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { EthereumWalletType } from '@/helpers/walletTypes';
 
 export const showcaseTokensQueryKey = ({ address }: { address: string }) => ['showcase-tokens', address];
 
@@ -18,6 +20,9 @@ export async function getShowcase(address: string, isMigration = false) {
   if (showcaseTokens?.showcase?.ids?.length) {
     const tokens = showcaseTokens.showcase.ids;
     if (!isDataComplete(tokens) && !isMigration) {
+      const isReadOnlyWallet = getWalletWithAccount(address)?.type === EthereumWalletType.readOnly;
+      if (isReadOnlyWallet) return STABLE_ARRAY;
+
       const { fetch } = useNftsStore.getState(address);
 
       const data = await fetch(
