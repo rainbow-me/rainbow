@@ -17,6 +17,7 @@ import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { RootStackParamList } from './types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -56,7 +57,7 @@ export default function RegisterENSNavigator() {
 
   const { colors } = useTheme();
 
-  const contentHeight = deviceHeight - SheetHandleFixedToTopHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
+  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
 
@@ -114,14 +115,7 @@ export default function RegisterENSNavigator() {
 
   return (
     <>
-      <SlackSheet
-        additionalTopPadding={IS_ANDROID ? !!StatusBar.currentHeight : false}
-        contentHeight={contentHeight}
-        height="100%"
-        ref={sheetRef}
-        removeTopPadding
-        scrollEnabled
-      >
+      <SlackSheet additionalTopPadding contentHeight={contentHeight} ref={sheetRef} scrollEnabled>
         <Box
           style={{
             height: contentHeight,

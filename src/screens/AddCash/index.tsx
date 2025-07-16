@@ -24,7 +24,6 @@ import * as lang from '@/languages';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const statusBarHeight = StatusBar.currentHeight || 0;
 
 const providerComponents = {
   [FiatProviderName.Ramp]: Ramp,
@@ -38,7 +37,7 @@ export function AddCashSheet() {
   const accountAddress = useAccountAddress();
   const borderColor = useForegroundColor('separatorTertiary');
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
-  const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;
+  const sheetHeight = deviceHeight - insets.top;
 
   const {
     isLoading,
@@ -81,7 +80,7 @@ export function AddCashSheet() {
     <Box
       background="surfaceSecondary"
       height={{ custom: sheetHeight }}
-      top={{ custom: IS_IOS ? insets.top : statusBarHeight }}
+      top={{ custom: insets.top }}
       width="full"
       alignItems="center"
       overflow="hidden"

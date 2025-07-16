@@ -64,7 +64,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import lang from 'i18n-js';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, StatusBar, TextInput, View } from 'react-native';
+import { InteractionManager, Keyboard, TextInput, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import { type Address } from 'viem';
 import { GasSpeedButton } from '../components/gas';
@@ -74,7 +74,6 @@ import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
-const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
 
 type ComponentPropsWithTheme = {
   theme: ThemeContextProps;
@@ -83,7 +82,6 @@ type ComponentPropsWithTheme = {
 const Container = styled(View)({
   backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.transparent,
   flex: 1,
-  paddingTop: IS_IOS ? 0 : statusBarHeight,
   width: '100%',
 });
 

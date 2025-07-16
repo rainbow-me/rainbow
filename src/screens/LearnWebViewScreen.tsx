@@ -120,7 +120,7 @@ export default function LearnWebViewScreen() {
       contentHeight={contentHeight}
       height="100%"
       removeTopPadding
-      additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+      additionalTopPadding
     >
       <View pointerEvents="none">
         <WebView

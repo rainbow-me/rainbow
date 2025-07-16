@@ -532,7 +532,7 @@ const MintSheet = () => {
         {...(IS_IOS ? { height: '100%' } : {})}
         ref={sheetRef}
         scrollEnabled
-        additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+        additionalTopPadding
         testID="nft-mint-sheet"
         yPosition={yPosition}
       >

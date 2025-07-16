@@ -34,8 +34,6 @@ export default function AudioPlayer({ fontColor, imageColor, uri }) {
   const [ready, setReady] = useState(false);
   const [closed, setClosed] = useState(false);
   useEffect(() => {
-    StatusBarHelper.setBackgroundColor('transparent', false);
-    StatusBarHelper.setTranslucent(true);
     StatusBarHelper.setDarkContent();
   }, []);
 

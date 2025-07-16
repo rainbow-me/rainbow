@@ -263,10 +263,10 @@ export default function ChartExpandedState({ asset }) {
 
   return (
     <SlackSheet
-      additionalTopPadding={IS_ANDROID}
+      additionalTopPadding
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled
-      {...(IS_IOS ? { height: '100%' } : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+      {...(IS_IOS ? { height: '100%' } : { contentHeight: screenHeight - 80 })}
     >
       <ChartPathProvider data={throttledData}>
         <Chart

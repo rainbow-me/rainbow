@@ -46,7 +46,7 @@ export default function AppIconUnlockSheet() {
 
   return (
     <SimpleSheet backgroundColor={useBackgroundColor('surfacePrimary')} scrollEnabled={false}>
-      <View onLayout={e => setParams({ longFormHeight: e.nativeEvent.layout.height + (IS_ANDROID ? StatusBar.currentHeight ?? 0 : 0) })}>
+      <View onLayout={e => setParams({ longFormHeight: e.nativeEvent.layout.height })}>
         <Inset top="36px" bottom="20px" horizontal="20px">
           <Stack space="36px">
             <Inset horizontal="20px">

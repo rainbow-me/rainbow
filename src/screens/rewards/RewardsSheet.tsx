@@ -52,7 +52,7 @@ export const RewardsSheet: React.FC = () => {
         // @ts-expect-error JS component
         <DynamicHeightSheet
           backgroundColor={backgroundColor}
-          additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+          additionalTopPadding
           limitScrollViewContent
           // sheetHeightRatio={0.67}
           sheetHeight={568}

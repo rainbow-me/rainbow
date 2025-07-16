@@ -30,19 +30,20 @@ interface ContainerProps {
   contentHeight?: number;
   deferredHeight?: boolean;
   deviceHeight: number;
+  removeTopPadding?: boolean;
 }
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight }: ContainerProps) => ({
+})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight, removeTopPadding }: ContainerProps) => ({
   ...(deferredHeight || IS_IOS
     ? {}
     : {
         top:
           typeof additionalTopPadding === 'number'
             ? additionalTopPadding
-            : contentHeight && additionalTopPadding
-              ? deviceHeight - contentHeight
+            : additionalTopPadding && contentHeight
+              ? deviceHeight - contentHeight - (removeTopPadding ? 0 : SheetHandleFixedToTopHeight)
               : 0,
       }),
   ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
@@ -57,7 +58,6 @@ const Container = styled(Centered).attrs({
 interface ContentProps {
   limitScrollViewContent?: boolean;
   contentHeight?: number;
-  deviceHeight: number;
   backgroundColor: string;
   removeTopPadding?: boolean;
 }
@@ -67,9 +67,9 @@ const Content = styled(ScrollView).attrs(({ limitScrollViewContent }: ContentPro
   directionalLockEnabled: true,
   keyboardShouldPersistTaps: 'always',
   scrollEventThrottle: 16,
-}))(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding }: ContentProps) => ({
+}))(({ contentHeight, backgroundColor, removeTopPadding }: ContentProps) => ({
   backgroundColor: backgroundColor,
-  ...(contentHeight ? { height: deviceHeight + contentHeight } : { height: '100%' }),
+  ...(contentHeight ? { height: contentHeight } : { height: '100%' }),
   paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
   width: '100%',
 }));
@@ -205,6 +205,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
+        removeTopPadding={removeTopPadding}
         testID={testID}
         {...props}
       >
@@ -221,7 +222,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
-            deviceHeight={deviceHeight}
             limitScrollViewContent={limitScrollViewContent}
             onContentSizeChange={onContentSizeChange}
             ref={sheet}

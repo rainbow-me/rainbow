@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
@@ -26,7 +26,6 @@ const Stack = createStackNavigator();
 export function SettingsSheet() {
   const { height: deviceHeight } = useDimensions();
   const { goBack, navigate } = useNavigation();
-  const { top } = useSafeAreaInsets();
   const { colors } = useTheme();
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
@@ -43,13 +42,7 @@ export function SettingsSheet() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet
-          testID="settings-sheet"
-          backgroundColor={backgroundColor as string}
-          customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
-          scrollEnabled={false}
-          useAdditionalTopPadding={IS_ANDROID && !!StatusBar.currentHeight}
-        >
+        <SimpleSheet testID="settings-sheet" backgroundColor={backgroundColor as string} scrollEnabled={false} useAdditionalTopPadding>
           <Stack.Navigator
             screenOptions={{
               ...memoSettingsOptions,

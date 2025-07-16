@@ -21,7 +21,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { safeAreaInsetValues } from '@/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
@@ -213,7 +213,7 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
-    marginTop: StatusBar.currentHeight ?? 0,
+    backgroundColor: 'red',
   },
   swapWarningAndExchangeWrapper: {
     position: 'relative',

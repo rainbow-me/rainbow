@@ -11,7 +11,7 @@ export const SEARCH_BAR_WIDTH = DEVICE_WIDTH - 72 * 2;
 
 const ADJUSTED_DEVICE_HEIGHT = IS_IOS ? DEVICE_HEIGHT : DEVICE_HEIGHT - (isUsingButtonNavigation() ? 0 : safeAreaInsetValues.bottom);
 
-export const TOP_INSET = IS_IOS ? Math.max(safeAreaInsetValues.top, 20) : StatusBar.currentHeight ?? 40;
+export const TOP_INSET = Math.max(safeAreaInsetValues.top, 20);
 export const WEBVIEW_HEIGHT = ADJUSTED_DEVICE_HEIGHT - TOP_INSET - (IS_IOS ? TAB_BAR_HEIGHT : BASE_TAB_BAR_HEIGHT) - BOTTOM_BAR_HEIGHT;
 export const EXTRA_WEBVIEW_HEIGHT = 62;
 export const COLLAPSED_WEBVIEW_ASPECT_RATIO = 4 / 3;

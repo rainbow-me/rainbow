@@ -141,7 +141,6 @@ export const Playground = () => {
         <DesignSystemProvider colorMode={colorMode}>
           <Box background="body (Deprecated)" flexGrow={1}>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
-              {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
               <Inset space="20px">
                 <Stack space="24px">
                   <TouchableOpacity onPress={toggleColorMode}>

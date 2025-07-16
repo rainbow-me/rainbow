@@ -215,7 +215,6 @@ export const styles = StyleSheet.create({
     borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
-    marginTop: StatusBar.currentHeight ?? 0,
   },
   staticInputContainerStyles: {
     shadowOffset: { width: 0, height: 6 },

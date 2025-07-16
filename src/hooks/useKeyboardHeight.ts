@@ -6,6 +6,8 @@ import KeyboardTypes from '@/helpers/keyboardTypes';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
 import { AppState } from '@/redux/store';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { IS_ANDROID } from '@/env';
 
 interface UseKeyboardHeightOptions {
   keyboardType?: keyof typeof KeyboardTypes;
@@ -19,6 +21,9 @@ export default function useKeyboardHeight(options: UseKeyboardHeightOptions = {}
   // things like "autofill" or "autocomplete" are enabled on the target input.
   const { keyboardType = KeyboardTypes.default, shouldListen = true } = options;
   const listenerRef = useRef<EmitterSubscription>(undefined);
+  const insets = useSafeAreaInsets();
+  // Android keyboard height doesn't include the bottom inset.
+  const extraHeight = IS_ANDROID ? insets.bottom : 0;
 
   const dispatch = useDispatch();
 
@@ -29,7 +34,7 @@ export default function useKeyboardHeight(options: UseKeyboardHeightOptions = {}
 
   const handleKeyboardDidShow: KeyboardEventListener = useCallback(
     event => {
-      const newHeight = Math.floor(event.endCoordinates.height);
+      const newHeight = Math.floor(event.endCoordinates.height + extraHeight);
       const isRouteActive = useNavigationStore.getState().isRouteActive(routeName);
       if (
         // We don't want to set the height cache when the screen is out of focus.
@@ -45,7 +50,7 @@ export default function useKeyboardHeight(options: UseKeyboardHeightOptions = {}
         );
       }
     },
-    [dispatch, heightForKeyboardType, keyboardType, routeName]
+    [dispatch, heightForKeyboardType, keyboardType, routeName, extraHeight]
   );
 
   const addListener = useCallback(() => {

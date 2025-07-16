@@ -9580,7 +9580,7 @@ __metadata:
     react-native-dark-mode: "npm:0.2.2"
     react-native-device-info: "npm:5.3.1"
     react-native-dotenv: "npm:2.4.2"
-    react-native-edge-to-edge: "npm:1.4.3"
+    react-native-edge-to-edge: "npm:1.6.2"
     react-native-extra-dimensions-android: "npm:1.2.2"
     react-native-fast-image: "npm:8.5.11"
     react-native-fs: "npm:2.16.6"
@@ -23328,16 +23328,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-edge-to-edge@npm:1.4.3":
-  version: 1.4.3
-  resolution: "react-native-edge-to-edge@npm:1.4.3"
-  peerDependencies:
-    react: ">=18.2.0"
-    react-native: ">=0.74.0"
-  checksum: 10c0/a73956604b2f0cd8de493295b556258c8c4d39bca040fa513ad441f460e80f9501a0c7840a5cf99453740c1b0c10b305fdd86fdb0a8eb57ff7bf61109532787d
-  languageName: node
-  linkType: hard
-
 "react-native-edge-to-edge@npm:1.6.0":
   version: 1.6.0
   resolution: "react-native-edge-to-edge@npm:1.6.0"
@@ -23345,6 +23335,16 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/6373cc1b447eae31689a9b62e38b15621e9273626e2324700c4c3eb58c02ce489236a4b9e3e0dc1187e062defd8316195c5b1213facd718706b79b92127a05a3
+  languageName: node
+  linkType: hard
+
+"react-native-edge-to-edge@npm:1.6.2":
+  version: 1.6.2
+  resolution: "react-native-edge-to-edge@npm:1.6.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/4c9defc3075aedff2bcef2a39ed97d037f220342baa95d374f3c68dee9e4493429f2f8f3b3dbb7ba355cdfb89a00d6400218c90944cc80e84283d3eb8646c584
   languageName: node
   linkType: hard
 
