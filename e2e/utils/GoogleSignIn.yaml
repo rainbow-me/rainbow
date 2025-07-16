@@ -1,0 +1,60 @@
+appId: ${APP_ID}
+---
+- assertVisible: '(Sign in|Choose an account)'
+
+- runScript:
+    when:
+      visible: ${CLOUD_BACKUP_EMAIL}
+    file: ./isLoggedIn.js
+
+# Already logged in
+- runFlow:
+    when:
+      true: ${output.isLoggedIn == true}
+    commands:
+      - tapOn: ${CLOUD_BACKUP_EMAIL}
+
+- runFlow:
+    when:
+      true: ${output.isLoggedIn != true}
+    commands:
+      # Sign in to Google Drive, no existing account
+      - runFlow:
+          when:
+            visible: Sign in
+          commands:
+            - tapOn: 'Email or phone'
+
+      # Sign in to Google Drive, has existing account
+      - runFlow:
+          when:
+            visible: Choose an account
+          commands:
+            - tapOn: 'Add another account'
+
+      - tapOn:
+          id: 'identifierId'
+      - inputText: ${CLOUD_BACKUP_EMAIL}
+      - tapOn: 'NEXT'
+      - tapOn:
+          text: 'Enter your password'
+          optional: true
+      - inputText: ${CLOUD_BACKUP_PASSWORD}
+      - tapOn: 'NEXT'
+
+      # Handle Google Password Manager prompt
+      - runFlow:
+          when:
+            visible: Google Password Manager
+          commands:
+            - tapOn: '(Not now|Never)'
+
+      # Accept TOS
+      - tapOn: 'I agree'
+      # Disable device backup
+      - tapOn:
+          id: 'com.google.android.gms:id/sud_items_switch'
+          optional: true
+      - tapOn:
+          text: 'ACCEPT'
+          optional: true
