@@ -85,21 +85,24 @@ tags:
       - longPressOn:
           id: swap-bottom-action-button
       - runFlow: ../utils/MaybeSetupPin.yaml
-      - tapOn:
-          id: tab-bar-icon-ProfileScreen
-
-      # ios view hierarchy takes too long to load, so some of the elements are loaded
-      # at signifigantly differnt times than expected... this works fine on Android.
-      - runFlow:
-          when:
-            platform: Android
+      - retry:
+          maxRetries: 3
           commands:
-            # Test transaction was done
-            - assertVisible: 'Pending'
-            - assertVisible: 'Swapping*.'
-
-            - tapOn: Swapping*.
             - tapOn:
-                id: transaction-details-context-menu-button
-            - assertVisible: 'Speed Up'
-            - assertVisible: 'Cancel'
+                id: tab-bar-icon-ProfileScreen
+
+            # ios view hierarchy takes too long to load, so some of the elements are loaded
+            # at signifigantly differnt times than expected... this works fine on Android.
+            - runFlow:
+                when:
+                  platform: Android
+                commands:
+                  # Test transaction was done
+                  - assertVisible: 'Pending'
+                  - assertVisible: 'Swapping*.'
+
+                  - tapOn: Swapping*.
+                  - tapOn:
+                      id: transaction-details-context-menu-button
+                  - assertVisible: 'Speed Up'
+                  - assertVisible: 'Cancel'
