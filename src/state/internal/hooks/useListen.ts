@@ -78,7 +78,7 @@ const DEFAULT_OPTIONS = Object.freeze({
   enabled: true,
   equalityFn: Object.is,
   fireImmediately: false,
-}) satisfies Readonly<Required<UseListenOptions<unknown>>>;
+}) satisfies Required<UseListenOptions<unknown>>;
 
 /**
  * ### `useListen`
@@ -130,7 +130,7 @@ export function useListen<S, Selected>(
   setOptions(listenerRef, optionsOrEqualityFn);
 
   useLayoutEffect(() => {
-    if (enabled === false) return;
+    if (!enabled) return;
     attachListener(store, listenerRef);
     return () => detachListener(listenerRef);
   }, [enabled, store]);

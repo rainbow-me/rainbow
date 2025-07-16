@@ -25,7 +25,7 @@ import { CandleResolution, ChartType, LineChartTimePeriod } from '../types';
 
 // ============ Constants ====================================================== //
 
-const PILL = { gap: 3, height: 34, width: 56 };
+const PILL = Object.freeze({ gap: 3, height: 34, width: 56 });
 
 const BASE_HORIZONTAL_INSET = 28;
 const CHART_TOGGLE_LEFT_MARGIN = 12;

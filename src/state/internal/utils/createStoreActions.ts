@@ -1,4 +1,4 @@
-import type { BaseRainbowStore } from '../types';
+import { BaseRainbowStore } from '../types';
 
 /** Extract the keys of T whose values are functions */
 type FunctionKeys<T> = {

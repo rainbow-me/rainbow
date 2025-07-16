@@ -36,7 +36,7 @@ const DEFAULT_OPTIONS = Object.freeze({
   debugMode: false,
   enabled: true,
   fireImmediately: false,
-}) satisfies Readonly<Required<UseListenerRouteGuardOptions>>;
+}) satisfies Required<UseListenerRouteGuardOptions>;
 
 /**
  * ### `useListenerRouteGuard`

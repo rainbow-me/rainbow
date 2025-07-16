@@ -24,7 +24,7 @@ export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({ p
       // important that string is not empty so that when actual value fills it does not cause a vertical layout shift
       return ' ';
     }
-    const directionString = value > 0 ? UP_ARROW : value < 0 ? DOWN_ARROW : '';
+    const directionString = value > 0 ? `${UP_ARROW} ` : value < 0 ? `${DOWN_ARROW} ` : '';
     const formattedPercentageChange = toFixedWorklet(Math.abs(value), 2);
 
     return `${directionString}${formattedPercentageChange}%`;

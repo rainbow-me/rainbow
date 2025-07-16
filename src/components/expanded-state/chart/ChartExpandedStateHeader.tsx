@@ -31,10 +31,10 @@ export const ChartExpandedStateHeader = memo(function ChartExpandedStateHeader({
   priceRelativeChange,
 }: ChartExpandedStateHeaderProps) {
   return (
-    <View testID={'expanded-state-header'}>
-      <Stack space={'20px'}>
+    <View testID="expanded-state-header">
+      <Stack space="20px">
         <ChartPriceLabel price={price} />
-        <Bleed top={'6px'}>
+        <Bleed top="6px">
           <Box gap={8} flexDirection="row" alignItems="center">
             <ChartPercentChangeLabel percentageChange={priceRelativeChange} />
             <FormattedTimeLabel

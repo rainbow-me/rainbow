@@ -474,26 +474,31 @@ function isKnownError(error: unknown): boolean {
 
 /**
  * Prunes prices from the cache in line with the candlestick store's cache time.
+ *
+ * @returns A new object with stale prices pruned, or the original object if no
+ * prices were pruned.
  */
-function prunePrices(prices: Partial<Record<TokenId, Price>>, tokenIdToPreserve?: TokenId): Partial<Record<TokenId, Price>> {
+function prunePrices(originalPrices: Partial<Record<TokenId, Price>>, tokenIdToPreserve?: TokenId): Partial<Record<TokenId, Price>> {
   const now = Date.now();
   const expiration = now - CACHE_TIME;
+  const prices = { ...originalPrices };
   const priceToPreserve = tokenIdToPreserve ? prices[tokenIdToPreserve] : undefined;
 
-  for (const tokenId in { ...prices }) {
+  let didPrune = false;
+  for (const tokenId in prices) {
     const price = prices[tokenId];
     if (price && price.lastUpdated < expiration) {
       if (price === priceToPreserve) continue;
+      didPrune = true;
       delete prices[tokenId];
     }
   }
-  return prices;
+  return didPrune ? prices : originalPrices;
 }
 
 /**
  * Determines whether to enable the candlestick store.
- *
- * Returns `true` if the current chart type is `Candlestick`, `false` otherwise.
+ * @returns `true` if the current chart type is `Candlestick`, `false` otherwise.
  */
 function shouldEnable(state: ChartsState): boolean {
   return state.chartType === ChartType.Candlestick;
