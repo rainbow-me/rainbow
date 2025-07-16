@@ -9,7 +9,7 @@ import { RainbowImage } from '@/components/RainbowImage';
 import Svg, { Path } from 'react-native-svg';
 import MaskedView from '@react-native-masked-view/masked-view';
 
-const ICON_INTERSECT = TOAST_ICON_SIZE * 0.15;
+const ICON_INTERSECT = TOAST_ICON_SIZE * 0.2;
 
 export const SWAP_ICON_WIDTH = TOAST_ICON_SIZE * 2 - ICON_INTERSECT;
 

@@ -6,14 +6,10 @@ import { RainbowToastSend } from './types';
 
 export function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
   const title = `${toast.token}`;
-  const subtitle =
-    toast.status === TransactionStatus.sending || TransactionStatus.pending
-      ? 'Sending...'
-      : toast.status === TransactionStatus.sent
-        ? 'Sent'
-        : 'Failed';
+  const isLoading = toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending;
+  const subtitle = isLoading ? 'Sending' : toast.status === TransactionStatus.sent ? 'Sent' : 'Failed';
 
   const icon = <SendToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
 
-  return <ToastExpandedContent icon={icon} statusLabel={subtitle} label={title} transaction={toast.transaction} />;
+  return <ToastExpandedContent isLoading={isLoading} icon={icon} statusLabel={subtitle} label={title} transaction={toast.transaction} />;
 }

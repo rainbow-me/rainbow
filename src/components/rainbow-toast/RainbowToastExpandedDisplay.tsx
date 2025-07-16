@@ -3,7 +3,7 @@ import { SwapToastExpandedContent } from '@/components/rainbow-toast/SwapToastEx
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Box, useColorMode } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
+import { Canvas, Path, point, Shadow } from '@shopify/react-native-skia';
 import { getSvgPath } from 'figma-squircle';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
@@ -78,6 +78,7 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
   const animateY = useSharedValue(-20);
   const dragY = useSharedValue(0);
   const opacity = useSharedValue(0);
+  const pointerEvents = useSharedValue<'auto' | 'none'>('none');
 
   // we know hardcoded height
   const paddingY = 20;
@@ -91,20 +92,29 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
   }, [hasVisibleToasts]);
 
   useEffect(() => {
+    console.warn('???', showExpanded);
     if (showExpanded) {
       animateY.value = withSpring(0, springConfig);
       opacity.value = withSpring(1, springConfig);
+      pointerEvents.value = 'auto';
     } else {
-      // Reset to initial position when hiding
-      animateY.value = -20;
-      opacity.value = 0;
+      animateY.value = withSpring(-20, springConfig);
+      opacity.value = withSpring(0, springConfig);
+      pointerEvents.value = 'auto';
     }
-  }, [opacity, showExpanded, animateY]);
+  }, [opacity, showExpanded, animateY, pointerEvents]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: animateY.value + dragY.value }],
     opacity: opacity.value,
   }));
+
+  const pointerEventsStyle = useAnimatedStyle(() => {
+    console.log('?', pointerEvents.value);
+    return {
+      pointerEvents: pointerEvents.value,
+    };
+  });
 
   const pan = useMemo(() => {
     return Gesture.Pan()
@@ -126,11 +136,12 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
           animateY.value = withSpring(targetY, springConfig, () => runOnJS(setShowExpandedToasts)(false));
           dragY.value = withSpring(0, springConfig);
           opacity.value = withSpring(0, springConfig);
+          pointerEvents.value = 'none';
         } else {
           dragY.value = withSpring(0, springConfig);
         }
       });
-  }, [animateY, dragY, opacity, height]);
+  }, [dragY, height, animateY, opacity, pointerEvents]);
 
   const hide = useCallback(() => {
     return new Promise<void>(res => {
@@ -143,7 +154,7 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
     });
   }, [opacity, animateY, dragY]);
 
-  const blurAnimatedStyle = useAnimatedStyle(() => {
+  const opacityStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
     };
@@ -156,7 +167,11 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
   return (
     <>
       <Animated.View
-        style={[{ zIndex: 100, position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' }, blurAnimatedStyle]}
+        style={[
+          { zIndex: 100, position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' },
+          pointerEventsStyle,
+          opacityStyle,
+        ]}
       >
         <BlurView blurIntensity={1} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         <TouchableWithoutFeedback onPress={hide}>
@@ -166,7 +181,13 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
 
       <View style={{ zIndex: 100 }}>
         <GestureDetector gesture={pan}>
-          <Animated.View style={[animatedStyle, { position: 'absolute', top: restingTranslateY, left: CARD_MARGIN, right: CARD_MARGIN }]}>
+          <Animated.View
+            style={[
+              animatedStyle,
+              pointerEventsStyle,
+              { position: 'absolute', top: restingTranslateY, left: CARD_MARGIN, right: CARD_MARGIN },
+            ]}
+          >
             <ExpandedToastCard width={deviceWidth - 2 * CARD_MARGIN} height={height} borderRadius={CARD_BORDER_RADIUS}>
               <View
                 style={{

@@ -1,5 +1,7 @@
 import { ToastExpandedAfterTransaction } from '@/components/rainbow-toast/ToastExpandedAfterTransaction';
-import { Box, Text } from '@/design-system';
+import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import Spinner from '@/components/Spinner';
+import { Text } from '@/design-system';
 import { RainbowTransaction } from '@/entities';
 import React, { ReactNode } from 'react';
 import { View } from 'react-native';
@@ -10,11 +12,14 @@ type Props = {
   transaction: RainbowTransaction;
   label: ReactNode;
   iconWidth?: number;
+  isLoading?: boolean;
 };
 
 export const EXPANDED_ICON_SIZE = 34;
 
-export function ToastExpandedContent({ icon, statusLabel, label, transaction }: Props) {
+export function ToastExpandedContent({ icon, statusLabel, label, transaction, isLoading }: Props) {
+  const colors = useToastColors();
+
   return (
     <View
       style={{
@@ -45,18 +50,27 @@ export function ToastExpandedContent({ icon, statusLabel, label, transaction }: 
         </View>
       </View>
 
-      <View style={{ gap: 12 }}>
-        <Text color="labelTertiary" size="13pt" weight="medium">
-          {statusLabel}
-        </Text>
-        <Text color="label" size="17pt" weight="bold">
+      <View
+        style={{
+          gap: 12,
+          // visually this looks a bit better being slightly up due to the smaller top title text
+          marginTop: -1,
+        }}
+      >
+        <View style={{ flexDirection: 'row' }}>
+          {isLoading ? <Spinner color={colors.loadingText} size={11} style={{ marginTop: -1, paddingRight: 5 }} /> : null}
+          <Text color={isLoading ? { custom: colors.loadingText } : 'labelTertiary'} size="13pt" weight="semibold">
+            {statusLabel}
+          </Text>
+        </View>
+        <Text color="label" size="17pt" weight="medium">
           {label}
         </Text>
       </View>
 
-      <Box flexGrow={1} alignItems="flex-end">
+      <View style={{ flexGrow: 1, alignItems: 'flex-end' }}>
         <ToastExpandedAfterTransaction transaction={transaction} />
-      </Box>
+      </View>
     </View>
   );
 }

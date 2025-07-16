@@ -11,12 +11,14 @@ export function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap })
 
   const title = useSwapToastNetworkLabel({ toast });
   const subtitle = getSwapToastStatusLabel({ toast });
+  const isSwapped = toast.status === TransactionStatus.swapped;
+  const isLoading = !isSwapped;
 
   const icon = (
-    <View style={{ marginLeft: toast.status === TransactionStatus.swapped ? 0 : -(SWAP_ICON_WIDTH - EXPANDED_ICON_SIZE) / 2 }}>
+    <View style={{ marginLeft: isSwapped ? 0 : -(SWAP_ICON_WIDTH - EXPANDED_ICON_SIZE) / 2 }}>
       <SwapToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />
     </View>
   );
 
-  return <ToastExpandedContent icon={icon} statusLabel={subtitle} label={title} transaction={transaction} />;
+  return <ToastExpandedContent isLoading={isLoading} icon={icon} statusLabel={subtitle} label={title} transaction={transaction} />;
 }
