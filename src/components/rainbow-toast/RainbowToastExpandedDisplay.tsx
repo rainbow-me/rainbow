@@ -92,7 +92,6 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
   }, [hasVisibleToasts]);
 
   useEffect(() => {
-    console.warn('???', showExpanded);
     if (showExpanded) {
       animateY.value = withSpring(0, springConfig);
       opacity.value = withSpring(1, springConfig);
@@ -110,7 +109,6 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
   }));
 
   const pointerEventsStyle = useAnimatedStyle(() => {
-    console.log('?', pointerEvents.value);
     return {
       pointerEvents: pointerEvents.value,
     };
