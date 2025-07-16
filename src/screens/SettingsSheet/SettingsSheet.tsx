@@ -1,7 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { StatusBar, View } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
@@ -13,18 +12,14 @@ import ShowSecretView from './components/Backups/ShowSecretView';
 import SecretWarning from './components/Backups/SecretWarning';
 import SettingsSection from './components/SettingsSection';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
-import { settingsOptions, sharedCoolModalTopOffset } from '@/navigation/config';
+import { settingsOptions } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { useDimensions } from '@/hooks';
-import { IS_ANDROID } from '@/env';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Routes from '@/navigation/routesNames';
 
 const Stack = createStackNavigator();
 
 export function SettingsSheet() {
-  const { height: deviceHeight } = useDimensions();
   const { goBack, navigate } = useNavigation();
   const { colors } = useTheme();
 
