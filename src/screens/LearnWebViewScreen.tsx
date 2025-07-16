@@ -91,7 +91,7 @@ export default function LearnWebViewScreen() {
       .super-navbar.simple, .notion-header__icon-wrapper, .intercom-lightweight-app { display: none; }
       body { background-color: ${surfacePrimaryElevated}; }
     \`;
-    
+
     if (${isDarkMode}) {
       style.innerHTML += \`
         h1, h2, h3, h4, h5, p, li, .notion-callout__content { color: white; }
@@ -99,16 +99,16 @@ export default function LearnWebViewScreen() {
         .notion-callout.bg-gray-light.border { border-color: ${globalColors.white30}; }
       \`;
     }
-  
+
     document.head.appendChild(style);
-  
+
     const updateHeight = () => {
-      window.ReactNativeWebView.postMessage(document.body.scrollHeight - 270);
+      window.ReactNativeWebView.postMessage(String(document.body.scrollHeight - 270));
     };
-  
+
     window.addEventListener('load', updateHeight);
     window.addEventListener('resize', updateHeight);
-    
+
     updateHeight();
   `;
 
