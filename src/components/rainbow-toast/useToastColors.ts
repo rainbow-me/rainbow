@@ -5,12 +5,12 @@ export const useToastColors = () => {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const foreground = isDarkMode ? colors.whiteLabel : colors.dark;
-  const shadowColor = isDarkMode ? 'rgba(0,0,0,1)' : 'rgba(0,0,0,0.1)';
+  const shadowColor = isDarkMode ? 'rgba(0,0,0,1)' : 'rgba(0,0,0,0.125)';
 
   return {
     foreground,
     foregroundDim: isDarkMode ? colors.whiteLabel : colors.darkGrey,
-    background: isDarkMode ? '#191A1C' : colors.darkGrey,
+    background: isDarkMode ? '#191A1C' : colors.white,
     borderColor: isDarkMode ? '#F5F8FF0F' : '#ccc',
     loadingText: colors.appleBlue,
     green: colors.green,

@@ -5,9 +5,11 @@ import { Mints } from '@/resources/mints';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type ToastState = {
+  isShowingTransactionDetails: boolean;
+  setIsShowingTransactionDetails: (val: boolean) => void;
   toasts: RainbowToastWithIndex[];
   handleTransactions: (props: { pendingTransactions: RainbowTransaction[]; mints?: Mints }) => void;
-  swipeRemoveToast: (id: string) => void;
+  startRemoveToast: (id: string, via: 'swipe' | 'finish') => void;
   finishRemoveToast: (id: string) => void;
   hiddenToasts: Record<string, boolean>;
   showExpanded: boolean;
@@ -20,6 +22,13 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
   // we don't re-add them back into the toast stack
   hiddenToasts: {},
   showExpanded: false,
+  isShowingTransactionDetails: false,
+
+  setIsShowingTransactionDetails(isShowingTransactionDetails) {
+    set({
+      isShowingTransactionDetails,
+    });
+  },
 
   setShowExpandedToasts: (show: boolean) => set({ showExpanded: show }),
 
@@ -70,11 +79,11 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 
   // split into starting to remove and then fully removing so we can animate out
-  swipeRemoveToast: id => {
+  startRemoveToast: (id, via) => {
     set(state => {
       return {
         hiddenToasts: { ...state.hiddenToasts, [id]: true },
-        toasts: state.toasts.map((toast, index) => (toast.id === id ? { ...toast, removing: 'swipe' } : { ...toast, index: index - 1 })),
+        toasts: state.toasts.map((toast, index) => (toast.id === id ? { ...toast, removing: via } : { ...toast, index: index - 1 })),
       };
     });
   },
@@ -86,4 +95,5 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
   },
 }));
 
-export const { handleTransactions, swipeRemoveToast, finishRemoveToast, setShowExpandedToasts } = useToastStore.getState();
+export const { handleTransactions, startRemoveToast, finishRemoveToast, setShowExpandedToasts, setIsShowingTransactionDetails } =
+  useToastStore.getState();

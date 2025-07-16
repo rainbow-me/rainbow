@@ -2,16 +2,17 @@ import { BlurGradient } from '@/components/blur/BlurGradient';
 import { MintToastContent } from '@/components/rainbow-toast/MintToastContent';
 import { SendToastContent } from '@/components/rainbow-toast/SendToastContent';
 import { SwapToastContent } from '@/components/rainbow-toast/SwapToastContent';
-import { type RainbowToast, type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
+import { type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import {
   finishRemoveToast,
   handleTransactions,
   setShowExpandedToasts,
-  swipeRemoveToast,
+  startRemoveToast,
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { Box, globalColors, useColorMode } from '@/design-system';
+import { TransactionStatus } from '@/entities';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
@@ -35,9 +36,21 @@ import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 
 export function RainbowToastDisplay() {
-  const { toasts } = useToastStore();
+  const { toasts, isShowingTransactionDetails } = useToastStore();
   const insets = useSafeAreaInsets();
   const { pendingTransactions } = usePendingTransactions();
+
+  const showingTransactionDetails = useSharedValue(false);
+
+  useEffect(() => {
+    showingTransactionDetails.value = isShowingTransactionDetails;
+  }, [isShowingTransactionDetails, showingTransactionDetails]);
+
+  const hiddenAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withSpring(showingTransactionDetails.value ? 0 : 1, springConfig),
+    };
+  });
 
   const accountAddress = useAccountAddress();
   const {
@@ -71,9 +84,11 @@ export function RainbowToastDisplay() {
       <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
         <RainbowToastExpandedDisplay insets={insets} />
 
-        {visibleToasts.map(toast => {
-          return <RainbowToast insets={insets} key={toast.id} toast={toast} />;
-        })}
+        <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
+          {visibleToasts.map(toast => {
+            return <RainbowToastItem insets={insets} key={toast.id} toast={toast} />;
+          })}
+        </Animated.View>
       </Box>
     </FullWindowOverlay>
   );
@@ -97,7 +112,7 @@ type Props = PropsWithChildren<{
   insets: EdgeInsets;
 }>;
 
-const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props) {
+const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: Props) {
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const visible = useSharedValue(0);
@@ -136,23 +151,53 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
   }, [id]);
 
   const swipeRemoveToastCallback = useCallback(() => {
-    swipeRemoveToast(id);
+    startRemoveToast(id, 'swipe');
   }, [id]);
 
-  // there's two ways to remove toasts - from a swipe, or from it being removed
-  // via pendingTransactions for swipe, we handle it internally here with
-  // swipeRemoveToast which sets `removing` to "swipe", but for state we just
-  // get `removing` true and we handle it here in an effect, animating it more
-  // simply just by fading it out downwards
+  const hideToast = useCallback(() => {
+    visible.value = withSpring(0, springConfig, () => {
+      runOnJS(finishRemoveToastCallback)();
+    });
+    translateY.value = withSpring(translateY.value - 10, springConfig);
+  }, [finishRemoveToastCallback, translateY, visible]);
+
+  // there's a few ways to remove toasts - from a swipe, from it being removed
+  // via pendingTransactions for swipe, or if it reaches final state
+  // we handle the non-swipe states here
   const nonSwipeRemove = toast.removing === true;
   useEffect(() => {
     if (nonSwipeRemove) {
-      visible.value = withSpring(0, springConfig, () => {
-        runOnJS(finishRemoveToastCallback)();
-      });
-      translateY.value = withSpring(translateY.value - 10, springConfig);
+      hideToast();
     }
-  }, [finishRemoveToastCallback, nonSwipeRemove, translateY, visible]);
+  }, [finishRemoveToastCallback, hideToast, nonSwipeRemove, translateY, visible]);
+
+  // if we reach a finished state we set a timeout and then remove
+  const shouldHideItself =
+    (toast.type === 'swap' && toast.status === TransactionStatus.swapped) ||
+    (toast.type === 'send' && toast.status === TransactionStatus.sent) ||
+    (toast.type === 'mint' && toast.status === TransactionStatus.minted);
+
+  useEffect(() => {
+    if (!shouldHideItself) return;
+    if (toast.removing === true) return;
+
+    if (!toast.removing) {
+      // sets it into removing state so it wont be cleared on other state updates
+      startRemoveToast(id, 'finish');
+      return;
+    }
+
+    if (toast.removing === 'finish') {
+      const tm = setTimeout(() => {
+        hideToast();
+        // wait a few seconds
+      }, 3000);
+
+      return () => {
+        clearTimeout(tm);
+      };
+    }
+  }, [hideToast, id, shouldHideItself, toast]);
 
   const panGesture = useMemo(() => {
     return Gesture.Pan()
@@ -184,7 +229,7 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
           translateX.value = withSpring(0, springConfig);
         }
       });
-  }, [deviceWidth, lastChangeX, finishRemoveToastCallback, swipeRemoveToastCallback, translateX]);
+  }, [translateX, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback]);
 
   const dragStyle = useAnimatedStyle(() => {
     const opacityY = visible.value;
@@ -296,7 +341,7 @@ const RainbowToast = memo(function RainbowToast({ toast, testID, insets }: Props
                   colors={
                     isDarkMode
                       ? ['rgba(57, 58, 64, 0.36)', 'rgba(57, 58, 64, 0.32)']
-                      : ['rgba(255, 255, 255, 0.36)', 'rgba(255, 255, 255, 0.32)']
+                      : ['rgba(255, 255, 255, 0.56)', 'rgba(255, 255, 255, 0.52)']
                   }
                   style={StyleSheet.absoluteFill}
                 />

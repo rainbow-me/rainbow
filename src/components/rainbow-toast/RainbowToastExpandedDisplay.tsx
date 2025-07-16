@@ -3,7 +3,7 @@ import { SwapToastExpandedContent } from '@/components/rainbow-toast/SwapToastEx
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Box, useColorMode } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { Canvas, Path, Shadow } from '@shopify/react-native-skia';
+import { Canvas, Path } from '@shopify/react-native-skia';
 import { getSvgPath } from 'figma-squircle';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
@@ -47,11 +47,8 @@ const ExpandedToastCard = ({
   });
 
   return (
-    <View style={{ width, height, borderRadius }}>
+    <View style={{ borderRadius, width, height, shadowColor, shadowOffset: { width: 0, height: 5 }, shadowRadius: 10, shadowOpacity: 1 }}>
       <Canvas style={[{ position: 'absolute', top: 0, left: 0, width, height }]}>
-        <Path path={squirclePath} color="transparent">
-          <Shadow dx={0} dy={20} blur={40} color={shadowColor} inner={false} />
-        </Path>
         <Path path={squirclePath} color={background} />
         <Path
           path={innerSquirclePath}
@@ -174,7 +171,7 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
       >
         <BlurView blurIntensity={1} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
         <TouchableWithoutFeedback onPress={hide}>
-          <Box style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)' }} />
+          <Box style={{ ...StyleSheet.absoluteFillObject, backgroundColor: isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.2)' }} />
         </TouchableWithoutFeedback>
       </Animated.View>
 

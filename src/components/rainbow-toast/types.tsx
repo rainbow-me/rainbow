@@ -6,7 +6,7 @@ type BaseToast = {
   transactionHash: string;
   transaction: RainbowTransaction;
   action?: () => void;
-  removing?: boolean | 'swipe';
+  removing?: boolean | 'swipe' | 'finish';
 };
 
 export type RainbowToastSwap = BaseToast & {
