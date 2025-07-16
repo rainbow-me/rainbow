@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getPreference } from '@/model/preferences';
 import { time } from '@/utils';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { isDataComplete } from '@/state/nfts/utils';
 import { useNftsStore } from '@/state/nfts/nfts';
 
@@ -16,8 +15,6 @@ export async function getHidden(address: string, isMigration = false) {
   if (hiddenTokens?.hidden?.ids?.length) {
     const tokens = hiddenTokens.hidden.ids;
     if (!isDataComplete(tokens) && !isMigration) {
-      useOpenCollectionsStore.getState(address).setCollectionOpen('hidden', false);
-
       const { fetch } = useNftsStore.getState(address);
 
       const data = await fetch(
@@ -42,7 +39,6 @@ export async function getHidden(address: string, isMigration = false) {
       });
 
       const flattenedTokens = Array.from(data.nftsByCollection.values()).flatMap(collection => Array.from(collection.keys()));
-
       return flattenedTokens;
     }
 

@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { getPreference } from '@/model/preferences';
 import { time } from '@/utils';
 import { queryClient } from '@/react-query';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 import { isDataComplete } from '@/state/nfts/utils';
 import { useNftsStore } from '@/state/nfts/nfts';
 
@@ -19,10 +18,6 @@ export async function getShowcase(address: string, isMigration = false) {
   if (showcaseTokens?.showcase?.ids?.length) {
     const tokens = showcaseTokens.showcase.ids;
     if (!isDataComplete(tokens) && !isMigration) {
-      const previousState = useOpenCollectionsStore.getState(address).openCollections['showcase'] ?? false;
-      // first, close the showcase collection so we don't show an empty collection to the user
-      useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', false);
-
       const { fetch } = useNftsStore.getState(address);
 
       const data = await fetch(
@@ -47,11 +42,6 @@ export async function getShowcase(address: string, isMigration = false) {
       });
 
       const flattenedTokens = Array.from(data.nftsByCollection.values()).flatMap(collection => Array.from(collection.keys()));
-      // re-open the showcase collection if it was open before
-      if (previousState) {
-        useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', previousState);
-      }
-
       return flattenedTokens;
     }
 
