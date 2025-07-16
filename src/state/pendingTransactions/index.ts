@@ -51,7 +51,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
     },
     setPendingTransactions: ({ address, pendingTransactions }) => {
       if (process.env.NODE_ENV === 'development') {
-        if (get().pendingTransactions[getAccountAddress()].some(p => p.isMocked)) {
+        if (get().pendingTransactions[getAccountAddress()]?.some(p => p.isMocked)) {
           logger.info(`Avoiding setting pending transactions due to mocked dev transactions`);
           return;
         }
