@@ -13,7 +13,7 @@ export function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap })
   const title = useSwapToastNetworkLabel({ toast });
   const subtitle = getSwapToastStatusLabel({ toast });
   const isSwapped = toast.status === TransactionStatus.swapped;
-  const isLoading = !isSwapped;
+  const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
 
   return (
     <ToastExpandedContent

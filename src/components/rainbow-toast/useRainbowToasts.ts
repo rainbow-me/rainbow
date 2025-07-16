@@ -37,7 +37,7 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
       const activeToastIds = new Set(state.toasts.map(t => t.id));
       const transactionToasts = pendingTransactions.map(tx => getToastFromTransaction(tx, mints)).filter(Boolean);
       const transactionToastsMap = new Map(transactionToasts.map(t => [t.id, t]));
-      let newlyHiddenToasts: Record<string, boolean> | null = null;
+      const newlyHiddenToasts: Record<string, boolean> = {};
 
       // handle updates:
       const updatedToasts = state.toasts.map(toast => {
@@ -60,7 +60,6 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
             // already being handled / or by swipe
             !toast.removing
           ) {
-            newlyHiddenToasts ||= {};
             newlyHiddenToasts[toast.id] = true;
             return { ...toast, removing: true };
           }
@@ -68,12 +67,12 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
           return toast;
         });
 
+      // always accumulates, memory shouldn't be a problem
+      const hiddenToasts = Object.keys(newlyHiddenToasts).length ? { ...state.hiddenToasts, ...newlyHiddenToasts } : state.hiddenToasts;
+
       return {
         toasts,
-        // always accumulates, memory shouldn't be a problem
-        ...(Boolean(newlyHiddenToasts) && {
-          hiddenToasts: { ...state.hiddenToasts, ...newlyHiddenToasts! },
-        }),
+        hiddenToasts,
       };
     });
   },

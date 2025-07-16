@@ -67,8 +67,7 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const { toasts, showExpanded } = useToastStore();
-  const visibleToasts = toasts.filter(t => !t.removing);
-  const hasVisibleToasts = !!visibleToasts.length;
+  const hasToasts = !!toasts.length;
   const { pressColor } = useToastColors();
 
   const restingTranslateY = insets.top + 20;
@@ -80,13 +79,13 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
   // we know hardcoded height
   const paddingY = 20;
   const itemHeight = 66;
-  const height = visibleToasts.length * itemHeight + paddingY * 2;
+  const height = toasts.length * itemHeight + paddingY * 2;
 
   useEffect(() => {
-    if (!hasVisibleToasts) {
+    if (!hasToasts) {
       setShowExpandedToasts(false);
     }
-  }, [hasVisibleToasts]);
+  }, [hasToasts]);
 
   useEffect(() => {
     if (showExpanded) {
@@ -198,7 +197,7 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
                   borderRadius: 50,
                 }}
               >
-                {visibleToasts.map(toast => {
+                {toasts.map(toast => {
                   const innerContents = (() => {
                     switch (toast.type) {
                       case 'send':

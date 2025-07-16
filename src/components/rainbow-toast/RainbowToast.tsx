@@ -11,9 +11,9 @@ import {
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
-import { Box, globalColors, useColorMode } from '@/design-system';
+import { Box, useColorMode } from '@/design-system';
 import { TransactionStatus } from '@/entities';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { useMints } from '@/resources/mints';
@@ -79,19 +79,23 @@ export function RainbowToastDisplay() {
 
   const visibleToasts = [...removingToasts, ...toastsToShow];
 
-  return (
-    <FullWindowOverlay>
-      <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
-        <RainbowToastExpandedDisplay insets={insets} />
+  const content = (
+    <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
+      <RainbowToastExpandedDisplay insets={insets} />
 
-        <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
-          {visibleToasts.map(toast => {
-            return <RainbowToastItem insets={insets} key={toast.id} toast={toast} />;
-          })}
-        </Animated.View>
-      </Box>
-    </FullWindowOverlay>
+      <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
+        {visibleToasts.map(toast => {
+          return <RainbowToastItem insets={insets} key={toast.id} toast={toast} />;
+        })}
+      </Animated.View>
+    </Box>
   );
+
+  if (IS_IOS) {
+    return <FullWindowOverlay>{content}</FullWindowOverlay>;
+  }
+
+  return content;
 }
 
 const springConfig: WithSpringConfig = {
@@ -122,7 +126,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
 
   const height = 60;
   const { index, id } = toast;
-  const gap = 5;
+  const gap = index > 1 ? 4 : 5; // less gap for third item
   const distance = index * gap + insets.top + 8;
 
   useEffect(() => {
@@ -162,8 +166,9 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   }, [finishRemoveToastCallback, translateY, visible]);
 
   // there's a few ways to remove toasts - from a swipe, from it being removed
-  // via pendingTransactions for swipe, or if it reaches final state
-  // we handle the non-swipe states here
+  // via pendingTransactions, or if it reaches final state if
+  // pendingTransactions are empty we set removing in state, so handle the final
+  // logic to hide it here
   const nonSwipeRemove = toast.removing === true;
   useEffect(() => {
     if (nonSwipeRemove) {
@@ -171,7 +176,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
     }
   }, [finishRemoveToastCallback, hideToast, nonSwipeRemove, translateY, visible]);
 
-  // if we reach a finished state we set a timeout and then remove
+  // reached a finished state, set a timeout then remove
   const shouldHideItself =
     (toast.type === 'swap' && toast.status === TransactionStatus.swapped) ||
     (toast.type === 'send' && toast.status === TransactionStatus.sent) ||
@@ -200,7 +205,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   }, [hideToast, id, shouldHideItself, toast]);
 
   const panGesture = useMemo(() => {
-    return Gesture.Pan()
+    const pan = Gesture.Pan()
       .minDistance(10)
       .onUpdate(event => {
         translateX.value = event.translationX;
@@ -229,6 +234,8 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
           translateX.value = withSpring(0, springConfig);
         }
       });
+
+    return pan;
   }, [translateX, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback]);
 
   const dragStyle = useAnimatedStyle(() => {
@@ -243,26 +250,37 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   });
 
   const isPressed = useSharedValue(false);
+  const touchStartedAt = useSharedValue(0);
+
+  const showExpanded = useCallback(() => {
+    isPressed.value = false;
+    setShowExpandedToasts(true);
+  }, [isPressed]);
 
   const pressGesture = useMemo(() => {
     return Gesture.Tap()
       .maxDuration(2000)
       .onTouchesDown(() => {
+        touchStartedAt.value = Date.now();
         isPressed.value = true;
       })
       .onTouchesUp(() => {
-        isPressed.value = false;
-      })
-      .onFinalize(() => {
+        // android doesn't trigger onEnd, do our own logic
+        if (IS_ANDROID) {
+          if (translateX.value === 0 && Date.now() - touchStartedAt.value < 500) {
+            runOnJS(showExpanded)();
+          }
+        }
+
         isPressed.value = false;
       })
       .onEnd(() => {
-        runOnJS(setShowExpandedToasts)(true);
+        runOnJS(showExpanded)();
       });
-  }, [isPressed]);
+  }, [isPressed, showExpanded, touchStartedAt, translateX.value]);
 
   const combinedGesture = useMemo(() => {
-    return Gesture.Exclusive(pressGesture, panGesture);
+    return Gesture.Simultaneous(pressGesture, panGesture);
   }, [pressGesture, panGesture]);
 
   const pressStyleContainer = useAnimatedStyle(() => {
@@ -319,7 +337,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
             pointerEvents="auto"
             position="absolute"
             top="0px"
-            borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.72)' }}
+            borderColor={isDarkMode ? 'separatorSecondary' : { custom: IS_ANDROID ? 'rgba(150,150,150,0.5)' : 'rgba(255, 255, 255, 0.72)' }}
             testID={testID}
           >
             {IS_IOS ? (
@@ -347,7 +365,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
                 />
               </>
             ) : (
-              <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : globalColors.white100 }]} />
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : 'rgba(255,255,255,0.985)' }]} />
             )}
 
             {isDarkMode && (

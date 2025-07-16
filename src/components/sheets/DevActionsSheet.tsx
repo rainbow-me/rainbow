@@ -601,7 +601,7 @@ export function DevActionsSheet() {
   let current: RainbowTransaction[] = [];
 
   function addThenUpdate(transaction: RainbowTransaction) {
-    current.push(transaction);
+    current = [...current, transaction];
     pendingTransactionsStore.setState(state => ({
       ...state,
       pendingTransactions: {
