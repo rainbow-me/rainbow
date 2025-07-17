@@ -12,7 +12,7 @@ export function MintToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
   const colors = useToastColors();
 
   if (toast.status === TransactionStatus.minted) {
-    return <SFSymbolIcon name="check" />;
+    return <SFSymbolIcon borderRadius={10} name="check" />;
   }
 
   return (

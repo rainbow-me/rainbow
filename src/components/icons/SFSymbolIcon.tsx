@@ -9,7 +9,15 @@ const sfSymbols = {
   exclamationMark: '􀅎',
 };
 
-export function SFSymbolIcon({ name, size = TOAST_ICON_SIZE }: { name: keyof typeof sfSymbols; size?: number }) {
+export function SFSymbolIcon({
+  name,
+  borderRadius = 100,
+  size = TOAST_ICON_SIZE,
+}: {
+  name: keyof typeof sfSymbols;
+  size?: number;
+  borderRadius?: number;
+}) {
   const colors = useToastColors();
   const bg = name === 'check' ? colors.green : colors.red;
 
@@ -18,7 +26,7 @@ export function SFSymbolIcon({ name, size = TOAST_ICON_SIZE }: { name: keyof typ
       style={{
         width: size,
         height: size,
-        borderRadius: 100,
+        borderRadius: borderRadius,
         borderWidth: 2,
         borderColor: bg,
         shadowColor: bg,
@@ -32,7 +40,7 @@ export function SFSymbolIcon({ name, size = TOAST_ICON_SIZE }: { name: keyof typ
           StyleSheet.absoluteFillObject,
           {
             backgroundColor: bg,
-            borderRadius: 100,
+            borderRadius: borderRadius,
             overflow: 'hidden',
             opacity: 0.9,
             alignItems: 'center',
