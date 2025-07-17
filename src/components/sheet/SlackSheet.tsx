@@ -30,12 +30,11 @@ interface ContainerProps {
   contentHeight?: number;
   deferredHeight?: boolean;
   deviceHeight: number;
-  removeTopPadding?: boolean;
 }
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight, removeTopPadding }: ContainerProps) => ({
+})(({ backgroundColor, additionalTopPadding, contentHeight, deferredHeight, deviceHeight }: ContainerProps) => ({
   ...(deferredHeight || IS_IOS
     ? {}
     : {
@@ -43,7 +42,7 @@ const Container = styled(Centered).attrs({
           typeof additionalTopPadding === 'number'
             ? additionalTopPadding
             : contentHeight && additionalTopPadding
-              ? deviceHeight - contentHeight - (removeTopPadding ? 0 : SheetHandleFixedToTopHeight)
+              ? deviceHeight - contentHeight
               : 0,
       }),
   ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
@@ -206,7 +205,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
-        removeTopPadding={removeTopPadding}
         testID={testID}
         {...props}
       >

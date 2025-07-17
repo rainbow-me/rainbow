@@ -78,7 +78,7 @@ export default function LearnWebViewScreen() {
     </Box>
   );
 
-  const contentHeight = deviceHeight - HEADER_HEIGHT - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
+  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
