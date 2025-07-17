@@ -4,20 +4,6 @@ import { getAddressAndChainIdFromUniqueId } from '@/utils/ethereumUtils';
 import { add } from '@/helpers/utilities';
 
 // selectors
-export function selectorFilterByUserChains<T>({
-  data,
-  selector,
-}: {
-  data: ParsedAssetsDictByChain;
-  selector: (data: ParsedAssetsDictByChain) => T;
-}): T {
-  const filteredAssetsDictByChain = Object.keys(data).reduce((acc, key) => {
-    const chainKey = Number(key);
-    acc[chainKey] = data[chainKey];
-    return acc;
-  }, {} as ParsedAssetsDictByChain);
-  return selector(filteredAssetsDictByChain);
-}
 
 export function selectUserAssetsList(assets: ParsedAssetsDictByChain) {
   return Object.values(assets)
