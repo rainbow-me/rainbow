@@ -20,6 +20,7 @@ export const RainbowToastSendStatuses = {
 } as const;
 
 export const RainbowToastMintStatuses = {
+  [TransactionStatus.contract_interaction]: TransactionStatus.minting,
   [TransactionStatus.pending]: TransactionStatus.pending,
   [TransactionStatus.minting]: TransactionStatus.minting,
   [TransactionStatus.minted]: TransactionStatus.minted,
@@ -65,7 +66,7 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
         transaction: tx,
         transactionHash: tx.hash,
         type: 'swap',
-        status: status,
+        status,
         fromChainId: tx.swap.fromChainId,
         toChainId: tx.swap.toChainId,
         fromAssetSymbol: outAsset.symbol,
@@ -91,7 +92,7 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
         chainId: tx.chainId,
         transactionHash: tx.hash,
         type: 'send',
-        status: status,
+        status,
         // @ts-expect-error it is there
         displayAmount: tx.asset?.balance?.display || '0',
         token: symbol,
@@ -105,7 +106,7 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
     }
   }
 
-  if (tx.type === 'mint') {
+  if (tx.type === 'mint' || tx.type === 'contract_interaction') {
     const mint = mints?.find(mint => mint.contractAddress === tx.hash);
     const status = getMintToastStatus(tx.status);
     if (status) {
@@ -115,9 +116,10 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
         chainId: tx.chainId,
         transactionHash: tx.hash,
         type: 'mint',
-        status: status,
-        name: tx.title || 'NFT',
-        image: mint?.imageURL || '',
+        status,
+        name: tx.contract?.name || tx.title || 'NFT',
+        // @ts-expect-error it is there
+        image: tx.contract?.iconUrl || mint?.imageURL || min?.asset || '',
         action: () => {
           Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
             transaction: tx,

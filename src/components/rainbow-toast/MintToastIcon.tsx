@@ -1,13 +1,19 @@
 import { RainbowImage } from '@/components/RainbowImage';
 import { ShimmerAnimation } from '@/components/animations';
+import { SFSymbolIcon } from '@/components/icons/SFSymbolIcon';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import type { RainbowToastMint } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import { TransactionStatus } from '@/entities';
 import React from 'react';
 import { View } from 'react-native';
 
 export function MintToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastMint; size?: number }) {
   const colors = useToastColors();
+
+  if (toast.status === TransactionStatus.minted) {
+    return <SFSymbolIcon name="check" />;
+  }
 
   return (
     <View

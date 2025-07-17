@@ -564,8 +564,216 @@ const exampleSends: RainbowTransaction[] = [
   } as unknown as RainbowTransaction,
 ];
 
+const exampleMints = [
+  {
+    status: 'pending',
+    chainId: 10,
+    asset: {
+      colors: {
+        fallback: '#E8EAF5',
+        primary: '#808088',
+        shadow: '',
+      },
+      decimals: 18,
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      name: 'Ethereum',
+      networks: {
+        '1': {
+          address: 'eth',
+          decimals: 18,
+        },
+        '10': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '56': {
+          address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+          decimals: 18,
+        },
+        '130': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '324': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '8453': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '42161': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '57073': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '59144': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '81457': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '534352': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '7777777': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+      },
+      transferable: true,
+      price: {
+        relativeChange24h: 3.632001751388027,
+        value: 3408.27,
+      },
+      symbol: 'ETH',
+      address: '0x0000000000000000000000000000000000000000',
+      isNativeAsset: true,
+      native: {
+        change: '3.63%',
+        price: {
+          amount: '3408.27',
+          display: '$3,408.27',
+        },
+      },
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      chainId: 10,
+      network: 'optimism',
+      uniqueId: '0x0000000000000000000000000000000000000000_10',
+      mainnet_address: '0x0000000000000000000000000000000000000000',
+    },
+    contract: {
+      name: 'Highlight',
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1693353740/dapps/ingested_highlight.xyz.png',
+    },
+    data: '0xee202946a507515a1aa8e2f9bf1f3c05abb91944918c0399203ca52585b8876e',
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    gasLimit: '0xa96a',
+    hash: '0x0ea92166f680cd4190a59e7a47ee00440be16b944ae3a832b799890d9ad449dc',
+    network: 'optimism',
+    nonce: 792,
+    to: '0xa5f565650890fba1824ee0f21ebbbf660a179934',
+    value: '507813239171051',
+    type: 'contract_interaction',
+    maxFeePerGas: '0x0e1f',
+    maxPriorityFeePerGas: '0x64',
+    title: 'contract_interaction.pending',
+    description: 'Ethereum',
+    timestamp: 1752774596231,
+  } as unknown as RainbowTransaction,
+  {
+    status: 'pending',
+    chainId: 10,
+    asset: {
+      colors: {
+        fallback: '#E8EAF5',
+        primary: '#808088',
+        shadow: '',
+      },
+      decimals: 18,
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      name: 'Ethereum',
+      networks: {
+        '1': {
+          address: 'eth',
+          decimals: 18,
+        },
+        '10': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '56': {
+          address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+          decimals: 18,
+        },
+        '130': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '324': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '8453': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '42161': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '57073': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '59144': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '81457': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '534352': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '7777777': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+      },
+      transferable: true,
+      price: {
+        relativeChange24h: 3.498215165317646,
+        value: 3403.8700000000003,
+      },
+      symbol: 'ETH',
+      address: '0x0000000000000000000000000000000000000000',
+      isNativeAsset: true,
+      native: {
+        change: '3.50%',
+        price: {
+          amount: '3403.8700000000003',
+          display: '$3,403.87',
+        },
+      },
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      chainId: 10,
+      network: 'optimism',
+      uniqueId: '0x0000000000000000000000000000000000000000_10',
+      mainnet_address: '0x0000000000000000000000000000000000000000',
+    },
+    contract: {
+      name: 'Highlight',
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1693353740/dapps/ingested_highlight.xyz.png',
+    },
+    data: '0x5a945b0063c1c6db74d0b86750facabffce253fbed45e4c17b6594ed7adeece9',
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    gasLimit: '0xa95b',
+    hash: '0x15e9c5c331b8e8a68e3d91259e19b65709dc1c41fdaebc9e559ac676077366b4',
+    network: 'optimism',
+    nonce: 791,
+    to: '0xa5f565650890fba1824ee0f21ebbbf660a179934',
+    value: '507730024236717',
+    type: 'contract_interaction',
+    maxFeePerGas: '0x0e9d',
+    maxPriorityFeePerGas: '0x64',
+    title: 'contract_interaction.pending',
+    description: 'Ethereum',
+    timestamp: 1752773535981,
+  } as unknown as RainbowTransaction,
+];
+
 let lastSend = 0;
 let lastSwap = 0;
+let lastMint = 0;
 
 export function DevActionsSheet() {
   const accountAddress = useAccountAddress();
@@ -584,19 +792,12 @@ export function DevActionsSheet() {
     };
   };
 
-  // const createMockMintTransaction = (status: TransactionStatus): RainbowTransaction => {
-  //   return {
-  //     chainId: ChainId.mainnet,
-  //     from: accountAddress,
-  //     to: '0x495f947276749ce646f68ac8c248420045cb7b5e',
-  //     hash: generateRandomHash(),
-  //     nonce: Math.floor(Math.random() * 1000),
-  //     network: 'mainnet',
-  //     type: 'mint' as const,
-  //     status,
-  //     description: 'A beautiful NFT',
-  //   };
-  // };
+  const createMockMintTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleMints[lastMint++ % exampleMints.length],
+      status,
+    };
+  };
 
   let current: RainbowTransaction[] = [];
 
@@ -619,19 +820,22 @@ export function DevActionsSheet() {
   };
 
   const addMintTransaction = () => {
-    // TODO - disabling as i moved to real data
-    // addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
+    addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
   };
 
-  const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send', status: TransactionStatus) => {
+  const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send' | 'contract_interaction', status: TransactionStatus) => {
     const latest = current.findLast(px => px.type === type);
     if (latest) {
+      console.info(`Updating`, latest, 'to', type);
       pendingTransactionsStore.setState(state => ({
         ...state,
         pendingTransactions: {
           [accountAddress]: current.map(item => (item === latest ? { ...item, status } : item)),
         },
       }));
+      return true;
+    } else {
+      return false;
     }
   };
 
@@ -644,7 +848,10 @@ export function DevActionsSheet() {
   };
 
   const updateLastMintTo = (status: TransactionStatus) => {
-    updateLatestTransactionOfType('mint', status);
+    if (updateLatestTransactionOfType('mint', status)) {
+      return;
+    }
+    updateLatestTransactionOfType('contract_interaction', status);
   };
 
   return (
@@ -673,7 +880,6 @@ export function DevActionsSheet() {
             </Text>
 
             <Button onPress={addSendTransaction} title="Add Send Transaction" />
-            <Button onPress={() => updateLastSendTo(TransactionStatus.sending)} title="Update Send → Sending" />
             <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="Update Send → Sent" />
             <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="Update Send → Failed" />
 
@@ -682,18 +888,16 @@ export function DevActionsSheet() {
             </Text>
 
             <Button onPress={addSwapTransaction} title="Add Swap Transaction" />
-            <Button onPress={() => updateLastSwapTo(TransactionStatus.swapping)} title="Update Swap → Swapping" />
             <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="Update Swap → Swapped" />
             <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="Update Swap → Failed" />
 
-            {/* <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
               Mint
             </Text>
 
             <Button onPress={addMintTransaction} title="Add Mint Transaction" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.minting)} title="Update Mint → Minting" />
             <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="Update Mint → Minted" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" /> */}
+            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" />
           </Box>
         </ScrollView>
       </Box>
