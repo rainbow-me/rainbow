@@ -1,4 +1,5 @@
 import { EthereumAddress, UniqueAsset } from '@/entities';
+import { logger, RainbowError } from '@/logger';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { qs } from 'url-parse';
 
@@ -20,22 +21,30 @@ export function parseCollectionSlugFromUrl(url: string) {
 }
 
 export function buildRainbowUrl(asset: UniqueAsset | null, accountENS: string, accountAddress: EthereumAddress): string {
-  if (!asset) {
+  try {
+    if (!asset) {
+      return '';
+    }
+
+    const { uniqueId, collectionUrl } = asset;
+
+    const address = accountENS || accountAddress;
+
+    const slug = parseCollectionSlugFromUrl(collectionUrl ?? '');
+    const familyString = slug ? `?family=${slug}` : '';
+    const assetString = uniqueId ? `&nft=${uniqueId.replace('mainnet', 'ethereum')}` : '';
+    const url = `${RAINBOW_PROFILES_BASE_URL}/profile/${address}${familyString}${assetString}`;
+
+    return url;
+  } catch (error) {
+    logger.error(new RainbowError(`Failed to build Rainbow URL`, error), {
+      asset,
+      accountENS,
+      accountAddress,
+    });
+
     return '';
   }
-
-  const { uniqueId, network, collectionUrl } = asset;
-
-  const address = accountENS || accountAddress;
-  const slug = parseCollectionSlugFromUrl(collectionUrl ?? '');
-
-  const networkName = network ? (network + '_').replace('mainnet', 'ethereum') : '';
-
-  const familyString = slug ? `?family=${slug}` : '';
-  const assetString = uniqueId ? `&nft=${networkName}${uniqueId}` : '';
-
-  const url = `${RAINBOW_PROFILES_BASE_URL}/profile/${address}${familyString}${assetString}`;
-  return url;
 }
 
 export enum LearnUTMCampaign {

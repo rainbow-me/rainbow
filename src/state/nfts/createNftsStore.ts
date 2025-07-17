@@ -264,7 +264,6 @@ export const createNftsStore = (address: Address | string) =>
         pageKey: null,
         collectionId: undefined,
       },
-      debugMode: IS_DEV,
       staleTime: STALE_TIME,
     },
 
@@ -422,17 +421,12 @@ export const createNftsStore = (address: Address | string) =>
 
         const now = Date.now();
         if (!prunePromise || prunePromise.address !== address || now - prunePromise.lastPruneAt > TIME_BETWEEN_PRUNES) {
-          logger.debug(`🔍 [NFT Store] Starting prune operation for address: ${address}`);
           prunePromise = {
             address,
             lastPruneAt: now,
-            promise: pruneStaleAndClosedCollections({ address, set })
-              .then(prunedCount => {
-                logger.debug(`🔍 [NFT Store] Prune operation completed for address: ${address}. Pruned ${prunedCount} stale collections`);
-              })
-              .finally(() => {
-                prunePromise = null;
-              }),
+            promise: pruneStaleAndClosedCollections({ address, set }).finally(() => {
+              prunePromise = null;
+            }),
           };
         }
 
@@ -440,13 +434,9 @@ export const createNftsStore = (address: Address | string) =>
 
         if (!force) {
           if (normalizedCollectionId === 'showcase' || normalizedCollectionId === 'hidden') {
-            logger.debug(`🔍 [NFT Store] Processing showcase/hidden collection: ${normalizedCollectionId}`);
             let needsFetch = false;
             const { collectionIds } = await getHiddenAndShowcaseCollectionIds(address, normalizedCollectionId);
-            logger.debug(`🔍 [NFT Store] Collection IDs for showcase/hidden: ${collectionIds}`);
-
             if (!collectionIds) {
-              logger.debug('🔍 [NFT Store] No collection IDs found, exiting early');
               return;
             }
 
@@ -454,33 +444,19 @@ export const createNftsStore = (address: Address | string) =>
               for (const collectionId of collectionIds) {
                 const normalizedCollectionId = collectionId.toLowerCase();
                 const collection = getNftsByCollection(normalizedCollectionId);
-                logger.debug(`🔍 [NFT Store] Checking collection: ${collectionId}`, {
-                  collectionId,
-                  normalizedCollectionId,
-                  hasCollection: !!collection,
-                  isEmpty: collection ? isEmpty(collection) : 'N/A',
-                });
                 if (!collection || isEmpty(collection)) {
                   needsFetch = true;
-                  logger.debug(`🔍 [NFT Store] Collection needs fetch: ${collectionId}`);
                   break;
                 }
               }
             }
 
             if (!needsFetch) {
-              logger.debug('🔍 [NFT Store] No fetch needed for showcase/hidden, returning existing nftsByCollection');
               return;
             }
           } else {
             const collection = getNftsByCollection(normalizedCollectionId);
-            logger.debug(`🔍 [NFT Store] Checking regular collection: ${normalizedCollectionId}`, {
-              normalizedCollectionId,
-              hasCollection: !!collection,
-              isEmpty: collection ? isEmpty(collection) : 'N/A',
-            });
             if (collection && !isEmpty(collection)) {
-              logger.debug(`🔍 [NFT Store] Collection exists and not empty, returning existing nftsByCollection`);
               return;
             }
           }
@@ -504,7 +480,12 @@ export const createNftsStore = (address: Address | string) =>
               }));
               return;
             } catch (error) {
-              logger.error(new RainbowError(`Attempt ${attempt} failed to fetch NFT collection: ${normalizedCollectionId}`, error));
+              logger.error(new RainbowError(`Failed to fetch NFT collection`, error), {
+                collectionId: normalizedCollectionId,
+                address,
+                attempt,
+                error,
+              });
               if (attempt === MAX_RETRIES) {
                 return;
               }

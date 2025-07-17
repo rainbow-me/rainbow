@@ -5,7 +5,6 @@ import { UniqueAsset } from '@/entities';
 import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import useFetchHiddenTokens, { hiddenTokensQueryKey } from './useFetchHiddenTokens';
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
-import { logger } from '@/logger';
 
 export default function useHiddenTokens(address?: string) {
   const queryClient = useQueryClient();
@@ -20,22 +19,11 @@ export default function useHiddenTokens(address?: string) {
       if (isReadOnlyWallet) return hiddenTokens;
 
       const lowercasedUniqueId = asset.uniqueId.toLowerCase();
-      logger.debug('[useHiddenTokens] Adding hidden token', {
-        asset: lowercasedUniqueId,
-        addressToUse,
-        isReadOnlyWallet,
-        currentHiddenTokens: hiddenTokens,
-      });
-
       const newHiddenTokens = [...hiddenTokens, lowercasedUniqueId];
-      logger.debug(`[useHiddenTokens] New hidden tokens: ${newHiddenTokens}`);
-
       const response = await getPreference('hidden', addressToUse);
       if (!response || !response.hidden.ids.length) {
-        logger.debug('[useHiddenTokens] Initializing hidden tokens');
         await setPreference(PreferenceActionType.init, 'hidden', addressToUse, newHiddenTokens);
       } else {
-        logger.debug(`[useHiddenTokens] Adding hidden token ${lowercasedUniqueId} to hidden tokens`);
         await setPreference(PreferenceActionType.update, 'hidden', addressToUse, newHiddenTokens);
       }
 
@@ -70,22 +58,11 @@ export default function useHiddenTokens(address?: string) {
       if (isReadOnlyWallet) return hiddenTokens;
 
       const lowercasedUniqueId = asset.uniqueId.toLowerCase();
-      logger.debug('[useHiddenTokens] Removing hidden token', {
-        asset: lowercasedUniqueId,
-        addressToUse,
-        isReadOnlyWallet,
-        currentHiddenTokens: hiddenTokens,
-      });
-
       const newHiddenTokens = hiddenTokens.filter(id => id !== lowercasedUniqueId);
-      logger.debug(`[useHiddenTokens] New hidden tokens: ${newHiddenTokens}`);
-
       const response = await getPreference('hidden', addressToUse);
       if (!response || !response.hidden.ids.length) {
-        logger.debug('[useHiddenTokens] Initializing hidden tokens');
         await setPreference(PreferenceActionType.init, 'hidden', addressToUse, newHiddenTokens);
       } else {
-        logger.debug(`[useHiddenTokens] Removing hidden token ${lowercasedUniqueId} from hidden tokens`);
         await setPreference(PreferenceActionType.update, 'hidden', addressToUse, newHiddenTokens);
       }
 
