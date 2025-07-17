@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import wait from 'w2t';
 
@@ -8,7 +8,6 @@ import { SheetHandle } from '@/components/sheet';
 import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
-import { IS_IOS } from '@/env';
 import { Box, Text, Separator, useForegroundColor, useBackgroundColor } from '@/design-system';
 import { getProviders } from '@/resources/f2c';
 import Skeleton from '@/components/skeleton/Skeleton';

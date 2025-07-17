@@ -48,7 +48,7 @@ import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { format } from 'date-fns';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { StatusBar, View } from 'react-native';
+import { View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useSharedValue } from 'react-native-reanimated';
 import { createWalletClient, http } from 'viem';

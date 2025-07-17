@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { ScrollView, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import RainbowContextWrapper from '../../helpers/RainbowContext';
 import { Box, DesignSystemProvider, Separator, Inline, Inset, Stack, Text } from '../';
 import { ColorMode } from '../color/palettes';

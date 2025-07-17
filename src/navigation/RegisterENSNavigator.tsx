@@ -1,9 +1,8 @@
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
-import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
+import { SlackSheet } from '../components/sheet';
 import ENSAssignRecordsSheet, { ENSAssignRecordsBottomActions } from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
@@ -15,9 +14,7 @@ import { useDimensions, useENSRegistration, useENSRegistrationForm, usePrevious 
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
-import { IS_ANDROID } from '@/env';
 import { RootStackParamList } from './types';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Swipe = createMaterialTopTabNavigator();
 

@@ -252,7 +252,6 @@ const aliases = [
   'Slider',
   'SliderIOS',
   'SnapshotViewIOS',
-  'StatusBar',
   'SwipeableListView',
   'Switch',
   'SwitchAndroid',

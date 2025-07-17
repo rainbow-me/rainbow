@@ -43,6 +43,13 @@ module.exports = {
     'no-restricted-imports': [
       'warn',
       {
+        paths: [
+          {
+            name: 'react-native',
+            importNames: ['StatusBar'],
+            message: 'Use StatusBarHelper or SystemBars from "react-native-edge-to-edge" instead.',
+          },
+        ],
         patterns: [
           {
             group: ['@react-navigation/core'],

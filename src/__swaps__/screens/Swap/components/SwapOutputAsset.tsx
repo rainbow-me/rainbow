@@ -1,7 +1,7 @@
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useState } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 

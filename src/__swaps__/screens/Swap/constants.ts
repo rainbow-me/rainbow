@@ -1,4 +1,3 @@
-import { StatusBar } from 'react-native';
 import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';

@@ -1,7 +1,6 @@
-import { IS_ANDROID } from '@/env';
 import { useDimensions } from '@/hooks';
 import React from 'react';
-import { ScrollView, StatusBar } from 'react-native';
+import { ScrollView } from 'react-native';
 import SlackSheet from './SlackSheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

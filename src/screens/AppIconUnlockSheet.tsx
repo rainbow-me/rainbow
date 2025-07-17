@@ -1,7 +1,7 @@
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useNavigation } from '@/navigation';
 import React, { useCallback, useEffect } from 'react';
-import { StatusBar, View } from 'react-native';
+import { View } from 'react-native';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
 import { unlockableAppIcons } from '@/appIcons/appIcons';
 import { ImgixImage } from '@/components/images';
@@ -14,7 +14,6 @@ import Routes from '@/navigation/routesNames';
 import { SheetActionButton } from '@/components/sheet';
 import { analytics } from '@/analytics';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
-import { IS_ANDROID } from '@/env';
 import { SettingsPages } from './SettingsSheet/SettingsPages';
 import { RootStackParamList } from '@/navigation/types';
 

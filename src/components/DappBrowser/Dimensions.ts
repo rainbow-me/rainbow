@@ -1,4 +1,3 @@
-import { StatusBar } from 'react-native';
 import { IS_IOS } from '@/env';
 import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { safeAreaInsetValues } from '@/utils';
