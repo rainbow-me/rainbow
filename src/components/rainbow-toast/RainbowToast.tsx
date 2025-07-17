@@ -129,10 +129,10 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   const { width: deviceWidth } = useDimensions();
   const opacity = useSharedValue(0);
   const translateX = useSharedValue(0);
-  const startHidden = index > 2;
+  const startedHiddenBelow = index > 2;
   const translateY = useSharedValue(
     (() => {
-      if (startHidden) {
+      if (startedHiddenBelow) {
         // if >3 (starting hidden), start from below
         return distance + 10;
       } else {
@@ -145,11 +145,11 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   const touchStartedAt = useSharedValue(0);
 
   useEffect(() => {
-    if (!startHidden) {
+    if (!startedHiddenBelow) {
       opacity.value = withSpring(1, springConfig);
       translateY.value = withSpring(distance, springConfig);
     }
-  }, [opacity, translateY, distance, startHidden]);
+  }, [opacity, translateY, distance, startedHiddenBelow]);
 
   const finishRemoveToastCallback = useCallback(() => {
     finishRemoveToast(id);
