@@ -26,7 +26,12 @@ export function RestoreSheet() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string} customHeight={deviceHeight - top} scrollEnabled={false}>
+        <SimpleSheet
+          backgroundColor={backgroundColor as string}
+          useAdditionalTopPadding
+          customHeight={deviceHeight - top}
+          scrollEnabled={false}
+        >
           <NativeStack.Navigator initialRouteName={Routes.CHOOSE_BACKUP_SHEET} screenOptions={{ ...memoSettingsOptions, title: '' }}>
             <NativeStack.Screen component={ChooseBackupStep} initialParams={{ fromSettings }} name={Routes.CHOOSE_BACKUP_SHEET} />
             <NativeStack.Screen component={RestoreCloudStep} initialParams={{ fromSettings }} name={Routes.RESTORE_CLOUD_SHEET} />

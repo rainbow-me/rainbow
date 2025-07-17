@@ -37,7 +37,7 @@ export function SettingsSheet() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet testID="settings-sheet" backgroundColor={backgroundColor as string} scrollEnabled={false}>
+        <SimpleSheet testID="settings-sheet" backgroundColor={backgroundColor as string} scrollEnabled={false} useAdditionalTopPadding>
           <Stack.Navigator
             screenOptions={{
               ...memoSettingsOptions,

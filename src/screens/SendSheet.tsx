@@ -82,6 +82,7 @@ type ComponentPropsWithTheme = {
 const Container = styled(View)({
   backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.transparent,
   flex: 1,
+  paddingTop: IS_IOS ? 0 : safeAreaInsetValues.top,
   width: '100%',
 });
 
