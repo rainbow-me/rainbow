@@ -72,7 +72,8 @@ export function RainbowToastDisplay() {
         removingToasts.push(toast);
       } else {
         toastsToShow.push(toast);
-        if (toastsToShow.length > 2) {
+        // show 3 toasts + 1 extra hidden off to the bottom
+        if (toastsToShow.length > 3) {
           break;
         }
       }
@@ -128,15 +129,27 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   const { width: deviceWidth } = useDimensions();
   const opacity = useSharedValue(0);
   const translateX = useSharedValue(0);
-  const translateY = useSharedValue(insets.top - 80);
+  const startHidden = index > 2;
+  const translateY = useSharedValue(
+    (() => {
+      if (startHidden) {
+        // if >3 (starting hidden), start from below
+        return distance + 10;
+      } else {
+        return insets.top - 80;
+      }
+    })()
+  );
   const lastChangeX = useSharedValue(0);
   const isPressed = useSharedValue(false);
   const touchStartedAt = useSharedValue(0);
 
   useEffect(() => {
-    opacity.value = withSpring(1, springConfig);
-    translateY.value = withSpring(distance, springConfig);
-  }, [opacity, translateY, distance]);
+    if (!startHidden) {
+      opacity.value = withSpring(1, springConfig);
+      translateY.value = withSpring(distance, springConfig);
+    }
+  }, [opacity, translateY, distance, startHidden]);
 
   const finishRemoveToastCallback = useCallback(() => {
     finishRemoveToast(id);
