@@ -70,10 +70,10 @@ export function RainbowToastDisplay() {
     if (toast.removing) {
       removingToasts.push(toast);
     } else {
+      toastsToShow.push(toast);
       if (toastsToShow.length > 2) {
         break;
       }
-      toastsToShow.push(toast);
     }
   }
 
