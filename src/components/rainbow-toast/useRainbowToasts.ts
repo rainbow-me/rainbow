@@ -80,9 +80,21 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
   // split into starting to remove and then fully removing so we can animate out
   startRemoveToast: (id, via) => {
     set(state => {
+      const toasts: RainbowToastWithIndex[] = [];
+
+      let currentIndex = 0;
+      for (const toast of state.toasts) {
+        if (toast.id === id) {
+          toasts.push({ ...toast, removing: via });
+        } else {
+          toasts.push({ ...toast, index: currentIndex });
+          currentIndex += 1;
+        }
+      }
+
       return {
         hiddenToasts: { ...state.hiddenToasts, [id]: true },
-        toasts: state.toasts.map((toast, index) => (toast.id === id ? { ...toast, removing: via } : { ...toast, index: index - 1 })),
+        toasts,
       };
     });
   },

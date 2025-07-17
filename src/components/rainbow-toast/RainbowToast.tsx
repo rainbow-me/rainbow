@@ -64,20 +64,22 @@ export function RainbowToastDisplay() {
   }, [mints, pendingTransactions]);
 
   // show all removing and 3 latest toasts
-  const toastsToShow: RainbowToastWithIndex[] = [];
-  const removingToasts: RainbowToastWithIndex[] = [];
-  for (const toast of toasts) {
-    if (toast.removing) {
-      removingToasts.push(toast);
-    } else {
-      toastsToShow.push(toast);
-      if (toastsToShow.length > 2) {
-        break;
+  const visibleToasts = useMemo(() => {
+    const toastsToShow: RainbowToastWithIndex[] = [];
+    const removingToasts: RainbowToastWithIndex[] = [];
+    for (const toast of toasts) {
+      if (toast.removing) {
+        removingToasts.push(toast);
+      } else {
+        toastsToShow.push(toast);
+        if (toastsToShow.length > 2) {
+          break;
+        }
       }
     }
-  }
 
-  const visibleToasts = [...removingToasts, ...toastsToShow];
+    return [...removingToasts, ...toastsToShow];
+  }, [toasts]);
 
   const content = (
     <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
@@ -117,38 +119,24 @@ type Props = PropsWithChildren<{
 }>;
 
 const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: Props) {
-  const { isDarkMode } = useColorMode();
-  const { width: deviceWidth } = useDimensions();
-  const visible = useSharedValue(0);
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const lastChangeX = useSharedValue(0);
+  const { index, id } = toast;
 
   const height = 60;
-  const { index, id } = toast;
-  const gap = index > 1 ? 4 : 5; // less gap for third item
-  const distance = index * gap + insets.top + 8;
+  const gap = index > 1 ? 3.5 : 4; // less gap for third item
+  const distance = index * gap + insets.top + 10;
+  const { isDarkMode } = useColorMode();
+  const { width: deviceWidth } = useDimensions();
+  const opacity = useSharedValue(0);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(insets.top - 80);
+  const lastChangeX = useSharedValue(0);
+  const isPressed = useSharedValue(false);
+  const touchStartedAt = useSharedValue(0);
 
   useEffect(() => {
-    visible.value = withSpring(1, springConfig);
-
-    if (translateY.value === 0) {
-      if (index === 0) {
-        // first toast starts from above
-        translateY.value = insets.top - 80;
-      } else if (index === 2) {
-        // bottom toast start from below
-        translateY.value = distance + 2;
-      } else {
-        // middle toast starts at target position
-        translateY.value = distance;
-      }
-    }
-  }, [visible, translateY, distance, index, insets.top]);
-
-  useEffect(() => {
+    opacity.value = withSpring(1, springConfig);
     translateY.value = withSpring(distance, springConfig);
-  }, [distance, translateY]);
+  }, [opacity, translateY, distance]);
 
   const finishRemoveToastCallback = useCallback(() => {
     finishRemoveToast(id);
@@ -159,11 +147,11 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   }, [id]);
 
   const hideToast = useCallback(() => {
-    visible.value = withSpring(0, springConfig, () => {
+    opacity.value = withSpring(0, springConfig, () => {
       runOnJS(finishRemoveToastCallback)();
     });
     translateY.value = withSpring(translateY.value - 10, springConfig);
-  }, [finishRemoveToastCallback, translateY, visible]);
+  }, [finishRemoveToastCallback, translateY, opacity]);
 
   // there's a few ways to remove toasts - from a swipe, from it being removed
   // via pendingTransactions, or if it reaches final state if
@@ -174,7 +162,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
     if (nonSwipeRemove) {
       hideToast();
     }
-  }, [finishRemoveToastCallback, hideToast, nonSwipeRemove, translateY, visible]);
+  }, [finishRemoveToastCallback, hideToast, nonSwipeRemove, translateY, opacity]);
 
   // reached a finished state, set a timeout then remove
   const shouldHideItself =
@@ -225,21 +213,31 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
         if (isDraggedFarEnough && isDraggedFastEnough) {
           runOnJS(swipeRemoveToastCallback)();
           const toValue = event.translationX > 0 ? deviceWidth : -deviceWidth;
-          translateX.value = withSpring(toValue, { damping: 20, stiffness: 90 }, finished => {
-            if (finished) {
-              runOnJS(finishRemoveToastCallback)();
+          translateX.value = withSpring(
+            toValue,
+            {
+              damping: 35,
+              stiffness: 150,
+              // avoid it bouncing a lot at the "end" so it removes on time
+              restDisplacementThreshold: 0.5,
+            },
+            finished => {
+              if (finished) {
+                runOnJS(finishRemoveToastCallback)();
+              }
             }
-          });
+          );
         } else {
           translateX.value = withSpring(0, springConfig);
+          isPressed.value = false;
         }
       });
 
     return pan;
-  }, [translateX, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback]);
+  }, [translateX, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback, isPressed]);
 
   const dragStyle = useAnimatedStyle(() => {
-    const opacityY = visible.value;
+    const opacityY = opacity.value;
     const opacityX = interpolate(Math.abs(translateX.value), [0, deviceWidth / 2], [1, 0], 'clamp');
     const scale = interpolate(index, [0, 2], [1, 0.95], 'clamp');
 
@@ -248,9 +246,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
       transform: [{ translateY: translateY.value }, { translateX: translateX.value }, { scale }],
     };
   });
-
-  const isPressed = useSharedValue(false);
-  const touchStartedAt = useSharedValue(0);
 
   const showExpanded = useCallback(() => {
     isPressed.value = false;
