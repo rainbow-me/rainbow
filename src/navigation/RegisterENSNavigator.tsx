@@ -112,7 +112,7 @@ export default function RegisterENSNavigator() {
 
   return (
     <>
-      <SlackSheet additionalTopPadding contentHeight={contentHeight} ref={sheetRef} scrollEnabled>
+      <SlackSheet additionalTopPadding contentHeight={contentHeight} height="100%" ref={sheetRef} removeTopPadding scrollEnabled>
         <Box
           style={{
             height: contentHeight,
