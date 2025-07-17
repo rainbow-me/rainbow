@@ -213,7 +213,6 @@ export const styles = StyleSheet.create({
     borderBottomRightRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
-    backgroundColor: 'red',
   },
   swapWarningAndExchangeWrapper: {
     position: 'relative',
