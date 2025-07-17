@@ -9,7 +9,487 @@ import { Button, ScrollView } from 'react-native';
 
 // the RainbowTransaction type is off from real data so i'm casting them:
 
+export function DevActionsSheet() {
+  const accountAddress = useAccountAddress();
+
+  const createMockSendTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleSends[lastSend++ % exampleSends.length],
+      status,
+    };
+  };
+
+  const createMockSwapTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleSwaps[lastSwap++ % exampleSwaps.length],
+      status,
+    };
+  };
+
+  const createMockMintTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleMints[lastMint++ % exampleMints.length],
+      status,
+    };
+  };
+
+  let current: RainbowTransaction[] = [];
+
+  function addThenUpdate(transaction: RainbowTransaction) {
+    current = [...current, transaction];
+    pendingTransactionsStore.setState(state => ({
+      ...state,
+      pendingTransactions: {
+        [accountAddress]: current,
+      },
+    }));
+  }
+
+  const addSendTransaction = () => {
+    addThenUpdate(createMockSendTransaction(TransactionStatus.sending));
+  };
+
+  const addSwapTransaction = () => {
+    addThenUpdate(createMockSwapTransaction(TransactionStatus.swapping));
+  };
+
+  const addMintTransaction = () => {
+    addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
+  };
+
+  const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send' | 'contract_interaction', status: TransactionStatus) => {
+    const latest = current.findLast(px => px.type === type);
+    if (latest) {
+      console.info(`Updating`, latest, 'to', type);
+      pendingTransactionsStore.setState(state => ({
+        ...state,
+        pendingTransactions: {
+          [accountAddress]: current.map(item => (item === latest ? { ...item, status } : item)),
+        },
+      }));
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const updateLastSendTo = (status: TransactionStatus) => {
+    updateLatestTransactionOfType('send', status);
+  };
+
+  const updateLastSwapTo = (status: TransactionStatus) => {
+    updateLatestTransactionOfType('swap', status);
+  };
+
+  const updateLastMintTo = (status: TransactionStatus) => {
+    if (updateLatestTransactionOfType('mint', status)) {
+      return;
+    }
+    updateLatestTransactionOfType('contract_interaction', status);
+  };
+
+  return (
+    <Sheet>
+      <Box paddingHorizontal="20px" paddingTop="44px">
+        <Text size="20pt" weight="bold" color="label" align="center">
+          Transactions
+        </Text>
+
+        <ScrollView style={{ marginTop: 20 }} showsVerticalScrollIndicator={false}>
+          <Box gap={12}>
+            <Button
+              onPress={() => {
+                current = [];
+                usePendingTransactionsStore.getState().clearPendingTransactions();
+                useToastStore.setState(() => ({
+                  hiddenToasts: {},
+                  toasts: [],
+                }));
+              }}
+              title="Clear All"
+            />
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Send
+            </Text>
+
+            <Button onPress={addSendTransaction} title="Add Send Transaction" />
+            <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="Update Send → Sent" />
+            <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="Update Send → Failed" />
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Swap
+            </Text>
+
+            <Button onPress={addSwapTransaction} title="Add Swap Transaction" />
+            <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="Update Swap → Swapped" />
+            <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="Update Swap → Failed" />
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Mint
+            </Text>
+
+            <Button onPress={addMintTransaction} title="Add Mint Transaction" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="Update Mint → Minted" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" />
+          </Box>
+        </ScrollView>
+      </Box>
+    </Sheet>
+  );
+}
+
+// mock data
+
 const exampleSwaps: RainbowTransaction[] = [
+  {
+    isMocked: true,
+    chainId: 8453,
+    data: '0x55e4b7be000000000000000000000000080550540c7655541281995516a6aed47c8474840000000000000000000000000f758abf9b242daa6b2b5e976d6e00c5aece9b070000000000000000000000000000000000001ff3684f28c67538d4d072c2273400000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000000000000000000000000000000001e32b47897400000000000000000000000000000000000000000000000000000000000000005842213bc0b000000000000000000000000f525ff21c370beb8d9f5c12dc0da2b583f4b949f000000000000000000000000080550540c7655541281995516a6aed47c8474840000000000000000000000000000000000000000000000000dc283ff2eccc000000000000000000000000000f525ff21c370beb8d9f5c12dc0da2b583f4b949f00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000004a41fff991f00000000000000000000000000000000009726632680fb29d3f7a9734e3010e20000000000000000000000000f758abf9b242daa6b2b5e976d6e00c5aece9b07000000000000000000000000000000000000000000000191f0e8132651f67a4c00000000000000000000000000000000000000000000000000000000000000a07a87f2dec40c69bebac4a4ef00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000002200000000000000000000000000000000000000000000000000000000000000340000000000000000000000000000000000000000000000000000000000000018422ce6ede000000000000000000000000f525ff21c370beb8d9f5c12dc0da2b583f4b949f0000000000000000000000000000000000000000000000000000000000000100000000000000000000000000080550540c7655541281995516a6aed47c8474840000000000000000000000000000000000000000000000000dc283ff2eccc000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000687955c400000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002c080550540c7655541281995516a6aed47c847484000027104200000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e48d68a156000000000000000000000000f525ff21c370beb8d9f5c12dc0da2b583f4b949f000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002c4200000000000000000000000000000000000006000027100f758abf9b242daa6b2b5e976d6e00c5aece9b070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000064c876d21d000000000000000000000000f5c4f3dc02c3fb9279495a8fef7b0741da9561570000000000000000000000000f758abf9b242daa6b2b5e976d6e00c5aece9b070000000000000000000000000000000000000000000001ab64233a13daa7bb9b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d7e44d53',
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    to: '0x00000000009726632680fb29d3f7a9734e3010e2',
+    value: '0',
+    asset: {
+      colors: {
+        primary: '#0758EF',
+        fallback: '#68A2F8',
+      },
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1752698818/assets/base/0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07.png',
+      name: '🟦',
+      networks: {
+        '8453': {
+          address: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07',
+          decimals: 18,
+        },
+      },
+      symbol: '🟦',
+      decimals: 18,
+      highLiquidity: true,
+      isRainbowCurated: false,
+      isVerified: false,
+      uniqueId: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07_8453',
+      address: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07',
+      market: {
+        currency_used: 'usd',
+        fdv: 881960.697084297,
+        volume_24h: 6226855.41461213,
+        total_supply: 100000000000,
+        market_cap: {
+          value: 881960.697084297,
+        },
+        price: {
+          value: 0.000008819606971,
+          change_24h: 93.02,
+        },
+        ath: {
+          date: '0001-01-01T00:00:00Z',
+        },
+        atl: {
+          date: '0001-01-01T00:00:00Z',
+        },
+        updated_at: '2025-07-17T19:45:15.939575332Z',
+      },
+      bridging: {
+        bridgeable: false,
+        networks: {},
+      },
+      trending: {
+        origin_id: 'rainbow',
+        timeframe_id: 3,
+        rank: 48,
+        trending_since: '2025-07-16T16:15:13.715472Z',
+        pool_data: {
+          pool_hash: '0x89bfaa07e84c391cbadf383e716c7f229e7e0a7f',
+          currency_used: 'usd',
+          reserve: 315037.9005,
+          m5_volume: 4359.2426503901,
+          h1_volume: 36355.8154482859,
+          h6_volume: 301257.079524808,
+          h24_volume: 6226855.41461213,
+          m5_price_change: 5.5,
+          h1_price_change: 14.04,
+          h6_price_change: 5.62,
+          h24_price_change: 93.02,
+        },
+        swap_data: {
+          currency_used: 'usd',
+          bought_stats: {
+            unique_users: 77,
+            total_transactions: 254,
+            total_volume: 244005.48026930203,
+          },
+          sold_stats: {
+            unique_users: 68,
+            total_transactions: 166,
+            total_volume: 61937.05170930842,
+          },
+        },
+      },
+      chainId: 8453,
+      transferable: true,
+      isNativeAsset: false,
+      mainnetAddress: '',
+      favorite: false,
+      sectionId: 'popular',
+      listItemType: 'coinRow',
+      chainName: 'base',
+      native: {
+        balance: {
+          amount: '0.15474900884324971728450192606276692',
+          display: '$0.15',
+        },
+        price: {
+          change: '100.54%',
+          amount: 0.00000940663872374,
+          display: '$0.00',
+        },
+      },
+      price: {
+        value: 0.00000940663872374,
+      },
+      balance: {
+        amount: '16451.042012775719758558',
+        display: '16,451.042 🟦',
+      },
+      color: {
+        light: '#0758EF',
+        dark: '#0758EF',
+      },
+      shadowColor: {
+        light: '#0758EF',
+        dark: '#0758EF',
+      },
+      mixedShadowColor: {
+        light: '#223368',
+        dark: '#000',
+      },
+      highContrastColor: {
+        light: '#0758EF',
+        dark: '#0758EF',
+      },
+      tintedBackgroundColor: {
+        light: '#f8f8fc',
+        dark: '#010a1b',
+      },
+      textColor: {
+        light: '#FFFFFF',
+        dark: '#FFFFFF',
+      },
+      nativePrice: 0.00000940663872374,
+      maxSwappableAmount: '16451.042012775719758558',
+      network: 'base',
+    },
+    changes: [
+      {
+        direction: 'out',
+        asset: {
+          address: '0x080550540c7655541281995516a6aed47c847484',
+          uniqueId: '0x080550540c7655541281995516a6aed47c847484_8453',
+          chainId: 8453,
+          chainName: 'base',
+          isNativeAsset: false,
+          name: '🌈 Bubble',
+          price: {
+            value: 0.075708761826,
+          },
+          symbol: 'RAINBUBB',
+          type: 'rainbow',
+          decimals: 18,
+          icon_url:
+            'https://rainbowme-res.cloudinary.com/image/upload/v1742286972/assets/base/0x080550540c7655541281995516a6aed47c847484.png',
+          colors: {
+            primary: '#B9B380',
+            fallback: '#5A4F4B',
+          },
+          networks: {
+            '8453': {
+              address: '0x080550540c7655541281995516a6aed47c847484',
+              decimals: 18,
+            },
+          },
+          bridging: {
+            isBridgeable: false,
+            networks: {},
+          },
+          balance: {
+            amount: '1545.035359661294645644',
+            display: '1,545.035 RAINBUBB',
+          },
+          smallBalance: false,
+          color: {
+            light: '#B9B380',
+            dark: '#B9B380',
+          },
+          shadowColor: {
+            light: '#B9B380',
+            dark: '#B9B380',
+          },
+          mixedShadowColor: {
+            light: '#515142',
+            dark: '#000',
+          },
+          highContrastColor: {
+            light: '#ada669',
+            dark: '#B9B380',
+          },
+          tintedBackgroundColor: {
+            light: '#fafafa',
+            dark: '#15140e',
+          },
+          textColor: {
+            light: '#FFFFFF',
+            dark: '#000',
+          },
+          nativePrice: 0.075708761826,
+          maxSwappableAmount: '1545.035359661294645644',
+          network: 'base',
+        },
+        value: '1000000000000000000',
+      },
+      {
+        direction: 'in',
+        asset: {
+          colors: {
+            primary: '#0758EF',
+            fallback: '#68A2F8',
+          },
+          icon_url:
+            'https://rainbowme-res.cloudinary.com/image/upload/v1752698818/assets/base/0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07.png',
+          name: '🟦',
+          networks: {
+            '8453': {
+              address: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07',
+              decimals: 18,
+            },
+          },
+          symbol: '🟦',
+          decimals: 18,
+          highLiquidity: true,
+          isRainbowCurated: false,
+          isVerified: false,
+          uniqueId: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07_8453',
+          address: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07',
+          market: {
+            currency_used: 'usd',
+            fdv: 881960.697084297,
+            volume_24h: 6226855.41461213,
+            total_supply: 100000000000,
+            market_cap: {
+              value: 881960.697084297,
+            },
+            price: {
+              value: 0.000008819606971,
+              change_24h: 93.02,
+            },
+            ath: {
+              date: '0001-01-01T00:00:00Z',
+            },
+            atl: {
+              date: '0001-01-01T00:00:00Z',
+            },
+            updated_at: '2025-07-17T19:45:15.939575332Z',
+          },
+          bridging: {
+            bridgeable: false,
+            networks: {},
+          },
+          trending: {
+            origin_id: 'rainbow',
+            timeframe_id: 3,
+            rank: 48,
+            trending_since: '2025-07-16T16:15:13.715472Z',
+            pool_data: {
+              pool_hash: '0x89bfaa07e84c391cbadf383e716c7f229e7e0a7f',
+              currency_used: 'usd',
+              reserve: 315037.9005,
+              m5_volume: 4359.2426503901,
+              h1_volume: 36355.8154482859,
+              h6_volume: 301257.079524808,
+              h24_volume: 6226855.41461213,
+              m5_price_change: 5.5,
+              h1_price_change: 14.04,
+              h6_price_change: 5.62,
+              h24_price_change: 93.02,
+            },
+            swap_data: {
+              currency_used: 'usd',
+              bought_stats: {
+                unique_users: 77,
+                total_transactions: 254,
+                total_volume: 244005.48026930203,
+              },
+              sold_stats: {
+                unique_users: 68,
+                total_transactions: 166,
+                total_volume: 61937.05170930842,
+              },
+            },
+          },
+          chainId: 8453,
+          transferable: true,
+          isNativeAsset: false,
+          mainnetAddress: '',
+          favorite: false,
+          sectionId: 'popular',
+          listItemType: 'coinRow',
+          chainName: 'base',
+          price: {
+            value: 0.00000940663872374,
+          },
+          balance: {
+            amount: '16451.042012775719758558',
+            display: '16,451.042 🟦',
+          },
+          color: {
+            light: '#0758EF',
+            dark: '#0758EF',
+          },
+          shadowColor: {
+            light: '#0758EF',
+            dark: '#0758EF',
+          },
+          mixedShadowColor: {
+            light: '#223368',
+            dark: '#000',
+          },
+          highContrastColor: {
+            light: '#0758EF',
+            dark: '#0758EF',
+          },
+          tintedBackgroundColor: {
+            light: '#f8f8fc',
+            dark: '#010a1b',
+          },
+          textColor: {
+            light: '#FFFFFF',
+            dark: '#FFFFFF',
+          },
+          nativePrice: 0.00000940663872374,
+          maxSwappableAmount: '16451.042012775719758558',
+          network: 'base',
+        },
+        value: '7804740546712141659035',
+      },
+    ],
+    gasLimit: '323022',
+    hash: '0x0f7c19fe01937651934ae772ca0768a70cfff7981c8b2cca408d960d6b07a5a0',
+    network: 'base',
+    nonce: 1150,
+    status: 'pending',
+    type: 'swap',
+    swap: {
+      type: 'normal',
+      fromChainId: 8453,
+      toChainId: 8453,
+      isBridge: false,
+    },
+    maxFeePerGas: '6862084',
+    maxPriorityFeePerGas: '150',
+    title: 'swap.pending',
+    description: '🌈 Bubble',
+    timestamp: 1752781982498,
+  } as unknown as RainbowTransaction,
+
   {
     isMocked: true,
     chainId: 1,
@@ -566,6 +1046,7 @@ const exampleSends: RainbowTransaction[] = [
 
 const exampleMints = [
   {
+    isMocked: true,
     status: 'pending',
     chainId: 10,
     asset: {
@@ -668,6 +1149,7 @@ const exampleMints = [
     timestamp: 1752774596231,
   } as unknown as RainbowTransaction,
   {
+    isMocked: true,
     status: 'pending',
     chainId: 10,
     asset: {
@@ -774,133 +1256,3 @@ const exampleMints = [
 let lastSend = 0;
 let lastSwap = 0;
 let lastMint = 0;
-
-export function DevActionsSheet() {
-  const accountAddress = useAccountAddress();
-
-  const createMockSendTransaction = (status: TransactionStatus): RainbowTransaction => {
-    return {
-      ...exampleSends[lastSend++ % exampleSends.length],
-      status,
-    };
-  };
-
-  const createMockSwapTransaction = (status: TransactionStatus): RainbowTransaction => {
-    return {
-      ...exampleSwaps[lastSwap++ % exampleSwaps.length],
-      status,
-    };
-  };
-
-  const createMockMintTransaction = (status: TransactionStatus): RainbowTransaction => {
-    return {
-      ...exampleMints[lastMint++ % exampleMints.length],
-      status,
-    };
-  };
-
-  let current: RainbowTransaction[] = [];
-
-  function addThenUpdate(transaction: RainbowTransaction) {
-    current = [...current, transaction];
-    pendingTransactionsStore.setState(state => ({
-      ...state,
-      pendingTransactions: {
-        [accountAddress]: current,
-      },
-    }));
-  }
-
-  const addSendTransaction = () => {
-    addThenUpdate(createMockSendTransaction(TransactionStatus.sending));
-  };
-
-  const addSwapTransaction = () => {
-    addThenUpdate(createMockSwapTransaction(TransactionStatus.swapping));
-  };
-
-  const addMintTransaction = () => {
-    addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
-  };
-
-  const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send' | 'contract_interaction', status: TransactionStatus) => {
-    const latest = current.findLast(px => px.type === type);
-    if (latest) {
-      console.info(`Updating`, latest, 'to', type);
-      pendingTransactionsStore.setState(state => ({
-        ...state,
-        pendingTransactions: {
-          [accountAddress]: current.map(item => (item === latest ? { ...item, status } : item)),
-        },
-      }));
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const updateLastSendTo = (status: TransactionStatus) => {
-    updateLatestTransactionOfType('send', status);
-  };
-
-  const updateLastSwapTo = (status: TransactionStatus) => {
-    updateLatestTransactionOfType('swap', status);
-  };
-
-  const updateLastMintTo = (status: TransactionStatus) => {
-    if (updateLatestTransactionOfType('mint', status)) {
-      return;
-    }
-    updateLatestTransactionOfType('contract_interaction', status);
-  };
-
-  return (
-    <Sheet>
-      <Box paddingHorizontal="20px" paddingTop="44px">
-        <Text size="20pt" weight="bold" color="label" align="center">
-          Transactions
-        </Text>
-
-        <ScrollView style={{ marginTop: 20 }} showsVerticalScrollIndicator={false}>
-          <Box gap={12}>
-            <Button
-              onPress={() => {
-                current = [];
-                usePendingTransactionsStore.getState().clearPendingTransactions();
-                useToastStore.setState(() => ({
-                  hiddenToasts: {},
-                  toasts: [],
-                }));
-              }}
-              title="Clear All"
-            />
-
-            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
-              Send
-            </Text>
-
-            <Button onPress={addSendTransaction} title="Add Send Transaction" />
-            <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="Update Send → Sent" />
-            <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="Update Send → Failed" />
-
-            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
-              Swap
-            </Text>
-
-            <Button onPress={addSwapTransaction} title="Add Swap Transaction" />
-            <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="Update Swap → Swapped" />
-            <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="Update Swap → Failed" />
-
-            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
-              Mint
-            </Text>
-
-            <Button onPress={addMintTransaction} title="Add Mint Transaction" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="Update Mint → Minted" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" />
-          </Box>
-        </ScrollView>
-      </Box>
-    </Sheet>
-  );
-}

@@ -100,6 +100,7 @@ export const activityValues = (transaction: RainbowTransaction, nativeCurrency: 
 
   return greaterThan(nativeBalance.amount, '0') ? [`${assetValue}`, assetNativeValue] : [assetNativeValue, `${valueSymbol}${assetValue}`];
 };
+
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {
     case 'swap':

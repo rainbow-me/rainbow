@@ -2,6 +2,7 @@ import { MintToastExpandedContent } from '@/components/rainbow-toast/MintToastEx
 import { SwapToastExpandedContent } from '@/components/rainbow-toast/SwapToastExpandedContent';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Box, useColorMode } from '@/design-system';
+import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import { Canvas, Path } from '@shopify/react-native-skia';
 import { getSvgPath } from 'figma-squircle';
@@ -158,6 +159,14 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
     return null;
   }
 
+  const backdropBackgroundColor = IS_IOS
+    ? isDarkMode
+      ? 'rgba(0,0,0,0.3)'
+      : 'rgba(255,255,255,0.2)'
+    : isDarkMode
+      ? 'rgba(0,0,0,0.6)'
+      : 'rgba(255,255,255,0.5)';
+
   return (
     <>
       {/* backdrop */}
@@ -168,9 +177,9 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
           opacityStyle,
         ]}
       >
-        <BlurView blurIntensity={1} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+        {IS_IOS && <BlurView blurIntensity={1} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
         <TouchableWithoutFeedback onPress={hide}>
-          <Box style={{ ...StyleSheet.absoluteFillObject, backgroundColor: isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.2)' }} />
+          <Box style={{ ...StyleSheet.absoluteFillObject, backgroundColor: backdropBackgroundColor }} />
         </TouchableWithoutFeedback>
       </Animated.View>
 
