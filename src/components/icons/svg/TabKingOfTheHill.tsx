@@ -3,7 +3,7 @@ import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 import { globalColors } from '@/design-system';
 
-export const TabLaunchpad = ({ color = globalColors.grey100 }: { color?: string }) => {
+export const TabKingOfTheHill = ({ color = globalColors.grey100 }: { color?: string }) => {
   return (
     <Svg height="28" width="28" viewBox="4 1 28 28">
       <Path

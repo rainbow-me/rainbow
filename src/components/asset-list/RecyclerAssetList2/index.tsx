@@ -18,7 +18,7 @@ import { useWalletSectionsData } from '@/hooks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
-import { LAUNCHPAD_PAGE, useExperimentalFlag } from '@/config';
+import { KING_OF_THE_HILL_TAB, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
@@ -114,8 +114,8 @@ function handleNavigateToActivity(): void {
 function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
-  const { enabled_launchpad_page } = useRemoteConfig('enabled_launchpad_page');
-  const showLaunchpadPage = (useExperimentalFlag(LAUNCHPAD_PAGE) || enabled_launchpad_page) && !IS_TEST;
+  const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
+  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
   const shadowOpacityStyle = useMemo(
@@ -224,7 +224,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
             </Navbar.Item>
           }
           rightComponent={
-            showLaunchpadPage ? (
+            showKingOfTheHillTab ? (
               <Box flexDirection="row" gap={16}>
                 <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
                   <Navbar.TextIcon color={accentColor as string} icon="􀍠" />

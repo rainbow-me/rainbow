@@ -40,7 +40,7 @@ const Routes = {
   HARDWARE_WALLET_TX_NAVIGATOR: 'HardwareWalletTxNavigator',
   IMPORT_OR_WATCH_WALLET_SHEET: 'ImportOrWatchWalletSheet',
   IMPORT_SCREEN: 'ImportScreen',
-  LAUNCHPAD: 'Launchpad',
+  KING_OF_THE_HILL: 'KingOfTheHill',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   LOG_SHEET: 'LogSheet',
   POAP_SHEET: 'PoapSheet',
