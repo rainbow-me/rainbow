@@ -42,7 +42,7 @@ const Container = styled(Centered).attrs({
         top:
           typeof additionalTopPadding === 'number'
             ? additionalTopPadding
-            : additionalTopPadding && contentHeight
+            : contentHeight && additionalTopPadding
               ? deviceHeight - contentHeight - (removeTopPadding ? 0 : SheetHandleFixedToTopHeight)
               : 0,
       }),
@@ -58,6 +58,7 @@ const Container = styled(Centered).attrs({
 interface ContentProps {
   limitScrollViewContent?: boolean;
   contentHeight?: number;
+  deviceHeight: number;
   backgroundColor: string;
   removeTopPadding?: boolean;
 }
@@ -67,9 +68,9 @@ const Content = styled(ScrollView).attrs(({ limitScrollViewContent }: ContentPro
   directionalLockEnabled: true,
   keyboardShouldPersistTaps: 'always',
   scrollEventThrottle: 16,
-}))(({ contentHeight, backgroundColor, removeTopPadding }: ContentProps) => ({
+}))(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding }: ContentProps) => ({
   backgroundColor: backgroundColor,
-  ...(contentHeight ? { height: contentHeight } : { height: '100%' }),
+  ...(contentHeight ? { height: deviceHeight + contentHeight } : { height: '100%' }),
   paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
   width: '100%',
 }));
@@ -222,6 +223,7 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
+            deviceHeight={deviceHeight}
             limitScrollViewContent={limitScrollViewContent}
             onContentSizeChange={onContentSizeChange}
             ref={sheet}
