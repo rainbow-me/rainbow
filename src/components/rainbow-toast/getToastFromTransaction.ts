@@ -20,6 +20,7 @@ export const RainbowToastSendStatuses = {
 } as const;
 
 export const RainbowToastMintStatuses = {
+  [TransactionStatus.pending]: TransactionStatus.pending,
   [TransactionStatus.minting]: TransactionStatus.minting,
   [TransactionStatus.minted]: TransactionStatus.minted,
 } as const;
