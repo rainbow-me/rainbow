@@ -35,7 +35,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { DiscoverSeparator } from './DiscoverSeparator';
-import { KingOfTheHill } from './KingOfTheHill';
+import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { useWallets } from '@/state/wallets/walletsStore';
 
 export const HORIZONTAL_PADDING = 20;
@@ -91,7 +91,7 @@ export default function DiscoverHome() {
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
           )}
-          {princeOfTheHillEnabled && <KingOfTheHill />}
+          {princeOfTheHillEnabled && <KingOfTheHillContent />}
           <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />

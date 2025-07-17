@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(grep:*)",
+      "Bash(done)",
+      "Bash(yarn lint:*)"
+    ],
+    "deny": []
+  }
+}
