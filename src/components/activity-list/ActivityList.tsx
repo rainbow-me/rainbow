@@ -164,9 +164,7 @@ const ActivityList = lazyMount(() => {
       // even if it was at the top before sometimes. so changing the key here
       // ensures the list fully re-renders and has the correct scroll position
       key={accountAddress}
-      ref={ref => {
-        listRef.current = ref;
-      }}
+      ref={listRef}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
