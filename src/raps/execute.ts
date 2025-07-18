@@ -25,6 +25,7 @@ import { Screens, TimeToSignOperation, performanceTracking } from '@/state/perfo
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { createClaimClaimableRap } from './claimClaimable';
 import { claimClaimable } from './actions/claimClaimable';
+import { IS_TEST } from '@/env';
 
 const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
 
@@ -116,7 +117,8 @@ function getRapFullName<T extends RapActionTypes>(actions: RapAction<T>[]) {
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-const NODE_ACK_DELAY = 500;
+// When testing, give it some time to let approvals through
+const NODE_ACK_DELAY = IS_TEST ? 5000 : 500;
 
 export const walletExecuteRap = async <T extends RapTypes>(
   wallet: Signer,
@@ -153,7 +155,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
     };
 
     const { baseNonce, errorMessage: error, hash: firstHash } = await executeAction(actionParams);
-    const shouldDelayForNodeAck = parameters.chainId !== ChainId.mainnet;
+    const shouldDelayForNodeAck = parameters.chainId !== ChainId.mainnet || IS_TEST;
 
     if (typeof baseNonce === 'number') {
       let latestHash = firstHash;
