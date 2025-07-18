@@ -1,125 +1,188 @@
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { ButtonPressAnimation } from '@/components/animations';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { Box, globalColors, Inline, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import { KingOfTheHillToken } from '@/graphql/__generated__/metadata';
-import { getSizedImageUrl } from '@/handlers/imgix';
+import React, { useCallback, useEffect } from 'react';
 import * as i18n from '@/languages';
+import { Box, Inline, Stack, Text, useColorMode } from '@/design-system';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import FastImage from 'react-native-fast-image';
+import { getSizedImageUrl } from '@/handlers/imgix';
+import { ButtonPressAnimation } from '@/components/animations';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useCallback } from 'react';
-import FastImage from 'react-native-fast-image';
+import { KingOfTheHill } from '@/graphql/__generated__/metadata';
+import { StyleSheet, View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
+import { IS_IOS } from '@/env';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import FireIcon from './FireIcon';
 
 interface HeaderProps {
-  lastWinner?: KingOfTheHillToken;
+  kingOfTheHill?: KingOfTheHill | null;
+  onColorExtracted?: (color: string | null) => void;
 }
 
-const SegmentedControl = React.memo(function SegmentedControl() {
-  const { isDarkMode } = useColorMode();
-  const fillTertiaryColor = useBackgroundColor('fillTertiary');
-
-  return (
-    <Box paddingHorizontal="20px">
-      <GradientBorderView
-        borderGradientColors={[fillTertiaryColor, 'transparent']}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        borderRadius={16}
-        backgroundColor={isDarkMode ? globalColors.grey100 : '#FBFCFD'}
-        style={{ height: 32 }}
-      >
-        <Box height="full" flexDirection="row" alignItems="center" paddingHorizontal="12px">
-          <Box alignItems="center" style={{ flex: 1 }}>
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.king_of_hill.name)}
-            </Text>
-          </Box>
-          <Box height={{ custom: 16 }} width={{ custom: 1 }} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} />
-          <Box alignItems="center" style={{ flex: 1 }}>
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.king_of_hill.vol)}
-            </Text>
-          </Box>
-          <Box height={{ custom: 16 }} width={{ custom: 1 }} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} />
-          <Box alignItems="center" style={{ flex: 1 }}>
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.king_of_hill.mcap)}
-            </Text>
-          </Box>
-        </Box>
-      </GradientBorderView>
-    </Box>
-  );
+const styles = StyleSheet.create({
+  tokenImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  tokenImageContainer: {
+    position: 'relative',
+  },
+  fireIcon: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    zIndex: 1,
+  },
 });
 
-const LastWinnerSection = React.memo(function LastWinnerSection({ lastWinner }: { lastWinner: KingOfTheHillToken }) {
-  const { token } = lastWinner;
+export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const { isDarkMode } = useColorMode();
-  const fillTertiaryColor = useBackgroundColor('fillTertiary');
-  const sizedIconUrl = getSizedImageUrl(token.iconUrl, 16);
-
+  const current = kingOfTheHill?.current;
+  const lastWinner = kingOfTheHill?.lastWinner;
+  
   const navigateToLastWinner = useCallback(() => {
+    if (!lastWinner) return;
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset: token,
-      address: token.address,
-      chainId: token.chainId,
+      asset: lastWinner.token,
+      address: lastWinner.token.address,
+      chainId: lastWinner.token.chainId,
     });
-  }, [token]);
+  }, [lastWinner]);
 
   const navigateToExplainSheet = useCallback(() => {
     Navigation.handleAction(Routes.KING_OF_THE_HILL_EXPLAIN_SHEET);
   }, []);
 
+  if (!current) return null;
+
+  const { token } = current;
+  const sizedIconUrl = getSizedImageUrl(token.iconUrl, 160);
+  const lastWinnerIconUrl = lastWinner ? getSizedImageUrl(lastWinner.token.iconUrl, 16) : null;
+  
+  // Extract dominant color from token image
+  const dominantColor = usePersistentDominantColorFromImage(sizedIconUrl);
+  
+  // Pass color to parent
+  useEffect(() => {
+    if (onColorExtracted && dominantColor) {
+      onColorExtracted(dominantColor);
+    }
+  }, [dominantColor, onColorExtracted]);
+
+  // TODO: Calculate actual time remaining
+  const timeRemaining = "24h 30m";
+  
+  // TODO: Get actual price data
+  const priceChange = "+12.5%";
+  const currentPrice = "$1,234.56";
+  const volume = "$12.3M";
+  const marketCap = "$456.7M";
+
   return (
-    <Box flexDirection="row" justifyContent="space-between" paddingHorizontal="10px">
-      <ButtonPressAnimation onPress={navigateToLastWinner}>
-        <GradientBorderView
-          borderGradientColors={[fillTertiaryColor, 'transparent']}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          borderRadius={13}
-          backgroundColor={isDarkMode ? globalColors.grey100 : '#FBFCFD'}
-          style={{ height: 26 }}
-        >
-          <Box height="full" justifyContent="center" paddingLeft="10px" paddingRight="6px">
-            <Inline alignVertical="center" space={'6px'} wrap={false}>
-              <Text color="labelQuaternary" size="11pt" weight="bold">
-                {i18n.t(i18n.l.king_of_hill.last_winner)}
-              </Text>
-              <Box height={{ custom: 16 }} width={{ custom: 1 }} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} />
-              <Text color="labelTertiary" size="11pt" weight="heavy">
-                {token.symbol}
-              </Text>
-              <FastImage source={{ uri: sizedIconUrl }} style={{ width: 16, height: 16, borderRadius: 8 }} />
-            </Inline>
+    <Stack space="16px" alignHorizontal="center">
+      {/* King image with fire icon */}
+      <View style={styles.tokenImageContainer}>
+        <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
+        <View style={styles.fireIcon}>
+          <FireIcon size={24} />
+        </View>
+      </View>
+
+      {/* Round timer */}
+      <Box borderRadius={16} style={{ overflow: 'hidden' }}>
+        {IS_IOS && (
+          <Box position="absolute" width="full" height="full">
+            <BlurView blurStyle={isDarkMode ? 'dark' : 'light'} style={{ width: '100%', height: '100%' }} />
           </Box>
-        </GradientBorderView>
-      </ButtonPressAnimation>
-      <ButtonPressAnimation onPress={navigateToExplainSheet}>
-        <GradientBorderView
-          borderGradientColors={[fillTertiaryColor, 'transparent']}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          borderRadius={13}
-          backgroundColor={isDarkMode ? globalColors.grey100 : '#FBFCFD'}
-          style={{ height: 26 }}
+        )}
+        <Box 
+          paddingHorizontal="16px" 
+          paddingVertical="8px"
+          backgroundColor={IS_IOS ? undefined : (isDarkMode ? 'fillSecondary' : 'fillTertiary')}
         >
-          <Box height="full" justifyContent="center" paddingHorizontal="10px">
-            <Text color="labelQuaternary" size="13pt" weight="bold">
-              {i18n.t(i18n.l.king_of_hill.how_it_works)}
+          <Text color="labelSecondary" size="13pt" weight="semibold">
+            Round ends in {timeRemaining}
+          </Text>
+        </Box>
+      </Box>
+
+      {/* Symbol and price change */}
+      <Inline alignVertical="center" space="8px">
+        <Text color="label" size="17pt" weight="bold">
+          {token.symbol}
+        </Text>
+        <Text color={priceChange.startsWith('+') ? 'green' : 'red'} size="17pt" weight="bold">
+          {priceChange}
+        </Text>
+      </Inline>
+
+      {/* Current price */}
+      <Text color="label" size="26pt" weight="heavy" align="center">
+        {currentPrice}
+      </Text>
+
+      {/* VOL | MCAP row */}
+      <Box flexDirection="row" alignItems="center">
+        <Text color="labelTertiary" size="13pt" weight="semibold">
+          VOL {volume}
+        </Text>
+        <Box width={{ custom: 1 }} height={{ custom: 16 }} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} marginHorizontal={{ custom: 12 }} />
+        <Text color="labelTertiary" size="13pt" weight="semibold">
+          MCAP {marketCap}
+        </Text>
+      </Box>
+
+      {/* Last winner and How it works buttons */}
+      <Box width="full" flexDirection="row" justifyContent="space-between" paddingHorizontal="20px">
+        <ButtonPressAnimation onPress={lastWinner ? navigateToLastWinner : navigateToExplainSheet}>
+          <Box 
+            flexDirection="row" 
+            alignItems="center" 
+            backgroundColor={isDarkMode ? 'fillSecondary' : 'fillTertiary'}
+            borderRadius={20}
+            paddingHorizontal="12px"
+            paddingVertical="8px"
+            height={{ custom: 32 }}
+          >
+            {lastWinner ? (
+              <>
+                {lastWinnerIconUrl && (
+                  <Box marginRight="6px">
+                    <FastImage source={{ uri: lastWinnerIconUrl }} style={{ width: 16, height: 16, borderRadius: 8 }} />
+                  </Box>
+                )}
+                <Text color="labelSecondary" size="13pt" weight="semibold">
+                  {lastWinner.token.symbol} Last Winner
+                </Text>
+              </>
+            ) : (
+              <Text color="labelSecondary" size="13pt" weight="semibold">
+                No Previous Winner
+              </Text>
+            )}
+          </Box>
+        </ButtonPressAnimation>
+        
+        <ButtonPressAnimation onPress={navigateToExplainSheet}>
+          <Box 
+            backgroundColor={isDarkMode ? 'fillSecondary' : 'fillTertiary'}
+            borderRadius={20}
+            paddingHorizontal="12px"
+            paddingVertical="8px"
+            height={{ custom: 32 }}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text color="labelSecondary" size="13pt" weight="semibold">
+              How it works
             </Text>
           </Box>
-        </GradientBorderView>
-      </ButtonPressAnimation>
-    </Box>
-  );
-});
+        </ButtonPressAnimation>
+      </Box>
 
-export function Header({ lastWinner }: HeaderProps) {
-  return (
-    <Box gap={6}>
-      <SegmentedControl />
-      {lastWinner && <LastWinnerSection lastWinner={lastWinner} />}
-    </Box>
+      {/* Separator */}
+      <Box width="full" height={{ custom: 1 }} backgroundColor={isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR} />
+    </Stack>
   );
 }
