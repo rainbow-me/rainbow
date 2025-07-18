@@ -82,10 +82,10 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
 
   const priceRelativeChange = useDerivedValue(() => {
     if (chartType === ChartType.Candlestick) {
-      return currentCandlestickPrice.value?.price ?? liveTokenPrice.value ?? asset.price.value ?? undefined;
+      return currentCandlestickPrice.value?.percentChange ?? liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
     }
 
-    if (isChartGestureActive.value) return chartGesturePrice.value;
+    if (isChartGestureActive.value) return chartGesturePriceRelativeChange.value;
 
     switch (lineChartTimePeriod.value) {
       case LineChartTimePeriod.M1:
@@ -181,7 +181,7 @@ const ChartHeader = memo(function ChartHeader({
   });
 
   return (
-    <Box as={Animated.View} style={chartHeaderStyle} paddingHorizontal="24px">
+    <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={chartHeaderStyle}>
       <ChartExpandedStateHeader
         accentColor={accentColor}
         backgroundColor={backgroundColor}

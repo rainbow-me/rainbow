@@ -34,21 +34,19 @@ export const ChartExpandedStateHeader = memo(function ChartExpandedStateHeader({
     <View testID="expanded-state-header">
       <Stack space="20px">
         <ChartPriceLabel price={price} backgroundColor={backgroundColor} isChartGestureActive={isChartGestureActive} />
-        <Bleed top="6px">
-          <Box gap={8} flexDirection="row" alignItems="center">
-            <ChartPercentChangeLabel
-              backgroundColor={backgroundColor}
-              isChartGestureActive={isChartGestureActive}
-              percentageChange={priceRelativeChange}
-            />
-            <FormattedTimeLabel
-              accentColor={accentColor}
-              backgroundColor={backgroundColor}
-              chartGestureUnixTimestamp={chartGestureUnixTimestamp}
-              isChartGestureActive={isChartGestureActive}
-            />
-          </Box>
-        </Bleed>
+        <Box gap={8} flexDirection="row" alignItems="center">
+          <ChartPercentChangeLabel
+            backgroundColor={backgroundColor}
+            isChartGestureActive={isChartGestureActive}
+            percentageChange={priceRelativeChange}
+          />
+          <FormattedTimeLabel
+            accentColor={accentColor}
+            backgroundColor={backgroundColor}
+            chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+            isChartGestureActive={isChartGestureActive}
+          />
+        </Box>
       </Stack>
     </View>
   );
