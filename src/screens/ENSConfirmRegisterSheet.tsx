@@ -103,7 +103,7 @@ export default function ENSConfirmRegisterSheet() {
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const avatarMetadata = useRecoilValue(avatarMetadataAtom);
 
-  const avatarImage = avatarMetadata?.path || initialAvatarUrl || params?.externalAvatarUrl || '';
+  const avatarImage = avatarMetadata?.uri || initialAvatarUrl || params?.externalAvatarUrl || '';
   const dominantColor = usePersistentDominantColorFromImage(avatarImage);
 
   useEffect(() => {

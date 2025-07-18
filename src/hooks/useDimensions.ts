@@ -1,4 +1,5 @@
 import { ScaledSize, useWindowDimensions } from 'react-native';
+import { useSafeAreaFrame } from 'react-native-safe-area-context';
 
 const deviceDimensions = {
   iphone6: {
@@ -29,7 +30,8 @@ export interface DeviceDimensions extends ScaledSize {
 }
 
 export default function useDimensions(): DeviceDimensions {
-  const { height, width, ...restOfDimensions } = useWindowDimensions();
+  const { scale, fontScale } = useWindowDimensions();
+  const { height, width } = useSafeAreaFrame();
   return {
     height,
     isLargePhone: width >= deviceDimensions.iphoneX.width,
@@ -39,6 +41,7 @@ export default function useDimensions(): DeviceDimensions {
     isTallPhone: height >= deviceDimensions.iphoneX.height,
     isTinyPhone: height <= deviceDimensions.iphoneSE.height,
     width,
-    ...restOfDimensions,
+    scale,
+    fontScale,
   };
 }

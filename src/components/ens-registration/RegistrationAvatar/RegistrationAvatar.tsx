@@ -1,6 +1,6 @@
 import ConditionalWrap from 'conditional-wrap';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Image } from 'react-native-image-crop-picker';
+import { ImagePickerAsset } from 'expo-image-picker';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import Skeleton from '../../skeleton/Skeleton';
@@ -14,7 +14,7 @@ import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
 import { IS_TEST } from '@/env';
 
-export const avatarMetadataAtom = atom<Image | undefined>({
+export const avatarMetadataAtom = atom<ImagePickerAsset | undefined>({
   default: undefined,
   key: 'ens.avatarMetadata',
 });
@@ -56,10 +56,10 @@ const RegistrationAvatar = ({
   const accentColor = useForegroundColor('accent');
 
   const onChangeImage = useCallback(
-    ({ asset, image }: { asset?: UniqueAsset; image?: Image & { tmpPath?: string } }) => {
+    ({ asset, image }: { asset?: UniqueAsset; image?: ImagePickerAsset }) => {
       setAvatarMetadata(image);
-      setAvatarUrl(image?.tmpPath || asset?.lowResUrl || asset?.image_thumbnail_url || '');
-      onChangeAvatarUrl(image?.path || asset?.lowResUrl || asset?.image_thumbnail_url || '');
+      setAvatarUrl(image?.uri || asset?.lowResUrl || asset?.image_thumbnail_url || '');
+      onChangeAvatarUrl(image?.uri || asset?.lowResUrl || asset?.image_thumbnail_url || '');
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
         const contractAddress = asset.asset_contract?.address || '';
@@ -72,13 +72,13 @@ const RegistrationAvatar = ({
             tokenId,
           }),
         });
-      } else if (image?.tmpPath) {
+      } else if (image?.uri) {
         // We want to disallow future avatar state changes (i.e. when upload successful)
         // to avoid avatar flashing (from temp URL to uploaded URL).
         setAvatarUpdateAllowed(false);
         onBlurField({
           key: 'avatar',
-          value: image.tmpPath,
+          value: image.uri,
         });
       }
     },
@@ -87,10 +87,9 @@ const RegistrationAvatar = ({
 
   const { ContextMenu, handleSelectImage, handleSelectNFT } = useSelectImageMenu({
     imagePickerOptions: {
-      cropperCircleOverlay: true,
-      cropping: true,
-      height: 400,
-      width: 400,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
     },
     menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage,

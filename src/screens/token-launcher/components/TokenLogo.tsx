@@ -33,7 +33,7 @@ export function TokenLogo({ size = SIZE, disabled = false }: { size?: number; di
   const onPress = useCallback(async () => {
     // NOTE: There is a bug on iOS simulator devices running iOS 18.0 - https://developer.apple.com/forums/thread/763636
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: 'images',
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
