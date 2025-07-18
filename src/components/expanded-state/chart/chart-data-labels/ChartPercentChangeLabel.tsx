@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { AnimatedText, Box, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useTheme } from '@/theme';

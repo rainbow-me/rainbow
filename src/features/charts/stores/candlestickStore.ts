@@ -1,21 +1,23 @@
 import qs from 'qs';
 import { NativeCurrencyKey } from '@/entities';
 import { IS_DEV } from '@/env';
+import { ChartsState, useChartsStore } from '@/features/charts/stores/chartsStore';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { ChainId } from '@/state/backendNetworks/types';
 import { createQueryStore, getQueryKey } from '@/state/internal/createQueryStore';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { CacheEntry, SetDataParams } from '@/state/internal/queryStore/types';
 import { time } from '@/utils';
-import { Bar, CandleResolution, CandlestickChartMetadata, CandlestickChartResponse, GetCandlestickChartRequest } from './types';
-import { getResolutionMinutes, transformApiResponseToBars } from './utils';
+import { Bar, CandlestickChartMetadata, CandlestickChartResponse, GetCandlestickChartRequest, Price } from '../candlestick/types';
+import { areCandlesEqual, getResolutionMinutes, transformApiResponseToBars } from '../candlestick/utils';
+import { CandleResolution, ChartType, Token } from '../types';
 
 // ============ Constants ====================================================== //
 
 const CANDLESTICK_ENDPOINT = '/tokens/charts/GetCandleChart';
+
 const ERROR_NO_DATA_FOUND = 'token data not found';
+const ERROR_UNSUPPORTED_CHAIN = 'unsupported chain id';
 
 const INITIAL_BAR_COUNT = 200;
 const MAX_CANDLES_PER_REQUEST = 1500;
@@ -23,68 +25,41 @@ const MAX_CANDLES_PER_REQUEST = 1500;
 // ============ Core Types ===================================================== //
 
 export type CandlestickResponse = {
+  candleResolution: CandleResolution;
   candles: Bar[];
   hasPreviousCandles: boolean;
   lastFetchedCurrentPriceAt: number | undefined;
-  resolution: CandleResolution;
 } | null;
 
-type ResponseMetadata = Omit<NonNullable<CandlestickResponse>, 'candles'>;
-
+type BaseParams = Pick<CandlestickParams, 'candleResolution' | 'token'> & Partial<Pick<CandlestickParams, 'currency'>>;
 type TokenId = string;
-type Token = { address: string; chainId: ChainId };
-type Price = { lastUpdated: number; percentChange: number; price: number };
-
-// ============ Charts Store =================================================== //
-
-type ChartSettingsState = {
-  candleResolution: CandleResolution;
-  chartType: 'candlestick' | 'line';
-  token: Token | null;
-  resetCandlestickToken: () => void;
-};
-
-export const useChartsStore = createRainbowStore<ChartSettingsState>(
-  set => ({
-    candleResolution: CandleResolution.H4,
-    chartType: 'candlestick',
-    token: null,
-
-    resetCandlestickToken: () =>
-      set({
-        token: null,
-      }),
-  }),
-
-  { storageKey: 'chartSettingsStore' }
-);
+type ResponseMetadata = Omit<NonNullable<CandlestickResponse>, 'candles'>;
 
 // ============ Candlestick Store ============================================== //
 
 const CACHE_TIME = time.minutes(2);
 
 type CandlestickParams = {
-  barCount: number | null;
+  barCount?: number;
   candleResolution: CandleResolution;
   currency: NativeCurrencyKey;
-  startTimestamp: number | null;
+  startTimestamp?: number;
   token: Token | null;
 };
 
 type CandlestickState = {
   prices: Partial<Record<TokenId, Price>>;
-  getPrice: (token?: Token) => Price | undefined;
+  getPrice: (token?: Token | TokenId) => Price | undefined;
 };
 
 export const useCandlestickStore = createQueryStore<CandlestickResponse, CandlestickParams, CandlestickState>(
   {
     fetcher: fetchCandlestickData,
     setData: setCandlestickData,
+    enabled: $ => $(useChartsStore, shouldEnable),
     params: {
-      barCount: null,
       candleResolution: $ => $(useChartsStore).candleResolution,
       currency: $ => $(userAssetsStoreManager).currency,
-      startTimestamp: null,
       token: $ => $(useChartsStore).token,
     },
     cacheTime: CACHE_TIME,
@@ -99,15 +74,19 @@ export const useCandlestickStore = createQueryStore<CandlestickResponse, Candles
       if (!token) return undefined;
 
       const { getData, prices } = get();
-      const candles = getData()?.candles;
-      const tokenId = getTokenId(token);
+      const existingData = getData();
+      const tokenId = typeof token === 'string' ? token : getTokenId(token);
       const price = prices[tokenId];
-      if (!candles || !price) return price;
+      if (!price || !existingData) return price;
+
+      const { candleResolution, candles } = existingData;
 
       return {
+        candleResolution,
         lastUpdated: price.lastUpdated,
         percentChange: calculatePercentChange(candles),
         price: price.price,
+        volume: getMostRecentCandleVolume(candles),
       };
     },
   })
@@ -128,21 +107,21 @@ async function fetchCandlestickData(params: CandlestickParams, abortController: 
       throw new Error('Invalid response structure from candlestick API');
     }
 
-    const { hasPreviousCandles, lastFetchedCurrentPriceAt, resolution } = parseResponseMetadata(response.data.metadata, params);
+    const { candleResolution, hasPreviousCandles, lastFetchedCurrentPriceAt } = parseResponseMetadata(response.data.metadata, params);
 
     return {
+      candleResolution,
       candles: transformApiResponseToBars(response.data),
       hasPreviousCandles,
       lastFetchedCurrentPriceAt,
-      resolution,
     };
   } catch (e) {
-    if (ensureError(e).message === ERROR_NO_DATA_FOUND)
+    if (isKnownError(e))
       return {
+        candleResolution: params.candleResolution,
         candles: [],
         hasPreviousCandles: false,
         lastFetchedCurrentPriceAt: undefined,
-        resolution: params.candleResolution,
       };
     throw e;
   }
@@ -170,13 +149,10 @@ export async function fetchHistoricalCandles({
 }): Promise<CandlestickResponse> {
   const { fetch: fetchCandles, getData } = useCandlestickStore.getState();
 
-  const baseParams: CandlestickParams = {
-    barCount: null,
+  const baseParams = buildBaseParams({
     candleResolution,
-    currency: userAssetsStoreManager.getState().currency,
-    startTimestamp: null,
     token,
-  };
+  });
 
   const existingData = getData(baseParams);
   if (!existingData?.candles?.length) {
@@ -190,6 +166,29 @@ export async function fetchHistoricalCandles({
   return fetchCandles(baseParams, { skipStoreUpdates: 'withCache' });
 }
 
+/**
+ * Fetches the current price of a token from the candlestick API.
+ *
+ * @param candleResolution - The candle resolution used to determine the % change and volume.
+ * @param currency - The currency to fetch the price in. Defaults to the user's native currency.
+ * @param token - The token to fetch the price for.
+ */
+export async function fetchCandlestickPrice({
+  candleResolution,
+  currency,
+  token,
+}: {
+  candleResolution: CandleResolution;
+  currency?: NativeCurrencyKey;
+  token: Token;
+}): Promise<Price | null> {
+  const response = await useCandlestickStore
+    .getState()
+    .fetch({ barCount: 1, candleResolution, currency, token }, { skipStoreUpdates: true });
+  if (!response) return null;
+  return extractPriceFromCandles(response.candles, candleResolution, response.lastFetchedCurrentPriceAt) ?? null;
+}
+
 // ============ Cache Updater ================================================== //
 
 function setCandlestickData({
@@ -201,16 +200,8 @@ function setCandlestickData({
   if (!data || !params.token) return;
 
   set(state => {
-    const isHistoricalFetch = params.barCount || params.startTimestamp;
-    const queryKey = isHistoricalFetch
-      ? getQueryKey({
-          barCount: null,
-          candleResolution: params.candleResolution,
-          currency: params.currency,
-          startTimestamp: null,
-          token: params.token,
-        })
-      : rawQueryKey;
+    const isHistoricalFetch = Boolean(params.barCount || params.startTimestamp);
+    const queryKey = isHistoricalFetch ? buildBaseQueryKey(params) : rawQueryKey;
 
     const existingData = state.queryCache[queryKey]?.data;
     const newData = existingData
@@ -232,7 +223,7 @@ function setCandlestickData({
     if (newData && params.token) {
       const tokenId = getTokenId(params.token);
       const existingPrice = state.prices[tokenId];
-      const newPrice = extractPriceFromCandles(newData.candles, newData.lastFetchedCurrentPriceAt);
+      const newPrice = extractPriceFromCandles(newData.candles, newData.candleResolution, newData.lastFetchedCurrentPriceAt);
       const shouldUpdate = !!newPrice && (!existingPrice?.lastUpdated || existingPrice.lastUpdated < newPrice.lastUpdated);
       if (shouldUpdate) updatedPrices = { ...prunePrices(state.prices), [tokenId]: newPrice };
     }
@@ -255,9 +246,9 @@ function parseResponseMetadata(metadata: CandlestickChartMetadata, params: Candl
   const returnedCount = metadata.count;
   const includesCurrentPrice = !params.startTimestamp;
   return {
+    candleResolution: params.candleResolution,
     hasPreviousCandles: requestedCount === returnedCount,
     lastFetchedCurrentPriceAt: includesCurrentPrice ? new Date(metadata.responseTime).getTime() : undefined,
-    resolution: params.candleResolution,
   };
 }
 
@@ -267,7 +258,7 @@ function buildCandlestickRequest(params: CandlestickParams): string | null {
   const { barCount: barCountParam, candleResolution, currency, startTimestamp, token } = params;
   const barCount = barCountParam ?? INITIAL_BAR_COUNT;
 
-  const existingData = useCandlestickStore.getState().getData(params);
+  const existingData = useCandlestickStore.getState().getData(params) ?? null;
   const isPrepending = startTimestamp !== null;
   const resolutionMinutes = getResolutionMinutes(candleResolution);
 
@@ -351,19 +342,19 @@ function mergeOrReturnCached({
 
   // -- Handle prepending historical candles
   if (isPrepending) {
-    const cutoffIndex = firstIndexOnOrAfterTimestamp(newData.candles, firstExistingTimestamp);
+    const cutoffIndex = firstIndexAtOrAfterTimestamp(newData.candles, firstExistingTimestamp);
     const mergedCandles = [...newData.candles.slice(0, cutoffIndex), ...existingData.candles];
 
     return {
+      candleResolution: existingData.candleResolution,
       candles: mergedCandles,
       hasPreviousCandles: newData.hasPreviousCandles,
       lastFetchedCurrentPriceAt: existingData.lastFetchedCurrentPriceAt,
-      resolution: existingData.resolution,
     };
   }
 
   // -- Handle appending new candles
-  const overlapStart = firstIndexOnOrAfterTimestamp(existingData.candles, firstNewTimestamp);
+  const overlapStart = firstIndexAtOrAfterTimestamp(existingData.candles, firstNewTimestamp);
   const overlapExisting = existingData.candles.length - overlapStart;
   const compareCount = Math.min(overlapExisting, newData.candles.length);
 
@@ -387,57 +378,81 @@ function mergeOrReturnCached({
   const hasPreviousCandles = existingData.hasPreviousCandles ? newData.hasPreviousCandles : false;
 
   return {
+    candleResolution,
     candles: mergedCandles,
     hasPreviousCandles,
     lastFetchedCurrentPriceAt: newData.lastFetchedCurrentPriceAt,
-    resolution: candleResolution,
   };
 }
 
 // ============ Utilities ====================================================== //
 
 /**
- * Compares two candle `Bar` objects for equality.
- */
-export function areCandlesEqual(a: Bar, b: Bar): boolean {
-  return a.t === b.t && a.c === b.c && a.o === b.o && a.h === b.h && a.l === b.l && a.v === b.v;
-}
-
-/**
  * Returns a unique identifier for a token in the format `address:chainId`.
  */
-export function getTokenId(token: Token): string {
-  return `${token.address}:${token.chainId}`;
+function getTokenId({ address, chainId }: Token): string {
+  return `${address}:${chainId}`;
 }
 
 /**
- * Calculates the percent change from the previous candle price to the current candle price.
+ * Creates a standardized parameter object for candlestick cache entries,
+ * taking into account only `candleResolution`, `currency`, and `token`.
+ */
+function buildBaseParams({ candleResolution, currency, token }: BaseParams): CandlestickParams {
+  return {
+    candleResolution,
+    currency: currency ?? userAssetsStoreManager.getState().currency,
+    token,
+  } satisfies Required<BaseParams>;
+}
+
+/**
+ * Generates a standardized query key for a candlestick chart data entry,
+ * taking into account only `candleResolution`, `currency`, and `token`.
+ */
+function buildBaseQueryKey(params: BaseParams): string {
+  return getQueryKey(buildBaseParams(params));
+}
+
+/**
+ * Calculates the percent change from the most recent candle's open
+ * price to its close price.
  */
 function calculatePercentChange(candles: Bar[]): number {
-  const currentCandlePrice = candles[candles.length - 1]?.c ?? 0;
-  const previousCandlePrice = candles[candles.length - 2]?.c ?? currentCandlePrice;
-  return previousCandlePrice ? ((currentCandlePrice - previousCandlePrice) / previousCandlePrice) * 100 : 0;
+  const currentCandleClose = candles[candles.length - 1]?.c ?? 0;
+  const currentCandleOpen = candles[candles.length - 1]?.o ?? 0;
+  return currentCandleOpen ? ((currentCandleClose - currentCandleOpen) / currentCandleOpen) * 100 : 0;
+}
+
+/**
+ * Gets the volume of the most recent candle.
+ */
+function getMostRecentCandleVolume(candles: Bar[]): number {
+  return candles[candles.length - 1]?.v ?? 0;
 }
 
 /**
  * Builds a `Price` object from candles and the associated response time.
  * @returns A `Price` object, or `undefined` if a response time is not provided.
  */
-function extractPriceFromCandles(candles: Bar[], responseTime: number | undefined): Price | undefined {
+function extractPriceFromCandles(candles: Bar[], resolution: CandleResolution, responseTime: number | undefined): Price | undefined {
   if (!responseTime) return undefined;
   const currentCandlePrice = candles[candles.length - 1]?.c ?? 0;
   const percentChange = calculatePercentChange(candles);
+  const volume = getMostRecentCandleVolume(candles);
   return {
+    candleResolution: resolution,
     lastUpdated: responseTime,
     percentChange,
     price: currentCandlePrice,
+    volume,
   };
 }
 
 /**
  * Runs an O(log n) binary search for the first index whose `t ≥ timestamp`.
  */
-function firstIndexOnOrAfterTimestamp(candles: readonly Bar[], timestamp: number): number {
+function firstIndexAtOrAfterTimestamp(candles: readonly Bar[], timestamp: number): number {
   let left = 0;
   let right = candles.length;
   while (left < right) {
@@ -449,19 +464,43 @@ function firstIndexOnOrAfterTimestamp(candles: readonly Bar[], timestamp: number
 }
 
 /**
- * Prunes prices from the cache in line with the store's cache time.
+ * Determines if a candlestick API error is one of the following known errors:
+ * - `No data found`
+ * - `Unsupported chain ID`
  */
-function prunePrices(prices: Partial<Record<TokenId, Price>>, tokenIdToPreserve?: TokenId): Partial<Record<TokenId, Price>> {
+function isKnownError(error: unknown): boolean {
+  const errorMessage = ensureError(error).message;
+  return errorMessage === ERROR_NO_DATA_FOUND || errorMessage.includes(ERROR_UNSUPPORTED_CHAIN);
+}
+
+/**
+ * Prunes prices from the cache in line with the candlestick store's cache time.
+ *
+ * @returns A new object with stale prices pruned, or the original object if no
+ * prices were pruned.
+ */
+function prunePrices(originalPrices: Partial<Record<TokenId, Price>>, tokenIdToPreserve?: TokenId): Partial<Record<TokenId, Price>> {
   const now = Date.now();
   const expiration = now - CACHE_TIME;
+  const prices = { ...originalPrices };
   const priceToPreserve = tokenIdToPreserve ? prices[tokenIdToPreserve] : undefined;
 
+  let didPrune = false;
   for (const tokenId in prices) {
     const price = prices[tokenId];
     if (price && price.lastUpdated < expiration) {
       if (price === priceToPreserve) continue;
+      didPrune = true;
       delete prices[tokenId];
     }
   }
-  return prices;
+  return didPrune ? prices : originalPrices;
+}
+
+/**
+ * Determines whether to enable the candlestick store.
+ * @returns `true` if the current chart type is `Candlestick`, `false` otherwise.
+ */
+function shouldEnable(state: ChartsState): boolean {
+  return state.chartType === ChartType.Candlestick;
 }

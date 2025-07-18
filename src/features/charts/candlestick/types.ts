@@ -1,3 +1,15 @@
+import { CandleResolution } from '../types';
+
+// ============ Internal Types ================================================= //
+
+export type Price = {
+  candleResolution: CandleResolution;
+  lastUpdated: number;
+  percentChange: number;
+  price: number;
+  volume: number;
+};
+
 export type Bar = {
   /** Close price */
   c: number;
@@ -13,32 +25,14 @@ export type Bar = {
   v: number;
 };
 
-export type BarsResponse = {
-  /** Close prices */
-  c: number[];
-  /** High prices */
-  h: number[];
-  /** Low prices */
-  l: number[];
-  /** Open prices */
-  o: number[];
-  /** Timestamps */
-  t: number[];
-  /** Volumes */
-  v: number[];
-};
+// ============ API Types ====================================================== //
 
-export enum CandleResolution {
-  UNSPECIFIED = 'RESOLUTION_UNSPECIFIED',
-  M1 = 'RESOLUTION_1_MIN',
-  M5 = 'RESOLUTION_5_MIN',
-  M15 = 'RESOLUTION_15_MIN',
+/**
+ * The candle resolutions supported by the API but not currently used in the app.
+ */
+enum DisabledCandleResolution {
   M30 = 'RESOLUTION_30_MIN',
-  H1 = 'RESOLUTION_60_MIN',
-  H4 = 'RESOLUTION_4_HR',
-  H12 = 'RESOLUTION_12_HR',
-  D1 = 'RESOLUTION_1_DAY',
-  D7 = 'RESOLUTION_7_DAY',
+  UNSPECIFIED = 'RESOLUTION_UNSPECIFIED',
 }
 
 export type GetCandlestickChartRequest = {
@@ -47,7 +41,7 @@ export type GetCandlestickChartRequest = {
   /** Number of candles to request */
   requested_candles: number;
   /** Candle resolution */
-  resolution: CandleResolution;
+  resolution: CandleResolution | DisabledCandleResolution;
   /** Inclusive start of the time window, as epoch-seconds */
   start_time?: number;
   /** Token identifier in the form `'address:chainId'` (e.g., `'0x123…:1'`) */
@@ -64,7 +58,7 @@ export type CandlestickChartMetadata = {
   /** Number of candles requested */
   requestedCandles: string;
   /** Candle resolution */
-  resolution: CandleResolution;
+  resolution: CandleResolution | DisabledCandleResolution;
   /** Duration of one candle in minutes */
   resolutionDuration: number;
   /** UTC Timestamp when the request arrived */

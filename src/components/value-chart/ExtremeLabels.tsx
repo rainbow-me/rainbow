@@ -7,7 +7,8 @@ import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
-const MIN_LABEL_OFFSET = 10;
+export const LABEL_VERTICAL_EXTRA_OFFSET = 12;
+const LABEL_MIN_HORIZONTAL_INSET = 12;
 
 const CenteredLabel = ({
   children,
@@ -36,8 +37,8 @@ const CenteredLabel = ({
   );
 
   const left = useMemo(() => {
-    const minLeft = MIN_LABEL_OFFSET;
-    const maxLeft = screenWidth - componentWidth - MIN_LABEL_OFFSET;
+    const minLeft = LABEL_MIN_HORIZONTAL_INSET;
+    const maxLeft = screenWidth - componentWidth - LABEL_MIN_HORIZONTAL_INSET;
     const centerAlignedLeft = x - componentWidth / 2;
     return Math.min(Math.max(centerAlignedLeft, minLeft), maxLeft);
   }, [screenWidth, componentWidth, x]);
@@ -82,13 +83,23 @@ export const ExtremeLabels = memo(function ExtremeLabels({ color, isCard }: { co
 
   return (
     <>
-      <CenteredLabel color={opacityWorklet(color, 0.8)} x={minPricePosition.x} size={isCard ? '13pt' : undefined} style={{ bottom: -13 }}>
+      <CenteredLabel
+        color={opacityWorklet(color, 0.8)}
+        x={minPricePosition.x}
+        size={isCard ? '13pt' : undefined}
+        style={{ bottom: -13 - LABEL_VERTICAL_EXTRA_OFFSET }}
+      >
         {formatAssetPrice({
           value: lowestPoint.y,
           currency: nativeCurrency,
         })}
       </CenteredLabel>
-      <CenteredLabel color={opacityWorklet(color, 0.8)} x={maxPricePosition.x} size={isCard ? '13pt' : undefined} style={{ top: -13 }}>
+      <CenteredLabel
+        color={opacityWorklet(color, 0.8)}
+        x={maxPricePosition.x}
+        size={isCard ? '13pt' : undefined}
+        style={{ top: -13 - LABEL_VERTICAL_EXTRA_OFFSET }}
+      >
         {formatAssetPrice({
           value: highestPoint.y,
           currency: nativeCurrency,

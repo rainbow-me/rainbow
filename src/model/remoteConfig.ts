@@ -1,5 +1,7 @@
 import remoteConfig, { FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import { dequal } from 'dequal';
+import { IS_DEV } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
 import { CURRENT_APP_VERSION } from '@/hooks/useAppVersion';
 import { RainbowError, logger } from '@/logger';
 import { ChainId, Network } from '@/state/backendNetworks/types';
@@ -79,6 +81,8 @@ export interface RainbowConfig extends Record<string, string | boolean | number 
   rainbow_trending_tokens_list_enabled: boolean;
   prince_of_the_hill_enabled: boolean;
   king_of_the_hill_enabled: boolean;
+  candlestick_charts_enabled: boolean;
+  king_of_the_hill_tab_enabled: boolean;
 }
 
 const Bips = {
@@ -197,6 +201,8 @@ export const DEFAULT_CONFIG = {
   rainbow_trending_tokens_list_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
+  candlestick_charts_enabled: IS_DEV || isTestFlight || false,
+  king_of_the_hill_tab_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;

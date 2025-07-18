@@ -16,11 +16,12 @@ import {
 import { dequal } from 'dequal';
 import { cloneDeep, merge } from 'lodash';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector, State as GestureState } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   SharedValue,
+  executeOnUIRuntimeSync,
   runOnJS,
   runOnUI,
   useAnimatedReaction,
@@ -34,64 +35,67 @@ import { triggerHaptics } from 'react-native-turbo-haptics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import {
-  CandlestickResponse,
-  areCandlesEqual,
-  fetchHistoricalCandles,
-  useCandlestickStore,
-  useChartsStore,
-} from '@/components/candlestick-charts/candlestickStore';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { DelayedMount } from '@/components/utilities/DelayedMount';
+import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
+import { CANDLESTICK_DATA_MONITOR, useExperimentalFlag } from '@/config';
 import { Inline, Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
 import { NativeCurrencyKey } from '@/entities';
-import { IS_IOS } from '@/env';
-import { convertAmountToNativeDisplayWorklet as formatPrice } from '@/helpers/utilities';
+import { IS_DEV, IS_IOS } from '@/env';
+import { areCandlesEqual } from '@/features/charts/candlestick/utils';
+import { CandlestickResponse, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
+import { chartsActions, useChartsStore } from '@/features/charts/stores/chartsStore';
+import { toCompactNotation } from '@/helpers/strings';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
-import { useChangeEffect } from '@/hooks/useChangeEffect';
 import { useCleanup } from '@/hooks/useCleanup';
+import { useOnChange } from '@/hooks/useOnChange';
 import { useStableValue } from '@/hooks/useStableValue';
 import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useListen } from '@/state/internal/hooks/useListen';
+import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { time } from '@/utils/time';
 import { DampingMassStiffnessConfig, normalizeSpringConfig } from '@/worklets/animations';
+import { NoChartData } from '../../components/NoChartData';
+import { CandleResolution } from '../../types';
+import { Animator } from '../classes/Animator';
+import { EmaIndicator, IndicatorBuilder, IndicatorKey } from '../classes/IndicatorBuilder';
+import { TimeFormatter } from '../classes/TimeFormatter';
+import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../constants';
+import { generateMockCandleData } from '../mock/mockData';
+import { Bar } from '../types';
 import { ActiveCandleCard } from './ActiveCandleCard';
-import { Animator } from './classes/Animator';
-import { EmaIndicator, IndicatorBuilder, IndicatorKey } from './classes/IndicatorBuilder';
-import { TimeFormatter } from './classes/TimeFormatter';
-import { generateMockCandleData } from './mockData';
-import { Bar } from './types';
 
 type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
+export type PartialCandlestickConfig = DeepPartial<
+  Omit<CandlestickConfig, 'chart'> & { chart: Omit<CandlestickConfig['chart'], 'backgroundColor'> }
+>;
+
 export type CandlestickChartProps = {
+  accentColor: string;
   address: string;
   chainId: ChainId;
-  backgroundColor?: string;
+  backgroundColor: string;
   candles?: Bar[];
   chartHeight?: number;
   chartWidth?: number;
-  config?: DeepPartial<Omit<CandlestickConfig, 'chart'> & { chart: Omit<CandlestickConfig['chart'], 'backgroundColor'> }>;
-  showChartControls?: boolean;
-  /**
-   * Displays candle count and load status for historical candle fetches.
-   * @default false
-   */
-  showDataMonitor?: boolean;
+  config?: PartialCandlestickConfig;
   isChartGestureActive: SharedValue<boolean>;
+  showChartControls?: boolean;
 };
 
-export type CandlestickConfig = {
+type CandlestickConfig = {
   activeCandleCard: {
     height: number;
-    style: StyleProp<ViewStyle>;
   };
 
   animation: {
@@ -188,15 +192,9 @@ export type CandlestickConfig = {
   };
 };
 
-export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
+export const DEFAULT_CANDLESTICK_CONFIG: Readonly<CandlestickConfig> = Object.freeze({
   activeCandleCard: {
     height: 75,
-    style: {
-      backgroundColor: '#141619',
-      borderRadius: 20,
-      height: 75,
-      width: 350,
-    },
   },
 
   animation: {
@@ -255,7 +253,7 @@ export const DEFAULT_CANDLESTICK_CONFIG: CandlestickConfig = {
     color: '#2B2D2F',
     heightFactor: 0.175,
   },
-};
+});
 
 /**
  * Finds the value at a specific percentile position in an unsorted array.
@@ -304,6 +302,17 @@ function createBlankPicture(width: number, height: number): SkPicture {
   );
 }
 
+function formatPrice(price: number, currency: NativeCurrencyKey): string {
+  'worklet';
+  return toCompactNotation({
+    currency,
+    decimalPlaces: supportedNativeCurrencies[currency].decimals,
+    prefix: supportedNativeCurrencies[currency].symbol,
+    thresholdMagnitude: -10,
+    value: price,
+  });
+}
+
 function getEmaPeriod(type: IndicatorKey): number {
   'worklet';
   switch (type) {
@@ -322,13 +331,16 @@ function getYOffsetForPriceLabel(index: number, textHeight: number): number {
   return -(textHeight ?? 0) / 2 - 0.5;
 }
 
+const AVERAGE_CHARACTER_WIDTH = 52 / 6;
+
 function getYAxisLabelWidth(maxCharacters: number): number {
   'worklet';
-  return Math.ceil(maxCharacters * (52 / 6));
+  return Math.ceil(maxCharacters * AVERAGE_CHARACTER_WIDTH);
 }
 
 const EMA_INDICATORS: IndicatorKey[] = ['EMA9', 'EMA20', 'EMA50'];
 const LOAD_THRESHOLD_PX = DEVICE_WIDTH * 4;
+const LOADING_SPINNER_SIZE = 28;
 const MAX_CANDLES_TO_LOAD = 5000;
 
 class CandlestickChartManager {
@@ -337,6 +349,7 @@ class CandlestickChartManager {
   private backgroundColor: SkColor;
   private blankPicture: SkPicture;
   private buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
+  private candleResolution: CandleResolution;
   private candleStrokeColor: SkColor;
   private candleWidth: number;
   private candles: Bar[];
@@ -357,18 +370,27 @@ class CandlestickChartManager {
   private chartScale: SharedValue<number>;
   private crosshairPicture: SharedValue<SkPicture>;
   private indicatorPicture: SharedValue<SkPicture>;
-  private isDecelerating: SharedValue<boolean>;
   private isChartGestureActive: SharedValue<boolean>;
+  private isDecelerating: SharedValue<boolean>;
   private isLoadingHistoricalCandles: SharedValue<boolean>;
   private maxDisplayedVolume: SharedValue<number>;
   private offset: SharedValue<number>;
 
   private lastCrosshairPosition = { x: 0, y: 0 };
   private lastVisibleRange = { startIndex: -1, endIndex: -1 };
+  private maxYAxisLabelDecimals = 2;
   private panStartOffset = 0;
   private pendingOffsetAdjustment = 0;
   private pictureRecorder = Skia.PictureRecorder();
-  private pinchInfo = { isActive: false, startCandleCount: 0, startFocalX: 0, startOffset: 0, startWidth: 0 };
+  private pinchInfo = {
+    isActive: false,
+    startCandleCount: 0,
+    startFocalX: 0,
+    startOffset: 0,
+    startWidth: 0,
+    startYAxisWidth: 0,
+    wasPinnedToRight: false,
+  };
 
   private animator = new Animator(() => this.rebuildChart());
   private indicatorBuilder = new IndicatorBuilder<IndicatorKey>();
@@ -384,8 +406,8 @@ class CandlestickChartManager {
     crosshairPriceBubble: Skia.Color(getColorForTheme('fill', 'light')),
     labelSecondary: Skia.Color(getColorForTheme('labelSecondary', 'light')),
     labelQuinary: Skia.Color(getColorForTheme('labelQuinary', 'light')),
-    green: Skia.Color('#00CC4B'),
-    red: Skia.Color('#FA5343'),
+    green: Skia.Color(GREEN_CANDLE_COLOR),
+    red: Skia.Color(RED_CANDLE_COLOR),
     transparent: Skia.Color('transparent'),
     white: Skia.Color('#FFFFFF'),
   };
@@ -413,6 +435,7 @@ class CandlestickChartManager {
   constructor({
     activeCandle,
     buildParagraph,
+    candleResolution,
     candles,
     chartHeight,
     chartMaxY,
@@ -435,6 +458,7 @@ class CandlestickChartManager {
   }: {
     activeCandle: SharedValue<Bar | undefined>;
     buildParagraph: (segments: TextSegment | TextSegment[]) => SkParagraph | null;
+    candleResolution: CandleResolution;
     candles: Bar[];
     chartHeight: number;
     chartMaxY: SharedValue<number>;
@@ -459,6 +483,7 @@ class CandlestickChartManager {
     this.backgroundColor = Skia.Color(config.chart.backgroundColor);
     this.blankPicture = createBlankPicture(chartWidth, chartHeight);
     this.buildParagraph = buildParagraph;
+    this.candleResolution = candleResolution;
     this.candleStrokeColor = Skia.Color(config.candles.strokeColor);
     this.candleWidth = config.candles.initialWidth;
     this.candles = candles;
@@ -599,7 +624,7 @@ class CandlestickChartManager {
     this.chartMinY.value = min;
     this.chartMaxY.value = max;
     this.yAxisWidth = this.getYAxisWidth(min, max);
-    if (this.candles) this.offset.value = this.getMinOffset();
+    this.offset.value = this.getMinOffset();
 
     this.buildBaseCandlesPicture();
   }
@@ -700,8 +725,48 @@ class CandlestickChartManager {
   }
 
   private getYAxisWidth(minPrice: number, maxPrice: number): number {
-    const currencyDecimals = this.nativeCurrency.decimals;
-    const maxCharacters = Math.max(minPrice.toFixed(currencyDecimals).length, maxPrice.toFixed(currencyDecimals).length);
+    // -- TODO: Simplify this method
+    const chartHeight = this.chartHeight;
+    const candleRegionHeight = chartHeight - chartHeight * this.config.volume.heightFactor;
+    const priceRange = maxPrice - minPrice;
+    const lastCandle = this.candles[this.candles.length - 1];
+    const inRangeBuffer = (maxPrice - minPrice) * 0.02;
+    const isLastCandleInRange = lastCandle && lastCandle.c >= minPrice - inRangeBuffer && lastCandle.c <= maxPrice + inRangeBuffer;
+
+    const newPrices: number[] = [];
+    let precisionIncrease = 0;
+
+    if (isLastCandleInRange) {
+      const currentPrice = lastCandle.c;
+      newPrices.push(currentPrice);
+      const shouldIncreasePrecision = currentPrice < 1.5 && this.nativeCurrency.currency !== 'ETH';
+      if (shouldIncreasePrecision) precisionIncrease = 1;
+    } else {
+      for (let i = 0; i <= 3; i++) {
+        const y = chartHeight * (i / 4);
+        const price = minPrice + (priceRange * (candleRegionHeight - y)) / candleRegionHeight;
+        newPrices.push(price);
+      }
+    }
+
+    let maxAfterDecimal = 0;
+    let maxCharacters = 0;
+
+    for (const price of newPrices) {
+      const formatted = formatPrice(price, this.nativeCurrency.currency);
+      const numeric = formatted.replace(/[^\d.]/g, '');
+      const afterDecimal = numeric.split('.')[1]?.length ?? 0;
+      maxAfterDecimal = Math.max(maxAfterDecimal, afterDecimal);
+      maxCharacters = Math.max(maxCharacters, numeric.length);
+    }
+
+    if (precisionIncrease && maxAfterDecimal === 2) {
+      maxAfterDecimal += precisionIncrease;
+      maxCharacters += precisionIncrease;
+    }
+
+    this.maxYAxisLabelDecimals = maxAfterDecimal;
+
     return this.config.chart.yAxisPaddingLeft + getYAxisLabelWidth(maxCharacters) + this.config.chart.yAxisPaddingRight;
   }
 
@@ -764,6 +829,15 @@ class CandlestickChartManager {
       return candleRegionHeight - ((price - minPrice) / priceRange) * candleRegionHeight;
     }
 
+    // ========== Current Price Calculation ==========
+    const lastCandle = this.candles[this.candles.length - 1];
+    const inRangeBuffer = (maxPrice - minPrice) * 0.02;
+    const minVisiblePrice = minPrice - priceRange * (volumeRegionHeight / candleRegionHeight);
+    const isCurrentPriceInRange = lastCandle && minVisiblePrice - inRangeBuffer <= lastCandle.c && lastCandle.c <= maxPrice + inRangeBuffer;
+
+    let currentPriceY: number | undefined;
+    if (isCurrentPriceInRange) currentPriceY = convertPriceToY(lastCandle.c);
+
     // ========== Grid Lines and Price Labels ==========
     const stride = this.getStride(candleWidth);
     const visibleCandles = chartWidth / stride;
@@ -783,13 +857,16 @@ class CandlestickChartManager {
       const y = chartHeight * (i / 4) + 0.5;
       canvas.drawLine(0, y, chartWidth, y, this.paints.grid);
       if (!hasCandles) continue;
-
+      // -- TODO: Simplify this
       const formattedPrice = formatPrice(this.getPriceAtYPosition(y), this.nativeCurrency.currency);
+      const [integerPart, decimalPart = ''] = formattedPrice.split('.');
+      const paddedDecimal = decimalPart.padEnd(this.maxYAxisLabelDecimals, '0').slice(0, this.maxYAxisLabelDecimals);
+      const newPrice = `${integerPart}.${paddedDecimal}`;
 
       const paragraph = buildParagraph({
         color: this.colors.labelQuinary,
         foregroundPaint: this.paints.text,
-        text: formattedPrice,
+        text: newPrice,
       });
 
       if (paragraph) {
@@ -800,28 +877,23 @@ class CandlestickChartManager {
     }
 
     // ========== Volume Bars ==========
+    const maxBorderRadius = this.config.candles.maxBorderRadius;
+    const maxVolume = this.maxDisplayedVolume.value;
     for (let i = startIndex; i <= endIndex; i++) {
       const candle = this.candles[i];
-      const cornerRadius = Math.min(this.config.candles.maxBorderRadius, candleWidth / 3);
-      const fractionOfMax = candle.v / this.maxDisplayedVolume.value;
-      const height = fractionOfMax * volumeRegionHeight;
+      const cornerRadius = Math.min(maxBorderRadius, candleWidth / 3);
+      const rawFraction = candle.v / maxVolume;
+      const easedFraction = rawFraction <= 0 ? 0 : Math.pow(rawFraction, 0.7);
+      const height = easedFraction * volumeRegionHeight;
       const x = i * stride + currentOffset;
       const y = chartHeight - height;
       canvas.drawRRect({ rect: { height, width: candleWidth, x, y }, rx: cornerRadius, ry: cornerRadius }, this.paints.volume);
     }
 
     // ========== Current Price Line ==========
-    const lastCandle = this.candles[this.candles.length - 1];
-    const buffer = (maxPrice - minPrice) * 0.02;
-    const minVisiblePrice = minPrice - priceRange * (volumeRegionHeight / candleRegionHeight);
-    const isCurrentPriceInRange = lastCandle && minVisiblePrice - buffer <= lastCandle.c && lastCandle.c <= maxPrice + buffer;
-
     let lastCandleColor: SkColor | undefined;
-    let currentPriceY: number | undefined;
-
-    if (isCurrentPriceInRange) {
+    if (currentPriceY) {
       lastCandleColor = lastCandle.c >= lastCandle.o ? this.colors.green : this.colors.red;
-      currentPriceY = convertPriceToY(lastCandle.c);
       this.paints.candleWick.setStrokeWidth(1);
       this.paints.candleWick.setColor(lastCandleColor);
       this.paints.candleWick.setAlphaf(0.4);
@@ -956,7 +1028,6 @@ class CandlestickChartManager {
 
     if (!active) {
       this.isChartGestureActive.value = false;
-      if (activeCandle.value) activeCandle.value = undefined;
       if (crosshairPicture.value !== this.blankPicture) {
         crosshairPicture.value = this.blankPicture;
       }
@@ -1004,11 +1075,12 @@ class CandlestickChartManager {
     const priceAtYPosition = this.getPriceAtYPosition(yWithOffset);
 
     if (newActiveCandle && !this.config.priceBubble.hidden) {
+      const labelX = this.chartWidth - this.yAxisWidth + this.config.chart.yAxisPaddingLeft;
       this.drawTextBubble({
         canvas,
         centerY: yWithOffset,
         color: this.colors.crosshairPriceBubble,
-        leftX: snappedX + 20,
+        leftX: labelX,
         priceOrLabel: priceAtYPosition,
         stabilizePriceWidth: true,
         strokeOpacity: 0.12,
@@ -1017,8 +1089,9 @@ class CandlestickChartManager {
     }
 
     const previousActiveCandle = activeCandle.value;
+    const didCandleChange = previousActiveCandle?.t !== newActiveCandle?.t || previousActiveCandle?.c !== newActiveCandle?.c;
 
-    if (previousActiveCandle?.t !== newActiveCandle?.t) {
+    if (didCandleChange) {
       activeCandle.value = newActiveCandle;
       if (previousActiveCandle) triggerHaptics('selection');
     }
@@ -1089,7 +1162,18 @@ class CandlestickChartManager {
     textColor?: SkColor;
   }): void {
     const didProvideRawPrice = typeof priceOrLabel === 'number';
-    const formattedPrice = didProvideRawPrice ? formatPrice(priceOrLabel, this.nativeCurrency.currency) : priceOrLabel;
+    let formattedPrice: string;
+
+    if (didProvideRawPrice) {
+      const maxDecimals = this.maxYAxisLabelDecimals;
+      const rawFormatted = formatPrice(priceOrLabel, this.nativeCurrency.currency);
+      const [integerPart, decimalPart = ''] = rawFormatted.split('.');
+      const paddedDecimal = decimalPart.padEnd(maxDecimals, '0').slice(0, maxDecimals);
+      formattedPrice = maxDecimals > 0 ? `${integerPart}.${paddedDecimal}` : integerPart;
+    } else {
+      formattedPrice = priceOrLabel;
+    }
+
     const paragraph = this.buildParagraph({ color: textColor ?? color, text: formattedPrice });
     if (!paragraph) return;
 
@@ -1099,8 +1183,12 @@ class CandlestickChartManager {
 
     let labelWidth: number;
     if (stabilizePriceWidth && didProvideRawPrice) {
-      const currencyDecimals = this.nativeCurrency.decimals;
-      labelWidth = getYAxisLabelWidth(priceOrLabel.toFixed(currencyDecimals).length) - 2;
+      const symbol = supportedNativeCurrencies[this.nativeCurrency.currency].symbol;
+      const numeric = formattedPrice
+        .replace(symbol, '')
+        .replace(/,/g, '')
+        .replace(/[KMB]$/, '');
+      labelWidth = getYAxisLabelWidth(numeric.length) - 2;
     } else {
       labelWidth = lineMetrics.width;
     }
@@ -1220,15 +1308,13 @@ class CandlestickChartManager {
     newCandles: Bar[],
     { hasPreviousCandles, shouldResetOffset = false }: { hasPreviousCandles: boolean; shouldResetOffset?: boolean }
   ): void {
-    if (newCandles === this.candles) {
-      this.hasPreviousCandles = hasPreviousCandles;
-      return;
-    }
-
     const oldCandleCount = this.candles.length;
     const wasDataPrepended =
       !shouldResetOffset && !!oldCandleCount && newCandles.length > oldCandleCount && newCandles[0].t < this.candles[0].t;
-    const wasPinnedToRight = shouldResetOffset || !oldCandleCount || this.getOffsetX() === this.getMinOffset();
+
+    const currentOffset = this.getOffsetX();
+    const currentMinOffset = this.getMinOffset();
+    const wasPinnedToRight = shouldResetOffset || !oldCandleCount || Math.abs(currentOffset - currentMinOffset) < 1;
 
     this.candles = newCandles;
     this.hasPreviousCandles = hasPreviousCandles;
@@ -1245,15 +1331,37 @@ class CandlestickChartManager {
       this.lastVisibleRange.startIndex = -1;
       this.lastVisibleRange.endIndex = -1;
       this.maxDisplayedVolume.value = -1;
-      this.getPriceBounds();
 
-      if (wasPinnedToRight) this.offset.value = this.getMinOffset();
+      if (wasPinnedToRight) {
+        this.offset.value = this.getMinOffset();
+        this.getPriceBounds();
+        // Update again in case new price bounds altered the y-axis width
+        this.offset.value = this.getMinOffset();
+      } else {
+        this.getPriceBounds();
+      }
+
       this.rebuildChart(false, true);
     }
 
-    if (!wasDataPrepended && this.activeCandle.value) {
+    if (!wasDataPrepended && this.isChartGestureActive.value) {
       this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
     }
+  }
+
+  public snapToCurrentCandle(): void {
+    const currentOffset = this.getOffsetX();
+    const minOffset = this.getMinOffset();
+    if (currentOffset === minOffset) return;
+
+    this.commitPendingOffset();
+    this.lastVisibleRange.startIndex = -1;
+    this.lastVisibleRange.endIndex = -1;
+    this.maxDisplayedVolume.value = -1;
+    this.getPriceBounds();
+
+    this.offset.value = minOffset;
+    this.rebuildChart(false, true);
   }
 
   public setColorMode(
@@ -1384,7 +1492,6 @@ class CandlestickChartManager {
   public onLongPressEnd(x: number, y: number, state: GestureState): void {
     if (state === GestureState.END) triggerHaptics('rigid');
     this.buildCrosshairPicture(x, y, false);
-    this.activeCandle.value = undefined;
   }
 
   public onPanStart(): void {
@@ -1438,7 +1545,7 @@ class CandlestickChartManager {
           if (this.isDecelerating.value) this.isDecelerating.value = false;
           this.commitPendingOffset();
 
-          if (didComplete && this.activeCandle.value) {
+          if (didComplete && this.isChartGestureActive.value) {
             this.buildCrosshairPicture(this.lastCrosshairPosition.x, this.lastCrosshairPosition.y, true);
           }
         }
@@ -1451,11 +1558,15 @@ class CandlestickChartManager {
     this.pinchInfo.isActive = true;
     this.pinchInfo.startCandleCount = this.candles.length;
     this.pinchInfo.startFocalX = focalX;
-    this.pinchInfo.startOffset = this.offset.value;
+    const currentOffset = this.offset.value;
+    this.pinchInfo.startOffset = currentOffset;
     this.pinchInfo.startWidth = this.candleWidth;
+    this.pinchInfo.wasPinnedToRight = currentOffset === this.getMinOffset();
+    this.pinchInfo.startYAxisWidth = this.yAxisWidth;
     if (this.isDecelerating.value) this.isDecelerating.value = false;
   }
 
+  // -- TODO: Simplify this method
   public onPinchUpdate(scale: number): void {
     this.commitPendingOffset();
     const { startFocalX, startOffset: rawStartOffset, startWidth, startCandleCount } = this.pinchInfo;
@@ -1472,13 +1583,11 @@ class CandlestickChartManager {
 
     const originalIndex = (startFocalX - startOffset) / oldStride;
     const currentIndex = clamp(originalIndex + prependedCount, 0, this.candles.length - 1);
-
-    const startMinOffset = this.toAdjustedOffset(this.chartWidth - this.yAxisWidth - startCandleCount * oldStride);
-    const wasPinnedToRight = Math.abs(startOffset - startMinOffset) < 2;
+    const yAxisDiff = this.pinchInfo.startYAxisWidth - this.yAxisWidth;
 
     let newOffset: number;
-    if (wasPinnedToRight) {
-      newOffset = this.getMinOffset();
+    if (this.pinchInfo.wasPinnedToRight) {
+      newOffset = this.getMinOffset() - yAxisDiff;
     } else {
       newOffset = this.clampOffset(startFocalX - currentIndex * newStride);
     }
@@ -1486,7 +1595,9 @@ class CandlestickChartManager {
     const newRawOffset = this.toRawOffset(newOffset);
     if (!didWidthChange && newRawOffset === this.offset.value) return;
 
+    this.offset.value = newOffset;
     this.animator.direct(this.offset, newRawOffset);
+    // this.rebuildChart();
 
     const distanceFromLeftEdge = Math.abs(newOffset);
     if (distanceFromLeftEdge < LOAD_THRESHOLD_PX) this.requestAdditionalCandles();
@@ -1495,6 +1606,12 @@ class CandlestickChartManager {
   public onPinchEnd(): void {
     this.pinchInfo.isActive = false;
   }
+}
+
+enum ChartStatus {
+  Empty = 'empty',
+  Loaded = 'loaded',
+  Loading = 'loading',
 }
 
 function useCandlestickChart({
@@ -1518,15 +1635,16 @@ function useCandlestickChart({
   isLoadingHistoricalCandles: SharedValue<boolean>;
   providedConfig: CandlestickChartProps['config'];
 }) {
-  const { candles, config, hasPreviousCandles, initialPicture, nativeCurrency } = useStableValue(() =>
-    buildChartConfig({
-      address,
-      backgroundColor,
-      chainId,
-      chartHeight,
-      chartWidth,
-      providedConfig,
-    })
+  const { candleResolution, candles, config, hasPreviousCandles, initialPicture, isFetchingInitialData, nativeCurrency } = useStableValue(
+    () =>
+      buildChartConfig({
+        address,
+        backgroundColor,
+        chainId,
+        chartHeight,
+        chartWidth,
+        providedConfig,
+      })
   );
 
   const buildParagraph = useSkiaText({
@@ -1548,6 +1666,7 @@ function useCandlestickChart({
   const crosshairPicture = useSharedValue(initialPicture);
   const indicatorPicture = useSharedValue(initialPicture);
 
+  const chartStatus = useSharedValue(isFetchingInitialData ? ChartStatus.Loading : candles.length ? ChartStatus.Loaded : ChartStatus.Empty);
   const fetchPromise = useRef<Promise<void> | null | undefined>(undefined);
 
   const fetchAdditionalCandles = useCallback(
@@ -1566,10 +1685,14 @@ function useCandlestickChart({
         candleResolution: useChartsStore.getState().candleResolution,
         candlesToFetch: 500,
         token: { address, chainId },
-      }).then(data => {
-        isLoadingHistoricalCandles.value = false;
-        fetchPromise.current = !data || data?.hasPreviousCandles === true ? undefined : null;
-      });
+      })
+        .then(data => {
+          if (!fetchPromise.current) return;
+          fetchPromise.current = !data || data?.hasPreviousCandles === true ? undefined : null;
+        })
+        .finally(() => {
+          isLoadingHistoricalCandles.value = false;
+        });
     },
     [address, chainId, isLoadingHistoricalCandles]
   );
@@ -1579,6 +1702,7 @@ function useCandlestickChart({
     return new CandlestickChartManager({
       activeCandle,
       buildParagraph,
+      candleResolution,
       candles,
       chartHeight,
       chartMaxY,
@@ -1599,11 +1723,16 @@ function useCandlestickChart({
       maxDisplayedVolume,
       nativeCurrency,
     });
-  }, true);
+  });
 
   const resetHistoricalFetchState = useCallback(
-    (hasPreviousCandles: boolean | undefined) => {
-      const shouldEnableFetching = hasPreviousCandles !== false;
+    (data: CandlestickResponse, previousData: CandlestickResponse) => {
+      const didResolutionChange = data?.candleResolution !== previousData?.candleResolution;
+      const hasExceededMaxCandles = (data?.candles.length ?? 0) >= MAX_CANDLES_TO_LOAD;
+
+      if (!didResolutionChange && !hasExceededMaxCandles) return;
+
+      const shouldEnableFetching = data?.hasPreviousCandles !== false && !hasExceededMaxCandles;
       fetchPromise.current = shouldEnableFetching ? undefined : null;
       isLoadingHistoricalCandles.value = false;
     },
@@ -1612,16 +1741,22 @@ function useCandlestickChart({
 
   const updateCandles = useCallback(
     (data: CandlestickResponse, previousData: CandlestickResponse) => {
-      if ((data?.candles.length ?? 0) >= MAX_CANDLES_TO_LOAD) fetchPromise.current = null;
+      if (data === null) {
+        chartStatus.value = ChartStatus.Loading;
+        return;
+      }
 
-      const didResolutionChange = !!data && !!previousData && data.resolution !== previousData.resolution;
-      if (didResolutionChange) resetHistoricalFetchState(data?.hasPreviousCandles);
+      resetHistoricalFetchState(data, previousData);
+      const hasData = data !== null;
+      const hasPreviousData = previousData !== null;
+      const didResolutionChange = data?.candleResolution !== previousData?.candleResolution;
 
       runOnUI(() => {
-        const newCandles = data?.candles ?? EMPTY_CANDLES;
-        const hasPreviousCandles = data?.hasPreviousCandles === true && newCandles.length < MAX_CANDLES_TO_LOAD;
-        const wasEmptyDataReplaced = !!data && !previousData;
-        const shouldResetOffset = wasEmptyDataReplaced || didResolutionChange;
+        chartStatus.value = data.candles.length ? ChartStatus.Loaded : ChartStatus.Empty;
+        const newCandles = data.candles ?? EMPTY_CANDLES;
+        const hasPreviousCandles = data.hasPreviousCandles === true && newCandles.length < MAX_CANDLES_TO_LOAD;
+        const wasEmptyDataReplaced = hasData && !hasPreviousData;
+        const shouldResetOffset = didResolutionChange || wasEmptyDataReplaced;
 
         chartManager.value?.setCandles?.(newCandles, {
           hasPreviousCandles,
@@ -1629,18 +1764,29 @@ function useCandlestickChart({
         });
       })();
     },
-    [chartManager, resetHistoricalFetchState]
+    [chartManager, chartStatus, resetHistoricalFetchState]
   );
 
-  useListen(useCandlestickStore, state => state.getData(), updateCandles, {
-    equalityFn: isCandlestickDataEqual,
-    fireImmediately: true,
-  });
+  useListenerRouteGuard(
+    useListen(useCandlestickStore, state => state.getData(), updateCandles, {
+      equalityFn: isCandlestickDataEqual,
+      fireImmediately: true,
+    })
+  );
 
-  const chartTransform = useDerivedValue(() => [{ scale: chartScale.value }]);
+  useListen(
+    useChartsStore,
+    state => state.snapSignal,
+    () => {
+      runOnUI(() => chartManager.value?.snapToCurrentCandle?.())();
+    }
+  );
 
-  const isInLoadRegion = useDerivedValue(() => {
-    if (!_WORKLET || !isDecelerating.value) return false;
+  const chartTransform = useDerivedValue(() => [{ scale: !_WORKLET ? 1 : chartScale.value }]);
+  const isChartLoading = useDerivedValue(() => (!_WORKLET ? isFetchingInitialData : chartStatus.value === ChartStatus.Loading));
+
+  const isInHistoricalLoadRegion = useDerivedValue(() => {
+    if (!_WORKLET || !isDecelerating.value || chartStatus.value !== ChartStatus.Loaded) return false;
     const currentOffset = chartManager.value?.toAdjustedOffset?.(chartXOffset.value);
     if (currentOffset === undefined) return false;
     const distanceFromLeftEdge = Math.abs(currentOffset);
@@ -1648,7 +1794,7 @@ function useCandlestickChart({
   });
 
   useAnimatedReaction(
-    () => isInLoadRegion.value,
+    () => isInHistoricalLoadRegion.value,
     (current, previous) => {
       if (current && previous === false && !isLoadingHistoricalCandles.value) {
         chartManager.value?.requestAdditionalCandles?.();
@@ -1657,13 +1803,13 @@ function useCandlestickChart({
     []
   );
 
-  useChangeEffect(() => {
+  useOnChange(() => {
     runOnUI(() => {
       chartManager.value?.setColorMode?.(isDarkMode ? 'dark' : 'light', backgroundColor, providedConfig);
     })();
   }, [backgroundColor, chartManager, isDarkMode, providedConfig]);
 
-  useChangeEffect(() => {
+  useOnChange(() => {
     if (IS_IOS) return;
     // Android loads Skia fonts asynchronously, so we need to
     // propagate buildParagraph updates to the chart class.
@@ -1671,22 +1817,24 @@ function useCandlestickChart({
   }, [buildParagraph, chartManager]);
 
   useCleanup(() => {
+    chartStatus.value = ChartStatus.Loaded;
     initialPicture.dispose();
-    runOnUI(() => {
+    executeOnUIRuntimeSync(() => {
       chartManager.value?.dispose?.();
       chartManager.value = undefined;
     })();
-    useChartsStore.getState().resetCandlestickToken();
   });
 
   return useMemo(
     () => ({
       activeCandle,
       chartManager,
+      chartStatus,
       chartTransform,
       chartXOffset,
       config,
       fetchAdditionalCandles,
+      isChartLoading,
       isDecelerating,
       pictures: {
         chart: chartPicture,
@@ -1698,12 +1846,14 @@ function useCandlestickChart({
       activeCandle,
       chartManager,
       chartPicture,
+      chartStatus,
       chartTransform,
       chartXOffset,
       config,
       crosshairPicture,
       fetchAdditionalCandles,
       indicatorPicture,
+      isChartLoading,
       isDecelerating,
     ]
   );
@@ -1714,24 +1864,35 @@ const SPINNER_HIT_AREA_PADDING = 12;
 const SPINNER_HIT_AREA_SIZE = SPINNER_SIZE + SPINNER_HIT_AREA_PADDING * 2;
 
 export const CandlestickChart = memo(function CandlestickChart({
+  accentColor,
   address,
-  backgroundColor = DEFAULT_CANDLESTICK_CONFIG.chart.backgroundColor,
+  backgroundColor,
   chainId,
   chartHeight: providedChartHeight = 480,
   chartWidth = DEVICE_WIDTH,
   config: providedConfig,
   showChartControls = false,
-  showDataMonitor = false,
   isChartGestureActive,
 }: CandlestickChartProps) {
   const { isDarkMode } = useColorMode();
+  const showDataMonitor = useExperimentalFlag(CANDLESTICK_DATA_MONITOR) && IS_DEV;
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const { currency } = getNativeCurrency();
 
   const isLoadingHistoricalCandles = useSharedValue(false);
   const chartHeight = providedChartHeight - 13 - 10 - 16;
 
-  const { activeCandle, chartManager, chartXOffset, config, fetchAdditionalCandles, isDecelerating, pictures } = useCandlestickChart({
+  const {
+    activeCandle,
+    chartManager,
+    chartStatus,
+    chartXOffset,
+    config,
+    fetchAdditionalCandles,
+    isChartLoading,
+    isDecelerating,
+    pictures,
+  } = useCandlestickChart({
     address,
     backgroundColor,
     chainId,
@@ -1829,12 +1990,23 @@ export const CandlestickChart = memo(function CandlestickChart({
     [chartGestures, pictures]
   );
 
+  const activeCardHeight = config.activeCandleCard.height + config.chart.activeCandleCardGap;
   const chartBottomPadding = config.chart.xAxisHeight + config.chart.xAxisGap * 2 + (showChartControls ? 56 : 0);
-  const primaryColor =
-    isDarkMode && providedConfig?.grid?.color ? opacity(providedConfig.grid.color, 1) : globalColors[isDarkMode ? 'white100' : 'grey100'];
+  const fullChartHeight = chartHeight + chartBottomPadding;
+  const fullHeight = fullChartHeight + activeCardHeight;
 
-  const activeCandleCardStyle = useAnimatedStyle(() => ({
-    opacity: isChartGestureActive.value ? 1 : 0,
+  const activeCandleCardStyle = useAnimatedStyle(() => {
+    const shouldDisplay = _WORKLET && isChartGestureActive.value;
+    const timingConfig = TIMING_CONFIGS[shouldDisplay ? 'buttonPressConfig' : 'buttonPressConfig'];
+    return {
+      opacity: withTiming(shouldDisplay ? 1 : 0, timingConfig),
+      transform: [{ scale: withTiming(shouldDisplay ? 1 : 1.02, timingConfig) }],
+      zIndex: shouldDisplay ? 0 : -1,
+    };
+  });
+
+  const chartOpacity = useAnimatedStyle(() => ({
+    opacity: withSpring(getOpacityForStatus(chartStatus.value), SPRING_CONFIGS.snappyMediumSpringConfig),
   }));
 
   const dataMonitorStyle = useAnimatedStyle(() => {
@@ -1845,12 +2017,20 @@ export const CandlestickChart = memo(function CandlestickChart({
     };
   });
 
+  const emptyStateStyle = useAnimatedStyle(() => {
+    const isEmpty = chartStatus.value === ChartStatus.Empty;
+    return {
+      opacity: withSpring(isEmpty ? 1 : 0, SPRING_CONFIGS.snappyMediumSpringConfig),
+      pointerEvents: isEmpty ? 'auto' : 'none',
+    };
+  });
+
   return (
     <View
       style={{
-        height: chartHeight + chartBottomPadding + config.activeCandleCard.height + config.chart.activeCandleCardGap,
-        marginTop: -(config.activeCandleCard.height + config.chart.activeCandleCardGap),
-        paddingTop: config.activeCandleCard.height + config.chart.activeCandleCardGap,
+        height: fullHeight,
+        marginTop: -activeCardHeight,
+        paddingTop: activeCardHeight,
         width: chartWidth,
       }}
     >
@@ -1866,32 +2046,36 @@ export const CandlestickChart = memo(function CandlestickChart({
           },
         ]}
       >
-        <ActiveCandleCard activeCandle={activeCandle} config={config} currency={currency} />
+        <DelayedMount delay="idle" maxWait={time.ms(300)}>
+          <ActiveCandleCard accentColor={accentColor} activeCandle={activeCandle} backgroundColor={backgroundColor} currency={currency} />
+        </DelayedMount>
       </Animated.View>
 
       {showDataMonitor && (
         <Animated.View style={[styles.spinnerContainer, dataMonitorStyle]}>
-          <AnimatedSpinner
-            color={primaryColor}
-            idleComponent={
-              <ButtonPressAnimation
-                hapticType="soft"
-                onPress={() => fetchAdditionalCandles(true)}
-                style={{ height: SPINNER_HIT_AREA_SIZE + 16, marginTop: 16, width: SPINNER_HIT_AREA_SIZE }}
-              >
-                <TextIcon color={{ custom: primaryColor }} containerSize={SPINNER_HIT_AREA_SIZE} size="icon 20px" weight="bold">
-                  􀣔
-                </TextIcon>
-              </ButtonPressAnimation>
-            }
-            isLoading={isLoadingHistoricalCandles}
-            size={SPINNER_SIZE}
-          />
-          <NumberOfCandles color={primaryColor} />
+          <MountWhenFocused>
+            <AnimatedSpinner
+              color={accentColor}
+              idleComponent={
+                <ButtonPressAnimation
+                  hapticType="soft"
+                  onPress={() => fetchAdditionalCandles(true)}
+                  style={{ height: SPINNER_HIT_AREA_SIZE + 16, marginTop: 16, width: SPINNER_HIT_AREA_SIZE }}
+                >
+                  <TextIcon color={{ custom: accentColor }} containerSize={SPINNER_HIT_AREA_SIZE} size="icon 20px" weight="bold">
+                    􀣔
+                  </TextIcon>
+                </ButtonPressAnimation>
+              }
+              isLoading={isLoadingHistoricalCandles}
+              size={SPINNER_SIZE}
+            />
+            <NumberOfCandles color={accentColor} />
+          </MountWhenFocused>
         </Animated.View>
       )}
 
-      <View style={{ backgroundColor, height: chartHeight + chartBottomPadding, width: chartWidth }}>
+      <Animated.View style={[{ backgroundColor, height: fullChartHeight, width: chartWidth }, chartOpacity]}>
         {chartCanvas}
 
         {showChartControls && (
@@ -1945,7 +2129,24 @@ export const CandlestickChart = memo(function CandlestickChart({
             },
           ]}
         />
-      </View>
+      </Animated.View>
+
+      <Animated.View style={[styles.emptyState, { height: fullChartHeight, top: activeCardHeight }, emptyStateStyle]}>
+        <NoChartData height={chartHeight} />
+      </Animated.View>
+
+      <AnimatedSpinner
+        color={accentColor}
+        containerStyle={{
+          alignSelf: 'center',
+          left: (chartWidth - LOADING_SPINNER_SIZE) / 2,
+          position: 'absolute',
+          top: (chartHeight - LOADING_SPINNER_SIZE) / 2 + activeCardHeight,
+        }}
+        isLoading={isChartLoading}
+        scaleInFrom={0.5}
+        size={LOADING_SPINNER_SIZE}
+      />
     </View>
   );
 }, dequal);
@@ -2007,6 +2208,7 @@ const styles = StyleSheet.create({
   canvas: {
     flex: 1,
   },
+  emptyState: StyleSheet.absoluteFillObject,
   leftFade: {
     bottom: 0,
     position: 'absolute',
@@ -2046,23 +2248,30 @@ function buildChartConfig({
   chartWidth: number;
   providedConfig: CandlestickChartProps['config'];
 }): {
+  candleResolution: CandleResolution;
   candles: Bar[];
   config: CandlestickConfig;
   hasPreviousCandles: boolean;
   initialPicture: SkPicture;
+  isFetchingInitialData: boolean;
   nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
 } {
-  const { candles, hasPreviousCandles, nativeCurrency } = prepareCandlestickData({ address, chainId });
+  const { candleResolution, candles, hasPreviousCandles, isFetchingInitialData, nativeCurrency } = prepareCandlestickData({
+    address,
+    chainId,
+  });
 
   let mergedConfig = cloneDeep(DEFAULT_CANDLESTICK_CONFIG);
   if (providedConfig) mergedConfig = merge(mergedConfig, providedConfig);
   mergedConfig.chart.backgroundColor = backgroundColor;
 
   return {
+    candleResolution,
     candles,
     config: mergedConfig,
     hasPreviousCandles,
     initialPicture: createBlankPicture(chartWidth, chartHeight),
+    isFetchingInitialData,
     nativeCurrency,
   };
 }
@@ -2114,25 +2323,22 @@ function getInitialOffset(bars: Bar[], chartWidth: number, config: CandlestickCo
 
 const EMPTY_CANDLES: Bar[] = [];
 
-function prepareCandlestickData({ address, chainId }: { address: string | undefined; chainId: ChainId | undefined }): {
+function prepareCandlestickData({ address, chainId }: { address: string; chainId: ChainId }): {
+  candleResolution: CandleResolution;
   candles: Bar[];
   hasPreviousCandles: boolean;
+  isFetchingInitialData: boolean;
   nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
 } {
+  chartsActions.setToken({ address, chainId });
+
+  const existingData = useCandlestickStore.getState().getData();
   const nativeCurrency = getNativeCurrency();
 
-  if (!address || !chainId)
-    return {
-      candles: EMPTY_CANDLES,
-      hasPreviousCandles: false,
-      nativeCurrency,
-    };
-
-  useChartsStore.setState({ token: { address, chainId } });
-  const existingData = useCandlestickStore.getState().getData();
-
   return {
+    candleResolution: existingData?.candleResolution ?? useChartsStore.getState().candleResolution,
     candles: existingData?.candles || EMPTY_CANDLES,
+    isFetchingInitialData: existingData === null,
     hasPreviousCandles: existingData?.hasPreviousCandles ?? false,
     nativeCurrency,
   };
@@ -2143,17 +2349,29 @@ function getNativeCurrency(): { currency: NativeCurrencyKey; decimals: number } 
   return { currency, decimals: supportedNativeCurrencies[currency].decimals };
 }
 
+function getOpacityForStatus(status: ChartStatus): number {
+  'worklet';
+  switch (status) {
+    case ChartStatus.Empty:
+      return 0;
+    case ChartStatus.Loading:
+      return 0.3;
+    case ChartStatus.Loaded:
+      return 1;
+  }
+}
+
 function isCandlestickDataEqual(previousData: CandlestickResponse, currentData: CandlestickResponse): boolean {
   if (Object.is(previousData, currentData)) return true;
 
   const candles = currentData?.candles;
-  if (!candles) return true;
+  if (!candles) return false;
 
   const previousCandles = previousData?.candles;
   if (!previousCandles) return false;
 
   if (
-    currentData.resolution !== previousData.resolution ||
+    currentData.candleResolution !== previousData.candleResolution ||
     currentData.hasPreviousCandles !== previousData.hasPreviousCandles ||
     candles.length !== previousCandles.length
   ) {

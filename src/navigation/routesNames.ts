@@ -1,3 +1,4 @@
+import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { IS_IOS } from '@/env';
 
 const Routes = {
@@ -40,6 +41,7 @@ const Routes = {
   HARDWARE_WALLET_TX_NAVIGATOR: 'HardwareWalletTxNavigator',
   IMPORT_OR_WATCH_WALLET_SHEET: 'ImportOrWatchWalletSheet',
   IMPORT_SCREEN: 'ImportScreen',
+  KING_OF_THE_HILL: 'KingOfTheHill',
   LEARN_WEB_VIEW_SCREEN: 'LearnWebViewScreen',
   LOG_SHEET: 'LogSheet',
   POAP_SHEET: 'PoapSheet',
@@ -129,5 +131,9 @@ const RoutesWithPlatformDifferences = {
   ...Routes,
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
+
+export type Route = (typeof Routes)[keyof typeof Routes];
+
+export type UseRoute = RouteProp<ParamListBase, Route>;
 
 export default RoutesWithPlatformDifferences;
