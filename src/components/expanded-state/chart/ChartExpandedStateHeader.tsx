@@ -81,7 +81,7 @@ const CandlestickTimeLabel = ({ accentColor, backgroundColor }: { accentColor: s
     : undefined;
 
   return (
-    <Bleed bottom={{ custom: 6 }} left={{ custom: 2 }} top={{ custom: 5 }}>
+    <Bleed left="2px" vertical="6px">
       <Box
         alignItems="center"
         backgroundColor={background}
