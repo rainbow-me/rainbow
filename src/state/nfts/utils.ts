@@ -7,13 +7,11 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { STALE_TIME } from '@/state/nfts/createNftsStore';
 import { NftsState } from '@/state/nfts/types';
 import { parseUniqueId } from '@/resources/nfts/utils';
-import { logger } from '@/logger';
 import { isLowerCaseMatch } from '@/utils';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import { UniqueAsset } from '@/entities';
 import { fetchNFTData, NFTData, nftsQueryKey } from '@/resources/nfts';
 import { isENSAddressFormat } from '@/helpers/validators';
-import { IS_DEV } from '@/env';
 
 export function isDataComplete(tokens: string[]) {
   if (!tokens.length) return true;
@@ -53,31 +51,23 @@ export async function migrateTokens(accountAddress: string, tokens: string[]): P
   });
 
   const data = await queryClient.fetchQuery<NFTData>({ queryKey, queryFn: () => fetchNFTData({ queryKey, meta: undefined }) });
-  logger.debug(`🔄 [Migration] Has cached query data: ${!!data}`);
-
   if (!data.nfts.length) return null;
 
   for (const token of tokens) {
     const isENS = isENSAddressFormat(token);
     if (isENS) {
-      logger.debug(`🔄 [Migration] Migrating ENS name: ${token}`);
       const uniqueId = matchEnsNameToUniqueId(token, data.nfts);
       if (!uniqueId) {
-        logger.debug(`🔄 [Migration] No match found for ENS name: ${token}`);
         continue;
       }
 
-      logger.debug(`🔄 [Migration] Migrating ENS name to uniqueId: ${uniqueId}`);
       migratedTokens.push(uniqueId.toLowerCase());
     } else {
-      logger.debug(`🔄 [Migration] Migrating contractAddress and tokenId: ${token}`);
       const uniqueId = matchContractAndAddress(token, data.nfts);
       if (!uniqueId) {
-        logger.debug(`🔄 [Migration] No match found for token: ${token}`);
         continue;
       }
 
-      logger.debug(`🔄 [Migration] Migrating token ${token} to uniqueId: ${uniqueId}`);
       migratedTokens.push(uniqueId.toLowerCase());
     }
   }
