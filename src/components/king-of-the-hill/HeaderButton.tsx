@@ -24,7 +24,7 @@ export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, i
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         borderRadius={20}
-        backgroundColor={isDarkMode ? 'rgba(245, 248, 255, 0.12)' : 'rgba(9, 17, 31, 0.05)'}
+        backgroundColor={isDarkMode ? 'rgba(245, 248, 255, 0.05)' : 'rgba(9, 17, 31, 0.05)'}
         style={[{ height: 26 }, style]}
       >
         <View

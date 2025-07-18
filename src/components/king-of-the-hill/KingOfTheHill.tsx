@@ -5,6 +5,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
 import { globalColors, TextIcon, useColorMode } from '@/design-system';
+import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -85,10 +86,12 @@ export const KingOfTheHill = () => {
                 borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.04)',
               }}
             >
-              <TextIcon size="icon 16px" color="label" weight="heavy" containerSize={36 + `${airdropsCount}`.length * 18}>
-                {/* TODO android use gift.svg */}
-                {'􀑉'} {airdropsCount}
-              </TextIcon>
+              <View style={{ opacity: 0.7 }}>
+                <TextIcon size="icon 16px" color="label" weight="heavy" containerSize={36 + `${abbreviateNumber(airdropsCount)}`.length * 18}>
+                  {/* TODO android use gift.svg */}
+                  {'􀑉'} {abbreviateNumber(airdropsCount)}
+                </TextIcon>
+              </View>
             </View>
           </ButtonPressAnimation>
         }

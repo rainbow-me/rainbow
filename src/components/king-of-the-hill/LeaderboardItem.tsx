@@ -1,6 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { RainbowImage } from '@/components/RainbowImage';
-import { Inline, Stack, Text, useColorMode } from '@/design-system';
+import { Inline, Text, useColorMode } from '@/design-system';
 import { Token } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { Navigation } from '@/navigation';
@@ -82,19 +82,19 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
 
         {/* info */}
         <View style={{ flex: 1, paddingHorizontal: 12 }}>
-          <Stack space="4px">
-            {/* Top row: Name, Fire icon, Price change */}
-            <Inline alignVertical="center" space="6px">
-              <Text color="label" size="15pt" weight="semibold" numberOfLines={1}>
-                {token.name}
-              </Text>
-              <FireIcon size={14} />
-              <Text color={priceChange.startsWith('+') ? 'green' : 'red'} size="13pt" weight="semibold">
-                {priceChange}
-              </Text>
-            </Inline>
+          {/* Top row: Name, Fire icon, Price change */}
+          <Inline alignVertical="center" space="6px">
+            <Text color="label" size="15pt" weight="semibold" numberOfLines={1}>
+              {token.name}
+            </Text>
+            <FireIcon size={14} />
+            <Text color={priceChange.startsWith('+') ? 'green' : 'red'} size="13pt" weight="semibold">
+              {priceChange}
+            </Text>
+          </Inline>
 
-            {/* Rank, VOL | MCAP */}
+          {/* Rank, VOL | MCAP */}
+          <View style={{ marginTop: 7 }}>
             <Inline alignVertical="center" space="8px">
               <View style={[styles.rankingBadge, { backgroundColor: rankingStyle.backgroundColor }]}>
                 <Text
@@ -114,7 +114,7 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
                 VOL {volume} | MCAP {marketCap}
               </Text>
             </Inline>
-          </Stack>
+          </View>
         </View>
 
         {/* Price */}

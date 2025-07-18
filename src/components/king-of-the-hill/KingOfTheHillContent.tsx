@@ -46,8 +46,8 @@ export const KingOfTheHillContent = ({
         if (color) {
           const chillColor = makeColorMoreChill(color);
           const adjustedColor = isDarkMode
-            ? chroma(chillColor).darken(2.5).alpha(0.45).css()
-            : chroma(chillColor).brighten(2).alpha(0.45).css();
+            ? chroma(chillColor).darken(3.5).desaturate(1.5).alpha(0.8).css()
+            : chroma(chillColor).brighten(2).desaturate(1.5).alpha(0.8).css();
           setBackgroundColor(adjustedColor);
           onColorExtracted?.(adjustedColor);
         }
@@ -111,7 +111,7 @@ export const KingOfTheHillContent = ({
     ({ item }: { item: ListItem }) => {
       if (item.type === 'header') {
         return (
-          <View style={{ borderRadius: 20, padding: 20, marginBottom: 12 }}>
+          <View style={{ borderRadius: 20, padding: 20 }}>
             <Header kingOfTheHill={item.data} onColorExtracted={handleColorExtracted} />
           </View>
         );

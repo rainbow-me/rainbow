@@ -7,13 +7,13 @@ interface RainbowGlowProps {
 }
 
 export const RainbowGlow: React.FC<RainbowGlowProps> = ({ size }) => {
-  const glowSize = size * 1.8; // Even smaller container
+  const glowSize = size * 3.75; // Scaled up 1.5x from 2.5
   const center = glowSize / 2;
-  const maskRadius = glowSize / 3; // Much smaller mask radius
+  const maskRadius = size * 0.7; // Scaled up proportionally
   
   return (
     <Canvas style={[styles.canvas, { width: glowSize, height: glowSize }]}>
-      <Group layer={<Paint><Blur blur={25} /></Paint>}>
+      <Group layer={<Paint><Blur blur={30} /></Paint>}>
         <Mask
           mask={
             <Group>
@@ -22,13 +22,13 @@ export const RainbowGlow: React.FC<RainbowGlowProps> = ({ size }) => {
                   c={vec(center, center)}
                   r={maskRadius}
                   colors={[
-                    'white',           // Center fully visible (0-40%)
-                    'white',           // Keep center visible
-                    'rgba(255,255,255,0.9)', // Slight fade
-                    'rgba(255,255,255,0.4)', // Heavy fade
-                    'transparent'      // Fully transparent at 70% radius
+                    'white',           // Center fully visible
+                    'white',           // Keep center visible longer
+                    'white',           // Keep center visible longer
+                    'rgba(255,255,255,0.5)', // Start fading
+                    'transparent'      // Fully transparent at edges
                   ]}
-                  positions={[0, 0.4, 0.5, 0.7, 1]}
+                  positions={[0, 0.3, 0.5, 0.7, 1]}
                 />
               </Circle>
             </Group>

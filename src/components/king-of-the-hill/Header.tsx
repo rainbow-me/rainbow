@@ -1,7 +1,8 @@
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import CaretRightIcon from '@/components/icons/svg/CaretRightIcon';
-import { Text, useColorMode } from '@/design-system';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
@@ -14,6 +15,7 @@ import crownImage from './crown.png';
 import FireIcon from './FireIcon';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
+import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
 
 interface HeaderProps {
   kingOfTheHill?: KingOfTheHill | null;
@@ -43,16 +45,16 @@ const styles = StyleSheet.create({
   },
   fireIcon: {
     position: 'absolute',
-    bottom: TOKEN_SIZE / 2 - 12,
-    right: TOKEN_SIZE / 2 - 12,
+    bottom: TOKEN_SIZE / 2 - 13,
+    right: TOKEN_SIZE / 2 - 15,
     zIndex: 3,
   },
   crown: {
     position: 'absolute',
-    top: 25,
+    top: 15,
     left: TOKEN_SIZE / 2 + 15,
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
     transform: [{ rotate: '-3deg' }],
     zIndex: 10,
   },
@@ -60,8 +62,10 @@ const styles = StyleSheet.create({
 
 export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const { isDarkMode } = useColorMode();
+  const fillTertiaryColor = useBackgroundColor('fillTertiary');
   const current = kingOfTheHill?.current;
   const lastWinner = kingOfTheHill?.lastWinner;
+  const { token } = current || {};
 
   const navigateToLastWinner = useCallback(() => {
     if (!lastWinner) return;
@@ -85,7 +89,6 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
     });
   }, [token]);
 
-  const { token } = current || {};
   const sizedIconUrl = getSizedImageUrl(token?.iconUrl, 160);
   const lastWinnerIconUrl = lastWinner ? getSizedImageUrl(lastWinner.token.iconUrl, 16) : null;
 
@@ -135,26 +138,55 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         <View style={styles.glowContainer}>
           <RainbowGlow size={TOKEN_SIZE} />
         </View>
+        
+        {/* Gradient circle behind token */}
+        <View style={{ position: 'absolute', width: TOKEN_SIZE + 12, height: TOKEN_SIZE + 12, zIndex: 1 }}>
+          <Canvas style={{ width: TOKEN_SIZE + 12, height: TOKEN_SIZE + 12 }}>
+            <Circle cx={(TOKEN_SIZE + 12) / 2} cy={(TOKEN_SIZE + 12) / 2} r={(TOKEN_SIZE + 12) / 2}>
+              <LinearGradient
+                start={vec((TOKEN_SIZE + 12) / 2, 0)}
+                end={vec((TOKEN_SIZE + 12) / 2, TOKEN_SIZE + 12)}
+                colors={[
+                  'rgba(34, 197, 94, 1)',   // green
+                  'rgba(250, 204, 21, 1)',  // yellow
+                  'rgba(239, 68, 68, 1)',   // red
+                ]}
+                positions={[0, 0.5, 1]}
+              />
+            </Circle>
+          </Canvas>
+        </View>
+        
         <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
         <View style={styles.fireIcon}>
-          <FireIcon size={24} />
+          <FireIcon size={36} />
         </View>
 
         <Image source={crownImage} style={styles.crown} />
       </View>
 
-      <View style={{ borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
-        <View
-          style={{
-            paddingHorizontal: 16,
-            paddingVertical: 8,
-            backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.02)' : 'rgba(9, 17, 31, 0.01)',
-          }}
+      <View style={{ alignSelf: 'center', marginTop: -19, height: 32 }}>
+        <GradientBorderView
+          borderGradientColors={[fillTertiaryColor, 'transparent']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          borderRadius={12}
+          backgroundColor={isDarkMode ? 'rgba(245, 248, 255, 0.02)' : 'rgba(9, 17, 31, 0.01)'}
+          style={{ height: 32 }}
         >
-          <Text color="labelSecondary" size="13pt" weight="semibold">
-            Round ends in {timeRemaining}
-          </Text>
-        </View>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              height: '100%',
+              justifyContent: 'center',
+            }}
+          >
+            <Text color="labelSecondary" size="13pt" weight="bold">
+              Round ends in {timeRemaining}
+            </Text>
+          </View>
+        </GradientBorderView>
       </View>
 
       {/* Symbol and price change */}
