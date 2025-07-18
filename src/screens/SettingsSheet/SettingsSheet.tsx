@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, Dimensions } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
@@ -25,8 +25,10 @@ const Stack = createStackNavigator();
 
 export function SettingsSheet() {
   const { height: deviceHeight } = useDimensions();
+  const screenHeight = Dimensions.get('screen').height;
+  const doesSystemUiOverlay = deviceHeight === screenHeight; // true when the navigation bar overlays the window
   const { goBack, navigate } = useNavigation();
-  const { top } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const { colors } = useTheme();
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
@@ -46,7 +48,7 @@ export function SettingsSheet() {
         <SimpleSheet
           testID="settings-sheet"
           backgroundColor={backgroundColor as string}
-          customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
+          customHeight={IS_ANDROID ? deviceHeight - top - (doesSystemUiOverlay ? bottom : 0) : deviceHeight - sharedCoolModalTopOffset}
           scrollEnabled={false}
           useAdditionalTopPadding={IS_ANDROID && !!StatusBar.currentHeight}
         >

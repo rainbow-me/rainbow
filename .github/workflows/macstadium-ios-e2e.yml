@@ -4,14 +4,17 @@ on:
     # prevent running on draft PRs
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
-
+  push:
+    branches:
+      - develop
 jobs:
   # iOS build and e2e tests
   e2e-ios:
-    if: github.event.pull_request.draft == false
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ["self-hosted"]
     concurrency:
-      group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
+      # For pushes on develop run for every commit, but for PRs cancel in-progress runs.
+      group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
       cancel-in-progress: true
     permissions:
       contents: read
@@ -72,6 +75,8 @@ jobs:
         run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - name: Modify env and build app in release mode
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
           ./scripts/e2e-ios-build.sh

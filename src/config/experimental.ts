@@ -39,6 +39,7 @@ export const PRINCE_OF_THE_HILL = 'Prince of the Hill';
 export const LAZY_TABS = 'Lazy Tabs';
 export const CANDLESTICK_CHARTS = 'Candlestick Charts';
 export const CANDLESTICK_DATA_MONITOR = 'Candlestick Data Monitor';
+export const KING_OF_THE_HILL_TAB = 'King of the Hill Tab';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -86,6 +87,7 @@ const config = {
   [LAZY_TABS]: { needsRestart: true, settings: true, value: false },
   [CANDLESTICK_CHARTS]: { settings: true, value: IS_DEV || isTestFlight || false },
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
+  [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
