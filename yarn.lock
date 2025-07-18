@@ -8849,7 +8849,7 @@ __metadata:
     ethereumjs-wallet: "npm:1.0.1"
     events: "npm:3.3.0"
     expo: "npm:53.0.11"
-    expo-image-picker: "npm:16.1.4"
+    expo-image-picker: "npm:17.0.0-canary-20250713-8f814f8"
     expo-store-review: "npm:8.1.5"
     expo-web-browser: "npm:14.1.6"
     fast-text-encoding: "npm:1.0.4"
@@ -8916,7 +8916,6 @@ __metadata:
     react-native-gesture-handler: "npm:2.25.0"
     react-native-get-random-values: "npm:1.5.0"
     react-native-haptic-feedback: "npm:2.2.0"
-    react-native-image-crop-picker: "npm:0.42.0"
     react-native-indicators: "npm:0.17.0"
     react-native-ios-context-menu: "npm:1.15.3"
     react-native-keyboard-area: "npm:1.0.6"
@@ -14323,23 +14322,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-image-loader@npm:~5.1.0":
-  version: 5.1.0
-  resolution: "expo-image-loader@npm:5.1.0"
+"expo-image-loader@npm:5.1.1-canary-20250713-8f814f8":
+  version: 5.1.1-canary-20250713-8f814f8
+  resolution: "expo-image-loader@npm:5.1.1-canary-20250713-8f814f8"
   peerDependencies:
-    expo: "*"
-  checksum: 10c0/2897a2c3623f752cc277677b170ca9b3db826439641ccc93dcc3a94ece76dcbf084ecc108eddfebb42c34bcb339ef00996726995112c99561f262696c3e23300
+    expo: 54.0.0-canary-20250713-8f814f8
+  checksum: 10c0/0f1c0e1882668b07919f6065051a7b42cbe8f97636545c1b42d0e03dfbf337bf78c2256f4f5d355a24c56e2791956feb34e3660e1d3da73744a8bb00595dd2be
   languageName: node
   linkType: hard
 
-"expo-image-picker@npm:16.1.4":
-  version: 16.1.4
-  resolution: "expo-image-picker@npm:16.1.4"
+"expo-image-picker@npm:17.0.0-canary-20250713-8f814f8":
+  version: 17.0.0-canary-20250713-8f814f8
+  resolution: "expo-image-picker@npm:17.0.0-canary-20250713-8f814f8"
   dependencies:
-    expo-image-loader: "npm:~5.1.0"
+    expo-image-loader: "npm:5.1.1-canary-20250713-8f814f8"
   peerDependencies:
-    expo: "*"
-  checksum: 10c0/7e27458a48140cea2864564db40ff102525302ca60e9526838ae265523dba8b1d9ceea3a2ac94c1eaece78f4cd1ded0f1a2391517e61a3fd8a6f17b06e337293
+    expo: 54.0.0-canary-20250713-8f814f8
+  checksum: 10c0/7df6b1331386ee6a3990fc27f7748fab59bf76a835e6cb28523b5810b7d74dc1adcfb05578ef1456401d87051344fee5b286bb3262753ec43d78d321910e25e6
   languageName: node
   linkType: hard
 
@@ -22476,15 +22475,6 @@ __metadata:
   peerDependencies:
     react-native: ">=0.60.0"
   checksum: 10c0/6939804b1e3a4c1e35052a65c2536a00b6d7d93b2b5a5c4fc6ef690a06d043c38bf95536f9b54acfb32d08abf901b847171a574d0d863acfdee59cce012d2497
-  languageName: node
-  linkType: hard
-
-"react-native-image-crop-picker@npm:0.42.0":
-  version: 0.42.0
-  resolution: "react-native-image-crop-picker@npm:0.42.0"
-  peerDependencies:
-    react-native: ">=0.40.0"
-  checksum: 10c0/8ebae127cf1701c07df6ad3a4304654da7088704628a475f1c2de4a1b99e0fcc7cefa3c34c19a76542c9311f6eaed04a9e402d34af86bdc4d1099c30c197bb8f
   languageName: node
   linkType: hard
 
