@@ -13,26 +13,39 @@ import { BlurView } from 'react-native-blur-view';
 import { IS_IOS } from '@/env';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import FireIcon from './FireIcon';
+import { RainbowGlow } from './RainbowGlow';
 
 interface HeaderProps {
   kingOfTheHill?: KingOfTheHill | null;
   onColorExtracted?: (color: string | null) => void;
 }
 
+const TOKEN_SIZE = 80;
+
 const styles = StyleSheet.create({
   tokenImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: TOKEN_SIZE,
+    height: TOKEN_SIZE,
+    borderRadius: TOKEN_SIZE / 2,
+    zIndex: 2,
   },
   tokenImageContainer: {
     position: 'relative',
+    width: TOKEN_SIZE * 2,
+    height: TOKEN_SIZE * 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  glowContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fireIcon: {
     position: 'absolute',
-    bottom: -4,
-    right: -4,
-    zIndex: 1,
+    bottom: TOKEN_SIZE / 2 - 12,
+    right: TOKEN_SIZE / 2 - 12,
+    zIndex: 3,
   },
 });
 
@@ -81,8 +94,11 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
   return (
     <Stack space="16px" alignHorizontal="center">
-      {/* King image with fire icon */}
+      {/* King image with rainbow glow and fire icon */}
       <View style={styles.tokenImageContainer}>
+        <View style={styles.glowContainer}>
+          <RainbowGlow size={TOKEN_SIZE} />
+        </View>
         <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
         <View style={styles.fireIcon}>
           <FireIcon size={24} />
@@ -148,9 +164,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
             {lastWinner ? (
               <>
                 {lastWinnerIconUrl && (
-                  <Box marginRight="6px">
-                    <FastImage source={{ uri: lastWinnerIconUrl }} style={{ width: 16, height: 16, borderRadius: 8 }} />
-                  </Box>
+                  <FastImage source={{ uri: lastWinnerIconUrl }} style={{ width: 16, height: 16, borderRadius: 8, marginRight: 6 }} />
                 )}
                 <Text color="labelSecondary" size="13pt" weight="semibold">
                   {lastWinner.token.symbol} Last Winner
