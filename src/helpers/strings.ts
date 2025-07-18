@@ -127,7 +127,7 @@ export function formatFractionWorklet(fraction: string, significantDigitsCount =
   let leadingZeros = 0;
   for (let i = 0; i < fraction.length; i++) {
     if (fraction[i] === '0') {
-      leadingZeros++;
+      leadingZeros += 1;
     } else {
       break;
     }
