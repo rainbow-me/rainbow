@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
@@ -26,6 +26,7 @@ import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilValue } from 'recoil';
+import { useStableValue } from '@/hooks/useStableValue';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -92,7 +93,7 @@ function WalletScreen() {
   }, []);
 
   // We cannot rely on `onMomentumScrollEnd` because it's not called when the user scrolls directly rather than swiping
-  const debouncedAddSubscribedTokensRef = useRef(
+  const debouncedAddSubscribedTokens = useStableValue(() =>
     debounce((viewableItems, routeName) => {
       const viewableTokenUniqueIds = extractTokenRowIds(viewableItems);
       if (viewableTokenUniqueIds.length > 0) {
@@ -117,9 +118,9 @@ function WalletScreen() {
         removeSubscribedTokens({ route: route.name, tokenIds: viewableTokenUniqueIdsRemoved });
       }
 
-      debouncedAddSubscribedTokensRef.current(viewableItems, route.name);
+      debouncedAddSubscribedTokens(viewableItems, route.name);
     },
-    [route.name]
+    [route.name, debouncedAddSubscribedTokens]
   );
 
   return (

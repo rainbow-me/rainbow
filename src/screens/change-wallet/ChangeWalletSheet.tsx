@@ -98,7 +98,7 @@ export default function ChangeWalletSheet() {
   const { updateWebProfile } = useWebData();
   const { goBack, navigate } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
-  const { balances: liveWalletBalances } = useLiveWalletBalance();
+  const liveWalletBalance = useLiveWalletBalance();
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
   const initialPinnedAddressCount = useMemo(() => usePinnedWalletsStore.getState().pinnedAddresses.length, []);
@@ -151,7 +151,7 @@ export default function ChangeWalletSheet() {
           color: account.color,
           emoji: account.emoji,
           label: account.label,
-          balance: isSelectedAddress ? liveWalletBalances.totalBalance.display : balanceText,
+          balance: isSelectedAddress && liveWalletBalance ? liveWalletBalance : balanceText,
           isLedger: wallet.type === WalletTypes.bluetooth,
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected: account.address === accountAddress,
@@ -171,7 +171,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalances]);
+  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalance]);
 
   // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {

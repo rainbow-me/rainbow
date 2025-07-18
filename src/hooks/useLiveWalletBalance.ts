@@ -44,29 +44,9 @@ export const useLiveWalletBalance = createDerivedStore(
 
     const liveAssetBalance = initialBalance ? add(initialBalance, valueDifference) : '0';
     const totalBalanceAmount = add(liveAssetBalance, add(positionsBalance, claimablesBalance));
-
-    const balances = {
-      assetsBalance: {
-        amount: liveAssetBalance,
-        display: convertAmountToNativeDisplay(liveAssetBalance, params.currency),
-      },
-      positionsBalance: {
-        amount: positionsBalance,
-        display: convertAmountToNativeDisplay(positionsBalance, params.currency),
-      },
-      claimablesBalance: {
-        amount: claimablesBalance,
-        display: convertAmountToNativeDisplay(claimablesBalance, params.currency),
-      },
-      totalBalance: {
-        amount: totalBalanceAmount,
-        display: convertAmountToNativeDisplay(totalBalanceAmount, params.currency),
-      },
-    };
-
     const isLoading = initialBalance === 0 && isFetching;
 
-    return { balances, isLoading };
+    return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, params.currency);
   },
 
   { debounce: 250, equalityFn: deepEqual }

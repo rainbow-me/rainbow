@@ -19,7 +19,7 @@ import { ExternalENSProfileScrollViewWithRef, ExternalSelectNFTScrollViewWithRef
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
-import { CellTypes, RecyclerListViewRef } from './ViewTypes';
+import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { useAccountAddress } from '../../../../state/wallets/walletsStore';
@@ -52,9 +52,9 @@ export type ViewableItemsChangedCallback = ({
   viewableItemsAdded,
   viewableItemsRemoved,
 }: {
-  viewableItems: CellTypes[];
-  viewableItemsAdded: CellTypes[];
-  viewableItemsRemoved: CellTypes[];
+  viewableItems: BaseCellType[];
+  viewableItemsAdded: BaseCellType[];
+  viewableItemsRemoved: BaseCellType[];
 }) => void;
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
@@ -79,7 +79,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const y = useRecyclerAssetListPosition()!;
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const viewableIndicesRef = useRef<number[]>([]);
-  const previousData = usePrevious(briefSectionsData);
+  const baseCellItems = useMemo(() => briefSectionsData.map(item => ({ uid: item.uid, type: item.type })), [briefSectionsData]);
+  const previousBaseCellItems = usePrevious(baseCellItems);
 
   const layoutProvider = useMemo(
     () =>
@@ -144,8 +145,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const handleViewableIndicesChanged = useCallback(
     (viewableIndices: number[], viewableIndicesAdded: number[], viewableIndicesRemoved: number[]) => {
-      viewableIndicesRef.current = viewableIndices;
       if (!onViewableItemsChanged) return;
+      viewableIndicesRef.current = viewableIndices;
 
       const viewableItems = viewableIndices.map(index => briefSectionsData[index]);
       const viewableItemsAdded = viewableIndicesAdded.map(index => briefSectionsData[index]);
@@ -158,20 +159,20 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   // If viewable indices remain the same but the data changes, we need to trigger onViewableItemsChanged
   useEffect(() => {
-    if (!onViewableItemsChanged || viewableIndicesRef.current.length === 0 || !previousData) return;
+    if (!onViewableItemsChanged || viewableIndicesRef.current.length === 0 || !previousBaseCellItems) return;
 
     const currentViewableIndices = viewableIndicesRef.current;
 
     const hasDataChanged = currentViewableIndices.some(index => {
-      const prevItem = previousData[index];
-      const currItem = briefSectionsData[index];
+      const prevItem = previousBaseCellItems[index];
+      const currItem = baseCellItems[index];
 
       return !prevItem || !currItem || prevItem.uid !== currItem.uid;
     });
 
     if (hasDataChanged) {
-      const viewableItems = currentViewableIndices.map(index => briefSectionsData[index]);
-      const previousViewableItems = currentViewableIndices.map(index => previousData[index]).filter(Boolean);
+      const viewableItems = currentViewableIndices.map(index => baseCellItems[index]);
+      const previousViewableItems = currentViewableIndices.map(index => previousBaseCellItems[index]).filter(Boolean);
 
       const currentUids = new Set(viewableItems.map(item => item.uid));
       const previousUids = new Set(previousViewableItems.map(item => item.uid));
@@ -181,7 +182,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
       onViewableItemsChanged({ viewableItems, viewableItemsAdded, viewableItemsRemoved });
     }
-  }, [briefSectionsData, onViewableItemsChanged, previousData]);
+  }, [onViewableItemsChanged, previousBaseCellItems, baseCellItems]);
 
   const mergedExtendedState = useMemo<ExtendedState>(() => {
     return {

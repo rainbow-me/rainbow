@@ -90,7 +90,6 @@ export function useLiveTokenValue({
     if (prevTokenId && prevTokenId !== tokenId) {
       setLiveValue(initialValue);
       prevLiveValue.current = initialValue;
-      removeSubscribedToken({ route: routeName, tokenId: prevTokenId });
     }
   }, [initialValue, prevTokenId, tokenId, routeName]);
 
@@ -130,15 +129,21 @@ export function useLiveTokenValue({
 
 type LiveTokenTextProps = LiveTokenValueParams &
   Omit<TextProps, 'children'> & {
-    // TODO: do not like these prop names
     animateTrendChange?: boolean;
-    usePriceChangeColor?: boolean;
-    priceChangeChangeColors?: {
-      positive?: string;
-      negative?: string;
-      neutral?: string;
-    };
-  };
+  } & (
+    | {
+        usePriceChangeColor?: boolean;
+        priceChangeChangeColors?: {
+          positive?: string;
+          negative?: string;
+          neutral?: string;
+        };
+      }
+    | {
+        usePriceChangeColor?: false;
+        priceChangeChangeColors?: undefined;
+      }
+  );
 
 export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function LiveTokenText({
   tokenId,
@@ -190,7 +195,8 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
       textColor.value = withTiming(animateToColor, { duration: 150 }, () => {
         textColor.value = withDelay(50, withTiming(baseColor, { duration: 150 }));
       });
-    }
+    },
+    []
   );
 
   const textStyle = useAnimatedStyle(() => {
@@ -201,7 +207,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <AnimatedText {...textProps} style={[textStyle, textProps.style]}>
+    <AnimatedText {...textProps} style={textProps.style ? [textStyle, textProps.style] : textStyle}>
       {liveValue}
     </AnimatedText>
   );

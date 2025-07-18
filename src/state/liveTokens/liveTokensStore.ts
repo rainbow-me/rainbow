@@ -165,12 +165,16 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
     setData: ({ data, set }) => {
       if (data) {
         set(state => {
-          updateUserAssetsStore(data);
           return {
             ...state,
             tokens: { ...state.tokens, ...data },
           };
         });
+      }
+    },
+    onFetched: ({ data }) => {
+      if (data) {
+        updateUserAssetsStore(data);
       }
     },
     paramChangeThrottle: 250,
@@ -243,14 +247,14 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
   })
 );
 
+export const { addSubscribedTokens, removeSubscribedTokens } = useLiveTokensStore.getState();
+
 export function addSubscribedToken({ route, tokenId }: { route: string; tokenId: string }) {
-  useLiveTokensStore.getState().addSubscribedTokens({ route, tokenIds: [tokenId] });
+  addSubscribedTokens({ route, tokenIds: [tokenId] });
 }
 export function removeSubscribedToken({ route, tokenId }: { route: string; tokenId: string }) {
-  useLiveTokensStore.getState().removeSubscribedTokens({ route, tokenIds: [tokenId] });
+  removeSubscribedTokens({ route, tokenIds: [tokenId] });
 }
-
-export const { addSubscribedTokens, removeSubscribedTokens } = useLiveTokensStore.getState();
 
 export function getBalance({
   token,
@@ -260,7 +264,7 @@ export function getBalance({
   token: TokenData;
   balanceAmount: string;
   nativeCurrency: SupportedCurrencyKey;
-}) {
+}): string {
   const balance = multiply(token.price, balanceAmount);
   if (greaterThan(balance, token.reliability.metadata.liquidityCap)) {
     return convertAmountToNativeDisplayWorklet(token.reliability.metadata.liquidityCap, nativeCurrency);

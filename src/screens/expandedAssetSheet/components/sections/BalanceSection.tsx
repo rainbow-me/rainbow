@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import * as i18n from '@/languages';
 import { Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
@@ -81,10 +81,13 @@ export function BalanceSection() {
     return liveTokenBalance;
   });
 
-  if (!isOwnedAsset || !asset?.balance || !asset?.native?.balance) return null;
-
   // TODO: must do this for the `AnimatedNumber` masking to work properly. However, this means this card will be very slightly a different color than the other cards. It's generally imperceptible, but we should use this background color for all the cards
-  const backgroundColor = getSolidColorEquivalent({ foreground: accentColors.color, background: accentColors.background, opacity: 0.06 });
+  const backgroundColor = useMemo(
+    () => getSolidColorEquivalent({ foreground: accentColors.color, background: accentColors.background, opacity: 0.06 }),
+    [accentColors]
+  );
+
+  if (!isOwnedAsset || !asset?.balance || !asset?.native?.balance) return null;
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>

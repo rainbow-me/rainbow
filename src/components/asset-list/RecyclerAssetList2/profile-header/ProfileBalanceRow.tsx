@@ -8,14 +8,13 @@ export const ProfileBalanceRowHeight = 24;
 const placeholderHeight = ProfileBalanceRowHeight;
 const placeholderWidth = 200;
 
-export function ProfileBalanceRow() {
+export const ProfileBalanceRow = React.memo(function ProfileBalanceRow() {
   const backgroundColor = useBackgroundColor('surfacePrimary');
-  const { balances, isLoading } = useLiveWalletBalance();
-  const totalBalance = balances.totalBalance.display;
+  const balance = useLiveWalletBalance();
 
   return (
     <>
-      {isLoading ? (
+      {balance === null ? (
         <Box height={{ custom: placeholderHeight }} width={{ custom: placeholderWidth }}>
           <Skeleton>
             <FakeText height={placeholderHeight} width={placeholderWidth} />
@@ -24,15 +23,15 @@ export function ProfileBalanceRow() {
       ) : (
         <Box paddingHorizontal={'36px'} width="full" style={{ alignItems: 'center' }} height={ProfileBalanceRowHeight}>
           <AnimatedNumber
-            value={totalBalance}
+            value={balance}
             color="label"
             align="center"
             easingMaskColor={backgroundColor}
-            size={totalBalance?.length > 14 ? '26pt' : '34pt'}
+            size={balance.length > 14 ? '26pt' : '34pt'}
             weight="heavy"
           />
         </Box>
       )}
     </>
   );
-}
+});

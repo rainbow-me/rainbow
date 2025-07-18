@@ -1,5 +1,5 @@
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 
 let addysHttp: RainbowFetchClient | undefined;

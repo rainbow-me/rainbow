@@ -65,6 +65,10 @@ function formatPercentChange(percentChange: string | undefined) {
   return formatPercentageString(toSignificantDigits({ value: percentChange, minDecimalPlaces: 2, minRepresentable: 0.01 }));
 }
 
+function tokenPriceChangeSelector(token: TokenData) {
+  return formatPercentChange(token.change.change24hPct);
+}
+
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
   nativeCurrency: NativeCurrencyKey;
@@ -80,7 +84,7 @@ const MemoizedBalanceCoinRow = React.memo(
     const nativeBalanceDisplay = item?.balance?.display ?? '';
     const chainId = item?.chainId || ChainId.mainnet;
     const tokenBalanceAmount = item?.balance?.amount ?? '0';
-    const percentChange = item?.native?.change?.replace('%', '') || undefined;
+    const percentChange = item?.native?.change?.replace('%', '');
     const priceUpdatedAt = item?.price?.changed_at ?? 0;
 
     const handlePress = useCallback(() => {
@@ -98,10 +102,6 @@ const MemoizedBalanceCoinRow = React.memo(
       },
       [tokenBalanceAmount, nativeCurrency]
     );
-
-    const tokenPriceChangeSelector = useCallback((token: TokenData) => {
-      return formatPercentChange(token.change.change24hPct);
-    }, []);
 
     return (
       <View style={sx.flex} testID={'fast-coin-info'}>
