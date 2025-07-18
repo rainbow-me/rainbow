@@ -189,7 +189,7 @@ const ChartHeader = memo(function ChartHeader({
           accentColor={accentColor}
           backgroundColor={backgroundColor}
           chartGestureUnixTimestamp={chartGestureUnixTimestamp}
-          isChartGestureActive={isLineChartGestureActive}
+          isLineChartGestureActive={isLineChartGestureActive}
           price={price}
           priceRelativeChange={priceRelativeChange}
         />

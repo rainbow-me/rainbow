@@ -12,10 +12,10 @@ const translations = {
 type ChartPriceLabelProps = {
   price: DerivedValue<string | number | undefined>;
   backgroundColor: string;
-  isChartGestureActive: SharedValue<boolean>;
+  isLineChartGestureActive: SharedValue<boolean>;
 };
 
-export function ChartPriceLabel({ price, backgroundColor, isChartGestureActive }: ChartPriceLabelProps) {
+export function ChartPriceLabel({ price, backgroundColor, isLineChartGestureActive }: ChartPriceLabelProps) {
   const { nativeCurrency } = useAccountSettings();
 
   const formattedPrice = useDerivedValue(() => {
@@ -34,7 +34,7 @@ export function ChartPriceLabel({ price, backgroundColor, isChartGestureActive }
       align="left"
       color="label"
       easingMaskColor={backgroundColor}
-      disabled={isChartGestureActive}
+      disabled={isLineChartGestureActive}
     />
   );
 }

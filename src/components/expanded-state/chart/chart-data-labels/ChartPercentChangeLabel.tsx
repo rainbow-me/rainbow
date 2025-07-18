@@ -20,13 +20,13 @@ const UP_ARROW = IS_ANDROID ? '' : '↑';
 
 type ChartPercentChangeLabelProps = {
   backgroundColor: string;
-  isChartGestureActive: SharedValue<boolean>;
+  isLineChartGestureActive: SharedValue<boolean>;
   percentageChange: DerivedValue<string | number | undefined>;
 };
 
 export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({
   backgroundColor,
-  isChartGestureActive,
+  isLineChartGestureActive,
   percentageChange,
 }: ChartPercentChangeLabelProps) {
   const { colors } = useTheme();
@@ -96,7 +96,7 @@ export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({
         size="20pt"
         weight="heavy"
         tabularNumbers
-        disabled={isChartGestureActive}
+        disabled={isLineChartGestureActive}
         color={'label'}
       />
     </Box>

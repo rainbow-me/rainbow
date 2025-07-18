@@ -17,7 +17,7 @@ type ChartExpandedStateHeaderProps = {
   accentColor: string;
   backgroundColor: string;
   chartGestureUnixTimestamp: SharedValue<number>;
-  isChartGestureActive: SharedValue<boolean>;
+  isLineChartGestureActive: SharedValue<boolean>;
   price: DerivedValue<string | number | undefined>;
   priceRelativeChange: DerivedValue<string | number | undefined>;
 };
@@ -26,25 +26,25 @@ export const ChartExpandedStateHeader = memo(function ChartExpandedStateHeader({
   accentColor,
   backgroundColor,
   chartGestureUnixTimestamp,
-  isChartGestureActive,
+  isLineChartGestureActive,
   price,
   priceRelativeChange,
 }: ChartExpandedStateHeaderProps) {
   return (
     <View testID="expanded-state-header">
       <Stack space="20px">
-        <ChartPriceLabel price={price} backgroundColor={backgroundColor} isChartGestureActive={isChartGestureActive} />
+        <ChartPriceLabel price={price} backgroundColor={backgroundColor} isLineChartGestureActive={isLineChartGestureActive} />
         <Box gap={8} flexDirection="row" alignItems="center">
           <ChartPercentChangeLabel
             backgroundColor={backgroundColor}
-            isChartGestureActive={isChartGestureActive}
+            isLineChartGestureActive={isLineChartGestureActive}
             percentageChange={priceRelativeChange}
           />
           <FormattedTimeLabel
             accentColor={accentColor}
             backgroundColor={backgroundColor}
             chartGestureUnixTimestamp={chartGestureUnixTimestamp}
-            isChartGestureActive={isChartGestureActive}
+            isLineChartGestureActive={isLineChartGestureActive}
           />
         </Box>
       </Stack>
@@ -56,19 +56,19 @@ const FormattedTimeLabel = ({
   accentColor,
   backgroundColor,
   chartGestureUnixTimestamp,
-  isChartGestureActive,
+  isLineChartGestureActive,
 }: {
   accentColor: string;
   backgroundColor: string;
   chartGestureUnixTimestamp: SharedValue<number>;
-  isChartGestureActive: SharedValue<boolean>;
+  isLineChartGestureActive: SharedValue<boolean>;
 }) => {
   const chartType = useChartType();
 
   return chartType === ChartType.Candlestick ? (
     <CandlestickTimeLabel accentColor={accentColor} backgroundColor={backgroundColor} />
   ) : (
-    <LineChartTimeLabel chartGestureUnixTimestamp={chartGestureUnixTimestamp} isChartGestureActive={isChartGestureActive} />
+    <LineChartTimeLabel chartGestureUnixTimestamp={chartGestureUnixTimestamp} isLineChartGestureActive={isLineChartGestureActive} />
   );
 };
 
@@ -102,14 +102,14 @@ const CandlestickTimeLabel = ({ accentColor, backgroundColor }: { accentColor: s
 
 const LineChartTimeLabel = ({
   chartGestureUnixTimestamp,
-  isChartGestureActive,
+  isLineChartGestureActive,
 }: {
   chartGestureUnixTimestamp: SharedValue<number>;
-  isChartGestureActive: SharedValue<boolean>;
+  isLineChartGestureActive: SharedValue<boolean>;
 }) => {
   const selectedTimespanLabel = useStoreSharedValue(useChartsStore, state => formatLineChartTimespan(state.lineChartTimePeriod));
   const lineChartLabel = useDerivedValue(() =>
-    isChartGestureActive.value ? formatTimestamp(chartGestureUnixTimestamp.value) : selectedTimespanLabel.value
+    isLineChartGestureActive.value ? formatTimestamp(chartGestureUnixTimestamp.value) : selectedTimespanLabel.value
   );
 
   return (
