@@ -21,9 +21,9 @@ import { useCleanup } from '@/hooks/useCleanup';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { LineChart } from './LineChart';
-import { TokenData } from '@/state/liveTokens/liveTokensStore';
 
 const BASE_CHART_HEIGHT = 292;
 const LINE_CHART_HEIGHT = BASE_CHART_HEIGHT - 6;
@@ -180,18 +180,25 @@ const ChartHeader = memo(function ChartHeader({
     };
   });
 
-  return (
-    <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={chartHeaderStyle}>
-      <ChartExpandedStateHeader
-        accentColor={accentColor}
-        backgroundColor={backgroundColor}
-        chartGestureUnixTimestamp={chartGestureUnixTimestamp}
-        isChartGestureActive={isChartGestureActive}
-        price={price}
-        priceRelativeChange={priceRelativeChange}
-      />
-    </Box>
+  const isLineChartGestureActive = useDerivedValue(() => chartType === ChartType.Line && isChartGestureActive.value);
+
+  const headerComponent = useMemo(
+    () => (
+      <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={chartHeaderStyle}>
+        <ChartExpandedStateHeader
+          accentColor={accentColor}
+          backgroundColor={backgroundColor}
+          chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+          isChartGestureActive={isLineChartGestureActive}
+          price={price}
+          priceRelativeChange={priceRelativeChange}
+        />
+      </Box>
+    ),
+    [accentColor, backgroundColor, chartGestureUnixTimestamp, chartHeaderStyle, isLineChartGestureActive, price, priceRelativeChange]
   );
+
+  return headerComponent;
 });
 
 function useCandlestickConfig(accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'>): PartialCandlestickConfig {
