@@ -764,4 +764,37 @@ query kingOfTheHill($currency: String) {
       }
     }
   }
+  kingOfTheHillLeaderBoard(currency: $currency) {
+    window {
+      start
+      end
+      durationSeconds
+      interval
+      secondsRemaining
+      isActive
+    }
+    rankings {
+      rank
+      windowTradingVolume
+      token {
+        chainId
+        address
+        decimals
+        name
+        symbol
+        iconUrl
+        colors {
+          primary
+          fallback
+          shadow
+        }
+        marketCap
+        volume1d
+        price {
+          value
+          relativeChange24h
+        }
+      }
+    }
+  }
 }
