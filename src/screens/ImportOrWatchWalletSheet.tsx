@@ -12,6 +12,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { LoadingOverlay } from '@/components/modal';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
+import { Keyboard } from 'react-native';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
@@ -32,10 +33,15 @@ export const ImportOrWatchWalletSheet = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         inputRef.current?.focus();
         // lower value than this seems to cause a bug where it de-focuses immediately
       }, 500);
+
+      return () => {
+        clearTimeout(timer);
+        Keyboard.dismiss();
+      };
     }, [inputRef])
   );
 
