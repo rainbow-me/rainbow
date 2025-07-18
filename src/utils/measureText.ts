@@ -1,5 +1,7 @@
 import TextSize from 'react-native-text-size';
 import { fonts } from '../styles';
+import * as MeasureText from '@domir/react-native-measure-text';
+import { PixelRatio } from 'react-native';
 
 const defaultTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -27,4 +29,22 @@ export default async function measureText(text: any, textStyles = {}) {
     .catch(() => {
       return DefaultMeasurementsState;
     });
+}
+
+export function measureTextSync(
+  text: string,
+  // not all style props are supported by the react-native-measure-text library
+  textStyles: { fontSize?: number; fontFamily?: string; fontWeight?: string; letterSpacing?: number; allowFontScaling?: boolean } = {}
+) {
+  if (textStyles.allowFontScaling) {
+    const fontScale = PixelRatio.getFontScale();
+
+    const style = {
+      ...textStyles,
+      fontSize: textStyles.fontSize ? Math.round(textStyles.fontSize * fontScale) : textStyles.fontSize,
+    };
+    return PixelRatio.roundToNearestPixel(MeasureText.measureWidth(text, style));
+  }
+
+  return PixelRatio.roundToNearestPixel(MeasureText.measureWidth(text, textStyles));
 }

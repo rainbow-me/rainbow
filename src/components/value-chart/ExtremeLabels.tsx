@@ -4,7 +4,7 @@ import { useChartData } from '@/react-native-animated-charts/src';
 import { Text } from '@/design-system';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
-import { currencyToCompactNotation } from '@/helpers/strings';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 export const LABEL_VERTICAL_EXTRA_OFFSET = 12;
@@ -89,7 +89,7 @@ export const ExtremeLabels = memo(function ExtremeLabels({ color, isCard }: { co
         size={isCard ? '13pt' : undefined}
         style={{ bottom: -13 - LABEL_VERTICAL_EXTRA_OFFSET }}
       >
-        {currencyToCompactNotation({
+        {formatAssetPrice({
           value: lowestPoint.y,
           currency: nativeCurrency,
         })}
@@ -100,7 +100,7 @@ export const ExtremeLabels = memo(function ExtremeLabels({ color, isCard }: { co
         size={isCard ? '13pt' : undefined}
         style={{ top: -13 - LABEL_VERTICAL_EXTRA_OFFSET }}
       >
-        {currencyToCompactNotation({
+        {formatAssetPrice({
           value: highestPoint.y,
           currency: nativeCurrency,
         })}

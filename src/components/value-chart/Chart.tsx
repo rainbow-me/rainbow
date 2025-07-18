@@ -1,18 +1,27 @@
 import React, { memo, useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
-import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  DerivedValue,
+  SharedValue,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { Box, useColorMode } from '@/design-system';
 import { CandlestickChart, PartialCandlestickConfig } from '@/features/charts/candlestick/components/CandlestickChart';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { TimeframeSelector } from '@/features/charts/components/TimeframeSelector';
 import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
-import { chartsActions, useChartType } from '@/features/charts/stores/chartsStore';
-import { ChartType } from '@/features/charts/types';
+import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
+import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
 import { useCleanup } from '@/hooks/useCleanup';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { LineChart } from './LineChart';
 
@@ -29,14 +38,64 @@ type ChartProps = {
 };
 
 export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
-  const priceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
-  const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
-  const chartGestureUnixTimestamp = useSharedValue<number>(0);
-  const isChartGestureActive = useSharedValue(false);
   const { width: screenWidth } = useWindowDimensions();
-
+  const candlestickConfig = useCandlestickConfig(accentColors);
   const chartType = useChartType();
-  const candleConfig = useCandlestickConfig(accentColors);
+  const enableCandlestickListeners = chartType === ChartType.Candlestick;
+
+  const chartGestureUnixTimestamp = useSharedValue<number>(0);
+  const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
+  const chartGesturePriceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
+  const isChartGestureActive = useSharedValue(false);
+  const lineChartTimePeriod = useStoreSharedValue(useChartsStore, state => state.lineChartTimePeriod);
+
+  const [currentCandlestickPrice, priceListener] = useStoreSharedValue(useCandlestickStore, state => state.getPrice(), {
+    equalityFn: arePricesEqual,
+    enabled: enableCandlestickListeners,
+    fireImmediately: true,
+    returnListenHandle: true,
+  });
+
+  useListenerRouteGuard(priceListener, { enabled: enableCandlestickListeners });
+
+  const liveTokenPercentageChange = useLiveTokenSharedValue({
+    tokenId: asset.uniqueId,
+    initialValue: asset.price.relativeChange24h?.toString() ?? '0',
+    selector: liveTokenPercentageChangeSelector,
+  });
+
+  const liveTokenPrice = useLiveTokenSharedValue({
+    tokenId: asset.uniqueId,
+    initialValue: asset.price.value?.toString() ?? '0',
+    selector: state => state.price,
+  });
+
+  const price = useDerivedValue(() => {
+    if (chartType === ChartType.Candlestick) {
+      return currentCandlestickPrice.value?.price ?? liveTokenPrice.value ?? asset.price.value ?? undefined;
+    }
+
+    if (isChartGestureActive.value) return chartGesturePrice.value;
+
+    return liveTokenPrice.value ?? asset.price.value ?? undefined;
+  });
+
+  const priceRelativeChange = useDerivedValue(() => {
+    if (chartType === ChartType.Candlestick) {
+      return currentCandlestickPrice.value?.percentChange ?? liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
+    }
+
+    if (isChartGestureActive.value) return chartGesturePriceRelativeChange.value;
+
+    switch (lineChartTimePeriod.value) {
+      case LineChartTimePeriod.M1:
+      case LineChartTimePeriod.W1:
+      case LineChartTimePeriod.Y1:
+        return chartGesturePriceRelativeChange.value;
+      default:
+        return liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
+    }
+  });
 
   useCleanup(() => {
     chartsActions.resetChartsState();
@@ -47,11 +106,11 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
       <ChartHeader
         accentColor={accentColors.color}
         backgroundColor={backgroundColor}
-        chartGesturePrice={chartGesturePrice}
         chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+        chartType={chartType}
         isChartGestureActive={isChartGestureActive}
-        priceValue={asset.price.value}
-        relativeChange24={asset.price.relativeChange24h}
+        price={price}
+        priceRelativeChange={priceRelativeChange}
       />
 
       <Box gap={20}>
@@ -70,7 +129,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
               height={LINE_CHART_HEIGHT - CHART_TOP_PADDING - CHART_BOTTOM_PADDING}
               isChartGestureActive={isChartGestureActive}
               price={chartGesturePrice}
-              priceRelativeChange={priceRelativeChange}
+              priceRelativeChange={chartGesturePriceRelativeChange}
               strokeColor={accentColors.color}
               width={screenWidth}
             />
@@ -83,7 +142,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
             chainId={asset.chainId}
             chartHeight={BASE_CHART_HEIGHT}
             chartWidth={screenWidth}
-            config={candleConfig}
+            config={candlestickConfig}
             isChartGestureActive={isChartGestureActive}
           />
         )}
@@ -97,41 +156,20 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
 const ChartHeader = memo(function ChartHeader({
   accentColor,
   backgroundColor,
-  chartGesturePrice,
   chartGestureUnixTimestamp,
+  chartType,
   isChartGestureActive,
-  priceValue,
-  relativeChange24,
+  price,
+  priceRelativeChange,
 }: {
   accentColor: string;
   backgroundColor: string;
-  chartGesturePrice: SharedValue<number | undefined>;
   chartGestureUnixTimestamp: SharedValue<number>;
+  chartType: ChartType;
   isChartGestureActive: SharedValue<boolean>;
-  priceValue: number | null | undefined;
-  relativeChange24: number | null | undefined;
+  price: DerivedValue<string | number | undefined>;
+  priceRelativeChange: DerivedValue<string | number | undefined>;
 }) {
-  const chartType = useChartType();
-  const enableCandlestickListeners = chartType === ChartType.Candlestick;
-
-  const [currentCandlestickPrice, priceListener] = useStoreSharedValue(useCandlestickStore, state => state.getPrice(), {
-    equalityFn: arePricesEqual,
-    enabled: enableCandlestickListeners,
-    fireImmediately: true,
-    returnListenHandle: true,
-  });
-
-  useListenerRouteGuard(priceListener, {
-    enabled: enableCandlestickListeners,
-  });
-
-  const price = useDerivedValue(() => {
-    const gesturePrice = chartType === ChartType.Line ? chartGesturePrice.value : undefined;
-    return gesturePrice ?? currentCandlestickPrice.value?.price ?? priceValue ?? undefined;
-  });
-
-  const relativeChange = useDerivedValue(() => currentCandlestickPrice.value?.percentChange ?? relativeChange24 ?? undefined);
-
   const chartHeaderStyle = useAnimatedStyle(() => {
     const shouldDisplay = !_WORKLET || !isChartGestureActive.value || chartType === ChartType.Line;
     const timingConfig = TIMING_CONFIGS[shouldDisplay ? 'buttonPressConfig' : 'buttonPressConfig'];
@@ -142,18 +180,25 @@ const ChartHeader = memo(function ChartHeader({
     };
   });
 
-  return (
-    <Box as={Animated.View} style={chartHeaderStyle} paddingHorizontal="24px">
-      <ChartExpandedStateHeader
-        accentColor={accentColor}
-        backgroundColor={backgroundColor}
-        chartGestureUnixTimestamp={chartGestureUnixTimestamp}
-        isChartGestureActive={isChartGestureActive}
-        priceRelativeChange={relativeChange}
-        price={price}
-      />
-    </Box>
+  const isLineChartGestureActive = useDerivedValue(() => chartType === ChartType.Line && isChartGestureActive.value);
+
+  const headerComponent = useMemo(
+    () => (
+      <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={chartHeaderStyle}>
+        <ChartExpandedStateHeader
+          accentColor={accentColor}
+          backgroundColor={backgroundColor}
+          chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+          isLineChartGestureActive={isLineChartGestureActive}
+          price={price}
+          priceRelativeChange={priceRelativeChange}
+        />
+      </Box>
+    ),
+    [accentColor, backgroundColor, chartGestureUnixTimestamp, chartHeaderStyle, isLineChartGestureActive, price, priceRelativeChange]
   );
+
+  return headerComponent;
 });
 
 function useCandlestickConfig(accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'>): PartialCandlestickConfig {
@@ -166,4 +211,14 @@ function useCandlestickConfig(accentColors: Pick<AssetAccentColors, 'color' | 'o
     }),
     [accentColors.color, accentColors.opacity12, accentColors.opacity24, isDarkMode]
   );
+}
+
+function liveTokenPercentageChangeSelector({ change }: TokenData): string {
+  const selectedTimespan = useChartsStore.getState().lineChartTimePeriod;
+  if (selectedTimespan === LineChartTimePeriod.D1) {
+    return change.change24hPct;
+  } else if (selectedTimespan === LineChartTimePeriod.H1) {
+    return change.change1hPct;
+  }
+  return '0';
 }

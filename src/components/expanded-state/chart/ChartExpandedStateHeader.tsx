@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
-import { SharedValue, useDerivedValue } from 'react-native-reanimated';
+import { DerivedValue, SharedValue, useDerivedValue } from 'react-native-reanimated';
 import { ChartPriceLabel } from '@/components/expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { AnimatedText, Bleed, Box, Stack, globalColors, useColorMode } from '@/design-system';
 import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '@/features/charts/constants';
@@ -17,34 +17,36 @@ type ChartExpandedStateHeaderProps = {
   accentColor: string;
   backgroundColor: string;
   chartGestureUnixTimestamp: SharedValue<number>;
-  isChartGestureActive: SharedValue<boolean>;
-  price: SharedValue<number | undefined>;
-  priceRelativeChange: SharedValue<number | undefined>;
+  isLineChartGestureActive: SharedValue<boolean>;
+  price: DerivedValue<string | number | undefined>;
+  priceRelativeChange: DerivedValue<string | number | undefined>;
 };
 
 export const ChartExpandedStateHeader = memo(function ChartExpandedStateHeader({
   accentColor,
   backgroundColor,
   chartGestureUnixTimestamp,
-  isChartGestureActive,
+  isLineChartGestureActive,
   price,
   priceRelativeChange,
 }: ChartExpandedStateHeaderProps) {
   return (
     <View testID="expanded-state-header">
       <Stack space="20px">
-        <ChartPriceLabel price={price} />
-        <Bleed top="6px">
-          <Box gap={8} flexDirection="row" alignItems="center">
-            <ChartPercentChangeLabel percentageChange={priceRelativeChange} />
-            <FormattedTimeLabel
-              accentColor={accentColor}
-              backgroundColor={backgroundColor}
-              chartGestureUnixTimestamp={chartGestureUnixTimestamp}
-              isChartGestureActive={isChartGestureActive}
-            />
-          </Box>
-        </Bleed>
+        <ChartPriceLabel price={price} backgroundColor={backgroundColor} isLineChartGestureActive={isLineChartGestureActive} />
+        <Box gap={8} flexDirection="row" alignItems="center">
+          <ChartPercentChangeLabel
+            backgroundColor={backgroundColor}
+            isLineChartGestureActive={isLineChartGestureActive}
+            percentageChange={priceRelativeChange}
+          />
+          <FormattedTimeLabel
+            accentColor={accentColor}
+            backgroundColor={backgroundColor}
+            chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+            isLineChartGestureActive={isLineChartGestureActive}
+          />
+        </Box>
       </Stack>
     </View>
   );
@@ -54,19 +56,19 @@ const FormattedTimeLabel = ({
   accentColor,
   backgroundColor,
   chartGestureUnixTimestamp,
-  isChartGestureActive,
+  isLineChartGestureActive,
 }: {
   accentColor: string;
   backgroundColor: string;
   chartGestureUnixTimestamp: SharedValue<number>;
-  isChartGestureActive: SharedValue<boolean>;
+  isLineChartGestureActive: SharedValue<boolean>;
 }) => {
   const chartType = useChartType();
 
   return chartType === ChartType.Candlestick ? (
     <CandlestickTimeLabel accentColor={accentColor} backgroundColor={backgroundColor} />
   ) : (
-    <LineChartTimeLabel chartGestureUnixTimestamp={chartGestureUnixTimestamp} isChartGestureActive={isChartGestureActive} />
+    <LineChartTimeLabel chartGestureUnixTimestamp={chartGestureUnixTimestamp} isLineChartGestureActive={isLineChartGestureActive} />
   );
 };
 
@@ -79,7 +81,7 @@ const CandlestickTimeLabel = ({ accentColor, backgroundColor }: { accentColor: s
     : undefined;
 
   return (
-    <Bleed bottom={{ custom: 6 }} left={{ custom: 2 }} top={{ custom: 5 }}>
+    <Bleed left="2px" vertical="6px">
       <Box
         alignItems="center"
         backgroundColor={background}
@@ -100,14 +102,14 @@ const CandlestickTimeLabel = ({ accentColor, backgroundColor }: { accentColor: s
 
 const LineChartTimeLabel = ({
   chartGestureUnixTimestamp,
-  isChartGestureActive,
+  isLineChartGestureActive,
 }: {
   chartGestureUnixTimestamp: SharedValue<number>;
-  isChartGestureActive: SharedValue<boolean>;
+  isLineChartGestureActive: SharedValue<boolean>;
 }) => {
   const selectedTimespanLabel = useStoreSharedValue(useChartsStore, state => formatLineChartTimespan(state.lineChartTimePeriod));
   const lineChartLabel = useDerivedValue(() =>
-    isChartGestureActive.value ? formatTimestamp(chartGestureUnixTimestamp.value) : selectedTimespanLabel.value
+    isLineChartGestureActive.value ? formatTimestamp(chartGestureUnixTimestamp.value) : selectedTimespanLabel.value
   );
 
   return (
