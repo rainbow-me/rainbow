@@ -1,7 +1,7 @@
 import qs from 'qs';
-import { ChartsState, useChartsStore } from '@/components/charts/state/chartsStore';
 import { NativeCurrencyKey } from '@/entities';
 import { IS_DEV } from '@/env';
+import { ChartsState, useChartsStore } from '@/features/charts/stores/chartsStore';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';

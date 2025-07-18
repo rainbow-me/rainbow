@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
 import { View } from 'react-native';
 import { SharedValue, useDerivedValue } from 'react-native-reanimated';
-import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '@/components/charts/constants';
-import { useChartsStore, useChartType } from '@/components/charts/state/chartsStore';
-import { ChartType, LineChartTimePeriod } from '@/components/charts/types';
 import { ChartPriceLabel } from '@/components/expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { AnimatedText, Bleed, Box, Stack, globalColors, useColorMode } from '@/design-system';
+import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '@/features/charts/constants';
+import { useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
+import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
 import * as i18n from '@/languages';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { opacity } from '@/__swaps__/utils/swaps';

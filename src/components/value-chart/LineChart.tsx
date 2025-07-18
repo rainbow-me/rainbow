@@ -8,9 +8,9 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { SharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import { NoChartData } from '@/components/charts/components/NoChartData';
-import { useChartsStore } from '@/components/charts/state/chartsStore';
-import { toLineChartTimespan } from '@/components/charts/utils';
+import { NoChartData } from '@/features/charts/components/NoChartData';
+import { useChartsStore } from '@/features/charts/stores/chartsStore';
+import { toLineChartTimespan } from '@/features/charts/utils';
 
 const CHART_DOT_SIZE = 10;
 

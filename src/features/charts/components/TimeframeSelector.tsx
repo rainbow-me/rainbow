@@ -20,7 +20,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../candlestick/constants';
 import { CANDLE_RESOLUTIONS, LINE_CHART_TIME_PERIODS } from '../constants';
-import { chartsActions, useChartsStore, useChartType } from '../state/chartsStore';
+import { chartsActions, useChartsStore, useChartType } from '../stores/chartsStore';
 import { CandleResolution, ChartType, LineChartTimePeriod } from '../types';
 
 // ============ Constants ====================================================== //

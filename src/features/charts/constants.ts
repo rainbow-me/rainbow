@@ -1,4 +1,4 @@
-import { CandleResolution, LineChartTimePeriod, LineChartTimespan } from '@/components/charts/types';
+import { CandleResolution, LineChartTimePeriod, LineChartTimespan } from '@/features/charts/types';
 
 export const CANDLE_RESOLUTIONS: Record<CandleResolution, { index: number; label: string; resolution: CandleResolution }> = {
   [CandleResolution.M1]: { index: 0, label: '1M', resolution: CandleResolution.M1 },
