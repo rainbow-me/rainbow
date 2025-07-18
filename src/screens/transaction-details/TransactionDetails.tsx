@@ -16,7 +16,6 @@ import { useDimensions } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { setIsShowingTransactionDetails } from '@/components/rainbow-toast/useRainbowToasts';
 
 export const TransactionDetails = () => {
   const {
@@ -29,13 +28,6 @@ export const TransactionDetails = () => {
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
   const { height: deviceHeight } = useDimensions();
   const { bottom } = useSafeAreaInsets();
-
-  useEffect(() => {
-    setIsShowingTransactionDetails(true);
-    return () => {
-      setIsShowingTransactionDetails(false);
-    };
-  }, []);
 
   // Dynamic sheet height based on content height
   useEffect(() => setParams({ longFormHeight: sheetHeight }), [setParams, sheetHeight]);
