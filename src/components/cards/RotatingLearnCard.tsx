@@ -28,8 +28,8 @@ const learnCards: LearnCardDetails[] = [
   collectNFTsCard,
 ];
 
-export const RotatingLearnCard = () => {
+export const RotatingLearnCard = React.memo(function RotatingLearnCard() {
   const [index, incrementIndex] = useReducer(i => (i === learnCards.length - 1 ? 0 : i + 1), 0);
 
   return <LearnCard type="stretch" rotate={() => delay(300).then(incrementIndex)} cardDetails={learnCards[index]} />;
-};
+});

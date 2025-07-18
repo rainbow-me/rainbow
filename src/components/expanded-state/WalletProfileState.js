@@ -11,7 +11,7 @@ import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
 import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { isValidHex } from '@/handlers/web3';
-import { useWebData } from '@/hooks';
+import { getWebProfile } from '@/helpers/webData';
 
 export default function WalletProfileState({
   actionType,
@@ -25,7 +25,6 @@ export default function WalletProfileState({
 }) {
   const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
-  const { getWebProfile } = useWebData();
 
   const {
     color: nameColor,
@@ -84,7 +83,7 @@ export default function WalletProfileState({
       setWebProfile(profile ?? {});
     };
     getProfile();
-  }, [address, getWebProfile]);
+  }, [address]);
 
   return (
     <ProfileModal

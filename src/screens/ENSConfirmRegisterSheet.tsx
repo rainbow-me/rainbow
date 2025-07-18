@@ -16,7 +16,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
-import { ChainId } from '@/state/backendNetworks/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { colors } from '@/styles';
@@ -41,6 +41,10 @@ import {
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { SheetActionButtonRow, SlackSheet } from '../components/sheet';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { time } from '@/utils/time';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -151,6 +155,11 @@ export default function ENSConfirmRegisterSheet() {
       setTimeout(() => {
         navigate(Routes.PROFILE_SCREEN);
       }, 100);
+
+      // revalidate nft data for ens collection
+      const ensCollectionId = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
+      useNftsStore.getState().fetchNftCollection(ensCollectionId, true);
+      useNftsStore.getState().fetch({ limit: PAGE_SIZE }, { staleTime: time.seconds(5) });
 
       setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {

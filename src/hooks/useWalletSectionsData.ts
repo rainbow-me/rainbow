@@ -2,9 +2,7 @@ import { useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
-import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
-import useShowcaseTokens from './useShowcaseTokens';
 import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers/buildWalletSections';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -13,13 +11,14 @@ import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
-import { useNftSort } from './useNFTsSortBy';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { IS_TEST } from '@/env';
-import { useLegacyNFTs } from '@/resources/nfts';
-import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '../state/wallets/walletsStore';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
+import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
+import { isDataComplete } from '@/state/nfts/utils';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -35,7 +34,6 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { nftSort, nftSortDirection } = useNftSort();
   const { language, network, nativeCurrency } = useAccountSettings();
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
@@ -80,24 +78,20 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
-  const {
-    data: { nfts: uniqueTokens },
-    isLoading: isFetchingNfts,
-  } = useLegacyNFTs({
-    address: accountAddress,
-    sortBy: nftSort,
-    sortDirection: nftSortDirection,
-    config: {
-      enabled: !!accountAddress,
-    },
-  });
+  const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
+  const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
+
+  const collections = useNftsStore(state => state.getNftCollections());
+  const hasMoreCollections = useNftsStore(state => state.hasNextNftCollectionPage());
+  const isFetchingNfts = useNftsStore(state => state.status) === 'loading';
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const accountWithBalance = useMemo(() => {
     if (!selectedWallet) return null;
+    const accountAddressLowercase = accountAddress.toLowerCase();
     return walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
-      account => account.address.toLowerCase() === accountAddress.toLowerCase()
+      address => address.address.toLowerCase() === accountAddressLowercase
     );
   }, [walletsWithBalancesAndNames, selectedWallet, accountAddress]);
 
@@ -132,17 +126,19 @@ export default function useWalletSectionsData({
       isReadOnlyWallet,
       listType: type,
       showcaseTokens,
-      uniqueTokens,
+      collections,
       isFetchingNfts,
       experimentalConfig,
       positions,
       claimables,
-      nftSort,
       remoteCards,
+      hasMoreCollections,
+      isShowcaseDataMigrated,
+      isHiddenDataMigrated,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(sections);
-    const hasNFTs = uniqueTokens.length > 0;
+    const hasNFTs = (collections?.size ?? 0) > 0;
 
     return {
       hasNFTs,
@@ -167,12 +163,14 @@ export default function useWalletSectionsData({
     isReadOnlyWallet,
     type,
     showcaseTokens,
-    uniqueTokens,
+    collections,
     isFetchingNfts,
     experimentalConfig,
     positions,
     claimables,
-    nftSort,
     remoteCards,
+    hasMoreCollections,
+    isShowcaseDataMigrated,
+    isHiddenDataMigrated,
   ]);
 }

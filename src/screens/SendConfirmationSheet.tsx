@@ -4,7 +4,7 @@ import { ShimmerAnimation } from '@/components/animations';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import { UniqueAsset } from '@/entities';
+import { AssetType } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import {
   estimateENSReclaimGasLimit,
@@ -30,7 +30,7 @@ import { performanceTracking, Screens, TimeToSignOperation } from '@/state/perfo
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
+import { promiseUtils } from '@/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
@@ -197,7 +197,7 @@ export const SendConfirmationSheet = () => {
   }, []);
 
   const {
-    params: { amountDetails, asset, callback, ensProfile, isL2, isNft, chainId, to, toAddress },
+    params: { amountDetails, asset, callback, ensProfile, isL2, isUniqueAsset, chainId, to, toAddress },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_CONFIRMATION_SHEET>>();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -222,8 +222,7 @@ export const SendConfirmationSheet = () => {
     return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
-  const uniqueTokenType = getUniqueTokenType(asset as UniqueAsset);
-  const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
+  const isENS = asset.type === AssetType.ens && profilesEnabled;
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, chainId, toAddress }));
 
@@ -341,7 +340,7 @@ export const SendConfirmationSheet = () => {
 
   let color = useColorForAsset(asset);
 
-  if (isNft) {
+  if (isUniqueAsset) {
     color = theme.colors.appleBlue;
   }
 
@@ -423,10 +422,10 @@ export const SendConfirmationSheet = () => {
 
   const imageUrl = useMemo(() => {
     if (assetIsUniqueAsset(asset)) {
-      return svgToPngIfNeeded(asset.image_thumbnail_url || asset.image_url, true);
+      return svgToPngIfNeeded(asset.images.lowResUrl || asset.images.highResUrl, true);
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const contentHeight = getSheetHeight({
     checkboxes,
@@ -442,14 +441,14 @@ export const SendConfirmationSheet = () => {
       return `${amountDetails.assetAmount} ${asset.symbol}`;
     }
     return '';
-  }, [asset, isNft, amountDetails]);
+  }, [asset, amountDetails]);
 
   const assetSymbolForDisclaimer = useMemo(() => {
     if (assetIsParsedAddressAsset(asset)) {
       return asset.symbol;
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const getMessage = () => {
     let message;
@@ -476,15 +475,15 @@ export const SendConfirmationSheet = () => {
             <Row>
               <Column justify="center" width={deviceWidth - 117}>
                 <Heading numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
-                  {isNft ? asset?.name : nativeDisplayAmount}
+                  {isUniqueAsset ? asset?.name : nativeDisplayAmount}
                 </Heading>
                 <Row marginTop={12}>
                   <Text
                     color={{
-                      custom: isNft ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
+                      custom: isUniqueAsset ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
                     }}
                     size="16px / 22px (Deprecated)"
-                    weight={isNft ? 'bold' : 'heavy'}
+                    weight={isUniqueAsset ? 'bold' : 'heavy'}
                   >
                     {subHeadingText}
                   </Text>
@@ -495,7 +494,7 @@ export const SendConfirmationSheet = () => {
                   {assetIsUniqueAsset(asset) ? (
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
-                      backgroundColor={asset.background || theme.colors.lightestGrey}
+                      backgroundColor={asset.backgroundColor || theme.colors.lightestGrey}
                       borderRadius={10}
                       chainId={asset?.chainId}
                       imageUrl={imageUrl}

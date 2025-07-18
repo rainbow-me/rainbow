@@ -11,7 +11,7 @@ type ProfileBalanceRowProps = {
   isLoadingBalance: boolean;
 };
 
-export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalanceRowProps) {
+export const ProfileBalanceRow = React.memo(function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalanceRowProps) {
   return (
     <>
       {isLoadingBalance ? (
@@ -27,4 +27,4 @@ export function ProfileBalanceRow({ totalValue, isLoadingBalance }: ProfileBalan
       )}
     </>
   );
-}
+});

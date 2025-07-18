@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import useGas from './useGas';
 import { ethereumUtils } from '@/utils';
 import { ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { assetIsUniqueAsset } from '@/handlers/web3';
 
 export default function useMaxInputBalance() {
   const [maxInputBalance, setMaxInputBalance] = useState<string>('0');
@@ -10,11 +11,10 @@ export default function useMaxInputBalance() {
 
   const updateMaxInputBalance = useCallback(
     (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined) => {
-      const isUniqueAssetOrUndefined = typeof inputCurrency === 'undefined' || 'collection' in inputCurrency;
-      if (isUniqueAssetOrUndefined) {
+      if (!inputCurrency || assetIsUniqueAsset(inputCurrency)) {
         return '0';
       }
-      // Update current balance
+
       const newInputBalance = ethereumUtils.getBalanceAmount(selectedGasFee, inputCurrency, l1GasFeeOptimism);
 
       setMaxInputBalance(newInputBalance);

@@ -2,12 +2,11 @@ import { useAccountProfileInfo, useAccountAddress, useSelectedWallet, updateAcco
 import { useTheme } from '@/theme';
 import { getNextEmojiWithColor } from '@/utils/profileUtils';
 import { useCallback } from 'react';
-import { useWebData } from './index';
+import { updateWebProfile } from '@/helpers/webData';
 
 export default function useUpdateEmoji() {
-  const { accountColor } = useAccountProfileInfo();
+  const { accountColor, accountSymbol } = useAccountProfileInfo();
   const selectedWallet = useSelectedWallet();
-  const { updateWebProfile, getWebProfile } = useWebData();
   const accountAddress = useAccountAddress();
   const { colors } = useTheme();
 
@@ -24,11 +23,11 @@ export default function useUpdateEmoji() {
       });
 
       const nextColor = color !== undefined ? colors.avatarBackgrounds[color || accountColor] : undefined;
-      if (nextColor && emoji) {
-        updateWebProfile(accountAddress, emoji, nextColor);
+      if (nextColor) {
+        await updateWebProfile(accountAddress, name || '', nextColor, accountSymbol || null);
       }
     },
-    [accountAddress, accountColor, colors.avatarBackgrounds, selectedWallet, updateWebProfile]
+    [accountAddress, accountColor, accountSymbol, colors.avatarBackgrounds, selectedWallet]
   );
 
   const setNextEmoji = useCallback(() => {
@@ -44,7 +43,6 @@ export default function useUpdateEmoji() {
   }, [accountAddress, saveInfo, selectedWallet]);
 
   return {
-    getWebProfile,
     saveInfo,
     setNextEmoji,
   };

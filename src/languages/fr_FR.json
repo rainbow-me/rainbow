@@ -1039,7 +1039,7 @@
         "text": "Linea est une blockchain sécurisée, équivalente à Ethereum, et de faible coût de couche 2 développée par ConsenSys.\n\nElle permet des transactions plus rapides et plus abordables sans compromettre la sécurité et la décentralisation, visant à intégrer le prochain milliard d'utilisateurs à Web3.",
         "title": "Qu'est-ce que Linea ?"
       },
-      "optimism": {
+      "opmainnet": {
         "text": "L'optimisme est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins coûteuses et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe de nombreuses transactions ensemble dans un \"roll up\" avant de les envoyer vivre de manière permanente sur Ethereum.",
         "title": "Qu'est-ce qu'Optimism ?"
       },

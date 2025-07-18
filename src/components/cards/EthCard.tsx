@@ -2,7 +2,6 @@ import { analytics } from '@/analytics';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
-import assetTypes from '@/entities/assetTypes';
 import { IS_IOS } from '@/env';
 import showWalletErrorAlert from '@/helpers/support';
 import { useChartThrottledPoints, useColorForAsset } from '@/hooks';
@@ -93,7 +92,7 @@ export const EthCard = () => {
     {
       address: ETH_ADDRESS,
       mainnet_address: ETH_ADDRESS,
-      type: assetTypes.token,
+      type: 'token',
     },
     colors.appleBlue
   );

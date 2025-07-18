@@ -1039,7 +1039,7 @@
         "text": "Linea는 ConsenSys에서 개발한 안전하고 적은 비용의 Ethereum 등가 레이어 2 블록체인입니다.\n\n이는 보안과 탈중앙화를 손상시키지 않으면서 거래를 더 빠르고 저렴하게 하고, 다음 10억 명의 사용자를 web3로 끌어들이는 것을 목표로 합니다.",
         "title": "Linea란 무엇인가요?"
       },
-      "optimism": {
+      "opmainnet": {
         "text": "Optimism은 Ethereum 위에 실행되는 Layer 2 네트워크로, Ethereum의 기본 보안에서 여전히 혜택을 받으면서 저렴하고 빠른 거래를 가능하게 합니다.\n\n한 번에 많은 거래를 \"roll up\"하여 Ethereum에 영구적으로 보냅니다.",
         "title": "Optimism이란 무엇인가요?"
       },

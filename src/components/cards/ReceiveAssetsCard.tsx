@@ -20,7 +20,7 @@ import { TintButton } from './reusables/TintButton';
 export const RECEIVE_CARD_HEIGHT = 174;
 const TRANSLATIONS = i18n.l.cards.receive;
 
-export const ReceiveAssetsCard = () => {
+export const ReceiveAssetsCard = React.memo(function ReceiveAssetsCard() {
   const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
@@ -101,4 +101,4 @@ export const ReceiveAssetsCard = () => {
       </Stack>
     </GenericCard>
   );
-};
+});
