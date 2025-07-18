@@ -102,6 +102,7 @@ import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScree
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 import { DevActionsSheet } from '@/components/sheets/DevActionsSheet';
+import ProfileScreen from '@/screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -185,6 +186,7 @@ function BSNavigator() {
           <BSStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} />
           <BSStack.Screen component={ENSAdditionalRecordsSheet} name={Routes.ENS_ADDITIONAL_RECORDS_SHEET} />
           <BSStack.Screen component={SelectENSSheet} name={Routes.SELECT_ENS_SHEET} />
+          <BSStack.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} />
           <BSStack.Screen component={ProfileSheet} name={Routes.PROFILE_PREVIEW_SHEET} />
           <BSStack.Screen
             component={SelectUniqueTokenSheet}
