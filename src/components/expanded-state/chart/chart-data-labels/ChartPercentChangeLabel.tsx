@@ -1,19 +1,27 @@
 import React, { memo } from 'react';
-import { SharedValue, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID } from '@/env';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useTheme } from '@/theme';
-import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import {
+  DerivedValue,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useTheme } from '@/theme';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';
 
 type ChartPercentChangeLabelProps = {
   backgroundColor: string;
   isChartGestureActive: SharedValue<boolean>;
-  percentageChange: SharedValue<string | number | undefined>;
+  percentageChange: DerivedValue<string | number | undefined>;
 };
 
 export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({

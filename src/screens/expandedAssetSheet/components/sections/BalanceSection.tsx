@@ -11,19 +11,17 @@ import { getBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useAccountSettings } from '@/hooks';
 import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { useAppSettingsStore } from '@/state/appSettings/appSettingsStore';
-import { useExperimentalConfig } from '@/config/experimentalHooks';
-import { ChartTypes } from '@/components/value-chart/Chart';
-import { useCandlestickStore } from '@/components/candlestick-charts/candlestickStore';
+import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';
+import { useChartType } from '@/features/charts/stores/chartsStore';
+import { ChartType } from '@/features/charts/types';
 
 export function BalanceSection() {
   const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
-  const { 'Candlestick Charts': enableCandlestickCharts } = useExperimentalConfig();
   const balanceAmount = asset?.balance?.amount ?? '0';
   const tokenId = asset?.uniqueId ?? '';
 
@@ -46,7 +44,7 @@ export function BalanceSection() {
     selector: token => token.reliability.metadata.liquidityCap,
   });
 
-  const chartType = useAppSettingsStore(state => (enableCandlestickCharts ? state.chartType : ChartTypes.LINE));
+  const chartType = useChartType();
   const initialCandlestickPrice = useStableValue(() => useCandlestickStore.getState().getPrice());
   const currentCandlestickPrice = useSharedValue(initialCandlestickPrice);
 
@@ -64,7 +62,7 @@ export function BalanceSection() {
   );
 
   const tokenBalance = useDerivedValue(() => {
-    if (chartType === ChartTypes.CANDLESTICK) {
+    if (chartType === ChartType.Candlestick) {
       const priceToUse = currentCandlestickPrice.value?.price ?? asset?.price?.value;
       if (!priceToUse) {
         return liveTokenBalance;

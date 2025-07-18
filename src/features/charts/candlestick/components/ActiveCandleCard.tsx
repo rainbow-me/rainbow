@@ -6,7 +6,7 @@ import { AnimatedText, AnimatedTextProps, Box, BoxProps, Text, TextProps, TextSh
 import { foregroundColors, globalColors } from '@/design-system/color/palettes';
 import { NativeCurrencyKey } from '@/entities';
 import { IS_IOS } from '@/env';
-import { toCompactNotation } from '@/helpers/strings';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
@@ -363,7 +363,7 @@ function formatPercentageChange(percentageChange: number): string {
 function formatPrice(price: number | undefined, currency: NativeCurrencyKey): string {
   'worklet';
   if (!price) return '';
-  return toCompactNotation({
+  return formatAssetPrice({
     currency,
     decimalPlaces: supportedNativeCurrencies[currency].decimals,
     prefix: supportedNativeCurrencies[currency].symbol,

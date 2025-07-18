@@ -47,7 +47,7 @@ import { IS_DEV, IS_IOS } from '@/env';
 import { areCandlesEqual } from '@/features/charts/candlestick/utils';
 import { CandlestickResponse, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { chartsActions, useChartsStore } from '@/features/charts/stores/chartsStore';
-import { toCompactNotation } from '@/helpers/strings';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
 import { useCleanup } from '@/hooks/useCleanup';
 import { useOnChange } from '@/hooks/useOnChange';
@@ -304,11 +304,10 @@ function createBlankPicture(width: number, height: number): SkPicture {
 
 function formatPrice(price: number, currency: NativeCurrencyKey): string {
   'worklet';
-  return toCompactNotation({
+  return formatAssetPrice({
     currency,
     decimalPlaces: supportedNativeCurrencies[currency].decimals,
     prefix: supportedNativeCurrencies[currency].symbol,
-    thresholdMagnitude: -10,
     value: price,
   });
 }

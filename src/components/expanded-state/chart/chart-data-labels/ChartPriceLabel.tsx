@@ -10,9 +10,9 @@ const translations = {
 };
 
 type ChartPriceLabelProps = {
-  price: SharedValue<string | number | undefined>;
+  price: DerivedValue<string | number | undefined>;
   backgroundColor: string;
-  isChartGestureActive: SharedValue<boolean> | DerivedValue<boolean>;
+  isChartGestureActive: SharedValue<boolean>;
 };
 
 export function ChartPriceLabel({ price, backgroundColor, isChartGestureActive }: ChartPriceLabelProps) {
