@@ -770,6 +770,17 @@
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Close",
+            "h": "H",
+            "l": "L",
+            "o": "Open",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "None"
+        },
         "all_time": "All Time",
         "date": {
           "months": {
