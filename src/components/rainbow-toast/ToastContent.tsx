@@ -1,0 +1,59 @@
+import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import { TruncatedText } from '@/components/text';
+import { IS_ANDROID } from '@/env';
+import React from 'react';
+import { View } from 'react-native';
+
+interface ToastContentProps {
+  title: React.ReactNode;
+  subtitle: React.ReactNode;
+  icon: React.ReactNode;
+  iconWidth?: number;
+  type?: 'error';
+}
+
+export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_ICON_SIZE }: ToastContentProps) {
+  const colors = useToastColors();
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 13, alignItems: 'center', minWidth: 130 }}>
+      <View
+        style={{
+          width: iconWidth,
+          // the ciruclar icons look further from the left edge than the text
+          // looks from the right edge, so adjusting it visually a bit here
+          marginLeft: -2,
+          height: TOAST_ICON_SIZE,
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </View>
+
+      <View style={{ gap: 4, minWidth: 0 }}>
+        <TruncatedText
+          color={colors.foreground}
+          size="smedium"
+          weight="bold"
+          {...(IS_ANDROID && {
+            lineHeight: 16,
+          })}
+        >
+          {title}
+        </TruncatedText>
+        <TruncatedText
+          color={type === 'error' ? colors.red : colors.foreground}
+          opacity={0.5}
+          size={12}
+          weight="bold"
+          {...(IS_ANDROID && {
+            lineHeight: 16,
+          })}
+        >
+          {subtitle}
+        </TruncatedText>
+      </View>
+    </View>
+  );
+}

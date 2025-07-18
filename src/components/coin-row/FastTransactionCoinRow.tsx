@@ -72,7 +72,7 @@ const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowT
   return [valueOut, valueIn];
 };
 
-const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeCurrencyKey) => {
+export const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeCurrencyKey) => {
   const { changes, direction, type, status } = transaction;
   if (checkForPendingSwap(transaction)) return swapTypeValues(changes, status);
   if (['approve', 'revoke'].includes(type)) return approvalTypeValues(transaction as RainbowTransaction);
@@ -100,6 +100,7 @@ const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeC
 
   return greaterThan(nativeBalance.amount, '0') ? [`${assetValue}`, assetNativeValue] : [assetNativeValue, `${valueSymbol}${assetValue}`];
 };
+
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {
     case 'swap':

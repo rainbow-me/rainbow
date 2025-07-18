@@ -90,6 +90,13 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       }
     );
 
+    if (process.env.NODE_ENV === 'development') {
+      if (newPendingTransactions.some(p => p.isMocked)) {
+        logger.info(`Avoiding updating transactions to avoid clearing mocked dev transactions`);
+        return;
+      }
+    }
+
     if (minedTransactions.length) {
       minedTransactions.forEach(tx => {
         if (tx.changes?.length) {
@@ -124,6 +131,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         });
       }, 2000);
     }
+
     setPendingTransactions({
       address,
       pendingTransactions: newPendingTransactions,

@@ -1,0 +1,1258 @@
+import { useToastStore } from '@/components/rainbow-toast/useRainbowToasts';
+import { Sheet } from '@/components/sheet';
+import { Box, Text } from '@/design-system';
+import { RainbowTransaction, TransactionDirection, TransactionStatus } from '@/entities';
+import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import React from 'react';
+import { Button, ScrollView } from 'react-native';
+
+// the RainbowTransaction type is off from real data so i'm casting them:
+
+export function DevActionsSheet() {
+  const accountAddress = useAccountAddress();
+
+  const createMockSendTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleSends[lastSend++ % exampleSends.length],
+      status,
+    };
+  };
+
+  const createMockSwapTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleSwaps[lastSwap++ % exampleSwaps.length],
+      status,
+    };
+  };
+
+  const createMockMintTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleMints[lastMint++ % exampleMints.length],
+      status,
+    };
+  };
+
+  let current: RainbowTransaction[] = [];
+
+  function addThenUpdate(transaction: RainbowTransaction) {
+    current = [...current, transaction];
+    pendingTransactionsStore.setState(state => ({
+      ...state,
+      pendingTransactions: {
+        [accountAddress]: current,
+      },
+    }));
+  }
+
+  const addSendTransaction = () => {
+    addThenUpdate(createMockSendTransaction(TransactionStatus.sending));
+  };
+
+  const addSwapTransaction = () => {
+    addThenUpdate(createMockSwapTransaction(TransactionStatus.swapping));
+  };
+
+  const addMintTransaction = () => {
+    addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
+  };
+
+  const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send' | 'contract_interaction', status: TransactionStatus) => {
+    const latest = current.findLast(px => px.type === type);
+    if (latest) {
+      console.info(`Updating`, latest, 'to', type);
+      pendingTransactionsStore.setState(state => ({
+        ...state,
+        pendingTransactions: {
+          [accountAddress]: current.map(item => (item === latest ? { ...item, status } : item)),
+        },
+      }));
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const updateLastSendTo = (status: TransactionStatus) => {
+    updateLatestTransactionOfType('send', status);
+  };
+
+  const updateLastSwapTo = (status: TransactionStatus) => {
+    updateLatestTransactionOfType('swap', status);
+  };
+
+  const updateLastMintTo = (status: TransactionStatus) => {
+    if (updateLatestTransactionOfType('mint', status)) {
+      return;
+    }
+    updateLatestTransactionOfType('contract_interaction', status);
+  };
+
+  return (
+    <Sheet>
+      <Box paddingHorizontal="20px" paddingTop="44px">
+        <Text size="20pt" weight="bold" color="label" align="center">
+          Transactions
+        </Text>
+
+        <ScrollView style={{ marginTop: 20 }} showsVerticalScrollIndicator={false}>
+          <Box gap={12}>
+            <Button
+              onPress={() => {
+                current = [];
+                usePendingTransactionsStore.getState().clearPendingTransactions();
+                useToastStore.setState(() => ({
+                  hiddenToasts: {},
+                  toasts: [],
+                }));
+              }}
+              title="Clear All"
+            />
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Send
+            </Text>
+
+            <Button onPress={addSendTransaction} title="Add Send Transaction" />
+            <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="Update Send → Sent" />
+            <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="Update Send → Failed" />
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Swap
+            </Text>
+
+            <Button onPress={addSwapTransaction} title="Add Swap Transaction" />
+            <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="Update Swap → Swapped" />
+            <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="Update Swap → Failed" />
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Mint
+            </Text>
+
+            <Button onPress={addMintTransaction} title="Add Mint Transaction" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="Update Mint → Minted" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" />
+          </Box>
+        </ScrollView>
+      </Box>
+    </Sheet>
+  );
+}
+
+// mock data
+
+const exampleSwaps: RainbowTransaction[] = [
+  {
+    isMocked: true,
+    chainId: 8453,
+    data: '0x55e4b7be000000000000000000000000080550540c7655541281995516a6aed47c8474840000000000000000000000000f758abf9b242daa6b2b5e976d6e00c5aece9b070000000000000000000000000000000000001ff3684f28c67538d4d072c2273400000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000000000000000000000000000000001e32b47897400000000000000000000000000000000000000000000000000000000000000005842213bc0b000000000000000000000000f525ff21c370beb8d9f5c12dc0da2b583f4b949f000000000000000000000000080550540c7655541281995516a6aed47c8474840000000000000000000000000000000000000000000000000dc283ff2eccc000000000000000000000000000f525ff21c370beb8d9f5c12dc0da2b583f4b949f00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000004a41fff991f00000000000000000000000000000000009726632680fb29d3f7a9734e3010e20000000000000000000000000f758abf9b242daa6b2b5e976d6e00c5aece9b07000000000000000000000000000000000000000000000191f0e8132651f67a4c00000000000000000000000000000000000000000000000000000000000000a07a87f2dec40c69bebac4a4ef00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000002200000000000000000000000000000000000000000000000000000000000000340000000000000000000000000000000000000000000000000000000000000018422ce6ede000000000000000000000000f525ff21c370beb8d9f5c12dc0da2b583f4b949f0000000000000000000000000000000000000000000000000000000000000100000000000000000000000000080550540c7655541281995516a6aed47c8474840000000000000000000000000000000000000000000000000dc283ff2eccc000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000687955c400000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002c080550540c7655541281995516a6aed47c847484000027104200000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e48d68a156000000000000000000000000f525ff21c370beb8d9f5c12dc0da2b583f4b949f000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002c4200000000000000000000000000000000000006000027100f758abf9b242daa6b2b5e976d6e00c5aece9b070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000064c876d21d000000000000000000000000f5c4f3dc02c3fb9279495a8fef7b0741da9561570000000000000000000000000f758abf9b242daa6b2b5e976d6e00c5aece9b070000000000000000000000000000000000000000000001ab64233a13daa7bb9b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d7e44d53',
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    to: '0x00000000009726632680fb29d3f7a9734e3010e2',
+    value: '0',
+    asset: {
+      colors: {
+        primary: '#0758EF',
+        fallback: '#68A2F8',
+      },
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1752698818/assets/base/0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07.png',
+      name: '🟦',
+      networks: {
+        '8453': {
+          address: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07',
+          decimals: 18,
+        },
+      },
+      symbol: '🟦',
+      decimals: 18,
+      highLiquidity: true,
+      isRainbowCurated: false,
+      isVerified: false,
+      uniqueId: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07_8453',
+      address: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07',
+      market: {
+        currency_used: 'usd',
+        fdv: 881960.697084297,
+        volume_24h: 6226855.41461213,
+        total_supply: 100000000000,
+        market_cap: {
+          value: 881960.697084297,
+        },
+        price: {
+          value: 0.000008819606971,
+          change_24h: 93.02,
+        },
+        ath: {
+          date: '0001-01-01T00:00:00Z',
+        },
+        atl: {
+          date: '0001-01-01T00:00:00Z',
+        },
+        updated_at: '2025-07-17T19:45:15.939575332Z',
+      },
+      bridging: {
+        bridgeable: false,
+        networks: {},
+      },
+      trending: {
+        origin_id: 'rainbow',
+        timeframe_id: 3,
+        rank: 48,
+        trending_since: '2025-07-16T16:15:13.715472Z',
+        pool_data: {
+          pool_hash: '0x89bfaa07e84c391cbadf383e716c7f229e7e0a7f',
+          currency_used: 'usd',
+          reserve: 315037.9005,
+          m5_volume: 4359.2426503901,
+          h1_volume: 36355.8154482859,
+          h6_volume: 301257.079524808,
+          h24_volume: 6226855.41461213,
+          m5_price_change: 5.5,
+          h1_price_change: 14.04,
+          h6_price_change: 5.62,
+          h24_price_change: 93.02,
+        },
+        swap_data: {
+          currency_used: 'usd',
+          bought_stats: {
+            unique_users: 77,
+            total_transactions: 254,
+            total_volume: 244005.48026930203,
+          },
+          sold_stats: {
+            unique_users: 68,
+            total_transactions: 166,
+            total_volume: 61937.05170930842,
+          },
+        },
+      },
+      chainId: 8453,
+      transferable: true,
+      isNativeAsset: false,
+      mainnetAddress: '',
+      favorite: false,
+      sectionId: 'popular',
+      listItemType: 'coinRow',
+      chainName: 'base',
+      native: {
+        balance: {
+          amount: '0.15474900884324971728450192606276692',
+          display: '$0.15',
+        },
+        price: {
+          change: '100.54%',
+          amount: 0.00000940663872374,
+          display: '$0.00',
+        },
+      },
+      price: {
+        value: 0.00000940663872374,
+      },
+      balance: {
+        amount: '16451.042012775719758558',
+        display: '16,451.042 🟦',
+      },
+      color: {
+        light: '#0758EF',
+        dark: '#0758EF',
+      },
+      shadowColor: {
+        light: '#0758EF',
+        dark: '#0758EF',
+      },
+      mixedShadowColor: {
+        light: '#223368',
+        dark: '#000',
+      },
+      highContrastColor: {
+        light: '#0758EF',
+        dark: '#0758EF',
+      },
+      tintedBackgroundColor: {
+        light: '#f8f8fc',
+        dark: '#010a1b',
+      },
+      textColor: {
+        light: '#FFFFFF',
+        dark: '#FFFFFF',
+      },
+      nativePrice: 0.00000940663872374,
+      maxSwappableAmount: '16451.042012775719758558',
+      network: 'base',
+    },
+    changes: [
+      {
+        direction: 'out',
+        asset: {
+          address: '0x080550540c7655541281995516a6aed47c847484',
+          uniqueId: '0x080550540c7655541281995516a6aed47c847484_8453',
+          chainId: 8453,
+          chainName: 'base',
+          isNativeAsset: false,
+          name: '🌈 Bubble',
+          price: {
+            value: 0.075708761826,
+          },
+          symbol: 'RAINBUBB',
+          type: 'rainbow',
+          decimals: 18,
+          icon_url:
+            'https://rainbowme-res.cloudinary.com/image/upload/v1742286972/assets/base/0x080550540c7655541281995516a6aed47c847484.png',
+          colors: {
+            primary: '#B9B380',
+            fallback: '#5A4F4B',
+          },
+          networks: {
+            '8453': {
+              address: '0x080550540c7655541281995516a6aed47c847484',
+              decimals: 18,
+            },
+          },
+          bridging: {
+            isBridgeable: false,
+            networks: {},
+          },
+          balance: {
+            amount: '1545.035359661294645644',
+            display: '1,545.035 RAINBUBB',
+          },
+          smallBalance: false,
+          color: {
+            light: '#B9B380',
+            dark: '#B9B380',
+          },
+          shadowColor: {
+            light: '#B9B380',
+            dark: '#B9B380',
+          },
+          mixedShadowColor: {
+            light: '#515142',
+            dark: '#000',
+          },
+          highContrastColor: {
+            light: '#ada669',
+            dark: '#B9B380',
+          },
+          tintedBackgroundColor: {
+            light: '#fafafa',
+            dark: '#15140e',
+          },
+          textColor: {
+            light: '#FFFFFF',
+            dark: '#000',
+          },
+          nativePrice: 0.075708761826,
+          maxSwappableAmount: '1545.035359661294645644',
+          network: 'base',
+        },
+        value: '1000000000000000000',
+      },
+      {
+        direction: 'in',
+        asset: {
+          colors: {
+            primary: '#0758EF',
+            fallback: '#68A2F8',
+          },
+          icon_url:
+            'https://rainbowme-res.cloudinary.com/image/upload/v1752698818/assets/base/0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07.png',
+          name: '🟦',
+          networks: {
+            '8453': {
+              address: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07',
+              decimals: 18,
+            },
+          },
+          symbol: '🟦',
+          decimals: 18,
+          highLiquidity: true,
+          isRainbowCurated: false,
+          isVerified: false,
+          uniqueId: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07_8453',
+          address: '0x0f758abf9b242daa6b2b5e976d6e00c5aece9b07',
+          market: {
+            currency_used: 'usd',
+            fdv: 881960.697084297,
+            volume_24h: 6226855.41461213,
+            total_supply: 100000000000,
+            market_cap: {
+              value: 881960.697084297,
+            },
+            price: {
+              value: 0.000008819606971,
+              change_24h: 93.02,
+            },
+            ath: {
+              date: '0001-01-01T00:00:00Z',
+            },
+            atl: {
+              date: '0001-01-01T00:00:00Z',
+            },
+            updated_at: '2025-07-17T19:45:15.939575332Z',
+          },
+          bridging: {
+            bridgeable: false,
+            networks: {},
+          },
+          trending: {
+            origin_id: 'rainbow',
+            timeframe_id: 3,
+            rank: 48,
+            trending_since: '2025-07-16T16:15:13.715472Z',
+            pool_data: {
+              pool_hash: '0x89bfaa07e84c391cbadf383e716c7f229e7e0a7f',
+              currency_used: 'usd',
+              reserve: 315037.9005,
+              m5_volume: 4359.2426503901,
+              h1_volume: 36355.8154482859,
+              h6_volume: 301257.079524808,
+              h24_volume: 6226855.41461213,
+              m5_price_change: 5.5,
+              h1_price_change: 14.04,
+              h6_price_change: 5.62,
+              h24_price_change: 93.02,
+            },
+            swap_data: {
+              currency_used: 'usd',
+              bought_stats: {
+                unique_users: 77,
+                total_transactions: 254,
+                total_volume: 244005.48026930203,
+              },
+              sold_stats: {
+                unique_users: 68,
+                total_transactions: 166,
+                total_volume: 61937.05170930842,
+              },
+            },
+          },
+          chainId: 8453,
+          transferable: true,
+          isNativeAsset: false,
+          mainnetAddress: '',
+          favorite: false,
+          sectionId: 'popular',
+          listItemType: 'coinRow',
+          chainName: 'base',
+          price: {
+            value: 0.00000940663872374,
+          },
+          balance: {
+            amount: '16451.042012775719758558',
+            display: '16,451.042 🟦',
+          },
+          color: {
+            light: '#0758EF',
+            dark: '#0758EF',
+          },
+          shadowColor: {
+            light: '#0758EF',
+            dark: '#0758EF',
+          },
+          mixedShadowColor: {
+            light: '#223368',
+            dark: '#000',
+          },
+          highContrastColor: {
+            light: '#0758EF',
+            dark: '#0758EF',
+          },
+          tintedBackgroundColor: {
+            light: '#f8f8fc',
+            dark: '#010a1b',
+          },
+          textColor: {
+            light: '#FFFFFF',
+            dark: '#FFFFFF',
+          },
+          nativePrice: 0.00000940663872374,
+          maxSwappableAmount: '16451.042012775719758558',
+          network: 'base',
+        },
+        value: '7804740546712141659035',
+      },
+    ],
+    gasLimit: '323022',
+    hash: '0x0f7c19fe01937651934ae772ca0768a70cfff7981c8b2cca408d960d6b07a5a0',
+    network: 'base',
+    nonce: 1150,
+    status: 'pending',
+    type: 'swap',
+    swap: {
+      type: 'normal',
+      fromChainId: 8453,
+      toChainId: 8453,
+      isBridge: false,
+    },
+    maxFeePerGas: '6862084',
+    maxPriorityFeePerGas: '150',
+    title: 'swap.pending',
+    description: '🌈 Bubble',
+    timestamp: 1752781982498,
+  } as unknown as RainbowTransaction,
+
+  {
+    isMocked: true,
+    chainId: 1,
+    data: '0x3c2b9a7d00000000000000000000000005be1d4c307c19450a6fd7ce7307ce72a3829a6000000000000000000000000068b3465833fb72a70ecdf485e0e4c7bd8665fc450000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000007bb0f7b08000000000000000000000000000000000000000000000000000000000000000184ac9650d800000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000e404e45aaf000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000005be1d4c307c19450a6fd7ce7307ce72a3829a600000000000000000000000000000000000000000000000000000000000000bb800000000000000000000000000000000009726632680fb29d3f7a9734e3010e2000000000000000000000000000000000000000000000000000385c3954b780000000000000000000000000000000000000000000000000019e40eccca027a3000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d7e44d53',
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    to: '0x00000000009726632680fb29d3f7a9734e3010e2',
+    value: '1000000000000000',
+    asset: {
+      colors: {
+        primary: '#5A92AB',
+        fallback: '',
+        shadow: '',
+      },
+      icon_url:
+        'https://rainbowme-res.cloudinary.com/image/upload/v1721694918/assets/ethereum/0x05be1d4c307c19450a6fd7ce7307ce72a3829a60.png',
+      name: 'International Meme Fund',
+      networks: {
+        '1': {
+          address: '0x05be1d4c307c19450a6fd7ce7307ce72a3829a60',
+          decimals: 18,
+        },
+      },
+      symbol: 'IMF',
+      decimals: 18,
+      highLiquidity: true,
+      isRainbowCurated: false,
+      isVerified: true,
+      uniqueId: '0x05be1d4c307c19450a6fd7ce7307ce72a3829a60_1',
+      address: '0x05be1d4c307c19450a6fd7ce7307ce72a3829a60',
+      market: {
+        currency_used: 'usd',
+        fdv: 35703121.8186819,
+        volume_24h: 615887.287797017,
+        circulating_supply: 31881158.77891933,
+        total_supply: 33000000,
+        max_supply: 33000000,
+        market_cap: {
+          value: 34492633.2006368,
+        },
+        price: {
+          value: 1.0819127824,
+          change_24h: 12.73,
+        },
+        ath: {
+          value: 1.092,
+          change_percentage: -0.25183,
+          date: '2025-07-09T20:51:07.332Z',
+        },
+        atl: {
+          value: 0.0241715,
+          change_percentage: 4407.29351,
+          date: '2025-04-07T07:01:13.007Z',
+        },
+        updated_at: '2025-07-09T22:04:32.10839793Z',
+      },
+      bridging: {
+        bridgeable: false,
+        networks: {},
+      },
+      trending: {
+        origin_id: 'rainbow',
+        timeframe_id: 3,
+        rank: 647,
+        trending_since: '2024-12-31T19:15:41.79896Z',
+        pool_data: {
+          pool_hash: '0x59d813c1d0266278e2f5f146c0e222a6cfea83df',
+          currency_used: 'usd',
+          reserve: 2507522.3106,
+          h1_volume: 24364.6496135043,
+          h6_volume: 149173.098513432,
+          h24_volume: 615887.287797017,
+          m5_price_change: 0,
+          h1_price_change: -0.64,
+          h6_price_change: 15.64,
+          h24_price_change: 12.73,
+        },
+        swap_data: {
+          currency_used: 'usd',
+          bought_stats: {
+            unique_users: 1,
+            total_transactions: 1,
+            total_volume: 6001.7191,
+          },
+          sold_stats: {
+            unique_users: 2,
+            total_transactions: 3,
+            total_volume: 6918.11227581952,
+          },
+        },
+      },
+      creationDate: '2024-05-28T11:00:11Z',
+      chainId: 1,
+      transferable: true,
+      isNativeAsset: false,
+      mainnetAddress: '0x05be1d4c307c19450a6fd7ce7307ce72a3829a60',
+      favorite: false,
+      sectionId: 'popular',
+      listItemType: 'coinRow',
+      chainName: 'mainnet',
+      native: {
+        balance: {
+          amount: '0',
+          display: '0.00',
+        },
+      },
+      balance: {
+        amount: '0',
+        display: '0.00',
+      },
+      color: {
+        light: '#5A92AB',
+        dark: '#5A92AB',
+      },
+      shadowColor: {
+        light: '#5A92AB',
+        dark: '#5A92AB',
+      },
+      mixedShadowColor: {
+        light: '#314550',
+        dark: '#000',
+      },
+      highContrastColor: {
+        light: '#5A92AB',
+        dark: '#5A92AB',
+      },
+      tintedBackgroundColor: {
+        light: '#fafafa',
+        dark: '#0a1013',
+      },
+      textColor: {
+        light: '#FFFFFF',
+        dark: '#FFFFFF',
+      },
+      maxSwappableAmount: '0',
+      network: 'mainnet',
+    },
+    changes: [
+      {
+        direction: TransactionDirection.OUT,
+        asset: {
+          address: 'eth',
+          uniqueId: 'eth_1',
+          chainId: 1,
+          chainName: 'mainnet',
+          mainnetAddress: 'eth',
+          isNativeAsset: true,
+          name: 'Ethereum',
+          price: {
+            value: 3075.05,
+          },
+          symbol: 'ETH',
+          type: 'native',
+          decimals: 18,
+          icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+          colors: {
+            primary: '#808088',
+            fallback: '#E8EAF5',
+          },
+          networks: {
+            '1': {
+              address: 'eth',
+              decimals: 18,
+            },
+            '10': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '56': {
+              address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+              decimals: 18,
+            },
+            '130': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '324': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '8453': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '42161': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '57073': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '59144': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '81457': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '534352': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '7777777': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+          },
+          bridging: {
+            isBridgeable: true,
+            networks: {
+              '10': {
+                bridgeable: true,
+              },
+              '56': {
+                bridgeable: true,
+              },
+              '130': {
+                bridgeable: true,
+              },
+              '324': {
+                bridgeable: true,
+              },
+              '8453': {
+                bridgeable: true,
+              },
+              '42161': {
+                bridgeable: true,
+              },
+              '57073': {
+                bridgeable: true,
+              },
+              '59144': {
+                bridgeable: true,
+              },
+              '81457': {
+                bridgeable: true,
+              },
+              '534352': {
+                bridgeable: true,
+              },
+              '7777777': {
+                bridgeable: true,
+              },
+            },
+          },
+          balance: {
+            amount: '0.79606854831326995',
+            display: '0.796 ETH',
+          },
+          smallBalance: false,
+          color: {
+            light: '#25292E',
+            dark: '#677483',
+          },
+          shadowColor: {
+            light: '#25292E',
+            dark: '#677483',
+          },
+          mixedShadowColor: {
+            light: '#25292e',
+            dark: '#000',
+          },
+          highContrastColor: {
+            light: '#25292E',
+            dark: '#677483',
+          },
+          tintedBackgroundColor: {
+            light: '#f7f7f7',
+            dark: '#0c0d0f',
+          },
+          textColor: {
+            light: '#FFFFFF',
+            dark: '#FFFFFF',
+          },
+          nativePrice: 3075.05,
+          maxSwappableAmount: '0.79447926401516995',
+          network: 'mainnet',
+        },
+        value: '1000000000000000',
+      },
+      {
+        direction: TransactionDirection.IN,
+        asset: {
+          colors: {
+            primary: '#5A92AB',
+            fallback: '',
+            shadow: '',
+          },
+          icon_url:
+            'https://rainbowme-res.cloudinary.com/image/upload/v1721694918/assets/ethereum/0x05be1d4c307c19450a6fd7ce7307ce72a3829a60.png',
+          name: 'International Meme Fund',
+          networks: {
+            '1': {
+              address: '0x05be1d4c307c19450a6fd7ce7307ce72a3829a60',
+              decimals: 18,
+            },
+          },
+          symbol: 'IMF',
+          decimals: 18,
+          highLiquidity: true,
+          isRainbowCurated: false,
+          isVerified: true,
+          uniqueId: '0x05be1d4c307c19450a6fd7ce7307ce72a3829a60_1',
+          address: '0x05be1d4c307c19450a6fd7ce7307ce72a3829a60',
+          market: {
+            currency_used: 'usd',
+            fdv: 35703121.8186819,
+            volume_24h: 615887.287797017,
+            circulating_supply: 31881158.77891933,
+            total_supply: 33000000,
+            max_supply: 33000000,
+            market_cap: {
+              value: 34492633.2006368,
+            },
+            price: {
+              value: 1.0819127824,
+              change_24h: 12.73,
+            },
+            ath: {
+              value: 1.092,
+              change_percentage: -0.25183,
+              date: '2025-07-09T20:51:07.332Z',
+            },
+            atl: {
+              value: 0.0241715,
+              change_percentage: 4407.29351,
+              date: '2025-04-07T07:01:13.007Z',
+            },
+            updated_at: '2025-07-09T22:04:32.10839793Z',
+          },
+          bridging: {
+            bridgeable: false,
+            networks: {},
+          },
+          trending: {
+            origin_id: 'rainbow',
+            timeframe_id: 3,
+            rank: 647,
+            trending_since: '2024-12-31T19:15:41.79896Z',
+            pool_data: {
+              pool_hash: '0x59d813c1d0266278e2f5f146c0e222a6cfea83df',
+              currency_used: 'usd',
+              reserve: 2507522.3106,
+              h1_volume: 24364.6496135043,
+              h6_volume: 149173.098513432,
+              h24_volume: 615887.287797017,
+              m5_price_change: 0,
+              h1_price_change: -0.64,
+              h6_price_change: 15.64,
+              h24_price_change: 12.73,
+            },
+            swap_data: {
+              currency_used: 'usd',
+              bought_stats: {
+                unique_users: 1,
+                total_transactions: 1,
+                total_volume: 6001.7191,
+              },
+              sold_stats: {
+                unique_users: 2,
+                total_transactions: 3,
+                total_volume: 6918.11227581952,
+              },
+            },
+          },
+          creationDate: '2024-05-28T11:00:11Z',
+          chainId: 1,
+          transferable: true,
+          isNativeAsset: false,
+          mainnetAddress: '0x05be1d4c307c19450a6fd7ce7307ce72a3829a60',
+          favorite: false,
+          sectionId: 'popular',
+          listItemType: 'coinRow',
+          chainName: 'mainnet',
+          balance: {
+            amount: '0',
+            display: '0.00',
+          },
+          color: {
+            light: '#5A92AB',
+            dark: '#5A92AB',
+          },
+          shadowColor: {
+            light: '#5A92AB',
+            dark: '#5A92AB',
+          },
+          mixedShadowColor: {
+            light: '#314550',
+            dark: '#000',
+          },
+          highContrastColor: {
+            light: '#5A92AB',
+            dark: '#5A92AB',
+          },
+          tintedBackgroundColor: {
+            light: '#fafafa',
+            dark: '#0a1013',
+          },
+          textColor: {
+            light: '#FFFFFF',
+            dark: '#FFFFFF',
+          },
+          maxSwappableAmount: '0',
+          network: 'mainnet',
+        },
+        value: '1884477190266166868',
+      },
+    ],
+    gasLimit: '194747',
+    hash: '0x74b32de0ef6ab3296f00d00910bef1d5d2c93a3c7f17509aabec317d989efc0f',
+    network: 'mainnet',
+    nonce: 2632,
+    status: 'pending',
+    type: 'swap',
+    swap: {
+      type: 'normal',
+      fromChainId: 1,
+      toChainId: 1,
+      isBridge: false,
+    },
+    maxFeePerGas: '5147132228',
+    maxPriorityFeePerGas: '146087701',
+    title: 'swap.pending',
+    description: 'Ethereum',
+    timestamp: 1752607596729,
+  } as unknown as RainbowTransaction,
+];
+
+const exampleSends: RainbowTransaction[] = [
+  {
+    isMocked: true,
+    amount: '0.0003255',
+    asset: {
+      isCoin: true,
+      isSmall: false,
+      address: 'eth',
+      balance: {
+        amount: '0.79651955346746395',
+        display: '0.797 ETH',
+      },
+      network: 'mainnet',
+      name: 'Ethereum',
+      chainId: 1,
+      color: '#808088',
+      colors: {
+        primary: '#808088',
+        fallback: '#E8EAF5',
+      },
+      decimals: 18,
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      id: 'eth',
+      isNativeAsset: true,
+      price: {
+        relative_change_24h: 2.2669320852446484,
+        value: 3072.1600000000003,
+      },
+      mainnet_address: 'eth',
+      native: {
+        balance: {
+          amount: '2447.035511380604287587866040239185',
+          display: '$2,447.04',
+        },
+        change: '2.27%',
+        price: {
+          amount: '3072.1600000000003',
+          display: '$3,072.16',
+        },
+      },
+      symbol: 'ETH',
+      type: 'native',
+      uniqueId: 'eth_1',
+    },
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    gasLimit: '21000',
+    network: 'mainnet',
+    chainId: 1,
+    nonce: 2631,
+    to: '0x49B1318bF58Fe42FE42cFE0E54B9F82479A857A7',
+    maxFeePerGas: '0x019eb9bd6e',
+    maxPriorityFeePerGas: '0x03f7aea6',
+    hash: '0xc3ebffa32267110609b35674abc36a2f864edb59060d83e165b64fa9454b91e9',
+    data: '0x',
+    value: '0x01280a5fdfd800',
+    txTo: '0x49B1318bF58Fe42FE42cFE0E54B9F82479A857A7',
+    type: 'send',
+    status: TransactionStatus.pending,
+    title: 'send.pending',
+    description: 'Ethereum',
+    timestamp: 1752606976389,
+  } as unknown as RainbowTransaction,
+  {
+    isMocked: true,
+    amount: '0.00065165',
+    asset: {
+      isCoin: true,
+      isSmall: false,
+      address: 'eth',
+      balance: {
+        amount: '0.79780705575339895',
+        display: '0.798 ETH',
+      },
+      network: 'mainnet',
+      name: 'Ethereum',
+      chainId: 1,
+      color: '#808088',
+      colors: {
+        primary: '#808088',
+        fallback: '#E8EAF5',
+      },
+      decimals: 18,
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      id: 'eth',
+      isNativeAsset: true,
+      price: {
+        relative_change_24h: 2.1664014700105843,
+        value: 3069.14,
+      },
+      mainnet_address: 'eth',
+      native: {
+        balance: {
+          amount: '2448.581547094986853403',
+          display: '$2,448.58',
+        },
+        change: '2.17%',
+        price: {
+          amount: '3069.14',
+          display: '$3,069.14',
+        },
+      },
+      symbol: 'ETH',
+      type: 'native',
+      uniqueId: 'eth_1',
+    },
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    gasLimit: '21000',
+    network: 'mainnet',
+    chainId: 1,
+    nonce: 2629,
+    to: '0x49B1318bF58Fe42FE42cFE0E54B9F82479A857A7',
+    maxFeePerGas: '0x028f0d67f9',
+    maxPriorityFeePerGas: '0x05dadef0',
+    hash: '0x0812224d823b1c5448fc986d65946f0e5d493f9874ec9856290e46176a807b8b',
+    data: '0x',
+    value: '0x0250ac16c49400',
+    txTo: '0x49B1318bF58Fe42FE42cFE0E54B9F82479A857A7',
+    type: 'send',
+    status: TransactionStatus.sending,
+    title: 'send.pending',
+    description: 'Ethereum',
+    timestamp: 1752606363082,
+  } as unknown as RainbowTransaction,
+];
+
+const exampleMints = [
+  {
+    isMocked: true,
+    status: 'pending',
+    chainId: 10,
+    asset: {
+      colors: {
+        fallback: '#E8EAF5',
+        primary: '#808088',
+        shadow: '',
+      },
+      decimals: 18,
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      name: 'Ethereum',
+      networks: {
+        '1': {
+          address: 'eth',
+          decimals: 18,
+        },
+        '10': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '56': {
+          address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+          decimals: 18,
+        },
+        '130': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '324': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '8453': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '42161': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '57073': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '59144': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '81457': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '534352': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '7777777': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+      },
+      transferable: true,
+      price: {
+        relativeChange24h: 3.632001751388027,
+        value: 3408.27,
+      },
+      symbol: 'ETH',
+      address: '0x0000000000000000000000000000000000000000',
+      isNativeAsset: true,
+      native: {
+        change: '3.63%',
+        price: {
+          amount: '3408.27',
+          display: '$3,408.27',
+        },
+      },
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      chainId: 10,
+      network: 'optimism',
+      uniqueId: '0x0000000000000000000000000000000000000000_10',
+      mainnet_address: '0x0000000000000000000000000000000000000000',
+    },
+    contract: {
+      name: 'Highlight',
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1693353740/dapps/ingested_highlight.xyz.png',
+    },
+    data: '0xee202946a507515a1aa8e2f9bf1f3c05abb91944918c0399203ca52585b8876e',
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    gasLimit: '0xa96a',
+    hash: '0x0ea92166f680cd4190a59e7a47ee00440be16b944ae3a832b799890d9ad449dc',
+    network: 'optimism',
+    nonce: 792,
+    to: '0xa5f565650890fba1824ee0f21ebbbf660a179934',
+    value: '507813239171051',
+    type: 'contract_interaction',
+    maxFeePerGas: '0x0e1f',
+    maxPriorityFeePerGas: '0x64',
+    title: 'contract_interaction.pending',
+    description: 'Ethereum',
+    timestamp: 1752774596231,
+  } as unknown as RainbowTransaction,
+  {
+    isMocked: true,
+    status: 'pending',
+    chainId: 10,
+    asset: {
+      colors: {
+        fallback: '#E8EAF5',
+        primary: '#808088',
+        shadow: '',
+      },
+      decimals: 18,
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      name: 'Ethereum',
+      networks: {
+        '1': {
+          address: 'eth',
+          decimals: 18,
+        },
+        '10': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '56': {
+          address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+          decimals: 18,
+        },
+        '130': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '324': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '8453': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '42161': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '57073': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '59144': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '81457': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '534352': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '7777777': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+      },
+      transferable: true,
+      price: {
+        relativeChange24h: 3.498215165317646,
+        value: 3403.8700000000003,
+      },
+      symbol: 'ETH',
+      address: '0x0000000000000000000000000000000000000000',
+      isNativeAsset: true,
+      native: {
+        change: '3.50%',
+        price: {
+          amount: '3403.8700000000003',
+          display: '$3,403.87',
+        },
+      },
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      chainId: 10,
+      network: 'optimism',
+      uniqueId: '0x0000000000000000000000000000000000000000_10',
+      mainnet_address: '0x0000000000000000000000000000000000000000',
+    },
+    contract: {
+      name: 'Highlight',
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1693353740/dapps/ingested_highlight.xyz.png',
+    },
+    data: '0x5a945b0063c1c6db74d0b86750facabffce253fbed45e4c17b6594ed7adeece9',
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    gasLimit: '0xa95b',
+    hash: '0x15e9c5c331b8e8a68e3d91259e19b65709dc1c41fdaebc9e559ac676077366b4',
+    network: 'optimism',
+    nonce: 791,
+    to: '0xa5f565650890fba1824ee0f21ebbbf660a179934',
+    value: '507730024236717',
+    type: 'contract_interaction',
+    maxFeePerGas: '0x0e9d',
+    maxPriorityFeePerGas: '0x64',
+    title: 'contract_interaction.pending',
+    description: 'Ethereum',
+    timestamp: 1752773535981,
+  } as unknown as RainbowTransaction,
+];
+
+let lastSend = 0;
+let lastSwap = 0;
+let lastMint = 0;
