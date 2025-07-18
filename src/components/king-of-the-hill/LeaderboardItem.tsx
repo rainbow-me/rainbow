@@ -1,13 +1,13 @@
-import React from 'react';
-import { Box, Inline, Stack, Text, useColorMode } from '@/design-system';
-import FastImage from 'react-native-fast-image';
-import { getSizedImageUrl } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
+import { RainbowImage } from '@/components/RainbowImage';
+import { Inline, Stack, Text, useColorMode } from '@/design-system';
+import { Token } from '@/graphql/__generated__/metadata';
+import { getSizedImageUrl } from '@/handlers/imgix';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import FireIcon from './FireIcon';
-import { StyleSheet } from 'react-native';
-import { Token } from '@/graphql/__generated__/metadata';
 
 interface LeaderboardItemProps {
   token: Token;
@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    overflow: 'hidden',
   },
   rankingBadge: {
     paddingHorizontal: 8,
@@ -73,14 +74,14 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
 
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={0.96}>
-      <Box flexDirection="row" alignItems="center" paddingVertical="12px" paddingHorizontal="20px" justifyContent="space-between">
-        {/* Left side: Token icon */}
-        <Box width={{ custom: 40 }}>
-          <FastImage source={{ uri: iconUrl }} style={styles.tokenIcon} />
-        </Box>
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 20, justifyContent: 'space-between' }}
+      >
+        {/* icon */}
+        <View style={{ width: 40 }}>{iconUrl && <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />}</View>
 
-        {/* Middle: Token info */}
-        <Box flex={1} paddingHorizontal="12px">
+        {/* info */}
+        <View style={{ flex: 1, paddingHorizontal: 12 }}>
           <Stack space="4px">
             {/* Top row: Name, Fire icon, Price change */}
             <Inline alignVertical="center" space="6px">
@@ -93,32 +94,36 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
               </Text>
             </Inline>
 
-            {/* Bottom row: Ranking badge, VOL | MCAP */}
+            {/* Rank, VOL | MCAP */}
             <Inline alignVertical="center" space="8px">
-              <Box style={[styles.rankingBadge, { backgroundColor: rankingStyle.backgroundColor }]}>
-                <Text 
-                  color={rankingStyle.textColor === 'labelSecondary' || rankingStyle.textColor === 'labelTertiary' ? rankingStyle.textColor : { custom: rankingStyle.textColor }} 
-                  size="11pt" 
-                  weight="bold" 
+              <View style={[styles.rankingBadge, { backgroundColor: rankingStyle.backgroundColor }]}>
+                <Text
+                  color={
+                    rankingStyle.textColor === 'labelSecondary' || rankingStyle.textColor === 'labelTertiary'
+                      ? rankingStyle.textColor
+                      : { custom: rankingStyle.textColor }
+                  }
+                  size="11pt"
+                  weight="bold"
                   align="center"
                 >
                   {ranking === 1 ? '1ST' : ranking === 2 ? '2ND' : ranking === 3 ? '3RD' : `${ranking}TH`}
                 </Text>
-              </Box>
+              </View>
               <Text color="labelTertiary" size="11pt" weight="medium">
                 VOL {volume} | MCAP {marketCap}
               </Text>
             </Inline>
           </Stack>
-        </Box>
+        </View>
 
-        {/* Right side: Price */}
-        <Box>
-          <Text color="label" size="18px" weight="bold" align="right">
+        {/* Price */}
+        <View>
+          <Text color="label" size="17pt" weight="bold" align="right">
             {price}
           </Text>
-        </Box>
-      </Box>
+        </View>
+      </View>
     </ButtonPressAnimation>
   );
 }

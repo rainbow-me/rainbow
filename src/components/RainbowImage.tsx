@@ -29,11 +29,15 @@ const RainbowImageInternal = ({ style, source, onError, onSuccess }: RainbowImag
       <FasterImageView
         onError={onError}
         onSuccess={onSuccess}
-        source={{
-          // aligns default resizeMode to match fast-image and RN Image
-          resizeMode: 'cover',
-          ...source,
-        }}
+        source={
+          typeof source === 'number'
+            ? source
+            : {
+                // aligns default resizeMode to match fast-image and RN Image
+                resizeMode: 'cover',
+                ...source,
+              }
+        }
         style={style || []}
       />
     );
@@ -133,7 +137,11 @@ const getHandlerFromType = (extension: DetectedImageExtension): ImageHandler => 
   return 'image';
 };
 
-const getImageType = memoFn((path: string): DetectedImageExtension => {
+const getImageType = memoFn((path: string | number): DetectedImageExtension => {
+  if (typeof path === 'number') {
+    return 'png';
+  }
+
   try {
     const url = new URL(path);
     if (url.host.includes('imgix.net')) {
