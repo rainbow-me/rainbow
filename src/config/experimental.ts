@@ -37,6 +37,7 @@ export const RAINBOW_TRENDING_TOKENS_LIST = 'Rainbow Trending Tokens List';
 export const PRINCE_OF_THE_HILL = 'Prince of the Hill';
 export const LAZY_TABS = 'Lazy Tabs';
 export const CANDLESTICK_CHARTS = 'Candlestick Charts';
+export const KING_OF_THE_HILL_TAB = 'King of the Hill Tab';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -83,6 +84,7 @@ const config = {
   [PRINCE_OF_THE_HILL]: { settings: true, value: false },
   [LAZY_TABS]: { needsRestart: true, settings: true, value: false },
   [CANDLESTICK_CHARTS]: { settings: true, value: false },
+  [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
