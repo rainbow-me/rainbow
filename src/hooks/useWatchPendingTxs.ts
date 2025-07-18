@@ -124,7 +124,9 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     if (validWaitingMindedTransactions.length < waitingMinedTransactions.length) {
       waitingMinedTransactions.forEach(tx => {
         if (now - tx.minedAt >= ASSET_DETECTION_TIMEOUT) {
-          logger.warn(`[watchPendingTransactions]: Timed out waiting for asset updates for transaction ${tx.hash}`);
+          logger.warn('[watchPendingTransactions]: Timed out waiting for asset updates for transaction', {
+            txHash: tx.hash,
+          });
         }
       });
     }
