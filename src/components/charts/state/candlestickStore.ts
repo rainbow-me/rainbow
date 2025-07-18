@@ -184,7 +184,7 @@ export async function fetchCandlestickPrice({
 }): Promise<Price | null> {
   const response = await useCandlestickStore
     .getState()
-    .fetch({ barCount: 2, candleResolution, currency, token }, { skipStoreUpdates: true });
+    .fetch({ barCount: 1, candleResolution, currency, token }, { skipStoreUpdates: true });
   if (!response) return null;
   return extractPriceFromCandles(response.candles, candleResolution, response.lastFetchedCurrentPriceAt) ?? null;
 }
@@ -415,12 +415,13 @@ function buildBaseQueryKey(params: BaseParams): string {
 }
 
 /**
- * Calculates the percent change from the previous candle price to the current candle price.
+ * Calculates the percent change from the most recent candle's open
+ * price to its close price.
  */
 function calculatePercentChange(candles: Bar[]): number {
-  const currentCandlePrice = candles[candles.length - 1]?.c ?? 0;
-  const previousCandlePrice = candles[candles.length - 2]?.c ?? currentCandlePrice;
-  return previousCandlePrice ? ((currentCandlePrice - previousCandlePrice) / previousCandlePrice) * 100 : 0;
+  const currentCandleClose = candles[candles.length - 1]?.c ?? 0;
+  const currentCandleOpen = candles[candles.length - 1]?.o ?? 0;
+  return currentCandleOpen ? ((currentCandleClose - currentCandleOpen) / currentCandleOpen) * 100 : 0;
 }
 
 /**

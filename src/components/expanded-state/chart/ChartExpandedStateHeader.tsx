@@ -74,13 +74,15 @@ const CandlestickTimeLabel = ({ accentColor, backgroundColor }: { accentColor: s
   const { isDarkMode } = useColorMode();
   const selectedTimespanLabel = useStoreSharedValue(useChartsStore, state => CANDLE_RESOLUTIONS[state.candleResolution].label);
 
+  const background = isDarkMode
+    ? getSolidColorEquivalent({ background: backgroundColor, foreground: globalColors.grey100, opacity: 0.08 })
+    : undefined;
+
   return (
     <Bleed bottom={{ custom: 6 }} left={{ custom: 2 }} top={{ custom: 5 }}>
       <Box
         alignItems="center"
-        backgroundColor={
-          isDarkMode ? getSolidColorEquivalent({ background: backgroundColor, foreground: globalColors.grey100, opacity: 0.08 }) : undefined
-        }
+        backgroundColor={background}
         borderColor={{ custom: opacity(accentColor, 0.12) }}
         borderRadius={10}
         borderWidth={2}
@@ -104,7 +106,6 @@ const LineChartTimeLabel = ({
   isChartGestureActive: SharedValue<boolean>;
 }) => {
   const selectedTimespanLabel = useStoreSharedValue(useChartsStore, state => formatLineChartTimespan(state.lineChartTimePeriod));
-
   const lineChartLabel = useDerivedValue(() =>
     isChartGestureActive.value ? formatTimestamp(chartGestureUnixTimestamp.value) : selectedTimespanLabel.value
   );

@@ -1,12 +1,17 @@
 import React from 'react';
 import { ViewProps } from 'react-native';
 import Animated, { AnimatedProps, AnimatedStyle, Easing, FadeIn, FadeOut } from 'react-native-reanimated';
-import { Route } from '@/navigation/routesNames';
+import { Route, UseRoute } from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { useRoute } from '@react-navigation/native';
 
 type MountWhenFocusedProps = {
   children: React.ReactNode;
-  route: Route;
+  /**
+   * The route that must be active for the component to mount.
+   * @default useRoute().name
+   */
+  route?: Route;
 } & (
   | {
       animated?: false;
@@ -35,7 +40,8 @@ export const MountWhenFocused = ({
   route,
   style,
 }: MountWhenFocusedProps) => {
-  const isRouteActive = useNavigationStore(state => state.isRouteActive(route));
+  const currentRoute = useRoute<UseRoute>().name;
+  const isRouteActive = useNavigationStore(state => state.isRouteActive(route ?? currentRoute));
 
   if (!isRouteActive) return null;
   if (!animated) return children;

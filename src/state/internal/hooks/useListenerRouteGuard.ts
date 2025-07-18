@@ -1,6 +1,7 @@
+import { useRoute } from '@react-navigation/native';
 import { MutableRefObject, useMemo } from 'react';
 import { useStableValue } from '@/hooks/useStableValue';
-import { Route } from '@/navigation/routesNames';
+import { Route, UseRoute } from '@/navigation/routesNames';
 import { Listener, Selector } from '@/state/internal/types';
 import { NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
 import { ListenHandle, useListen } from './useListen';
@@ -28,7 +29,14 @@ export type UseListenerRouteGuardOptions = {
    * @default false
    */
   fireImmediately?: boolean;
+  /**
+   * The route that must be active for the listener to run.
+   * @default useRoute().name
+   */
+  route?: Route;
 };
+
+type RequiredInternalOptions = Required<Omit<UseListenerRouteGuardOptions, 'route'>>;
 
 // ============ useListenerRouteGuard ========================================== //
 
@@ -36,7 +44,7 @@ const DEFAULT_OPTIONS = Object.freeze({
   debugMode: false,
   enabled: true,
   fireImmediately: false,
-}) satisfies Required<UseListenerRouteGuardOptions>;
+}) satisfies RequiredInternalOptions;
 
 /**
  * ### `useListenerRouteGuard`
@@ -79,10 +87,10 @@ const DEFAULT_OPTIONS = Object.freeze({
  */
 export function useListenerRouteGuard(
   listenHandle: MutableRefObject<Readonly<ListenHandle>>,
-  route: Route,
-  { debugMode, enabled, fireImmediately }: UseListenerRouteGuardOptions = DEFAULT_OPTIONS
+  { debugMode, enabled, fireImmediately, route }: UseListenerRouteGuardOptions = DEFAULT_OPTIONS
 ): void {
-  const handlers = useStableValue(() => createHandlers(listenHandle, route, debugMode));
+  const currentRoute = useRoute<UseRoute>().name;
+  const handlers = useStableValue(() => createHandlers(listenHandle, route ?? currentRoute, debugMode));
   const adjustedOptions = useMemo(() => stripDebugMode({ enabled, fireImmediately }), [enabled, fireImmediately]);
   useListen(useNavigationStore, handlers.selector, handlers.suspensionHandler, adjustedOptions);
 }
@@ -120,7 +128,7 @@ function createSuspensionHandler(
 function stripDebugMode({
   enabled,
   fireImmediately,
-}: Pick<UseListenerRouteGuardOptions, 'enabled' | 'fireImmediately'>): Required<UseListenerRouteGuardOptions> {
+}: Pick<UseListenerRouteGuardOptions, 'enabled' | 'fireImmediately'>): RequiredInternalOptions {
   return {
     debugMode: false,
     enabled: enabled ?? DEFAULT_OPTIONS.enabled,

@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
-import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CandlestickChart, PartialCandlestickConfig } from '@/components/charts/candlestick/components/CandlestickChart';
 import { arePricesEqual } from '@/components/charts/candlestick/utils';
 import { TimeframeSelector } from '@/components/charts/components/TimeframeSelector';
@@ -9,11 +10,9 @@ import { chartsActions, useChartType } from '@/components/charts/state/chartsSto
 import { ChartType } from '@/components/charts/types';
 import { Box, useColorMode } from '@/design-system';
 import { useCleanup } from '@/hooks/useCleanup';
-import Routes from '@/navigation/routesNames';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { LineChart } from './LineChart';
 
@@ -118,22 +117,28 @@ const ChartHeader = memo(function ChartHeader({
   const [currentCandlestickPrice, priceListener] = useStoreSharedValue(useCandlestickStore, state => state.getPrice(), {
     equalityFn: arePricesEqual,
     enabled: enableCandlestickListeners,
+    fireImmediately: true,
     returnListenHandle: true,
   });
 
-  useListenerRouteGuard(priceListener, Routes.EXPANDED_ASSET_SHEET_V2, {
+  useListenerRouteGuard(priceListener, {
     enabled: enableCandlestickListeners,
   });
 
   const price = useDerivedValue(() => {
-    return isChartGestureActive.value ? chartGesturePrice.value : currentCandlestickPrice.value?.price ?? priceValue ?? undefined;
+    const gesturePrice = chartType === ChartType.Line ? chartGesturePrice.value : undefined;
+    return gesturePrice ?? currentCandlestickPrice.value?.price ?? priceValue ?? undefined;
   });
 
   const relativeChange = useDerivedValue(() => currentCandlestickPrice.value?.percentChange ?? relativeChange24 ?? undefined);
 
   const chartHeaderStyle = useAnimatedStyle(() => {
+    const shouldDisplay = !_WORKLET || !isChartGestureActive.value || chartType === ChartType.Line;
+    const timingConfig = TIMING_CONFIGS[shouldDisplay ? 'buttonPressConfig' : 'buttonPressConfig'];
     return {
-      opacity: isChartGestureActive.value && chartType === ChartType.Candlestick ? 0 : 1,
+      opacity: withTiming(shouldDisplay ? 1 : 0, timingConfig),
+      transform: [{ scale: withTiming(shouldDisplay ? 1 : 0.98, timingConfig) }],
+      zIndex: shouldDisplay ? 0 : -1,
     };
   });
 
@@ -151,28 +156,14 @@ const ChartHeader = memo(function ChartHeader({
   );
 });
 
-function useCandlestickConfig(
-  accentColors: Pick<AssetAccentColors, 'color' | 'opacity6' | 'opacity10' | 'opacity12' | 'opacity24'>
-): PartialCandlestickConfig {
+function useCandlestickConfig(accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'>): PartialCandlestickConfig {
   const { isDarkMode } = useColorMode();
   return useMemo(
     () => ({
-      activeCandleCard: {
-        style: {
-          backgroundColor: accentColors.opacity6,
-          paddingHorizontal: 16,
-          alignSelf: 'center',
-          borderRadius: 20,
-          borderWidth: 1,
-          borderColor: accentColors.opacity10,
-          width: DEVICE_WIDTH - 48,
-        },
-        height: 75,
-      },
       crosshair: isDarkMode ? undefined : { dotColor: accentColors.color, lineColor: accentColors.color },
       grid: { color: accentColors.opacity12 },
       volume: { color: accentColors.opacity24 },
     }),
-    [accentColors.color, accentColors.opacity6, accentColors.opacity10, accentColors.opacity12, accentColors.opacity24, isDarkMode]
+    [accentColors.color, accentColors.opacity12, accentColors.opacity24, isDarkMode]
   );
 }
