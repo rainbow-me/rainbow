@@ -1,5 +1,5 @@
 import { SWAP_ICON_WIDTH } from '@/components/rainbow-toast/constants';
-import { getSwapToastStatusLabel, useSwapToastNetworkLabel } from '@/components/rainbow-toast/SwapToastContent';
+import { getSwapToastStatusLabel, getSwapToastNetworkLabel } from '@/components/rainbow-toast/SwapToastContent';
 import { SwapToastIcon } from '@/components/rainbow-toast/SwapToastIcon';
 import { RainbowToastSwap } from '@/components/rainbow-toast/types';
 import { TransactionStatus } from '@/entities';
@@ -10,7 +10,7 @@ import { EXPANDED_ICON_SIZE, ToastExpandedContent } from './ToastExpandedContent
 export function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
   const { transaction } = toast;
 
-  const title = useSwapToastNetworkLabel({ toast });
+  const title = getSwapToastNetworkLabel({ toast });
   const subtitle = getSwapToastStatusLabel({ toast });
   const isSwapped = toast.status === TransactionStatus.swapped;
   const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;

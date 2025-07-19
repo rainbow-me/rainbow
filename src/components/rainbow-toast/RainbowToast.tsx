@@ -4,6 +4,15 @@ import { SendToastContent } from '@/components/rainbow-toast/SendToastContent';
 import { SwapToastContent } from '@/components/rainbow-toast/SwapToastContent';
 import { type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import {
+  TOAST_HEIGHT,
+  TOAST_GAP_NEAR,
+  TOAST_GAP_FAR,
+  TOAST_TOP_OFFSET,
+  TOAST_INITIAL_OFFSET_ABOVE,
+  TOAST_INITIAL_OFFSET_BELOW,
+  TOAST_HIDE_TIMEOUT_MS,
+} from '@/components/rainbow-toast/constants';
+import {
   finishRemoveToast,
   handleTransactions,
   setShowExpandedToasts,
@@ -68,7 +77,7 @@ export function RainbowToastDisplay() {
     const toastsToShow: RainbowToastWithIndex[] = [];
     const removingToasts: RainbowToastWithIndex[] = [];
     for (const toast of toasts) {
-      if (toast.removing) {
+      if (toast.isRemoving) {
         removingToasts.push(toast);
       } else {
         toastsToShow.push(toast);
@@ -122,9 +131,9 @@ type Props = PropsWithChildren<{
 const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: Props) {
   const { index, id } = toast;
 
-  const height = 60;
-  const gap = index > 1 ? 3.5 : 4; // less gap for third item
-  const distance = index * gap + insets.top + 10;
+  const height = TOAST_HEIGHT;
+  const gap = index > 1 ? TOAST_GAP_FAR : TOAST_GAP_NEAR;
+  const distance = index * gap + insets.top + TOAST_TOP_OFFSET;
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const opacity = useSharedValue(0);
@@ -134,9 +143,9 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
     (() => {
       if (startedHiddenBelow) {
         // if >3 (starting hidden), start from below
-        return distance + 10;
+        return distance + TOAST_INITIAL_OFFSET_BELOW;
       } else {
-        return insets.top - 80;
+        return insets.top + TOAST_INITIAL_OFFSET_ABOVE;
       }
     })()
   );
@@ -170,7 +179,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   // via pendingTransactions, or if it reaches final state if
   // pendingTransactions are empty we set removing in state, so handle the final
   // logic to hide it here
-  const nonSwipeRemove = toast.removing === true;
+  const nonSwipeRemove = toast.isRemoving && !toast.removalReason;
   useEffect(() => {
     if (nonSwipeRemove) {
       hideToast();
@@ -181,23 +190,24 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
   const shouldHideItself =
     (toast.type === 'swap' && toast.status === TransactionStatus.swapped) ||
     (toast.type === 'send' && toast.status === TransactionStatus.sent) ||
-    (toast.type === 'mint' && toast.status === TransactionStatus.minted);
+    (toast.type === 'mint' && toast.status === TransactionStatus.minted) ||
+    toast.status === TransactionStatus.failed;
 
   useEffect(() => {
     if (!shouldHideItself) return;
-    if (toast.removing === true) return;
+    if (toast.isRemoving && !toast.removalReason) return;
 
-    if (!toast.removing) {
+    if (!toast.isRemoving) {
       // sets it into removing state so it wont be cleared on other state updates
       startRemoveToast(id, 'finish');
       return;
     }
 
-    if (toast.removing === 'finish') {
+    if (toast.removalReason === 'finish') {
       const tm = setTimeout(() => {
         hideToast();
         // wait a few seconds
-      }, 3000);
+      }, TOAST_HIDE_TIMEOUT_MS);
 
       return () => {
         clearTimeout(tm);

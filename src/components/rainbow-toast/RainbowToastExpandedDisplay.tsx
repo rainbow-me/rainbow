@@ -1,6 +1,7 @@
 import { MintToastExpandedContent } from '@/components/rainbow-toast/MintToastExpandedContent';
 import { SwapToastExpandedContent } from '@/components/rainbow-toast/SwapToastExpandedContent';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import { DISMISS_SENSITIVITY, UPWARD_SENSITIVITY_MULTIPLIER } from '@/components/rainbow-toast/constants';
 import { Box, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
@@ -117,14 +118,12 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
         dragY.value = e.translationY;
       })
       .onEnd(e => {
-        const sensitivity = 0.5; // make dismissing easier (lower) or harder (higher)
-        const upwardSensitivityMultiplier = 2; // upward dragging more sensitive
         const dragDistance = dragY.value;
-        const adjustedDistance = dragDistance < 0 ? dragDistance * upwardSensitivityMultiplier : dragDistance;
+        const adjustedDistance = dragDistance < 0 ? dragDistance * UPWARD_SENSITIVITY_MULTIPLIER : dragDistance;
         const distanceRatio = Math.abs(adjustedDistance) / height;
         const velocityFactor = Math.abs(e.velocityY) / 1000;
         const dismissScore = distanceRatio + velocityFactor;
-        const shouldDismiss = dismissScore > sensitivity;
+        const shouldDismiss = dismissScore > DISMISS_SENSITIVITY;
 
         if (shouldDismiss) {
           const targetY = -100;

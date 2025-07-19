@@ -2470,7 +2470,22 @@
     },
     "toasts": {
       "copied": "Copied \"%{copiedText}\"",
-      "invalid_paste": "You can't paste that here"
+      "invalid_paste": "You can't paste that here",
+      "swap": {
+        "swapping": "Swapping",
+        "swapped": "Swapped",
+        "failed": "Swap Failed"
+      },
+      "send": {
+        "sending": "Sending",
+        "sent": "Sent",
+        "failed": "Send Failed"
+      },
+      "mint": {
+        "minting": "Minting",
+        "minted": "Minted",
+        "failed": "Mint Failed"
+      }
     },
     "tokens_tab": {
       "unknown_token": "Unknown Token"

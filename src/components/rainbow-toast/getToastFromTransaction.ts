@@ -24,6 +24,7 @@ export const RainbowToastMintStatuses = {
   [TransactionStatus.pending]: TransactionStatus.pending,
   [TransactionStatus.minting]: TransactionStatus.minting,
   [TransactionStatus.minted]: TransactionStatus.minted,
+  [TransactionStatus.failed]: TransactionStatus.failed,
 } as const;
 
 export function getSwapToastStatus(status: TransactionStatus): keyof typeof RainbowToastSwapStatuses | null {

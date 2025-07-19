@@ -1,7 +1,6 @@
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
-import { TruncatedText } from '@/components/text';
-import { IS_ANDROID } from '@/env';
+import { Text } from '@/design-system';
 import React from 'react';
 import { View } from 'react-native';
 
@@ -32,27 +31,19 @@ export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_IC
       </View>
 
       <View style={{ gap: 4, minWidth: 0 }}>
-        <TruncatedText
-          color={colors.foreground}
-          size="smedium"
-          weight="bold"
-          {...(IS_ANDROID && {
-            lineHeight: 16,
-          })}
-        >
+        <Text color={{ custom: colors.foreground }} size="15pt" weight="bold" numberOfLines={1} ellipsizeMode="tail">
           {title}
-        </TruncatedText>
-        <TruncatedText
-          color={type === 'error' ? colors.red : colors.foreground}
-          opacity={0.5}
-          size={12}
+        </Text>
+        <Text
+          color={{ custom: type === 'error' ? colors.red : colors.foreground }}
+          size="13pt"
           weight="bold"
-          {...(IS_ANDROID && {
-            lineHeight: 16,
-          })}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={{ opacity: 0.5 }}
         >
           {subtitle}
-        </TruncatedText>
+        </Text>
       </View>
     </View>
   );

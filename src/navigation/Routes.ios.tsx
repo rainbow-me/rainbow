@@ -117,7 +117,7 @@ import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
-import { DevActionsSheet } from '@/components/sheets/DevActionsSheet';
+import { ToastDebugSheet } from '@/components/rainbow-toast/ToastDebugSheet';
 import ProfileScreen from '@/screens/ProfileScreen';
 
 const Stack = createStackNavigator();
@@ -162,7 +162,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
       <NativeStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <NativeStack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
-      <NativeStack.Screen component={DevActionsSheet} name={Routes.DEV_ACTION_SHEET} {...devActionsModalSheetConfig} />
+      <NativeStack.Screen component={ToastDebugSheet} name={Routes.DEV_ACTION_SHEET} {...devActionsModalSheetConfig} />
       <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
       <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />

@@ -1,5 +1,5 @@
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { SFSymbolIcon } from '@/components/icons/SFSymbolIcon';
+import { SFSymbolIcon } from '@/components/rainbow-toast/SFSymbolIcon';
 import { SWAP_ICON_INTERSECT, SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { RainbowToastSwap } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';

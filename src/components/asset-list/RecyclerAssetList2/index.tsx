@@ -16,14 +16,16 @@ import { analytics } from '@/analytics';
 import * as lang from '@/languages';
 import { useWalletSectionsData } from '@/hooks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_TEST, IS_DEV } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { KING_OF_THE_HILL_TAB, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
-const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
+type Item = MenuItem<(typeof Routes)[keyof typeof Routes]>;
+
+const menuItems: Item[] = [
   {
     actionKey: Routes.SETTINGS_SHEET,
     actionTitle: lang.t(lang.l.settings.label),
@@ -39,11 +41,15 @@ const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
     actionTitle: lang.t(lang.l.wallet.connected_apps),
     icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
   },
-  {
-    actionKey: Routes.DEV_ACTION_SHEET,
-    actionTitle: 'Dev Actions',
-    icon: { iconType: 'SYSTEM', iconValue: 'ladybug' },
-  },
+  ...(IS_DEV
+    ? [
+        {
+          actionKey: Routes.DEV_ACTION_SHEET,
+          actionTitle: 'Dev Actions',
+          icon: { iconType: 'SYSTEM', iconValue: 'ladybug' },
+        } satisfies Item,
+      ]
+    : []),
 ];
 
 export interface RecyclerAssetList2Props {

@@ -1,6 +1,6 @@
 import { RainbowImage } from '@/components/RainbowImage';
 import { ShimmerAnimation } from '@/components/animations';
-import { SFSymbolIcon } from '@/components/icons/SFSymbolIcon';
+import { SFSymbolIcon } from '@/components/rainbow-toast/SFSymbolIcon';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import type { RainbowToastMint } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
@@ -13,6 +13,10 @@ export function MintToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
 
   if (toast.status === TransactionStatus.minted) {
     return <SFSymbolIcon borderRadius={10} name="check" />;
+  }
+
+  if (toast.status === TransactionStatus.failed) {
+    return <SFSymbolIcon borderRadius={10} name="exclamationMark" />;
   }
 
   return (
