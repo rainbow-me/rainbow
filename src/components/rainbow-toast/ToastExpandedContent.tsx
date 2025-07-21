@@ -145,14 +145,24 @@ function ToastExpandedContentDisplay({
             marginTop: -1,
           }}
         >
-          <View style={{ flexDirection: 'row', flex: 1, minHeight: 14, alignItems: 'center', flexWrap: 'nowrap' }}>
+          <View style={{ flexDirection: 'row', flex: 1, minHeight: 16, alignItems: 'center', flexWrap: 'nowrap' }}>
             {isLoading ? <Spinner color={colors.loadingText} size={11} style={{ marginTop: -1, paddingRight: 5 }} /> : null}
             <Text color={isLoading ? { custom: colors.loadingText } : 'labelTertiary'} size="13pt" weight="semibold">
               {statusLabel}
             </Text>
           </View>
 
-          <Text numberOfLines={1} ellipsizeMode="tail" color="label" size="17pt" weight="medium">
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            color="label"
+            size="17pt"
+            weight="medium"
+            style={{
+              lineHeight: 28,
+              marginTop: -10,
+            }}
+          >
             {label}
           </Text>
         </View>
