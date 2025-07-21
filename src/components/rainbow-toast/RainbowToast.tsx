@@ -59,10 +59,7 @@ export function RainbowToastDisplay() {
     };
   });
 
-  console.log(
-    'transactions',
-    transactions.slice(0, 4).map(t => [t.type, t.swap, t.status])
-  );
+  console.log('transactions', JSON.stringify(transactions.slice(0, 2), null, 2));
 
   const accountAddress = useAccountAddress();
   const {
