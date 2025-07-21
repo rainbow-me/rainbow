@@ -78,18 +78,22 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
   );
 }
 
-type Props = {
+export const EXPANDED_ICON_SIZE = 34;
+
+function ToastExpandedContentDisplay({
+  icon,
+  statusLabel,
+  label,
+  transaction,
+  isLoading,
+}: {
   icon: ReactNode;
   statusLabel: ReactNode;
   transaction: RainbowTransaction;
   label: ReactNode;
   iconWidth?: number;
   isLoading?: boolean;
-};
-
-export const EXPANDED_ICON_SIZE = 34;
-
-function ToastExpandedContentDisplay({ icon, statusLabel, label, transaction, isLoading }: Props) {
+}) {
   const colors = useToastColors();
 
   return (
@@ -136,7 +140,7 @@ function ToastExpandedContentDisplay({ icon, statusLabel, label, transaction, is
         <View
           style={{
             flex: 10,
-            gap: 13,
+            gap: 8,
             // visually this looks a bit better being slightly up due to the smaller top title text
             marginTop: -1,
           }}

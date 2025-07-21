@@ -6,11 +6,7 @@ import { TransactionStatus } from '@/entities';
 import React from 'react';
 
 export const SendToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastSend; size?: number }) => {
-  if (toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending) {
-    return <ChainImage chainId={toast.chainId} size={size} />;
-  }
-
-  if (toast.status === TransactionStatus.sent) {
+  if (toast.status === TransactionStatus.sent || toast.status === TransactionStatus.confirmed) {
     return <ToastSFSymbolIcon size={size} name="check" />;
   }
 
@@ -18,5 +14,5 @@ export const SendToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
     return <ToastSFSymbolIcon size={size} name="exclamationMark" />;
   }
 
-  return null;
+  return <ChainImage chainId={toast.chainId} size={size} />;
 };

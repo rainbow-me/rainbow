@@ -40,7 +40,7 @@ export function ToastSFSymbolIcon({
           StyleSheet.absoluteFillObject,
           {
             backgroundColor: bg,
-            borderRadius: borderRadius,
+            borderRadius: borderRadius - 5,
             overflow: 'hidden',
             opacity: 0.9,
             alignItems: 'center',

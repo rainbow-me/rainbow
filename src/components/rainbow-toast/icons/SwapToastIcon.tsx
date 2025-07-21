@@ -9,10 +9,19 @@ import React from 'react';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-export const isWideSwapIcon = (toast: RainbowToastSwap) => toast.status !== TransactionStatus.swapped;
+export const isWideSwapIcon = (toast: RainbowToastSwap) => {
+  if (
+    toast.status === TransactionStatus.swapped ||
+    toast.status === TransactionStatus.confirmed ||
+    toast.status === TransactionStatus.failed
+  ) {
+    return false;
+  }
+  return true;
+};
 
 export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastSwap; size?: number }) => {
-  const chainImage = <ChainImage chainId={toast.fromChainId} size={16} />;
+  const chainImage = <ChainImage chainId={toast.chainId} size={16} />;
 
   return isWideSwapIcon(toast) ? (
     <View style={{ position: 'relative', flexDirection: 'row', height: TOAST_ICON_SIZE, width: SWAP_ICON_WIDTH }}>
@@ -29,7 +38,7 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
       </View>
     </View>
   ) : (
-    <ToastSFSymbolIcon size={size} name="check" />
+    <ToastSFSymbolIcon size={size} name={toast.status === TransactionStatus.failed ? 'exclamationMark' : 'check'} />
   );
 };
 

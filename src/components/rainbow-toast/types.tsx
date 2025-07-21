@@ -14,8 +14,7 @@ type BaseToast = {
 export type RainbowToastSwap = BaseToast & {
   type: 'swap';
   status: keyof typeof RainbowToastSwapStatuses;
-  fromChainId: number;
-  toChainId: number;
+  chainId: number;
   fromAssetSymbol: string;
   toAssetSymbol: string;
   fromAssetImage: string;

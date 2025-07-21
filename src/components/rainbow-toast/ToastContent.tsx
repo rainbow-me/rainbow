@@ -83,11 +83,13 @@ function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
 }
 
 export const getSwapToastStatusLabel = ({ toast }: { toast: RainbowToastSwap }) => {
-  return toast.status === TransactionStatus.failed
-    ? i18n.t(i18n.l.toasts.swap.failed)
-    : toast.status === TransactionStatus.swapping
-      ? i18n.t(i18n.l.toasts.swap.swapping)
-      : i18n.t(i18n.l.toasts.swap.swapped);
+  if (toast.status === TransactionStatus.failed) {
+    return i18n.t(i18n.l.toasts.swap.failed);
+  }
+  if (toast.status === TransactionStatus.swapped || toast.status === TransactionStatus.confirmed) {
+    return i18n.t(i18n.l.toasts.swap.swapped);
+  }
+  return i18n.t(i18n.l.toasts.swap.swapping);
 };
 
 export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap }) => {
@@ -99,11 +101,13 @@ export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap })
 };
 
 export const getSendToastStatusLabel = (toast: RainbowToastSend) => {
-  return toast.status === TransactionStatus.sent
-    ? i18n.t(i18n.l.toasts.send.sent)
-    : toast.status === TransactionStatus.failed
-      ? i18n.t(i18n.l.toasts.send.failed)
-      : i18n.t(i18n.l.toasts.send.sending);
+  if (toast.status === TransactionStatus.sent || toast.status === TransactionStatus.confirmed) {
+    return i18n.t(i18n.l.toasts.send.sent);
+  }
+  if (toast.status === TransactionStatus.failed) {
+    return i18n.t(i18n.l.toasts.send.failed);
+  }
+  return i18n.t(i18n.l.toasts.send.sending);
 };
 
 export function SendToastContent({ toast }: { toast: RainbowToastSend }) {
@@ -122,14 +126,14 @@ export function SendToastContent({ toast }: { toast: RainbowToastSend }) {
 }
 
 export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
+  if (toast.status === TransactionStatus.minted) {
+    return i18n.t(i18n.l.toasts.contract.minted);
+  }
   if (toast.status === TransactionStatus.minting) {
     return i18n.t(i18n.l.toasts.contract.minting);
   }
   if (toast.status === TransactionStatus.failed) {
     return i18n.t(i18n.l.toasts.contract.failed);
-  }
-  if (toast.status === TransactionStatus.minted) {
-    i18n.t(i18n.l.toasts.contract.minted);
   }
   return i18n.t(i18n.l.toasts.contract.pending);
 };

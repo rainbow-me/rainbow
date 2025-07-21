@@ -56,15 +56,15 @@ export function ToastDebugSheet() {
   }
 
   const addSendTransaction = () => {
-    addThenUpdate(createMockSendTransaction(TransactionStatus.sending));
+    addThenUpdate(createMockSendTransaction(TransactionStatus.pending));
   };
 
   const addSwapTransaction = () => {
-    addThenUpdate(createMockSwapTransaction(TransactionStatus.swapping));
+    addThenUpdate(createMockSwapTransaction(TransactionStatus.pending));
   };
 
   const addMintTransaction = () => {
-    addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
+    addThenUpdate(createMockMintTransaction(TransactionStatus.pending));
   };
 
   const addDappSwapTransaction = () => {

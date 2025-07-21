@@ -5,11 +5,11 @@ import { useMemo } from 'react';
 export const useToastColors = () => {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
-  
+
   return useMemo(() => {
     const foreground = isDarkMode ? colors.whiteLabel : colors.dark;
     const shadowColor = isDarkMode ? 'rgba(0,0,0,1)' : 'rgba(0,0,0,0.125)';
-    
+
     return {
       foreground,
       foregroundDim: isDarkMode ? '#F5F8FF66' : colors.darkGrey,
@@ -20,7 +20,7 @@ export const useToastColors = () => {
       red: colors.red,
       purple: colors.purple,
       clearBlue: colors.clearBlue,
-      white: colors.white,
+      white: '#fff',
       shadowColor,
       pressColor: isDarkMode ? 'rgba(50,50,50,0.2)' : 'rgba(200,200,200,0.2)',
     };

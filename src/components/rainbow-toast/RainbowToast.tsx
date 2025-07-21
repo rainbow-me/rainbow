@@ -191,9 +191,10 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
 
   // reached a finished state, set a timeout then remove
   const shouldHideItself =
-    (toast.type === 'swap' && toast.status === TransactionStatus.swapped) ||
-    (toast.type === 'send' && toast.status === TransactionStatus.sent) ||
-    (toast.type === 'mint' && toast.status === TransactionStatus.minted) ||
+    toast.status === TransactionStatus.confirmed ||
+    toast.status === TransactionStatus.swapped ||
+    toast.status === TransactionStatus.sent ||
+    toast.status === TransactionStatus.minted ||
     toast.status === TransactionStatus.failed;
 
   useEffect(() => {
