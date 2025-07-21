@@ -1,6 +1,6 @@
 import { getToastFromTransaction } from '@/components/rainbow-toast/getToastFromTransaction';
 import type { RainbowToastWithIndex } from '@/components/rainbow-toast/types';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Mints } from '@/resources/mints';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
@@ -8,7 +8,7 @@ export type ToastState = {
   isShowingTransactionDetails: boolean;
   setIsShowingTransactionDetails: (val: boolean) => void;
   toasts: RainbowToastWithIndex[];
-  handleTransactions: (props: { pendingTransactions: RainbowTransaction[]; mints?: Mints }) => void;
+  handleTransactions: (props: { transactions: RainbowTransaction[]; mints?: Mints }) => void;
   startRemoveToast: (id: string, via: 'swipe' | 'finish') => void;
   finishRemoveToast: (id: string) => void;
   dismissedToasts: Set<string>;
@@ -32,24 +32,30 @@ export const useToastStore = createRainbowStore<ToastState>(set => ({
 
   setShowExpandedToasts: (show: boolean) => set({ showExpanded: show }),
 
-  handleTransactions: ({ pendingTransactions, mints }) => {
+  handleTransactions: ({ transactions, mints }) => {
     set(state => {
       const activeToastIds = new Set(state.toasts.map(t => t.id));
-      const transactionToasts = pendingTransactions.map(tx => getToastFromTransaction(tx, mints)).filter(Boolean);
+      const transactionToasts = transactions.map(tx => getToastFromTransaction(tx, mints)).filter(Boolean);
       const transactionToastsMap = new Map(transactionToasts.map(t => [t.id, t]));
       const newlyDismissedToasts = new Set<string>();
 
-      // handle updates:
+      // updates:
       const updatedToasts = state.toasts.map(toast => {
-        const newToast = transactionToastsMap.get(toast.id);
-        if (newToast) {
-          return { ...toast, ...newToast };
+        const existing = transactionToastsMap.get(toast.id);
+        if (existing) {
+          return { ...toast, ...existing };
         }
         return toast;
       });
 
       // additions:
-      const additions = transactionToasts.filter(t => !activeToastIds.has(t.id) && !state.dismissedToasts.has(t.id));
+      const additions = transactionToasts.filter(
+        t =>
+          !activeToastIds.has(t.id) &&
+          !state.dismissedToasts.has(t.id) &&
+          // all transactions start as pending, we only add if we start from pending
+          t.status === TransactionStatus.pending
+      );
 
       const toasts = [...additions, ...updatedToasts]
         .map((t, index) => ({ ...t, index }))

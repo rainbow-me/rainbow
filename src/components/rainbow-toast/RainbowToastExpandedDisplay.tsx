@@ -1,5 +1,3 @@
-import { MintToastExpandedContent } from '@/components/rainbow-toast/MintToastExpandedContent';
-import { SwapToastExpandedContent } from '@/components/rainbow-toast/SwapToastExpandedContent';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { DISMISS_SENSITIVITY, UPWARD_SENSITIVITY_MULTIPLIER } from '@/components/rainbow-toast/constants';
 import { Box, useColorMode } from '@/design-system';
@@ -13,8 +11,8 @@ import { BlurView } from 'react-native-blur-view';
 import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { EdgeInsets } from 'react-native-safe-area-context';
-import { SendToastExpandedContent } from './SendToastExpandedContent';
 import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
+import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
 
 const springConfig = { damping: 14, mass: 1, stiffness: 121.6 };
 const CARD_BORDER_RADIUS = 50;
@@ -206,19 +204,6 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
                 }}
               >
                 {toasts.map(toast => {
-                  const innerContents = (() => {
-                    switch (toast.type) {
-                      case 'send':
-                        return <SendToastExpandedContent toast={toast} />;
-                      case 'swap':
-                        return <SwapToastExpandedContent toast={toast} />;
-                      case 'mint':
-                        return <MintToastExpandedContent toast={toast} />;
-                      default:
-                        return null;
-                    }
-                  })();
-
                   return (
                     <Pressable
                       key={toast.id}
@@ -236,7 +221,7 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
                         });
                       }}
                     >
-                      {innerContents}
+                      <ToastExpandedContent toast={toast} />
                     </Pressable>
                   );
                 })}

@@ -1,6 +1,6 @@
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { SFSymbolIcon } from '@/components/rainbow-toast/SFSymbolIcon';
 import { SWAP_ICON_INTERSECT, SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
 import { RainbowToastSwap } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities';
@@ -18,14 +18,18 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
     <View style={{ position: 'relative', flexDirection: 'row', height: TOAST_ICON_SIZE, width: SWAP_ICON_WIDTH }}>
       <View style={{ position: 'absolute', bottom: -4, right: 10, zIndex: 10 }}>{chainImage}</View>
       <MaskedView maskElement={<Mask />}>
-        <RainbowImage style={{ width: TOAST_ICON_SIZE, height: TOAST_ICON_SIZE }} source={{ url: toast.fromAssetImage }} />
+        <View style={{ borderRadius: 100, overflow: 'hidden' }}>
+          <RainbowImage style={{ width: TOAST_ICON_SIZE, height: TOAST_ICON_SIZE }} source={{ url: toast.fromAssetImage }} />
+        </View>
       </MaskedView>
       <View style={{ marginLeft: -SWAP_ICON_INTERSECT, zIndex: 2 }}>
-        <RainbowImage style={{ width: TOAST_ICON_SIZE, height: TOAST_ICON_SIZE }} source={{ url: toast.toAssetImage }} />
+        <View style={{ borderRadius: 100, overflow: 'hidden' }}>
+          <RainbowImage style={{ width: TOAST_ICON_SIZE, height: TOAST_ICON_SIZE }} source={{ url: toast.toAssetImage }} />
+        </View>
       </View>
     </View>
   ) : (
-    <SFSymbolIcon size={size} name="check" />
+    <ToastSFSymbolIcon size={size} name="check" />
   );
 };
 

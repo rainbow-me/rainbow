@@ -16,12 +16,13 @@ export const RainbowToastSendStatuses = {
   [TransactionStatus.pending]: TransactionStatus.pending,
   [TransactionStatus.sending]: TransactionStatus.sending,
   [TransactionStatus.sent]: TransactionStatus.sent,
+  [TransactionStatus.confirmed]: TransactionStatus.confirmed,
   [TransactionStatus.failed]: TransactionStatus.failed,
 } as const;
 
-export const RainbowToastMintStatuses = {
-  [TransactionStatus.contract_interaction]: TransactionStatus.minting,
+export const RainbowToastContractStatuses = {
   [TransactionStatus.pending]: TransactionStatus.pending,
+  [TransactionStatus.contract_interaction]: TransactionStatus.contract_interaction,
   [TransactionStatus.minting]: TransactionStatus.minting,
   [TransactionStatus.minted]: TransactionStatus.minted,
   [TransactionStatus.failed]: TransactionStatus.failed,
@@ -41,9 +42,9 @@ export function getSendToastStatus(status: TransactionStatus): keyof typeof Rain
   return null;
 }
 
-export function getMintToastStatus(status: TransactionStatus): keyof typeof RainbowToastMintStatuses | null {
-  if (status in RainbowToastMintStatuses) {
-    return status as keyof typeof RainbowToastMintStatuses;
+export function getContractToastStatus(status: TransactionStatus): keyof typeof RainbowToastContractStatuses | null {
+  if (status in RainbowToastContractStatuses) {
+    return status as keyof typeof RainbowToastContractStatuses;
   }
   return null;
 }
@@ -109,14 +110,14 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
 
   if (tx.type === 'mint' || tx.type === 'contract_interaction') {
     const mint = mints?.find(mint => mint.contractAddress === tx.hash);
-    const status = getMintToastStatus(tx.status);
+    const status = getContractToastStatus(tx.status);
     if (status) {
       return {
         id: txIdToToastId(tx),
         transaction: tx,
         chainId: tx.chainId,
         transactionHash: tx.hash,
-        type: 'mint',
+        type: 'contract',
         status,
         name: tx.contract?.name || tx.title || 'NFT',
         // @ts-expect-error it is there

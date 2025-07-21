@@ -1,17 +1,15 @@
 import { BlurGradient } from '@/components/blur/BlurGradient';
-import { MintToastContent } from '@/components/rainbow-toast/MintToastContent';
-import { SendToastContent } from '@/components/rainbow-toast/SendToastContent';
-import { SwapToastContent } from '@/components/rainbow-toast/SwapToastContent';
-import { type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import {
-  TOAST_HEIGHT,
-  TOAST_GAP_NEAR,
   TOAST_GAP_FAR,
-  TOAST_TOP_OFFSET,
+  TOAST_GAP_NEAR,
+  TOAST_HEIGHT,
+  TOAST_HIDE_TIMEOUT_MS,
   TOAST_INITIAL_OFFSET_ABOVE,
   TOAST_INITIAL_OFFSET_BELOW,
-  TOAST_HIDE_TIMEOUT_MS,
+  TOAST_TOP_OFFSET,
 } from '@/components/rainbow-toast/constants';
+import { ToastContent } from '@/components/rainbow-toast/ToastContent';
+import { type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import {
   finishRemoveToast,
   handleTransactions,
@@ -24,7 +22,7 @@ import { Box, useColorMode } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
-import usePendingTransactions from '@/hooks/usePendingTransactions';
+import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
 import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
@@ -47,7 +45,7 @@ import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 export function RainbowToastDisplay() {
   const { toasts, isShowingTransactionDetails } = useToastStore();
   const insets = useSafeAreaInsets();
-  const { pendingTransactions } = usePendingTransactions();
+  const { transactions } = useLatestAccountTransactions();
 
   const showingTransactionDetails = useSharedValue(false);
 
@@ -61,6 +59,11 @@ export function RainbowToastDisplay() {
     };
   });
 
+  console.log(
+    'transactions',
+    transactions.slice(0, 4).map(t => [t.type, t.swap, t.status])
+  );
+
   const accountAddress = useAccountAddress();
   const {
     data: { mints },
@@ -69,8 +72,8 @@ export function RainbowToastDisplay() {
   });
 
   useEffect(() => {
-    handleTransactions({ pendingTransactions, mints });
-  }, [mints, pendingTransactions]);
+    handleTransactions({ transactions, mints });
+  }, [mints, transactions]);
 
   // show all removing and 3 latest toasts
   const visibleToasts = useMemo(() => {
@@ -316,20 +319,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
     };
   });
 
-  let contents: React.ReactNode = null;
-
-  switch (toast.type) {
-    case 'swap':
-      contents = <SwapToastContent toast={toast} />;
-      break;
-    case 'send':
-      contents = <SendToastContent toast={toast} />;
-      break;
-    case 'mint':
-      contents = <MintToastContent toast={toast} />;
-      break;
-  }
-
   const shadowOpacity = interpolate(index, [0, 2], [0.45, 0.2], 'clamp');
 
   return (
@@ -354,6 +343,9 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
             paddingHorizontal="20px"
             pointerEvents="auto"
             position="absolute"
+            height={52}
+            alignItems="center"
+            justifyContent="center"
             top="0px"
             borderColor={isDarkMode ? 'separatorSecondary' : { custom: IS_ANDROID ? 'rgba(150,150,150,0.5)' : 'rgba(255, 255, 255, 0.72)' }}
             testID={testID}
@@ -395,7 +387,9 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
               />
             )}
 
-            <Animated.View style={pressStyleContent}>{contents}</Animated.View>
+            <Animated.View style={pressStyleContent}>
+              <ToastContent toast={toast} />
+            </Animated.View>
           </Box>
         </Animated.View>
       </Animated.View>

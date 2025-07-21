@@ -1,23 +1,46 @@
+import { RainbowTransaction } from '@/entities';
+import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
 import { useEffect, useMemo } from 'react';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
 import useContacts from './useContacts';
-import { useNavigation } from '@/navigation';
-import { useTheme } from '@/theme';
-import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
-import { RainbowTransaction } from '@/entities';
-import { pendingTransactionsStore } from '@/state/pendingTransactions';
-import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
+  const accountState = useLatestAccountTransactions();
+  const { hasNextPage, isLoading, fetchNextPage, transactions, pendingTransactions } = accountState;
+
+  const { sections } = buildTransactionsSections(accountState);
+
+  const remainingItemsLabel = useMemo(() => {
+    if (!hasNextPage) {
+      return null;
+    }
+    return `Show ${NOE_PAGE} more transactions...`;
+  }, [hasNextPage]);
+
+  return {
+    pendingTransactions,
+    isLoadingTransactions: isLoading,
+    nextPage: fetchNextPage,
+    remainingItemsLabel,
+    sections,
+    transactions: transactions,
+    transactionsCount: transactions.length,
+  };
+}
+
+export const useLatestAccountTransactions = () => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
-
+  const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
   const { getPendingTransactionsInReverseOrder } = pendingTransactionsStore.getState();
   const pendingTransactionsMostRecentFirst = getPendingTransactionsInReverseOrder(accountAddress);
   const walletConnectRequests = getSortedWalletConnectRequests();
@@ -88,40 +111,24 @@ export default function useAccountTransactions() {
 
   const allTransactions = useMemo(
     () => pendingTransactionsMostRecentFirst.concat(transactions),
-    [pendingTransactionsMostRecentFirst, transactions]
+    // if you don't do this it updates constantly
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify([pendingTransactionsMostRecentFirst, transactions])]
   );
-
-  const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
 
   const { contacts } = useContacts();
   const theme = useTheme();
-  const { navigate } = useNavigation();
-
-  const accountState = {
-    accountAddress,
-    contacts,
-    navigate,
-    requests: walletConnectRequests,
-    theme,
-    transactions: slicedTransaction,
-    nativeCurrency,
-  };
-
-  const { sections } = buildTransactionsSections(accountState);
-
-  const remainingItemsLabel = useMemo(() => {
-    if (!hasNextPage) {
-      return null;
-    }
-    return `Show ${NOE_PAGE} more transactions...`;
-  }, [hasNextPage]);
 
   return {
-    isLoadingTransactions: isLoading,
-    nextPage: fetchNextPage,
-    remainingItemsLabel,
-    sections,
-    transactions: ios ? allTransactions : slicedTransaction,
-    transactionsCount: slicedTransaction.length,
+    pendingTransactions,
+    accountAddress,
+    contacts,
+    requests: walletConnectRequests,
+    theme,
+    transactions: allTransactions,
+    nativeCurrency,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
   };
-}
+};

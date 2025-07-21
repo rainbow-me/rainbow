@@ -1,3 +1,4 @@
+import { exampleDappSwaps, exampleMints, exampleSends, exampleSwaps } from '@/components/rainbow-toast/mockToastData';
 import { useToastStore } from '@/components/rainbow-toast/useRainbowToasts';
 import { Sheet } from '@/components/sheet';
 import { Box, Text } from '@/design-system';
@@ -6,7 +7,6 @@ import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/p
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React from 'react';
 import { Button, ScrollView } from 'react-native';
-import { exampleSwaps, exampleSends, exampleMints } from '@/components/rainbow-toast/mockToastData';
 
 let lastSwap = 0;
 let lastSend = 0;
@@ -36,6 +36,13 @@ export function ToastDebugSheet() {
     };
   };
 
+  const createMockDappSwapTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleDappSwaps[lastMint++ % exampleDappSwaps.length],
+      status,
+    };
+  };
+
   let current: RainbowTransaction[] = [];
 
   function addThenUpdate(transaction: RainbowTransaction) {
@@ -58,6 +65,10 @@ export function ToastDebugSheet() {
 
   const addMintTransaction = () => {
     addThenUpdate(createMockMintTransaction(TransactionStatus.minting));
+  };
+
+  const addDappSwapTransaction = () => {
+    addThenUpdate(createMockDappSwapTransaction(TransactionStatus.contract_interaction));
   };
 
   const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send' | 'contract_interaction', status: TransactionStatus) => {
@@ -135,6 +146,14 @@ export function ToastDebugSheet() {
             <Button onPress={addMintTransaction} title="Add Mint Transaction" />
             <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="Update Mint → Minted" />
             <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" />
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Dapp Swap
+            </Text>
+
+            <Button onPress={addDappSwapTransaction} title="Add Dapp Swap Transaction" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.swapped)} title="Update Contract → Swapped" />
+            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Contract → Failed" />
           </Box>
         </ScrollView>
       </Box>

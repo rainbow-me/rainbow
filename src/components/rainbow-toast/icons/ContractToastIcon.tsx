@@ -1,22 +1,22 @@
 import { RainbowImage } from '@/components/RainbowImage';
 import { ShimmerAnimation } from '@/components/animations';
-import { SFSymbolIcon } from '@/components/rainbow-toast/SFSymbolIcon';
+import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
-import type { RainbowToastMint } from '@/components/rainbow-toast/types';
+import type { RainbowToastContract } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { TransactionStatus } from '@/entities';
 import React from 'react';
 import { View } from 'react-native';
 
-export function MintToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastMint; size?: number }) {
+export function ContractToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastContract; size?: number }) {
   const colors = useToastColors();
 
   if (toast.status === TransactionStatus.minted) {
-    return <SFSymbolIcon borderRadius={10} name="check" />;
+    return <ToastSFSymbolIcon borderRadius={10} name="check" />;
   }
 
   if (toast.status === TransactionStatus.failed) {
-    return <SFSymbolIcon borderRadius={10} name="exclamationMark" />;
+    return <ToastSFSymbolIcon borderRadius={10} name="exclamationMark" />;
   }
 
   return (

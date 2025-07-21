@@ -2481,10 +2481,13 @@
         "sent": "Sent",
         "failed": "Send Failed"
       },
-      "mint": {
-        "minting": "Minting",
+      "contract": {
+        "failed": "Failed",
         "minted": "Minted",
-        "failed": "Mint Failed"
+        "minting": "Minting",
+        "pending": "Pending",
+        "swapped": "Swapped",
+        "sent": "Sent"
       }
     },
     "tokens_tab": {

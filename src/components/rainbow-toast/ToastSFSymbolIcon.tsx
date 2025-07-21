@@ -9,7 +9,7 @@ const sfSymbols = {
   exclamationMark: '􀅎',
 };
 
-export function SFSymbolIcon({
+export function ToastSFSymbolIcon({
   name,
   borderRadius = 100,
   size = TOAST_ICON_SIZE,

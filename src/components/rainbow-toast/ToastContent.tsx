@@ -1,8 +1,14 @@
-import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
+import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
+import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
+import { RainbowToast, RainbowToastContract, type RainbowToastSend, type RainbowToastSwap } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
+import { TransactionStatus } from '@/entities';
+import * as i18n from '@/languages';
 import React from 'react';
-import { View } from 'react-native';
+import { Text as RNText, View } from 'react-native';
 
 interface ToastContentProps {
   title: React.ReactNode;
@@ -12,7 +18,20 @@ interface ToastContentProps {
   type?: 'error';
 }
 
-export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_ICON_SIZE }: ToastContentProps) {
+export function ToastContent({ toast }: { toast: RainbowToast }) {
+  if (toast.type === 'swap') {
+    return <SwapToastContent toast={toast} />;
+  }
+  if (toast.type === 'send') {
+    return <SendToastContent toast={toast} />;
+  }
+  if (toast.type === 'contract') {
+    return <ContractToastContent toast={toast} />;
+  }
+  return null;
+}
+
+function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_ICON_SIZE }: ToastContentProps) {
   const colors = useToastColors();
 
   return (
@@ -30,7 +49,7 @@ export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_IC
         {icon}
       </View>
 
-      <View style={{ gap: 4, minWidth: 0 }}>
+      <View style={{ gap: 9, minWidth: 100 }}>
         <Text color={{ custom: colors.foreground }} size="15pt" weight="bold" numberOfLines={1} ellipsizeMode="tail">
           {title}
         </Text>
@@ -46,5 +65,86 @@ export function ToastContent({ icon, title, subtitle, type, iconWidth = TOAST_IC
         </Text>
       </View>
     </View>
+  );
+}
+
+function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
+  const title = getSwapToastStatusLabel({ toast });
+  const subtitle = getSwapToastNetworkLabel({ toast });
+  return (
+    <ToastContentDisplay
+      iconWidth={isWideSwapIcon(toast) ? SWAP_ICON_WIDTH : TOAST_ICON_SIZE}
+      type={toast.status === TransactionStatus.failed ? 'error' : undefined}
+      icon={<SwapToastIcon toast={toast} />}
+      title={title}
+      subtitle={subtitle}
+    />
+  );
+}
+
+export const getSwapToastStatusLabel = ({ toast }: { toast: RainbowToastSwap }) => {
+  return toast.status === TransactionStatus.failed
+    ? i18n.t(i18n.l.toasts.swap.failed)
+    : toast.status === TransactionStatus.swapping
+      ? i18n.t(i18n.l.toasts.swap.swapping)
+      : i18n.t(i18n.l.toasts.swap.swapped);
+};
+
+export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap }) => {
+  return (
+    <RNText>
+      {toast.fromAssetSymbol} <RNText style={{ fontWeight: '200' }}>􀄫</RNText> {toast.toAssetSymbol}
+    </RNText>
+  );
+};
+
+export const getSendToastStatusLabel = (toast: RainbowToastSend) => {
+  return toast.status === TransactionStatus.sent
+    ? i18n.t(i18n.l.toasts.send.sent)
+    : toast.status === TransactionStatus.failed
+      ? i18n.t(i18n.l.toasts.send.failed)
+      : i18n.t(i18n.l.toasts.send.sending);
+};
+
+export function SendToastContent({ toast }: { toast: RainbowToastSend }) {
+  const title = getSendToastStatusLabel(toast);
+  const subtitle = toast.displayAmount;
+
+  return (
+    <ToastContentDisplay
+      key={toast.status}
+      icon={<SendToastIcon toast={toast} />}
+      title={title}
+      subtitle={subtitle}
+      type={toast.status === TransactionStatus.failed ? 'error' : undefined}
+    />
+  );
+}
+
+export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
+  if (toast.status === TransactionStatus.minting) {
+    return i18n.t(i18n.l.toasts.contract.minting);
+  }
+  if (toast.status === TransactionStatus.failed) {
+    return i18n.t(i18n.l.toasts.contract.failed);
+  }
+  if (toast.status === TransactionStatus.minted) {
+    i18n.t(i18n.l.toasts.contract.minted);
+  }
+  return i18n.t(i18n.l.toasts.contract.pending);
+};
+
+export function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
+  const icon = <ContractToastIcon toast={toast} />;
+  const title = getContractToastStatusLabel(toast);
+  const subtitle = toast.name;
+
+  return (
+    <ToastContentDisplay
+      icon={icon}
+      title={title}
+      subtitle={subtitle}
+      type={toast.status === TransactionStatus.failed ? 'error' : undefined}
+    />
   );
 }

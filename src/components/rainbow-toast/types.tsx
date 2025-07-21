@@ -1,5 +1,5 @@
 import { RainbowTransaction } from '@/entities';
-import { RainbowToastMintStatuses, RainbowToastSendStatuses, RainbowToastSwapStatuses } from './getToastFromTransaction';
+import { RainbowToastContractStatuses, RainbowToastSendStatuses, RainbowToastSwapStatuses } from './getToastFromTransaction';
 
 type BaseToast = {
   id: string;
@@ -31,15 +31,15 @@ export type RainbowToastSend = BaseToast & {
   tokenName: string;
 };
 
-export type RainbowToastMint = BaseToast & {
-  type: 'mint';
+export type RainbowToastContract = BaseToast & {
+  type: 'contract';
   chainId: number;
-  status: keyof typeof RainbowToastMintStatuses;
+  status: keyof typeof RainbowToastContractStatuses;
   name: string;
   image: string;
 };
 
-export type RainbowToast = RainbowToastSwap | RainbowToastSend | RainbowToastMint;
+export type RainbowToast = RainbowToastSwap | RainbowToastSend | RainbowToastContract;
 
 export type RainbowToastWithIndex = RainbowToast & {
   index: number;

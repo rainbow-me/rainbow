@@ -5,7 +5,6 @@ import { lazyMount } from '@/helpers/lazyMount';
 import { useAccountTransactions } from '@/hooks';
 import { useMainList } from '@/navigation/MainListContext';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
@@ -79,8 +78,7 @@ const ActivityList = lazyMount(() => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
-  const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
-  const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
+  const { sections, nextPage, transactionsCount, remainingItemsLabel, pendingTransactions } = useAccountTransactions();
 
   const theme = useTheme();
 

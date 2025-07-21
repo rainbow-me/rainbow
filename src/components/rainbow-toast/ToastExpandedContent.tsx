@@ -1,12 +1,82 @@
 import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
+import { SWAP_ICON_WIDTH } from '@/components/rainbow-toast/constants';
+import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
+import { SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
+import {
+  getContractToastStatusLabel,
+  getSendToastStatusLabel,
+  getSwapToastNetworkLabel,
+  getSwapToastStatusLabel,
+} from '@/components/rainbow-toast/ToastContent';
+import { SendToastIcon } from './icons/SendToastIcon';
+import type { RainbowToast, RainbowToastContract, RainbowToastSend, RainbowToastSwap } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { View } from 'react-native';
 import { useToastColors } from './useToastColors';
+
+export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
+  if (toast.type === 'swap') {
+    return <SwapToastExpandedContent toast={toast} />;
+  }
+  if (toast.type === 'send') {
+    return <SendToastExpandedContent toast={toast} />;
+  }
+  if (toast.type === 'contract') {
+    return <ContractToastExpandedContent toast={toast} />;
+  }
+  return null;
+}
+
+function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }) {
+  const icon = <ContractToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
+  const title = getContractToastStatusLabel(toast);
+  const subtitle = toast.name;
+  return <ToastExpandedContentDisplay icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />;
+}
+
+export function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
+  const title = `${toast.token}`;
+  const isLoading = toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending;
+  const subtitle = getSendToastStatusLabel(toast);
+
+  return (
+    <ToastExpandedContentDisplay
+      isLoading={isLoading}
+      icon={<SendToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />}
+      statusLabel={subtitle}
+      label={title}
+      transaction={toast.transaction}
+    />
+  );
+}
+
+function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
+  const { transaction } = toast;
+
+  const title = getSwapToastNetworkLabel({ toast });
+  const subtitle = getSwapToastStatusLabel({ toast });
+  const isSwapped = toast.status === TransactionStatus.swapped;
+  const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
+
+  return (
+    <ToastExpandedContentDisplay
+      isLoading={isLoading}
+      icon={
+        <View style={{ marginLeft: isSwapped ? 0 : -(SWAP_ICON_WIDTH - EXPANDED_ICON_SIZE) / 2 }}>
+          <SwapToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />
+        </View>
+      }
+      statusLabel={subtitle}
+      label={title}
+      transaction={transaction}
+    />
+  );
+}
 
 type Props = {
   icon: ReactNode;
@@ -19,7 +89,7 @@ type Props = {
 
 export const EXPANDED_ICON_SIZE = 34;
 
-export function ToastExpandedContent({ icon, statusLabel, label, transaction, isLoading }: Props) {
+function ToastExpandedContentDisplay({ icon, statusLabel, label, transaction, isLoading }: Props) {
   const colors = useToastColors();
 
   return (
