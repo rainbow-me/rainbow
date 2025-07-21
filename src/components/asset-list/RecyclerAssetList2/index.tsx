@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
-import RawMemoRecyclerAssetList from './core/RawRecyclerList';
+import RawMemoRecyclerAssetList, { ViewableItemsChangedCallback } from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
@@ -16,8 +16,10 @@ import { analytics } from '@/analytics';
 import * as lang from '@/languages';
 import { useWalletSectionsData } from '@/hooks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
+import { KING_OF_THE_HILL_TAB, useExperimentalFlag } from '@/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -46,6 +48,7 @@ export interface RecyclerAssetList2Props {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
 
 function RecyclerAssetList({
@@ -55,6 +58,7 @@ function RecyclerAssetList({
   onPressUniqueToken,
   type = 'wallet',
   walletBriefSectionsData,
+  onViewableItemsChanged,
 }: RecyclerAssetList2Props) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
@@ -84,6 +88,7 @@ function RecyclerAssetList({
             top: 132,
           }}
           type={type}
+          onViewableItemsChanged={onViewableItemsChanged}
         />
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>
@@ -105,9 +110,15 @@ function handlePressMenuItem(route: (typeof Routes)[keyof typeof Routes]): void 
   Navigation.handleAction(route);
 }
 
+function handleNavigateToActivity(): void {
+  Navigation.handleAction(Routes.PROFILE_SCREEN);
+}
+
 function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
+  const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
+  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
   const shadowOpacityStyle = useMemo(
@@ -216,9 +227,21 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
             </Navbar.Item>
           }
           rightComponent={
-            <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
-              <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-            </DropdownMenu>
+            showKingOfTheHillTab ? (
+              <Box flexDirection="row" gap={16}>
+                <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
+                  <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                </DropdownMenu>
+
+                <Navbar.Item onPress={handleNavigateToActivity}>
+                  <Navbar.TextIcon color={accentColor as string} icon="􀐫" />
+                </Navbar.Item>
+              </Box>
+            ) : (
+              <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
+                <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+              </DropdownMenu>
+            )
           }
           titleComponent={
             <Box

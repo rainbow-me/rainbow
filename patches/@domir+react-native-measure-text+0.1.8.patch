@@ -1,0 +1,60 @@
+diff --git a/node_modules/@domir/react-native-measure-text/ios/ReactNativeMeasureTextModule.swift b/node_modules/@domir/react-native-measure-text/ios/ReactNativeMeasureTextModule.swift
+index 1de0407..716d630 100644
+--- a/node_modules/@domir/react-native-measure-text/ios/ReactNativeMeasureTextModule.swift
++++ b/node_modules/@domir/react-native-measure-text/ios/ReactNativeMeasureTextModule.swift
+@@ -4,16 +4,12 @@ import React
+ struct StyleOptions: Record {
+   @Field
+   var fontFamily: String? = nil
+-
+   @Field
+   var fontWeight: String? = nil
+-
+   @Field
+   var fontSize: Int? = nil
+-
+   @Field
+   var letterSpacing: Double? = nil
+-
+   @Field
+   var allowFontScaling: Bool? = nil // ANDROID ONLY
+ }
+@@ -25,16 +21,29 @@ public class ReactNativeMeasureTextModule: Module {
+     Function("measureWidth") { (text: String, style: StyleOptions) -> CGFloat in
+       let fontSize = style.fontSize != nil ? RCTConvert.cgFloat(style.fontSize) : CGFloat(0)
+       let letterSpacing = style.letterSpacing != nil ? RCTConvert.cgFloat(style.letterSpacing) : CGFloat(0)
+-      let usedFontWeight = style.fontWeight ?? "Normal"
+-
+-      if let font = style.fontFamily != nil ?
+-        RCTConvert.uiFont(["fontWeight": usedFontWeight, "fontFamily": style.fontFamily!, "fontSize": fontSize, NSAttributedString.Key.kern: letterSpacing ]) : RCTConvert.uiFont(["fontWeight": usedFontWeight, "fontSize": fontSize])
+-      {
+-        let size: CGSize = text.size(withAttributes: [.font: font])
+-        return size.width
+-      } else {
++      let usedFontWeight = style.fontWeight ?? "normal"
++      
++      var fontDict: [String: Any] = [
++        "fontSize": fontSize,
++        "fontWeight": usedFontWeight
++      ]
++      
++      if let fontFamily = style.fontFamily {
++        fontDict["fontFamily"] = fontFamily
++      }
++      
++      guard let font = RCTConvert.uiFont(fontDict) else {
+         return CGFloat(0)
+       }
++      
++      var attributes: [NSAttributedString.Key: Any] = [.font: font]
++      
++      if letterSpacing != 0 {
++        attributes[.kern] = letterSpacing
++      }
++      
++      let size = text.size(withAttributes: attributes)
++      return size.width
+     }
+   }
+ }
+\ No newline at end of file

@@ -1,3 +1,6 @@
+import React, { memo, useCallback, useMemo } from 'react';
+import { AssetList } from '../../components/asset-list';
+import { Page } from '../../components/layout';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -12,16 +15,18 @@ import { useWalletCohort } from '@/hooks/useWalletCohort';
 import Routes from '@/navigation/Routes';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { addSubscribedTokens, removeSubscribedTokens } from '@/state/liveTokens/liveTokensStore';
+import { debounce } from 'lodash';
+import { useRoute } from '@react-navigation/native';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
-import React, { memo, useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRecoilValue } from 'recoil';
-import { AssetList } from '../../components/asset-list';
-import { Page } from '../../components/layout';
+import { useStableValue } from '@/hooks/useStableValue';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -51,10 +56,15 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   return null;
 });
 
+function extractTokenRowIds(items: CellTypes[]) {
+  return items.filter(item => item.type === 'COIN').map(item => item.uid.replace('coin-', ''));
+}
+
 function WalletScreen() {
   const { network: currentNetwork } = useAccountSettings();
   const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
+  const route = useRoute();
 
   const {
     isWalletEthZero,
@@ -82,6 +92,37 @@ function WalletScreen() {
     });
   }, []);
 
+  // We cannot rely on `onMomentumScrollEnd` because it's not called when the user scrolls directly rather than swiping
+  const debouncedAddSubscribedTokens = useStableValue(() =>
+    debounce((viewableItems, routeName) => {
+      const viewableTokenUniqueIds = extractTokenRowIds(viewableItems);
+      if (viewableTokenUniqueIds.length > 0) {
+        addSubscribedTokens({ route: routeName, tokenIds: viewableTokenUniqueIds });
+      }
+    }, 250)
+  );
+
+  const handleViewableItemsChanged = useCallback(
+    ({
+      viewableItems,
+      viewableItemsRemoved,
+    }: {
+      viewableItems: CellTypes[];
+      viewableItemsAdded: CellTypes[];
+      viewableItemsRemoved: CellTypes[];
+    }) => {
+      const viewableTokenUniqueIdsRemoved = extractTokenRowIds(viewableItemsRemoved);
+
+      // removal cannot be debounced
+      if (viewableTokenUniqueIdsRemoved.length > 0) {
+        removeSubscribedTokens({ route: route.name, tokenIds: viewableTokenUniqueIdsRemoved });
+      }
+
+      debouncedAddSubscribedTokens(viewableItems, route.name);
+    },
+    [route.name, debouncedAddSubscribedTokens]
+  );
+
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
       <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
@@ -91,6 +132,7 @@ function WalletScreen() {
           isWalletEthZero={isWalletEthZero}
           network={currentNetwork}
           walletBriefSectionsData={walletBriefSectionsData}
+          onViewableItemsChanged={handleViewableItemsChanged}
         />
         <ToastComponent />
         <UtilityComponents />

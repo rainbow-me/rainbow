@@ -1,59 +1,80 @@
 import React, { memo } from 'react';
-import { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { AnimatedText, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import {
+  DerivedValue,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { AnimatedNumber } from '@/components/animated-number/AnimatedNumber';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { AnimatedText, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useChartData } from '@/react-native-animated-charts/src';
+import { greaterThanWorklet, lessThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useTheme } from '@/theme';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
 
 const UP_ARROW = IS_ANDROID ? '' : '↑';
-const DOWN_ARROW = IS_ANDROID ? '' : '↓';
 
-export default memo(function ChartPercentChangeLabel({ latestChange }: { latestChange: DerivedValue<number | undefined> }) {
-  const { originalY, data } = useChartData();
+type ChartPercentChangeLabelProps = {
+  backgroundColor: string;
+  isLineChartGestureActive: SharedValue<boolean>;
+  percentageChange: DerivedValue<string | number | undefined>;
+};
+
+export const ChartPercentChangeLabel = memo(function ChartPercentChangeLabel({
+  backgroundColor,
+  isLineChartGestureActive,
+  percentageChange,
+}: ChartPercentChangeLabelProps) {
   const { colors } = useTheme();
   const { isDarkMode } = useColorMode();
   const labelSecondary = useForegroundColor('labelSecondary');
+  const percentageChangeDirectionRotation = useSharedValue(0);
 
-  const percentageChange: DerivedValue<number | null> = useDerivedValue(() => {
-    const hasData = data?.points?.length > 0;
-    if (!hasData && latestChange.value === undefined) {
-      // important that string is not empty so that when actual value fills it does not cause a vertical layout shift
+  const sign = useDerivedValue(() => {
+    const value = percentageChange.value;
+    if (value === undefined) {
       return null;
     }
-
-    const firstPoint = data?.points?.[0]?.y;
-    const lastPoint = data?.points?.[data.points.length - 1]?.y;
-    // This is the current value of the scrubber
-    const originalYNumber = Number(originalY?.value);
-    const firstValue = firstPoint;
-    const lastValue = isNaN(originalYNumber) ? lastPoint : originalYNumber;
-
-    if (firstValue && lastValue) {
-      return ((lastValue - firstValue) / firstValue) * 100;
-    } else if (latestChange.value) {
-      return latestChange.value;
-    }
-
-    return null;
-  }, [data, latestChange, originalY]);
+    return greaterThanWorklet(value, 0) ? '+' : lessThanWorklet(value, 0) ? '-' : '';
+  });
 
   const percentageChangeText = useDerivedValue(() => {
-    if (percentageChange.value === null) {
+    const value = percentageChange.value;
+    if (value === undefined) {
       // important that string is not empty so that when actual value fills it does not cause a vertical layout shift
       return ' ';
     }
-    const directionString = percentageChange.value > 0 ? UP_ARROW : percentageChange.value < 0 ? DOWN_ARROW : '';
-    const formattedPercentageChange = toFixedWorklet(Math.abs(percentageChange.value), 2);
-
-    return `${directionString}${formattedPercentageChange}%`;
+    return `${toFixedWorklet(Math.abs(Number(value)), 2)}%`;
   });
 
+  const percentageChangeDirectionStyle = useAnimatedStyle(() => {
+    const color = sign.value === '+' ? colors.green : sign.value === '-' ? colors.red : labelSecondary;
+
+    return {
+      color,
+      transform: [{ rotate: `${percentageChangeDirectionRotation.value}deg` }],
+    };
+  });
+
+  useAnimatedReaction(
+    () => sign.value,
+    sign => {
+      percentageChangeDirectionRotation.value = withTiming(sign === '+' ? 0 : 180, TIMING_CONFIGS.slowFadeConfig);
+    }
+  );
+
   const textStyle = useAnimatedStyle(() => {
-    const isPositive = percentageChange.value !== null && percentageChange.value > 0;
-    const isNegative = percentageChange.value !== null && percentageChange.value < 0;
-    const color = percentageChange.value !== null ? (isPositive ? colors.green : isNegative ? colors.red : labelSecondary) : 'transparent';
+    if (sign.value === null) {
+      return {
+        color: 'transparent',
+        textShadowColor: 'transparent',
+      };
+    }
+    const color = sign.value === '+' ? colors.green : sign.value === '-' ? colors.red : labelSecondary;
 
     return {
       color,
@@ -61,11 +82,23 @@ export default memo(function ChartPercentChangeLabel({ latestChange }: { latestC
     };
   });
 
+  // TODO: Add text shadow to AnimatedNumber
   return (
-    <TextShadow blur={12} shadowOpacity={0.24}>
-      <AnimatedText numberOfLines={1} size="20pt" style={textStyle} tabularNumbers weight="heavy">
-        {percentageChangeText}
+    <Box flexDirection="row" alignItems="center" gap={2}>
+      <AnimatedText size="20pt" style={percentageChangeDirectionStyle} tabularNumbers weight="heavy">
+        {UP_ARROW}
       </AnimatedText>
-    </TextShadow>
+      <AnimatedNumber
+        value={percentageChangeText}
+        easingMaskColor={backgroundColor}
+        style={textStyle}
+        align="left"
+        size="20pt"
+        weight="heavy"
+        tabularNumbers
+        disabled={isLineChartGestureActive}
+        color={'label'}
+      />
+    </Box>
   );
 });

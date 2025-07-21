@@ -95,6 +95,7 @@ import WarningIcon from './svg/WarningIcon';
 import { WarpcastIcon } from './svg/WarpcastIcon';
 import BridgeIcon from './svg/BridgeIcon';
 import { DragHandlerIcon } from './svg/DragHandlerIcon';
+import { TabKingOfTheHill } from './svg/TabKingOfTheHill';
 
 const IconTypes = {
   applePay: ApplePayIcon,
@@ -184,6 +185,7 @@ const IconTypes = {
   tabDappBrowser: TabDappBrowser,
   tabDappBrowserInner: TabDappBrowserInner,
   tabDappBrowserInnerFill: TabDappBrowserInnerFill,
+  tabKingOfTheHill: TabKingOfTheHill,
   telegram: TelegramIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,

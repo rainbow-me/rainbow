@@ -4,8 +4,9 @@ import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { QueryStoreState } from '@/state/internal/queryStore/types';
 import { OptionallyPersistedRainbowStore } from '@/state/internal/types';
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { UserAssetsStateToPersist } from './persistence';
+import { LiveTokensData } from '../liveTokens/liveTokensStore';
 
 export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
   QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>,
@@ -56,8 +57,7 @@ export interface UserAssetsState {
   getHighestValueNativeAsset: () => ParsedSearchAsset | null;
   getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
   getNativeAssetForChain: (chainId: ChainId) => ParsedSearchAsset | null;
-  /** Returns the total balance of the user's assets, or undefined if not yet loaded. */
-  getTotalBalance: () => number | undefined;
+  getTotalBalance: () => number;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
@@ -65,6 +65,18 @@ export interface UserAssetsState {
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
+  setUserAssets: ({
+    address,
+    chainIdsWithErrors,
+    userAssets,
+    state,
+  }: {
+    address: Address | string;
+    chainIdsWithErrors: ChainId[] | null;
+    userAssets: ParsedSearchAsset[] | ParsedAssetsDictByChain | null;
+    state: UserAssetsState | undefined;
+  }) => UserAssetsState | null;
+  updateTokens: (tokens: LiveTokensData) => void;
 }
 
 export type Asset = {

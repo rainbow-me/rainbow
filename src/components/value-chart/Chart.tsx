@@ -1,258 +1,237 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import * as i18n from '@/languages';
-import { Dimensions, View } from 'react-native';
+import React, { memo, useCallback, useMemo } from 'react';
+import { useWindowDimensions } from 'react-native';
 import Animated, {
-  cancelAnimation,
-  Easing,
+  DerivedValue,
   SharedValue,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
-  withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import Spinner from '../../assets/chartSpinner.png';
-import { nativeStackConfig } from '../../navigation/nativeStackConfig';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { Box, useColorMode } from '@/design-system';
+import { CandlestickChart, PartialCandlestickConfig } from '@/features/charts/candlestick/components/CandlestickChart';
+import { arePricesEqual } from '@/features/charts/candlestick/utils';
+import { TimeframeSelector } from '@/features/charts/components/TimeframeSelector';
+import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
+import { chartsActions, useChartsStore, useChartType } from '@/features/charts/stores/chartsStore';
+import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
+import { useCleanup } from '@/hooks/useCleanup';
+import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
-import { Column } from '../layout';
-import { Text, Box, Bleed, TextIcon, useColorMode } from '@/design-system';
-import Labels from './ExtremeLabels';
-import TimespanSelector from './TimespanSelector';
-import { ChartDot, ChartPath, useChartData } from '@/react-native-animated-charts/src';
-import ChartTypes, { ChartType } from '@/helpers/chartTypes';
-import { ImgixImage } from '@/components/images';
-import { useNavigation } from '@/navigation';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import { IS_IOS } from '@/env';
-import { useTheme } from '@/theme';
+import { LineChart } from './LineChart';
 
-export const { width: WIDTH } = Dimensions.get('window');
+const BASE_CHART_HEIGHT = 292;
+const LINE_CHART_HEIGHT = BASE_CHART_HEIGHT - 6;
 
-const ChartTimespans = [
-  ChartTypes.hour,
-  ChartTypes.day,
-  ChartTypes.week,
-  ChartTypes.month,
-  ChartTypes.year,
-  // ChartTypes.max, todo restore after receiving proper data from zerion
-];
-
-const ChartContainer = styled(View)({
-  marginVertical: ({ showChart }: { showChart: boolean }) => (showChart ? 17 : 0),
-});
-
-const CHART_DOT_SIZE = 10;
-
-const ChartSpinner = styled(ImgixImage).attrs(({ color }: { color: string }) => ({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: Spinner,
-  tintColor: color,
-  size: 30,
-}))({
-  height: 28,
-  width: 28,
-});
-
-const Container = styled(Column)({
-  paddingBottom: 32,
-  paddingTop: IS_IOS ? 0 : 4,
-  width: '100%',
-});
-
-const HEIGHT = 146.5;
-
-const Overlay = styled(Animated.View).attrs({
-  pointerEvents: 'none',
-})({
-  ...position.coverAsObject,
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const rotationConfig = {
-  duration: 500,
-  easing: Easing.linear,
-};
-
-const timingConfig = {
-  duration: 300,
-};
-
-function useShowLoadingState(isFetching: boolean) {
-  const [isShow, setIsShow] = useState(false);
-  const timeout = useRef<NodeJS.Timeout | undefined>(undefined);
-  useEffect(() => {
-    if (isFetching) {
-      timeout.current = setTimeout(() => setIsShow(isFetching), 500);
-    } else {
-      if (timeout.current) {
-        clearTimeout(timeout.current);
-        timeout.current = undefined;
-      }
-      setIsShow(isFetching);
-    }
-  }, [isFetching]);
-  return isShow;
-}
-
-const longPressGestureHandlerProps = {
-  minDurationMs: 60,
-};
+const CHART_BOTTOM_PADDING = 32;
+const CHART_TOP_PADDING = 20;
 
 type ChartProps = {
-  chartType: ChartType;
-  fetchingCharts: boolean;
-  isPool: boolean;
-  latestChange: SharedValue<string | undefined>;
-  updateChartType: (chartType: ChartType) => void;
-  showChart: boolean;
-  throttledData: any;
-  latestPrice: number;
-  asset: any;
+  asset: ExpandedSheetAsset;
+  backgroundColor: string;
+  accentColors: AssetAccentColors;
 };
 
-export default function Chart({
-  chartType,
-  fetchingCharts,
-  isPool,
-  latestChange,
-  updateChartType,
-  showChart,
-  throttledData,
-  latestPrice,
-  asset,
-}: ChartProps) {
-  const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [chartType]);
+export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
+  const { width: screenWidth } = useWindowDimensions();
+  const candlestickConfig = useCandlestickConfig(accentColors);
+  const chartType = useChartType();
+  const enableCandlestickListeners = chartType === ChartType.Candlestick;
 
-  const { progress, color } = useChartData();
-  const spinnerRotation = useSharedValue(0);
-  const spinnerScale = useSharedValue(0);
+  const chartGestureUnixTimestamp = useSharedValue<number>(0);
+  const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
+  const chartGesturePriceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
+  const isChartGestureActive = useSharedValue(false);
+  const lineChartTimePeriod = useStoreSharedValue(useChartsStore, state => state.lineChartTimePeriod);
+  const selectedTimespan = useChartsStore(state => state.lineChartTimePeriod);
 
-  const { isDarkMode } = useColorMode();
-  const { colors } = useTheme();
-
-  const { setOptions } = useNavigation();
-  useEffect(
-    () =>
-      setOptions({
-        onWillDismiss: () => {
-          cancelAnimation(progress);
-          cancelAnimation(spinnerRotation);
-          cancelAnimation(spinnerScale);
-          nativeStackConfig.screenOptions.onWillDismiss();
-        },
-      }),
-    [setOptions, progress, spinnerRotation, spinnerScale]
-  );
-
-  const showLoadingState = useShowLoadingState(fetchingCharts);
-
-  const spinnerTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
-  useEffect(() => {
-    if (showLoadingState) {
-      if (spinnerTimeout.current) {
-        clearTimeout(spinnerTimeout.current);
-        spinnerTimeout.current = undefined;
-      }
-      spinnerRotation.value = 0;
-      spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
-      spinnerScale.value = withTiming(1, timingConfig);
-    } else {
-      spinnerScale.value = withTiming(0, timingConfig);
-      spinnerTimeout.current = setTimeout(() => (spinnerRotation.value = 0), timingConfig.duration);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showLoadingState]);
-
-  const overlayStyle = useAnimatedStyle(() => {
-    return {
-      opacity: spinnerScale.value,
-    };
+  const [currentCandlestickPrice, priceListener] = useStoreSharedValue(useCandlestickStore, state => state.getPrice(), {
+    equalityFn: arePricesEqual,
+    enabled: enableCandlestickListeners,
+    fireImmediately: true,
+    returnListenHandle: true,
   });
 
-  const spinnerStyle = useAnimatedStyle(() => {
-    return {
-      opacity: spinnerScale.value,
-      transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
-    };
+  useListenerRouteGuard(priceListener, { enabled: enableCandlestickListeners });
+
+  const liveTokenPercentageChangeSelector = useCallback(
+    ({ change }: TokenData): string => {
+      if (selectedTimespan === LineChartTimePeriod.D1) {
+        return change.change24hPct;
+      } else if (selectedTimespan === LineChartTimePeriod.H1) {
+        return change.change1hPct;
+      }
+      return '0';
+    },
+    [selectedTimespan]
+  );
+
+  const liveTokenPercentageChange = useLiveTokenSharedValue({
+    tokenId: asset.uniqueId,
+    initialValue: asset.price.relativeChange24h?.toString() ?? '0',
+    selector: liveTokenPercentageChangeSelector,
+  });
+
+  const liveTokenPrice = useLiveTokenSharedValue({
+    tokenId: asset.uniqueId,
+    initialValue: asset.price.value?.toString() ?? '0',
+    selector: state => state.price,
+  });
+
+  const price = useDerivedValue(() => {
+    if (chartType === ChartType.Candlestick) {
+      return currentCandlestickPrice.value?.price ?? liveTokenPrice.value ?? asset.price.value ?? undefined;
+    }
+
+    if (isChartGestureActive.value) return chartGesturePrice.value;
+
+    return liveTokenPrice.value ?? asset.price.value ?? undefined;
+  });
+
+  const priceRelativeChange = useDerivedValue(() => {
+    if (chartType === ChartType.Candlestick) {
+      return currentCandlestickPrice.value?.percentChange ?? liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
+    }
+
+    if (isChartGestureActive.value) return chartGesturePriceRelativeChange.value;
+
+    switch (lineChartTimePeriod.value) {
+      case LineChartTimePeriod.M1:
+      case LineChartTimePeriod.W1:
+      case LineChartTimePeriod.Y1:
+        return chartGesturePriceRelativeChange.value;
+      default:
+        return liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
+    }
+  });
+
+  useCleanup(() => {
+    chartsActions.resetChartsState();
   });
 
   return (
-    <Container>
-      <ChartExpandedStateHeader
-        asset={asset}
+    <Box gap={28}>
+      <ChartHeader
+        accentColor={accentColors.color}
+        backgroundColor={backgroundColor}
+        chartGestureUnixTimestamp={chartGestureUnixTimestamp}
         chartType={chartType}
-        color={color}
-        isPool={isPool}
-        latestChange={latestChange}
-        latestPrice={latestPrice.toString()}
-        showChart={showChart}
+        isChartGestureActive={isChartGestureActive}
+        price={price}
+        priceRelativeChange={priceRelativeChange}
       />
-      <ChartContainer showChart={showChart}>
-        {showChart && (
-          <>
-            <Labels color={color} width={WIDTH} isCard={false} />
-            <ChartPath
-              fill="none"
-              gestureEnabled={!fetchingCharts && !!throttledData}
-              hapticsEnabled
-              height={HEIGHT}
-              hitSlop={30}
-              longPressGestureHandlerProps={longPressGestureHandlerProps}
-              selectedStrokeWidth={3}
-              stroke={color}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={3.5}
-              width={WIDTH}
+
+      <Box gap={20}>
+        {chartType === ChartType.Line ? (
+          <Box
+            alignItems="center"
+            height={LINE_CHART_HEIGHT}
+            justifyContent="center"
+            paddingBottom={{ custom: CHART_BOTTOM_PADDING }}
+            paddingTop={{ custom: CHART_TOP_PADDING }}
+          >
+            <LineChart
+              asset={asset}
+              backgroundColor={accentColors.background}
+              chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+              height={LINE_CHART_HEIGHT - CHART_TOP_PADDING - CHART_BOTTOM_PADDING}
+              isChartGestureActive={isChartGestureActive}
+              price={chartGesturePrice}
+              priceRelativeChange={chartGesturePriceRelativeChange}
+              strokeColor={accentColors.color}
+              width={screenWidth}
             />
-            <ChartDot
-              size={CHART_DOT_SIZE}
-              color={color}
-              dotStyle={{
-                shadowColor: isDarkMode ? colors.shadow : color,
-                shadowOffset: { height: 3, width: 0 },
-                shadowOpacity: 0.6,
-                shadowRadius: 4.5,
-              }}
-            />
-            <Overlay style={overlayStyle}>
-              <Animated.View style={spinnerStyle}>
-                <ChartSpinner color={color} />
-              </Animated.View>
-            </Overlay>
-          </>
+          </Box>
+        ) : (
+          <CandlestickChart
+            accentColor={accentColors.color}
+            address={asset.address}
+            backgroundColor={backgroundColor}
+            chainId={asset.chainId}
+            chartHeight={BASE_CHART_HEIGHT}
+            chartWidth={screenWidth}
+            config={candlestickConfig}
+            isChartGestureActive={isChartGestureActive}
+          />
         )}
-        {!showChart && (
-          <Bleed bottom="24px">
-            <Box
-              height={HEIGHT + 48}
-              alignItems="center"
-              flexDirection="row"
-              gap={8}
-              justifyContent="center"
-              paddingBottom="32px"
-              style={{ opacity: 0.8 }}
-            >
-              <TextIcon color="labelQuaternary" containerSize={12} size="icon 15px" weight="heavy">
-                􀋪
-              </TextIcon>
-              <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-                {i18n.t(i18n.l.expanded_state.chart.no_chart_data)}
-              </Text>
-            </Box>
-          </Bleed>
-        )}
-      </ChartContainer>
-      {showChart ? (
-        <TimespanSelector
-          color={color}
-          defaultIndex={timespanIndex}
-          key={`ts_${chartType}`}
-          reloadChart={updateChartType}
-          timespans={ChartTimespans}
-        />
-      ) : null}
-    </Container>
+
+        <TimeframeSelector backgroundColor={backgroundColor} color={accentColors.color} />
+      </Box>
+    </Box>
   );
+});
+
+const ChartHeader = memo(function ChartHeader({
+  accentColor,
+  backgroundColor,
+  chartGestureUnixTimestamp,
+  chartType,
+  isChartGestureActive,
+  price,
+  priceRelativeChange,
+}: {
+  accentColor: string;
+  backgroundColor: string;
+  chartGestureUnixTimestamp: SharedValue<number>;
+  chartType: ChartType;
+  isChartGestureActive: SharedValue<boolean>;
+  price: DerivedValue<string | number | undefined>;
+  priceRelativeChange: DerivedValue<string | number | undefined>;
+}) {
+  const chartHeaderStyle = useAnimatedStyle(() => {
+    const shouldDisplay = !_WORKLET || !isChartGestureActive.value || chartType === ChartType.Line;
+    const timingConfig = TIMING_CONFIGS[shouldDisplay ? 'buttonPressConfig' : 'buttonPressConfig'];
+    return {
+      opacity: withTiming(shouldDisplay ? 1 : 0, timingConfig),
+      transform: [{ scale: withTiming(shouldDisplay ? 1 : 0.98, timingConfig) }],
+      zIndex: shouldDisplay ? 0 : -1,
+    };
+  });
+
+  const isLineChartGestureActive = useDerivedValue(() => chartType === ChartType.Line && isChartGestureActive.value);
+
+  const headerComponent = useMemo(
+    () => (
+      <Box as={Animated.View} paddingBottom="4px" paddingHorizontal="24px" style={chartHeaderStyle}>
+        <ChartExpandedStateHeader
+          accentColor={accentColor}
+          backgroundColor={backgroundColor}
+          chartGestureUnixTimestamp={chartGestureUnixTimestamp}
+          isLineChartGestureActive={isLineChartGestureActive}
+          price={price}
+          priceRelativeChange={priceRelativeChange}
+        />
+      </Box>
+    ),
+    [accentColor, backgroundColor, chartGestureUnixTimestamp, chartHeaderStyle, isLineChartGestureActive, price, priceRelativeChange]
+  );
+
+  return headerComponent;
+});
+
+function useCandlestickConfig(accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'>): PartialCandlestickConfig {
+  const { isDarkMode } = useColorMode();
+  return useMemo(
+    () => ({
+      crosshair: isDarkMode ? undefined : { dotColor: accentColors.color, lineColor: accentColors.color },
+      grid: { color: accentColors.opacity12 },
+      volume: { color: accentColors.opacity24 },
+    }),
+    [accentColors.color, accentColors.opacity12, accentColors.opacity24, isDarkMode]
+  );
+}
+
+function liveTokenPercentageChangeSelector({ change }: TokenData): string {
+  const selectedTimespan = useChartsStore.getState().lineChartTimePeriod;
+  if (selectedTimespan === LineChartTimePeriod.D1) {
+    return change.change24hPct;
+  } else if (selectedTimespan === LineChartTimePeriod.H1) {
+    return change.change1hPct;
+  }
+  return '0';
 }
