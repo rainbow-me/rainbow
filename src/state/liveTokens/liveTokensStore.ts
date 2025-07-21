@@ -64,7 +64,7 @@ type LiveTokensResponse = {
     requestId: string;
     requestTime: string;
   };
-  result: LiveTokensData;
+  result?: LiveTokensData;
   errors?: string[];
 };
 
@@ -133,6 +133,8 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
       currency,
     },
   });
+
+  if (!response.data.result) return null;
 
   const result: LiveTokensData = {};
 
