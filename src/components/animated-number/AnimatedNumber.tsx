@@ -565,15 +565,15 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
       };
     }),
 
-    staticContainer: useAnimatedStyle(() => {
+    hiddenWhenDisabled: useAnimatedStyle(() => {
       return {
-        opacity: disabled.value ? 1 : 0,
+        opacity: disabled.value ? 0 : 1,
       };
     }),
 
-    animatedContainer: useAnimatedStyle(() => {
+    visibleWhenDisabled: useAnimatedStyle(() => {
       return {
-        opacity: disabled.value ? 0 : 1,
+        opacity: disabled.value ? 1 : 0,
       };
     }),
 
@@ -625,7 +625,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
   return (
     <LayoutAnimationConfig skipEntering skipExiting>
       <View style={styles.outerContainer}>
-        <Animated.View style={[styles.staticContainer, animatedStyles.staticContainer]}>
+        <Animated.View style={[styles.digitContainer, animatedStyles.visibleWhenDisabled]}>
           <AnimatedText
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...textProps}
@@ -634,7 +634,7 @@ export const AnimatedNumber = React.memo(function AnimatedNumber({
             {value}
           </AnimatedText>
         </Animated.View>
-        <Animated.View style={[styles.row, animatedStyles.animatedContainer]}>
+        <Animated.View style={[styles.row, styles.staticContainer, animatedStyles.hiddenWhenDisabled]}>
           {parts.prefix && (
             <Animated.View style={animatedStyles.prefixPart}>
               <NumberParts
