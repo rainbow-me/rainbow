@@ -16,102 +16,111 @@ export type ToastState = {
   setShowExpandedToasts: (show: boolean) => void;
 };
 
-export const useToastStore = createRainbowStore<ToastState>(set => ({
-  toasts: [],
-  // we're tracking dismissed toasts here so even if transactions update while we're removing
-  // we don't re-add them back into the toast stack
-  dismissedToasts: new Set<string>(),
-  showExpanded: false,
-  isShowingTransactionDetails: false,
+export const useToastStore = createRainbowStore<ToastState>(
+  set => ({
+    toasts: [],
+    // we're tracking dismissed toasts here so even if transactions update while we're removing
+    // we don't re-add them back into the toast stack
+    dismissedToasts: new Set<string>(),
+    showExpanded: false,
+    isShowingTransactionDetails: false,
 
-  setIsShowingTransactionDetails(isShowingTransactionDetails) {
-    set({
-      isShowingTransactionDetails,
-    });
-  },
-
-  setShowExpandedToasts: (show: boolean) => set({ showExpanded: show }),
-
-  handleTransactions: ({ transactions, mints }) => {
-    set(state => {
-      const activeToastIds = new Set(state.toasts.map(t => t.id));
-      const transactionToasts = transactions.map(tx => getToastFromTransaction(tx, mints)).filter(Boolean);
-      const transactionToastsMap = new Map(transactionToasts.map(t => [t.id, t]));
-      const newlyDismissedToasts = new Set<string>();
-
-      // updates:
-      const updatedToasts = state.toasts.map(toast => {
-        const existing = transactionToastsMap.get(toast.id);
-        if (existing) {
-          return { ...toast, ...existing };
-        }
-        return toast;
+    setIsShowingTransactionDetails(isShowingTransactionDetails) {
+      set({
+        isShowingTransactionDetails,
       });
+    },
 
-      // additions:
-      const additions = transactionToasts.filter(
-        t =>
-          !activeToastIds.has(t.id) &&
-          !state.dismissedToasts.has(t.id) &&
-          // all transactions start as pending, we only add if we start from pending
-          t.status === TransactionStatus.pending
-      );
+    setShowExpandedToasts: (show: boolean) => set({ showExpanded: show }),
 
-      const toasts = [...additions, ...updatedToasts]
-        .map((t, index) => ({ ...t, index }))
-        .map(toast => {
-          // removals:
-          if (
-            !transactionToastsMap.has(toast.id) &&
-            // already being handled / or by swipe
-            !toast.isRemoving
-          ) {
-            newlyDismissedToasts.add(toast.id);
-            return { ...toast, isRemoving: true };
+    handleTransactions: ({ transactions, mints }) => {
+      set(state => {
+        const activeToastIds = new Set(state.toasts.map(t => t.id));
+        const transactionToasts = transactions.map(tx => getToastFromTransaction(tx, mints)).filter(Boolean);
+        const transactionToastsMap = new Map(transactionToasts.map(t => [t.id, t]));
+        const newDismissedToasts = new Set<string>();
+
+        // updates:
+        const updatedToasts = state.toasts.map(toast => {
+          const existing = transactionToastsMap.get(toast.id);
+          if (existing) {
+            return { ...toast, ...existing };
           }
-
           return toast;
         });
 
-      // always accumulates, memory shouldn't be a problem
-      const dismissedToasts =
-        newlyDismissedToasts.size > 0 ? new Set([...state.dismissedToasts, ...newlyDismissedToasts]) : state.dismissedToasts;
+        // additions:
+        const additions = transactionToasts.filter(
+          t =>
+            !activeToastIds.has(t.id) &&
+            !state.dismissedToasts.has(t.id) &&
+            // all transactions start as pending, we only add if we start from pending
+            t.status === TransactionStatus.pending
+        );
 
-      return {
-        toasts,
-        dismissedToasts,
-      };
-    });
-  },
+        const toasts = [...additions, ...updatedToasts]
+          .map((t, index) => ({ ...t, index }))
+          .map(toast => {
+            // removals:
+            if (
+              !transactionToastsMap.has(toast.id) &&
+              // already being handled / or by swipe
+              !toast.isRemoving
+            ) {
+              newDismissedToasts.add(toast.id);
+              return { ...toast, isRemoving: true };
+            }
 
-  // split into starting to remove and then fully removing so we can animate out
-  startRemoveToast: (id, via) => {
-    set(state => {
-      const toasts: RainbowToastWithIndex[] = [];
+            return toast;
+          });
 
-      let currentIndex = 0;
-      for (const toast of state.toasts) {
-        if (toast.id === id) {
-          toasts.push({ ...toast, isRemoving: true, removalReason: via });
-        } else {
-          toasts.push({ ...toast, index: currentIndex });
-          currentIndex += 1;
+        let dismissedToasts = state.dismissedToasts;
+
+        if (newDismissedToasts.size > 0) {
+          // ensure we don't accumulate too many, keep only the recent 20
+          const oldDismissedToasts = [...state.dismissedToasts].slice(-20);
+          dismissedToasts = new Set([...oldDismissedToasts, ...newDismissedToasts]);
         }
-      }
 
-      return {
-        dismissedToasts: new Set([...state.dismissedToasts, id]),
-        toasts,
-      };
-    });
-  },
+        return {
+          toasts,
+          dismissedToasts,
+        };
+      });
+    },
 
-  finishRemoveToast: id => {
-    set(state => ({
-      toasts: state.toasts.filter(t => t.id !== id).map((t, index) => ({ ...t, index })),
-    }));
-  },
-}));
+    // split into starting to remove and then fully removing so we can animate out
+    startRemoveToast: (id, via) => {
+      set(state => {
+        const toasts: RainbowToastWithIndex[] = [];
+
+        let currentIndex = 0;
+        for (const toast of state.toasts) {
+          if (toast.id === id) {
+            toasts.push({ ...toast, isRemoving: true, removalReason: via });
+          } else {
+            toasts.push({ ...toast, index: currentIndex });
+            currentIndex += 1;
+          }
+        }
+
+        return {
+          dismissedToasts: new Set([...state.dismissedToasts, id]),
+          toasts,
+        };
+      });
+    },
+
+    finishRemoveToast: id => {
+      set(state => ({
+        toasts: state.toasts.filter(t => t.id !== id).map((t, index) => ({ ...t, index })),
+      }));
+    },
+  }),
+  {
+    storageKey: `rainbow-toasts`,
+  }
+);
 
 export const { handleTransactions, startRemoveToast, finishRemoveToast, setShowExpandedToasts, setIsShowingTransactionDetails } =
   useToastStore.getState();
