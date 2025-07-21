@@ -110,7 +110,7 @@ export const getSendToastStatusLabel = (toast: RainbowToastSend) => {
   return i18n.t(i18n.l.toasts.send.sending);
 };
 
-export function SendToastContent({ toast }: { toast: RainbowToastSend }) {
+function SendToastContent({ toast }: { toast: RainbowToastSend }) {
   const title = getSendToastStatusLabel(toast);
   const subtitle = toast.displayAmount;
 
@@ -138,7 +138,7 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   return i18n.t(i18n.l.toasts.contract.pending);
 };
 
-export function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
+function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
   const icon = <ContractToastIcon toast={toast} />;
   const title = getContractToastStatusLabel(toast);
   const subtitle = toast.name;

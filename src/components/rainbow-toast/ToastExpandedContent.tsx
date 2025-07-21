@@ -39,7 +39,7 @@ function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }
   return <ToastExpandedContentDisplay icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />;
 }
 
-export function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
+function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
   const title = `${toast.token}`;
   const isLoading = toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending;
   const subtitle = getSendToastStatusLabel(toast);
