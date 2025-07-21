@@ -4,7 +4,7 @@
  * A worklet class that handles formatting chart labels and timestamps,
  * respecting the current locale.
  *
- * 💡 *Note:* This class can only be used from the UI thread.
+ * 💡 **Note:** This class can only be used from the UI thread.
  */
 export class TimeFormatter {
   private __workletClass = true;

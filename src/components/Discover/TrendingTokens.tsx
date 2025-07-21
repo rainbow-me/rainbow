@@ -32,6 +32,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { RAINBOW_TRENDING_TOKENS_LIST, useExperimentalFlag } from '@/config';
 import { shallowEqual } from '@/worklets/comparisons';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
+import { LiveTokenText } from '../live-token-text/LiveTokenText';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const t = i18n.l.trending_tokens;
@@ -465,7 +466,11 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                 >
                   {token.symbol}
                 </Text>
-                <Text
+                <LiveTokenText
+                  tokenId={token.uniqueId}
+                  initialValueLastUpdated={0}
+                  initialValue={formatCurrency(token.price, { currency })}
+                  selector={token => formatCurrency(token.price, { currency })}
                   color="label"
                   numberOfLines={1}
                   size="15pt"
@@ -474,9 +479,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                     flex: 1,
                   }}
                   weight="bold"
-                >
-                  {price}
-                </Text>
+                />
               </View>
 
               <View style={{ flexDirection: 'row', gap: 8, height: 7, alignItems: 'center' }}>
@@ -495,26 +498,47 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   <Text color="labelQuaternary" size="11pt" weight="bold">
                     MCAP
                   </Text>
-                  <Text color="labelTertiary" numberOfLines={1} size="11pt" weight="bold">
-                    {marketCap}
-                  </Text>
+                  <LiveTokenText
+                    tokenId={token.uniqueId}
+                    initialValue={marketCap}
+                    selector={token =>
+                      formatNumber(token.marketData.circulatingMarketCap, { useOrderSuffix: true, decimals: 1, style: '$' })
+                    }
+                    color="labelTertiary"
+                    numberOfLines={1}
+                    size="11pt"
+                    weight="bold"
+                  />
                 </View>
               </View>
             </View>
 
             <View style={{ gap: 12, marginLeft: 'auto', maxWidth: 75 }}>
               <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
-                <Text color={getPriceChangeColor(token.priceChange.day)} size="15pt" weight="bold">
-                  {formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%
-                </Text>
+                <LiveTokenText
+                  tokenId={token.uniqueId}
+                  initialValue={`${formatNumber(token.priceChange.day, { decimals: 2, useOrderSuffix: true })}%`}
+                  selector={token => `${formatNumber(token.change.change24hPct, { decimals: 2, useOrderSuffix: true })}%`}
+                  color="label"
+                  numberOfLines={1}
+                  size="15pt"
+                  weight="bold"
+                  usePriceChangeColor
+                />
               </View>
               <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
                 <Text color="labelQuaternary" size="11pt" weight="bold">
                   1H
                 </Text>
-                <Text color={getPriceChangeColor(token.priceChange.hr)} size="11pt" weight="bold">
-                  {formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}%
-                </Text>
+                <LiveTokenText
+                  tokenId={token.uniqueId}
+                  initialValue={`${formatNumber(token.priceChange.hr, { decimals: 2, useOrderSuffix: true })}%`}
+                  selector={token => `${formatNumber(token.change.change1hPct, { decimals: 2, useOrderSuffix: true })}%`}
+                  color="label"
+                  size="11pt"
+                  weight="bold"
+                  usePriceChangeColor
+                />
               </View>
             </View>
           </View>

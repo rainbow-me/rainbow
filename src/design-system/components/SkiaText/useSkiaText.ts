@@ -1,4 +1,13 @@
-import { SkColor, SkPaint, SkParagraph, SkTextShadow, SkTextStyle, Skia } from '@shopify/react-native-skia';
+import {
+  SkColor,
+  SkPaint,
+  SkParagraph,
+  SkTextFontFeatures,
+  SkTextFontStyle,
+  SkTextShadow,
+  SkTextStyle,
+  Skia,
+} from '@shopify/react-native-skia';
 import { useCallback, useMemo } from 'react';
 import { TextAlign } from '@/components/text/types';
 import { SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
@@ -35,6 +44,7 @@ export type UseSkiaTextOptions = {
   lineHeight?: number;
   shadows?: SkTextShadow[];
   size: TextSize;
+  tabularNumbers?: boolean;
   weight?: TextWeight;
 };
 
@@ -53,6 +63,7 @@ export function useSkiaText({
   lineHeight,
   shadows,
   size,
+  tabularNumbers = false,
   weight = 'regular',
 }: UseSkiaTextOptions): (segments: TextSegment | TextSegment[]) => SkParagraph | null {
   const manager = useSkiaFontManager(align, weight, additionalWeights);
@@ -80,6 +91,7 @@ export function useSkiaText({
           fontInfo,
           letterSpacing,
           lineHeight,
+          tabularNumbers,
           weight,
           weightOverride: segment.weight,
         });
@@ -106,11 +118,16 @@ export function useSkiaText({
     },
     // Only the weight dependency is omitted on Android (see comment above)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, manager.paragraphBuilder, shadows, size, weightDep]
+    [backgroundPaint, color, foregroundPaint, letterSpacing, lineHeight, manager.paragraphBuilder, shadows, size, tabularNumbers, weightDep]
   );
 
   return buildParagraph;
 }
+
+const SF_PRO_ROUNDED_IOS = ['SF Pro Rounded'];
+const EMPTY_FONT_FEATURES: SkTextFontFeatures[] = [];
+const EMPTY_FONT_STYLE: SkTextFontStyle = {};
+const TABULAR_NUMBERS: SkTextFontFeatures[] = [{ name: 'tnum', value: 1 }];
 
 /**
  * Builds the text style, merging in text segment overrides if needed.
@@ -123,6 +140,7 @@ function getTextStyle({
   fontInfo,
   letterSpacing,
   lineHeight,
+  tabularNumbers,
   weight,
   weightOverride,
 }: {
@@ -132,9 +150,11 @@ function getTextStyle({
   fontInfo: (typeof typeHierarchy.text)[TextSize];
   letterSpacing: number | undefined;
   lineHeight: number | undefined;
+  tabularNumbers: boolean;
   weight: TextWeight;
   weightOverride?: TextWeight;
 }): Required<Pick<SkTextStyle, 'color' | 'fontFamilies' | 'fontSize' | 'fontStyle' | 'heightMultiplier' | 'letterSpacing'>> & {
+  fontFeatures: SkTextFontFeatures[] | undefined;
   shadows?: SkTextShadow[];
 } {
   'worklet';
@@ -144,9 +164,10 @@ function getTextStyle({
         ? Skia.Color(colorOverride)
         : colorOverride
       : defaultColor ?? Skia.Color(color),
-    fontFamilies: IS_IOS ? ['SF Pro Rounded'] : [`SFProRounded-${weightOverride ?? weight}`],
+    fontFamilies: IS_IOS ? SF_PRO_ROUNDED_IOS : [`SFProRounded-${weightOverride ?? weight}`],
     fontSize: fontInfo.fontSize,
-    fontStyle: IS_IOS ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : {},
+    fontStyle: IS_IOS ? { weight: getSkiaFontWeight(weightOverride ?? weight) } : EMPTY_FONT_STYLE,
+    fontFeatures: tabularNumbers ? TABULAR_NUMBERS : EMPTY_FONT_FEATURES,
     heightMultiplier: (lineHeight ? lineHeight : fontInfo.lineHeight) / fontInfo.fontSize,
     letterSpacing: letterSpacing ?? fontInfo.letterSpacing,
   };

@@ -1,5 +1,5 @@
 import { PaintStyle, SkCanvas, SkColor, SkPaint, SkPath, Skia, StrokeCap, StrokeJoin } from '@shopify/react-native-skia';
-import { Bar } from '../types';
+import { Bar } from '@/features/charts/candlestick/types';
 
 export type IndicatorKey = 'EMA9' | 'EMA20' | 'EMA50';
 
