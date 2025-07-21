@@ -12,6 +12,8 @@ import Routes from '@/navigation/routesNames';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useAnimatedCountdown } from '@/hooks/reanimated/useAnimatedCountdown';
 import { KingOfTheHillToken } from '@/graphql/__generated__/metadata';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const CARD_HEIGHT = 84;
 const startingNextRoundText = i18n.t(i18n.l.king_of_hill.starting_next_round);
@@ -44,6 +46,7 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
   const priceColor = hasTokenPriceIncreased ? 'green' : 'red';
   const sizedIconUrl = getSizedImageUrl(token.iconUrl, 40);
   const primaryColor = token.colors.primary;
+  const tokenId = getUniqueId(token.address, token.chainId);
 
   const { marketCap, price, priceChange24h, volume } = useMemo(
     () => ({
@@ -54,6 +57,22 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
     }),
     [token.marketCap, token.price, token.marketData]
   );
+
+  const liveMarketCap = useLiveTokenValue({
+    tokenId,
+    initialValue: marketCap,
+    selector: token => formatNumber(token.marketData.circulatingMarketCap ?? 0, { useOrderSuffix: true, decimals: 1, style: '$' }),
+  });
+  const livePrice = useLiveTokenValue({
+    tokenId,
+    initialValue: price,
+    selector: token => formatCurrency(token.price ?? 0),
+  });
+  const livePriceChange24h = useLiveTokenValue({
+    tokenId,
+    initialValue: priceChange24h,
+    selector: token => `${formatNumber(token.change.change24hPct ?? 0, { decimals: 2, useOrderSuffix: true })}%`,
+  });
 
   const onPress = useCallback(() => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
@@ -113,12 +132,12 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
                         {hasTokenPriceIncreased ? '􀄨' : '􀄩'}
                       </Text>
                       <Text color={priceColor} size="15pt" weight="bold">
-                        {priceChange24h}
+                        {livePriceChange24h}
                       </Text>
                     </Box>
                   </Box>
                   <Text color="label" size="17pt" weight="heavy">
-                    {price}
+                    {livePrice}
                   </Text>
                 </Inline>
                 <Inline
@@ -141,7 +160,7 @@ export function KingOfTheHillCard({ king }: { king: KingOfTheHillToken }) {
                       {i18n.t(i18n.l.market_data.mcap)}
                     </Text>
                     <Text color="labelTertiary" size="11pt" weight="bold">
-                      {marketCap}
+                      {liveMarketCap}
                     </Text>
                   </Inline>
                 </Inline>

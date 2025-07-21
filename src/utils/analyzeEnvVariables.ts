@@ -7,6 +7,7 @@ import {
   ADDYS_BASE_URL,
   TOKEN_LAUNCHER_API_KEY,
   TOKEN_LAUNCHER_URL,
+  PLATFORM_BASE_URL,
 } from 'react-native-dotenv';
 import { getRainbowMeteorologyApi } from '@/handlers/gasFees';
 import { showLogSheet } from '@/components/debugging/LogSheet';
@@ -28,6 +29,7 @@ export const analyzeEnvVariables = () => {
   if (TOKEN_LAUNCHER_URL) envVars['TOKEN_LAUNCHER_URL'] = TOKEN_LAUNCHER_URL;
   if (TOKEN_LAUNCHER_API_KEY) envVars['TOKEN_LAUNCHER_API_KEY'] = TOKEN_LAUNCHER_API_KEY;
   if (ARC_GRAPHQL_API_KEY) envVars['ARC_GRAPHQL_API_KEY'] = ARC_GRAPHQL_API_KEY;
+  if (PLATFORM_BASE_URL) envVars['PLATFORM_BASE_URL'] = PLATFORM_BASE_URL;
 
   // Find all RainbowFetchClient instances in the app
   const fetchClients: Record<string, any> = {};

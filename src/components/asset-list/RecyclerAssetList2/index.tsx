@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
-import RawMemoRecyclerAssetList from './core/RawRecyclerList';
+import RawMemoRecyclerAssetList, { ViewableItemsChangedCallback } from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
@@ -59,6 +59,7 @@ export interface RecyclerAssetList2Props {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
 
 function RecyclerAssetList({
@@ -68,6 +69,7 @@ function RecyclerAssetList({
   onPressUniqueToken,
   type = 'wallet',
   walletBriefSectionsData,
+  onViewableItemsChanged,
 }: RecyclerAssetList2Props) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
@@ -97,6 +99,7 @@ function RecyclerAssetList({
             top: 132,
           }}
           type={type}
+          onViewableItemsChanged={onViewableItemsChanged}
         />
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>

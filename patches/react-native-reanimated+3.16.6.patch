@@ -48,6 +48,19 @@ index 1b556f6..8cd4fcb 100644
  #endif
      [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
    }
+diff --git a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+index 7f4f188..5d96d66 100644
+--- a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
++++ b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+@@ -527,7 +527,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
+     };
+   }, [areAnimationsActive]);
+ 
+-  checkSharedValueUsage(initial.value);
++  if (__DEV__) checkSharedValueUsage(initial.value);
+ 
+   const animatedStyleHandle = useRef<
+     AnimatedStyleHandle<Style> | JestAnimatedStyleHandle<Style> | null
 diff --git a/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts b/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts
 index 375da59..3566819 100644
 --- a/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts
