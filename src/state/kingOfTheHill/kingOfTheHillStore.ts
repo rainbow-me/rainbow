@@ -10,7 +10,6 @@ import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 async function kingOfTheHillQueryFunction({ currency }: { currency: string }): Promise<KingOfTheHill | null> {
   try {
     const { kingOfTheHill } = await metadataClient.kingOfTheHill({ currency });
-
     if (!kingOfTheHill) return null;
 
     // TODO: This is a hack because the generic Token type is badly typed and requires some fields we don't have on this query

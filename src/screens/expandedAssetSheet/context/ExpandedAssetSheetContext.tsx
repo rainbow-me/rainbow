@@ -45,6 +45,8 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
 
 export interface AssetAccentColors {
   opacity100: string;
+  opacity80: string;
+  opacity75: string;
   opacity56: string;
   opacity24: string;
   opacity12: string;

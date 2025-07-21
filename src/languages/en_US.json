@@ -1306,6 +1306,9 @@
       "private_key": "Private Key",
       "recipient_address": "Recipient Address"
     },
+    "king_of_the_hill": {
+      "title": "Launchpad"
+    },
     "list": {
       "share": {
         "check_out_my_wallet": "Check out my collectibles on 🌈 Rainbow at %{showcaseUrl}",
