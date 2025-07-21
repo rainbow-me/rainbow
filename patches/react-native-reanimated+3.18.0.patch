@@ -42,3 +42,16 @@ index 2ee2cc8..2edb5c9 100644
    /***
     * Wraps a method of `NativeProxy` in a function object capturing `this`
     * @tparam TReturn return type of passed method
+diff --git a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+index d9817af..eef353d 100644
+--- a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
++++ b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+@@ -582,7 +582,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
+     };
+   }, [areAnimationsActive]);
+ 
+-  checkSharedValueUsage(initial.value);
++  if (__DEV__) checkSharedValueUsage(initial.value);
+ 
+   const animatedStyleHandle = useRef<
+     | AnimatedStyleHandle<Style | AnimatedProps>
