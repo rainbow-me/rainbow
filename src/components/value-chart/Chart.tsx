@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 import Animated, {
   DerivedValue,
@@ -48,6 +48,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   const chartGesturePriceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
   const isChartGestureActive = useSharedValue(false);
   const lineChartTimePeriod = useStoreSharedValue(useChartsStore, state => state.lineChartTimePeriod);
+  const selectedTimespan = useChartsStore(state => state.lineChartTimePeriod);
 
   const [currentCandlestickPrice, priceListener] = useStoreSharedValue(useCandlestickStore, state => state.getPrice(), {
     equalityFn: arePricesEqual,
@@ -57,6 +58,18 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
   });
 
   useListenerRouteGuard(priceListener, { enabled: enableCandlestickListeners });
+
+  const liveTokenPercentageChangeSelector = useCallback(
+    ({ change }: TokenData): string => {
+      if (selectedTimespan === LineChartTimePeriod.D1) {
+        return change.change24hPct;
+      } else if (selectedTimespan === LineChartTimePeriod.H1) {
+        return change.change1hPct;
+      }
+      return '0';
+    },
+    [selectedTimespan]
+  );
 
   const liveTokenPercentageChange = useLiveTokenSharedValue({
     tokenId: asset.uniqueId,
