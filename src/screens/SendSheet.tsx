@@ -672,9 +672,6 @@ export default function SendSheet() {
       const goBackAndNavigate = () => {
         goBack();
         navigate(Routes.WALLET_SCREEN);
-        InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.PROFILE_SCREEN);
-        });
       };
 
       if (submitSuccessful) {
