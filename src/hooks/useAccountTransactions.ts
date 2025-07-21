@@ -116,10 +116,6 @@ export const useLatestAccountTransactions = () => {
     [JSON.stringify([pendingTransactionsMostRecentFirst, transactions])]
   );
 
-  console.log('pendingTransactionsMostRecentFirst', pendingTransactionsMostRecentFirst[0]);
-  console.log('????????', pendingTransactions[0]);
-  console.log('transactionstransactionstransactions', transactions[0]);
-
   const { contacts } = useContacts();
   const theme = useTheme();
 
