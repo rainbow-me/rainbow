@@ -37,7 +37,7 @@ export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, i
         >
           {iconUrl && <FastImage source={{ uri: iconUrl }} style={{ width: 16, height: 16, borderRadius: 8, marginRight: 6 }} />}
           {children || (
-            <Text color="labelSecondary" size="13pt" weight="bold">
+            <Text color="labelTertiary" size="13pt" weight="bold">
               {text}
             </Text>
           )}

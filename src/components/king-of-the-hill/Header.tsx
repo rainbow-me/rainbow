@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
   },
   crown: {
     position: 'absolute',
-    top: 15,
-    left: TOKEN_SIZE / 2 + 15,
+    top: 5,
+    left: TOKEN_SIZE / 2 + 20,
     width: 40,
     height: 40,
     transform: [{ rotate: '-3deg' }],
@@ -118,7 +118,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
   // Get actual price data from token
   const priceChangeValue = token.price?.relativeChange24h || 0;
-  const priceChange = priceChangeValue !== 0 ? `${priceChangeValue > 0 ? '+' : ''}${(priceChangeValue * 100).toFixed(2)}%` : 'N/A';
+  const priceChange = priceChangeValue !== 0 ? `${priceChangeValue > 0 ? '↑' : ''}${(priceChangeValue * 100).toFixed(2)}%` : 'N/A';
 
   const currentPrice = token.price?.value
     ? `$${token.price.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}`
@@ -165,19 +165,18 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         <Image source={crownImage} style={styles.crown} />
       </View>
 
-      <View style={{ alignSelf: 'center', marginTop: -19, height: 32 }}>
+      <View style={{ alignSelf: 'center', marginTop: -12, height: 32 }}>
         <GradientBorderView
           borderGradientColors={[gradientBorderColor, 'transparent']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           borderRadius={12}
           backgroundColor={isDarkMode ? 'rgba(245, 248, 255, 0.02)' : 'rgba(9, 17, 31, 0.01)'}
-          style={{ height: 32 }}
+          style={{ height: 28 }}
         >
           <View
             style={{
               paddingHorizontal: 16,
-              paddingVertical: 8,
               height: '100%',
               justifyContent: 'center',
             }}
@@ -191,21 +190,21 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
       {/* Symbol and price change */}
       <ButtonPressAnimation onPress={navigateToToken} scaleTo={0.96}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 18, gap: 5 }}>
           <Text color="label" size="17pt" weight="bold">
             {token.symbol}
           </Text>
-          <Text color={priceChange.startsWith('+') ? 'green' : 'red'} size="17pt" weight="bold" style={{ marginLeft: 8 }}>
+          <Text color={priceChange.startsWith('↑') ? 'green' : 'red'} size="17pt" weight="bold">
             {priceChange}
           </Text>
           <View style={{ marginLeft: 4 }}>
-            <CaretRightIcon color={isDarkMode ? '#999' : '#666'} width={8} height={16} />
+            <CaretRightIcon color={isDarkMode ? '#999' : '#666'} width={8} height={12} />
           </View>
         </View>
       </ButtonPressAnimation>
 
       {/* Current price */}
-      <Text color="label" size="26pt" weight="heavy" align="center" style={{ marginTop: 16 }}>
+      <Text color="label" size="30pt" weight="heavy" align="center" style={{ marginTop: 14 }}>
         {currentPrice}
       </Text>
 
@@ -228,7 +227,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
       </View>
 
       {/* Last winner and How it works buttons */}
-      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 16 }}>
+      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 0, marginTop: 26 }}>
         <HeaderButton
           onPress={lastWinner ? navigateToLastWinner : navigateToExplainSheet}
           iconUrl={lastWinner ? lastWinnerIconUrl : null}
