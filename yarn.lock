@@ -8861,6 +8861,7 @@ __metadata:
     ethereumjs-wallet: "npm:1.0.1"
     events: "npm:3.3.0"
     expo: "npm:53.0.11"
+    expo-image-manipulator: "npm:13.1.7"
     expo-image-picker: "npm:17.0.0-canary-20250713-8f814f8"
     expo-store-review: "npm:8.1.5"
     expo-web-browser: "npm:14.1.6"
@@ -14340,6 +14341,26 @@ __metadata:
   peerDependencies:
     expo: 54.0.0-canary-20250713-8f814f8
   checksum: 10c0/0f1c0e1882668b07919f6065051a7b42cbe8f97636545c1b42d0e03dfbf337bf78c2256f4f5d355a24c56e2791956feb34e3660e1d3da73744a8bb00595dd2be
+  languageName: node
+  linkType: hard
+
+"expo-image-loader@npm:~5.1.0":
+  version: 5.1.0
+  resolution: "expo-image-loader@npm:5.1.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/2897a2c3623f752cc277677b170ca9b3db826439641ccc93dcc3a94ece76dcbf084ecc108eddfebb42c34bcb339ef00996726995112c99561f262696c3e23300
+  languageName: node
+  linkType: hard
+
+"expo-image-manipulator@npm:13.1.7":
+  version: 13.1.7
+  resolution: "expo-image-manipulator@npm:13.1.7"
+  dependencies:
+    expo-image-loader: "npm:~5.1.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/814a9b9cbbb9e9c78b6b8e939e815c57283423b7faa05b1f18032f482e1f857206e942bf2b08892b08e2c2cedc4e2799de1d8ee549b1205edb851bfb1f5030be
   languageName: node
   linkType: hard
 

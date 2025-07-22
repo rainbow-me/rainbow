@@ -90,6 +90,8 @@ const RegistrationAvatar = ({
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
+      width: 400,
+      height: 400,
     },
     menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage,

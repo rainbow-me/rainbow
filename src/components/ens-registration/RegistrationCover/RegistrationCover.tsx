@@ -86,6 +86,8 @@ const RegistrationCover = ({
       allowsEditing: true,
       aspect: [3, 1],
       quality: 1,
+      height: 500,
+      width: 1500,
     },
     menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
     onChangeImage: onChangeImage,

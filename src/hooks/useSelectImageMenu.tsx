@@ -2,9 +2,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useMutation } from '@tanstack/react-query';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { ImagePickerAsset, ImagePickerOptions } from 'expo-image-picker';
+import { ImagePickerAsset } from 'expo-image-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import { useImagePicker } from '.';
+import useImagePicker, { ImagePickerOptions } from './useImagePicker';
 import { UniqueAsset } from '@/entities';
 import { uploadImage, UploadImageReturnData } from '@/handlers/pinata';
 import { useNavigation } from '@/navigation';
@@ -103,11 +103,10 @@ export default function useSelectImageMenu({
   );
 
   const handleSelectImage = useCallback(async () => {
-    const result = await openPicker({
+    const image = await openPicker({
       ...imagePickerOptions,
       mediaTypes: 'images',
     });
-    const image = result?.assets?.at(0);
     if (!image) return;
 
     if (uploadToIPFS) {

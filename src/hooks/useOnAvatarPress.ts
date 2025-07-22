@@ -82,12 +82,11 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountColor, accountName, navigate, screenType]);
 
   const onAvatarChooseImage = useCallback(async () => {
-    const result = await openPicker({
+    const image = await openPicker({
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-    const image = result?.assets?.at(0);
     if (!image) return;
     processPhoto(image);
   }, [openPicker, processPhoto]);
