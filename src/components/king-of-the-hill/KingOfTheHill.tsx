@@ -15,7 +15,7 @@ import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect } from 'react';
 import { Dimensions, Keyboard, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { useSharedValue } from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
@@ -40,25 +40,47 @@ export const KingOfTheHill = () => {
   const { width: screenWidth } = Dimensions.get('window');
   const hillWidth = screenWidth * 0.9;
 
+  const hillAnimatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      scrollY.value,
+      [0, 150],
+      [1, 0],
+      'clamp'
+    );
+    const translateY = interpolate(
+      scrollY.value,
+      [0, 150],
+      [0, -30],
+      'clamp'
+    );
+    return {
+      opacity,
+      transform: [{ translateY }],
+    };
+  });
+
   return (
     <View style={{ flex: 1, backgroundColor: backgroundColor || (isDarkMode ? globalColors.grey100 : '#FBFCFD') }}>
       {/* Hill background image - positioned behind everything */}
-      <View
-        style={{
-          position: 'absolute',
-          top: 120,
-          left: (screenWidth - hillWidth) / 2,
-          width: hillWidth,
-          height: hillWidth * 0.7,
-          zIndex: 0,
-        }}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            top: 120,
+            left: (screenWidth - hillWidth) / 2,
+            width: hillWidth,
+            height: hillWidth * 0.7,
+            zIndex: 0,
+          },
+          hillAnimatedStyle,
+        ]}
       >
         <FastImage
           source={require('@/components/king-of-the-hill/hill.png')}
           style={{ width: '100%', height: '100%' }}
           resizeMode="contain"
         />
-      </View>
+      </Animated.View>
       <Navbar
         leftComponent={
           <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>

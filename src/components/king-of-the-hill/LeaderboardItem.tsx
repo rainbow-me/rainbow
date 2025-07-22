@@ -172,7 +172,7 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
                   style={{
                     width: 1,
                     height: 12,
-                    backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
+                    backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)',
                   }}
                 />
 

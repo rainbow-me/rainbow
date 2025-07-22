@@ -13,6 +13,7 @@ import React, { useLayoutEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { abbreviateNumber } from '@/helpers/utilities';
 import crownImage from './crown.png';
 import FireIcon from './FireIcon';
 import { HeaderButton } from './HeaderButton';
@@ -88,11 +89,11 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
   // Get volume from ranking details
   const volumeValue = current.rankingDetails?.windowTradingVolume;
-  const volume = volumeValue ? `$${(parseFloat(volumeValue) / 1000000).toFixed(1)}M` : 'N/A';
+  const volume = volumeValue ? `$${abbreviateNumber(parseFloat(volumeValue), 1)}` : 'N/A';
 
   // Get market cap from token
   const marketCapValue = token.marketCap;
-  const marketCap = marketCapValue ? `$${(marketCapValue / 1000000).toFixed(1)}M` : 'N/A';
+  const marketCap = marketCapValue ? `$${abbreviateNumber(marketCapValue, 1)}` : 'N/A';
 
   return (
     <View style={{ alignItems: 'center' }}>
@@ -187,7 +188,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
           style={{
             width: 1,
             height: 10,
-            backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
+            backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)',
           }}
         />
         <Text color="labelTertiary" size="13pt" weight="semibold">

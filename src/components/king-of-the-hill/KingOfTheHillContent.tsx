@@ -13,6 +13,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { abbreviateNumber } from '@/helpers/utilities';
 import { Header } from './Header';
 import { LeaderboardItem } from './LeaderboardItem';
 
@@ -117,7 +118,7 @@ export const KingOfTheHillContent = ({
       }
 
       if (item.type === 'bottom-pad') {
-        return <View style={{ height: 100 }} />;
+        return <View style={{ height: 180 }} />;
       }
 
       const priceChange = item.token.price?.relativeChange24h
@@ -128,9 +129,9 @@ export const KingOfTheHillContent = ({
         ? `$${item.token.price.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}`
         : 'N/A';
 
-      const volume = item.windowTradingVolume ? `$${Math.round(parseFloat(item.windowTradingVolume)).toLocaleString()}` : 'N/A';
+      const volume = item.windowTradingVolume ? `$${abbreviateNumber(parseFloat(item.windowTradingVolume), 1)}` : 'N/A';
 
-      const marketCap = item.token.marketCap ? `$${(item.token.marketCap / 1000000).toFixed(1)}M` : 'N/A';
+      const marketCap = item.token.marketCap ? `$${abbreviateNumber(item.token.marketCap, 1)}` : 'N/A';
 
       return (
         <LeaderboardItem
