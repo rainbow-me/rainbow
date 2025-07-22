@@ -9,7 +9,7 @@ interface HeaderButtonProps {
   onPress: () => void;
   children?: React.ReactNode;
   iconUrl?: string | null;
-  text: string;
+  text?: string;
   style?: ViewStyle;
 }
 

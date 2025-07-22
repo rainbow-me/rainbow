@@ -9,6 +9,7 @@ import Routes from '@/navigation/routesNames';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import FireIcon from './FireIcon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 
 interface LeaderboardItemProps {
   token: Token;
@@ -31,6 +32,27 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 4,
     alignItems: 'center',
+  },
+  tokenIconContainer: {
+    position: 'relative',
+    width: 40,
+    height: 40,
+  },
+  tokenIconShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  chainImageContainer: {
+    position: 'absolute',
+    bottom: -3,
+    left: -3,
+    zIndex: 2,
   },
 });
 
@@ -86,7 +108,32 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
         style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 20, justifyContent: 'space-between' }}
       >
         {/* icon */}
-        <View style={{ width: 40 }}>{iconUrl && <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />}</View>
+        <View style={{ width: 40 }}>
+          {iconUrl && (
+            <View style={styles.tokenIconContainer}>
+              <View style={styles.tokenIconShadow}>
+                <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />
+                {(ranking === 2 || ranking === 3) && (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      borderRadius: 22,
+                      borderWidth: 2,
+                      borderColor: rankingStyle.backgroundColor,
+                    }}
+                  />
+                )}
+              </View>
+              <View style={styles.chainImageContainer}>
+                <ChainImage chainId={token.chainId} size={16} position="absolute" />
+              </View>
+            </View>
+          )}
+        </View>
 
         <View style={{ flex: 1, paddingHorizontal: 12 }}>
           {/* Name, Fire icon, Price change */}
@@ -149,7 +196,7 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
 const SmallLabeledRow = ({ label, value }: { label: string; value: string }) => {
   return (
     <View style={{ flexDirection: 'row', gap: 4 }}>
-      <Text color="labelTertiary" size="11pt" weight="medium">
+      <Text color="labelQuaternary" size="11pt" weight="medium">
         {label}
       </Text>
 

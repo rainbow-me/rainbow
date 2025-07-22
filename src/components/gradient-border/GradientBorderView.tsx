@@ -29,7 +29,7 @@ export function GradientBorderView({
     <View style={[style, { backgroundColor, borderRadius, position: 'relative' }]}>
       <MaskedView
         maskElement={<View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderWidth, borderRadius }]} />}
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { zIndex: 1000 }]}
       >
         <LinearGradient start={start} end={end} style={StyleSheet.absoluteFill} colors={borderGradientColors} pointerEvents="none" />
       </MaskedView>

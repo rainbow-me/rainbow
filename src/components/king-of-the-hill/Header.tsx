@@ -12,6 +12,7 @@ import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia'
 import React, { useLayoutEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import crownImage from './crown.png';
 import FireIcon from './FireIcon';
 import { HeaderButton } from './HeaderButton';
@@ -120,8 +121,14 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         </View>
 
         <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
+
         <View style={styles.fireIcon}>
-          <FireIcon size={36} />
+          <FireIcon size={40} />
+        </View>
+
+        {/* Chain image floating at bottom */}
+        <View style={styles.chainImageContainer}>
+          <ChainImage chainId={token.chainId} size={26} position="absolute" style={styles.chainImageShadow} />
         </View>
 
         <Image source={crownImage} style={styles.crown} />
@@ -190,13 +197,25 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
       {/* Last winner and How it works buttons */}
       <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 0, marginTop: 26 }}>
-        <HeaderButton
-          onPress={lastWinner ? navigateToLastWinner : navigateToExplainSheet}
-          iconUrl={lastWinner ? lastWinnerIconUrl : null}
-          text={lastWinner ? `${lastWinner.token.symbol} Last Winner` : 'No Previous Winner'}
-        />
+        <HeaderButton onPress={lastWinner ? navigateToLastWinner : navigateToExplainSheet} iconUrl={lastWinner ? lastWinnerIconUrl : null}>
+          <Text color="labelQuaternary" size="13pt" weight="bold">
+            {lastWinner ? 'Last winner ' : 'No Previous Winner'}
+          </Text>
+          {lastWinner && (
+            <Text color="labelTertiary" size="13pt" weight="bold">
+              {lastWinner.token.symbol}
+            </Text>
+          )}
+        </HeaderButton>
 
-        <HeaderButton onPress={navigateToExplainSheet} text="How it works" />
+        <HeaderButton onPress={navigateToExplainSheet}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Text color="labelTertiary" size="13pt" weight="bold">
+              How it works
+            </Text>
+            <CaretRightIcon color={isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'} width={6} height={8} />
+          </View>
+        </HeaderButton>
       </View>
 
       {/* Separator */}
@@ -226,7 +245,7 @@ const styles = StyleSheet.create({
   },
   fireIcon: {
     position: 'absolute',
-    bottom: TOKEN_SIZE / 2 - 13,
+    bottom: TOKEN_SIZE / 2 - 15,
     right: TOKEN_SIZE / 2 - 15,
     zIndex: 3,
   },
@@ -238,5 +257,21 @@ const styles = StyleSheet.create({
     height: 35,
     transform: [{ rotate: '-3deg' }],
     zIndex: 10,
+  },
+  chainImageContainer: {
+    position: 'absolute',
+    bottom: TOKEN_SIZE / 2 - 9,
+    left: TOKEN_SIZE / 2 - 8,
+    zIndex: 3,
+  },
+  chainImageShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
   },
 });

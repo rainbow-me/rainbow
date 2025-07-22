@@ -4,7 +4,7 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
-import { globalColors, TextIcon, useColorMode } from '@/design-system';
+import { globalColors, TextIcon, useColorMode, Text } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -16,6 +16,9 @@ import React, { memo, useEffect } from 'react';
 import { Dimensions, Keyboard, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSharedValue } from 'react-native-reanimated';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import MaskedView from '@react-native-masked-view/masked-view';
+import LinearGradient from 'react-native-linear-gradient';
 
 export const KingOfTheHill = () => {
   const { isDarkMode } = useColorMode();
@@ -87,7 +90,12 @@ export const KingOfTheHill = () => {
               }}
             >
               <View style={{ opacity: 0.7 }}>
-                <TextIcon size="icon 16px" color="label" weight="heavy" containerSize={36 + `${abbreviateNumber(airdropsCount)}`.length * 18}>
+                <TextIcon
+                  size="icon 16px"
+                  color="label"
+                  weight="heavy"
+                  containerSize={36 + `${abbreviateNumber(airdropsCount)}`.length * 18}
+                >
                   {/* TODO android use gift.svg */}
                   {'􀑉'} {abbreviateNumber(airdropsCount)}
                 </TextIcon>
@@ -102,6 +110,81 @@ export const KingOfTheHill = () => {
       />
 
       <KingOfTheHillContent scrollY={scrollY} onColorExtracted={handleColorExtracted} />
+
+      {/* Floating Launch Button */}
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 100,
+          alignSelf: 'center',
+          zIndex: 10,
+        }}
+      >
+        <ButtonPressAnimation
+          onPress={() => {
+            Navigation.handleAction(Routes.TOKEN_LAUNCHER_SCREEN);
+          }}
+          scaleTo={0.95}
+        >
+          <View
+            style={{
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 8,
+              },
+              shadowOpacity: 0.4,
+              shadowRadius: 12,
+              elevation: 16,
+            }}
+          >
+            <GradientBorderView
+              borderGradientColors={['#FFEB3B', '#FFA500']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              borderRadius={28}
+              borderWidth={3}
+              backgroundColor={'transparent'}
+              style={{
+                height: 52,
+                width: 150,
+              }}
+            >
+              <View style={{ borderRadius: 28, overflow: 'hidden', flex: 1 }}>
+                <LinearGradient
+                  colors={['#EBAF09', '#FFC800']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <MaskedView
+                      maskElement={
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                          <Text color="accent" size="20pt" weight="black" style={{ marginTop: -1 }}>
+                            + Launch
+                          </Text>
+                        </View>
+                      }
+                    >
+                      <LinearGradient
+                        colors={['#3D1E0A', '#7A600A']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{ width: 100, height: 24 }}
+                      />
+                    </MaskedView>
+                  </View>
+                </LinearGradient>
+              </View>
+            </GradientBorderView>
+          </View>
+        </ButtonPressAnimation>
+      </View>
 
       <KeyboardDismissHandler />
     </View>
