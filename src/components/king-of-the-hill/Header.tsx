@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
 
 export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const { isDarkMode } = useColorMode();
-  const fillTertiaryColor = useBackgroundColor('fillTertiary');
+  const gradientBorderColor = useBackgroundColor('fillTertiary');
   const current = kingOfTheHill?.current;
   const lastWinner = kingOfTheHill?.lastWinner;
   const { token } = current || {};
@@ -138,7 +138,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         <View style={styles.glowContainer}>
           <RainbowGlow size={TOKEN_SIZE} />
         </View>
-        
+
         {/* Gradient circle behind token */}
         <View style={{ position: 'absolute', width: TOKEN_SIZE + 12, height: TOKEN_SIZE + 12, zIndex: 1 }}>
           <Canvas style={{ width: TOKEN_SIZE + 12, height: TOKEN_SIZE + 12 }}>
@@ -147,16 +147,16 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
                 start={vec((TOKEN_SIZE + 12) / 2, 0)}
                 end={vec((TOKEN_SIZE + 12) / 2, TOKEN_SIZE + 12)}
                 colors={[
-                  'rgba(34, 197, 94, 1)',   // green
-                  'rgba(250, 204, 21, 1)',  // yellow
-                  'rgba(239, 68, 68, 1)',   // red
+                  'rgba(34, 197, 94, 1)', // green
+                  'rgba(250, 204, 21, 1)', // yellow
+                  'rgba(239, 68, 68, 1)', // red
                 ]}
                 positions={[0, 0.5, 1]}
               />
             </Circle>
           </Canvas>
         </View>
-        
+
         <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
         <View style={styles.fireIcon}>
           <FireIcon size={36} />
@@ -167,7 +167,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
       <View style={{ alignSelf: 'center', marginTop: -19, height: 32 }}>
         <GradientBorderView
-          borderGradientColors={[fillTertiaryColor, 'transparent']}
+          borderGradientColors={[gradientBorderColor, 'transparent']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           borderRadius={12}
