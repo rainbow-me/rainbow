@@ -1,6 +1,7 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
-import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 type GradientBorderViewProps = {
@@ -25,32 +26,16 @@ export function GradientBorderView({
   backgroundColor = 'transparent',
 }: GradientBorderViewProps) {
   return (
-    <View
-      style={[
-        style,
-        {
-          borderRadius,
-          overflow: 'hidden',
-        },
-      ]}
-    >
-      <LinearGradient colors={borderGradientColors} start={start} end={end} style={StyleSheet.absoluteFill} />
-      <View
-        style={{
-          margin: borderWidth,
-          borderRadius: borderRadius - borderWidth,
-          backgroundColor,
-        }}
+    <View style={[style, { backgroundColor, borderRadius, position: 'relative' }]}>
+      <MaskedView
+        maskElement={
+          <View style={StyleSheet.absoluteFill} pointerEvents="none" style={[StyleSheet.absoluteFill, { borderWidth, borderRadius }]} />
+        }
+        style={StyleSheet.absoluteFill}
       >
-        <View style={styles.childrenContainer}>{children}</View>
-      </View>
+        <LinearGradient start={start} end={end} style={StyleSheet.absoluteFill} colors={borderGradientColors} pointerEvents="none" />
+      </MaskedView>
+      {children}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  childrenContainer: {
-    height: '100%',
-    width: '100%',
-  },
-});
