@@ -34,27 +34,35 @@ const styles = StyleSheet.create({
   },
 });
 
+const darkColorsByRank = {
+  2: ['#AEAEAE', '#444'],
+  3: ['#A68152', '#572302'],
+  4: ['rgba(255, 255, 255, 0.1)', 'labelTertiary'],
+  5: ['rgba(255, 255, 255, 0.04)', 'labelTertiary'],
+} as const;
+
+const lightColorsByRank = {
+  2: darkColorsByRank[2].toReversed(),
+  3: darkColorsByRank[3].toReversed(),
+  4: ['rgba(0, 0, 0, 0.1)', 'labelTertiary'],
+  5: ['rgba(0, 0, 0, 0.04)', 'labelTertiary'],
+} as const;
+
 const getRankingStyle = (ranking: number, isDarkMode: boolean) => {
+  const colorsByRank = isDarkMode ? darkColorsByRank : lightColorsByRank;
+
   switch (ranking) {
-    case 1:
-      return {
-        backgroundColor: '#FFD700',
-        textColor: 'labelSecondary' as const,
-      };
     case 2:
-      return {
-        backgroundColor: isDarkMode ? '#C0C0C0' : '#E5E5E5',
-        textColor: 'labelSecondary' as const,
-      };
     case 3:
+    case 4:
       return {
-        backgroundColor: isDarkMode ? '#CD7F32' : '#FFE4B5',
-        textColor: isDarkMode ? '#8B4513' : '#CD7F32',
+        backgroundColor: colorsByRank[ranking],
+        textColor: colorsByRank[ranking],
       };
     default:
       return {
-        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)',
-        textColor: 'labelTertiary' as const,
+        backgroundColor: colorsByRank[5],
+        textColor: colorsByRank[5],
       };
   }
 };

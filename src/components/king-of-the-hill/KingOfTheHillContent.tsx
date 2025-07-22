@@ -32,7 +32,7 @@ export const KingOfTheHillContent = ({
   scrollY,
   onColorExtracted,
 }: {
-  scrollY?: SharedValue<number>;
+  scrollY: SharedValue<number>;
   onColorExtracted?: (color: string | null) => void;
 }) => {
   const { kingOfTheHill, kingOfTheHillLeaderBoard } = useKingOfTheHillStore(store => store.getData(), dequal) || {};
@@ -79,30 +79,29 @@ export const KingOfTheHillContent = ({
   type ListItem = HeaderItem | LeaderboardListItem | BottomPadItem;
 
   const listData = useMemo(() => {
-    const data: ListItem[] = [];
-
-    if (kingOfTheHill) {
-      data.push({
-        type: 'header',
-        data: kingOfTheHill,
-      });
+    if (!kingOfTheHillLeaderBoard || !kingOfTheHill) {
+      return [];
     }
 
-    if (kingOfTheHillLeaderBoard?.rankings) {
-      kingOfTheHillLeaderBoard.rankings
+    const rankings = kingOfTheHillLeaderBoard?.rankings || [];
+
+    const data: ListItem[] = [
+      {
+        type: 'header',
+        data: kingOfTheHill,
+      },
+      ...rankings
         .filter(item => item.rank > 1) // Start from 2nd place
-        .forEach(item => {
-          data.push({
+        .map(item => {
+          return {
             type: 'item',
             ranking: item.rank,
             token: item.token,
             windowTradingVolume: item.windowTradingVolume,
-          });
-        });
-    }
-
-    // Add bottom padding item
-    data.push({ type: 'bottom-pad' });
+          } satisfies ListItem;
+        }),
+      { type: 'bottom-pad' },
+    ];
 
     return data;
   }, [kingOfTheHill, kingOfTheHillLeaderBoard]);
@@ -153,15 +152,6 @@ export const KingOfTheHillContent = ({
     return `${item.token.address}-${item.token.chainId}`;
   }, []);
 
-  const handleScroll = useCallback(
-    (event: any) => {
-      if (scrollY) {
-        scrollY.value = event.nativeEvent.contentOffset.y;
-      }
-    },
-    [scrollY]
-  );
-
   if (!kingOfTheHill && !kingOfTheHillLeaderBoard) {
     return (
       <View style={{ flex: 1, backgroundColor: backgroundColor || undefined }}>
@@ -180,7 +170,11 @@ export const KingOfTheHillContent = ({
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         showsVerticalScrollIndicator={false}
-        onScroll={scrollY ? handleScroll : undefined}
+        onScroll={event => {
+          if (scrollY) {
+            scrollY.value = event.nativeEvent.contentOffset.y;
+          }
+        }}
         contentContainerStyle={{ paddingTop: topInset + 40 }}
         style={{ zIndex: 1 }}
       />

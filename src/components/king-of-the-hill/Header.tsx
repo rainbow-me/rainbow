@@ -1,64 +1,28 @@
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
-import CaretRightIcon from '@/components/icons/svg/CaretRightIcon';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import CaretRightIcon from '@/components/icons/svg/CaretRightIcon';
 import { Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useCallback, useEffect } from 'react';
+import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
+import React, { useLayoutEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import crownImage from './crown.png';
 import FireIcon from './FireIcon';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
-import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
 
-interface HeaderProps {
+type HeaderProps = {
   kingOfTheHill?: KingOfTheHill | null;
   onColorExtracted?: (color: string | null) => void;
-}
+};
 
 const TOKEN_SIZE = 80;
-
-const styles = StyleSheet.create({
-  tokenImage: {
-    width: TOKEN_SIZE,
-    height: TOKEN_SIZE,
-    borderRadius: TOKEN_SIZE / 2,
-    zIndex: 2,
-  },
-  tokenImageContainer: {
-    position: 'relative',
-    width: TOKEN_SIZE * 2,
-    height: TOKEN_SIZE * 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  glowContainer: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fireIcon: {
-    position: 'absolute',
-    bottom: TOKEN_SIZE / 2 - 13,
-    right: TOKEN_SIZE / 2 - 15,
-    zIndex: 3,
-  },
-  crown: {
-    position: 'absolute',
-    top: 5,
-    left: TOKEN_SIZE / 2 + 20,
-    width: 40,
-    height: 40,
-    transform: [{ rotate: '-3deg' }],
-    zIndex: 10,
-  },
-});
 
 export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const { isDarkMode } = useColorMode();
@@ -67,36 +31,34 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const lastWinner = kingOfTheHill?.lastWinner;
   const { token } = current || {};
 
-  const navigateToLastWinner = useCallback(() => {
+  const navigateToLastWinner = () => {
     if (!lastWinner) return;
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: lastWinner.token,
       address: lastWinner.token.address,
       chainId: lastWinner.token.chainId,
     });
-  }, [lastWinner]);
+  };
 
-  const navigateToExplainSheet = useCallback(() => {
+  const navigateToExplainSheet = () => {
     Navigation.handleAction(Routes.KING_OF_THE_HILL_EXPLAIN_SHEET);
-  }, []);
+  };
 
-  const navigateToToken = useCallback(() => {
+  const navigateToToken = () => {
     if (!token) return;
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
       asset: token,
       address: token.address,
       chainId: token.chainId,
     });
-  }, [token]);
+  };
 
   const sizedIconUrl = getSizedImageUrl(token?.iconUrl, 160);
   const lastWinnerIconUrl = lastWinner ? getSizedImageUrl(lastWinner.token.iconUrl, 16) : null;
 
-  // Extract dominant color from token image
   const dominantColor = usePersistentDominantColorFromImage(sizedIconUrl);
 
-  // Pass color to parent
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (onColorExtracted && dominantColor) {
       onColorExtracted(dominantColor);
     }
@@ -106,7 +68,6 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
     return null;
   }
 
-  // Calculate time remaining from window data
   const secondsRemaining = current.window?.secondsRemaining || 0;
   const hours = Math.floor(secondsRemaining / 3600);
   const minutes = Math.floor((secondsRemaining % 3600) / 60);
@@ -134,6 +95,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
   return (
     <View style={{ alignItems: 'center' }}>
+      {/* Token circle */}
       <View style={styles.tokenImageContainer}>
         <View style={styles.glowContainer}>
           <RainbowGlow size={TOKEN_SIZE} />
@@ -165,6 +127,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         <Image source={crownImage} style={styles.crown} />
       </View>
 
+      {/* Round ends */}
       <View style={{ alignSelf: 'center', marginTop: -12, height: 32 }}>
         <GradientBorderView
           borderGradientColors={[gradientBorderColor, 'transparent']}
@@ -242,3 +205,39 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  tokenImage: {
+    width: TOKEN_SIZE,
+    height: TOKEN_SIZE,
+    borderRadius: TOKEN_SIZE / 2,
+    zIndex: 2,
+  },
+  tokenImageContainer: {
+    position: 'relative',
+    width: TOKEN_SIZE * 2,
+    height: TOKEN_SIZE * 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  glowContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fireIcon: {
+    position: 'absolute',
+    bottom: TOKEN_SIZE / 2 - 13,
+    right: TOKEN_SIZE / 2 - 15,
+    zIndex: 3,
+  },
+  crown: {
+    position: 'absolute',
+    top: 7,
+    left: TOKEN_SIZE / 2 + 20,
+    width: 35,
+    height: 35,
+    transform: [{ rotate: '-3deg' }],
+    zIndex: 10,
+  },
+});
