@@ -1,3 +1,4 @@
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Inline, Text, useColorMode } from '@/design-system';
@@ -26,27 +27,26 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   rankingBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 3,
     paddingVertical: 4,
-    borderRadius: 8,
-    minWidth: 32,
+    borderRadius: 4,
     alignItems: 'center',
   },
 });
 
-const darkColorsByRank = {
+const darkColorsByRank: Record<number, [string, string]> = {
   2: ['#AEAEAE', '#444'],
   3: ['#A68152', '#572302'],
   4: ['rgba(255, 255, 255, 0.1)', 'labelTertiary'],
   5: ['rgba(255, 255, 255, 0.04)', 'labelTertiary'],
-} as const;
+};
 
-const lightColorsByRank = {
-  2: darkColorsByRank[2].toReversed(),
-  3: darkColorsByRank[3].toReversed(),
+const lightColorsByRank: Record<number, [string, string]> = {
+  2: [darkColorsByRank[2][0], darkColorsByRank[2][1]],
+  3: [darkColorsByRank[3][0], darkColorsByRank[3][1]],
   4: ['rgba(0, 0, 0, 0.1)', 'labelTertiary'],
   5: ['rgba(0, 0, 0, 0.04)', 'labelTertiary'],
-} as const;
+};
 
 const getRankingStyle = (ranking: number, isDarkMode: boolean) => {
   const colorsByRank = isDarkMode ? darkColorsByRank : lightColorsByRank;
@@ -56,13 +56,13 @@ const getRankingStyle = (ranking: number, isDarkMode: boolean) => {
     case 3:
     case 4:
       return {
-        backgroundColor: colorsByRank[ranking],
-        textColor: colorsByRank[ranking],
+        backgroundColor: colorsByRank[ranking][0],
+        textColor: colorsByRank[ranking][1],
       };
     default:
       return {
-        backgroundColor: colorsByRank[5],
-        textColor: colorsByRank[5],
+        backgroundColor: colorsByRank[5][0],
+        textColor: colorsByRank[5][1],
       };
   }
 };
@@ -88,9 +88,8 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
         {/* icon */}
         <View style={{ width: 40 }}>{iconUrl && <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />}</View>
 
-        {/* info */}
         <View style={{ flex: 1, paddingHorizontal: 12 }}>
-          {/* Top row: Name, Fire icon, Price change */}
+          {/* Name, Fire icon, Price change */}
           <Inline alignVertical="center" space="6px">
             <Text color="label" size="15pt" weight="semibold" numberOfLines={1}>
               {token.name}
@@ -101,7 +100,7 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
             </Text>
           </Inline>
 
-          {/* Rank, VOL | MCAP */}
+          {/* Rank | VOL | MCAP */}
           <View style={{ marginTop: 7 }}>
             <Inline alignVertical="center" space="8px">
               <View style={[styles.rankingBadge, { backgroundColor: rankingStyle.backgroundColor }]}>
@@ -118,9 +117,20 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
                   {ranking === 1 ? '1ST' : ranking === 2 ? '2ND' : ranking === 3 ? '3RD' : `${ranking}TH`}
                 </Text>
               </View>
-              <Text color="labelTertiary" size="11pt" weight="medium">
-                VOL {volume} | MCAP {marketCap}
-              </Text>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <SmallLabeledRow label="VOL" value={volume} />
+
+                <View
+                  style={{
+                    width: 1,
+                    height: 12,
+                    backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
+                  }}
+                />
+
+                <SmallLabeledRow label="MCAP" value={marketCap} />
+              </View>
             </Inline>
           </View>
         </View>
@@ -135,3 +145,17 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
     </ButtonPressAnimation>
   );
 }
+
+const SmallLabeledRow = ({ label, value }: { label: string; value: string }) => {
+  return (
+    <View style={{ flexDirection: 'row', gap: 4 }}>
+      <Text color="labelTertiary" size="11pt" weight="medium">
+        {label}
+      </Text>
+
+      <Text color="labelTertiary" size="11pt" weight="medium">
+        {value}
+      </Text>
+    </View>
+  );
+};
