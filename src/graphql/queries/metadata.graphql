@@ -707,6 +707,11 @@ query kingOfTheHill($currency: String) {
           value
           relativeChange24h
         }
+        rainbowTokenDetails {
+          onchainData {
+            creatorAddress
+          }
+        }
       }
       window {
         start

@@ -105,7 +105,7 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={0.96}>
       <View
-        style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 20, justifyContent: 'space-between' }}
+        style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 12, paddingHorizontal: 20, justifyContent: 'space-between' }}
       >
         {/* icon */}
         <View style={{ width: 40 }}>

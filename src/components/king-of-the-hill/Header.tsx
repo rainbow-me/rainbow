@@ -9,7 +9,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
-import React, { useLayoutEffect, useState, useEffect } from 'react';
+import React, { useLayoutEffect, useState, useEffect, memo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -18,6 +18,10 @@ import crownImage from './crown.png';
 import FireIcon from './FireIcon';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
+import { Address } from 'viem';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
+import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
+import { useSharedValue } from 'react-native-reanimated';
 
 type HeaderProps = {
   kingOfTheHill?: KingOfTheHill | null;
@@ -25,6 +29,34 @@ type HeaderProps = {
 };
 
 const TOKEN_SIZE = 80;
+
+const CreatorDisplay = memo(function CreatorDisplay({ creatorAddress }: { creatorAddress: string }) {
+  const [creatorData, setCreatorData] = useState<{ ens: string | null; avatar: string | null }>({ ens: null, avatar: null });
+  const ensOrAddress = useSharedValue<string | null | undefined>(undefined);
+  const avatarUrl = useSharedValue<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    const getEnsData = async () => {
+      await fetchAndSetEnsData({ address: creatorAddress as Address, avatarUrl, ensOrAddress });
+      setCreatorData({
+        ens: ensOrAddress.value || null,
+        avatar: avatarUrl.value || null,
+      });
+    };
+    getEnsData();
+  }, [creatorAddress, avatarUrl, ensOrAddress]);
+
+  const displayName = creatorData.ens || formatAddressForDisplay(creatorAddress, 4, 4);
+
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+      {creatorData.avatar && <FastImage source={{ uri: creatorData.avatar }} style={{ width: 14, height: 14, borderRadius: 7 }} />}
+      <Text color="labelTertiary" size="11pt" weight="black">
+        {displayName}
+      </Text>
+    </View>
+  );
+});
 
 export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const { isDarkMode } = useColorMode();
@@ -108,6 +140,10 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   // Get market cap from token
   const marketCapValue = token.marketCap;
   const marketCap = marketCapValue ? `$${abbreviateNumber(marketCapValue, 1)}` : 'N/A';
+
+  // Get creator address
+  const creatorAddress = token.rainbowTokenDetails?.onchainData?.creatorAddress;
+  console.log('creatorAddress', creatorAddress);
 
   return (
     <View style={{ alignItems: 'center' }}>
@@ -193,11 +229,28 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         {currentPrice}
       </Text>
 
-      {/* VOL | MCAP */}
+      {/* Creator | VOL | MCAP */}
       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, gap: 10 }}>
-        <Text color="labelTertiary" size="13pt" weight="semibold">
-          VOL {volume}
-        </Text>
+        {creatorAddress && (
+          <>
+            <CreatorDisplay creatorAddress={creatorAddress} />
+            <View
+              style={{
+                width: 1,
+                height: 10,
+                backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)',
+              }}
+            />
+          </>
+        )}
+        <View style={{ flexDirection: 'row', gap: 4 }}>
+          <Text color="labelQuaternary" size="13pt" weight="semibold">
+            VOL
+          </Text>
+          <Text color="labelTertiary" size="13pt" weight="semibold">
+            {volume}
+          </Text>
+        </View>
         <View
           style={{
             width: 1,
@@ -205,9 +258,14 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
             backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)',
           }}
         />
-        <Text color="labelTertiary" size="13pt" weight="semibold">
-          MCAP {marketCap}
-        </Text>
+        <View style={{ flexDirection: 'row', gap: 4 }}>
+          <Text color="labelQuaternary" size="13pt" weight="semibold">
+            MCAP
+          </Text>
+          <Text color="labelTertiary" size="13pt" weight="semibold">
+            {marketCap}
+          </Text>
+        </View>
       </View>
 
       {/* Last winner and How it works buttons */}

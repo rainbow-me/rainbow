@@ -4,7 +4,8 @@
       "Bash(do echo \"=== $file ===\")",
       "Bash(grep:*)",
       "Bash(done)",
-      "Bash(yarn lint:*)"
+      "Bash(yarn lint:*)",
+      "Bash(yarn graphql-codegen:*)"
     ],
     "deny": []
   }
