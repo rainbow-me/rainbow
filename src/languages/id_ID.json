@@ -1039,7 +1039,7 @@
         "text": "Linea adalah blockchain Layer 2 yang setara dengan Ethereum yang aman dan berbiaya rendah yang dikembangkan oleh ConsenSys.\n\nIni memungkinkan transaksi yang lebih cepat dan lebih terjangkau tanpa mengorbankan keamanan dan desentralisasi, bertujuan untuk membawa satu miliar pengguna berikutnya ke web3.",
         "title": "Apa itu Linea?"
       },
-      "optimism": {
+      "opmainnet": {
         "text": "Optimisme adalah jaringan Layer 2 yang berjalan di atas Ethereum, memungkinkan transaksi yang lebih murah dan lebih cepat sambil masih mendapat manfaat dari keamanan dasar Ethereum.\n\nPenggabungan banyak transaksi bersama dalam \"roll up\" sebelum mengirimkannya ke Ethereum untuk ditetapkan secara permanen.",
         "title": "Apa itu Optimisme?"
       },

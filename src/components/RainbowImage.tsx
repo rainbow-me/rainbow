@@ -133,11 +133,13 @@ const getHandlerFromType = (extension: DetectedImageExtension): ImageHandler => 
   return 'image';
 };
 
+const pathRegex = /fm=([a-z]+)/;
+
 const getImageType = memoFn((path: string): DetectedImageExtension => {
   try {
     const url = new URL(path);
     if (url.host.includes('imgix.net')) {
-      const [type = 'png'] = path.match(/fm=[a-z]+/) || [];
+      const [, type = 'png'] = path.match(pathRegex) || [];
       return fastImageExtension[type as FastImageExtensions] || 'unknown';
     }
     const pathname = url.pathname;

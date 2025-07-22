@@ -61,11 +61,11 @@ export interface RainbowTransaction {
         (
           | {
               id?: string;
-              asset_contract: never;
+              contractAddress: never;
             }
           | {
               id?: string;
-              asset_contract?: UniqueAsset['asset_contract'];
+              contractAddress?: UniqueAsset['contractAddress'];
             }
         ))
     | null;

@@ -3,7 +3,12 @@ import { Box, BoxProps } from '@/design-system';
 import { PositionCard } from '@/components/positions/PositionsCard';
 import { RainbowPosition } from '@/resources/defi/types';
 
-export default function WrappedPosition({ position, placement }: { position: RainbowPosition; placement: 'left' | 'right' }) {
+type Props = {
+  position: RainbowPosition;
+  placement: 'left' | 'right';
+};
+
+function WrappedPosition({ position, placement }: Props) {
   const placementProps: BoxProps =
     placement === 'left'
       ? {
@@ -25,3 +30,5 @@ export default function WrappedPosition({ position, placement }: { position: Rai
     </Box>
   );
 }
+
+export default React.memo(WrappedPosition);

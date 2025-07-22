@@ -96,13 +96,11 @@ const Tag = ({
   title,
   marketplaceId,
   marketplaceName,
-  maxValue,
   originalValue,
   lowercase,
   hideNftMarketplaceAction,
   ...props
 }) => {
-  const { colors } = useTheme();
   const isURL = typeof originalValue === 'string' && originalValue.toLowerCase().startsWith('https://');
 
   const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(marketplaceName);
@@ -190,14 +188,6 @@ const Tag = ({
           <Title color={color}>{upperCase(title)}</Title>
           <Inline wrap={false}>
             <Text>{textWithUpdatedCase}</Text>
-            {maxValue && (
-              <Text>
-                <Text color={colors.alpha(colors.whiteLabel, 0.8)}>
-                  {HairlineSpace}/{HairlineSpace}
-                </Text>
-                {maxValue}
-              </Text>
-            )}
           </Inline>
         </Container>
       </OuterBorder>
@@ -219,7 +209,6 @@ export default magicMemo(Tag, [
   'title',
   'marketplaceId',
   'marketplaceName',
-  'maxValue',
   'originalValue',
   'hideNftMarketplaceAction',
 ]);

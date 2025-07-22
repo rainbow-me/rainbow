@@ -11,7 +11,6 @@ import { settingsUpdateNetwork } from '@/redux/settings';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { isL2Chain } from '@/handlers/web3';
-import { loadTokensData } from '@/state/tokens/loadTokensData';
 
 interface NetworkSectionProps {
   inDevSection?: boolean;
@@ -25,7 +24,6 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
     async (chainId: ChainId) => {
       dispatch(settingsUpdateNetwork(chainId));
       InteractionManager.runAfterInteractions(async () => {
-        await loadTokensData();
         analytics.track(analytics.event.changedNetwork, { chainId });
       });
     },
