@@ -54,10 +54,13 @@ export function BalanceSection() {
     price => {
       currentCandlestickPrice.value = price;
     },
-    (previousPrice, price) => {
-      if (!price) return true;
-      if (!previousPrice) return false;
-      return price.price === previousPrice.price && price.percentChange === previousPrice.percentChange;
+    {
+      equalityFn: (previousPrice, price) => {
+        if (!price) return true;
+        if (!previousPrice) return false;
+        return previousPrice.price === price.price;
+      },
+      fireImmediately: true,
     }
   );
 
