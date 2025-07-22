@@ -48,6 +48,7 @@ interface DefaultProps extends BaseAssetListProps, RecyclerList2 {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  onEndReached?: () => void;
   onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
 
@@ -92,6 +93,7 @@ const AssetList = (props: AssetListProps) => {
         walletBriefSectionsData={props.walletBriefSectionsData}
         disablePullDownToRefresh={props.disablePullDownToRefresh}
         externalAddress={props.externalAddress}
+        onEndReached={props.onEndReached}
         onPressUniqueToken={props.onPressUniqueToken}
         type={props.type}
         onViewableItemsChanged={props.onViewableItemsChanged}

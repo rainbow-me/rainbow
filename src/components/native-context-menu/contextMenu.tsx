@@ -30,7 +30,7 @@ export type MenuActionConfig = Readonly<
     icon?: IconConfig;
   } & (
     | { menuTitle: string; menuItems: Readonly<Array<MenuActionConfig>>; actionKey?: never; actionTitle?: never }
-    | { menuTitle?: never; menuItems?: never; actionKey: string; actionTitle: string }
+    | { menuTitle?: never; menuItems?: never; actionKey: string; actionTitle?: string }
   )
 >;
 

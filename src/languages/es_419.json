@@ -1039,7 +1039,7 @@
         "text": "Linea es una blockchain de Capa 2 segura y de bajo costo, equivalente a Ethereum, desarrollada por ConsenSys.\n\nPermite transacciones más rápidas y asequibles sin comprometer la seguridad y la descentralización, con el objetivo de incorporar a mil millones de usuarios a web3.",
         "title": "¿Qué es Linea?"
       },
-      "optimism": {
+      "opmainnet": {
         "text": "Optimism es una red de Capa 2 que se ejecuta en Ethereum, lo que permite transacciones más baratas y rápidas al tiempo que se beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones juntas en un \"roll up\" antes de enviarlas para vivir permanentemente en Ethereum.",
         "title": "¿Qué es Optimism?"
       },

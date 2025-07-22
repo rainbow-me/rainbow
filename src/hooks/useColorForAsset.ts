@@ -4,6 +4,7 @@ import { ParsedAddressAsset } from '@/entities';
 import { ethereumUtils, isETH, pseudoRandomArrayItemFromString } from '@/utils';
 import { getHighContrastColor } from './useAccountAccentColor';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
+import { useTheme } from '@/theme';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},
@@ -11,7 +12,6 @@ export default function useColorForAsset(
   forceLightMode = false,
   forceETHColor = false
 ) {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
   const accountAsset = ethereumUtils.getAssetFromAllAssets(asset?.uniqueId || asset?.mainnet_address || asset?.address);
   const resolvedAddress = asset?.mainnet_address || asset?.address || accountAsset?.address;
@@ -64,6 +64,10 @@ export default function useColorForAsset(
       // fallback color derived from address
     } else {
       color2Return = colorDerivedFromAddress;
+    }
+
+    if (!color2Return) {
+      color2Return = fallbackColor || colors.blueGreyDark;
     }
 
     try {

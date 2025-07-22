@@ -60,7 +60,7 @@ function StickyHeaderInternal({
           ]
         : [],
     }),
-    [last, visibleAtYPosition, position, range]
+    [colors.white, visibleAtYPosition, position, range, last]
   );
   const ref = useRef<Animated.View>() as MutableRefObject<Animated.View>;
   const onLayout = useCallback(() => {
@@ -95,7 +95,13 @@ function StickyHeaderInternal({
   );
 }
 
-export function StickyHeaderManager({ children, yOffset = 0 }: { children: ReactElement; yOffset?: number }) {
+export const StickyHeaderManager = React.memo(function StickyHeaderManager({
+  children,
+  yOffset = 0,
+}: {
+  children: ReactElement;
+  yOffset?: number;
+}) {
   const [positions, setPositions] = useState<Record<string, { height: number; position: number; name: string }>>({});
   const interpolationsRanges: Record<string, { range: number[]; last: boolean }> = useMemo(() => {
     const sorted = sortBy(Object.values(positions), 'position');
@@ -141,6 +147,6 @@ export function StickyHeaderManager({ children, yOffset = 0 }: { children: React
     [yOffset, interpolationsRanges, setMeasures]
   );
   return <Context.Provider value={value}>{children}</Context.Provider>;
-}
+});
 
 export const StickyHeader = React.memo(StickyHeaderInternal);

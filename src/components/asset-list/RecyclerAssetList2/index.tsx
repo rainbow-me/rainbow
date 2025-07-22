@@ -48,6 +48,7 @@ export interface RecyclerAssetList2Props {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  onEndReached?: () => void;
   onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
 
@@ -58,6 +59,7 @@ function RecyclerAssetList({
   onPressUniqueToken,
   type = 'wallet',
   walletBriefSectionsData,
+  onEndReached,
   onViewableItemsChanged,
 }: RecyclerAssetList2Props) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
@@ -83,6 +85,7 @@ function RecyclerAssetList({
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
+          onEndReached={onEndReached}
           scrollIndicatorInsets={{
             bottom: insets.bottom + 14,
             top: 132,
@@ -114,7 +117,7 @@ function handleNavigateToActivity(): void {
   Navigation.handleAction(Routes.PROFILE_SCREEN);
 }
 
-function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
+const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
   const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
@@ -258,4 +261,4 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
       </Box>
     </>
   );
-}
+});

@@ -2,36 +2,40 @@ import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { useCollectible } from '@/hooks';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import { useNftsStore } from '@/state/nfts/nfts';
 
-export default React.memo(function WrappedNFT({
+export const WrappedNFT = React.memo(function WrappedNFT({
   onPress,
-  uniqueId,
+  collectionId,
   placement,
-  externalAddress,
+  index,
+  uniqueId,
 }: {
   onPress?: (asset: UniqueAsset) => void;
-  uniqueId: string;
+  collectionId: string;
   placement: 'left' | 'right';
-  externalAddress?: string;
+  index: number;
+  uniqueId?: string;
 }) {
   const { nfts_enabled } = useRemoteConfig();
   const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
-  const asset = useCollectible(uniqueId, externalAddress);
+  const asset = uniqueId
+    ? // eslint-disable-next-line react-hooks/rules-of-hooks
+      useNftsStore(state => state.getNftByUniqueId(collectionId, uniqueId))
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useNftsStore(state => state.getNft(collectionId, index));
 
   const handleItemPress = useCallback(
-    // @ts-expect-error passed to an untyped JS component
-    asset =>
+    (asset: UniqueAsset) =>
       Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
-        external: asset?.isExternal || false,
         springDamping: 1,
         topOffset: 0,
         transitionDuration: 0.25,
@@ -51,7 +55,7 @@ export default React.memo(function WrappedNFT({
           paddingRight: '19px (Deprecated)',
         };
 
-  if (!nftsEnabled) return null;
+  if (!nftsEnabled || !asset) return null;
 
   return (
     <Box flexGrow={1} justifyContent="center" testID={`wrapped-nft-${asset.name}`} {...placementProps}>
@@ -59,3 +63,5 @@ export default React.memo(function WrappedNFT({
     </Box>
   );
 });
+
+export default WrappedNFT;

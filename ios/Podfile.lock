@@ -215,9 +215,9 @@ PODS:
   - MetricsReporter (2.0.0):
     - RSCrashReporter (= 1.0.1)
     - RudderKit (= 1.4.0)
-  - MMKV (2.1.0):
-    - MMKVCore (~> 2.1.0)
-  - MMKVCore (2.1.1)
+  - MMKV (2.2.2):
+    - MMKVCore (~> 2.2.2)
+  - MMKVCore (2.2.2)
   - mobile-wallet-protocol-host (0.1.7):
     - CoinbaseWalletSDK/Host
     - React-Core
@@ -1949,7 +1949,7 @@ PODS:
   - RNTextSize (4.0.0-rc.1):
     - React
   - RSCrashReporter (1.0.1)
-  - Rudder (1.31.0):
+  - Rudder (1.31.1):
     - MetricsReporter (= 2.0.0)
   - RudderKit (1.4.0)
   - SDWebImage (5.18.12):
@@ -2658,7 +2658,7 @@ SPEC CHECKSUMS:
   RNSVG: 2df577ee9762d1b6deef820173b59b064c2570fe
   RNTextSize: c5e0593c898ad57ef5061464c154ab855da06047
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
-  Rudder: 04713668b0b7d46f214e6b7b46b60134849661aa
+  Rudder: 352cb3417238fb84cc083826d9a5a7cc91efaa69
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
