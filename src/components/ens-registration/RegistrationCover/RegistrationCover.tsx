@@ -52,12 +52,12 @@ const RegistrationCover = ({
   const onChangeImage = useCallback(
     ({ asset, image }: { asset?: UniqueAsset; image?: ImagePickerAsset }) => {
       setCoverMetadata(image);
-      setCoverUrl(image?.uri || asset?.image_url || asset?.lowResUrl || asset?.image_thumbnail_url || '');
+      setCoverUrl(image?.uri || asset?.images.highResUrl || asset?.images.lowResUrl || '');
 
       if (asset) {
-        const standard = asset.asset_contract?.schema_name || '';
-        const contractAddress = asset.asset_contract?.address || '';
-        const tokenId = asset.id;
+        const standard = asset.standard || '';
+        const contractAddress = asset.contractAddress || '';
+        const tokenId = asset.tokenId;
         onBlurField({
           key: 'header',
           value: stringifyENSNFTRecord({

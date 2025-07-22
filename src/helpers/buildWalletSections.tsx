@@ -6,11 +6,11 @@ import { RainbowPositions } from '@/resources/defi/types';
 import { UniqueId } from '@/__swaps__/types/assets';
 import { Language } from '@/languages';
 import { Network } from '@/state/backendNetworks/types';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
+import { Collection, CollectionId } from '@/state/nfts/types';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -59,12 +59,14 @@ export type WalletSectionsState = {
   sellingTokens?: UniqueAsset[];
   experimentalConfig: ReturnType<typeof useExperimentalConfig>;
   showcaseTokens: string[];
-  uniqueTokens: UniqueAsset[];
+  collections: Map<CollectionId, Collection> | null;
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
-  nftSort: NftCollectionSortCriterion;
   remoteCards: string[];
+  hasMoreCollections: boolean;
+  isShowcaseDataMigrated: boolean;
+  isHiddenDataMigrated: boolean;
 };
 
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
@@ -73,19 +75,21 @@ const hiddenAssetsSelector = (state: WalletSectionsState) => state.hiddenAssets;
 const isCoinListEditedSelector = (state: WalletSectionsState) => state.isCoinListEdited;
 const isLoadingUserAssetsSelector = (state: WalletSectionsState) => state.isLoadingUserAssets;
 const isLoadingBalanceSelector = (state: WalletSectionsState) => state.isLoadingBalance;
-const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 const nativeCurrencySelector = (state: WalletSectionsState) => state.nativeCurrency;
 const pinnedCoinsSelector = (state: WalletSectionsState) => state.pinnedCoins;
 const sellingTokensSelector = (state: WalletSectionsState) => state.sellingTokens;
 const showcaseTokensSelector = (state: WalletSectionsState) => state.showcaseTokens;
 const hiddenTokensSelector = (state: WalletSectionsState) => state.hiddenTokens;
-const uniqueTokensSelector = (state: WalletSectionsState) => state.uniqueTokens;
+const collectionsSelector = (state: WalletSectionsState) => state.collections;
 const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingNfts;
-const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
-const nftSortSelector = (state: WalletSectionsState) => state.nftSort;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
+const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
+const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
+const isHiddenDataMigratedSelector = (state: WalletSectionsState) => state.isHiddenDataMigrated;
+const listTypeSelector = (state: WalletSectionsState) => state.listType;
+const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 
 interface BalanceSectionData {
   balanceSection: CellTypes[];
@@ -190,13 +194,13 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
-  collectibles: UniqueAsset[],
+  collections: Map<CollectionId, Collection> | null,
   remoteCards: string[]
 ): BalanceSectionResult => {
   const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
   const hasTokens = briefAssets?.length;
-  const hasNFTs = collectibles?.length;
+  const hasNFTs = (collections?.size ?? 0) > 0;
   const hasNFTsOnly = !hasTokens && hasNFTs;
 
   const isEmpty = !hasTokens && !hasNFTs;
@@ -310,14 +314,16 @@ const withBriefBalanceSection = (
 
 const briefUniqueTokenDataSelector = createSelector(
   [
-    uniqueTokensSelector,
-    showcaseTokensSelector,
+    collectionsSelector,
     sellingTokensSelector,
+    showcaseTokensSelector,
     hiddenTokensSelector,
     listTypeSelector,
-    isReadOnlyWalletSelector,
-    nftSortSelector,
     isFetchingNftsSelector,
+    hasMoreCollectionsSelector,
+    isShowcaseDataMigratedSelector,
+    isHiddenDataMigratedSelector,
+    isReadOnlyWalletSelector,
   ],
   buildBriefUniqueTokenList
 );
@@ -332,7 +338,7 @@ const briefBalanceSectionSelector = createSelector(
     isCoinListEditedSelector,
     pinnedCoinsSelector,
     hiddenAssetsSelector,
-    uniqueTokensSelector,
+    collectionsSelector,
     remoteCardsSelector,
   ],
   withBriefBalanceSection

@@ -4,7 +4,7 @@ import Routes from '@/navigation/routesNames';
 import { Linking } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 
-export const openInBrowser = (url: string, useDappBrowser = true, useInAppBrowser = false) => {
+export const openInBrowser = (url: string | null | undefined, useDappBrowser = true, useInAppBrowser = false) => {
   if (!url) {
     logger.warn(`[openInBrowser] No url provided, returning early...`);
     return;

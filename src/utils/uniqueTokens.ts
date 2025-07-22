@@ -14,25 +14,3 @@ export const uniqueTokenFormats = {
   'video': 'video',
 } as const;
 export type UniqueTokenFormat = keyof typeof uniqueTokenFormats;
-
-export function getUniqueTokenType(asset: UniqueAsset) {
-  const { familyName, uniqueId } = asset;
-  if (asset.isPoap) return uniqueTokenTypes.POAP;
-  if (familyName === 'ENS' && uniqueId !== 'Unknown ENS name') {
-    return uniqueTokenTypes.ENS;
-  }
-  return uniqueTokenTypes.NFT;
-}
-
-export function getUniqueTokenFormat(asset: UniqueAsset) {
-  if (asset?.model_properties) {
-    return uniqueTokenFormats['3d'];
-  }
-  if (asset?.audio_properties) {
-    return uniqueTokenFormats.audio;
-  }
-  if (asset?.video_properties) {
-    return uniqueTokenFormats.video;
-  }
-  return uniqueTokenFormats.image;
-}

@@ -12,6 +12,8 @@ import {
   ClaimablesHeaderExtraData,
   CoinDividerExtraData,
   CoinExtraData,
+  LegacyNFTExtraData,
+  LegacyNFTFamilyExtraData,
   NFTExtraData,
   NFTFamilyExtraData,
   PositionExtraData,
@@ -37,6 +39,8 @@ import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
 import { NFTEmptyState } from '../NFTEmptyState';
 import { ClaimablesListHeader } from '../ClaimablesListHeader';
 import { Claimable } from '../Claimable';
+import LegacyWrappedNFT from '../LegacyWrappedNFT';
+import LegacyWrappedTokenFamilyHeader from '../LegacyWrappedTokenFamilyHeader';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -62,6 +66,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.COIN_DIVIDER:
       return (
         <CoinDivider
+          // @ts-expect-error - untyped js file
           balancesSum={(data as CoinDividerExtraData).value}
           defaultToEditButton={(data as CoinDividerExtraData).defaultToEditButton}
           extendedState={extendedState}
@@ -133,7 +138,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.NFTS_EMPTY:
       return <NFTEmptyState />;
     case CellType.FAMILY_HEADER: {
-      const { name, image, total } = data as NFTFamilyExtraData;
+      const { name, image, total, uid } = data as NFTFamilyExtraData;
 
       return (
         <WrappedTokenFamilyHeader
@@ -142,18 +147,44 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
           testID={`token-family-header-${name}`}
           theme={extendedState.theme}
           total={total}
+          uid={uid}
         />
       );
     }
-    case CellType.NFT: {
-      const { index, uniqueId } = data as NFTExtraData;
+    case CellType.LEGACY_FAMILY_HEADER: {
+      const { name, image, total } = data as LegacyNFTFamilyExtraData;
 
       return (
-        <WrappedNFT
+        <LegacyWrappedTokenFamilyHeader
+          image={image}
+          name={name}
+          testID={`token-family-header-${name}`}
+          theme={extendedState.theme}
+          total={total}
+        />
+      );
+    }
+    case CellType.LEGACY_NFT: {
+      const { index, uniqueId } = data as LegacyNFTExtraData;
+      return (
+        <LegacyWrappedNFT
           externalAddress={extendedState.externalAddress}
           onPress={extendedState.onPressUniqueToken}
           placement={index % 2 === 0 ? 'left' : 'right'}
           uniqueId={uniqueId}
+        />
+      );
+    }
+    case CellType.NFT: {
+      const { index, collectionId, uniqueId } = data as NFTExtraData;
+
+      return (
+        <WrappedNFT
+          onPress={extendedState.onPressUniqueToken}
+          placement={index % 2 === 0 ? 'left' : 'right'}
+          index={index}
+          uniqueId={uniqueId}
+          collectionId={collectionId}
         />
       );
     }
