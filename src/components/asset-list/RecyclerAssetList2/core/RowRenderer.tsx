@@ -122,10 +122,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.PROFILE_BALANCE_ROW:
       return (
         <ProfileRowWrapper>
-          <ProfileBalanceRow
-            totalValue={(data as AssetsHeaderExtraData).value}
-            isLoadingBalance={(data as AssetsHeaderExtraData).isLoadingBalance}
-          />
+          <ProfileBalanceRow />
         </ProfileRowWrapper>
       );
     case CellType.PROFILE_NAME_ROW:
@@ -207,7 +204,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.CLAIMABLE: {
       const { claimable } = data as ClaimableExtraData;
 
-      return <Claimable claimable={claimable} extendedState={extendedState} />;
+      return <Claimable claimable={claimable} />;
     }
 
     case CellType.LOADING_ASSETS:

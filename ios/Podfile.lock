@@ -1682,6 +1682,8 @@ PODS:
     - React-utils (= 0.74.3)
   - ReactNativeDarkMode (0.2.2):
     - React
+  - ReactNativeMeasureText (0.1.8):
+    - ExpoModulesCore
   - ReactNativePerformance (4.1.2):
     - React-Core
   - rn-fetch-blob (0.12.0):
@@ -2118,6 +2120,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeDarkMode (from `../node_modules/react-native-dark-mode`)
+  - "ReactNativeMeasureText (from `../node_modules/@domir/react-native-measure-text/ios`)"
   - "ReactNativePerformance (from `../node_modules/@shopify/react-native-performance`)"
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNBootSplash (from `../node_modules/react-native-bootsplash`)
@@ -2411,6 +2414,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeDarkMode:
     :path: "../node_modules/react-native-dark-mode"
+  ReactNativeMeasureText:
+    :path: "../node_modules/@domir/react-native-measure-text/ios"
   ReactNativePerformance:
     :path: "../node_modules/@shopify/react-native-performance"
   rn-fetch-blob:
@@ -2529,8 +2534,8 @@ SPEC CHECKSUMS:
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   MetricsReporter: 364b98791e868b10e9d512eb50af28d8c11e5cdb
-  MMKV: b4802ebd5a7c68fc0c4a5ccb4926fbdfb62d68e0
-  MMKVCore: a255341a3746955f50da2ad9121b18cb2b346e61
+  MMKV: ce484c1ac40bf76d5f09a0195d2ec5b3d3840d55
+  MMKVCore: 1eb661c6c498ab88e3df9ce5d8ff94d05fcc0567
   mobile-wallet-protocol-host: 3f9bb3b14f3648e06f6181cace6737cd0371db42
   MultiplatformBleAdapter: b1fddd0d499b96b607e00f0faa8e60648343dc1d
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
@@ -2621,6 +2626,7 @@ SPEC CHECKSUMS:
   React-utils: 595335727912553f56aad7f580254ce4ca95a09c
   ReactCommon: 57d127dbf2ca045a07604e13f51c8e97ba176e56
   ReactNativeDarkMode: 24151d23f70a51eea4b8db0166e79d28b6f2ae57
+  ReactNativeMeasureText: 715dcf137d43c76ce2ed8104212abffcc2af428e
   ReactNativePerformance: fa4952a58739e1a1f6b90a4e9777657d463499a3
   rn-fetch-blob: 25612b6d6f6e980c6f17ed98ba2f58f5696a51ca
   RNBootSplash: 38a079811ede5f999aee49aa26808265cfc9263d

@@ -1,6 +1,7 @@
-import { IS_TEST } from '@/env';
-import { STORAGE_IDS } from '@/model/mmkv';
 import { MMKV } from 'react-native-mmkv';
+import { IS_DEV, IS_TEST } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 /**
  * This file contains flags for enabling features which are still in development.
@@ -37,6 +38,7 @@ export const RAINBOW_TRENDING_TOKENS_LIST = 'Rainbow Trending Tokens List';
 export const PRINCE_OF_THE_HILL = 'Prince of the Hill';
 export const LAZY_TABS = 'Lazy Tabs';
 export const CANDLESTICK_CHARTS = 'Candlestick Charts';
+export const CANDLESTICK_DATA_MONITOR = 'Candlestick Data Monitor';
 export const KING_OF_THE_HILL_TAB = 'King of the Hill Tab';
 
 /**
@@ -83,7 +85,8 @@ const config = {
   [RAINBOW_TRENDING_TOKENS_LIST]: { settings: true, value: false },
   [PRINCE_OF_THE_HILL]: { settings: true, value: false },
   [LAZY_TABS]: { needsRestart: true, settings: true, value: false },
-  [CANDLESTICK_CHARTS]: { settings: true, value: false },
+  [CANDLESTICK_CHARTS]: { settings: true, value: IS_DEV || isTestFlight || false },
+  [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
   [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
 } as const;
 

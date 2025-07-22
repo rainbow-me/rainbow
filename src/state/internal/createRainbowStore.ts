@@ -3,7 +3,7 @@ import { PersistStorage, persist, subscribeWithSelector } from 'zustand/middlewa
 import { createWithEqualityFn } from 'zustand/traditional';
 import { IS_IOS, IS_TEST } from '@/env';
 import { RainbowError, logger } from '@/logger';
-import { time } from '@/utils';
+import { time } from '@/utils/time';
 import { rainbowStorage } from './rainbowStorage';
 import { LazyPersistParams, RainbowPersistConfig, RainbowStateCreator, RainbowStore } from './types';
 import { defaultDeserializeState, defaultSerializeState, omitStoreMethods } from './utils/persistUtils';
