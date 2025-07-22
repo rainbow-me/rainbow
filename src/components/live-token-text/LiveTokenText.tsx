@@ -128,7 +128,7 @@ export function useLiveTokenValue({
 }
 
 type LiveTokenTextProps = LiveTokenValueParams &
-  Omit<TextProps, 'children'> & {
+  Omit<TextProps, 'children' | 'ref'> & {
     animateTrendChange?: boolean;
   } & (
     | {

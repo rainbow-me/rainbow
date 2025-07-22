@@ -352,7 +352,7 @@ const emptyLayoutTransition = {
   animations: {},
 };
 
-type AnimatedNumberProps = Omit<TextProps, 'children'> & {
+type AnimatedNumberProps = Omit<TextProps, 'children' | 'ref'> & {
   value: string | SharedValue<string> | DerivedValue<string>;
   timingConfig?: TimingAnimationConfig;
   easingMaskColor?: string;

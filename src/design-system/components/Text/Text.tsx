@@ -35,7 +35,7 @@ export type TextProps = {
   | { containsEmoji?: false; children: ReactNode }
 ) & {
     style?: StyleProp<TextStyle>;
-    ref?: Ref<InstanceType<typeof NativeText>>;
+    ref?: Ref<InstanceType<typeof NativeText> | null>;
   };
 
 export function Text({
