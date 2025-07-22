@@ -1,3 +1,4 @@
+import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { IS_IOS } from '@/env';
 
 const Routes = {
@@ -130,5 +131,9 @@ const RoutesWithPlatformDifferences = {
   ...Routes,
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
 };
+
+export type Route = (typeof Routes)[keyof typeof Routes];
+
+export type UseRoute = RouteProp<ParamListBase, Route>;
 
 export default RoutesWithPlatformDifferences;

@@ -11,7 +11,6 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/em
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -277,21 +276,22 @@ export default async function runMigrations() {
 
   /* Turning ON web data for all accounts */
   const v7 = async () => {
-    const wallets = getWallets();
-    if (!wallets) return;
-    const walletKeys = Object.keys(wallets);
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for (let i = 0; i < walletKeys.length; i++) {
-      const wallet = wallets[walletKeys[i]];
-      if (wallet.type !== WalletTypes.readOnly) {
-        // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let x = 0; x < (wallet.addresses || []).length; x++) {
-          const { address } = (wallet.addresses || [])[x];
-          logger.debug(`[runMigrations]: setting web profiles for address ${address}`);
-          await store.dispatch(updateWebDataEnabled(true, address));
-        }
-      }
-    }
+    // NOTE: No longer used, as we store in react-query now
+    // const wallets = getWallets();
+    // if (!wallets) return;
+    // const walletKeys = Object.keys(wallets);
+    // // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    // for (let i = 0; i < walletKeys.length; i++) {
+    //   const wallet = wallets[walletKeys[i]];
+    //   if (wallet.type !== WalletTypes.readOnly) {
+    //     // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    //     for (let x = 0; x < (wallet.addresses || []).length; x++) {
+    //       const { address } = (wallet.addresses || [])[x];
+    //       logger.debug(`[runMigrations]: setting web profiles for address ${address}`);
+    //       await store.dispatch(updateWebDataEnabled(true, address));
+    //     }
+    //   }
+    // }
   };
 
   migrations.push(v7);
@@ -823,6 +823,28 @@ export default async function runMigrations() {
 
   migrations.push(v28);
 
+  /**
+   *************** Migration v29 ******************
+   * Delete nfts-sort-${address} from MMKV as it is no longer used per address
+   */
+  const v29 = async () => {
+    const wallets = getWallets();
+    if (!wallets) {
+      logger.debug('[runMigrations]: v29 migration - no wallets found');
+      return;
+    }
+
+    for (const wallet of Object.values(wallets)) {
+      for (const { address } of (wallet as RainbowWallet).addresses || []) {
+        mmkv.delete(`nfts-sort-${address}`);
+        logger.debug(`[runMigrations]: v29 migration - deleted nfts-sort-${address}`);
+      }
+    }
+  };
+
+  migrations.push(v29);
+
+  logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
     logger.debug(`[runMigrations]: Nothing to run`);

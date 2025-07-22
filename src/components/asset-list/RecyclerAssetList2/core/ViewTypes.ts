@@ -27,6 +27,11 @@ export enum CellType {
   NFT = 'NFT',
   NFT_SPACE_AFTER = 'NFT_SPACE_AFTER',
 
+  // @deprecated - use NFT instead
+  LEGACY_NFT = 'LEGACY_NFT',
+  // @deprecated - use FAMILY_HEADER instead
+  LEGACY_FAMILY_HEADER = 'LEGACY_FAMILY_HEADER',
+
   POSITIONS_SPACE_BEFORE = 'POSITIONS_SPACE_BEFORE',
   POSITIONS_HEADER = 'POSITIONS_HEADER',
   POSITION = 'POSITION',
@@ -77,9 +82,18 @@ export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {
   type: CellType.NFT;
   index: number;
+  uniqueId?: string;
+  collectionId: string;
+  onPressUniqueToken?: (asset: UniqueAsset) => void;
+};
+
+export type LegacyNFTExtraData = {
+  type: CellType.LEGACY_NFT;
+  index: number;
   uniqueId: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
 };
+
 export type PositionExtraData = {
   type: CellType.POSITION;
   position: RainbowPosition;
@@ -95,11 +109,20 @@ export type ClaimableExtraData = {
 export type ClaimablesHeaderExtraData = {
   total: string;
 };
+
+export type LegacyNFTFamilyExtraData = {
+  type: CellType.LEGACY_FAMILY_HEADER;
+  name: string;
+  total?: number;
+  image?: string;
+};
+
 export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
   name: string;
   total?: number;
   image?: string;
+  uid: string;
 };
 
 export type ProfileActionButtonsRowExtraData = {
@@ -114,9 +137,11 @@ export type LoadingAssetsSection = {
 export type CellExtraData =
   | LoadingAssetsSection
   | NFTFamilyExtraData
+  | LegacyNFTFamilyExtraData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
+  | LegacyNFTExtraData
   | NFTsHeaderExtraData
   | NFTsOtherData
   | AssetsHeaderExtraData

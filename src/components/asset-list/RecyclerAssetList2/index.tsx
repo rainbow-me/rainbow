@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
-import RawMemoRecyclerAssetList from './core/RawRecyclerList';
+import RawMemoRecyclerAssetList, { ViewableItemsChangedCallback } from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
@@ -48,6 +48,8 @@ export interface RecyclerAssetList2Props {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  onEndReached?: () => void;
+  onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
 
 function RecyclerAssetList({
@@ -57,6 +59,8 @@ function RecyclerAssetList({
   onPressUniqueToken,
   type = 'wallet',
   walletBriefSectionsData,
+  onEndReached,
+  onViewableItemsChanged,
 }: RecyclerAssetList2Props) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
@@ -81,11 +85,13 @@ function RecyclerAssetList({
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
+          onEndReached={onEndReached}
           scrollIndicatorInsets={{
             bottom: insets.bottom + 14,
             top: 132,
           }}
           type={type}
+          onViewableItemsChanged={onViewableItemsChanged}
         />
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>
@@ -111,7 +117,7 @@ function handleNavigateToActivity(): void {
   Navigation.handleAction(Routes.PROFILE_SCREEN);
 }
 
-function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
+const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
   const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
@@ -255,4 +261,4 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
       </Box>
     </>
   );
-}
+});

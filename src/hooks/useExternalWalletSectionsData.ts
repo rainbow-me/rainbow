@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { AssetListType } from '../components/asset-list/RecyclerAssetList2';
-import useFetchHiddenTokens from './useFetchHiddenTokens';
-import useFetchShowcaseTokens from './useFetchShowcaseTokens';
-import { buildBriefUniqueTokenList } from '@/helpers/assets';
+import { legacyBuildBriefUniqueTokenList } from '@/helpers/assets';
 import { useLegacyNFTs } from '@/resources/nfts';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
 
 export default function useExternalWalletSectionsData({ address, type }: { address?: string; type?: AssetListType }) {
   const {
@@ -12,14 +12,15 @@ export default function useExternalWalletSectionsData({ address, type }: { addre
   } = useLegacyNFTs({
     address: address ?? '',
   });
-  const { data: hiddenTokens } = useFetchHiddenTokens({ address });
-  const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
+  const { hiddenTokens } = useHiddenTokens(address);
+  const { showcaseTokens } = useShowcaseTokens(address);
 
-  const sellingTokens = useMemo(() => uniqueTokens?.filter(token => token.currentPrice) || [], [uniqueTokens]);
+  // TODO: Bring back selling tokens eventually
+  // const sellingTokens = useMemo(() => uniqueTokens?.filter(token => token.) || [], [uniqueTokens]);
 
   const briefSectionsData = useMemo(
-    () => (uniqueTokens ? buildBriefUniqueTokenList(uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type) : []),
-    [uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type]
+    () => (uniqueTokens ? legacyBuildBriefUniqueTokenList(uniqueTokens, showcaseTokens, [], hiddenTokens, type) : []),
+    [uniqueTokens, showcaseTokens, hiddenTokens, type]
   );
 
   return {

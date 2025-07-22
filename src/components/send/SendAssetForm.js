@@ -8,11 +8,11 @@ import { Column } from '../layout';
 import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
-import { AssetTypes } from '@/entities';
 import { useDimensions, useKeyboardHeight } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { assetIsUniqueAsset } from '@/handlers/web3';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],
@@ -38,9 +38,9 @@ const FormContainer = styled(Column).attrs(
         justify: 'space-between',
       }
     : {}
-)(({ isNft }) => ({
+)(({ isUniqueAsset }) => ({
   flex: 1,
-  ...(isNft ? padding.object(0) : padding.object(0, 19)),
+  ...(isUniqueAsset ? padding.object(0) : padding.object(0, 19)),
 }));
 
 export default function SendAssetForm({
@@ -64,9 +64,9 @@ export default function SendAssetForm({
   const keyboardHeight = useKeyboardHeight();
   const [showNativeValue, setShowNativeValue] = useState(true);
 
-  const isNft = selected.type === AssetTypes.nft;
+  const isUniqueAsset = assetIsUniqueAsset(selected);
 
-  const AssetRowElement = isNft ? CollectiblesSendRow : SendCoinRow;
+  const AssetRowElement = isUniqueAsset ? CollectiblesSendRow : SendCoinRow;
 
   const onFocusAssetInput = useCallback(() => {
     setLastFocusedInputHandle(assetInputRef);
@@ -103,8 +103,8 @@ export default function SendAssetForm({
           </AssetRowElement>
         </ShadowStack>
       </ButtonPressAnimation>
-      <FormContainer isNft={isNft}>
-        {isNft ? (
+      <FormContainer isUniqueAsset={isUniqueAsset}>
+        {isUniqueAsset ? (
           <SendAssetFormCollectible asset={selected} buttonRenderer={buttonRenderer} txSpeedRenderer={txSpeedRenderer} />
         ) : (
           <Fragment>

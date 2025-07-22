@@ -1,9 +1,11 @@
 export enum AssetType {
   nft = 'nft',
-  token = 'token',
+  poap = 'poap',
+  ens = 'ens',
 }
 
 export default {
   nft: 'nft',
-  token: 'token',
+  poap: 'poap',
+  ens: 'ens',
 } as const;

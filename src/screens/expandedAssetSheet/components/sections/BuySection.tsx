@@ -264,6 +264,7 @@ export function BuySection({ placement }: BuySectionProps) {
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
+      {placement === Placement.AFTER_BALANCE && <SheetSeparator />}
       <CollapsibleSection
         content={<BuyContent />}
         icon="􀡓"

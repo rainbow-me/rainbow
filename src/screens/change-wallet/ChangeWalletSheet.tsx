@@ -12,7 +12,8 @@ import { IS_IOS } from '@/env';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import { isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import { useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
+import { useWalletsWithBalancesAndNames } from '@/hooks';
+import { useLiveWalletBalance } from '@/hooks/useLiveWalletBalance';
 import { useWalletTransactionCounts } from '@/hooks/useWalletTransactionCounts';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
@@ -45,6 +46,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { Address } from 'viem';
+import { updateWebProfile } from '@/helpers/webData';
 
 const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
 
@@ -94,9 +96,9 @@ export default function ChangeWalletSheet() {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { colors, isDarkMode } = useTheme();
-  const { updateWebProfile } = useWebData();
   const { goBack, navigate } = useNavigation();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const liveWalletBalance = useLiveWalletBalance();
 
   const initialHasShownEditHintTooltip = useMemo(() => usePinnedWalletsStore.getState().hasShownEditHintTooltip, []);
   const initialPinnedAddressCount = useMemo(() => usePinnedWalletsStore.getState().pinnedAddresses.length, []);
@@ -137,6 +139,7 @@ export default function ChangeWalletSheet() {
       const visibleAccounts = (wallet.addresses || []).filter(account => account.visible);
 
       visibleAccounts.forEach(account => {
+        const isSelectedAddress = account.address === accountAddress;
         const balanceText = account.balancesMinusHiddenBalances
           ? account.balancesMinusHiddenBalances
           : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
@@ -148,7 +151,7 @@ export default function ChangeWalletSheet() {
           color: account.color,
           emoji: account.emoji,
           label: account.label,
-          balance: balanceText,
+          balance: isSelectedAddress && liveWalletBalance ? liveWalletBalance : balanceText,
           isLedger: wallet.type === WalletTypes.bluetooth,
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected: account.address === accountAddress,
@@ -168,7 +171,7 @@ export default function ChangeWalletSheet() {
 
     // sorts by order wallets were added
     return [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets].sort((a, b) => a.walletId.localeCompare(b.walletId));
-  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets]);
+  }, [walletsWithBalancesAndNames, accountAddress, hideReadOnlyWallets, liveWalletBalance]);
 
   // If user has never seen pinned addresses feature, auto-pin the users most used owned addresses
   useEffect(() => {
@@ -284,7 +287,7 @@ export default function ChangeWalletSheet() {
 
               if (name) {
                 analytics.track(analytics.event.tappedDoneEditingWallet, { wallet_label: name });
-                updateWebProfile(address, name, colors.avatarBackgrounds[color]);
+                await updateWebProfile(address, name, colors.avatarBackgrounds[color], null);
               } else {
                 analytics.track(analytics.event.tappedCancelEditingWallet);
               }
@@ -300,7 +303,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [wallets, goBack, navigate, updateWebProfile, colors.avatarBackgrounds]
+    [wallets, goBack, navigate, colors.avatarBackgrounds]
   );
 
   const onPressEdit = useCallback(

@@ -1,58 +1,58 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
 import { useChartData } from '@/react-native-animated-charts/src';
 import { Text } from '@/design-system';
-import { supportedNativeCurrencies } from '@/references';
-import { useTheme } from '@/theme';
+import { useAccountSettings, useDimensions } from '@/hooks';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
-import { toCompactNotation } from '@/helpers/strings';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
-function trim(val: number) {
-  return Math.min(Math.max(val, 0.05), 0.95);
-}
+export const LABEL_VERTICAL_EXTRA_OFFSET = 12;
+const LABEL_MIN_HORIZONTAL_INSET = 12;
 
 const CenteredLabel = ({
   children,
   color,
-  position,
+  x,
   size = '14px / 19px (Deprecated)',
   style,
-  width,
 }: {
   children: React.ReactNode;
   color: string;
-  position: number;
   size?: TextSize;
   style: StyleProp<ViewStyle>;
-  width: number;
+  x: number;
 }) => {
-  const [componentWidth, setWidth] = useState(0);
+  const { width: screenWidth } = useDimensions();
+  const [componentWidth, setComponentWidth] = useState(0);
   const onLayout = useCallback(
     ({
       nativeEvent: {
         layout: { width: newWidth },
       },
     }: LayoutChangeEvent) => {
-      setWidth(newWidth);
+      setComponentWidth(newWidth);
     },
-    [setWidth]
+    [setComponentWidth]
   );
 
-  const left = useMemo(
-    () => Math.max(Math.floor(Math.min(width * position - componentWidth / 2, width - componentWidth - 10)), 10),
-    [componentWidth, position, width]
-  );
+  const left = useMemo(() => {
+    const minLeft = LABEL_MIN_HORIZONTAL_INSET;
+    const maxLeft = screenWidth - componentWidth - LABEL_MIN_HORIZONTAL_INSET;
+    const centerAlignedLeft = x - componentWidth / 2;
+    return Math.min(Math.max(centerAlignedLeft, minLeft), maxLeft);
+  }, [screenWidth, componentWidth, x]);
+
   return (
     <View
       onLayout={onLayout}
       style={[
-        style,
         {
           left,
           opacity: componentWidth ? 1 : 0,
           position: 'absolute',
         },
+        style,
       ]}
     >
       <Text color={{ custom: color }} size={size} weight="bold">
@@ -62,53 +62,49 @@ const CenteredLabel = ({
   );
 };
 
-const Labels = ({ color, width, isCard }: { color: string; width: number; isCard: boolean }) => {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { greatestX, greatestY, smallestX, smallestY } = useChartData();
-  const { colors } = useTheme();
+export const ExtremeLabels = memo(function ExtremeLabels({ color, isCard }: { color: string; isCard: boolean }) {
+  const { nativeCurrency } = useAccountSettings();
+  const {
+    greatestX: rightmostPoint,
+    greatestY: highestPoint,
+    smallestX: leftmostPoint,
+    smallestY: lowestPoint,
+    width: chartWidth,
+  } = useChartData();
 
-  if (!greatestX || !greatestY || !smallestX || !smallestY) return null;
+  if (!rightmostPoint || !highestPoint || !leftmostPoint || !lowestPoint) return null;
 
-  const positionMin = trim((smallestY.x - smallestX.x) / (greatestX.x - smallestX.x));
-  const positionMax = trim((greatestY.x - smallestX.x) / (greatestX.x - smallestX.x));
+  const minPricePosition = {
+    x: ((lowestPoint.x - leftmostPoint.x) / (rightmostPoint.x - leftmostPoint.x)) * chartWidth,
+  };
+  const maxPricePosition = {
+    x: ((highestPoint.x - leftmostPoint.x) / (rightmostPoint.x - leftmostPoint.x)) * chartWidth,
+  };
 
   return (
     <>
-      {positionMin ? (
-        <CenteredLabel
-          color={colors.alpha(color, 0.8)}
-          position={positionMin}
-          size={isCard ? '13pt' : undefined}
-          style={{ bottom: isCard ? -24 : -40 }}
-          width={width}
-        >
-          {toCompactNotation({
-            value: smallestY.y,
-            prefix: nativeSelected.symbol,
-            decimalPlaces: nativeSelected.decimals,
-            currency: nativeCurrency,
-          })}
-        </CenteredLabel>
-      ) : null}
-      {positionMax ? (
-        <CenteredLabel
-          color={colors.alpha(color, 0.8)}
-          position={positionMax}
-          size={isCard ? '13pt' : undefined}
-          style={{ top: -20, left: isCard ? 0 : 40 }}
-          width={width}
-        >
-          {toCompactNotation({
-            value: greatestY.y,
-            prefix: nativeSelected.symbol,
-            decimalPlaces: nativeSelected.decimals,
-            currency: nativeCurrency,
-          })}
-        </CenteredLabel>
-      ) : null}
+      <CenteredLabel
+        color={opacityWorklet(color, 0.8)}
+        x={minPricePosition.x}
+        size={isCard ? '13pt' : undefined}
+        style={{ bottom: -13 - LABEL_VERTICAL_EXTRA_OFFSET }}
+      >
+        {formatAssetPrice({
+          value: lowestPoint.y,
+          currency: nativeCurrency,
+        })}
+      </CenteredLabel>
+      <CenteredLabel
+        color={opacityWorklet(color, 0.8)}
+        x={maxPricePosition.x}
+        size={isCard ? '13pt' : undefined}
+        style={{ top: -13 - LABEL_VERTICAL_EXTRA_OFFSET }}
+      >
+        {formatAssetPrice({
+          value: highestPoint.y,
+          currency: nativeCurrency,
+        })}
+      </CenteredLabel>
     </>
   );
-};
-
-export default React.memo(Labels);
+});
