@@ -9,7 +9,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -70,7 +70,21 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
     return null;
   }
 
-  const secondsRemaining = current.window?.secondsRemaining || 0;
+  const initialSecondsRemaining = current.window?.secondsRemaining || 0;
+  const [secondsRemaining, setSecondsRemaining] = useState(initialSecondsRemaining);
+
+  useEffect(() => {
+    setSecondsRemaining(initialSecondsRemaining);
+  }, [initialSecondsRemaining]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSecondsRemaining(prev => Math.max(0, prev - 60));
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
   const hours = Math.floor(secondsRemaining / 3600);
   const minutes = Math.floor((secondsRemaining % 3600) / 60);
   const timeRemaining = `${hours}h ${minutes}m`;
