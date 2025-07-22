@@ -153,35 +153,34 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
       {/* Symbol and price change */}
       <ButtonPressAnimation onPress={navigateToToken} scaleTo={0.96}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 18, gap: 5 }}>
-          <Text color="label" size="17pt" weight="bold">
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 18, gap: 10 }}>
+          <Text color="label" size="20pt" weight="bold">
             {token.symbol}
           </Text>
-          <Text color={priceChange.startsWith('↑') ? 'green' : 'red'} size="17pt" weight="bold">
-            {priceChange}
+          <Text color={priceChange.startsWith('↑') ? 'green' : 'red'} size="20pt" weight="bold">
+            {priceChange.slice(0, 1)} {priceChange.slice(1)}
           </Text>
-          <View style={{ marginLeft: 4 }}>
-            <CaretRightIcon color={isDarkMode ? '#999' : '#666'} width={8} height={12} />
+          <View style={{ marginLeft: 0 }}>
+            <CaretRightIcon color={isDarkMode ? '#999' : '#666'} width={8} height={10} />
           </View>
         </View>
       </ButtonPressAnimation>
 
       {/* Current price */}
-      <Text color="label" size="30pt" weight="heavy" align="center" style={{ marginTop: 14 }}>
+      <Text color="label" size="30pt" weight="heavy" align="center" style={{ marginTop: 12 }}>
         {currentPrice}
       </Text>
 
-      {/* VOL | MCAP row */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
+      {/* VOL | MCAP */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, gap: 10 }}>
         <Text color="labelTertiary" size="13pt" weight="semibold">
           VOL {volume}
         </Text>
         <View
           style={{
             width: 1,
-            height: 16,
+            height: 10,
             backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
-            marginHorizontal: 12,
           }}
         />
         <Text color="labelTertiary" size="13pt" weight="semibold">
