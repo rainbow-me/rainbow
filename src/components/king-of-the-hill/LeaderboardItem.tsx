@@ -8,8 +8,8 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import FireIcon from './FireIcon';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { getPriceChangeColor } from './utils';
 
 interface LeaderboardItemProps {
   token: Token;
@@ -53,6 +53,45 @@ const styles = StyleSheet.create({
     bottom: -3,
     left: -3,
     zIndex: 2,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+  },
+  iconColumn: {
+    width: 40,
+  },
+  contentColumn: {
+    flex: 1,
+    paddingHorizontal: 12,
+  },
+  rankOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 22,
+    borderWidth: 2,
+  },
+  rankInfoRow: {
+    marginTop: 7,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  statsSeparator: {
+    width: 1,
+    height: 12,
+  },
+  smallLabelRow: {
+    flexDirection: 'row',
+    gap: 4,
   },
 });
 
@@ -104,29 +143,14 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
 
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={0.96}>
-      <View
-        style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 12, paddingHorizontal: 20, justifyContent: 'space-between' }}
-      >
+      <View style={styles.itemContainer}>
         {/* icon */}
-        <View style={{ width: 40 }}>
+        <View style={styles.iconColumn}>
           {iconUrl && (
             <View style={styles.tokenIconContainer}>
               <View style={styles.tokenIconShadow}>
                 <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />
-                {(ranking === 2 || ranking === 3) && (
-                  <View
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      borderRadius: 22,
-                      borderWidth: 2,
-                      borderColor: rankingStyle.backgroundColor,
-                    }}
-                  />
-                )}
+                {(ranking === 2 || ranking === 3) && <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />}
               </View>
               <View style={styles.chainImageContainer}>
                 <ChainImage chainId={token.chainId} size={16} position="absolute" />
@@ -135,20 +159,19 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
           )}
         </View>
 
-        <View style={{ flex: 1, paddingHorizontal: 12 }}>
+        <View style={styles.contentColumn}>
           {/* Name, Fire icon, Price change */}
           <Inline alignVertical="center" space="6px">
             <Text color="label" size="15pt" weight="semibold" numberOfLines={1}>
               {token.name}
             </Text>
-            <FireIcon size={14} />
-            <Text color={priceChange.startsWith('+') ? 'green' : 'red'} size="13pt" weight="semibold">
+            <Text color={getPriceChangeColor(priceChange)} size="13pt" weight="semibold">
               {priceChange}
             </Text>
           </Inline>
 
           {/* Rank | VOL | MCAP */}
-          <View style={{ marginTop: 7 }}>
+          <View style={styles.rankInfoRow}>
             <Inline alignVertical="center" space="8px">
               <View style={[styles.rankingBadge, { backgroundColor: rankingStyle.backgroundColor }]}>
                 <Text
@@ -165,15 +188,11 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
                 </Text>
               </View>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={styles.statsRow}>
                 <SmallLabeledRow label="VOL" value={volume} />
 
                 <View
-                  style={{
-                    width: 1,
-                    height: 12,
-                    backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)',
-                  }}
+                  style={[styles.statsSeparator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]}
                 />
 
                 <SmallLabeledRow label="MCAP" value={marketCap} />
@@ -195,7 +214,7 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
 
 const SmallLabeledRow = ({ label, value }: { label: string; value: string }) => {
   return (
-    <View style={{ flexDirection: 'row', gap: 4 }}>
+    <View style={styles.smallLabelRow}>
       <Text color="labelQuaternary" size="11pt" weight="medium">
         {label}
       </Text>

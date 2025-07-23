@@ -9,13 +9,15 @@ import { LegendList } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useMemo, useState, ReactNode } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { abbreviateNumber } from '@/helpers/utilities';
+import { formatCurrency } from '@/helpers/strings';
 import { Header } from './Header';
 import { LeaderboardItem } from './LeaderboardItem';
+import { formatPriceChange } from './utils';
 
 function SyncStoreEnabled() {
   const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
@@ -111,23 +113,19 @@ export const KingOfTheHillContent = ({
     ({ item }: { item: ListItem }) => {
       if (item.type === 'header') {
         return (
-          <View style={{ borderRadius: 20, padding: 20 }}>
+          <View style={styles.headerContainer}>
             <Header kingOfTheHill={item.data} onColorExtracted={handleColorExtracted} />
           </View>
         );
       }
 
       if (item.type === 'bottom-pad') {
-        return <View style={{ height: 180 }} />;
+        return <View style={styles.bottomPadding} />;
       }
 
-      const priceChange = item.token.price?.relativeChange24h
-        ? `${item.token.price.relativeChange24h > 0 ? '+' : ''}${(item.token.price.relativeChange24h * 100).toFixed(2)}%`
-        : 'N/A';
+      const priceChange = formatPriceChange(item.token.price?.relativeChange24h);
 
-      const price = item.token.price?.value
-        ? `$${item.token.price.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}`
-        : 'N/A';
+      const price = item.token.price?.value ? formatCurrency(item.token.price.value) : 'N/A';
 
       const volume = item.windowTradingVolume ? `$${abbreviateNumber(parseFloat(item.windowTradingVolume), 1)}` : 'N/A';
 
@@ -153,19 +151,16 @@ export const KingOfTheHillContent = ({
     return `${item.token.address}-${item.token.chainId}`;
   }, []);
 
+  let content: ReactNode = null;
+
   if (!kingOfTheHill && !kingOfTheHillLeaderBoard) {
-    return (
-      <View style={{ flex: 1, backgroundColor: backgroundColor || undefined }}>
-        <View style={{ borderRadius: 20, padding: 20, marginTop: topInset + 40 }}>
-          <Skeleton width={'100%'} height={400} />
-        </View>
-        <SyncStoreEnabled />
+    content = (
+      <View style={[styles.skeletonContainer, { marginTop: topInset + 40 }]}>
+        <Skeleton width={'100%'} height={400} />
       </View>
     );
-  }
-
-  return (
-    <View style={{ flex: 1, backgroundColor: backgroundColor || undefined }}>
+  } else {
+    content = (
       <LegendList
         data={listData}
         renderItem={renderItem}
@@ -177,9 +172,35 @@ export const KingOfTheHillContent = ({
           }
         }}
         contentContainerStyle={{ paddingTop: topInset + 40 }}
-        style={{ zIndex: 1 }}
+        style={styles.list}
       />
+    );
+  }
+
+  return (
+    <View style={[styles.container, { backgroundColor: backgroundColor || undefined }]}>
+      {content}
       <SyncStoreEnabled />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerContainer: {
+    borderRadius: 20,
+    padding: 20,
+  },
+  bottomPadding: {
+    height: 180,
+  },
+  skeletonContainer: {
+    borderRadius: 20,
+    padding: 20,
+  },
+  list: {
+    zIndex: 1,
+  },
+});

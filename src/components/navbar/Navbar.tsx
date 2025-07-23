@@ -39,19 +39,9 @@ export function Navbar({
       return {};
     }
 
-    const translateY = interpolate(
-      scrollY.value,
-      [0, 200],
-      [0, -30],
-      'clamp'
-    );
+    const translateY = interpolate(scrollY.value, [0, 200], [0, -30], 'clamp');
 
-    const opacity = interpolate(
-      scrollY.value,
-      [0, 200],
-      [1, 0],
-      'clamp'
-    );
+    const opacity = interpolate(scrollY.value, [0, 200], [1, 0], 'clamp');
 
     return {
       transform: [{ translateY }],
@@ -81,16 +71,18 @@ export function Navbar({
     </>
   );
 
-  const containerStyle = floating ? {
-    position: 'absolute' as const,
-    top: hasStatusBarInset ? 0 : topInset,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-    backgroundColor: 'transparent',
-  } : {
-    backgroundColor: 'transparent',
-  };
+  const containerStyle = floating
+    ? {
+        position: 'absolute' as const,
+        top: hasStatusBarInset ? 0 : topInset,
+        left: 0,
+        right: 0,
+        zIndex: 10,
+        backgroundColor: 'transparent',
+      }
+    : {
+        backgroundColor: 'transparent',
+      };
 
   if (scrollY) {
     return (

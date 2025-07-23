@@ -14,14 +14,15 @@ import { Image, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { abbreviateNumber } from '@/helpers/utilities';
+import { formatCurrency } from '@/helpers/strings';
 import crownImage from './crown.png';
-import FireIcon from './FireIcon';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
 import { Address } from 'viem';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { useSharedValue } from 'react-native-reanimated';
+import { formatPriceChange, getPriceChangeColor } from './utils';
 
 type HeaderProps = {
   kingOfTheHill?: KingOfTheHill | null;
@@ -49,8 +50,8 @@ const CreatorDisplay = memo(function CreatorDisplay({ creatorAddress }: { creato
   const displayName = creatorData.ens || formatAddressForDisplay(creatorAddress, 4, 4);
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-      {creatorData.avatar && <FastImage source={{ uri: creatorData.avatar }} style={{ width: 14, height: 14, borderRadius: 7 }} />}
+    <View style={styles.creatorDisplayContainer}>
+      {creatorData.avatar && <FastImage source={{ uri: creatorData.avatar }} style={styles.creatorAvatar} />}
       <Text color="labelTertiary" size="11pt" weight="black">
         {displayName}
       </Text>
@@ -92,18 +93,14 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
   const dominantColor = usePersistentDominantColorFromImage(sizedIconUrl);
 
+  const initialSecondsRemaining = current?.window?.secondsRemaining || 0;
+  const [secondsRemaining, setSecondsRemaining] = useState(initialSecondsRemaining);
+
   useLayoutEffect(() => {
     if (onColorExtracted && dominantColor) {
       onColorExtracted(dominantColor);
     }
   }, [dominantColor, onColorExtracted]);
-
-  if (!current) {
-    return null;
-  }
-
-  const initialSecondsRemaining = current.window?.secondsRemaining || 0;
-  const [secondsRemaining, setSecondsRemaining] = useState(initialSecondsRemaining);
 
   useEffect(() => {
     setSecondsRemaining(initialSecondsRemaining);
@@ -117,6 +114,10 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
     return () => clearInterval(interval);
   }, []);
 
+  if (!current) {
+    return null;
+  }
+
   const hours = Math.floor(secondsRemaining / 3600);
   const minutes = Math.floor((secondsRemaining % 3600) / 60);
   const timeRemaining = `${hours}h ${minutes}m`;
@@ -126,12 +127,9 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   }
 
   // Get actual price data from token
-  const priceChangeValue = token.price?.relativeChange24h || 0;
-  const priceChange = priceChangeValue !== 0 ? `${priceChangeValue > 0 ? '↑' : ''}${(priceChangeValue * 100).toFixed(2)}%` : 'N/A';
+  const priceChange = formatPriceChange(token.price?.relativeChange24h);
 
-  const currentPrice = token.price?.value
-    ? `$${token.price.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })}`
-    : 'N/A';
+  const currentPrice = token.price?.value ? formatCurrency(token.price.value) : 'N/A';
 
   // Get volume from ranking details
   const volumeValue = current.rankingDetails?.windowTradingVolume;
@@ -143,10 +141,9 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
   // Get creator address
   const creatorAddress = token.rainbowTokenDetails?.onchainData?.creatorAddress;
-  console.log('creatorAddress', creatorAddress);
 
   return (
-    <View style={{ alignItems: 'center' }}>
+    <View style={styles.headerContainer}>
       {/* Token circle */}
       <View style={styles.tokenImageContainer}>
         <View style={styles.glowContainer}>
@@ -154,8 +151,8 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         </View>
 
         {/* Gradient circle behind token */}
-        <View style={{ position: 'absolute', width: TOKEN_SIZE + 12, height: TOKEN_SIZE + 12, zIndex: 1 }}>
-          <Canvas style={{ width: TOKEN_SIZE + 12, height: TOKEN_SIZE + 12 }}>
+        <View style={styles.gradientCircleContainer}>
+          <Canvas style={styles.gradientCanvas}>
             <Circle cx={(TOKEN_SIZE + 12) / 2} cy={(TOKEN_SIZE + 12) / 2} r={(TOKEN_SIZE + 12) / 2}>
               <LinearGradient
                 start={vec((TOKEN_SIZE + 12) / 2, 0)}
@@ -173,10 +170,6 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
         <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
 
-        <View style={styles.fireIcon}>
-          <FireIcon size={40} />
-        </View>
-
         {/* Chain image floating at bottom */}
         <View style={styles.chainImageContainer}>
           <ChainImage chainId={token.chainId} size={26} position="absolute" style={styles.chainImageShadow} />
@@ -186,7 +179,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
       </View>
 
       {/* Round ends */}
-      <View style={{ alignSelf: 'center', marginTop: -12, height: 32 }}>
+      <View style={styles.roundEndsContainer}>
         <GradientBorderView
           borderGradientColors={[gradientBorderColor, 'transparent']}
           start={{ x: 0, y: 0 }}
@@ -195,13 +188,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
           backgroundColor={isDarkMode ? 'rgba(245, 248, 255, 0.02)' : 'rgba(9, 17, 31, 0.01)'}
           style={{ height: 28 }}
         >
-          <View
-            style={{
-              paddingHorizontal: 16,
-              height: '100%',
-              justifyContent: 'center',
-            }}
-          >
+          <View style={styles.roundEndsContent}>
             <Text color="labelSecondary" size="13pt" weight="bold">
               Round ends in {timeRemaining}
             </Text>
@@ -211,39 +198,33 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
       {/* Symbol and price change */}
       <ButtonPressAnimation onPress={navigateToToken} scaleTo={0.96}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 18, gap: 10 }}>
+        <View style={styles.symbolPriceContainer}>
           <Text color="label" size="20pt" weight="bold">
             {token.symbol}
           </Text>
-          <Text color={priceChange.startsWith('↑') ? 'green' : 'red'} size="20pt" weight="bold">
-            {priceChange.slice(0, 1)} {priceChange.slice(1)}
+          <Text color={getPriceChangeColor(priceChange)} size="20pt" weight="bold">
+            {priceChange}
           </Text>
-          <View style={{ marginLeft: 0 }}>
+          <View style={styles.caretContainer}>
             <CaretRightIcon color={isDarkMode ? '#999' : '#666'} width={8} height={10} />
           </View>
         </View>
       </ButtonPressAnimation>
 
       {/* Current price */}
-      <Text color="label" size="30pt" weight="heavy" align="center" style={{ marginTop: 12 }}>
+      <Text color="label" size="30pt" weight="heavy" align="center" style={styles.currentPrice}>
         {currentPrice}
       </Text>
 
       {/* Creator | VOL | MCAP */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, gap: 10 }}>
+      <View style={styles.statsContainer}>
         {creatorAddress && (
           <>
             <CreatorDisplay creatorAddress={creatorAddress} />
-            <View
-              style={{
-                width: 1,
-                height: 10,
-                backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)',
-              }}
-            />
+            <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]} />
           </>
         )}
-        <View style={{ flexDirection: 'row', gap: 4 }}>
+        <View style={styles.statItem}>
           <Text color="labelQuaternary" size="13pt" weight="semibold">
             VOL
           </Text>
@@ -251,14 +232,8 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
             {volume}
           </Text>
         </View>
-        <View
-          style={{
-            width: 1,
-            height: 10,
-            backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)',
-          }}
-        />
-        <View style={{ flexDirection: 'row', gap: 4 }}>
+        <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]} />
+        <View style={styles.statItem}>
           <Text color="labelQuaternary" size="13pt" weight="semibold">
             MCAP
           </Text>
@@ -269,7 +244,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
       </View>
 
       {/* Last winner and How it works buttons */}
-      <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 0, marginTop: 26 }}>
+      <View style={styles.buttonsContainer}>
         <HeaderButton onPress={lastWinner ? navigateToLastWinner : navigateToExplainSheet} iconUrl={lastWinner ? lastWinnerIconUrl : null}>
           <Text color="labelQuaternary" size="13pt" weight="bold">
             {lastWinner ? 'Last winner ' : 'No Previous Winner'}
@@ -282,7 +257,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         </HeaderButton>
 
         <HeaderButton onPress={navigateToExplainSheet}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <View style={styles.howItWorksContent}>
             <Text color="labelTertiary" size="13pt" weight="bold">
               How it works
             </Text>
@@ -292,12 +267,25 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
       </View>
 
       {/* Separator */}
-      <View style={{ width: '100%', height: 1, backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR, marginTop: 16 }} />
+      <View style={[styles.bottomSeparator, { backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    alignItems: 'center',
+  },
+  creatorDisplayContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  creatorAvatar: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+  },
   tokenImage: {
     width: TOKEN_SIZE,
     height: TOKEN_SIZE,
@@ -316,11 +304,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fireIcon: {
+  gradientCircleContainer: {
     position: 'absolute',
-    bottom: TOKEN_SIZE / 2 - 15,
-    right: TOKEN_SIZE / 2 - 15,
-    zIndex: 3,
+    width: TOKEN_SIZE + 12,
+    height: TOKEN_SIZE + 12,
+    zIndex: 1,
+  },
+  gradientCanvas: {
+    width: TOKEN_SIZE + 12,
+    height: TOKEN_SIZE + 12,
   },
   crown: {
     position: 'absolute',
@@ -346,5 +338,58 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 10,
+  },
+  roundEndsContainer: {
+    alignSelf: 'center',
+    marginTop: -12,
+    height: 32,
+  },
+  roundEndsContent: {
+    paddingHorizontal: 16,
+    height: '100%',
+    justifyContent: 'center',
+  },
+  symbolPriceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 18,
+    gap: 10,
+  },
+  caretContainer: {
+    marginLeft: 0,
+  },
+  currentPrice: {
+    marginTop: 12,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+    gap: 10,
+  },
+  separator: {
+    width: 1,
+    height: 10,
+  },
+  statItem: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  buttonsContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 0,
+    marginTop: 26,
+  },
+  howItWorksContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  bottomSeparator: {
+    width: '100%',
+    height: 1,
+    marginTop: 16,
   },
 });

@@ -2,7 +2,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { Text, useBackgroundColor, useColorMode } from '@/design-system';
 import React from 'react';
-import { View, ViewStyle } from 'react-native';
+import { View, ViewStyle, StyleSheet } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 interface HeaderButtonProps {
@@ -27,15 +27,8 @@ export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, i
         backgroundColor={isDarkMode ? 'rgba(245, 248, 255, 0.05)' : 'rgba(9, 17, 31, 0.05)'}
         style={[{ height: 26 }, style]}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 12,
-            height: '100%',
-          }}
-        >
-          {iconUrl && <FastImage source={{ uri: iconUrl }} style={{ width: 16, height: 16, borderRadius: 8, marginRight: 6 }} />}
+        <View style={styles.buttonContent}>
+          {iconUrl && <FastImage source={{ uri: iconUrl }} style={styles.buttonIcon} />}
           {children || (
             <Text color="labelTertiary" size="13pt" weight="bold">
               {text}
@@ -46,3 +39,18 @@ export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, i
     </ButtonPressAnimation>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    height: '100%',
+  },
+  buttonIcon: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    marginRight: 6,
+  },
+});
