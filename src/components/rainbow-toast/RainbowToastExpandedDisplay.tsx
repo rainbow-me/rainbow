@@ -118,6 +118,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
         dragY.value = e.translationY;
       })
       .onEnd(e => {
+        'worklet';
         const dragDistance = dragY.value;
         const adjustedDistance = dragDistance < 0 ? dragDistance * UPWARD_SENSITIVITY_MULTIPLIER : dragDistance;
         const distanceRatio = Math.abs(adjustedDistance) / height;
