@@ -78,6 +78,7 @@ function getTabBarHeight() {
   return BASE_TAB_BAR_HEIGHT + (initialWindowMetrics?.insets.bottom ?? 0) + 6;
 }
 
+const DOUBLE_PRESS_DELAY = 400;
 const TAB_BAR_BORDER_RADIUS = BASE_TAB_BAR_HEIGHT / 2;
 
 const TAB_BAR_ICONS = {
@@ -105,20 +106,16 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const { extraWebViewHeight, tabViewProgress } = useBrowserTabBarContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
-  // const { colors } = useTheme();
   const recyclerList = useRecyclerListViewScrollToTopContext();
   const mainList = useMainList();
-
-  // const separatorSecondary = useForegroundColor('separatorSecondary');
 
   const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
   const numberOfTabs = 3 + (showPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
-  const horizontalInset = TAB_BAR_INNER_PADDING; // numberOfTabs > 4 ? HORIZONTAL_TAB_BAR_INSET_5_TABS : HORIZONTAL_TAB_BAR_INSET;
-  const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - horizontalInset * 2) / numberOfTabs;
-  const tabPillStartPosition = (tabWidth - TAB_BAR_PILL_WIDTH) / 2 + horizontalInset;
+  const tabWidth = (deviceWidth - TAB_BAR_HORIZONTAL_INSET * 2 - TAB_BAR_INNER_PADDING * 2) / numberOfTabs;
+  const tabPillStartPosition = (tabWidth - TAB_BAR_PILL_WIDTH) / 2 + TAB_BAR_INNER_PADDING;
 
   const reanimatedPosition = useSharedValue(0);
   const showBrowserNavButtons = useSharedValue(false);
@@ -136,7 +133,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
 
     return {
       backgroundColor: opacityWorklet(accentColor, (isDarkMode ? 0.2 : 0.1) * backgroundOpacity),
-      // transform: [{ translateX }],
       transform: [{ translateX: withSpring(translateX, SPRING_CONFIGS.snappyMediumSpringConfig) }],
     };
   });
@@ -189,8 +185,6 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
       const isFocused = getIsFocused(index);
       const time = new Date().getTime();
       const delta = time - (lastPressRef.current || 0);
-
-      const DOUBLE_PRESS_DELAY = 400;
 
       if (!isFocused) {
         reanimatedPosition.value = index;
@@ -297,10 +291,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   const shadowStyle = useAnimatedStyle(() => {
     const isDappBrowserTab = showDappBrowserTab && reanimatedPosition.value === 2;
     return {
-      shadowColor: globalColors.grey100,
-      shadowOffset: { width: 0, height: 12 },
-      shadowOpacity: withSpring(isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.2, SPRING_CONFIGS.snappyMediumSpringConfig),
-      shadowRadius: 18,
+      shadowOpacity: withSpring(isDarkMode ? 0.6 : isDappBrowserTab ? 0 : 0.16, SPRING_CONFIGS.snappyMediumSpringConfig),
     };
   });
 
@@ -329,10 +320,10 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
         <Animated.View style={[styles.tabBarBackgroundFade, gradientBackgroundStyle]} />
       </MaskedView>
 
-      <Animated.View style={shadowStyle}>
+      <Animated.View style={[{ shadowColor: globalColors.grey100, shadowOffset: { width: 0, height: 12 }, shadowRadius: 18 }, shadowStyle]}>
         <Box
           as={Animated.View}
-          borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.72)' }}
+          borderColor={isDarkMode ? 'separatorSecondary' : { custom: 'rgba(255, 255, 255, 0.64)' }}
           borderWidth={THICK_BORDER_WIDTH}
           borderRadius={TAB_BAR_BORDER_RADIUS}
           bottom={{ custom: TAB_BAR_HEIGHT - BASE_TAB_BAR_HEIGHT }}
@@ -361,7 +352,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
                   colors={
                     isDarkMode
                       ? ['rgba(57, 58, 64, 0.36)', 'rgba(57, 58, 64, 0.32)']
-                      : ['rgba(255, 255, 255, 0.36)', 'rgba(255, 255, 255, 0.32)']
+                      : ['rgba(255, 255, 255, 0.72)', 'rgba(255, 255, 255, 0.52)']
                   }
                   style={StyleSheet.absoluteFill}
                 />
@@ -398,7 +389,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
               top={{ custom: TAB_BAR_INNER_PADDING }}
               width={{ custom: TAB_BAR_PILL_WIDTH }}
             />
-            <Box paddingHorizontal={{ custom: horizontalInset }}>
+            <Box paddingHorizontal={{ custom: TAB_BAR_INNER_PADDING }}>
               <Columns alignVertical="center">{renderedTabs}</Columns>
             </Box>
           </Box>
@@ -408,7 +399,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
   );
 });
 
-interface BaseTabIconProps {
+type BaseTabIconProps = {
   accentColor: string;
   activeIndex: SharedValue<number>;
   index: number;
@@ -416,7 +407,7 @@ interface BaseTabIconProps {
   onPress: ({ route, index, tabBarIcon }: { route: { key: string; name: string }; index: number; tabBarIcon: TabIconKey }) => void;
   route: { key: string; name: string };
   tabBarIcon: TabIconKey;
-}
+};
 
 export const BaseTabIcon = memo(function BaseTabIcon({
   accentColor,
