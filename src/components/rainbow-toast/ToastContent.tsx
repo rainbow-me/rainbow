@@ -8,7 +8,7 @@ import { Text } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
 import React from 'react';
-import { Text as RNText, View } from 'react-native';
+import { StyleSheet, Text as RNText, View } from 'react-native';
 
 interface ToastContentProps {
   title: React.ReactNode;
@@ -35,21 +35,20 @@ function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_IC
   const colors = useToastColors();
 
   return (
-    <View style={{ flexDirection: 'row', gap: 13, alignItems: 'center', minWidth: 130 }}>
+    <View style={styles.container}>
       <View
-        style={{
-          width: iconWidth,
-          // the ciruclar icons look further from the left edge than the text
-          // looks from the right edge, so adjusting it visually a bit here
-          marginLeft: -2,
-          height: TOAST_ICON_SIZE,
-          flexShrink: 0,
-        }}
+        style={[
+          styles.iconContainer,
+          {
+            width: iconWidth,
+            height: TOAST_ICON_SIZE,
+          },
+        ]}
       >
         {icon}
       </View>
 
-      <View style={{ gap: 9, minWidth: 100 }}>
+      <View style={styles.textContainer}>
         <Text color={{ custom: colors.foreground }} size="15pt" weight="bold" numberOfLines={1} ellipsizeMode="tail">
           {title}
         </Text>
@@ -96,7 +95,7 @@ export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap })
   // using RNText because it can inherit the color/size from ToastContentDisplay
   return (
     <RNText>
-      {toast.fromAssetSymbol} <RNText style={{ fontWeight: '200' }}>􀄫</RNText> {toast.toAssetSymbol}
+      {toast.fromAssetSymbol} <RNText style={styles.arrowSeparator}>􀄫</RNText> {toast.toAssetSymbol}
     </RNText>
   );
 };
@@ -156,3 +155,23 @@ function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    gap: 13,
+    alignItems: 'center',
+    minWidth: 130,
+  },
+  iconContainer: {
+    marginLeft: -2,
+    flexShrink: 0,
+  },
+  textContainer: {
+    gap: 9,
+    minWidth: 100,
+  },
+  arrowSeparator: {
+    fontWeight: '200',
+  },
+});

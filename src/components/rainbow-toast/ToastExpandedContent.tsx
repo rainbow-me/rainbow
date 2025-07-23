@@ -16,7 +16,7 @@ import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import React, { useMemo, type ReactNode } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useToastColors } from './useToastColors';
 
 export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
@@ -78,7 +78,7 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
   );
 }
 
-export const EXPANDED_ICON_SIZE = 34;
+const EXPANDED_ICON_SIZE = 34;
 
 function ToastExpandedContentDisplay({
   icon,
@@ -97,72 +97,21 @@ function ToastExpandedContentDisplay({
   const colors = useToastColors();
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        gap: 24,
-        alignItems: 'center',
-        overflow: 'hidden',
-        paddingHorizontal: 28,
-        paddingVertical: 16,
-        flex: 1,
-      }}
-    >
-      <View
-        style={{
-          width: EXPANDED_ICON_SIZE + 12,
-          height: EXPANDED_ICON_SIZE,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: EXPANDED_ICON_SIZE,
-            height: EXPANDED_ICON_SIZE,
-          }}
-        >
-          {icon}
-        </View>
+    <View style={styles.container}>
+      <View style={styles.iconSection}>
+        <View style={styles.iconWrapper}>{icon}</View>
       </View>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          gap: 12,
-          alignItems: 'center',
-          overflow: 'hidden',
-          flex: 1,
-        }}
-      >
-        <View
-          style={{
-            flex: 10,
-            gap: 8,
-            // visually this looks a bit better being slightly up due to the smaller top title text
-            marginTop: -1,
-          }}
-        >
-          <View style={{ flexDirection: 'row', flex: 1, minHeight: 16, alignItems: 'center', flexWrap: 'nowrap' }}>
-            {isLoading ? <Spinner color={colors.loadingText} size={11} style={{ marginTop: -1, paddingRight: 5 }} /> : null}
+      <View style={styles.middleSection}>
+        <View style={styles.textSection}>
+          <View style={styles.statusRow}>
+            {isLoading ? <Spinner color={colors.loadingText} size={11} style={styles.spinnerStyle} /> : null}
             <Text color={isLoading ? { custom: colors.loadingText } : 'labelTertiary'} size="13pt" weight="semibold">
               {statusLabel}
             </Text>
           </View>
 
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            color="label"
-            size="17pt"
-            weight="medium"
-            style={{
-              lineHeight: 28,
-              marginTop: -10,
-            }}
-          >
+          <Text numberOfLines={1} ellipsizeMode="tail" color="label" size="17pt" weight="medium" style={styles.labelText}>
             {label}
           </Text>
         </View>
@@ -188,7 +137,7 @@ function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTr
   }, [bottomValueIn]);
 
   return (
-    <View style={{ maxWidth: '33%', flexDirection: 'column', minHeight: '100%', gap: 12, marginVertical: -4 }}>
+    <View style={styles.valueSection}>
       <Text ellipsizeMode="tail" numberOfLines={1} color={{ custom: colors.foregroundDim }} size="13pt" weight="medium">
         {topValue || 'Pending'}
       </Text>
@@ -198,3 +147,62 @@ function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTr
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    gap: 24,
+    alignItems: 'center',
+    overflow: 'hidden',
+    paddingHorizontal: 28,
+    paddingVertical: 16,
+    flex: 1,
+  },
+  iconSection: {
+    width: EXPANDED_ICON_SIZE + 12,
+    height: EXPANDED_ICON_SIZE,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: EXPANDED_ICON_SIZE,
+    height: EXPANDED_ICON_SIZE,
+  },
+  middleSection: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+    flex: 1,
+    overflow: 'hidden',
+  },
+  textSection: {
+    flex: 10,
+    gap: 8,
+    // visually this looks a bit better being slightly up due to the smaller top title text
+    marginTop: -1,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    flex: 1,
+    minHeight: 16,
+    alignItems: 'center',
+    flexWrap: 'nowrap',
+  },
+  labelText: {
+    lineHeight: 28,
+    marginTop: -10,
+  },
+  valueSection: {
+    maxWidth: '33%',
+    flexDirection: 'column',
+    minHeight: '100%',
+    gap: 12,
+    marginVertical: -4,
+  },
+  spinnerStyle: {
+    marginTop: -1,
+    paddingRight: 5,
+  },
+});

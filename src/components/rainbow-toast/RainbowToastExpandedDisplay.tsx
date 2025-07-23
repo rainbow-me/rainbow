@@ -1,5 +1,6 @@
-import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { DISMISS_SENSITIVITY, UPWARD_SENSITIVITY_MULTIPLIER } from '@/components/rainbow-toast/constants';
+import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
+import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Box, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
@@ -10,9 +11,8 @@ import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
-import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
 
 const springConfig = { damping: 14, mass: 1, stiffness: 121.6 };
 const CARD_BORDER_RADIUS = 50;
@@ -48,7 +48,7 @@ const ExpandedToastCard = ({
 
   return (
     <View style={{ borderRadius, width, height, shadowColor, shadowOffset: { width: 0, height: 5 }, shadowRadius: 10, shadowOpacity: 1 }}>
-      <Canvas style={[{ position: 'absolute', top: 0, left: 0, width, height }]}>
+      <Canvas style={[styles.canvasStyle, { width, height }]}>
         <Path path={squirclePath} color={background} />
         <Path
           path={innerSquirclePath}
@@ -170,13 +170,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   return (
     <>
       {/* backdrop */}
-      <Animated.View
-        style={[
-          { zIndex: 100, position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' },
-          pointerEventsStyle,
-          opacityStyle,
-        ]}
-      >
+      <Animated.View style={[styles.backdrop, pointerEventsStyle, opacityStyle]}>
         {IS_IOS && <BlurView blurIntensity={1} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
         <TouchableWithoutFeedback onPress={hide}>
           <Box style={{ ...StyleSheet.absoluteFillObject, backgroundColor: backdropBackgroundColor }} />
@@ -184,7 +178,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
       </Animated.View>
 
       {/* content card */}
-      <View style={{ zIndex: 100 }}>
+      <View style={styles.contentContainer}>
         <GestureDetector gesture={pan}>
           <Animated.View
             style={[
@@ -194,18 +188,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
             ]}
           >
             <ExpandedToastCard width={deviceWidth - 2 * CARD_MARGIN} height={height} borderRadius={CARD_BORDER_RADIUS}>
-              <View
-                style={{
-                  flex: 1,
-                  paddingVertical: paddingY,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  overflow: 'hidden',
-                  borderRadius: 50,
-                }}
-              >
+              <View style={[styles.toastContentWrapper, { paddingVertical: paddingY }]}>
                 {toasts.map(toast => {
                   return (
                     <Pressable
@@ -234,4 +217,33 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
       </View>
     </>
   );
+});
+
+const styles = StyleSheet.create({
+  backdrop: {
+    zIndex: 100,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    pointerEvents: 'box-none',
+  },
+  canvasStyle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  contentContainer: {
+    zIndex: 100,
+  },
+  toastContentWrapper: {
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    overflow: 'hidden',
+    borderRadius: 50,
+  },
 });

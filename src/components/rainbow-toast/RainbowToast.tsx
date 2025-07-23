@@ -274,7 +274,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
       });
 
     return pan;
-  }, [translateX, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback, isPressed]);
+  }, [translateX, isSimulator.value, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback, isPressed]);
 
   const dragStyle = useAnimatedStyle(() => {
     const opacityY = opacity.value;
@@ -342,9 +342,8 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
       <Animated.View style={[dragStyle, { zIndex: 3 - index }]}>
         <Animated.View
           style={[
+            styles.shadowContainer,
             {
-              alignItems: 'center',
-              justifyContent: 'center',
               shadowRadius: interpolate(index, [0, 2], [8, 2], 'clamp'),
               shadowOpacity: shadowOpacity,
               shadowColor: `rgba(0,0,0,${shadowOpacity})`,
@@ -411,4 +410,11 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
       </Animated.View>
     </GestureDetector>
   );
+});
+
+const styles = StyleSheet.create({
+  shadowContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

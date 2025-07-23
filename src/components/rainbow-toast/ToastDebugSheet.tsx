@@ -115,6 +115,11 @@ export function ToastDebugSheet() {
             the amounts, as the transaction is not actually in the userAssetsStoreManager.
           </Text>
 
+          <Text size="12pt" color="label" style={{ marginTop: 10 }}>
+            Also note that in general there&apos;s only 2 example transactions of any given type, and they sometimes will get immediately
+            sent into sent state if they&apos;ve been processed by this wallet already.
+          </Text>
+
           <Box gap={12} paddingVertical="32px">
             <Button
               onPress={() => {
