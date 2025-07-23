@@ -4,6 +4,7 @@ import { RainbowToastContractStatuses, RainbowToastSendStatuses, RainbowToastSwa
 type BaseToast = {
   id: string;
   transactionHash: string;
+  chainId: number;
   transaction: RainbowTransaction;
   action?: () => void;
   isRemoving?: boolean;
@@ -14,7 +15,6 @@ type BaseToast = {
 export type RainbowToastSwap = BaseToast & {
   type: 'swap';
   status: keyof typeof RainbowToastSwapStatuses;
-  chainId: number;
   fromAssetSymbol: string;
   toAssetSymbol: string;
   fromAssetImage: string;
@@ -23,7 +23,6 @@ export type RainbowToastSwap = BaseToast & {
 
 export type RainbowToastSend = BaseToast & {
   type: 'send';
-  chainId: number;
   status: keyof typeof RainbowToastSendStatuses;
   displayAmount: string;
   token: string;
@@ -32,7 +31,6 @@ export type RainbowToastSend = BaseToast & {
 
 export type RainbowToastContract = BaseToast & {
   type: 'contract';
-  chainId: number;
   status: keyof typeof RainbowToastContractStatuses;
   name: string;
   image: string;

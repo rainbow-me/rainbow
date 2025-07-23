@@ -25,7 +25,7 @@ export const useToastStore = createRainbowStore<ToastState>(
     showExpanded: false,
     isShowingTransactionDetails: false,
 
-    setIsShowingTransactionDetails(isShowingTransactionDetails) {
+    setIsShowingTransactionDetails: isShowingTransactionDetails => {
       set({
         isShowingTransactionDetails,
       });

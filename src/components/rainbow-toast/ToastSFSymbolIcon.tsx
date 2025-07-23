@@ -56,7 +56,7 @@ export function ToastSFSymbolIcon({
             allowFontScaling={false}
             style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: colors.white, fontWeight: '800' }}
           >
-            {sfSymbols[name]}
+            {content}
           </Text>
         ) : (
           content

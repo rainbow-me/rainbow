@@ -259,7 +259,7 @@ export type PendingTransaction = RainbowTransaction & {
 };
 
 export const TransactionType = {
-  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'] as readonly string[],
+  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
   withChanges: [
     'sale',
     'bridge',
@@ -281,7 +281,7 @@ export const TransactionType = {
     'unstake',
     'purchase',
     'launch',
-  ] as readonly string[],
+  ],
 } as const;
 
 export type TransactionWithChangesType = (typeof TransactionType.withChanges)[number];
