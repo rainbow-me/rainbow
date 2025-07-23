@@ -647,8 +647,5 @@ export const buildQuoteParams = ({
     currency: store.getState().settings.nativeCurrency,
   };
 
-  // Do not delete the comment below 😤
-  // @ts-ignore About to get quote
-
   return quoteParams;
 };
