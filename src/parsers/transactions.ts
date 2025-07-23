@@ -6,6 +6,7 @@ import {
   TransactionApiResponse,
   TransactionChanges,
   TransactionStatus,
+  TransactionTypeMap,
   TransactionType,
 } from '@/entities';
 
@@ -16,7 +17,12 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 
-import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
+import {
+  NewTransaction,
+  RainbowTransactionFee,
+  TransactionWithChangesType,
+  TransactionWithoutChangesType,
+} from '@/entities/transactions/transaction';
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 
@@ -191,6 +197,6 @@ export const getDescription = (asset: ParsedAsset | undefined, type: Transaction
 
 export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
   !!type &&
-  (TransactionType.withChanges.includes(type as TransactionType) ||
-    TransactionType.withoutChanges.includes(type as TransactionType) ||
+  (TransactionTypeMap.withChanges.includes(type as TransactionWithChangesType) ||
+    TransactionTypeMap.withoutChanges.includes(type as TransactionWithoutChangesType) ||
     type === ('sale' as TransactionType));

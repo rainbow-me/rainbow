@@ -138,6 +138,7 @@ const activityTypeIcon: Record<TransactionType, string> = {
   claim: '􀄩',
   borrow: '􀄩',
   deployment: '􀄩',
+  launch: '􀓎',
 };
 
 export const ActivityTypeIcon = ({

@@ -258,7 +258,7 @@ export type PendingTransaction = RainbowTransaction & {
   status: TransactionStatus.pending;
 };
 
-export const TransactionType = {
+export const TransactionTypeMap = {
   withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
   withChanges: [
     'sale',
@@ -284,8 +284,8 @@ export const TransactionType = {
   ],
 } as const;
 
-export type TransactionWithChangesType = (typeof TransactionType.withChanges)[number];
-export type TransactionWithoutChangesType = (typeof TransactionType.withoutChanges)[number];
+export type TransactionWithChangesType = (typeof TransactionTypeMap.withChanges)[number];
+export type TransactionWithoutChangesType = (typeof TransactionTypeMap.withoutChanges)[number];
 
 export type TransactionType = TransactionWithChangesType | TransactionWithoutChangesType;
 
