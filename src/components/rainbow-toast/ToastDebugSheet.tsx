@@ -109,8 +109,13 @@ export function ToastDebugSheet() {
           Transactions
         </Text>
 
-        <ScrollView style={{ marginTop: 20 }} showsVerticalScrollIndicator={false}>
-          <Box gap={12}>
+        <ScrollView style={{ marginTop: 30 }} showsVerticalScrollIndicator={false}>
+          <Text size="12pt" color="label">
+            Note that due to these being fake transactions the expanded toast sheet doesn&apos;t show the right values on the right side for
+            the amounts, as the transaction is not actually in the userAssetsStoreManager.
+          </Text>
+
+          <Box gap={12} paddingVertical="32px">
             <Button
               onPress={() => {
                 current = [];

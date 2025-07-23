@@ -55,7 +55,7 @@ export const useToastStore = createRainbowStore<ToastState>(
             !activeToastIds.has(t.id) &&
             !state.dismissedToasts.has(t.id) &&
             // all transactions start as pending, we only add if we start from pending
-            t.status === TransactionStatus.pending
+            (t.status === TransactionStatus.pending || t.status === TransactionStatus.contract_interaction)
         );
 
         const toasts = [...additions, ...updatedToasts]

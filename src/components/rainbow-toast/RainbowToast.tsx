@@ -26,6 +26,7 @@ import { useDimensions } from '@/hooks';
 import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
 import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { time } from '@/utils';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -39,10 +40,9 @@ import Animated, {
   WithSpringConfig,
   withTiming,
 } from 'react-native-reanimated';
-import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
-import { time } from '@/utils';
 
 export function RainbowToastDisplay() {
   const { toasts, isShowingTransactionDetails } = useToastStore();

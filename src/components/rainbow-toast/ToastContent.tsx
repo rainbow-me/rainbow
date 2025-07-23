@@ -93,6 +93,7 @@ export const getSwapToastStatusLabel = ({ toast }: { toast: RainbowToastSwap }) 
 };
 
 export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap }) => {
+  // using RNText because it can inherit the color/size from ToastContentDisplay
   return (
     <RNText>
       {toast.fromAssetSymbol} <RNText style={{ fontWeight: '200' }}>􀄫</RNText> {toast.toAssetSymbol}
@@ -131,6 +132,9 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   }
   if (toast.status === TransactionStatus.minting) {
     return i18n.t(i18n.l.toasts.contract.minting);
+  }
+  if (toast.status === TransactionStatus.swapped) {
+    return i18n.t(i18n.l.toasts.swap.swapped);
   }
   if (toast.status === TransactionStatus.failed) {
     return i18n.t(i18n.l.toasts.contract.failed);

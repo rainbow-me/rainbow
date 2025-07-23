@@ -25,6 +25,7 @@ export const RainbowToastContractStatuses = {
   [TransactionStatus.contract_interaction]: TransactionStatus.contract_interaction,
   [TransactionStatus.minting]: TransactionStatus.minting,
   [TransactionStatus.minted]: TransactionStatus.minted,
+  [TransactionStatus.swapped]: TransactionStatus.swapped,
   [TransactionStatus.failed]: TransactionStatus.failed,
   [TransactionStatus.confirmed]: TransactionStatus.confirmed,
 } as const;

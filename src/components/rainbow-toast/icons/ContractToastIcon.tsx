@@ -11,7 +11,11 @@ import { View } from 'react-native';
 export function ContractToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastContract; size?: number }) {
   const colors = useToastColors();
 
-  if (toast.status === TransactionStatus.minted || toast.status === TransactionStatus.confirmed) {
+  if (
+    toast.status === TransactionStatus.minted ||
+    toast.status === TransactionStatus.swapped ||
+    toast.status === TransactionStatus.confirmed
+  ) {
     return <ToastSFSymbolIcon borderRadius={10} name="check" />;
   }
 
