@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, SharedValue, AnimatedStyle } from 'react-native-reanimated';
@@ -25,7 +24,7 @@ export function TabBarIcon({ accentColor, hideShadow, icon, index, reanimatedPos
 
   const hasTransparentInnerFill = icon === 'tabDiscover' || icon === 'tabPoints' || icon === 'tabDappBrowser';
 
-  const outlineColor = isDarkMode ? globalColors.blueGrey60 : globalColors.blueGrey70;
+  const outlineColor = isDarkMode ? globalColors.white70 : globalColors.grey70;
 
   const iconColor = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
@@ -75,9 +74,9 @@ export function TabBarIcon({ accentColor, hideShadow, icon, index, reanimatedPos
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [
         isDarkMode ? outlineColor : '#FEFEFE',
-        tintBackdrop || (hasTransparentInnerFill ? (isDarkMode ? '#171819' : '#FEFEFE') : accentColor),
-        tintBackdrop || (hasTransparentInnerFill ? (isDarkMode ? '#171819' : '#FEFEFE') : accentColor),
-        tintBackdrop || (hasTransparentInnerFill ? (isDarkMode ? '#171819' : '#FEFEFE') : accentColor),
+        tintBackdrop || (hasTransparentInnerFill ? (isDarkMode ? '#1F2020' : '#FEFEFE') : accentColor),
+        tintBackdrop || (hasTransparentInnerFill ? (isDarkMode ? '#1F2020' : '#FEFEFE') : accentColor),
+        tintBackdrop || (hasTransparentInnerFill ? (isDarkMode ? '#1F2020' : '#FEFEFE') : accentColor),
         isDarkMode ? outlineColor : '#FEFEFE',
       ]
     );
