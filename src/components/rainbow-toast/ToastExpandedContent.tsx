@@ -15,7 +15,7 @@ import { Text } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import React, { type ReactNode } from 'react';
+import React, { useMemo, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { useToastColors } from './useToastColors';
 
@@ -177,12 +177,15 @@ function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTr
   const colors = useToastColors();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const [topValue, bottomValueIn] = activityValues(transaction, nativeCurrency) ?? [];
-  const bottomValueWithoutSymbol = bottomValueIn
-    ?.trim()
-    .split(' ')
-    .map(part => (returnStringFirstEmoji(part) ? '' : part))
-    .filter(Boolean)
-    .join(' ');
+
+  const bottomValueWithoutSymbol = useMemo(() => {
+    return bottomValueIn
+      ?.trim()
+      .split(' ')
+      .map(part => (returnStringFirstEmoji(part) ? '' : part))
+      .filter(Boolean)
+      .join(' ');
+  }, [bottomValueIn]);
 
   return (
     <View style={{ maxWidth: '33%', flexDirection: 'column', minHeight: '100%', gap: 12, marginVertical: -4 }}>

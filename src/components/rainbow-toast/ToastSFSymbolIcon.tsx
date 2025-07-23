@@ -40,14 +40,17 @@ export function ToastSFSymbolIcon({
     >
       <View
         style={[
-          StyleSheet.absoluteFillObject,
           {
+            flex: 1,
             backgroundColor: bg,
-            borderRadius: borderRadius - 5,
+            // this gets us the right inner rounding based on the borderWidth above
+            // we use a semi-rounded borderRadius for extral contracts which needs it
+            borderRadius: borderRadius - 4,
             overflow: 'hidden',
-            opacity: 0.9,
+            opacity: 0.85,
             alignItems: 'center',
             justifyContent: 'center',
+            transform: [{ scale: 1.02 }],
           },
         ]}
       >

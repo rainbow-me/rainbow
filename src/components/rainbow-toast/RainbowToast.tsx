@@ -42,10 +42,10 @@ import Animated, {
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
+import { time } from '@/utils';
 
 export function RainbowToastDisplay() {
   const { toasts, isShowingTransactionDetails } = useToastStore();
-  const insets = useSafeAreaInsets();
   const { transactions } = useLatestAccountTransactions();
 
   const showingTransactionDetails = useSharedValue(false);
@@ -92,11 +92,11 @@ export function RainbowToastDisplay() {
 
   const content = (
     <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
-      <RainbowToastExpandedDisplay insets={insets} />
+      <RainbowToastExpandedDisplay />
 
       <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
         {visibleToasts.map(toast => {
-          return <RainbowToastItem insets={insets} key={toast.id} toast={toast} />;
+          return <RainbowToastItem key={toast.id} toast={toast} />;
         })}
       </Animated.View>
     </Box>
@@ -119,15 +119,15 @@ const springConfig: WithSpringConfig = {
 };
 
 const DISMISS_THRESHOLD_PERCENTAGE = 0.1;
-const DISMISS_VELOCITY_THRESHOLD = 5;
+const DISMISS_VELOCITY_THRESHOLD = 20;
 
 type Props = PropsWithChildren<{
   testID?: string;
   toast: RainbowToastWithIndex;
-  insets: EdgeInsets;
 }>;
 
-const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: Props) {
+const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
+  const insets = useSafeAreaInsets();
   const { index, id } = toast;
 
   const height = TOAST_HEIGHT;
@@ -280,7 +280,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, insets }: P
 
   const pressGesture = useMemo(() => {
     return Gesture.Tap()
-      .maxDuration(2000)
+      .maxDuration(time.minutes(10)) // doesn't accept Infinity
       .onTouchesDown(() => {
         touchStartedAt.value = Date.now();
         isPressed.value = true;

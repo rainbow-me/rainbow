@@ -11,7 +11,10 @@ export const TOAST_GAP_FAR = 3.5; // gap for third item
 export const TOAST_TOP_OFFSET = 10;
 export const TOAST_INITIAL_OFFSET_ABOVE = -80;
 export const TOAST_INITIAL_OFFSET_BELOW = 10;
-export const TOAST_DONE_HIDE_TIMEOUT_MS = time.seconds(3);
+export const TOAST_DONE_HIDE_TIMEOUT_MS = time.seconds(
+  // temp while developing
+  1000
+);
 export const TOAST_HIDE_TIMEOUT_MS = time.seconds(30);
 
 export const DISMISS_SENSITIVITY = 0.5; // make dismissing easier (lower) or harder (higher)

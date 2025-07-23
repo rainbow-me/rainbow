@@ -83,7 +83,7 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
 
   return (
     <Box
-      pointerEvents={disableOnPress ? 'none' : 'auto'}
+      pointerEvents="none"
       position="absolute"
       style={{
         zIndex: 100,

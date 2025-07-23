@@ -5,12 +5,12 @@ import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import { Canvas, Path } from '@shopify/react-native-skia';
 import { getSvgPath } from 'figma-squircle';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { EdgeInsets } from 'react-native-safe-area-context';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
 import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
 
@@ -63,7 +63,8 @@ const ExpandedToastCard = ({
   );
 };
 
-export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) {
+export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDisplay() {
+  const insets = useSafeAreaInsets();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const { toasts, showExpanded } = useToastStore();
@@ -216,9 +217,8 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
                           // avoid press after dismiss
                           return;
                         }
-                        hide().then(() => {
-                          toast.action?.();
-                        });
+                        hide();
+                        toast.action?.();
                       }}
                     >
                       <ToastExpandedContent toast={toast} />
@@ -232,4 +232,4 @@ export function RainbowToastExpandedDisplay({ insets }: { insets: EdgeInsets }) 
       </View>
     </>
   );
-}
+});
