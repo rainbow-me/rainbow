@@ -29,6 +29,7 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -119,7 +120,7 @@ const springConfig: WithSpringConfig = {
 };
 
 const DISMISS_THRESHOLD_PERCENTAGE = 0.1;
-const DISMISS_VELOCITY_THRESHOLD = 20;
+const DISMISS_VELOCITY_THRESHOLD = 15;
 
 type Props = PropsWithChildren<{
   testID?: string;
@@ -151,6 +152,13 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
   const lastChangeX = useSharedValue(0);
   const isPressed = useSharedValue(false);
   const touchStartedAt = useSharedValue(0);
+  const isSimulator = useSharedValue(false);
+
+  useEffect(() => {
+    DeviceInfo.isEmulator().then(result => {
+      isSimulator.value = result;
+    });
+  }, [isSimulator]);
 
   useEffect(() => {
     if (!startedHiddenBelow) {
@@ -168,6 +176,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
   }, [id]);
 
   const hideToast = useCallback(() => {
+    'worklet';
     opacity.value = withSpring(0, springConfig, () => {
       runOnJS(finishRemoveToastCallback)();
     });
@@ -222,14 +231,19 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
     const pan = Gesture.Pan()
       .minDistance(10)
       .onUpdate(event => {
+        'worklet';
         translateX.value = event.translationX;
       })
       .onChange(event => {
-        // at least on iOS simulator velocityX is always 0 so using this
-        lastChangeX.value = event.changeX;
+        'worklet';
+        // on iOS simulator velocityX is always 0 so using changeX as workaround
+        if (IS_IOS && isSimulator.value) {
+          lastChangeX.value = event.changeX;
+        }
       })
       .onEnd(event => {
-        const velocityX = lastChangeX.value;
+        'worklet';
+        const velocityX = IS_IOS && isSimulator.value ? lastChangeX.value : event.velocityX;
         lastChangeX.value = 0;
 
         const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
@@ -282,10 +296,12 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
     return Gesture.Tap()
       .maxDuration(time.minutes(10)) // doesn't accept Infinity
       .onTouchesDown(() => {
+        'worklet';
         touchStartedAt.value = Date.now();
         isPressed.value = true;
       })
       .onTouchesUp(() => {
+        'worklet';
         // android doesn't trigger onEnd, do our own logic
         if (IS_ANDROID) {
           if (translateX.value === 0 && Date.now() - touchStartedAt.value < 500) {

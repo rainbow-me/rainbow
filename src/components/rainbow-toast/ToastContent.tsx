@@ -59,7 +59,7 @@ function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_IC
           weight="bold"
           numberOfLines={1}
           ellipsizeMode="tail"
-          style={{ opacity: 0.5 }}
+          style={{ opacity: type === 'error' ? 1 : 0.5 }}
         >
           {subtitle}
         </Text>

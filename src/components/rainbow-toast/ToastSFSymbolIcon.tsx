@@ -1,10 +1,11 @@
 import { Icon } from '@/components/icons';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import { Text } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { fonts } from '@/styles';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
 
 const sfSymbols = {
   check: IS_IOS ? '􀆅' : <Icon style={{ marginLeft: 6, marginTop: 6 }} width={18} height={18} color="white" name="checkmark" />,
@@ -56,8 +57,11 @@ export function ToastSFSymbolIcon({
       >
         {typeof content === 'string' ? (
           <Text
-            allowFontScaling={false}
-            style={{ fontSize: 12, fontFamily: fonts.family.SFProRounded, color: colors.white, fontWeight: '800' }}
+            size="12pt"
+            color={{ custom: colors.white }}
+            weight="bold"
+            // somehow this does make a difference, 0.25 specifically vs 0.5 in centering it right
+            style={{ transform: [{ translateX: 0.25 }] }}
           >
             {content}
           </Text>

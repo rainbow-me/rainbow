@@ -114,6 +114,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   const pan = useMemo(() => {
     return Gesture.Pan()
       .onUpdate(e => {
+        'worklet';
         dragY.value = e.translationY;
       })
       .onEnd(e => {
