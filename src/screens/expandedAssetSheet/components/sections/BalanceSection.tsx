@@ -4,7 +4,7 @@ import { Box, Text, TextShadow } from '@/design-system';
 import { useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { SheetSeparator } from '../shared/Separator';
-import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getBalance, TokenData } from '@/state/liveTokens/liveTokensStore';
@@ -14,14 +14,17 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
-import { useStableValue } from '@/hooks/useStableValue';
-import { useListen } from '@/state/internal/hooks/useListen';
+import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { useChartType } from '@/features/charts/stores/chartsStore';
 import { ChartType } from '@/features/charts/types';
+import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 
 export function BalanceSection() {
   const { accentColors, accountAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
   const { nativeCurrency } = useAccountSettings();
+  const chartType = useChartType();
+
   const balanceAmount = asset?.balance?.amount ?? '0';
   const tokenId = asset?.uniqueId ?? '';
 
@@ -44,22 +47,12 @@ export function BalanceSection() {
     selector: token => token.reliability.metadata.liquidityCap,
   });
 
-  const chartType = useChartType();
-  const initialCandlestickPrice = useStableValue(() => useCandlestickStore.getState().getPrice());
-  const currentCandlestickPrice = useSharedValue(initialCandlestickPrice);
+  const [currentCandlestickPrice, candlestickPriceListener] = useStoreSharedValue(useCandlestickStore, state => state.getPrice(), {
+    equalityFn: arePricesEqual,
+    returnListenHandle: true,
+  });
 
-  useListen(
-    useCandlestickStore,
-    state => state.getPrice(),
-    price => {
-      currentCandlestickPrice.value = price;
-    },
-    (previousPrice, price) => {
-      if (!price) return true;
-      if (!previousPrice) return false;
-      return price.price === previousPrice.price && price.percentChange === previousPrice.percentChange;
-    }
-  );
+  useListenerRouteGuard(candlestickPriceListener);
 
   const tokenBalance = useDerivedValue(() => {
     if (chartType === ChartType.Candlestick) {
