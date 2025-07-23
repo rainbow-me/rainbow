@@ -54,7 +54,7 @@ export function getContractToastStatus(status: TransactionStatus): keyof typeof 
 const txIdToToastId = (tx: RainbowTransaction) => tx.hash + (tx.address || tx.asset?.address) + (tx.chainId || tx.asset?.chainId);
 
 export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): RainbowToast | null {
-  if (tx.swap || tx.type === 'swap') {
+  if (tx.type === 'swap') {
     const status = getSwapToastStatus(tx.status);
     if (status) {
       // only pending trasactions hvae this, but for failed or success we don't show asset icons
