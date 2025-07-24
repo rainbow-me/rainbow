@@ -91,13 +91,17 @@ export function RainbowToastDisplay() {
     return [...removingToasts, ...toastsToShow];
   }, [toasts]);
 
+  const hasWideToast = visibleToasts.some(
+    t => t.type === 'swap' && (t.status === TransactionStatus.swapping || t.status === TransactionStatus.pending)
+  );
+
   const content = (
     <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
       <RainbowToastExpandedDisplay />
 
       <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
         {visibleToasts.map(toast => {
-          return <RainbowToastItem key={toast.id} toast={toast} />;
+          return <RainbowToastItem hasWideToast={hasWideToast} key={toast.id} toast={toast} />;
         })}
       </Animated.View>
     </Box>
@@ -125,9 +129,10 @@ const DISMISS_VELOCITY_THRESHOLD = 15;
 type Props = PropsWithChildren<{
   testID?: string;
   toast: RainbowToastWithIndex;
+  hasWideToast: boolean;
 }>;
 
-const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
+const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToast }: Props) {
   const insets = useSafeAreaInsets();
   const { index, id } = toast;
 
@@ -153,6 +158,11 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
   const isPressed = useSharedValue(false);
   const touchStartedAt = useSharedValue(0);
   const isSimulator = useSharedValue(false);
+  const isWide = useSharedValue(hasWideToast);
+
+  useEffect(() => {
+    isWide.value = hasWideToast;
+  }, [isWide, hasWideToast]);
 
   useEffect(() => {
     DeviceInfo.isEmulator().then(result => {
@@ -320,17 +330,18 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
     return Gesture.Simultaneous(pressGesture, panGesture);
   }, [pressGesture, panGesture]);
 
-  const pressStyleContainer = useAnimatedStyle(() => {
+  const outerContainerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: withSpring(isPressed.value ? 0.9 : 1) }],
     };
   });
 
-  const pressStyleContent = useAnimatedStyle(() => {
+  const innerContainerStyle = useAnimatedStyle(() => {
     const stackOpacity = interpolate(index, [0, 2], [1, 0.8], 'clamp') * interpolate(index, [2, 3], [1, 0], 'clamp');
     const pressOpacity = isPressed.value ? 0.6 : 0.9;
 
     return {
+      width: withTiming(isWide.value ? 170 : 130),
       opacity: withTiming(pressOpacity * stackOpacity),
     };
   });
@@ -349,7 +360,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
               shadowColor: `rgba(0,0,0,${shadowOpacity})`,
               shadowOffset: { height: interpolate(index, [0, 2], [4, 1], 'clamp'), width: 0 },
             },
-            pressStyleContainer,
+            outerContainerStyle,
           ]}
         >
           <Box
@@ -402,7 +413,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID }: Props) {
               />
             )}
 
-            <Animated.View style={pressStyleContent}>
+            <Animated.View style={innerContainerStyle}>
               <ToastContent toast={toast} />
             </Animated.View>
           </Box>

@@ -547,6 +547,7 @@
       "not_applied": "NOT APPLIED",
       "notifications_debug": "Notifications Debug",
       "remove_all_backups": "Remove All Backups",
+      "toasts_actions": "Toasts Debug Actions",
       "keychain": {
         "menu_title": "Reset Keychain",
         "delete_wallets": "Delete All Wallets",

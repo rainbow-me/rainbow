@@ -16,7 +16,7 @@ import { analytics } from '@/analytics';
 import * as lang from '@/languages';
 import { useWalletSectionsData } from '@/hooks';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { IS_ANDROID, IS_TEST, IS_DEV } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { useStableValue } from '@/hooks/useStableValue';
 import { KING_OF_THE_HILL_TAB, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -41,15 +41,6 @@ const menuItems: Item[] = [
     actionTitle: lang.t(lang.l.wallet.connected_apps),
     icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
   },
-  ...(IS_DEV
-    ? [
-        {
-          actionKey: Routes.DEV_ACTION_SHEET,
-          actionTitle: 'Dev Actions',
-          icon: { iconType: 'SYSTEM', iconValue: 'ladybug' },
-        } satisfies Item,
-      ]
-    : []),
 ];
 
 export interface RecyclerAssetList2Props {
