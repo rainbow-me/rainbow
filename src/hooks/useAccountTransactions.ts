@@ -11,12 +11,16 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import usePendingTransactions from '@/hooks/usePendingTransactions';
 
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
+
+  // without this this hook won't react to new pending transactions
+  usePendingTransactions();
 
   const { getPendingTransactionsInReverseOrder } = pendingTransactionsStore.getState();
   const pendingTransactionsMostRecentFirst = getPendingTransactionsInReverseOrder(accountAddress);
