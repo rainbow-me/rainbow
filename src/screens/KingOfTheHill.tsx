@@ -5,7 +5,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
-import { globalColors, Text, TextIcon, useColorMode } from '@/design-system';
+import { globalColors, Text, useColorMode } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -15,7 +15,7 @@ import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect } from 'react';
-import { Dimensions, Keyboard, View } from 'react-native';
+import { Dimensions, Keyboard, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -89,27 +89,20 @@ export const KingOfTheHillScreen = () => {
             testID="koth-search-icon"
           >
             <View
-              style={{
-                backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.12)' : 'rgba(9, 17, 31, 0.05)',
-                height: 36,
-                borderRadius: 18,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderWidth: THICK_BORDER_WIDTH,
-                borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.04)',
-              }}
+              style={[
+                styles.airdropButton,
+                {
+                  backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.12)' : 'rgba(9, 17, 31, 0.05)',
+                  borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.04)',
+                },
+              ]}
             >
-              <View style={{ opacity: 0.7 }}>
-                <TextIcon
-                  size="icon 16px"
-                  color="label"
-                  weight="heavy"
-                  containerSize={36 + `${abbreviateNumber(airdropsCount)}`.length * 18}
-                >
-                  {/* TODO android use gift.svg */}
-                  {'􀑉'} {abbreviateNumber(airdropsCount)}
-                </TextIcon>
-              </View>
+              <Text color="labelSecondary" size="icon 14px" weight="bold">
+                {'􀑉'}
+              </Text>
+              <Text size="icon 17px" color="labelSecondary" weight="heavy">
+                {abbreviateNumber(airdropsCount)}
+              </Text>
             </View>
           </ButtonPressAnimation>
         }
@@ -122,31 +115,19 @@ export const KingOfTheHillScreen = () => {
       <KingOfTheHillContent scrollY={scrollY} onColorExtracted={handleColorExtracted} />
 
       {/* launch button */}
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 100,
-          alignSelf: 'center',
-          zIndex: 10,
-        }}
-      >
+      <View style={styles.launchButtonPosition}>
         <ButtonPressAnimation
           onPress={() => {
             Navigation.handleAction(Routes.TOKEN_LAUNCHER_SCREEN);
           }}
-          scaleTo={0.95}
         >
           <View
-            style={{
-              shadowColor: isDarkMode ? '#000' : 'rgba(0,0,0,0.4)',
-              shadowOffset: {
-                width: 0,
-                height: 8,
+            style={[
+              styles.launchButton,
+              {
+                shadowColor: isDarkMode ? '#000' : 'rgba(0,0,0,0.4)',
               },
-              shadowOpacity: 0.4,
-              shadowRadius: 10,
-              elevation: 16,
-            }}
+            ]}
           >
             <GradientBorderView
               borderGradientColors={['#FFEB3B', '#FFA500']}
@@ -160,35 +141,29 @@ export const KingOfTheHillScreen = () => {
                 width: 150,
               }}
             >
-              <View style={{ borderRadius: 28, overflow: 'hidden', flex: 1 }}>
+              <View style={styles.launchButtonContent}>
                 <LinearGradient
                   colors={['#EBAF09', '#FFC800']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
-                  style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
+                  style={styles.launchButtonGradient}
                 >
-                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <MaskedView
-                      maskElement={
-                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                          <Text color="accent" size="20pt" weight="black" style={{ marginTop: -1 }}>
-                            + Launch
-                          </Text>
-                        </View>
-                      }
-                    >
-                      <LinearGradient
-                        colors={['#3D1E0A', '#7A600A']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={{ width: 100, height: 24 }}
-                      />
-                    </MaskedView>
-                  </View>
+                  <MaskedView
+                    maskElement={
+                      <View style={styles.launchButtonTextContainer}>
+                        <Text color="accent" size="20pt" weight="black" style={{ marginTop: -1 }}>
+                          + Launch
+                        </Text>
+                      </View>
+                    }
+                  >
+                    <LinearGradient
+                      colors={['#3D1E0A', '#7A600A']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={{ width: 100, height: 24 }}
+                    />
+                  </MaskedView>
                 </LinearGradient>
               </View>
             </GradientBorderView>
@@ -211,4 +186,45 @@ const KeyboardDismissHandler = memo(function KeyboardDismissHandler() {
   }, [isFocused]);
 
   return null;
+});
+
+const styles = StyleSheet.create({
+  airdropButton: {
+    height: 36,
+    borderRadius: 18,
+    paddingHorizontal: 10,
+    gap: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: THICK_BORDER_WIDTH,
+    flexDirection: 'row',
+  },
+
+  launchButtonPosition: {
+    position: 'absolute',
+    bottom: 100,
+    alignSelf: 'center',
+    zIndex: 10,
+  },
+
+  launchButton: {
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 16,
+  },
+
+  // separate from launchButton so overflow hidden doesnt mess up shadow
+  launchButtonContent: { borderRadius: 28, overflow: 'hidden', flex: 1 },
+
+  launchButtonGradient: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  launchButtonTextContainer: { alignItems: 'center', justifyContent: 'center' },
 });
