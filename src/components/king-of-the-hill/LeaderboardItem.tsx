@@ -6,10 +6,10 @@ import { Token } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React from 'react';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { formatPriceChange, getPriceChangeColor } from './utils';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 interface LeaderboardItemProps {
   token: Token;
@@ -20,42 +20,51 @@ interface LeaderboardItemProps {
   price: string;
 }
 
-const darkColorsByRank: Record<number, [string, string]> = {
-  2: ['#AEAEAE', '#444'],
-  3: ['#A68152', '#572302'],
-  4: ['rgba(255, 255, 255, 0.1)', 'labelTertiary'],
-  5: ['rgba(255, 255, 255, 0.04)', 'labelTertiary'],
-};
-
-const lightColorsByRank: Record<number, [string, string]> = {
-  2: [darkColorsByRank[2][0], darkColorsByRank[2][1]],
-  3: [darkColorsByRank[3][0], darkColorsByRank[3][1]],
-  4: ['rgba(0, 0, 0, 0.1)', 'labelTertiary'],
-  5: ['rgba(0, 0, 0, 0.04)', 'labelTertiary'],
-};
-
 const getRankingStyle = (ranking: number, isDarkMode: boolean) => {
+  const darkColorsByRank: Record<number, [string, string]> = {
+    2: ['#AEAEAE', isDarkMode ? '#444' : '#fff'],
+    3: ['#A68152', isDarkMode ? '#572302' : '#fff'],
+    4: ['rgba(255, 255, 255, 0.1)', 'labelTertiary'],
+    5: ['rgba(255, 255, 255, 0.04)', 'labelTertiary'],
+  };
+
+  const lightColorsByRank: Record<number, [string, string]> = {
+    2: [darkColorsByRank[2][0], darkColorsByRank[2][1]],
+    3: [darkColorsByRank[3][0], darkColorsByRank[3][1]],
+    4: ['rgba(0, 0, 0, 0.1)', 'labelTertiary'],
+    5: ['rgba(0, 0, 0, 0.04)', 'labelTertiary'],
+  };
+
   const colorsByRank = isDarkMode ? darkColorsByRank : lightColorsByRank;
 
   switch (ranking) {
     case 2:
     case 3:
-    case 4:
+    case 4: {
       return {
         backgroundColor: colorsByRank[ranking][0],
         textColor: colorsByRank[ranking][1],
       };
-    default:
+    }
+    default: {
       return {
         backgroundColor: colorsByRank[5][0],
         textColor: colorsByRank[5][1],
       };
+    }
   }
 };
 
-export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap, price }: LeaderboardItemProps) {
+export const LeaderboardItem = memo(function LeaderboardItem({
+  token,
+  ranking,
+  priceChange,
+  volume,
+  marketCap,
+  price,
+}: LeaderboardItemProps) {
   const { isDarkMode } = useColorMode();
-  const rankingStyle = getRankingStyle(ranking, isDarkMode);
+  const rankingStyle = useMemo(() => getRankingStyle(ranking, isDarkMode), [ranking, isDarkMode]);
   const iconUrl = getSizedImageUrl(token.iconUrl, 80);
   const priceChangeString = formatPriceChange(priceChange);
   const priceChangeColor = getPriceChangeColor(priceChangeString);
@@ -152,7 +161,7 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
       </View>
     </ButtonPressAnimation>
   );
-}
+});
 
 const SmallLabeledRow = ({ label, value }: { label: string; value: string }) => {
   return (

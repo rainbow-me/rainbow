@@ -5,6 +5,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
+import { RainbowImage } from '@/components/RainbowImage';
 import { globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -16,7 +17,6 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect } from 'react';
 import { Dimensions, Keyboard, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
@@ -51,7 +51,7 @@ export const KingOfTheHillScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: backgroundColor || (isDarkMode ? globalColors.grey100 : '#FBFCFD') }}>
-      {/* Hill background image - positioned behind everything */}
+      {/* Hill background image */}
       <Animated.View
         style={[
           {
@@ -65,11 +65,7 @@ export const KingOfTheHillScreen = () => {
           hillAnimatedStyle,
         ]}
       >
-        <FastImage
-          source={require('@/components/king-of-the-hill/hill.png')}
-          style={{ width: '100%', height: '100%' }}
-          resizeMode="contain"
-        />
+        <RainbowImage source={require('@/components/king-of-the-hill/hill.png')} />
       </Animated.View>
       <Navbar
         leftComponent={
@@ -123,7 +119,7 @@ export const KingOfTheHillScreen = () => {
 
       <KingOfTheHillContent scrollY={scrollY} onColorExtracted={handleColorExtracted} />
 
-      {/* Floating Launch Button */}
+      {/* Launch Button */}
       <View
         style={{
           position: 'absolute',
@@ -140,13 +136,13 @@ export const KingOfTheHillScreen = () => {
         >
           <View
             style={{
-              shadowColor: '#000',
+              shadowColor: isDarkMode ? '#000' : 'rgba(0,0,0,0.4)',
               shadowOffset: {
                 width: 0,
                 height: 8,
               },
               shadowOpacity: 0.4,
-              shadowRadius: 12,
+              shadowRadius: 10,
               elevation: 16,
             }}
           >

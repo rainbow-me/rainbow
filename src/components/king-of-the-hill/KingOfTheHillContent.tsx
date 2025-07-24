@@ -1,5 +1,7 @@
 import { useColorMode } from '@/design-system';
 import { KingOfTheHill, KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';
+import { formatCurrency } from '@/helpers/strings';
+import { abbreviateNumber } from '@/helpers/utilities';
 import { usePrevious } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { Skeleton } from '@/screens/points/components/Skeleton';
@@ -9,15 +11,12 @@ import { LegendList } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { useCallback, useMemo, useState, ReactNode } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { abbreviateNumber } from '@/helpers/utilities';
-import { formatCurrency } from '@/helpers/strings';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LeaderboardItem } from './LeaderboardItem';
-import { formatPriceChange } from './utils';
 
 function SyncStoreEnabled() {
   const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
@@ -42,26 +41,30 @@ export const KingOfTheHillContent = ({
   const { isDarkMode } = useColorMode();
   const [backgroundColor, setBackgroundColor] = useState<string | null>(null);
   const { top: topInset } = useSafeAreaInsets();
+  const [tokenDominantColor, setTokenDominantColor] = useState('#999');
 
-  const handleColorExtracted = useCallback(
-    (color: string | null) => {
-      try {
-        if (color) {
-          const chillColor = makeColorMoreChill(color);
-          const adjustedColor = isDarkMode
-            ? chroma(chillColor).darken(3.5).desaturate(1.5).alpha(0.8).css()
-            : chroma(chillColor).brighten(2).desaturate(1.5).alpha(0.8).css();
-          setBackgroundColor(adjustedColor);
-          onColorExtracted?.(adjustedColor);
-        }
-      } catch (error) {
-        console.warn('Error adjusting color:', error);
-        setBackgroundColor(null);
-        onColorExtracted?.(null);
+  const handleColorExtracted = useCallback((color: string | null) => {
+    if (color) {
+      setTokenDominantColor(color);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (tokenDominantColor) {
+        const chillColor = makeColorMoreChill(tokenDominantColor);
+        const adjustedColor = isDarkMode
+          ? chroma(chillColor).darken(3.5).desaturate(1.5).alpha(0.8).css()
+          : chroma(chillColor).brighten(2).desaturate(1.5).alpha(0.8).css();
+        setBackgroundColor(adjustedColor);
+        onColorExtracted?.(adjustedColor);
       }
-    },
-    [isDarkMode, onColorExtracted]
-  );
+    } catch (error) {
+      console.warn('Error adjusting color:', error);
+      setBackgroundColor(null);
+      onColorExtracted?.(null);
+    }
+  }, [tokenDominantColor, isDarkMode, onColorExtracted]);
 
   type HeaderItem = {
     type: 'header';

@@ -3,7 +3,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { CARET_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
-import { Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { Text, useColorMode } from '@/design-system';
 import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { formatCurrency } from '@/helpers/strings';
@@ -33,7 +33,6 @@ const TOKEN_SIZE = 80;
 
 export function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const { isDarkMode } = useColorMode();
-  const gradientBorderColor = useBackgroundColor('fillTertiary');
   const current = kingOfTheHill?.current;
   const lastWinner = kingOfTheHill?.lastWinner;
   const { token } = current || {};
@@ -340,7 +339,7 @@ const styles = StyleSheet.create({
   },
   roundEndsContainer: {
     alignSelf: 'center',
-    marginTop: -12,
+    marginTop: -10,
     height: 32,
   },
   roundEndsContent: {
@@ -351,7 +350,7 @@ const styles = StyleSheet.create({
   symbolPriceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 18,
+    marginTop: 16,
     gap: 10,
   },
   caretContainer: {
