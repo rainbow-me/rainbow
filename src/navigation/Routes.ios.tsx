@@ -82,7 +82,7 @@ import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { KING_OF_THE_HILL_TAB, PROFILES } from '@/config/experimentalHooks';
 import createNativeStackCoolModalNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
@@ -117,6 +117,8 @@ import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScree
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 import ProfileScreen from '@/screens/ProfileScreen';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { IS_TEST } from '@/env';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -154,6 +156,8 @@ function MainStack() {
 
 function NativeStackNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
+  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -164,7 +168,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={MintSheet} name={Routes.MINT_SHEET} {...expandedAssetSheetConfigWithLimit} />
-      <NativeStack.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} {...profileConfig} />
       <NativeStack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} {...positionSheetConfig} />
       <NativeStack.Screen
         component={ShowcaseScreen}
@@ -240,6 +243,7 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
       <NativeStack.Screen component={Portal} name={Routes.PORTAL} {...portalSheetConfig} />
+      {showKingOfTheHillTab && <NativeStack.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} {...profileConfig} />}
       {profilesEnabled && (
         <>
           <NativeStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} {...registerENSNavigatorConfig} />

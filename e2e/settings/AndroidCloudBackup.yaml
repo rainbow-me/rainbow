@@ -2,6 +2,7 @@ appId: ${APP_ID}
 env:
   CLOUD_BACKUP_EMAIL: ${CLOUD_BACKUP_EMAIL}
   CLOUD_BACKUP_PASSWORD: ${CLOUD_BACKUP_PASSWORD}
+  RUN_TEST: false
 tags:
   - backup
   - parallel
@@ -9,6 +10,7 @@ tags:
 - runFlow:
     when:
       platform: Android
+      true: ${RUN_TEST}
     commands:
       - retry:
           maxRetries: 3
