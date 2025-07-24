@@ -13,6 +13,11 @@ import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { Alert } from 'react-native';
+import { debounce } from 'lodash';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
+import Routes from '@/navigation/routesNames';
+import { time } from '@/utils/time';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -255,6 +260,29 @@ const checkRateLimitFn = async (host: string) => {
   return false;
 };
 
+// Debounce alert functions to guard against bad dapp implementations
+const debouncedUnsupportedChainAlert = debounce(
+  () => {
+    const isDappBrowserFocused = useNavigationStore.getState().activeRoute === Routes.DAPP_BROWSER_SCREEN;
+    if (isDappBrowserFocused) {
+      Alert.alert(lang.t(lang.l.dapp_browser.provider_error.unsupported_chain));
+    }
+  },
+  time.seconds(1),
+  { leading: true, trailing: false }
+);
+
+const debouncedNoActiveSessionAlert = debounce(
+  () => {
+    const isDappBrowserFocused = useNavigationStore.getState().activeRoute === Routes.DAPP_BROWSER_SCREEN;
+    if (isDappBrowserFocused) {
+      Alert.alert(lang.t(lang.l.dapp_browser.provider_error.no_active_session));
+    }
+  },
+  time.seconds(1),
+  { leading: true, trailing: false }
+);
+
 export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger: Messenger; data: any; meta: any }) => {
   const providerRequestTransport = createTransport<ProviderRequestPayload, ProviderResponse>({ messenger, topic: 'providerRequest' });
   const isSupportedChain = (chainId: number) => isSupportedChainId(chainId);
@@ -290,7 +318,6 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
 
   const onSwitchEthereumChainNotSupported = ({
     proposedChain,
-    callbackOptions,
   }: {
     proposedChain: AddEthereumChainProposedChain;
     callbackOptions?: CallbackOptions;
@@ -298,9 +325,9 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     const { chainId } = proposedChain;
     const supportedChain = isSupportedChainId(chainId);
     if (!supportedChain) {
-      alert(lang.t(lang.l.dapp_browser.provider_error.unsupported_chain));
+      debouncedUnsupportedChainAlert();
     } else {
-      alert(lang.t(lang.l.dapp_browser.provider_error.no_active_session));
+      debouncedNoActiveSessionAlert();
     }
     // console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
     // TODO SEND NOTIFICATION
