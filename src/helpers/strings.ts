@@ -3,6 +3,7 @@ import { supportedNativeCurrencies } from '@/references';
 import { NativeCurrencyKey } from '@/entities';
 import { convertAmountToNativeDisplayWorklet } from './utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { getNumberFormatter } from '@/helpers/intl';
 
 /**
  * @desc subtracts two numbers
@@ -62,11 +63,11 @@ export function formatNumber(
 
   return (
     (style === '$' ? '$' : '') +
-    x.toLocaleString('en-US', {
-      style: 'decimal',
-      minimumFractionDigits: decimals,
+    getNumberFormatter('en-US', {
       maximumFractionDigits: decimals,
-    }) +
+      minimumFractionDigits: decimals,
+      style: 'decimal',
+    }).format(x) +
     orderSuffix +
     (style === '%' ? '%' : '')
   );

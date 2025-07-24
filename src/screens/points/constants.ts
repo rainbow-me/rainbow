@@ -2,6 +2,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { OnboardPointsMutation, PointsOnboardingCategory } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
+import { getNumberFormatter } from '@/helpers/intl';
 
 const ONE_WEEK_MS = 604_800_000;
 const ONE_DAY_MS = ONE_WEEK_MS / 7;
@@ -78,16 +79,16 @@ export const buildTwitterIntentMessage = (
   const ONBOARDING_TOTAL_POINTS = profile.onboardPoints.user.onboarding.earnings.total;
   const referralCode = profile.onboardPoints.user.referralCode;
 
-  let text = `I just had ${ONBOARDING_TOTAL_POINTS.toLocaleString(
-    'en-US'
+  let text = `I just had ${getNumberFormatter('en-US').format(
+    ONBOARDING_TOTAL_POINTS
   )} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!${NEWLINE_OR_SPACE}Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
 
   if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
     const METAMASK_POINTS = metamaskSwaps.earnings.total;
-    text = `I just had ${(ONBOARDING_TOTAL_POINTS - METAMASK_POINTS).toLocaleString(
-      'en-US'
-    )} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS.toLocaleString(
-      'en-US'
+    text = `I just had ${getNumberFormatter('en-US').format(
+      ONBOARDING_TOTAL_POINTS - METAMASK_POINTS
+    )} Rainbow Points dropped into my wallet — plus an extra ${getNumberFormatter('en-US').format(
+      METAMASK_POINTS
     )} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫.${NEWLINE_OR_SPACE}Everybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
   }
 
