@@ -3,11 +3,8 @@ import { useColorMode } from '@/design-system';
 import { KingOfTheHill, KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';
 import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
-import { usePrevious } from '@/hooks';
-import Routes from '@/navigation/routesNames';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { LegendList } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
@@ -180,25 +177,8 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     );
   }
 
-  return (
-    <View style={[styles.container, { backgroundColor: backgroundColor || undefined }]}>
-      {content}
-      <SyncStoreEnabled />
-    </View>
-  );
+  return <View style={[styles.container, { backgroundColor: backgroundColor || undefined }]}>{content}</View>;
 });
-
-function SyncStoreEnabled() {
-  const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
-  const previousActiveSwipeRoute = usePrevious(activeSwipeRoute);
-
-  if (activeSwipeRoute === Routes.KING_OF_THE_HILL && previousActiveSwipeRoute !== Routes.KING_OF_THE_HILL) {
-    useKingOfTheHillStore.setState({
-      enabled: true,
-    });
-  }
-  return null;
-}
 
 const styles = StyleSheet.create({
   container: {
