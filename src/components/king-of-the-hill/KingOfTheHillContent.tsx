@@ -18,17 +18,27 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LeaderboardItem } from './LeaderboardItem';
 
-function SyncStoreEnabled() {
-  const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
-  const previousActiveSwipeRoute = usePrevious(activeSwipeRoute);
+type HeaderItem = {
+  type: 'header';
+  data: KingOfTheHill;
+};
 
-  if (activeSwipeRoute === Routes.KING_OF_THE_HILL && previousActiveSwipeRoute !== Routes.KING_OF_THE_HILL) {
-    useKingOfTheHillStore.setState({
-      enabled: true,
-    });
-  }
-  return null;
-}
+type LeaderboardListItem = {
+  type: 'item';
+  ranking: number;
+  token: KingOfTheHillRankingElem['token'];
+  windowTradingVolume: string;
+};
+
+type BottomPadItem = {
+  type: 'bottom-pad';
+};
+
+type PastWinnersItem = {
+  type: 'past-winners';
+};
+
+type ListItem = HeaderItem | LeaderboardListItem | PastWinnersItem | BottomPadItem;
 
 export const KingOfTheHillContent = ({
   scrollY,
@@ -65,24 +75,6 @@ export const KingOfTheHillContent = ({
       onColorExtracted?.(null);
     }
   }, [tokenDominantColor, isDarkMode, onColorExtracted]);
-
-  type HeaderItem = {
-    type: 'header';
-    data: KingOfTheHill;
-  };
-
-  type LeaderboardListItem = {
-    type: 'item';
-    ranking: number;
-    token: KingOfTheHillRankingElem['token'];
-    windowTradingVolume: string;
-  };
-
-  type BottomPadItem = {
-    type: 'bottom-pad';
-  };
-
-  type ListItem = HeaderItem | LeaderboardListItem | BottomPadItem;
 
   const listData = useMemo(() => {
     if (!kingOfTheHillLeaderBoard || !kingOfTheHill) {
@@ -147,8 +139,7 @@ export const KingOfTheHillContent = ({
   );
 
   const keyExtractor = useCallback((item: ListItem) => {
-    if (item.type === 'header') return 'header';
-    if (item.type === 'bottom-pad') return 'bottom-pad';
+    if (item.type !== 'item') return item.type;
     return `${item.token.address}-${item.token.chainId}`;
   }, []);
 
@@ -185,6 +176,18 @@ export const KingOfTheHillContent = ({
     </View>
   );
 };
+
+function SyncStoreEnabled() {
+  const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
+  const previousActiveSwipeRoute = usePrevious(activeSwipeRoute);
+
+  if (activeSwipeRoute === Routes.KING_OF_THE_HILL && previousActiveSwipeRoute !== Routes.KING_OF_THE_HILL) {
+    useKingOfTheHillStore.setState({
+      enabled: true,
+    });
+  }
+  return null;
+}
 
 const styles = StyleSheet.create({
   container: {
