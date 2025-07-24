@@ -3,6 +3,7 @@ import { useColorMode } from '@/design-system';
 import { KingOfTheHill, KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';
 import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
+import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 import { LegendList, LegendListRef } from '@legendapp/list';
@@ -14,8 +15,8 @@ import { StyleSheet, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
+import { LaunchButton } from './LaunchButton';
 import { LeaderboardItem } from './LeaderboardItem';
-import { useLegendListNavBarScrollToTop, useMainList } from '@/navigation/MainListContext';
 
 type HeaderItem = {
   type: 'header';
@@ -182,7 +183,12 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     );
   }
 
-  return <View style={[styles.container, { backgroundColor: backgroundColor || undefined }]}>{content}</View>;
+  return (
+    <View style={[styles.container, { backgroundColor: backgroundColor || undefined }]}>
+      {content}
+      <LaunchButton />
+    </View>
+  );
 });
 
 const styles = StyleSheet.create({

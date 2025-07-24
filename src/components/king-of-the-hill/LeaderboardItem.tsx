@@ -83,8 +83,8 @@ export const LeaderboardItem = memo(function LeaderboardItem({
         {/* icon */}
         <View style={styles.iconColumn}>
           {iconUrl && (
-            <View style={styles.tokenIconContainer}>
-              <View style={styles.tokenIconShadow}>
+            <View style={styles.tokenIconShadow}>
+              <View style={styles.tokenIconContainer}>
                 <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />
                 {(ranking === 2 || ranking === 3) && <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />}
               </View>
@@ -181,21 +181,17 @@ const styles = StyleSheet.create({
   tokenIcon: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  rankingBadge: {
-    paddingHorizontal: 3,
-    paddingVertical: 4,
-    borderRadius: 4,
-    alignItems: 'center',
+    borderRadius: 100,
   },
   tokenIconContainer: {
     position: 'relative',
+    borderRadius: 100,
     width: 40,
     height: 40,
+    overflow: 'hidden',
   },
   tokenIconShadow: {
+    borderRadius: 100,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -204,6 +200,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 8,
+  },
+  rankingBadge: {
+    paddingHorizontal: 3,
+    paddingVertical: 4,
+    borderRadius: 4,
+    alignItems: 'center',
   },
   chainImageContainer: {
     position: 'absolute',

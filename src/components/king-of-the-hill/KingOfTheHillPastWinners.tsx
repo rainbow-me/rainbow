@@ -3,6 +3,8 @@ import { Box, Inline, Text } from '@/design-system';
 import React from 'react';
 import { View } from 'react-native';
 
+// Note: this is disabled at the moment pending backend data update
+
 export const KingOfTheHillPastWinners = () => {
   // const { kingOfTheHill, kingOfTheHillLeaderBoard } = useKingOfTheHillStore(store => store.getData()) || {};
 
