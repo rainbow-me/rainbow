@@ -844,16 +844,6 @@ export default async function runMigrations() {
 
   migrations.push(v29);
 
-  /**
-   *************** Migration v30 ******************
-   * Delete all queries except favorites
-   */
-  const v30 = async () => {
-    await clearReactQueryCache({ analyzeAfterClearing: false });
-  };
-
-  migrations.push(v30);
-
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
