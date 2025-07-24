@@ -1,18 +1,20 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
+import Skeleton from '@/components/skeleton/Skeleton';
+import { Box } from '@/design-system';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
 import { lazyMount } from '@/helpers/lazyMount';
 import { useAccountTransactions } from '@/hooks';
-import { useMainList } from '@/navigation/MainListContext';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { safeAreaInsetValues } from '@/utils';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { LegendList, LegendListRef } from '@legendapp/list';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { SharedValue } from 'react-native-reanimated';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
@@ -68,44 +70,65 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 
 type ListItems =
   | { key: string; type: 'item'; value: TransactionItemForSectionList }
-  | { key: string; type: 'header'; value: TransactionSections };
+  | { key: string; type: 'header'; value: TransactionSections }
+  | { key: string; type: 'loading' }
+  | { key: string; type: 'paddingTopForNavBar' };
 
 // keeping everything the same height here since we basically can pretty easily
 // improves performance and reduces jitter (until move to new architecture)
 const ITEM_HEIGHT = 59;
 
-const ActivityList = lazyMount(() => {
+const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: SharedValue<number>; paddingTopForNavBar?: boolean }) => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
 
   const theme = useTheme();
 
-  const { setScrollToTopRef } = useMainList() || {};
-
   // Flatten sections into a single data array for LegendList
   const flatData = useMemo(() => {
     const items: ListItems[] = [];
 
-    sections.forEach(section => {
-      if (section.data.length > 0) {
-        items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
-        for (const item of section.data) {
-          const key = `${item.chainId}${'requestId' in item ? item.requestId : item.hash}`;
-          items.push({
-            key: `${accountAddress}${key}-entry`,
-            type: 'item',
-            value: item,
-          });
+    if (paddingTopForNavBar) {
+      items.push({ key: 'paddingTopForNavBar', type: 'paddingTopForNavBar' });
+    }
+
+    if (!sections.length) {
+      items.push({ key: 'loading', type: 'loading' });
+    } else {
+      sections.forEach(section => {
+        if (section.data.length > 0) {
+          items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
+          for (const item of section.data) {
+            const key = `${item.chainId}${'requestId' in item ? item.requestId : item.hash}`;
+            items.push({
+              key: `${accountAddress}${key}-entry`,
+              type: 'item',
+              value: item,
+            });
+          }
         }
-      }
-    });
+      });
+    }
+
     return items;
-  }, [accountAddress, sections]);
+  }, [accountAddress, paddingTopForNavBar, sections]);
 
   const renderItem = useCallback(
     ({ item }: { item: ListItems }) => {
-      if ('type' in item && item.type === 'header') {
+      if (item.type === 'paddingTopForNavBar') {
+        return <View style={{ height: 60 }} />;
+      }
+
+      if (item.type === 'loading') {
+        return (
+          <Skeleton animated width={DEVICE_WIDTH}>
+            <Box background="body (Deprecated)" borderRadius={10} height={{ custom: 44 }} width={{ custom: DEVICE_WIDTH }} />
+          </Skeleton>
+        );
+      }
+
+      if (item.type === 'header') {
         return (
           <View style={[sx.sectionHeader, { backgroundColor: theme.colors.white, height: ITEM_HEIGHT }]}>
             {/* push month header to bottom */}
@@ -129,27 +152,6 @@ const ActivityList = lazyMount(() => {
 
   const listRef = useRef<LegendListRef | null>(null);
 
-  const scrollToTopRef = useMemo(() => {
-    return {
-      scrollToTop() {
-        if (!listRef.current) {
-          return;
-        }
-        if (listRef.current.getState().isAtStart) {
-          return;
-        }
-        listRef.current.scrollToIndex({
-          index: 0,
-          animated: true,
-        });
-      },
-    };
-  }, []);
-
-  useEffect(() => {
-    setScrollToTopRef?.(scrollToTopRef);
-  }, [scrollToTopRef, setScrollToTopRef]);
-
   return (
     <LegendList
       data={flatData}
@@ -161,19 +163,27 @@ const ActivityList = lazyMount(() => {
       // even if it was at the top before sometimes. so changing the key here
       // ensures the list fully re-renders and has the correct scroll position
       key={accountAddress}
-      ref={listRef}
+      ref={listRef as any}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
       testID={'wallet-activity-list'}
       ListEmptyComponent={<ActivityListEmptyState />}
       ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
-      recycleItems
+      // recycleItems
       // this caused issues when going from a wallet with many items that had scrolling
       // to a wallet that has no scrollable area, causing it to show blank
       // maintainVisibleContentPosition
       drawDistance={PANEL_HEIGHT / 2}
       estimatedItemSize={ITEM_HEIGHT}
+      {...(scrollY && {
+        onScroll: event => {
+          'worklet';
+          if (scrollY) {
+            scrollY.value = event.nativeEvent.contentOffset.y;
+          }
+        },
+      })}
     />
   );
 });

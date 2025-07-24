@@ -5,16 +5,17 @@ import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
-import { LegendList } from '@legendapp/list';
+import { LegendList, LegendListRef } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LeaderboardItem } from './LeaderboardItem';
+import { useLegendListNavBarScrollToTop, useMainList } from '@/navigation/MainListContext';
 
 type HeaderItem = {
   type: 'header';
@@ -50,6 +51,9 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   const [backgroundColor, setBackgroundColor] = useState<string | null>(null);
   const { top: topInset } = useSafeAreaInsets();
   const [tokenDominantColor, setTokenDominantColor] = useState('#999');
+  const listRef = useRef<LegendListRef | null>(null);
+
+  useLegendListNavBarScrollToTop(listRef);
 
   const handleColorExtracted = useCallback((color: string | null) => {
     if (color) {
@@ -163,10 +167,11 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     content = (
       <LegendList
         data={listData}
+        ref={listRef}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        showsVerticalScrollIndicator={false}
         onScroll={event => {
+          'worklet';
           if (scrollY) {
             scrollY.value = event.nativeEvent.contentOffset.y;
           }

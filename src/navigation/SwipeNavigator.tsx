@@ -213,7 +213,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
         }
       } else if (isFocused && tabBarIcon === 'tabHome') {
         recyclerList.scrollToTop?.();
-      } else if (isFocused && tabBarIcon === 'tabActivity') {
+      } else if (isFocused && tabBarIcon === 'tabKingOfTheHill') {
         mainList?.scrollToTop();
       }
 

@@ -9,6 +9,7 @@ import Animated, { SharedValue, useAnimatedStyle, interpolate } from 'react-nati
 
 type NavbarProps = {
   hasStatusBarInset?: boolean;
+  topInset?: number;
   useScrollToTopOnPress?: boolean;
   leftComponent?: React.ReactElement | null;
   rightComponent?: React.ReactElement | null;
@@ -24,6 +25,7 @@ export const NAVBAR_HORIZONTAL_INSET = 20;
 
 export function Navbar({
   hasStatusBarInset = false,
+  topInset: topInsetProp,
   leftComponent = <Box />,
   rightComponent = <Box />,
   scrollY,
@@ -32,7 +34,8 @@ export function Navbar({
   title,
   floating = false,
 }: NavbarProps) {
-  const { top: topInset } = useSafeAreaInsets();
+  const { top: safeAreaTopInset } = useSafeAreaInsets();
+  const topInset = topInsetProp ?? safeAreaTopInset;
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!scrollY) {

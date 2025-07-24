@@ -100,9 +100,9 @@ import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
-import ProfileScreen from '@/screens/ProfileScreen';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
+import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -180,7 +180,7 @@ function BSNavigator() {
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         options={hardwareWalletTxNavigatorPreset}
       />
-      {showKingOfTheHillTab && <BSStack.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} />}
+      {showKingOfTheHillTab && <BSStack.Screen component={ActivitySheetScreen} name={Routes.PROFILE_SCREEN} />}
       {profilesEnabled && (
         <>
           <BSStack.Screen component={ENSConfirmRegisterSheet} name={Routes.ENS_CONFIRM_REGISTER_SHEET} />
