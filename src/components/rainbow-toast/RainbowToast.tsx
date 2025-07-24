@@ -18,7 +18,6 @@ import {
   startRemoveToast,
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
-import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { Box, useColorMode } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -124,7 +123,7 @@ const springConfig: WithSpringConfig = {
 };
 
 const DISMISS_THRESHOLD_PERCENTAGE = 0.1;
-const DISMISS_VELOCITY_THRESHOLD = 15;
+const DISMISS_VELOCITY_THRESHOLD = 80;
 
 type Props = PropsWithChildren<{
   testID?: string;
@@ -341,7 +340,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
     const pressOpacity = isPressed.value ? 0.6 : 0.9;
 
     return {
-      width: withTiming(isWide.value ? 170 : 130),
+      minWidth: withTiming(isWide.value ? 170 : 130),
       opacity: withTiming(pressOpacity * stackOpacity),
     };
   });
@@ -356,7 +355,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
             styles.shadowContainer,
             {
               shadowRadius: interpolate(index, [0, 2], [8, 2], 'clamp'),
-              shadowOpacity: shadowOpacity,
+              shadowOpacity,
               shadowColor: `rgba(0,0,0,${shadowOpacity})`,
               shadowOffset: { height: interpolate(index, [0, 2], [4, 1], 'clamp'), width: 0 },
             },
@@ -401,7 +400,9 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
                 />
               </>
             ) : (
-              <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : 'rgba(255,255,255,0.985)' }]} />
+              <View
+                style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? 'rgba(40,40,40,0.985)' : 'rgba(255,255,255,0.985)' }]}
+              />
             )}
 
             {isDarkMode && (

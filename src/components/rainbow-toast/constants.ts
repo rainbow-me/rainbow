@@ -14,5 +14,7 @@ export const TOAST_INITIAL_OFFSET_BELOW = 10;
 export const TOAST_DONE_HIDE_TIMEOUT_MS = time.seconds(4);
 export const TOAST_HIDE_TIMEOUT_MS = time.seconds(30);
 
-export const DISMISS_SENSITIVITY = 0.5; // make dismissing easier (lower) or harder (higher)
-export const UPWARD_SENSITIVITY_MULTIPLIER = 2; // upward dragging more sensitive
+// make dismissing easier (lower) or harder (higher)
+export const TOAST_EXPANDED_DISMISS_SENSITIVITY = 0.5;
+// upward dragging more sensitive
+export const TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER = 2;

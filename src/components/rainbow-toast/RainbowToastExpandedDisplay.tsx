@@ -1,4 +1,4 @@
-import { DISMISS_SENSITIVITY, UPWARD_SENSITIVITY_MULTIPLIER } from '@/components/rainbow-toast/constants';
+import { TOAST_EXPANDED_DISMISS_SENSITIVITY, TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER } from '@/components/rainbow-toast/constants';
 import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Box, useColorMode } from '@/design-system';
@@ -120,11 +120,11 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
       .onEnd(e => {
         'worklet';
         const dragDistance = dragY.value;
-        const adjustedDistance = dragDistance < 0 ? dragDistance * UPWARD_SENSITIVITY_MULTIPLIER : dragDistance;
+        const adjustedDistance = dragDistance < 0 ? dragDistance * TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER : dragDistance;
         const distanceRatio = Math.abs(adjustedDistance) / height;
         const velocityFactor = Math.abs(e.velocityY) / 1000;
         const dismissScore = distanceRatio + velocityFactor;
-        const shouldDismiss = dismissScore > DISMISS_SENSITIVITY;
+        const shouldDismiss = dismissScore > TOAST_EXPANDED_DISMISS_SENSITIVITY;
 
         if (shouldDismiss) {
           const targetY = -100;
