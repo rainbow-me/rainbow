@@ -8,26 +8,27 @@ import { Box, useColorMode, TextIcon } from '@/design-system';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { shallowEqual } from '@/worklets/comparisons';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
-import { TAB_BAR_PILL_HEIGHT, TAB_BAR_PILL_WIDTH } from './dimensions';
+import { TAB_BAR_PILL_HEIGHT } from './dimensions';
 
 export const BrowserTabIcon = memo(function BrowserTabIcon({
   accentColor,
   index,
   reanimatedPosition,
+  showNavButtons,
   tabBarIcon,
 }: {
   accentColor: string;
   index: number;
   reanimatedPosition: SharedValue<number>;
+  showNavButtons: SharedValue<boolean>;
   tabBarIcon: string;
 }) {
   const { isDarkMode } = useColorMode();
   const { goBack, goForward } = useBrowserTabBarContext();
 
-  const navState = useBrowserStore(state => state.getActiveTabNavState());
-
-  const showNavButtons = useDerivedValue(() => reanimatedPosition.value === 2 && (navState.canGoBack || navState.canGoForward));
+  const navState = useBrowserStore(state => state.getActiveTabNavState(), shallowEqual);
 
   const navButtonsBackgroundOpacity = useDerivedValue(() => {
     const navButtonsVisible = reanimatedPosition.value === 2 && (navState.canGoBack || navState.canGoForward);
@@ -79,16 +80,10 @@ export const BrowserTabIcon = memo(function BrowserTabIcon({
   });
 
   return (
-    <Box
-      testID="dapp-browser-tab-icon"
-      width={{ custom: TAB_BAR_PILL_WIDTH }}
-      height={{ custom: TAB_BAR_PILL_HEIGHT }}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Animated.View style={[navButtonsStyle, styles.navButtonsPill]}>
+    <Box alignItems="center" height={{ custom: TAB_BAR_PILL_HEIGHT }} justifyContent="center" testID="dapp-browser-tab-icon" width="full">
+      <Animated.View style={[styles.navButtonsPill, navButtonsStyle]}>
         <ButtonPressAnimation
-          onPress={() => goBack()}
+          onPress={goBack}
           scaleTo={0.75}
           style={[styles.navButton, styles.backButton, { pointerEvents: navState.canGoBack ? 'auto' : 'none' }]}
         >
@@ -99,7 +94,7 @@ export const BrowserTabIcon = memo(function BrowserTabIcon({
           </Animated.View>
         </ButtonPressAnimation>
         <ButtonPressAnimation
-          onPress={() => goForward()}
+          onPress={goForward}
           scaleTo={0.75}
           style={[styles.navButton, styles.forwardButton, { pointerEvents: navState.canGoForward ? 'auto' : 'none' }]}
         >
@@ -153,6 +148,5 @@ const styles = StyleSheet.create({
     borderRadius: TAB_BAR_PILL_HEIGHT / 2,
     flexDirection: 'row',
     height: TAB_BAR_PILL_HEIGHT,
-    width: TAB_BAR_PILL_WIDTH,
   },
 });

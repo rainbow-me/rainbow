@@ -1,26 +1,33 @@
-import { RecyclerListViewRef } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RecyclerListViewRef } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 
 export const RecyclerListViewScrollToTopContext = createContext<{
   scrollToTop: () => void;
   setScrollToTopRef: (ref: RecyclerListViewRef | null) => void;
 }>({
-  scrollToTop: () => {},
-  setScrollToTopRef: () => {},
+  scrollToTop: () => {
+    return;
+  },
+  setScrollToTopRef: () => {
+    return;
+  },
 });
 
 type ScrollToTopProviderProps = {
   children: React.ReactNode;
 };
 
-const RecyclerListViewScrollToTopProvider: React.FC<ScrollToTopProviderProps> = ({ children }) => {
+export function RecyclerListViewScrollToTopProvider({ children }: ScrollToTopProviderProps) {
   const insets = useSafeAreaInsets();
-
-  const [scrollToTopRef, setScrollToTopRef] = useState<RecyclerListViewRef | null>(null);
+  const scrollToTopRef = useRef<RecyclerListViewRef | null>(null);
 
   const scrollToTop = () => {
-    scrollToTopRef?.scrollToOffset(0, -insets.top, true);
+    scrollToTopRef?.current?.scrollToOffset(0, -insets.top, true);
+  };
+
+  const setScrollToTopRef = (ref: RecyclerListViewRef | null) => {
+    scrollToTopRef.current = ref;
   };
 
   return (
@@ -28,8 +35,6 @@ const RecyclerListViewScrollToTopProvider: React.FC<ScrollToTopProviderProps> = 
       {children}
     </RecyclerListViewScrollToTopContext.Provider>
   );
-};
+}
 
-export const useRecyclerListViewScrollToTopContext = () => React.useContext(RecyclerListViewScrollToTopContext);
-
-export default RecyclerListViewScrollToTopProvider;
+export const useRecyclerListViewScrollToTopContext = () => useContext(RecyclerListViewScrollToTopContext);

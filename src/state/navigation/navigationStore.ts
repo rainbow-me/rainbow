@@ -49,7 +49,6 @@ export const useNavigationStore = createRainbowStore<NavigationState>((set, get)
       if (onSwipeRoute) state.animatedActiveSwipeRoute.value = route;
 
       return {
-        ...state,
         activeRoute: route,
         activeSwipeRoute: onSwipeRoute ? route : state.activeSwipeRoute,
       };
