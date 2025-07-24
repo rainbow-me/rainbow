@@ -77,6 +77,10 @@ export const KingOfTheHillScreen = () => {
           <FastImage source={require('@/components/king-of-the-hill/hill.png')} style={{ width: hillWidth, height: hillHeight }} />
         </Animated.View>
         <Navbar
+          scrollY={scrollY}
+          testID="koth-header"
+          title={i18n.t(i18n.l.king_of_hill.title)}
+          floating
           leftComponent={
             <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
               {accountImage ? (
@@ -113,10 +117,6 @@ export const KingOfTheHillScreen = () => {
               </View>
             </ButtonPressAnimation>
           }
-          scrollY={scrollY}
-          testID={'koth-header'}
-          title={i18n.t(i18n.l.king_of_hill.title)}
-          floating
         />
 
         <KingOfTheHillContent scrollY={scrollY} onColorExtracted={handleColorExtracted} />

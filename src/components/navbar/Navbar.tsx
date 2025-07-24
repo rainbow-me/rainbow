@@ -40,7 +40,6 @@ export function Navbar({
     }
 
     const translateY = interpolate(scrollY.value, [0, 200], [0, -30], 'clamp');
-
     const opacity = interpolate(scrollY.value, [0, 200], [1, 0], 'clamp');
 
     return {
