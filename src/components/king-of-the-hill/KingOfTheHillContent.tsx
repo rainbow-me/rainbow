@@ -101,7 +101,8 @@ export const KingOfTheHillContent = ({
         data: kingOfTheHill,
       },
       ...rankedItems.slice(0, 3),
-      { type: 'past-winners' },
+      // disabled until data
+      // { type: 'past-winners' },
       ...rankedItems.slice(4),
       { type: 'bottom-pad' },
     ];
