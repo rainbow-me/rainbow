@@ -8,7 +8,6 @@ import {
   getSwapToastNetworkLabel,
   getSwapToastStatusLabel,
 } from '@/components/rainbow-toast/ToastContent';
-import { SendToastIcon } from './icons/SendToastIcon';
 import type { RainbowToast, RainbowToastContract, RainbowToastSend, RainbowToastSwap } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
@@ -17,6 +16,7 @@ import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import React, { useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { SendToastIcon } from './icons/SendToastIcon';
 import { useToastColors } from './useToastColors';
 
 export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
@@ -34,9 +34,12 @@ export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
 
 function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }) {
   const icon = <ContractToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
-  const title = getContractToastStatusLabel(toast);
-  const subtitle = toast.name;
-  return <ToastExpandedContentDisplay icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />;
+  const title = toast.name;
+  const subtitle = getContractToastStatusLabel(toast);
+  const isLoading = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
+  return (
+    <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />
+  );
 }
 
 function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
