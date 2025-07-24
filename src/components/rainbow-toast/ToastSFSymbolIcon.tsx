@@ -1,15 +1,12 @@
-import { Icon } from '@/components/icons';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
-import { IS_IOS } from '@/env';
-import { fonts } from '@/styles';
 import React from 'react';
 import { View } from 'react-native';
 
 const sfSymbols = {
-  check: IS_IOS ? '􀆅' : <Icon style={{ marginLeft: 6, marginTop: 6 }} width={18} height={18} color="white" name="checkmark" />,
-  exclamationMark: IS_IOS ? '􀅎' : <Icon size={12} color="white" name="warning" />,
+  check: '􀆅',
+  exclamationMark: '􀅎',
 };
 
 export function ToastSFSymbolIcon({
