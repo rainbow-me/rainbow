@@ -17,6 +17,7 @@ import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LeaderboardItem } from './LeaderboardItem';
+import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
 
 type HeaderItem = {
   type: 'header';
@@ -83,21 +84,25 @@ export const KingOfTheHillContent = ({
 
     const rankings = kingOfTheHillLeaderBoard?.rankings || [];
 
+    const rankedItems = rankings
+      .filter(item => item.rank > 1) // Start from 2nd place
+      .map(item => {
+        return {
+          type: 'item',
+          ranking: item.rank,
+          token: item.token,
+          windowTradingVolume: item.windowTradingVolume,
+        } satisfies ListItem;
+      });
+
     const data: ListItem[] = [
       {
         type: 'header',
         data: kingOfTheHill,
       },
-      ...rankings
-        .filter(item => item.rank > 1) // Start from 2nd place
-        .map(item => {
-          return {
-            type: 'item',
-            ranking: item.rank,
-            token: item.token,
-            windowTradingVolume: item.windowTradingVolume,
-          } satisfies ListItem;
-        }),
+      ...rankedItems.slice(0, 3),
+      { type: 'past-winners' },
+      ...rankedItems.slice(4),
       { type: 'bottom-pad' },
     ];
 
@@ -112,6 +117,10 @@ export const KingOfTheHillContent = ({
             <KingOfTheHillHeader kingOfTheHill={item.data} onColorExtracted={handleColorExtracted} />
           </View>
         );
+      }
+
+      if (item.type === 'past-winners') {
+        return <KingOfTheHillPastWinners />;
       }
 
       if (item.type === 'bottom-pad') {

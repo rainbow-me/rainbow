@@ -1,7 +1,7 @@
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { CARET_SYMBOL } from '@/components/king-of-the-hill/constants';
+import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
 import { Text, useColorMode } from '@/design-system';
 import { KingOfTheHill } from '@/graphql/__generated__/metadata';
@@ -171,7 +171,7 @@ export function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderP
             {priceChange}
           </Text>
           <Text color="labelQuaternary" size="icon 11px" weight="bold" style={styles.caretContainer}>
-            {CARET_SYMBOL}
+            {CHEVRON_RIGHT_SYMBOL}
           </Text>
         </View>
       </ButtonPressAnimation>

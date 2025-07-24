@@ -1,5 +1,5 @@
 import { ButtonPressAnimation } from '@/components/animations';
-import { CARET_SYMBOL } from '@/components/king-of-the-hill/constants';
+import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
 import { Text } from '@/design-system';
 import React from 'react';
@@ -20,7 +20,7 @@ export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, i
           {iconUrl && <FastImage source={{ uri: iconUrl }} style={styles.buttonIcon} />}
           <View style={styles.buttonChildren}>{children}</View>
           <Text color="labelQuaternary" size="icon 9px" weight="heavy">
-            {CARET_SYMBOL}
+            {CHEVRON_RIGHT_SYMBOL}
           </Text>
         </View>
       </GradientBorderContent>

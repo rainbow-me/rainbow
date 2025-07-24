@@ -1,1 +1,1 @@
-export const CARET_SYMBOL = '􀆊';
+export const CHEVRON_RIGHT_SYMBOL = '􀆊';
