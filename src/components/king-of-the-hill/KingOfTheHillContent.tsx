@@ -15,7 +15,7 @@ import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { formatCurrency } from '@/helpers/strings';
-import { Header } from './Header';
+import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LeaderboardItem } from './LeaderboardItem';
 import { formatPriceChange } from './utils';
 
@@ -114,7 +114,7 @@ export const KingOfTheHillContent = ({
       if (item.type === 'header') {
         return (
           <View style={styles.headerContainer}>
-            <Header kingOfTheHill={item.data} onColorExtracted={handleColorExtracted} />
+            <KingOfTheHillHeader kingOfTheHill={item.data} onColorExtracted={handleColorExtracted} />
           </View>
         );
       }
@@ -122,8 +122,6 @@ export const KingOfTheHillContent = ({
       if (item.type === 'bottom-pad') {
         return <View style={styles.bottomPadding} />;
       }
-
-      const priceChange = formatPriceChange(item.token.price?.relativeChange24h);
 
       const price = item.token.price?.value ? formatCurrency(item.token.price.value) : 'N/A';
 
@@ -135,7 +133,7 @@ export const KingOfTheHillContent = ({
         <LeaderboardItem
           token={item.token}
           ranking={item.ranking}
-          priceChange={priceChange}
+          priceChange={item.token.price?.relativeChange24h}
           volume={volume}
           marketCap={marketCap}
           price={price}

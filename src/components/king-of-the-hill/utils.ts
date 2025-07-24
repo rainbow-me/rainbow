@@ -8,7 +8,7 @@ export const formatPriceChange = (relativeChange?: number | null): string => {
   return isPositive ? `↑ ${percentage}%` : `- ${Math.abs(parseFloat(percentage))}%`;
 };
 
-export const getPriceChangeColor = (priceChange: string): string => {
+export const getPriceChangeColor = (priceChange: string) => {
   if (priceChange === 'N/A') return 'labelQuaternary';
   return priceChange.startsWith('↑') ? 'green' : 'labelQuaternary';
 };

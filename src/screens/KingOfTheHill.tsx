@@ -2,23 +2,23 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
-import { globalColors, TextIcon, useColorMode, Text } from '@/design-system';
+import { globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useAirdropsStore } from '@/state/claimables/airdropsStore';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import MaskedView from '@react-native-masked-view/masked-view';
 import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect } from 'react';
 import { Dimensions, Keyboard, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 export const KingOfTheHillScreen = () => {
   const { isDarkMode } = useColorMode();

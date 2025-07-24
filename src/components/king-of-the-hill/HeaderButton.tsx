@@ -1,41 +1,29 @@
 import { ButtonPressAnimation } from '@/components/animations';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import { Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { CARET_SYMBOL } from '@/components/king-of-the-hill/constants';
+import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
+import { Text } from '@/design-system';
 import React from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 interface HeaderButtonProps {
   onPress: () => void;
   children?: React.ReactNode;
   iconUrl?: string | null;
-  text?: string;
-  style?: ViewStyle;
 }
 
-export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, iconUrl, text, style }) => {
-  const { isDarkMode } = useColorMode();
-  const fillTertiaryColor = useBackgroundColor('fillTertiary');
-
+export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, iconUrl }) => {
   return (
     <ButtonPressAnimation onPress={onPress}>
-      <GradientBorderView
-        borderGradientColors={[fillTertiaryColor, 'transparent']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        borderRadius={20}
-        backgroundColor={isDarkMode ? 'rgba(245, 248, 255, 0.05)' : 'rgba(9, 17, 31, 0.05)'}
-        style={[{ height: 26 }, style]}
-      >
+      <GradientBorderContent height={26}>
         <View style={styles.buttonContent}>
           {iconUrl && <FastImage source={{ uri: iconUrl }} style={styles.buttonIcon} />}
-          {children || (
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              {text}
-            </Text>
-          )}
+          <View style={styles.buttonChildren}>{children}</View>
+          <Text color="labelQuaternary" size="icon 9px" weight="heavy">
+            {CARET_SYMBOL}
+          </Text>
         </View>
-      </GradientBorderView>
+      </GradientBorderContent>
     </ButtonPressAnimation>
   );
 };
@@ -46,11 +34,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     height: '100%',
+    gap: 6,
+  },
+  buttonChildren: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   buttonIcon: {
     width: 16,
     height: 16,
     borderRadius: 8,
-    marginRight: 6,
   },
 });

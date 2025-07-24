@@ -1,27 +1,27 @@
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
-import CaretRightIcon from '@/components/icons/svg/CaretRightIcon';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { CARET_SYMBOL } from '@/components/king-of-the-hill/constants';
+import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
 import { Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
+import { formatCurrency } from '@/helpers/strings';
+import { abbreviateNumber } from '@/helpers/utilities';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
-import React, { useLayoutEffect, useState, useEffect, memo } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import React, { memo, useEffect, useLayoutEffect, useState } from 'react';
+import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { abbreviateNumber } from '@/helpers/utilities';
-import { formatCurrency } from '@/helpers/strings';
+import { useSharedValue } from 'react-native-reanimated';
+import { Address } from 'viem';
 import crownImage from './crown.png';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
-import { Address } from 'viem';
-import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
-import { useSharedValue } from 'react-native-reanimated';
 import { formatPriceChange, getPriceChangeColor } from './utils';
 
 type HeaderProps = {
@@ -31,40 +31,13 @@ type HeaderProps = {
 
 const TOKEN_SIZE = 80;
 
-const CreatorDisplay = memo(function CreatorDisplay({ creatorAddress }: { creatorAddress: string }) {
-  const [creatorData, setCreatorData] = useState<{ ens: string | null; avatar: string | null }>({ ens: null, avatar: null });
-  const ensOrAddress = useSharedValue<string | null | undefined>(undefined);
-  const avatarUrl = useSharedValue<string | null | undefined>(undefined);
-
-  useEffect(() => {
-    const getEnsData = async () => {
-      await fetchAndSetEnsData({ address: creatorAddress as Address, avatarUrl, ensOrAddress });
-      setCreatorData({
-        ens: ensOrAddress.value || null,
-        avatar: avatarUrl.value || null,
-      });
-    };
-    getEnsData();
-  }, [creatorAddress, avatarUrl, ensOrAddress]);
-
-  const displayName = creatorData.ens || formatAddressForDisplay(creatorAddress, 4, 4);
-
-  return (
-    <View style={styles.creatorDisplayContainer}>
-      {creatorData.avatar && <FastImage source={{ uri: creatorData.avatar }} style={styles.creatorAvatar} />}
-      <Text color="labelTertiary" size="11pt" weight="black">
-        {displayName}
-      </Text>
-    </View>
-  );
-});
-
-export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
+export function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const { isDarkMode } = useColorMode();
   const gradientBorderColor = useBackgroundColor('fillTertiary');
   const current = kingOfTheHill?.current;
   const lastWinner = kingOfTheHill?.lastWinner;
   const { token } = current || {};
+  const { width: deviceWidth } = useWindowDimensions();
 
   const navigateToLastWinner = () => {
     if (!lastWinner) return;
@@ -180,34 +153,27 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
 
       {/* Round ends */}
       <View style={styles.roundEndsContainer}>
-        <GradientBorderView
-          borderGradientColors={[gradientBorderColor, 'transparent']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          borderRadius={12}
-          backgroundColor={isDarkMode ? 'rgba(245, 248, 255, 0.02)' : 'rgba(9, 17, 31, 0.01)'}
-          style={{ height: 28 }}
-        >
+        <GradientBorderContent borderRadius={12} height={28}>
           <View style={styles.roundEndsContent}>
-            <Text color="labelSecondary" size="13pt" weight="bold">
+            <Text color="labelSecondary" size="13pt" weight="heavy">
               Round ends in {timeRemaining}
             </Text>
           </View>
-        </GradientBorderView>
+        </GradientBorderContent>
       </View>
 
       {/* Symbol and price change */}
       <ButtonPressAnimation onPress={navigateToToken} scaleTo={0.96}>
         <View style={styles.symbolPriceContainer}>
-          <Text color="label" size="20pt" weight="bold">
+          <Text color="label" size="20pt" weight="heavy">
             {token.symbol}
           </Text>
-          <Text color={getPriceChangeColor(priceChange)} size="20pt" weight="bold">
+          <Text color={getPriceChangeColor(priceChange)} size="17pt" weight="bold">
             {priceChange}
           </Text>
-          <View style={styles.caretContainer}>
-            <CaretRightIcon color={isDarkMode ? '#999' : '#666'} width={8} height={10} />
-          </View>
+          <Text color="labelQuaternary" size="icon 11px" weight="bold" style={styles.caretContainer}>
+            {CARET_SYMBOL}
+          </Text>
         </View>
       </ButtonPressAnimation>
 
@@ -216,7 +182,7 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
         {currentPrice}
       </Text>
 
-      {/* Creator | VOL | MCAP */}
+      {/* VOL | MCAP */}
       <View style={styles.statsContainer}>
         {creatorAddress && (
           <>
@@ -246,23 +212,23 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
       {/* Last winner and How it works buttons */}
       <View style={styles.buttonsContainer}>
         <HeaderButton onPress={lastWinner ? navigateToLastWinner : navigateToExplainSheet} iconUrl={lastWinner ? lastWinnerIconUrl : null}>
+          {lastWinner && (
+            // maxWidth = how it works 120px + last winner outer content 130px + side pad 20px * 2 + gap between 20px
+            <View style={{ maxWidth: deviceWidth - (120 + 130 + 20 * 2 + 20), marginRight: 8 }}>
+              <Text color="labelTertiary" size="13pt" weight="bold" ellipsizeMode="tail" numberOfLines={1}>
+                {token.symbol}
+              </Text>
+            </View>
+          )}
           <Text color="labelQuaternary" size="13pt" weight="bold">
             {lastWinner ? 'Last winner ' : 'No Previous Winner'}
           </Text>
-          {lastWinner && (
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              {lastWinner.token.symbol}
-            </Text>
-          )}
         </HeaderButton>
 
         <HeaderButton onPress={navigateToExplainSheet}>
-          <View style={styles.howItWorksContent}>
-            <Text color="labelTertiary" size="13pt" weight="bold">
-              How it works
-            </Text>
-            <CaretRightIcon color={isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'} width={6} height={8} />
-          </View>
+          <Text color="labelTertiary" size="13pt" weight="bold">
+            How it works
+          </Text>
         </HeaderButton>
       </View>
 
@@ -271,6 +237,34 @@ export function Header({ kingOfTheHill, onColorExtracted }: HeaderProps) {
     </View>
   );
 }
+
+const CreatorDisplay = memo(function CreatorDisplay({ creatorAddress }: { creatorAddress: string }) {
+  const [creatorData, setCreatorData] = useState<{ ens: string | null; avatar: string | null }>({ ens: null, avatar: null });
+  const ensOrAddress = useSharedValue<string | null | undefined>(undefined);
+  const avatarUrl = useSharedValue<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    const getEnsData = async () => {
+      await fetchAndSetEnsData({ address: creatorAddress as Address, avatarUrl, ensOrAddress });
+      setCreatorData({
+        ens: ensOrAddress.value || null,
+        avatar: avatarUrl.value || null,
+      });
+    };
+    getEnsData();
+  }, [creatorAddress, avatarUrl, ensOrAddress]);
+
+  const displayName = creatorData.ens || formatAddressForDisplay(creatorAddress, 4, 4);
+
+  return (
+    <View style={styles.creatorDisplayContainer}>
+      {creatorData.avatar && <FastImage source={{ uri: creatorData.avatar }} style={styles.creatorAvatar} />}
+      <Text color="labelTertiary" size="11pt" weight="black">
+        {displayName}
+      </Text>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -381,11 +375,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 0,
     marginTop: 26,
-  },
-  howItWorksContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
   },
   bottomSeparator: {
     width: '100%',

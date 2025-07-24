@@ -1,5 +1,5 @@
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Inline, Text, useColorMode } from '@/design-system';
 import { Token } from '@/graphql/__generated__/metadata';
@@ -8,92 +8,16 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { getPriceChangeColor } from './utils';
+import { formatPriceChange, getPriceChangeColor } from './utils';
 
 interface LeaderboardItemProps {
   token: Token;
   ranking: number;
-  priceChange: string;
+  priceChange?: number | null;
   volume: string;
   marketCap: string;
   price: string;
 }
-
-const styles = StyleSheet.create({
-  tokenIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  rankingBadge: {
-    paddingHorizontal: 3,
-    paddingVertical: 4,
-    borderRadius: 4,
-    alignItems: 'center',
-  },
-  tokenIconContainer: {
-    position: 'relative',
-    width: 40,
-    height: 40,
-  },
-  tokenIconShadow: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  chainImageContainer: {
-    position: 'absolute',
-    bottom: -3,
-    left: -3,
-    zIndex: 2,
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    justifyContent: 'space-between',
-  },
-  iconColumn: {
-    width: 40,
-  },
-  contentColumn: {
-    flex: 1,
-    paddingHorizontal: 12,
-  },
-  rankOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 22,
-    borderWidth: 2,
-  },
-  rankInfoRow: {
-    marginTop: 7,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  statsSeparator: {
-    width: 1,
-    height: 12,
-  },
-  smallLabelRow: {
-    flexDirection: 'row',
-    gap: 4,
-  },
-});
 
 const darkColorsByRank: Record<number, [string, string]> = {
   2: ['#AEAEAE', '#444'],
@@ -132,6 +56,8 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
   const { isDarkMode } = useColorMode();
   const rankingStyle = getRankingStyle(ranking, isDarkMode);
   const iconUrl = getSizedImageUrl(token.iconUrl, 80);
+  const priceChangeString = formatPriceChange(priceChange);
+  const priceChangeColor = getPriceChangeColor(priceChangeString);
 
   const handlePress = () => {
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
@@ -161,12 +87,15 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
 
         <View style={styles.contentColumn}>
           {/* Name, Fire icon, Price change */}
-          <Inline alignVertical="center" space="6px">
-            <Text color="label" size="15pt" weight="semibold" numberOfLines={1}>
+          <Inline alignVertical="center">
+            <Text color="label" size="15pt" weight="semibold" numberOfLines={1} style={{ marginRight: 6 }}>
               {token.name}
             </Text>
-            <Text color={getPriceChangeColor(priceChange)} size="13pt" weight="semibold">
-              {priceChange}
+            <Text color={priceChangeColor} size="11pt" weight="bold" style={{ marginRight: 3 }}>
+              {priceChangeString[0]}
+            </Text>
+            <Text color={priceChangeColor} size="15pt" weight="bold">
+              {priceChangeString.slice(2)}
             </Text>
           </Inline>
 
@@ -225,3 +154,80 @@ const SmallLabeledRow = ({ label, value }: { label: string; value: string }) => 
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  tokenIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  rankingBadge: {
+    paddingHorizontal: 3,
+    paddingVertical: 4,
+    borderRadius: 4,
+    alignItems: 'center',
+  },
+  tokenIconContainer: {
+    position: 'relative',
+    width: 40,
+    height: 40,
+  },
+  tokenIconShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  chainImageContainer: {
+    position: 'absolute',
+    bottom: -3,
+    left: -3,
+    zIndex: 2,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+  },
+  iconColumn: {
+    width: 40,
+  },
+  contentColumn: {
+    flex: 1,
+    paddingHorizontal: 12,
+    gap: 5,
+    marginTop: 1, // visually more centered due to text capsize
+  },
+  rankOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 22,
+    borderWidth: 2,
+  },
+  rankInfoRow: {
+    marginTop: 7,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  statsSeparator: {
+    width: 1,
+    height: 12,
+  },
+  smallLabelRow: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+});
