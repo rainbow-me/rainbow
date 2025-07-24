@@ -218,17 +218,19 @@ function createListenerRef<S, Selected>(
 function buildOptionsObject<Selected>(
   optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']
 ): UseListenOptions<Selected> {
-  return typeof optionsOrEqualityFn === 'object' ? optionsOrEqualityFn : { equalityFn: optionsOrEqualityFn };
+  if (typeof optionsOrEqualityFn === 'function') return { equalityFn: optionsOrEqualityFn };
+  return optionsOrEqualityFn ?? DEFAULT_OPTIONS;
 }
 
 function getEnabledOption<Selected>(optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']): boolean {
-  return (typeof optionsOrEqualityFn === 'object' && optionsOrEqualityFn.enabled) ?? DEFAULT_OPTIONS.enabled;
+  if (typeof optionsOrEqualityFn === 'function') return DEFAULT_OPTIONS.enabled;
+  return optionsOrEqualityFn?.enabled ?? DEFAULT_OPTIONS.enabled;
 }
 
 function setOptions<S, Selected>(
   listenerRef: MutableRefObject<ListenerRef<S, Selected>>,
   optionsOrEqualityFn: UseListenOptions<Selected> | UseListenOptions<Selected>['equalityFn']
 ): void {
-  if (typeof optionsOrEqualityFn === 'object') listenerRef.current.options = optionsOrEqualityFn;
-  else listenerRef.current.options.equalityFn = optionsOrEqualityFn;
+  if (typeof optionsOrEqualityFn === 'function') listenerRef.current.options.equalityFn = optionsOrEqualityFn;
+  else if (optionsOrEqualityFn) listenerRef.current.options = optionsOrEqualityFn ?? DEFAULT_OPTIONS;
 }

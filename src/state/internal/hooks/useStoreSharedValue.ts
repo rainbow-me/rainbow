@@ -6,7 +6,9 @@ import { ListenHandle, useListen, UseListenOptions } from './useListen';
 
 // ============ Types ========================================================== //
 
-type ReadOnlySharedValue<T> = DerivedValue<T>;
+export type ListenHandleTuple<Selected> = [ReadOnlySharedValue<Selected>, MutableRefObject<Readonly<ListenHandle>>];
+
+export type ReadOnlySharedValue<T> = DerivedValue<T>;
 
 type UseStoreSharedValueOptions<Selected, ReturnListenHandle extends true | undefined = true | undefined> =
   | (UseListenOptions<Selected> & {
@@ -19,8 +21,6 @@ type UseStoreSharedValueOptions<Selected, ReturnListenHandle extends true | unde
       returnListenHandle?: ReturnListenHandle;
     })
   | UseListenOptions<Selected>['equalityFn'];
-
-type ListenHandleTuple<Selected> = [ReadOnlySharedValue<Selected>, MutableRefObject<Readonly<ListenHandle>>];
 
 // ============ useStoreSharedValue ================================================== //
 
@@ -112,8 +112,8 @@ function buildInitialState<S, Selected>(
   returnListenHandle: boolean;
   selected: Selected;
 } {
-  const hasOptions = typeof optionsOrEqualityFn === 'object' && optionsOrEqualityFn !== null;
-  const returnListenHandle = (hasOptions && 'returnListenHandle' in optionsOrEqualityFn && optionsOrEqualityFn.returnListenHandle) || false;
+  const hasOptions = optionsOrEqualityFn !== undefined && typeof optionsOrEqualityFn !== 'function';
+  const returnListenHandle = (hasOptions && optionsOrEqualityFn?.returnListenHandle) || false;
   return {
     returnListenHandle,
     selected: selector(store.getState()),
