@@ -187,7 +187,7 @@ export function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderP
         {creatorAddress && (
           <>
             <CreatorDisplay creatorAddress={creatorAddress} />
-            <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]} />
+            <Separator />
           </>
         )}
         <View style={styles.statItem}>
@@ -265,6 +265,11 @@ const CreatorDisplay = memo(function CreatorDisplay({ creatorAddress }: { creato
     </View>
   );
 });
+
+const Separator = () => {
+  const { isDarkMode } = useColorMode();
+  return <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]} />;
+};
 
 const styles = StyleSheet.create({
   headerContainer: {

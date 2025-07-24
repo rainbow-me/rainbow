@@ -9,6 +9,7 @@ import Routes from '@/navigation/routesNames';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { formatPriceChange, getPriceChangeColor } from './utils';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 interface LeaderboardItemProps {
   token: Token;
@@ -86,9 +87,21 @@ export function LeaderboardItem({ token, ranking, priceChange, volume, marketCap
         </View>
 
         <View style={styles.contentColumn}>
-          {/* Name, Fire icon, Price change */}
+          {/* Name, Price change */}
           <Inline alignVertical="center">
-            <Text color="label" size="15pt" weight="semibold" numberOfLines={1} style={{ marginRight: 6 }}>
+            <Text
+              color="label"
+              size="15pt"
+              weight="semibold"
+              numberOfLines={1}
+              style={{
+                marginRight: 6,
+                maxWidth:
+                  DEVICE_WIDTH -
+                  // left side content + right side content
+                  (70 + 200),
+              }}
+            >
               {token.name}
             </Text>
             <Text color={priceChangeColor} size="11pt" weight="bold" style={{ marginRight: 3 }}>
