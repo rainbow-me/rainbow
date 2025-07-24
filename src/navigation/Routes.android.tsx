@@ -180,7 +180,15 @@ function BSNavigator() {
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         options={hardwareWalletTxNavigatorPreset}
       />
-      {showKingOfTheHillTab && <BSStack.Screen component={ActivitySheetScreen} name={Routes.PROFILE_SCREEN} />}
+      {showKingOfTheHillTab && (
+        <BSStack.Screen
+          component={ActivitySheetScreen}
+          name={Routes.PROFILE_SCREEN}
+          options={{
+            snapPoints: ['88%'],
+          }}
+        />
+      )}
       {profilesEnabled && (
         <>
           <BSStack.Screen component={ENSConfirmRegisterSheet} name={Routes.ENS_CONFIRM_REGISTER_SHEET} />
