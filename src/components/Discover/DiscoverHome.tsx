@@ -8,7 +8,6 @@ import useExperimentalFlag, {
   NFT_OFFERS,
   FEATURED_RESULTS,
   TRENDING_TOKENS,
-  PRINCE_OF_THE_HILL,
 } from '@rainbow-me/config/experimentalHooks';
 import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
@@ -35,7 +34,6 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
 import { DiscoverSeparator } from './DiscoverSeparator';
-import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { useWallets } from '@/state/wallets/walletsStore';
 
 export const HORIZONTAL_PADDING = 20;
@@ -47,15 +45,8 @@ function onNavigate(url: string): void {
 }
 
 export default function DiscoverHome() {
-  const {
-    profiles_enabled,
-    mints_enabled,
-    op_rewards_enabled,
-    featured_results,
-    trending_tokens_enabled,
-    new_discover_cards_enabled,
-    prince_of_the_hill_enabled,
-  } = useRemoteConfig();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results, trending_tokens_enabled, new_discover_cards_enabled } =
+    useRemoteConfig();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -66,7 +57,6 @@ export default function DiscoverHome() {
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const trendingTokensEnabled = (useExperimentalFlag(TRENDING_TOKENS) || trending_tokens_enabled) && !IS_TEST;
-  const kingOfTheHillEnabled = (useExperimentalFlag(PRINCE_OF_THE_HILL) || prince_of_the_hill_enabled) && !IS_TEST;
 
   const { chainId } = useAccountSettings();
   const testNetwork = isTestnetChain({ chainId });
@@ -91,7 +81,6 @@ export default function DiscoverHome() {
               {isProfilesEnabled && <ENSSearchCard />}
             </Inline>
           )}
-          {kingOfTheHillEnabled && <KingOfTheHillContent />}
           <DiscoverSeparator />
           {trendingTokensEnabled && <TrendingTokens />}
           <RemoteCardCarousel />
