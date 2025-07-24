@@ -5,7 +5,6 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
-import { RainbowImage } from '@/components/RainbowImage';
 import { globalColors, Text, TextIcon, useColorMode } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -17,6 +16,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect } from 'react';
 import { Dimensions, Keyboard, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
@@ -39,10 +39,12 @@ export const KingOfTheHillScreen = () => {
 
   const { width: screenWidth } = Dimensions.get('window');
   const hillWidth = screenWidth * 0.9;
+  const hillHeight = hillWidth * 0.7;
+  const hillImageHiddenByScrollY = 100;
 
   const hillAnimatedStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(scrollY.value, [0, 150], [1, 0], 'clamp');
-    const translateY = interpolate(scrollY.value, [0, 150], [0, -30], 'clamp');
+    const opacity = interpolate(scrollY.value, [0, hillImageHiddenByScrollY], [1, 0], 'clamp');
+    const translateY = interpolate(scrollY.value, [0, hillImageHiddenByScrollY], [0, -30], 'clamp');
     return {
       opacity,
       transform: [{ translateY }],
@@ -51,7 +53,7 @@ export const KingOfTheHillScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: backgroundColor || (isDarkMode ? globalColors.grey100 : '#FBFCFD') }}>
-      {/* Hill background image */}
+      {/* hill background image */}
       <Animated.View
         style={[
           {
@@ -59,13 +61,13 @@ export const KingOfTheHillScreen = () => {
             top: 120,
             left: (screenWidth - hillWidth) / 2,
             width: hillWidth,
-            height: hillWidth * 0.7,
+            height: hillHeight,
             zIndex: 0,
           },
           hillAnimatedStyle,
         ]}
       >
-        <RainbowImage source={require('@/components/king-of-the-hill/hill.png')} />
+        <FastImage source={require('@/components/king-of-the-hill/hill.png')} style={{ width: hillWidth, height: hillHeight }} />
       </Animated.View>
       <Navbar
         leftComponent={
@@ -119,7 +121,7 @@ export const KingOfTheHillScreen = () => {
 
       <KingOfTheHillContent scrollY={scrollY} onColorExtracted={handleColorExtracted} />
 
-      {/* Launch Button */}
+      {/* launch button */}
       <View
         style={{
           position: 'absolute',

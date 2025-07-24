@@ -1,3 +1,4 @@
+import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
 import { useColorMode } from '@/design-system';
 import { KingOfTheHill, KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';
 import { formatCurrency } from '@/helpers/strings';
@@ -11,13 +12,12 @@ import { LegendList } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LeaderboardItem } from './LeaderboardItem';
-import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
 
 type HeaderItem = {
   type: 'header';
@@ -41,13 +41,13 @@ type PastWinnersItem = {
 
 type ListItem = HeaderItem | LeaderboardListItem | PastWinnersItem | BottomPadItem;
 
-export const KingOfTheHillContent = ({
+export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   scrollY,
   onColorExtracted,
 }: {
   scrollY: SharedValue<number>;
   onColorExtracted?: (color: string | null) => void;
-}) => {
+}) {
   const { kingOfTheHill, kingOfTheHillLeaderBoard } = useKingOfTheHillStore(store => store.getData(), dequal) || {};
   const { isDarkMode } = useColorMode();
   const [backgroundColor, setBackgroundColor] = useState<string | null>(null);
@@ -85,7 +85,8 @@ export const KingOfTheHillContent = ({
     const rankings = kingOfTheHillLeaderBoard?.rankings || [];
 
     const rankedItems = rankings
-      .filter(item => item.rank > 1) // Start from 2nd place
+      // start from 2nd place (first is in header)
+      .filter(item => item.rank > 1)
       .map(item => {
         return {
           type: 'item',
@@ -185,7 +186,7 @@ export const KingOfTheHillContent = ({
       <SyncStoreEnabled />
     </View>
   );
-};
+});
 
 function SyncStoreEnabled() {
   const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);

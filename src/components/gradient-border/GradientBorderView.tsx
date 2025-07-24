@@ -26,9 +26,9 @@ export function GradientBorderView({
   backgroundColor = 'transparent',
 }: GradientBorderViewProps) {
   return (
-    <View style={[style, { backgroundColor, borderRadius, position: 'relative' }]}>
+    <View style={[styles.baseStyle, style, { backgroundColor, borderRadius }]}>
       <MaskedView
-        maskElement={<View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderWidth, borderRadius }]} />}
+        maskElement={<View style={[StyleSheet.absoluteFill, { borderWidth, borderRadius }]} />}
         style={[StyleSheet.absoluteFill, { zIndex: 1000 }]}
       >
         <LinearGradient start={start} end={end} style={StyleSheet.absoluteFill} colors={borderGradientColors} pointerEvents="none" />
@@ -37,3 +37,10 @@ export function GradientBorderView({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  baseStyle: {
+    position: 'relative',
+    pointerEvents: 'none',
+  },
+});

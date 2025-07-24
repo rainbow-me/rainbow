@@ -1,10 +1,10 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
+import { RainbowImage } from '@/components/RainbowImage';
 import { Text } from '@/design-system';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 
 interface HeaderButtonProps {
   onPress: () => void;
@@ -17,7 +17,7 @@ export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, i
     <ButtonPressAnimation onPress={onPress}>
       <GradientBorderContent height={26}>
         <View style={styles.buttonContent}>
-          {iconUrl && <FastImage source={{ uri: iconUrl }} style={styles.buttonIcon} />}
+          {iconUrl && <RainbowImage source={{ url: iconUrl }} style={styles.buttonIcon} />}
           <View style={styles.buttonChildren}>{children}</View>
           <Text color="labelQuaternary" size="icon 9px" weight="heavy">
             {CHEVRON_RIGHT_SYMBOL}
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     height: '100%',
     gap: 6,
   },
@@ -44,5 +44,6 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
+    overflow: 'hidden',
   },
 });
