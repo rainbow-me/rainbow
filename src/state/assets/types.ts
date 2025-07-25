@@ -65,17 +65,6 @@ export interface UserAssetsState {
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
-  setUserAssets: ({
-    address,
-    chainIdsWithErrors,
-    userAssets,
-    state,
-  }: {
-    address: Address | string;
-    chainIdsWithErrors: ChainId[] | null;
-    userAssets: ParsedSearchAsset[] | ParsedAssetsDictByChain | null;
-    state: UserAssetsState | undefined;
-  }) => UserAssetsState | null;
   updateTokens: (tokens: LiveTokensData) => void;
 }
 
