@@ -157,6 +157,10 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
   return (
     <LegendList
       data={flatData}
+      style={{
+        // needs flex 1 or else going from loading => loaded scroll doesn't work
+        flex: 1,
+      }}
       // changing key - we had a bug with key calculation where headers were
       // matching causing legend list to see the key move index and scroll to a
       // bad position i tried fixing just the key to avoid changing the key
