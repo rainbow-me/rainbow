@@ -112,38 +112,40 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
   return (
     <View style={styles.headerContainer}>
       {/* token circle */}
-      <View style={styles.tokenImageContainer}>
-        <View style={styles.glowContainer}>
-          <RainbowGlow size={TOKEN_SIZE} />
+      <ButtonPressAnimation onPress={navigateToToken}>
+        <View style={styles.tokenImageContainer}>
+          <View style={styles.glowContainer}>
+            <RainbowGlow size={TOKEN_SIZE} />
+          </View>
+
+          {/* gradient circle behind token */}
+          <View style={styles.gradientCircleContainer}>
+            <Canvas style={styles.gradientCanvas}>
+              <Circle cx={(TOKEN_SIZE + 12) / 2} cy={(TOKEN_SIZE + 12) / 2} r={(TOKEN_SIZE + 12) / 2}>
+                <LinearGradient
+                  start={vec((TOKEN_SIZE + 12) / 2, 0)}
+                  end={vec((TOKEN_SIZE + 12) / 2, TOKEN_SIZE + 12)}
+                  colors={[
+                    'rgba(34, 197, 94, 1)', // green
+                    'rgba(250, 204, 21, 1)', // yellow
+                    'rgba(239, 68, 68, 1)', // red
+                  ]}
+                  positions={[0, 0.5, 1]}
+                />
+              </Circle>
+            </Canvas>
+          </View>
+
+          <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
+
+          {/* chain image */}
+          <View style={styles.chainImageContainer}>
+            <ChainImage chainId={currentWinningToken.chainId} size={26} position="absolute" style={styles.chainImageShadow} />
+          </View>
+
+          <Image source={crownImage} style={styles.crown} />
         </View>
-
-        {/* gradient circle behind token */}
-        <View style={styles.gradientCircleContainer}>
-          <Canvas style={styles.gradientCanvas}>
-            <Circle cx={(TOKEN_SIZE + 12) / 2} cy={(TOKEN_SIZE + 12) / 2} r={(TOKEN_SIZE + 12) / 2}>
-              <LinearGradient
-                start={vec((TOKEN_SIZE + 12) / 2, 0)}
-                end={vec((TOKEN_SIZE + 12) / 2, TOKEN_SIZE + 12)}
-                colors={[
-                  'rgba(34, 197, 94, 1)', // green
-                  'rgba(250, 204, 21, 1)', // yellow
-                  'rgba(239, 68, 68, 1)', // red
-                ]}
-                positions={[0, 0.5, 1]}
-              />
-            </Circle>
-          </Canvas>
-        </View>
-
-        <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
-
-        {/* chain image */}
-        <View style={styles.chainImageContainer}>
-          <ChainImage chainId={currentWinningToken.chainId} size={26} position="absolute" style={styles.chainImageShadow} />
-        </View>
-
-        <Image source={crownImage} style={styles.crown} />
-      </View>
+      </ButtonPressAnimation>
 
       {/* round ends */}
       <View style={styles.roundEndsContainer}>
@@ -157,7 +159,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
       </View>
 
       {/* symbol, price change */}
-      <ButtonPressAnimation onPress={navigateToToken} scaleTo={0.96}>
+      <ButtonPressAnimation onPress={navigateToToken}>
         <View style={styles.symbolPriceContainer}>
           <Text color="label" size="20pt" weight="heavy">
             {currentWinningToken.symbol}
