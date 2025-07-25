@@ -128,7 +128,9 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
 
         if (shouldDismiss) {
           const targetY = -100;
-          animateY.value = withSpring(targetY, springConfig, () => runOnJS(setShowExpandedToasts)(false));
+          animateY.value = withSpring(targetY, springConfig, () => {
+            runOnJS(setShowExpandedToasts)(false);
+          });
           dragY.value = withSpring(0, springConfig);
           opacity.value = withSpring(0, springConfig);
           pointerEvents.value = 'none';
@@ -140,10 +142,12 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
 
   const hide = useCallback(() => {
     return new Promise<void>(res => {
-      animateY.value = withSpring(-100, springConfig, () => runOnJS(setShowExpandedToasts)(false));
+      'worklet';
+      animateY.value = withSpring(-100, springConfig, () => {
+        runOnJS(setShowExpandedToasts)(false);
+      });
       dragY.value = withSpring(0, springConfig);
       opacity.value = withSpring(0, springConfig, () => {
-        'worklet';
         runOnJS(res)();
       });
     });
