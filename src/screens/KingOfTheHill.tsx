@@ -2,6 +2,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import hillImage from '@/components/king-of-the-hill/hill.png';
 import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
 import { globalColors, Text, useColorMode } from '@/design-system';
@@ -57,7 +58,7 @@ export const KingOfTheHillScreen = () => {
       <SyncStoreEnabled />
 
       <View style={{ flex: 1, backgroundColor: backgroundColor || (isDarkMode ? globalColors.grey100 : '#FBFCFD') }}>
-        {/* hill background image */}
+        {/* hill bg */}
         <Animated.View
           style={[
             {
@@ -71,8 +72,9 @@ export const KingOfTheHillScreen = () => {
             hillAnimatedStyle,
           ]}
         >
-          <FastImage source={require('@/components/king-of-the-hill/hill.png')} style={{ width: hillWidth, height: hillHeight }} />
+          <FastImage source={hillImage} style={{ width: hillWidth, height: hillHeight }} />
         </Animated.View>
+
         <Navbar
           scrollY={scrollY}
           testID="koth-header"

@@ -1,9 +1,8 @@
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
-import { Text, useColorMode } from '@/design-system';
+import { Separator, Text } from '@/design-system';
 import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { formatCurrency } from '@/helpers/strings';
@@ -12,6 +11,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
+import { time } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
 import React, { memo, useEffect, useLayoutEffect, useState } from 'react';
@@ -30,9 +30,9 @@ type HeaderProps = {
 };
 
 const TOKEN_SIZE = 80;
+const SECONDS_PER_HOUR = 60 * 60;
 
 export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderProps) {
-  const { isDarkMode } = useColorMode();
   const current = kingOfTheHill?.current;
   const lastWinner = kingOfTheHill?.lastWinner;
   const { token } = current || {};
@@ -62,9 +62,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
 
   const sizedIconUrl = getSizedImageUrl(token?.iconUrl, 160);
   const lastWinnerIconUrl = lastWinner ? getSizedImageUrl(lastWinner.token.iconUrl, 16) : null;
-
   const dominantColor = usePersistentDominantColorFromImage(sizedIconUrl);
-
   const initialSecondsRemaining = current?.window?.secondsRemaining || 0;
   const [secondsRemaining, setSecondsRemaining] = useState(initialSecondsRemaining);
 
@@ -78,10 +76,11 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
     setSecondsRemaining(initialSecondsRemaining);
   }, [initialSecondsRemaining]);
 
+  // update time remaining every minute
   useEffect(() => {
     const interval = setInterval(() => {
       setSecondsRemaining(prev => Math.max(0, prev - 60));
-    }, 60000); // Update every minute
+    }, time.minutes(1));
 
     return () => clearInterval(interval);
   }, []);
@@ -90,39 +89,31 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
     return null;
   }
 
-  const hours = Math.floor(secondsRemaining / 3600);
-  const minutes = Math.floor((secondsRemaining % 3600) / 60);
+  const hours = Math.floor(secondsRemaining / SECONDS_PER_HOUR);
+  const minutes = Math.floor((secondsRemaining % SECONDS_PER_HOUR) / 60);
   const timeRemaining = `${hours}h ${minutes}m`;
 
   if (!token) {
     return null;
   }
 
-  // Get actual price data from token
   const priceChange = formatPriceChange(token.price?.relativeChange24h);
-
   const currentPrice = token.price?.value ? formatCurrency(token.price.value) : 'N/A';
-
-  // Get volume from ranking details
   const volumeValue = current.rankingDetails?.windowTradingVolume;
   const volume = volumeValue ? `$${abbreviateNumber(parseFloat(volumeValue), 1)}` : 'N/A';
-
-  // Get market cap from token
   const marketCapValue = token.marketCap;
   const marketCap = marketCapValue ? `$${abbreviateNumber(marketCapValue, 1)}` : 'N/A';
-
-  // Get creator address
   const creatorAddress = token.rainbowTokenDetails?.onchainData?.creatorAddress;
 
   return (
     <View style={styles.headerContainer}>
-      {/* Token circle */}
+      {/* token circle */}
       <View style={styles.tokenImageContainer}>
         <View style={styles.glowContainer}>
           <RainbowGlow size={TOKEN_SIZE} />
         </View>
 
-        {/* Gradient circle behind token */}
+        {/* gradient circle behind token */}
         <View style={styles.gradientCircleContainer}>
           <Canvas style={styles.gradientCanvas}>
             <Circle cx={(TOKEN_SIZE + 12) / 2} cy={(TOKEN_SIZE + 12) / 2} r={(TOKEN_SIZE + 12) / 2}>
@@ -142,7 +133,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
 
         <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
 
-        {/* Chain image floating at bottom */}
+        {/* chain image */}
         <View style={styles.chainImageContainer}>
           <ChainImage chainId={token.chainId} size={26} position="absolute" style={styles.chainImageShadow} />
         </View>
@@ -150,7 +141,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         <Image source={crownImage} style={styles.crown} />
       </View>
 
-      {/* Round ends */}
+      {/* round ends */}
       <View style={styles.roundEndsContainer}>
         <GradientBorderContent borderRadius={12} height={28}>
           <View style={styles.roundEndsContent}>
@@ -161,7 +152,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         </GradientBorderContent>
       </View>
 
-      {/* Symbol and price change */}
+      {/* symbol, price change */}
       <ButtonPressAnimation onPress={navigateToToken} scaleTo={0.96}>
         <View style={styles.symbolPriceContainer}>
           <Text color="label" size="20pt" weight="heavy">
@@ -176,17 +167,19 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         </View>
       </ButtonPressAnimation>
 
-      {/* Current price */}
+      {/* price */}
       <Text color="label" size="30pt" weight="heavy" align="center" style={styles.currentPrice}>
         {currentPrice}
       </Text>
 
-      {/* VOL | MCAP */}
+      {/* vol | mcap */}
       <View style={styles.statsContainer}>
         {creatorAddress && (
           <>
             <CreatorDisplay creatorAddress={creatorAddress} />
-            <Separator />
+            <View>
+              <Separator direction="vertical" color="separatorSecondary" />
+            </View>
           </>
         )}
         <View style={styles.statItem}>
@@ -197,7 +190,9 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
             {volume}
           </Text>
         </View>
-        <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]} />
+        <View>
+          <Separator direction="vertical" color="separatorSecondary" />
+        </View>
         <View style={styles.statItem}>
           <Text color="labelQuaternary" size="13pt" weight="semibold">
             MCAP
@@ -208,7 +203,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         </View>
       </View>
 
-      {/* Last winner and How it works buttons */}
+      {/* last winner / how it works */}
       <View style={styles.buttonsContainer}>
         <HeaderButton onPress={lastWinner ? navigateToLastWinner : navigateToExplainSheet} iconUrl={lastWinner ? lastWinnerIconUrl : null}>
           {lastWinner && (
@@ -231,8 +226,9 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         </HeaderButton>
       </View>
 
-      {/* Separator */}
-      <View style={[styles.bottomSeparator, { backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }]} />
+      <View style={{ marginTop: 15, width: '100%' }}>
+        <Separator color="separatorTertiary" direction="horizontal" />
+      </View>
     </View>
   );
 });
@@ -264,11 +260,6 @@ const CreatorDisplay = memo(function CreatorDisplay({ creatorAddress }: { creato
     </View>
   );
 });
-
-const Separator = () => {
-  const { isDarkMode } = useColorMode();
-  return <View style={[styles.separator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]} />;
-};
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -366,10 +357,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     gap: 10,
   },
-  separator: {
-    width: 1,
-    height: 10,
-  },
   statItem: {
     flexDirection: 'row',
     gap: 4,
@@ -380,10 +367,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 0,
     marginTop: 26,
-  },
-  bottomSeparator: {
-    width: '100%',
-    height: 1,
-    marginTop: 16,
   },
 });
