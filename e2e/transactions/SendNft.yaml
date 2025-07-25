@@ -29,6 +29,13 @@ tags:
             - assertVisible:
                 id: 'balance-coin-row-Ethereum'
 
+      - retry:
+          maxRetries: 3
+          commands:
+            - swipe:
+                direction: UP
+            - assertVisible: '.*Rainbow Pooly.*'
+
       - tapOn: '.*Rainbow Pooly.*'
 
       - tapOn:
@@ -38,8 +45,7 @@ tags:
       - waitForAnimationToEnd:
           timeout: 2000
 
-      - tapOn:
-          id: 'send-action-button'
+      - tapOn: '.*Send'
 
       # Test ENS address input
       - inputText: 'rainbowwallet.eth'

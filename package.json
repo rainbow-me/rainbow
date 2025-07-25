@@ -99,7 +99,7 @@
     "@lavamoat/preinstall-always-fail": "2.0.0",
     "@ledgerhq/hw-app-eth": "6.39.0",
     "@ledgerhq/react-native-hw-transport-ble": "6.33.4",
-    "@legendapp/list": "1.1.0",
+    "@legendapp/list": "1.1.4",
     "@metamask/eth-sig-util": "7.0.2",
     "@notifee/react-native": "7.8.2",
     "@rainbow-me/provider": "0.1.2",
