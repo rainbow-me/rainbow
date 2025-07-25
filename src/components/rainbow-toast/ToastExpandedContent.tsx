@@ -2,10 +2,7 @@ import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
 import { SWAP_ICON_WIDTH } from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
 import { SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
-import {
-  getStatusLabel,
-  getSwapToastNetworkLabel,
-} from '@/components/rainbow-toast/ToastContent';
+import { getStatusLabel, getSwapToastNetworkLabel } from '@/components/rainbow-toast/ToastContent';
 import type { RainbowToast, RainbowToastContract, RainbowToastSend, RainbowToastSwap } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
