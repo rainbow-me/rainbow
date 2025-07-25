@@ -93,7 +93,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
 
     const rankedItems = rankings
       // start from 2nd place (first is in header)
-      .filter(item => item.rank > 1)
+      .slice(1)
       .map(item => {
         return {
           type: 'item',
