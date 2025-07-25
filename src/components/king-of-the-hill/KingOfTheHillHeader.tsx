@@ -172,7 +172,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
       </ButtonPressAnimation>
 
       {/* price */}
-      <Text color="label" size="30pt" weight="heavy" align="center" style={styles.currentPrice}>
+      <Text color="label" size="30pt" weight="heavy" align="center" style={styles.priceContainer}>
         {currentPrice}
       </Text>
 
@@ -353,8 +353,8 @@ const styles = StyleSheet.create({
   caretContainer: {
     marginLeft: 0,
   },
-  currentPrice: {
-    marginTop: 12,
+  priceContainer: {
+    marginTop: 11,
   },
   statsContainer: {
     flexDirection: 'row',

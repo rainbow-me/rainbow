@@ -222,11 +222,7 @@ const HillBackground = memo(function HillBackground({ scrollY }: { scrollY: Shar
         hillAnimatedStyle,
       ]}
     >
-      <FastImage
-        source={hillImage}
-        resizeMode="contain"
-        style={{ width: hillWidth, height: hillHeight, opacity: isDarkMode ? 0.3 : 0.6 }}
-      />
+      <FastImage source={hillImage} resizeMode="contain" style={{ width: hillWidth, height: hillHeight, opacity: isDarkMode ? 0.5 : 1 }} />
     </Animated.View>
   );
 });
