@@ -11,14 +11,14 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { formatPriceChange, getPriceChangeColor } from './utils';
 
-interface LeaderboardItemProps {
+type LeaderboardItemProps = {
   token: Token;
   ranking: number;
   priceChange?: number | null;
   volume: string;
   marketCap: string;
   price: string;
-}
+};
 
 const getRankingStyle = (ranking: number, isDarkMode: boolean) => {
   const darkColorsByRank: Record<number, [string, string]> = {

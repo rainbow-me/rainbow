@@ -635,7 +635,6 @@ export const activitySheetConfig: PartialNavigatorConfigOptions = {
       springDamping: 1,
       topOffset: safeAreaInsetValues.top + 15,
       transitionDuration: 0.3,
-      // backgroundColor: colors.themedColors?.stackBackground,
     }),
   }),
 };

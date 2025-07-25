@@ -6,11 +6,11 @@ import { Text } from '@/design-system';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-interface HeaderButtonProps {
+type HeaderButtonProps = {
   onPress: () => void;
   children?: React.ReactNode;
   iconUrl?: string | null;
-}
+};
 
 export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, iconUrl }) => {
   return (

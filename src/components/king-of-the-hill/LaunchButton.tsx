@@ -4,11 +4,11 @@ import { Text, useColorMode } from '@/design-system';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-export const LaunchButton = () => {
+export const LaunchButton = memo(function LaunchButton() {
   const { isDarkMode } = useColorMode();
 
   return (
@@ -71,7 +71,7 @@ export const LaunchButton = () => {
       </ButtonPressAnimation>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   launchButtonPosition: {
