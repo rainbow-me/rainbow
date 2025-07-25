@@ -3,6 +3,7 @@ import { useColorMode } from '@/design-system';
 import { KingOfTheHill, KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';
 import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
+import { logger, RainbowError } from '@/logger';
 import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
@@ -10,7 +11,7 @@ import { LegendList, LegendListRef } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { memo, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -74,7 +75,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
         onColorExtracted?.(adjustedColor);
       }
     } catch (error) {
-      console.warn('Error adjusting color:', error);
+      logger.error(new RainbowError(`Error adjusting color:`, error));
       setBackgroundColor(null);
       onColorExtracted?.(null);
     }
@@ -104,10 +105,11 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
         type: 'header',
         data: kingOfTheHill,
       },
-      ...rankedItems.slice(0, 3),
-      // disabled until data
+      ...rankedItems,
+      // disabled until backend data available:
+      // ...rankedItems.slice(0, 3),
       // { type: 'past-winners' },
-      ...rankedItems.slice(4),
+      // ...rankedItems.slice(4),
       { type: 'bottom-pad' },
     ];
 
@@ -153,7 +155,9 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   );
 
   const keyExtractor = useCallback((item: ListItem) => {
-    if (item.type !== 'item') return item.type;
+    if (item.type !== 'item') {
+      return item.type;
+    }
     return `${item.token.address}-${item.token.chainId}`;
   }, []);
 
@@ -162,7 +166,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   if (!kingOfTheHill && !kingOfTheHillLeaderBoard) {
     content = (
       <View style={[styles.skeletonContainer, { marginTop: topInset + 40 }]}>
-        <Skeleton width={'100%'} height={400} />
+        <Skeleton width="100%" height={400} />
       </View>
     );
   } else {

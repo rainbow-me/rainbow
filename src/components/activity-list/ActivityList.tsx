@@ -1,16 +1,15 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
-import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
-import { Box } from '@/design-system';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
 import { lazyMount } from '@/helpers/lazyMount';
 import { useAccountTransactions } from '@/hooks';
+import { Skeleton } from '@/screens/points/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { safeAreaInsetValues } from '@/utils';
-import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList, LegendListRef } from '@legendapp/list';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -193,12 +192,10 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
   );
 });
 
-const LoadingActivityItem = memo(() => {
+const LoadingActivityItem = memo(function LoadingActivityItem() {
   return (
     <View style={{ height: 44, marginHorizontal: 20, marginVertical: 3 }}>
-      <Skeleton>
-        <View style={{ width: '100%', height: '100%', backgroundColor: '#000', borderRadius: 15 }} />
-      </Skeleton>
+      <Skeleton width="100%" height={44} />
     </View>
   );
 });
