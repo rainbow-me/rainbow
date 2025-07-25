@@ -42,6 +42,23 @@ index 2ee2cc8..2edb5c9 100644
    /***
     * Wraps a method of `NativeProxy` in a function object capturing `this`
     * @tparam TReturn return type of passed method
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+index 91ba53e..8c589e6 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+@@ -175,7 +175,11 @@ - (READisplayLink *)getDisplayLink
+   if (!_displayLink) {
+     _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+ #if !TARGET_OS_OSX
+-    _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++    if (@available(iOS 15.0, *)) {
++      _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 80);
++    } else {
++      _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++    }
+ #endif // TARGET_OS_OSX
+     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+   }
 diff --git a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
 index d9817af..eef353d 100644
 --- a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
