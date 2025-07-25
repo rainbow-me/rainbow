@@ -144,8 +144,6 @@ function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTr
     return '';
   })();
 
-  console.log('transaction', topValue, JSON.stringify(transaction, null, 2));
-
   return (
     <View style={styles.valueSection}>
       <Text ellipsizeMode="tail" numberOfLines={1} color={{ custom: colors.foregroundDim }} size="13pt" weight="medium">

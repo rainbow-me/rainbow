@@ -6,7 +6,7 @@ import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 export const isWideSwapIcon = (toast: RainbowToastSwap) => {
@@ -24,16 +24,16 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
   const chainImage = <ChainImage chainId={toast.chainId} size={16} />;
 
   return isWideSwapIcon(toast) ? (
-    <View style={{ position: 'relative', flexDirection: 'row', height: TOAST_ICON_SIZE, width: SWAP_ICON_WIDTH }}>
-      <View style={{ position: 'absolute', bottom: -4, right: 10, zIndex: 10 }}>{chainImage}</View>
+    <View style={styles.wideContainer}>
+      <View style={styles.chainImageContainer}>{chainImage}</View>
       <MaskedView maskElement={<Mask />}>
-        <View style={{ borderRadius: 100, overflow: 'hidden' }}>
-          <RainbowImage style={{ width: TOAST_ICON_SIZE, height: TOAST_ICON_SIZE }} source={{ url: toast.fromAssetImage }} />
+        <View style={styles.imageContainer}>
+          <RainbowImage style={styles.image} source={{ url: toast.fromAssetImage }} />
         </View>
       </MaskedView>
-      <View style={{ marginLeft: -SWAP_ICON_INTERSECT, zIndex: 2 }}>
-        <View style={{ borderRadius: 100, overflow: 'hidden' }}>
-          <RainbowImage style={{ width: TOAST_ICON_SIZE, height: TOAST_ICON_SIZE }} source={{ url: toast.toAssetImage }} />
+      <View style={styles.secondImageContainer}>
+        <View style={styles.imageContainer}>
+          <RainbowImage style={styles.image} source={{ url: toast.toAssetImage }} />
         </View>
       </View>
     </View>
@@ -68,3 +68,30 @@ const Mask = () => {
     </Svg>
   );
 };
+
+const styles = StyleSheet.create({
+  wideContainer: {
+    position: 'relative',
+    flexDirection: 'row',
+    height: TOAST_ICON_SIZE,
+    width: SWAP_ICON_WIDTH,
+  },
+  chainImageContainer: {
+    position: 'absolute',
+    bottom: -4,
+    right: 10,
+    zIndex: 10,
+  },
+  imageContainer: {
+    borderRadius: 100,
+    overflow: 'hidden',
+  },
+  image: {
+    width: TOAST_ICON_SIZE,
+    height: TOAST_ICON_SIZE,
+  },
+  secondImageContainer: {
+    marginLeft: -SWAP_ICON_INTERSECT,
+    zIndex: 2,
+  },
+});

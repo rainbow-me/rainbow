@@ -126,7 +126,7 @@ export function ToastDebugSheet() {
                 current = [];
                 usePendingTransactionsStore.getState().clearPendingTransactions();
                 useToastStore.setState(() => ({
-                  dismissedToasts: new Set(),
+                  dismissedToasts: {},
                   hiddenToasts: {},
                   toasts: [],
                 }));

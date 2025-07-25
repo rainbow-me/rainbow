@@ -11,7 +11,7 @@ export type ToastState = {
   handleTransactions: (props: { transactions: RainbowTransaction[]; mints?: Mints }) => void;
   startRemoveToast: (id: string, via: 'swipe' | 'finish') => void;
   finishRemoveToast: (id: string) => void;
-  dismissedToasts: Set<string>;
+  dismissedToasts: Record<string, boolean>;
   showExpanded: boolean;
   setShowExpandedToasts: (show: boolean) => void;
 };
@@ -19,9 +19,9 @@ export type ToastState = {
 export const useToastStore = createRainbowStore<ToastState>(
   set => ({
     toasts: [],
-    // we're tracking dismissed toasts here so even if transactions update while we're removing
+    // we're tracking dismissed toasts here so if transactions update while we're removing
     // we don't re-add them back into the toast stack
-    dismissedToasts: new Set<string>(),
+    dismissedToasts: {},
     showExpanded: false,
     isShowingTransactionDetails: false,
 
@@ -46,7 +46,7 @@ export const useToastStore = createRainbowStore<ToastState>(
         for (const tx of transactions) {
           const id = txIdToToastId(tx);
           allToastIds.add(id);
-          if (state.dismissedToasts.has(id)) continue;
+          if (state.dismissedToasts[id]) continue;
 
           const existingToast = activeToasts.get(id);
 
@@ -71,8 +71,9 @@ export const useToastStore = createRainbowStore<ToastState>(
 
         // garbage collection, we only need to track dismissed for current transactions
         let dismissedToasts = state.dismissedToasts;
-        if (dismissedToasts.size > 20) {
-          dismissedToasts = new Set([...dismissedToasts].filter(id => allToastIds.has(id)));
+        const dismissedIds = Object.keys(dismissedToasts);
+        if (dismissedIds.length > 20) {
+          dismissedToasts = Object.fromEntries(dismissedIds.filter(id => allToastIds.has(id)).map(id => [id, true]));
         }
 
         // always put additions at top, and update index based on current order
@@ -101,7 +102,10 @@ export const useToastStore = createRainbowStore<ToastState>(
         }
 
         return {
-          dismissedToasts: new Set([...state.dismissedToasts, id]),
+          dismissedToasts: {
+            ...state.dismissedToasts,
+            [id]: true,
+          },
           toasts,
         };
       });
