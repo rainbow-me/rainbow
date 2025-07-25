@@ -257,7 +257,10 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
 
         const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
         const isDraggedFarEnough = Math.abs(event.translationX) > dismissThreshold;
-        const isDraggedFastEnough = Math.abs(velocityX) >= DISMISS_VELOCITY_THRESHOLD;
+        const isDraggedFastEnough =
+          Math.abs(velocityX) >=
+          // on emulator velocity is always far less, without this you can't swipe to dismiss
+          (isSimulator.value ? 5 : DISMISS_VELOCITY_THRESHOLD);
 
         if (isDraggedFarEnough && isDraggedFastEnough) {
           runOnJS(swipeRemoveToastCallback)();
