@@ -297,6 +297,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     transform: [{ translateY: -30 }],
+    opacity: 0.8,
   },
   gradientCircleContainer: {
     position: 'absolute',

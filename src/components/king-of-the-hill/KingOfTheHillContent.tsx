@@ -1,19 +1,21 @@
+import { ShimmerAnimation } from '@/components/animations';
+import hillImage from '@/components/king-of-the-hill/hill.png';
 import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
-import { useColorMode } from '@/design-system';
+import { useBackgroundColor, useColorMode } from '@/design-system';
 import { KingOfTheHill, KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';
 import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
-import { Skeleton } from '@/screens/points/components/Skeleton';
 import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore';
 import { LegendList, LegendListRef } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { memo, ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
 import { LaunchButton } from './LaunchButton';
@@ -69,8 +71,9 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
       if (tokenDominantColor) {
         const chillColor = makeColorMoreChill(tokenDominantColor);
         const adjustedColor = isDarkMode
-          ? chroma(chillColor).darken(3.5).desaturate(1.5).alpha(0.8).css()
-          : chroma(chillColor).brighten(2).desaturate(1.5).alpha(0.8).css();
+          ? // these are a bit tricky to get right, these values visually seem similar on light/dark
+            chroma(chillColor).darken(3).desaturate(1.25).css()
+          : chroma(chillColor).brighten(3).desaturate(1.7).css();
         setBackgroundColor(adjustedColor);
         onColorExtracted?.(adjustedColor);
       }
@@ -160,11 +163,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   let content: ReactNode = null;
 
   if (!kingOfTheHill && !kingOfTheHillLeaderBoard) {
-    content = (
-      <View style={[styles.skeletonContainer, { marginTop: topInset + 40 }]}>
-        <Skeleton width="100%" height={400} />
-      </View>
-    );
+    content = <KingOfTheHillLoading />;
   } else {
     content = (
       <LegendList
@@ -186,15 +185,68 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
 
   return (
     <View style={[styles.container, { backgroundColor: backgroundColor || undefined }]}>
+      <HillBackground scrollY={scrollY} />
       {content}
       <LaunchButton />
     </View>
   );
 });
 
+const HillBackground = memo(function HillBackground({ scrollY }: { scrollY: SharedValue<number> }) {
+  const { isDarkMode } = useColorMode();
+  const { top: topInset } = useSafeAreaInsets();
+  const { width: screenWidth } = Dimensions.get('window');
+  const hillWidth = Math.min(630, screenWidth);
+  const hillHeight = hillWidth * 0.7;
+  const hillImageHiddenByScrollY = 100;
+
+  const hillAnimatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(scrollY.value, [0, hillImageHiddenByScrollY], [1, 0], 'clamp');
+    const translateY = interpolate(scrollY.value, [0, hillImageHiddenByScrollY], [0, -30], 'clamp');
+    return {
+      opacity,
+      transform: [{ translateY }],
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          top: topInset + 80,
+          left: (screenWidth - hillWidth) / 2,
+          width: hillWidth,
+          height: hillHeight,
+        },
+        hillAnimatedStyle,
+      ]}
+    >
+      <FastImage
+        source={hillImage}
+        resizeMode="contain"
+        style={{ width: hillWidth, height: hillHeight, opacity: isDarkMode ? 0.3 : 0.8 }}
+      />
+    </Animated.View>
+  );
+});
+
+const KingOfTheHillLoading = () => {
+  const { isDarkMode } = useColorMode();
+  const fill = useBackgroundColor('fill');
+  const fillSecondary = useBackgroundColor('fillTertiary');
+
+  return (
+    <View style={[styles.skeletonContainer, { opacity: isDarkMode ? 0.2 : 1 }]}>
+      <ShimmerAnimation color={fill} gradientColor={fillSecondary} />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    zIndex: 2,
   },
   headerContainer: {
     borderRadius: 20,
@@ -206,6 +258,11 @@ const styles = StyleSheet.create({
   skeletonContainer: {
     borderRadius: 20,
     padding: 20,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   list: {
     zIndex: 1,

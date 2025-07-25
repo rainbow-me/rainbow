@@ -2,10 +2,9 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
-import hillImage from '@/components/king-of-the-hill/hill.png';
 import { KingOfTheHillContent } from '@/components/king-of-the-hill/KingOfTheHillContent';
 import { Navbar } from '@/components/navbar/Navbar';
-import { globalColors, Text, useColorMode } from '@/design-system';
+import { Text, useColorMode } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { usePrevious } from '@/hooks';
 import * as i18n from '@/languages';
@@ -17,9 +16,8 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useIsFocused } from '@react-navigation/native';
 import React, { memo, useEffect } from 'react';
-import { Dimensions, Keyboard, StyleSheet, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { Keyboard, StyleSheet, View } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
 
 export const KingOfTheHillScreen = () => {
   const { isDarkMode } = useColorMode();
@@ -38,43 +36,12 @@ export const KingOfTheHillScreen = () => {
     setBackgroundColor(color);
   }, []);
 
-  const { width: screenWidth } = Dimensions.get('window');
-  const hillWidth = screenWidth * 0.9;
-  const hillHeight = hillWidth * 0.7;
-  const hillImageHiddenByScrollY = 100;
-
-  const hillAnimatedStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(scrollY.value, [0, hillImageHiddenByScrollY], [1, 0], 'clamp');
-    const translateY = interpolate(scrollY.value, [0, hillImageHiddenByScrollY], [0, -30], 'clamp');
-    return {
-      opacity,
-      transform: [{ translateY }],
-    };
-  });
-
   return (
     <>
       <KeyboardDismissHandler />
       <SyncStoreEnabled />
 
-      <View style={{ flex: 1, backgroundColor: backgroundColor || (isDarkMode ? globalColors.grey100 : '#FBFCFD') }}>
-        {/* hill bg */}
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              top: 120,
-              left: (screenWidth - hillWidth) / 2,
-              width: hillWidth,
-              height: hillHeight,
-              zIndex: 0,
-            },
-            hillAnimatedStyle,
-          ]}
-        >
-          <FastImage source={hillImage} style={{ width: hillWidth, height: hillHeight }} />
-        </Animated.View>
-
+      <View style={{ flex: 1, backgroundColor: backgroundColor || 'transparent' }}>
         <Navbar
           scrollY={scrollY}
           testID="koth-header"
