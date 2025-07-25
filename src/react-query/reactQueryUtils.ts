@@ -7,6 +7,7 @@ import { RainbowError, logger } from '@/logger';
 import { persistOptions, queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { REACT_QUERY_STORAGE_ID } from '@/storage/legacy';
+import { getDateFormatter } from '@/helpers/intl';
 
 // ============ clearReactQueryCache =========================================== //
 
@@ -408,14 +409,14 @@ function logTop10BySize(sizeByType: Record<string, { totalSize: number; queries:
     if (report) logEntry.message += `Example Query Key: ${JSON.stringify(mostRecentQuery.queryKey)}\n`;
 
     if (mostRecentQuery.lastUpdated) {
-      const updatedAt = new Date(mostRecentQuery.lastUpdated).toLocaleString('en-US', {
+      const updatedAt = getDateFormatter('en-US', {
         day: '2-digit',
         hour: '2-digit',
         hour12: true,
         minute: '2-digit',
         month: 'short',
         year: 'numeric',
-      });
+      }).format(new Date(mostRecentQuery.lastUpdated));
       devLog(`Last Updated: ${updatedAt}`);
       if (report) logEntry.message += `Last Updated: ${updatedAt}\n`;
     }

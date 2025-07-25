@@ -14,6 +14,7 @@ import { colors } from '@/styles';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { MarketStats, TimeFrames, useTokenMarketStats } from '@/resources/metadata/tokenStats';
+import { getNumberFormatter } from '@/helpers/intl';
 
 const TIMEFRAME_SWITCH_CONFIG = TIMING_CONFIGS.buttonPressConfig;
 
@@ -193,23 +194,23 @@ const MarketStatsCardContent = memo(function MarketStatsCardContent({ marketData
     timeframe => {
       'worklet';
       const timeframeData = marketData[timeframe as TimeFrames];
-      transactions.value = timeframeData.transactions.toLocaleString('en-US', {
+      transactions.value = getNumberFormatter('en-US', {
         maximumFractionDigits: 2,
-      });
+      }).format(timeframeData.transactions);
 
       // TODO
       volume.value = '$' + abbreviateNumberWorklet(timeframeData.volume, 1);
 
-      makers.value = timeframeData.uniques.toLocaleString('en-US', {
+      makers.value = getNumberFormatter('en-US', {
         maximumFractionDigits: 2,
-      });
+      }).format(timeframeData.uniques);
 
-      buys.value = timeframeData.buys.toLocaleString('en-US', {
+      buys.value = getNumberFormatter('en-US', {
         maximumFractionDigits: 2,
-      });
-      sells.value = timeframeData.sells.toLocaleString('en-US', {
+      }).format(timeframeData.buys);
+      sells.value = getNumberFormatter('en-US', {
         maximumFractionDigits: 2,
-      });
+      }).format(timeframeData.sells);
 
       // TODO
       // This is the only section that requires a separate value for the non formatted value so that the ratio bar can be calculated
@@ -218,12 +219,12 @@ const MarketStatsCardContent = memo(function MarketStatsCardContent({ marketData
       buyVolume.value = timeframeData.buyVolume.toString();
       sellVolume.value = timeframeData.sellVolume.toString();
 
-      buyers.value = timeframeData.buyers.toLocaleString('en-US', {
+      buyers.value = getNumberFormatter('en-US', {
         maximumFractionDigits: 2,
-      });
-      sellers.value = timeframeData.sellers.toLocaleString('en-US', {
+      }).format(timeframeData.buyers);
+      sellers.value = getNumberFormatter('en-US', {
         maximumFractionDigits: 2,
-      });
+      }).format(timeframeData.sellers);
     }
   );
 

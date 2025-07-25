@@ -13,6 +13,7 @@ import { NeonButton } from '../../components/NeonButton';
 import { Paragraph } from '../../components/Paragraph';
 import { RainbowPointsFlowSteps, rainbowColors, textColors } from '../../constants';
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
+import { getNumberFormatter } from '@/helpers/intl';
 
 export const Calculate = () => {
   const {
@@ -165,7 +166,7 @@ export const Calculate = () => {
                   enableHapticTyping
                   hapticType="impactHeavy"
                   textAlign="right"
-                  textContent={(profile?.onboardPoints?.user.onboarding?.earnings?.total ?? 0).toLocaleString('en-US')}
+                  textContent={getNumberFormatter('en-US').format(profile?.onboardPoints?.user.onboarding?.earnings?.total ?? 0)}
                   onComplete={() => {
                     setShouldShowContinueButton(true);
                   }}

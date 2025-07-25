@@ -64,6 +64,7 @@ import { InfoCard } from '../components/InfoCard';
 import { LeaderboardRow } from '../components/LeaderboardRow';
 import { RewardsActionButton } from '../components/RewardsActionButton';
 import { Skeleton } from '../components/Skeleton';
+import { getNumberFormatter } from '@/helpers/intl';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -123,19 +124,19 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
     if (rankChange === undefined) return '';
     if (rankChange === 0) return i18n.t(i18n.l.points.points.no_change);
 
-    return Math.abs(rankChange).toLocaleString('en-US');
+    return getNumberFormatter('en-US').format(rankChange);
   };
 
   const getRankCardMainText = () => {
     if (!rank) return '';
-    return isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`;
+    return isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${getNumberFormatter('en-US').format(rank)}`;
   };
 
   const getEarnedLastWeekSubtitle = () => {
     if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.no_weekly_rank);
     if (lastPeriodRank <= 10) return i18n.t(i18n.l.points.points.top_10_earner);
     return i18n.t(i18n.l.points.points.ranking, {
-      rank: lastPeriodRank.toLocaleString('en-US'),
+      rank: getNumberFormatter('en-US').format(lastPeriodRank),
     });
   };
 
@@ -149,7 +150,7 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
               title={i18n.t(i18n.l.points.points.earned_last_week)}
               mainText={
                 lastPeriodEarnings
-                  ? `${lastPeriodEarnings.toLocaleString('en-US')} ${i18n.t(i18n.l.points.points.points_capitalized)}`
+                  ? `${getNumberFormatter('en-US').format(lastPeriodEarnings)} ${i18n.t(i18n.l.points.points.points_capitalized)}`
                   : undefined
               }
               placeholderMainText={i18n.t(i18n.l.points.points.zero_points)}
@@ -160,10 +161,10 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
             <InfoCard
               loading={isLoadingReferralsCard}
               title={i18n.t(i18n.l.points.points.referrals)}
-              mainText={qualifiedReferees ? qualifiedReferees.toLocaleString('en-US') : undefined}
+              mainText={qualifiedReferees ? getNumberFormatter('en-US').format(qualifiedReferees) : undefined}
               placeholderMainText={i18n.t(i18n.l.points.points.none)}
               icon="􀇯"
-              subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points_capitalized)}`}
+              subtitle={`${getNumberFormatter('en-US').format(referralsEarnings ?? 0)} ${i18n.t(i18n.l.points.points.points_capitalized)}`}
               accentColor={yellow}
             />
             <InfoCard
@@ -670,7 +671,8 @@ export function PointsContent() {
     setIsRefreshing(false);
   }, [dataUpdatedAt, refetch]);
 
-  const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString('en-US');
+  const totalPointsString =
+    points?.points?.user?.earnings?.total != null ? getNumberFormatter('en-US').format(points.points.user.earnings.total) : undefined;
 
   const rank = points?.points?.user.stats.position.current;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
@@ -913,7 +915,7 @@ export function PointsContent() {
                           </Text>
                         </Box>
                         <Text color={isUnranked ? 'labelQuaternary' : 'label'} size="17pt" weight="heavy">
-                          {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`}
+                          {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${getNumberFormatter('en-US').format(rank)}`}
                         </Text>
                       </Box>
                     </Box>

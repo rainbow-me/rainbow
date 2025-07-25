@@ -3,6 +3,7 @@ import currency from 'currency.js';
 import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@/references';
 import { divWorklet, lessThanWorklet, orderOfMagnitudeWorklet, powWorklet } from '@/safe-math/SafeMath';
+import { getNumberFormatter } from '@/helpers/intl';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -271,11 +272,11 @@ export const handleSignificantDecimalsWorklet = (value: number | string, decimal
     dec = Math.min(decimals, buffer);
   }
 
-  return Number(value).toLocaleString('en-US', {
-    useGrouping: true,
-    minimumFractionDigits: Math.min(2, dec),
+  return getNumberFormatter('en-US', {
     maximumFractionDigits: dec,
-  });
+    minimumFractionDigits: Math.min(2, dec),
+    useGrouping: true,
+  }).format(Number(value));
 };
 
 export const handleSignificantDecimals = (
@@ -460,11 +461,11 @@ export const convertAmountToNativeDisplayWorklet = (
 
   const nativeValue = thresholdReached
     ? threshold
-    : valueNumber.toLocaleString('en-US', {
-        useGrouping: true,
-        minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
+    : getNumberFormatter('en-US', {
         maximumFractionDigits: decimals,
-      });
+        minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
+        useGrouping: true,
+      }).format(valueNumber);
 
   const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' || ignoreAlignment ? symbol : ''}${nativeValue}${!ignoreAlignment && alignment === 'right' ? symbol : ''}`;
 

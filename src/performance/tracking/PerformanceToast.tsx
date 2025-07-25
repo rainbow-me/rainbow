@@ -12,6 +12,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { isDarkTheme } from '@/theme/ThemeContext';
 import { time } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { getNumberFormatter } from '@/helpers/intl';
 
 let shouldCollectStats = !IS_TEST && getExperimetalFlag(PERFORMANCE_TOAST);
 
@@ -115,7 +116,7 @@ export async function showPerformanceToast(results: Record<string, number>) {
     .map(([metric, data], index) => {
       const duration = Math.round(data.duration);
       const emojiForIndex = index === 0 ? '🦦' : index === 1 ? '🥉' : index === 2 ? '🥈' : '🥇';
-      return `${emojiForIndex}  ${metric.replace('Performance ', '').replace('To', 'to').replace('Root App', 'Root')}: ${duration.toLocaleString()}ms`;
+      return `${emojiForIndex}  ${metric.replace('Performance ', '').replace('To', 'to').replace('Root App', 'Root')}: ${getNumberFormatter().format(duration)}ms`;
     })
     .join('\n')
     .trim();
