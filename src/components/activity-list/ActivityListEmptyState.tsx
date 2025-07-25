@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,11 +17,15 @@ const Container = styled(Column)({
 
 type ActivityListEmptyStateProps = {
   children?: React.ReactNode;
-  emoji: string;
-  label: string;
+  emoji?: string;
+  label?: string;
 };
 
-const ActivityListEmptyState = ({ children, emoji, label }: ActivityListEmptyStateProps) => {
+const ActivityListEmptyState = ({
+  children,
+  emoji = '🏝',
+  label = lang.t('activity_list.empty_state.default_label'),
+}: ActivityListEmptyStateProps) => {
   const { top: topInset } = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
 
@@ -50,16 +53,6 @@ const ActivityListEmptyState = ({ children, emoji, label }: ActivityListEmptySta
       </Container>
     </View>
   );
-};
-
-ActivityListEmptyState.propTypes = {
-  emoji: PropTypes.string,
-  label: PropTypes.string,
-};
-
-ActivityListEmptyState.defaultProps = {
-  emoji: '🏝',
-  label: lang.t('activity_list.empty_state.default_label'),
 };
 
 export default ActivityListEmptyState;

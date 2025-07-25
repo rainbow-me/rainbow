@@ -1,7 +1,7 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useRef } from 'react';
-import { Image } from 'react-native-image-crop-picker';
+import { ImagePickerAsset } from 'expo-image-picker';
 import { useRecoilValue } from 'recoil';
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
@@ -379,14 +379,17 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
   };
 };
 
-async function uploadRecordImages(records: Partial<Records> | undefined, imageMetadata: { avatar?: Image; header?: Image }) {
+async function uploadRecordImages(
+  records: Partial<Records> | undefined,
+  imageMetadata: { avatar?: ImagePickerAsset; header?: ImagePickerAsset }
+) {
   const uploadRecordImage = async (key: 'avatar' | 'header') => {
     if ((records?.[key]?.startsWith('~') || records?.[key]?.startsWith('file')) && imageMetadata[key]) {
       try {
         const { url } = await uploadImage({
-          filename: imageMetadata[key]?.filename || '',
-          mime: imageMetadata[key]?.mime || '',
-          path: imageMetadata[key]?.path || '',
+          filename: imageMetadata[key]?.fileName || '',
+          mime: imageMetadata[key]?.mimeType || '',
+          path: imageMetadata[key]?.uri || '',
         });
         return url;
       } catch (error) {

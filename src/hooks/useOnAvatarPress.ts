@@ -12,7 +12,7 @@ import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
 import lang from 'i18n-js';
 import { useCallback } from 'react';
-import { ImageOrVideo } from 'react-native-image-crop-picker';
+import { ImagePickerAsset } from 'expo-image-picker';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountAsset from './useAccountAsset';
 import useENSAvatar, { prefetchENSAvatar } from './useENSAvatar';
@@ -61,16 +61,13 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountAddress]);
 
   const processPhoto = useCallback(
-    (image: ImageOrVideo | null) => {
+    (image: ImagePickerAsset) => {
       const { selected: selectedWallet, wallets } = useWalletsStore.getState();
       if (!selectedWallet || !wallets) return;
 
-      const stringIndex = image?.path.indexOf('/tmp');
-      const imagePath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
-
       updateAccountInfo({
         address: accountAddress,
-        image: imagePath,
+        image: image.uri,
         walletId: selectedWallet.id,
       });
     },
@@ -86,8 +83,9 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
 
   const onAvatarChooseImage = useCallback(async () => {
     const image = await openPicker({
-      cropperCircleOverlay: true,
-      cropping: true,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
     });
     if (!image) return;
     processPhoto(image);

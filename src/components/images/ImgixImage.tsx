@@ -97,19 +97,27 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
 
     const Component = maybeComponent || (shouldUseFasterImage ? FasterImageView : FastImage);
 
-    const conditionalProps = shouldUseFasterImage
-      ? {
-          key: `${typeof source === 'object' && source.uri ? source.uri : ''}` || undefined,
-          onError: this.props.onError,
-          onLoad: undefined,
-          onSuccess: this.props.onLoad,
-        }
-      : {
-          key: `${typeof source === 'object' && source.uri ? source.uri : JSON.stringify(source)}-${retryCount}`,
-          onError: this.handleError,
-        };
-
-    return <Component {...props} {...conditionalProps} source={source} />;
+    if (shouldUseFasterImage) {
+      return (
+        <Component
+          {...props}
+          key={`${typeof source === 'object' && source.uri ? source.uri : ''}` || undefined}
+          onError={this.props.onError}
+          onLoad={undefined}
+          onSuccess={this.props.onLoad}
+          source={source}
+        />
+      );
+    } else {
+      return (
+        <Component
+          {...props}
+          key={`${typeof source === 'object' && source.uri ? source.uri : JSON.stringify(source)}-${retryCount}`}
+          onError={this.handleError}
+          source={source}
+        />
+      );
+    }
   }
 }
 
@@ -131,13 +139,12 @@ const ImgixImageWithForwardRef = React.forwardRef((props: MergedImgixImageProps,
   <ImgixImage forwardedRef={ref} {...props} />
 ));
 
-const { cacheControl, clearDiskCache, clearMemoryCache, contextTypes, priority, resizeMode } = FastImage;
+const { cacheControl, clearDiskCache, clearMemoryCache, priority, resizeMode } = FastImage;
 
 export default Object.assign(ImgixImageWithForwardRef, {
   cacheControl,
   clearDiskCache,
   clearMemoryCache,
-  contextTypes,
   preload,
   priority,
   resizeMode,

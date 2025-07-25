@@ -2,7 +2,6 @@ import ConditionalWrap from 'conditional-wrap';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Image } from 'react-native-image-crop-picker';
 import RadialGradient from 'react-native-radial-gradient';
 import { atom, useSetRecoilState } from 'recoil';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
@@ -14,8 +13,9 @@ import { useENSModifiedRegistration, useENSRegistration, useENSRegistrationForm,
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
+import { ImagePickerAsset } from 'expo-image-picker';
 
-export const coverMetadataAtom = atom<Image | undefined>({
+export const coverMetadataAtom = atom<ImagePickerAsset | undefined>({
   default: undefined,
   key: 'ens.coverMetadata',
 });
@@ -50,9 +50,9 @@ const RegistrationCover = ({
 
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
   const onChangeImage = useCallback(
-    ({ asset, image }: { asset?: UniqueAsset; image?: Image & { tmpPath?: string } }) => {
+    ({ asset, image }: { asset?: UniqueAsset; image?: ImagePickerAsset }) => {
       setCoverMetadata(image);
-      setCoverUrl(image?.tmpPath || asset?.images.highResUrl || asset?.images.lowResUrl || '');
+      setCoverUrl(image?.uri || asset?.images.highResUrl || asset?.images.lowResUrl || '');
 
       if (asset) {
         const standard = asset.standard || '';
@@ -66,13 +66,13 @@ const RegistrationCover = ({
             tokenId,
           }),
         });
-      } else if (image?.tmpPath) {
+      } else if (image?.uri) {
         // We want to disallow future avatar state changes (i.e. when upload successful)
         // to avoid avatar flashing (from temp URL to uploaded URL).
         setCoverUpdateAllowed(false);
         onBlurField({
           key: 'header',
-          value: image.tmpPath,
+          value: image.uri,
         });
       }
     },
@@ -83,7 +83,9 @@ const RegistrationCover = ({
 
   const { ContextMenu, handleSelectImage } = useSelectImageMenu({
     imagePickerOptions: {
-      cropping: true,
+      allowsEditing: true,
+      aspect: [3, 1],
+      quality: 1,
       height: 500,
       width: 1500,
     },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import wait from 'w2t';
 
@@ -8,7 +8,6 @@ import { SheetHandle } from '@/components/sheet';
 import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
-import { IS_IOS } from '@/env';
 import { Box, Text, Separator, useForegroundColor, useBackgroundColor } from '@/design-system';
 import { getProviders } from '@/resources/f2c';
 import Skeleton from '@/components/skeleton/Skeleton';
@@ -24,7 +23,6 @@ import * as lang from '@/languages';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const deviceHeight = deviceUtils.dimensions.height;
-const statusBarHeight = StatusBar.currentHeight || 0;
 
 const providerComponents = {
   [FiatProviderName.Ramp]: Ramp,
@@ -38,7 +36,7 @@ export function AddCashSheet() {
   const accountAddress = useAccountAddress();
   const borderColor = useForegroundColor('separatorTertiary');
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
-  const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;
+  const sheetHeight = deviceHeight - insets.top;
 
   const {
     isLoading,
@@ -81,7 +79,7 @@ export function AddCashSheet() {
     <Box
       background="surfaceSecondary"
       height={{ custom: sheetHeight }}
-      top={{ custom: IS_IOS ? insets.top : statusBarHeight }}
+      top={{ custom: insets.top }}
       width="full"
       alignItems="center"
       overflow="hidden"

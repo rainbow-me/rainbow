@@ -1,6 +1,6 @@
-import { Canvas, Fill, Group, LinearGradient, Path, Rect, Shadow, vec } from '@shopify/react-native-skia';
+import { Canvas, DrawingNodeProps, Fill, Group, LinearGradient, Path, Rect, Shadow, SkiaProps, vec } from '@shopify/react-native-skia';
 import { getSvgPath } from 'figma-squircle';
-import React, { ReactNode, memo, useMemo } from 'react';
+import React, { ReactElement, ReactNode, memo, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { convertToRGBA } from 'react-native-reanimated';
 import { useDeepCompareMemo } from 'use-deep-compare';
@@ -23,7 +23,7 @@ export type SkiaCardProps = {
   onPress?: () => void;
   scaleTo?: number;
   shadowColor?: ValueByTheme<string>;
-  skiaBackground?: ReactNode;
+  skiaBackground?: ReactElement<SkiaProps<DrawingNodeProps>>;
   skiaForeground?: ReactNode;
   strokeOpacity?: { start: number; end: number };
   width?: number;
@@ -82,12 +82,8 @@ export const SkiaCard = memo(function SkiaCard({
       <View style={styles.shadowLayer} />
       <View style={styles.innerContainer}>
         <Canvas style={styles.canvas}>
-          <Group
-            clip={backgroundRect}
-            layer={
-              skiaBackground ? <Fill clip={backgroundRect}>{skiaBackground}</Fill> : <Fill clip={backgroundRect} color={backgroundColor} />
-            }
-          >
+          <Group clip={backgroundRect}>
+            {skiaBackground ?? <Fill color={backgroundColor} />}
             <CardHighlights
               height={height}
               innerShadowColor={styles.innerShadowColor}
@@ -97,7 +93,7 @@ export const SkiaCard = memo(function SkiaCard({
               strokePath={strokePath}
               width={width}
             />
-            {skiaForeground && skiaForeground}
+            {skiaForeground}
           </Group>
         </Canvas>
       </View>

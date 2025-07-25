@@ -1,31 +1,17 @@
-import { ColorValue, StatusBar, StatusBarAnimation } from 'react-native';
-
-export const setTranslucent = (translucent: boolean): void => {
-  StatusBar.setTranslucent(translucent);
-};
+import { SystemBars } from 'react-native-edge-to-edge';
 
 export const setInitialSettings = (): void => {
-  StatusBar.setBackgroundColor('transparent', false);
-  StatusBar.setTranslucent(true);
-  StatusBar.setBarStyle('dark-content', true);
-};
-export const setBackgroundColor = (color: ColorValue, animated?: boolean): void => {
-  StatusBar.setBackgroundColor(color, animated);
-};
-export const setHidden = (hidden: boolean, animation?: StatusBarAnimation): void => {
-  StatusBar.setHidden(hidden, animation);
+  SystemBars.setStyle({ statusBar: 'dark' });
 };
 
-export const setLightContent = (isAnimated = true) => {
-  StatusBar.pushStackEntry({
-    animated: isAnimated,
-    barStyle: 'light-content',
-  });
+export const setHidden = (hidden: boolean): void => {
+  SystemBars.setHidden({ statusBar: hidden });
 };
 
-export const setDarkContent = (isAnimated = true) => {
-  StatusBar.pushStackEntry({
-    animated: isAnimated,
-    barStyle: 'dark-content',
-  });
+export const setLightContent = () => {
+  SystemBars.setStyle({ statusBar: 'light' });
+};
+
+export const setDarkContent = () => {
+  SystemBars.setStyle({ statusBar: 'dark' });
 };
