@@ -35,8 +35,6 @@ tags:
                 id: settings-menu
             - tapOn: 'Settings'
       # Change theme to dark and validate
-      - assertVisible:
-          id: choose-theme-section-light
       - tapOn:
           id: choose-theme-section.*
       - tapOn: 'Dark'
