@@ -14,7 +14,7 @@ export const TOAST_TOP_OFFSET = 10;
 export const TOAST_INITIAL_OFFSET_ABOVE = -80;
 export const TOAST_INITIAL_OFFSET_BELOW = 10;
 export const TOAST_DONE_HIDE_TIMEOUT_MS = time.seconds(4);
-export const TOAST_HIDE_TIMEOUT_MS = time.seconds(30); // max time to show a toast
+export const TOAST_HIDE_TIMEOUT_MS = time.seconds(120); // max time to show a toast
 
 // make dismissing easier (lower) or harder (higher)
 export const TOAST_EXPANDED_DISMISS_SENSITIVITY = 0.5;

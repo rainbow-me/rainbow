@@ -69,13 +69,13 @@ export const useToastStore = createRainbowStore<ToastState>(
           }
         }
 
-        // just some garbage collection, we only need to track dismissed for current transactions
+        // garbage collection, we only need to track dismissed for current transactions
         let dismissedToasts = state.dismissedToasts;
         if (dismissedToasts.size > 20) {
           dismissedToasts = new Set([...dismissedToasts].filter(id => allToastIds.has(id)));
         }
 
-        // we always put additions at top, and update index based on current order
+        // always put additions at top, and update index based on current order
         const toasts = [...additions, ...activeToasts.values()].map((toast, index) => ({ ...toast, index }));
 
         return {

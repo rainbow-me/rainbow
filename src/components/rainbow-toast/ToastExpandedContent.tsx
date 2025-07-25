@@ -32,7 +32,7 @@ export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
 function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }) {
   const icon = <ContractToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
   const title = toast.name;
-  const subtitle = getStatusLabel(toast.status);
+  const subtitle = getStatusLabel(toast);
   const isLoading = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
   return (
     <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />
@@ -42,7 +42,7 @@ function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }
 function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
   const title = `${toast.token}`;
   const isLoading = toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending;
-  const subtitle = getStatusLabel(toast.status);
+  const subtitle = getStatusLabel(toast);
 
   return (
     <ToastExpandedContentDisplay
@@ -59,7 +59,7 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
   const { transaction } = toast;
 
   const title = getSwapToastNetworkLabel({ toast });
-  const subtitle = getStatusLabel(toast.status);
+  const subtitle = getStatusLabel(toast);
   const isSwapped = toast.status === TransactionStatus.swapped;
   const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
 
@@ -123,7 +123,7 @@ function ToastExpandedContentDisplay({
 function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTransaction }) {
   const colors = useToastColors();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const [topValue, bottomValueIn] = activityValues(transaction, nativeCurrency) ?? [];
+  const [topValueIn, bottomValueIn] = activityValues(transaction, nativeCurrency) ?? [];
 
   const bottomValueWithoutSymbol = useMemo(() => {
     return bottomValueIn
@@ -134,9 +134,17 @@ function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTr
       .join(' ');
   }, [bottomValueIn]);
 
-  if (!topValue && !bottomValueWithoutSymbol) {
-    return null;
-  }
+  const topValue = (() => {
+    if (topValueIn) {
+      return topValueIn;
+    }
+    if (transaction.type === 'send' && transaction.asset?.symbol && transaction.amount) {
+      return `- ${transaction.amount} ${transaction.asset.symbol}`;
+    }
+    return '';
+  })();
+
+  console.log('transaction', topValue, JSON.stringify(transaction, null, 2));
 
   return (
     <View style={styles.valueSection}>
@@ -197,7 +205,7 @@ const styles = StyleSheet.create({
     marginTop: -10,
   },
   valueSection: {
-    maxWidth: '33%',
+    maxWidth: '38%',
     flexDirection: 'column',
     minHeight: '100%',
     gap: 12,

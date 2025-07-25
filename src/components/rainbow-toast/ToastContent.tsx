@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
 });
 
 function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
-  const title = getStatusLabel(toast.status);
+  const title = getStatusLabel(toast);
   const subtitle = getSwapToastNetworkLabel({ toast });
   return (
     <ToastContentDisplay
@@ -112,7 +112,7 @@ export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap })
 };
 
 function SendToastContent({ toast }: { toast: RainbowToastSend }) {
-  const title = getStatusLabel(toast.status);
+  const title = getStatusLabel(toast);
   const subtitle = toast.displayAmount;
 
   return (
@@ -128,7 +128,7 @@ function SendToastContent({ toast }: { toast: RainbowToastSend }) {
 
 function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
   const icon = <ContractToastIcon toast={toast} />;
-  const title = getStatusLabel(toast.status);
+  const title = getStatusLabel(toast);
   const subtitle = toast.name;
 
   return (
@@ -141,6 +141,13 @@ function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
   );
 }
 
-export const getStatusLabel = (status: TransactionStatus): string => {
-  return allTransactionStatuses[status] || i18n.t(i18n.l.toasts.statuses.unknown);
+export const getStatusLabel = (toast: RainbowToast): string => {
+  // for swap/send we set the "pending" label to be the more active name, swapping/sending
+  if (toast.type === 'swap' && toast.status === TransactionStatus.pending) {
+    return allTransactionStatuses.swapping;
+  }
+  if (toast.type === 'send' && toast.status === TransactionStatus.pending) {
+    return allTransactionStatuses.sending;
+  }
+  return allTransactionStatuses[toast.status] || i18n.t(i18n.l.toasts.statuses.unknown);
 };
