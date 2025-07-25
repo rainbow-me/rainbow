@@ -5,8 +5,7 @@
       "Bash(grep:*)",
       "Bash(done)",
       "Bash(yarn lint:*)",
-      "Bash(yarn graphql-codegen:*)",
-      "Bash(rm:*)"
+      "Bash(yarn graphql-codegen:*)"
     ],
     "deny": []
   }
