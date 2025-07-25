@@ -81,7 +81,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     }
   }, [tokenDominantColor, isDarkMode, onColorExtracted]);
 
-  const listData = useMemo(() => {
+  const listData = useMemo((): ListItem[] => {
     if (!kingOfTheHillLeaderBoard || !kingOfTheHill) {
       return [];
     }
@@ -100,7 +100,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
         } satisfies ListItem;
       });
 
-    const data: ListItem[] = [
+    return [
       {
         type: 'header',
         data: kingOfTheHill,
@@ -112,8 +112,6 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
       // ...rankedItems.slice(4),
       { type: 'bottom-pad' },
     ];
-
-    return data;
   }, [kingOfTheHill, kingOfTheHillLeaderBoard]);
 
   const renderItem = useCallback(
