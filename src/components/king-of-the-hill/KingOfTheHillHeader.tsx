@@ -301,6 +301,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
+    transform: [{ translateY: -30 }],
   },
   gradientCircleContainer: {
     position: 'absolute',
@@ -314,7 +315,7 @@ const styles = StyleSheet.create({
   },
   crown: {
     position: 'absolute',
-    top: 7,
+    top: 10,
     left: TOKEN_SIZE / 2 + 20,
     width: 35,
     height: 35,
