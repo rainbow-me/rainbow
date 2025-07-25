@@ -48,19 +48,6 @@ index 1b556f6..8cd4fcb 100644
  #endif
      [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
    }
-diff --git a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
-index 7f4f188..5d96d66 100644
---- a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
-+++ b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
-@@ -527,7 +527,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
-     };
-   }, [areAnimationsActive]);
- 
--  checkSharedValueUsage(initial.value);
-+  if (__DEV__) checkSharedValueUsage(initial.value);
- 
-   const animatedStyleHandle = useRef<
-     AnimatedStyleHandle<Style> | JestAnimatedStyleHandle<Style> | null
 diff --git a/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts b/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts
 index 375da59..3566819 100644
 --- a/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts
@@ -81,6 +68,19 @@ index 375da59..3566819 100644
  }
  export interface InterpolateConfig {
      inputRange: readonly number[];
+diff --git a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+index 7f4f188..5d96d66 100644
+--- a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
++++ b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+@@ -527,7 +527,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
+     };
+   }, [areAnimationsActive]);
+ 
+-  checkSharedValueUsage(initial.value);
++  if (__DEV__) checkSharedValueUsage(initial.value);
+ 
+   const animatedStyleHandle = useRef<
+     AnimatedStyleHandle<Style> | JestAnimatedStyleHandle<Style> | null
 diff --git a/node_modules/react-native-reanimated/src/interpolateColor.ts b/node_modules/react-native-reanimated/src/interpolateColor.ts
 index f7987b0..83e6c63 100644
 --- a/node_modules/react-native-reanimated/src/interpolateColor.ts
@@ -403,6 +403,83 @@ index 0000000..511f65f
 +    toRgb: convertLrgbToRgb,
 +  },
 +};
+diff --git a/node_modules/react-native-reanimated/src/mutables.ts b/node_modules/react-native-reanimated/src/mutables.ts
+index 4a05b56..7016d3a 100644
+--- a/node_modules/react-native-reanimated/src/mutables.ts
++++ b/node_modules/react-native-reanimated/src/mutables.ts
+@@ -6,7 +6,7 @@ import { logger } from './logger';
+ import { isFirstReactRender, isReactRendering } from './reactUtils';
+ import { shareableMappingCache } from './shareableMappingCache';
+ import { makeShareableCloneRecursive } from './shareables';
+-import { executeOnUIRuntimeSync, runOnUI } from './threads';
++import {  executeOnUIRuntimeSync, runOnJS, runOnUI } from './threads';
+ import { valueSetter } from './valueSetter';
+ 
+ const SHOULD_BE_USE_WEB = shouldBeUseWeb();
+@@ -94,10 +94,11 @@ function hideInternalValueProp<Value>(mutable: PartialMutable<Value>) {
+   });
+ }
+ 
+-export function makeMutableUI<Value>(initial: Value): Mutable<Value> {
++export function makeMutableUI<Value>(initial: Value, setIsDirty?: () => void): Mutable<Value> {
+   'worklet';
+   const listeners = new Map<number, Listener<Value>>();
+   let value = initial;
++  let isDirty = false;
+ 
+   const mutable: PartialMutable<Value> = {
+     get value() {
+@@ -114,6 +115,10 @@ export function makeMutableUI<Value>(initial: Value): Mutable<Value> {
+       listeners.forEach((listener) => {
+         listener(newValue);
+       });
++      if (setIsDirty && !isDirty && value !== initial) {
++        isDirty = true;
++        runOnJS(setIsDirty)();
++      }
+     },
+     modify: (modifier, forceUpdate = true) => {
+       valueSetter(
+@@ -140,23 +145,34 @@ export function makeMutableUI<Value>(initial: Value): Mutable<Value> {
+ }
+ 
+ function makeMutableNative<Value>(initial: Value): Mutable<Value> {
++  let isDirty = false;
++
++  const setIsDirty = () => {
++    isDirty = true;
++  }
++
+   const handle = makeShareableCloneRecursive({
+     __init: () => {
+       'worklet';
+-      return makeMutableUI(initial);
++      return makeMutableUI(initial, setIsDirty);
+     },
+   });
+ 
+   const mutable: PartialMutable<Value> = {
+     get value(): Value {
+       checkInvalidReadDuringRender();
+-      const uiValueGetter = executeOnUIRuntimeSync((sv: Mutable<Value>) => {
+-        return sv.value;
+-      });
+-      return uiValueGetter(mutable as Mutable<Value>);
++      if (isDirty) {
++        const uiValueGetter = executeOnUIRuntimeSync((sv: Mutable<Value>) => {
++          return sv.value;
++        });
++        return uiValueGetter(mutable as Mutable<Value>);
++      } else {
++        return initial;
++      }
+     },
+     set value(newValue) {
+       checkInvalidWriteDuringRender();
++      isDirty = true;
+       runOnUI(() => {
+         mutable.value = newValue;
+       })();
 diff --git a/node_modules/react-native-reanimated/src/oklab.ts b/node_modules/react-native-reanimated/src/oklab.ts
 new file mode 100644
 index 0000000..fc599e1
