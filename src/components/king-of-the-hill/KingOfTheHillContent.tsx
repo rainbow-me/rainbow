@@ -109,7 +109,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
         data: kingOfTheHill,
       },
       ...rankedItems,
-      // disabled until backend data available:
+      // to show past winners section (disabled until backend data available)
       // ...rankedItems.slice(0, 3),
       // { type: 'past-winners' },
       // ...rankedItems.slice(4),
