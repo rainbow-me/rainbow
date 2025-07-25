@@ -35,7 +35,8 @@ const SECONDS_PER_HOUR = 60 * 60;
 export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const current = kingOfTheHill?.current;
   const lastWinner = kingOfTheHill?.lastWinner;
-  const { token } = current || {};
+
+  const { token: currentWinningToken } = current || {};
   const { width: deviceWidth } = useWindowDimensions();
 
   const navigateToLastWinner = () => {
@@ -52,15 +53,15 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
   };
 
   const navigateToToken = () => {
-    if (!token) return;
+    if (!currentWinningToken) return;
     Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
-      asset: token,
-      address: token.address,
-      chainId: token.chainId,
+      asset: currentWinningToken,
+      address: currentWinningToken.address,
+      chainId: currentWinningToken.chainId,
     });
   };
 
-  const sizedIconUrl = getSizedImageUrl(token?.iconUrl, 160);
+  const sizedIconUrl = getSizedImageUrl(currentWinningToken?.iconUrl, 160);
   const lastWinnerIconUrl = lastWinner ? getSizedImageUrl(lastWinner.token.iconUrl, 16) : null;
   const dominantColor = usePersistentDominantColorFromImage(sizedIconUrl);
   const initialSecondsRemaining = current?.window?.secondsRemaining || 0;
@@ -89,21 +90,24 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
     return null;
   }
 
+  if (!currentWinningToken) {
+    return null;
+  }
+
   const hours = Math.floor(secondsRemaining / SECONDS_PER_HOUR);
   const minutes = Math.floor((secondsRemaining % SECONDS_PER_HOUR) / 60);
   const timeRemaining = `${hours}h ${minutes}m`;
 
-  if (!token) {
-    return null;
-  }
+  const priceChange = formatPriceChange(currentWinningToken.price?.relativeChange24h);
+  const currentPrice = currentWinningToken.price?.value ? formatCurrency(currentWinningToken.price.value) : 'N/A';
 
-  const priceChange = formatPriceChange(token.price?.relativeChange24h);
-  const currentPrice = token.price?.value ? formatCurrency(token.price.value) : 'N/A';
   const volumeValue = current.rankingDetails?.windowTradingVolume;
   const volume = volumeValue ? `$${abbreviateNumber(parseFloat(volumeValue), 1)}` : 'N/A';
-  const marketCapValue = token.marketCap;
+
+  const marketCapValue = currentWinningToken.marketCap;
   const marketCap = marketCapValue ? `$${abbreviateNumber(marketCapValue, 1)}` : 'N/A';
-  const creatorAddress = token.rainbowTokenDetails?.onchainData?.creatorAddress;
+
+  const creatorAddress = currentWinningToken.rainbowTokenDetails?.onchainData?.creatorAddress;
 
   return (
     <View style={styles.headerContainer}>
@@ -135,7 +139,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
 
         {/* chain image */}
         <View style={styles.chainImageContainer}>
-          <ChainImage chainId={token.chainId} size={26} position="absolute" style={styles.chainImageShadow} />
+          <ChainImage chainId={currentWinningToken.chainId} size={26} position="absolute" style={styles.chainImageShadow} />
         </View>
 
         <Image source={crownImage} style={styles.crown} />
@@ -156,7 +160,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
       <ButtonPressAnimation onPress={navigateToToken} scaleTo={0.96}>
         <View style={styles.symbolPriceContainer}>
           <Text color="label" size="20pt" weight="heavy">
-            {token.symbol}
+            {currentWinningToken.symbol}
           </Text>
           <Text color={getPriceChangeColor(priceChange)} size="17pt" weight="bold">
             {priceChange}
@@ -210,7 +214,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
             // maxWidth = how it works 120px + last winner outer content 130px + side pad 20px * 2 + gap between 20px
             <View style={{ maxWidth: deviceWidth - (120 + 130 + 20 * 2 + 20), marginRight: 8 }}>
               <Text color="labelTertiary" size="13pt" weight="bold" ellipsizeMode="tail" numberOfLines={1}>
-                {token.symbol}
+                {lastWinner.token.symbol}
               </Text>
             </View>
           )}
