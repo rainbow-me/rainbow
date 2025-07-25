@@ -34,7 +34,7 @@ function getSendToastStatus(status: TransactionStatus): keyof typeof RainbowToas
   return null;
 }
 
-export const txIdToToastId = (tx: RainbowTransaction) => tx.hash + (tx.address || tx.asset?.address) + (tx.chainId || tx.asset?.chainId);
+export const txIdToToastId = (tx: RainbowTransaction) => tx.hash + (tx.chainId || tx.asset?.chainId);
 
 export function getToastFromTransaction({
   transaction: tx,
@@ -45,6 +45,16 @@ export function getToastFromTransaction({
   existingToast?: RainbowToast;
   mints?: Mints;
 }): RainbowToast | null {
+  // in the case of updates we only ever update the status
+  // this is because you can have contract-type toasts that change to swap on confirmation
+  // but we want to display them as contract-type and keep existing information
+  if (existingToast) {
+    return {
+      ...existingToast,
+      status: tx.status,
+    };
+  }
+
   if (tx.type === 'swap') {
     const status = getSwapToastStatus(tx.status);
     if (status) {
@@ -105,10 +115,6 @@ export function getToastFromTransaction({
 
   const mint = tx.type === 'mint' ? mints?.find(mint => mint.contractAddress === tx.hash) : null;
 
-  if (existingToast && existingToast.type !== 'contract') {
-    throw new Error(`Toast type guard, should never hit`);
-  }
-
   return {
     id: txIdToToastId(tx),
     transaction: tx,
@@ -118,8 +124,8 @@ export function getToastFromTransaction({
     status: tx.status,
     // in the case of contracts, as it goes from pending to finalized it loses some information
     // we want to keep the existing image and name if possible, so defer to existing toast
-    name: existingToast?.name || tx.contract?.name || tx.title || 'NFT',
-    image: existingToast?.image || tx.contract?.iconUrl || mint?.imageURL || '',
+    name: tx.contract?.name || tx.title || 'NFT',
+    image: tx.contract?.iconUrl || mint?.imageURL || '',
     action: () => {
       Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
         transaction: tx,

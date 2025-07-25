@@ -142,10 +142,10 @@ function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTr
   return (
     <View style={styles.valueSection}>
       <Text ellipsizeMode="tail" numberOfLines={1} color={{ custom: colors.foregroundDim }} size="13pt" weight="medium">
-        {topValue || 'Pending'}
+        {topValue || ''}
       </Text>
       <Text ellipsizeMode="tail" numberOfLines={1} color={{ custom: colors.foreground }} size="15pt" weight="medium" align="right">
-        {bottomValueWithoutSymbol || '0 ETH'}
+        {bottomValueWithoutSymbol || ''}
       </Text>
     </View>
   );

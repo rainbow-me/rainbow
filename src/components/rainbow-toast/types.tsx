@@ -1,8 +1,8 @@
 import { RainbowTransaction, TransactionStatus } from '@/entities';
-import { RainbowToastSendStatuses, RainbowToastSwapStatuses } from './getToastFromTransaction';
 
 type BaseToast = {
   id: string;
+  status: TransactionStatus;
   transactionHash: string;
   chainId: number;
   transaction: RainbowTransaction;
@@ -14,7 +14,6 @@ type BaseToast = {
 
 export type RainbowToastSwap = BaseToast & {
   type: 'swap';
-  status: keyof typeof RainbowToastSwapStatuses;
   fromAssetSymbol: string;
   toAssetSymbol: string;
   fromAssetImage: string;
@@ -23,7 +22,6 @@ export type RainbowToastSwap = BaseToast & {
 
 export type RainbowToastSend = BaseToast & {
   type: 'send';
-  status: keyof typeof RainbowToastSendStatuses;
   displayAmount: string;
   token: string;
   tokenName: string;
@@ -31,7 +29,6 @@ export type RainbowToastSend = BaseToast & {
 
 export type RainbowToastContract = BaseToast & {
   type: 'contract';
-  status: TransactionStatus;
   name: string;
   image: string;
 };

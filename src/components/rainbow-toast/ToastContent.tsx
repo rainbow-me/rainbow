@@ -203,7 +203,6 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   if (toast.status === TransactionStatus.withdrew) {
     return i18n.t(i18n.l.toasts.contract.withdrew);
   }
-  console.log('wtf?', toast.status);
 
   return i18n.t(i18n.l.toasts.contract.pending);
 };

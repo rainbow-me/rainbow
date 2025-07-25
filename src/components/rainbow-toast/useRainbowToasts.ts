@@ -36,7 +36,7 @@ export const useToastStore = createRainbowStore<ToastState>(
     handleTransactions: ({ transactions, mints }) => {
       set(state => {
         const activeToasts = new Map<string, RainbowToast>(state.toasts.map(t => [t.id, t]));
-        const nextActiveToastIds = new Set<string>();
+        const allToastIds = new Set<string>();
         const additions: RainbowToast[] = [];
 
         // we can have both pending + confirmed in transactions at the same time
@@ -44,21 +44,21 @@ export const useToastStore = createRainbowStore<ToastState>(
         // pending will always be before the confirmed so lets grab the last of each
         for (const tx of transactions) {
           const id = txIdToToastId(tx);
+          allToastIds.add(id);
+          if (state.dismissedToasts.has(id)) continue;
+
           const existingToast = activeToasts.get(id);
           const toast = getToastFromTransaction({ transaction: tx, mints, existingToast });
           if (!toast) continue;
-          if (state.dismissedToasts.has(toast.id)) continue;
-
-          // if already removing never update
-          if (existingToast?.isRemoving) continue;
 
           if (existingToast) {
+            // if already removing never update
+            if (existingToast.isRemoving) continue;
             // update
             activeToasts.set(toast.id, { ...existingToast, ...toast });
           } else {
             // we only add if it's pending or contract_interaction
             if (tx.status === TransactionStatus.pending || tx.status === TransactionStatus.contract_interaction) {
-              nextActiveToastIds.add(toast.id);
               additions.push(toast);
             }
           }
@@ -67,13 +67,11 @@ export const useToastStore = createRainbowStore<ToastState>(
         // just some garbage collection, we only need to track dismissed for current transactions
         let dismissedToasts = state.dismissedToasts;
         if (dismissedToasts.size > 20) {
-          dismissedToasts = new Set([...dismissedToasts].filter(id => nextActiveToastIds.has(id)));
+          dismissedToasts = new Set([...dismissedToasts].filter(id => allToastIds.has(id)));
         }
 
         // we always put additions at top, and update index based on current order
-        const toasts = [...additions, ...Object.values(activeToasts)].map((toast, index) => ({ ...toast, index }));
-
-        console.log('update toasts', JSON.stringify({ transactions, toasts }, null, 2));
+        const toasts = [...additions, ...activeToasts.values()].map((toast, index) => ({ ...toast, index }));
 
         return {
           toasts,
