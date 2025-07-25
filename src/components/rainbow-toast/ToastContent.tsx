@@ -7,8 +7,8 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
-import React from 'react';
-import { StyleSheet, Text as RNText, View } from 'react-native';
+import React, { memo } from 'react';
+import { Text as RNText, StyleSheet, View } from 'react-native';
 
 interface ToastContentProps {
   title: React.ReactNode;
@@ -18,7 +18,7 @@ interface ToastContentProps {
   type?: 'error';
 }
 
-export function ToastContent({ toast }: { toast: RainbowToast }) {
+export const ToastContent = memo(function ToastContent({ toast }: { toast: RainbowToast }) {
   if (toast.type === 'swap') {
     return <SwapToastContent toast={toast} />;
   }
@@ -29,8 +29,9 @@ export function ToastContent({ toast }: { toast: RainbowToast }) {
     return <ContractToastContent toast={toast} />;
   }
   return null;
-}
+});
 
+// used by each toast type to display their inner contents
 function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_ICON_SIZE }: ToastContentProps) {
   const colors = useToastColors();
 
@@ -67,7 +68,7 @@ function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_IC
   );
 }
 
-function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
+const SwapToastContent = memo(function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
   const title = getSwapToastStatusLabel({ toast });
   const subtitle = getSwapToastNetworkLabel({ toast });
   return (
@@ -79,7 +80,7 @@ function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
       subtitle={subtitle}
     />
   );
-}
+});
 
 export const getSwapToastStatusLabel = ({ toast }: { toast: RainbowToastSwap }) => {
   if (toast.status === TransactionStatus.failed) {
@@ -110,7 +111,7 @@ export const getSendToastStatusLabel = (toast: RainbowToastSend) => {
   return i18n.t(i18n.l.toasts.send.sending);
 };
 
-function SendToastContent({ toast }: { toast: RainbowToastSend }) {
+const SendToastContent = memo(function SendToastContent({ toast }: { toast: RainbowToastSend }) {
   const title = getSendToastStatusLabel(toast);
   const subtitle = toast.displayAmount;
 
@@ -123,7 +124,7 @@ function SendToastContent({ toast }: { toast: RainbowToastSend }) {
       type={toast.status === TransactionStatus.failed ? 'error' : undefined}
     />
   );
-}
+});
 
 // note: the only transactions not in here are "self"
 export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
@@ -199,10 +200,11 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   if (toast.status === TransactionStatus.withdrew) {
     return i18n.t(i18n.l.toasts.contract.withdrew);
   }
+
   return i18n.t(i18n.l.toasts.contract.pending);
 };
 
-function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
+const ContractToastContent = memo(function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
   const icon = <ContractToastIcon toast={toast} />;
   const title = getContractToastStatusLabel(toast);
   const subtitle = toast.name;
@@ -215,7 +217,7 @@ function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
       type={toast.status === TransactionStatus.failed ? 'error' : undefined}
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

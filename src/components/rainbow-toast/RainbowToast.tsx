@@ -48,6 +48,8 @@ export function RainbowToastDisplay() {
   const { toasts, isShowingTransactionDetails } = useToastStore();
   const { transactions } = useLatestAccountTransactions();
 
+  console.log('got trnasacdtions', JSON.stringify(transactions, null, 2));
+
   const showingTransactionDetails = useSharedValue(false);
 
   useEffect(() => {

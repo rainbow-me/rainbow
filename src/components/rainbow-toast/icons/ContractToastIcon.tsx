@@ -5,22 +5,41 @@ import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import type { RainbowToastContract } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { TransactionStatus } from '@/entities';
-import React from 'react';
+import React, { memo } from 'react';
 import { View } from 'react-native';
 
-export function ContractToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastContract; size?: number }) {
+const BORDER_RADIUS = 10;
+
+export const ContractToastIcon = memo(function ContractToastIcon({
+  toast,
+  size = TOAST_ICON_SIZE,
+}: {
+  toast: RainbowToastContract;
+  size?: number;
+}) {
   const colors = useToastColors();
 
   if (
+    toast.status === TransactionStatus.approved ||
+    toast.status === TransactionStatus.bridged ||
+    toast.status === TransactionStatus.cancelled ||
+    toast.status === TransactionStatus.confirmed ||
+    toast.status === TransactionStatus.deposited ||
+    toast.status === TransactionStatus.dropped ||
+    toast.status === TransactionStatus.launched ||
     toast.status === TransactionStatus.minted ||
+    toast.status === TransactionStatus.purchased ||
+    toast.status === TransactionStatus.received ||
+    toast.status === TransactionStatus.sent ||
+    toast.status === TransactionStatus.sold ||
     toast.status === TransactionStatus.swapped ||
-    toast.status === TransactionStatus.confirmed
+    toast.status === TransactionStatus.withdrew
   ) {
-    return <ToastSFSymbolIcon borderRadius={10} name="check" />;
+    return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="check" />;
   }
 
   if (toast.status === TransactionStatus.failed) {
-    return <ToastSFSymbolIcon borderRadius={10} name="exclamationMark" />;
+    return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="exclamationMark" />;
   }
 
   return (
@@ -40,4 +59,4 @@ export function ContractToastIcon({ toast, size = TOAST_ICON_SIZE }: { toast: Ra
       )}
     </View>
   );
-}
+});
