@@ -17,11 +17,11 @@ export const RainbowGlow = memo(function RainbowGlow({ size }: RainbowGlowProps)
       <Group
         layer={
           <Paint>
-            <Blur blur={20} />
+            <Blur blur={25} />
           </Paint>
         }
         // skew it downwards
-        transform={[{ scaleY: 1.15 }, { skewX: 0.08 }]}
+        transform={[{ scaleY: 1.3 }, { skewX: 0.08 }, { translateY: -15 }]}
       >
         <Mask
           mask={
