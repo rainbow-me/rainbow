@@ -1,7 +1,7 @@
 import { RainbowImage } from '@/components/RainbowImage';
 import { ShimmerAnimation } from '@/components/animations';
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
-import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import { doneTransactionStatuses, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import type { RainbowToastContract } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { TransactionStatus } from '@/entities';
@@ -19,22 +19,7 @@ export const ContractToastIcon = memo(function ContractToastIcon({
 }) {
   const colors = useToastColors();
 
-  if (
-    toast.status === TransactionStatus.approved ||
-    toast.status === TransactionStatus.bridged ||
-    toast.status === TransactionStatus.cancelled ||
-    toast.status === TransactionStatus.confirmed ||
-    toast.status === TransactionStatus.deposited ||
-    toast.status === TransactionStatus.dropped ||
-    toast.status === TransactionStatus.launched ||
-    toast.status === TransactionStatus.minted ||
-    toast.status === TransactionStatus.purchased ||
-    toast.status === TransactionStatus.received ||
-    toast.status === TransactionStatus.sent ||
-    toast.status === TransactionStatus.sold ||
-    toast.status === TransactionStatus.swapped ||
-    toast.status === TransactionStatus.withdrew
-  ) {
+  if (toast.status in doneTransactionStatuses) {
     return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="check" />;
   }
 
