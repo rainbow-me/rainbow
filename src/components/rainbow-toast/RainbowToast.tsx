@@ -48,8 +48,6 @@ export function RainbowToastDisplay() {
   const { toasts, isShowingTransactionDetails } = useToastStore();
   const { transactions } = useLatestAccountTransactions();
 
-  console.log('got trnasacdtions', JSON.stringify(transactions, null, 2));
-
   const showingTransactionDetails = useSharedValue(false);
 
   useEffect(() => {
@@ -214,29 +212,30 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
     toast.status === TransactionStatus.failed;
 
   // hide toast - we always hide it eventually, just slower if not in a finished state
-  useEffect(() => {
-    // if removing already and not from us
-    if (toast.isRemoving && !toast.removalReason) return;
+  // disable while testing
+  // useEffect(() => {
+  //   // if removing already and not from us
+  //   if (toast.isRemoving && !toast.removalReason) return;
 
-    // if not already removing set timeout to remove
-    if (!toast.isRemoving) {
-      const tm = setTimeout(
-        () => {
-          // sets it into removing state so it wont be cleared on other state updates
-          startRemoveToast(id, 'finish');
-        },
-        isDone ? TOAST_DONE_HIDE_TIMEOUT_MS : TOAST_HIDE_TIMEOUT_MS
-      );
+  //   // if not already removing set timeout to remove
+  //   if (!toast.isRemoving) {
+  //     const tm = setTimeout(
+  //       () => {
+  //         // sets it into removing state so it wont be cleared on other state updates
+  //         startRemoveToast(id, 'finish');
+  //       },
+  //       isDone ? TOAST_DONE_HIDE_TIMEOUT_MS : TOAST_HIDE_TIMEOUT_MS
+  //     );
 
-      return () => {
-        clearTimeout(tm);
-      };
-    }
+  //     return () => {
+  //       clearTimeout(tm);
+  //     };
+  //   }
 
-    if (toast.removalReason === 'finish') {
-      hideToast();
-    }
-  }, [hideToast, id, isDone, toast]);
+  //   if (toast.removalReason === 'finish') {
+  //     hideToast();
+  //   }
+  // }, [hideToast, id, isDone, toast]);
 
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()

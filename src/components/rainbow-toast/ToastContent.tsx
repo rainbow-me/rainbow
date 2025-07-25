@@ -140,9 +140,6 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   if (toast.status === TransactionStatus.swapping) {
     return i18n.t(i18n.l.toasts.swap.swapping);
   }
-  if (toast.status === TransactionStatus.failed) {
-    return i18n.t(i18n.l.toasts.contract.failed);
-  }
   if (toast.status === TransactionStatus.approved) {
     return i18n.t(i18n.l.toasts.contract.approved);
   }
@@ -158,6 +155,9 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   if (toast.status === TransactionStatus.cancelled) {
     return i18n.t(i18n.l.toasts.contract.cancelling);
   }
+  if (toast.status === TransactionStatus.confirmed) {
+    return i18n.t(i18n.l.toasts.contract.confirmed);
+  }
   if (toast.status === TransactionStatus.deposited) {
     return i18n.t(i18n.l.toasts.contract.deposited);
   }
@@ -166,6 +166,9 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   }
   if (toast.status === TransactionStatus.dropped) {
     return i18n.t(i18n.l.toasts.contract.dropped);
+  }
+  if (toast.status === TransactionStatus.failed) {
+    return i18n.t(i18n.l.toasts.contract.failed);
   }
   if (toast.status === TransactionStatus.launched) {
     return i18n.t(i18n.l.toasts.contract.launched);
@@ -200,6 +203,7 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   if (toast.status === TransactionStatus.withdrew) {
     return i18n.t(i18n.l.toasts.contract.withdrew);
   }
+  console.log('wtf?', toast.status);
 
   return i18n.t(i18n.l.toasts.contract.pending);
 };

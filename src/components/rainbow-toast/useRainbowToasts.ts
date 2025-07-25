@@ -1,4 +1,4 @@
-import { getToastFromTransaction } from '@/components/rainbow-toast/getToastFromTransaction';
+import { getToastFromTransaction, txIdToToastId } from '@/components/rainbow-toast/getToastFromTransaction';
 import type { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-toast/types';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Mints } from '@/resources/mints';
@@ -43,17 +43,18 @@ export const useToastStore = createRainbowStore<ToastState>(
         // pending store will have it still in there right after it confirms
         // pending will always be before the confirmed so lets grab the last of each
         for (const tx of transactions) {
-          const toast = getToastFromTransaction(tx, mints);
+          const id = txIdToToastId(tx);
+          const existingToast = activeToasts.get(id);
+          const toast = getToastFromTransaction({ transaction: tx, mints, existingToast });
           if (!toast) continue;
           if (state.dismissedToasts.has(toast.id)) continue;
 
-          const currentToast = activeToasts.get(toast.id);
           // if already removing never update
-          if (currentToast?.isRemoving) continue;
+          if (existingToast?.isRemoving) continue;
 
-          if (currentToast) {
+          if (existingToast) {
             // update
-            activeToasts.set(toast.id, { ...currentToast, ...toast });
+            activeToasts.set(toast.id, { ...existingToast, ...toast });
           } else {
             // we only add if it's pending or contract_interaction
             if (tx.status === TransactionStatus.pending || tx.status === TransactionStatus.contract_interaction) {
