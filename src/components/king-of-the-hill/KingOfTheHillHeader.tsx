@@ -31,7 +31,7 @@ type HeaderProps = {
 
 const TOKEN_SIZE = 80;
 
-export function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderProps) {
+export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderProps) {
   const { isDarkMode } = useColorMode();
   const current = kingOfTheHill?.current;
   const lastWinner = kingOfTheHill?.lastWinner;
@@ -235,7 +235,7 @@ export function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderP
       <View style={[styles.bottomSeparator, { backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }]} />
     </View>
   );
-}
+});
 
 const CreatorDisplay = memo(function CreatorDisplay({ creatorAddress }: { creatorAddress: string }) {
   const [creatorData, setCreatorData] = useState<{ ens: string | null; avatar: string | null }>({ ens: null, avatar: null });
