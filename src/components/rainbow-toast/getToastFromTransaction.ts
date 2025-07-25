@@ -38,23 +38,11 @@ export const txIdToToastId = (tx: RainbowTransaction) => tx.hash + (tx.chainId |
 
 export function getToastFromTransaction({
   transaction: tx,
-  existingToast,
   mints,
 }: {
   transaction: RainbowTransaction;
-  existingToast?: RainbowToast;
   mints?: Mints;
 }): RainbowToast | null {
-  // in the case of updates we only ever update the status
-  // this is because you can have contract-type toasts that change to swap on confirmation
-  // but we want to display them as contract-type and keep existing information
-  if (existingToast) {
-    return {
-      ...existingToast,
-      status: tx.status,
-    };
-  }
-
   if (tx.type === 'swap') {
     const status = getSwapToastStatus(tx.status);
     if (status) {
@@ -122,8 +110,6 @@ export function getToastFromTransaction({
     transactionHash: tx.hash,
     type: 'contract',
     status: tx.status,
-    // in the case of contracts, as it goes from pending to finalized it loses some information
-    // we want to keep the existing image and name if possible, so defer to existing toast
     name: tx.contract?.name || tx.title || 'NFT',
     image: tx.contract?.iconUrl || mint?.imageURL || '',
     action: () => {

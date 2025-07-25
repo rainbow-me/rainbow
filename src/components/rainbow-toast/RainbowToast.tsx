@@ -1,5 +1,6 @@
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import {
+  doneTransactionStatuses,
   TOAST_DONE_HIDE_TIMEOUT_MS,
   TOAST_GAP_FAR,
   TOAST_GAP_NEAR,
@@ -203,39 +204,32 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
     }
   }, [finishRemoveToastCallback, hideToast, nonSwipeRemove, translateY, opacity]);
 
-  // reached a finished state
-  const isDone =
-    toast.status === TransactionStatus.confirmed ||
-    toast.status === TransactionStatus.swapped ||
-    toast.status === TransactionStatus.sent ||
-    toast.status === TransactionStatus.minted ||
-    toast.status === TransactionStatus.failed;
-
   // hide toast - we always hide it eventually, just slower if not in a finished state
   // disable while testing
-  // useEffect(() => {
-  //   // if removing already and not from us
-  //   if (toast.isRemoving && !toast.removalReason) return;
+  const shouldRemoveToast = toast.status in doneTransactionStatuses;
+  useEffect(() => {
+    // if removing already and not from us
+    if (toast.isRemoving && !toast.removalReason) return;
 
-  //   // if not already removing set timeout to remove
-  //   if (!toast.isRemoving) {
-  //     const tm = setTimeout(
-  //       () => {
-  //         // sets it into removing state so it wont be cleared on other state updates
-  //         startRemoveToast(id, 'finish');
-  //       },
-  //       isDone ? TOAST_DONE_HIDE_TIMEOUT_MS : TOAST_HIDE_TIMEOUT_MS
-  //     );
+    // if not already removing set timeout to remove
+    if (!toast.isRemoving) {
+      const tm = setTimeout(
+        () => {
+          // sets it into removing state so it wont be cleared on other state updates
+          startRemoveToast(id, 'finish');
+        },
+        shouldRemoveToast ? TOAST_DONE_HIDE_TIMEOUT_MS : TOAST_HIDE_TIMEOUT_MS
+      );
 
-  //     return () => {
-  //       clearTimeout(tm);
-  //     };
-  //   }
+      return () => {
+        clearTimeout(tm);
+      };
+    }
 
-  //   if (toast.removalReason === 'finish') {
-  //     hideToast();
-  //   }
-  // }, [hideToast, id, isDone, toast]);
+    if (toast.removalReason === 'finish') {
+      hideToast();
+    }
+  }, [hideToast, id, shouldRemoveToast, toast]);
 
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()

@@ -1,3 +1,5 @@
+import { TransactionStatus } from '@/entities';
+import * as i18n from '@/languages';
 import { time } from '@/utils';
 
 export const TOAST_ICON_SIZE = 28;
@@ -12,9 +14,48 @@ export const TOAST_TOP_OFFSET = 10;
 export const TOAST_INITIAL_OFFSET_ABOVE = -80;
 export const TOAST_INITIAL_OFFSET_BELOW = 10;
 export const TOAST_DONE_HIDE_TIMEOUT_MS = time.seconds(4);
-export const TOAST_HIDE_TIMEOUT_MS = time.seconds(30);
+export const TOAST_HIDE_TIMEOUT_MS = time.seconds(30); // max time to show a toast
 
 // make dismissing easier (lower) or harder (higher)
 export const TOAST_EXPANDED_DISMISS_SENSITIVITY = 0.5;
 // upward dragging more sensitive
 export const TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER = 2;
+
+export const doneTransactionStatuses = {
+  [TransactionStatus.approved]: i18n.t(i18n.l.toasts.statuses.approved),
+  [TransactionStatus.bridged]: i18n.t(i18n.l.toasts.statuses.bridged),
+  [TransactionStatus.cancelled]: i18n.t(i18n.l.toasts.statuses.cancelled),
+  [TransactionStatus.confirmed]: i18n.t(i18n.l.toasts.statuses.confirmed),
+  [TransactionStatus.deposited]: i18n.t(i18n.l.toasts.statuses.deposited),
+  [TransactionStatus.dropped]: i18n.t(i18n.l.toasts.statuses.dropped),
+  [TransactionStatus.failed]: i18n.t(i18n.l.toasts.statuses.failed),
+  [TransactionStatus.launched]: i18n.t(i18n.l.toasts.statuses.launched),
+  [TransactionStatus.minted]: i18n.t(i18n.l.toasts.statuses.minted),
+  [TransactionStatus.purchased]: i18n.t(i18n.l.toasts.statuses.purchased),
+  [TransactionStatus.received]: i18n.t(i18n.l.toasts.statuses.received),
+  [TransactionStatus.sent]: i18n.t(i18n.l.toasts.statuses.sent),
+  [TransactionStatus.sold]: i18n.t(i18n.l.toasts.statuses.sold),
+  [TransactionStatus.swapped]: i18n.t(i18n.l.toasts.statuses.swapped),
+  [TransactionStatus.withdrew]: i18n.t(i18n.l.toasts.statuses.withdrew),
+} as const satisfies Partial<Record<TransactionStatus, string>>;
+
+export const allTransactionStatuses: Record<TransactionStatus, string> = {
+  [TransactionStatus.approving]: i18n.t(i18n.l.toasts.statuses.approving),
+  [TransactionStatus.bridging]: i18n.t(i18n.l.toasts.statuses.bridging),
+  [TransactionStatus.cancelling]: i18n.t(i18n.l.toasts.statuses.cancelling),
+  [TransactionStatus.contract_interaction]: i18n.t(i18n.l.toasts.statuses.contract_interaction),
+  [TransactionStatus.depositing]: i18n.t(i18n.l.toasts.statuses.depositing),
+  [TransactionStatus.launching]: i18n.t(i18n.l.toasts.statuses.launching),
+  [TransactionStatus.minting]: i18n.t(i18n.l.toasts.statuses.minting),
+  [TransactionStatus.pending]: i18n.t(i18n.l.toasts.statuses.pending),
+  [TransactionStatus.purchasing]: i18n.t(i18n.l.toasts.statuses.purchasing),
+  [TransactionStatus.receiving]: i18n.t(i18n.l.toasts.statuses.receiving),
+  [TransactionStatus.self]: i18n.t(i18n.l.toasts.statuses.self),
+  [TransactionStatus.selling]: i18n.t(i18n.l.toasts.statuses.selling),
+  [TransactionStatus.sending]: i18n.t(i18n.l.toasts.statuses.sending),
+  [TransactionStatus.speeding_up]: i18n.t(i18n.l.toasts.statuses.speeding_up),
+  [TransactionStatus.swapping]: i18n.t(i18n.l.toasts.statuses.swapping),
+  [TransactionStatus.unknown]: i18n.t(i18n.l.toasts.statuses.unknown),
+  [TransactionStatus.withdrawing]: i18n.t(i18n.l.toasts.statuses.withdrawing),
+  ...doneTransactionStatuses,
+};

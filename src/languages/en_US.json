@@ -2483,23 +2483,15 @@
     "toasts": {
       "copied": "Copied \"%{copiedText}\"",
       "invalid_paste": "You can't paste that here",
-      "swap": {
-        "swapping": "Swapping",
-        "swapped": "Swapped",
-        "failed": "Swap Failed"
-      },
-      "send": {
-        "sending": "Sending",
-        "sent": "Sent",
-        "failed": "Send Failed"
-      },
-      "contract": {
+      "statuses": {
         "approved": "Approved",
         "approving": "Approving",
         "bridged": "Bridged",
         "bridging": "Bridging",
+        "cancelled": "Cancelled",
         "cancelling": "Cancelling",
         "confirmed": "Confirmed",
+        "contract_interaction": "Contract Interaction",
         "deposited": "Deposited",
         "depositing": "Depositing",
         "dropped": "Dropped",
@@ -2513,11 +2505,15 @@
         "purchasing": "Purchasing",
         "received": "Received",
         "receiving": "Receiving",
+        "self": "Self",
         "selling": "Selling",
+        "sending": "Sending",
         "sent": "Sent",
         "sold": "Sold",
         "speeding_up": "Speeding Up",
         "swapped": "Swapped",
+        "swapping": "Swapping",
+        "unknown": "Unknown",
         "withdrawing": "Withdrawing",
         "withdrew": "Withdrew"
       }

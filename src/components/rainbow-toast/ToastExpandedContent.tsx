@@ -3,10 +3,8 @@ import { SWAP_ICON_WIDTH } from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
 import { SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
 import {
-  getContractToastStatusLabel,
-  getSendToastStatusLabel,
+  getStatusLabel,
   getSwapToastNetworkLabel,
-  getSwapToastStatusLabel,
 } from '@/components/rainbow-toast/ToastContent';
 import type { RainbowToast, RainbowToastContract, RainbowToastSend, RainbowToastSwap } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
@@ -18,6 +16,8 @@ import React, { useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SendToastIcon } from './icons/SendToastIcon';
 import { useToastColors } from './useToastColors';
+
+const EXPANDED_ICON_SIZE = 34;
 
 export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
   if (toast.type === 'swap') {
@@ -35,7 +35,7 @@ export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
 function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }) {
   const icon = <ContractToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
   const title = toast.name;
-  const subtitle = getContractToastStatusLabel(toast);
+  const subtitle = getStatusLabel(toast.status);
   const isLoading = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
   return (
     <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />
@@ -45,7 +45,7 @@ function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }
 function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
   const title = `${toast.token}`;
   const isLoading = toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending;
-  const subtitle = getSendToastStatusLabel(toast);
+  const subtitle = getStatusLabel(toast.status);
 
   return (
     <ToastExpandedContentDisplay
@@ -62,7 +62,7 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
   const { transaction } = toast;
 
   const title = getSwapToastNetworkLabel({ toast });
-  const subtitle = getSwapToastStatusLabel({ toast });
+  const subtitle = getStatusLabel(toast.status);
   const isSwapped = toast.status === TransactionStatus.swapped;
   const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
 
@@ -80,8 +80,6 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
     />
   );
 }
-
-const EXPANDED_ICON_SIZE = 34;
 
 function ToastExpandedContentDisplay({
   icon,
@@ -138,6 +136,10 @@ function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTr
       .filter(Boolean)
       .join(' ');
   }, [bottomValueIn]);
+
+  if (!topValue && !bottomValueWithoutSymbol) {
+    return null;
+  }
 
   return (
     <View style={styles.valueSection}>
