@@ -99,9 +99,8 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
         if (section.data.length > 0) {
           items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
           for (const item of section.data) {
-            const key = `${item.chainId}${'requestId' in item ? item.requestId : item.hash}`;
             items.push({
-              key: `${accountAddress}${key}-entry`,
+              key: `${accountAddress}${item.chainId}${'requestId' in item ? item.requestId : item.hash}-entry`,
               type: 'item',
               value: item,
             });
