@@ -1,6 +1,6 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow } from '@/components/coin-row';
-import Skeleton from '@/components/skeleton/Skeleton';
+import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { Box } from '@/design-system';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
 import { lazyMount } from '@/helpers/lazyMount';
@@ -12,7 +12,7 @@ import { useTheme } from '@/theme';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { LegendList, LegendListRef } from '@legendapp/list';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import ActivityIndicator from '../ActivityIndicator';
@@ -81,7 +81,7 @@ const ITEM_HEIGHT = 59;
 const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: SharedValue<number>; paddingTopForNavBar?: boolean }) => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
+  const { sections, nextPage, transactionsCount, remainingItemsLabel, isLoadingTransactions } = useAccountTransactions();
 
   const theme = useTheme();
 
@@ -93,7 +93,7 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
       items.push({ key: 'paddingTopForNavBar', type: 'paddingTopForNavBar' });
     }
 
-    if (!sections.length) {
+    if (isLoadingTransactions) {
       items.push({ key: 'loading', type: 'loading' });
     } else {
       sections.forEach(section => {
@@ -112,19 +112,22 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
     }
 
     return items;
-  }, [accountAddress, paddingTopForNavBar, sections]);
+  }, [accountAddress, isLoadingTransactions, paddingTopForNavBar, sections]);
 
   const renderItem = useCallback(
     ({ item }: { item: ListItems }) => {
       if (item.type === 'paddingTopForNavBar') {
-        return <View style={{ height: 60 }} />;
+        return <View style={{ height: 68 }} />;
       }
 
       if (item.type === 'loading') {
         return (
-          <Skeleton animated width={DEVICE_WIDTH}>
-            <Box background="body (Deprecated)" borderRadius={10} height={{ custom: 44 }} width={{ custom: DEVICE_WIDTH }} />
-          </Skeleton>
+          <>
+            <LoadingActivityItem />
+            <LoadingActivityItem />
+            <LoadingActivityItem />
+            <LoadingActivityItem />
+          </>
         );
       }
 
@@ -169,7 +172,9 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
       testID={'wallet-activity-list'}
       ListEmptyComponent={<ActivityListEmptyState />}
-      ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
+      ListFooterComponent={() =>
+        !isLoadingTransactions && remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />
+      }
       // recycleItems
       // this caused issues when going from a wallet with many items that had scrolling
       // to a wallet that has no scrollable area, causing it to show blank
@@ -185,6 +190,16 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
         },
       })}
     />
+  );
+});
+
+const LoadingActivityItem = memo(() => {
+  return (
+    <View style={{ height: 44, marginHorizontal: 20, marginVertical: 3 }}>
+      <Skeleton>
+        <View style={{ width: '100%', height: '100%', backgroundColor: '#000', borderRadius: 15 }} />
+      </Skeleton>
+    </View>
   );
 });
 
