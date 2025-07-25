@@ -1,23 +1,33 @@
+import { metadataClient } from '@/graphql';
+import { KingOfTheHill, KingOfTheHillRankings } from '@/graphql/__generated__/metadata';
 import { RainbowError, logger } from '@/logger';
+import Routes from '@/navigation/routesNames';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils';
-import { metadataClient } from '@/graphql';
 import { userAssetsStoreManager } from '../assets/userAssetsStoreManager';
 import { useNavigationStore } from '../navigation/navigationStore';
-import Routes from '@/navigation/routesNames';
-import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 
-async function kingOfTheHillQueryFunction({ currency }: { currency: string }): Promise<KingOfTheHill | null> {
+type State = {
+  kingOfTheHill?: KingOfTheHill;
+  kingOfTheHillLeaderBoard?: KingOfTheHillRankings;
+};
+
+async function kingOfTheHillQueryFunction({ currency }: { currency: string }): Promise<State | null> {
   try {
-    const { kingOfTheHill } = await metadataClient.kingOfTheHill({ currency });
+    const { kingOfTheHill, kingOfTheHillLeaderBoard } = await metadataClient.kingOfTheHill({ currency });
 
-    if (!kingOfTheHill) return null;
+    if (!kingOfTheHill || !kingOfTheHillLeaderBoard) {
+      return {};
+    }
 
-    // TODO: This is a hack because the generic Token type is badly typed and requires some fields we don't have on this query
-    return kingOfTheHill as KingOfTheHill;
+    // TODO: type hack because the generic Token type is badly typed and requires some fields we don't have on this query
+    return {
+      kingOfTheHill: kingOfTheHill as KingOfTheHill,
+      kingOfTheHillLeaderBoard: kingOfTheHillLeaderBoard as KingOfTheHillRankings,
+    };
   } catch (e) {
     logger.error(new RainbowError('[kingOfTheHillQueryFunction]: King of the Hill failed', e), { currency });
-    return null;
+    return {};
   }
 }
 
@@ -25,7 +35,7 @@ type KingOfTheHillQueryParams = {
   currency: string;
 };
 
-export const useKingOfTheHillStore = createQueryStore<KingOfTheHill | null, KingOfTheHillQueryParams>(
+export const useKingOfTheHillStore = createQueryStore<State | null, KingOfTheHillQueryParams>(
   {
     fetcher: kingOfTheHillQueryFunction,
     onFetched: ({ set }) => {

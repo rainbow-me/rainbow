@@ -29,11 +29,15 @@ const RainbowImageInternal = ({ style, source, onError, onSuccess }: RainbowImag
       <FasterImageView
         onError={onError}
         onSuccess={onSuccess}
-        source={{
-          // aligns default resizeMode to match fast-image and RN Image
-          resizeMode: 'cover',
-          ...source,
-        }}
+        source={
+          typeof source === 'number'
+            ? source
+            : {
+                // aligns default resizeMode to match fast-image and RN Image
+                resizeMode: 'cover',
+                ...source,
+              }
+        }
         style={style || []}
       />
     );

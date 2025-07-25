@@ -76,6 +76,7 @@ import {
   expandedAssetSheetV2Config,
   tokenLauncherConfig,
   kingOfTheHillExplainSheetConfig,
+  activitySheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -116,9 +117,9 @@ import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
-import ProfileScreen from '@/screens/ProfileScreen';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
+import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -243,7 +244,7 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
       <NativeStack.Screen component={Portal} name={Routes.PORTAL} {...portalSheetConfig} />
-      {showKingOfTheHillTab && <NativeStack.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} {...profileConfig} />}
+      {showKingOfTheHillTab && <NativeStack.Screen component={ActivitySheetScreen} name={Routes.PROFILE_SCREEN} {...activitySheetConfig} />}
       {profilesEnabled && (
         <>
           <NativeStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} {...registerENSNavigatorConfig} />
