@@ -1,5 +1,5 @@
-import { RainbowTransaction } from '@/entities';
-import { RainbowToastContractStatuses, RainbowToastSendStatuses, RainbowToastSwapStatuses } from './getToastFromTransaction';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
+import { RainbowToastSendStatuses, RainbowToastSwapStatuses } from './getToastFromTransaction';
 
 type BaseToast = {
   id: string;
@@ -31,7 +31,7 @@ export type RainbowToastSend = BaseToast & {
 
 export type RainbowToastContract = BaseToast & {
   type: 'contract';
-  status: keyof typeof RainbowToastContractStatuses;
+  status: TransactionStatus;
   name: string;
   image: string;
 };

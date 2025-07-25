@@ -20,33 +20,16 @@ export const RainbowToastSendStatuses = {
   [TransactionStatus.failed]: TransactionStatus.failed,
 } as const;
 
-export const RainbowToastContractStatuses = {
-  [TransactionStatus.pending]: TransactionStatus.pending,
-  [TransactionStatus.contract_interaction]: TransactionStatus.contract_interaction,
-  [TransactionStatus.minting]: TransactionStatus.minting,
-  [TransactionStatus.minted]: TransactionStatus.minted,
-  [TransactionStatus.swapped]: TransactionStatus.swapped,
-  [TransactionStatus.failed]: TransactionStatus.failed,
-  [TransactionStatus.confirmed]: TransactionStatus.confirmed,
-} as const;
-
-export function getSwapToastStatus(status: TransactionStatus): keyof typeof RainbowToastSwapStatuses | null {
+function getSwapToastStatus(status: TransactionStatus): keyof typeof RainbowToastSwapStatuses | null {
   if (status in RainbowToastSwapStatuses) {
     return status as keyof typeof RainbowToastSwapStatuses;
   }
   return null;
 }
 
-export function getSendToastStatus(status: TransactionStatus): keyof typeof RainbowToastSendStatuses | null {
+function getSendToastStatus(status: TransactionStatus): keyof typeof RainbowToastSendStatuses | null {
   if (status in RainbowToastSendStatuses) {
     return status as keyof typeof RainbowToastSendStatuses;
-  }
-  return null;
-}
-
-export function getContractToastStatus(status: TransactionStatus): keyof typeof RainbowToastContractStatuses | null {
-  if (status in RainbowToastContractStatuses) {
-    return status as keyof typeof RainbowToastContractStatuses;
   }
   return null;
 }
@@ -106,27 +89,27 @@ export function getToastFromTransaction(tx: RainbowTransaction, mints?: Mints): 
     }
   }
 
-  if (tx.type === 'mint' || tx.type === 'contract_interaction') {
-    const mint = mints?.find(mint => mint.contractAddress === tx.hash);
-    const status = getContractToastStatus(tx.status);
-    if (status) {
-      return {
-        id: txIdToToastId(tx),
-        transaction: tx,
-        chainId: tx.chainId,
-        transactionHash: tx.hash,
-        type: 'contract',
-        status,
-        name: tx.contract?.name || tx.title || 'NFT',
-        image: tx.contract?.iconUrl || mint?.imageURL || '',
-        action: () => {
-          Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
-            transaction: tx,
-          });
-        },
-      };
-    }
-  }
+  // swap and send have unique styles
+  //  - swap is overlapping circular icons for tokens with a custom subtitle showing the tokens
+  //  - send is a circular icon with the amount as the subtitle
+  //  the rest of the transaction types fall through to here, they get a
+  //  rounded icon and we show a generic label based on the status
 
-  return null;
+  const mint = tx.type === 'mint' ? mints?.find(mint => mint.contractAddress === tx.hash) : null;
+
+  return {
+    id: txIdToToastId(tx),
+    transaction: tx,
+    chainId: tx.chainId,
+    transactionHash: tx.hash,
+    type: 'contract',
+    status: tx.status,
+    name: tx.contract?.name || tx.title || 'NFT',
+    image: tx.contract?.iconUrl || mint?.imageURL || '',
+    action: () => {
+      Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+        transaction: tx,
+      });
+    },
+  };
 }

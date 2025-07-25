@@ -125,6 +125,7 @@ function SendToastContent({ toast }: { toast: RainbowToastSend }) {
   );
 }
 
+// note: the only transactions not in here are "self"
 export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   if (toast.status === TransactionStatus.minted) {
     return i18n.t(i18n.l.toasts.contract.minted);
@@ -135,8 +136,68 @@ export const getContractToastStatusLabel = (toast: RainbowToastContract) => {
   if (toast.status === TransactionStatus.swapped) {
     return i18n.t(i18n.l.toasts.swap.swapped);
   }
+  if (toast.status === TransactionStatus.swapping) {
+    return i18n.t(i18n.l.toasts.swap.swapping);
+  }
   if (toast.status === TransactionStatus.failed) {
     return i18n.t(i18n.l.toasts.contract.failed);
+  }
+  if (toast.status === TransactionStatus.approved) {
+    return i18n.t(i18n.l.toasts.contract.approved);
+  }
+  if (toast.status === TransactionStatus.approving) {
+    return i18n.t(i18n.l.toasts.contract.approving);
+  }
+  if (toast.status === TransactionStatus.bridged) {
+    return i18n.t(i18n.l.toasts.contract.bridged);
+  }
+  if (toast.status === TransactionStatus.bridging) {
+    return i18n.t(i18n.l.toasts.contract.bridging);
+  }
+  if (toast.status === TransactionStatus.cancelled) {
+    return i18n.t(i18n.l.toasts.contract.cancelling);
+  }
+  if (toast.status === TransactionStatus.deposited) {
+    return i18n.t(i18n.l.toasts.contract.deposited);
+  }
+  if (toast.status === TransactionStatus.depositing) {
+    return i18n.t(i18n.l.toasts.contract.depositing);
+  }
+  if (toast.status === TransactionStatus.dropped) {
+    return i18n.t(i18n.l.toasts.contract.dropped);
+  }
+  if (toast.status === TransactionStatus.launched) {
+    return i18n.t(i18n.l.toasts.contract.launched);
+  }
+  if (toast.status === TransactionStatus.launching) {
+    return i18n.t(i18n.l.toasts.contract.launching);
+  }
+  if (toast.status === TransactionStatus.purchased) {
+    return i18n.t(i18n.l.toasts.contract.purchased);
+  }
+  if (toast.status === TransactionStatus.purchasing) {
+    return i18n.t(i18n.l.toasts.contract.purchasing);
+  }
+  if (toast.status === TransactionStatus.received) {
+    return i18n.t(i18n.l.toasts.contract.received);
+  }
+  if (toast.status === TransactionStatus.receiving) {
+    return i18n.t(i18n.l.toasts.contract.receiving);
+  }
+  if (toast.status === TransactionStatus.selling) {
+    return i18n.t(i18n.l.toasts.contract.selling);
+  }
+  if (toast.status === TransactionStatus.sold) {
+    return i18n.t(i18n.l.toasts.contract.sold);
+  }
+  if (toast.status === TransactionStatus.speeding_up) {
+    return i18n.t(i18n.l.toasts.contract.speeding_up);
+  }
+  if (toast.status === TransactionStatus.withdrawing) {
+    return i18n.t(i18n.l.toasts.contract.withdrawing);
+  }
+  if (toast.status === TransactionStatus.withdrew) {
+    return i18n.t(i18n.l.toasts.contract.withdrew);
   }
   return i18n.t(i18n.l.toasts.contract.pending);
 };

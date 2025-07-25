@@ -2499,7 +2499,26 @@
         "minting": "Minting",
         "pending": "Pending",
         "swapped": "Swapped",
-        "sent": "Sent"
+        "sent": "Sent",
+        "approved": "Approved",
+        "approving": "Approving",
+        "bridged": "Bridged",
+        "bridging": "Bridging",
+        "cancelling": "Cancelling",
+        "deposited": "Deposited",
+        "depositing": "Depositing",
+        "dropped": "Dropped",
+        "launched": "Launched",
+        "launching": "Launching",
+        "purchased": "Purchased",
+        "purchasing": "Purchasing",
+        "received": "Received",
+        "receiving": "Receiving",
+        "selling": "Selling",
+        "speeding_up": "Speeding Up",
+        "sold": "Sold",
+        "withdrawing": "Withdrawing",
+        "withdrew": "Withdrew"
       }
     },
     "tokens_tab": {
