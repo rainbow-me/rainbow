@@ -23,7 +23,9 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
-const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
+type Item = MenuItem<(typeof Routes)[keyof typeof Routes]>;
+
+const menuItems: Item[] = [
   {
     actionKey: Routes.SETTINGS_SHEET,
     actionTitle: lang.t(lang.l.settings.label),

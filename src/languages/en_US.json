@@ -547,6 +547,7 @@
       "not_applied": "NOT APPLIED",
       "notifications_debug": "Notifications Debug",
       "remove_all_backups": "Remove All Backups",
+      "toasts_actions": "Toasts Debug Actions",
       "keychain": {
         "menu_title": "Reset Keychain",
         "delete_wallets": "Delete All Wallets",
@@ -2481,7 +2482,41 @@
     },
     "toasts": {
       "copied": "Copied \"%{copiedText}\"",
-      "invalid_paste": "You can't paste that here"
+      "invalid_paste": "You can't paste that here",
+      "statuses": {
+        "approved": "Approved",
+        "approving": "Approving",
+        "bridged": "Bridged",
+        "bridging": "Bridging",
+        "cancelled": "Cancelled",
+        "cancelling": "Cancelling",
+        "confirmed": "Confirmed",
+        "contract_interaction": "Contract Interaction",
+        "deposited": "Deposited",
+        "depositing": "Depositing",
+        "dropped": "Dropped",
+        "failed": "Failed",
+        "launched": "Launched",
+        "launching": "Launching",
+        "minted": "Minted",
+        "minting": "Minting",
+        "pending": "Pending",
+        "purchased": "Purchased",
+        "purchasing": "Purchasing",
+        "received": "Received",
+        "receiving": "Receiving",
+        "self": "Self",
+        "selling": "Selling",
+        "sending": "Sending",
+        "sent": "Sent",
+        "sold": "Sold",
+        "speeding_up": "Speeding Up",
+        "swapped": "Swapped",
+        "swapping": "Swapping",
+        "unknown": "Unknown",
+        "withdrawing": "Withdrawing",
+        "withdrew": "Withdrew"
+      }
     },
     "tokens_tab": {
       "unknown_token": "Unknown Token"

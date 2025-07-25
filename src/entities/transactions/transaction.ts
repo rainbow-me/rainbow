@@ -54,7 +54,9 @@ export enum TransactionStatus {
 }
 
 export interface RainbowTransaction {
+  isMocked?: boolean;
   address?: string;
+  amount?: string;
   asset?:
     | (ParsedAsset &
         (
@@ -257,8 +259,8 @@ export type PendingTransaction = RainbowTransaction & {
   status: TransactionStatus.pending;
 };
 
-export const TransactionType = {
-  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'] as readonly string[],
+export const TransactionTypeMap = {
+  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
   withChanges: [
     'sale',
     'bridge',
@@ -280,11 +282,11 @@ export const TransactionType = {
     'unstake',
     'purchase',
     'launch',
-  ] as readonly string[],
+  ],
 } as const;
 
-export type TransactionWithChangesType = (typeof TransactionType.withChanges)[number];
-export type TransactionWithoutChangesType = (typeof TransactionType.withoutChanges)[number];
+export type TransactionWithChangesType = (typeof TransactionTypeMap.withChanges)[number];
+export type TransactionWithoutChangesType = (typeof TransactionTypeMap.withoutChanges)[number];
 
 export type TransactionType = TransactionWithChangesType | TransactionWithoutChangesType;
 

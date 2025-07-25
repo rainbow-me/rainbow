@@ -1,5 +1,4 @@
 import { RainbowTransaction } from '@/entities';
-import { useNavigation } from '@/navigation';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -15,6 +14,29 @@ import useContacts from './useContacts';
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
+  const accountState = useLatestAccountTransactions();
+  const { hasNextPage, isLoading, fetchNextPage, transactions } = accountState;
+
+  const { sections } = buildTransactionsSections(accountState);
+
+  const remainingItemsLabel = useMemo(() => {
+    if (!hasNextPage) {
+      return null;
+    }
+    return `Show ${NOE_PAGE} more transactions...`;
+  }, [hasNextPage]);
+
+  return {
+    isLoadingTransactions: isLoading,
+    nextPage: fetchNextPage,
+    remainingItemsLabel,
+    sections,
+    transactions: transactions,
+    transactionsCount: transactions.length,
+  };
+}
+
+export const useLatestAccountTransactions = () => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
 
@@ -36,7 +58,7 @@ export default function useAccountTransactions() {
     const latestTransactions = data.pages
       .map(p => p.transactions)
       .flat()
-      .filter(t => t.from?.toLowerCase() === accountAddress?.toLowerCase())
+      .filter(t => t.from?.toLowerCase() === accountAddress?.toLowerCase() && !t.isMocked)
       .reduce(
         (latestTxMap, currentTx) => {
           const currentChainId = currentTx?.chainId;
@@ -90,40 +112,23 @@ export default function useAccountTransactions() {
 
   const allTransactions = useMemo(
     () => pendingTransactionsMostRecentFirst.concat(transactions),
-    [pendingTransactionsMostRecentFirst, transactions]
+    // if you don't do this it updates constantly
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify([pendingTransactionsMostRecentFirst, transactions])]
   );
-
-  const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
 
   const { contacts } = useContacts();
   const theme = useTheme();
-  const { navigate } = useNavigation();
-
-  const accountState = {
-    accountAddress,
-    contacts,
-    navigate,
-    requests: walletConnectRequests,
-    theme,
-    transactions: slicedTransaction,
-    nativeCurrency,
-  };
-
-  const { sections } = buildTransactionsSections(accountState);
-
-  const remainingItemsLabel = useMemo(() => {
-    if (!hasNextPage) {
-      return null;
-    }
-    return `Show ${NOE_PAGE} more transactions...`;
-  }, [hasNextPage]);
 
   return {
-    isLoadingTransactions: isLoading,
-    nextPage: fetchNextPage,
-    remainingItemsLabel,
-    sections,
-    transactions: ios ? allTransactions : slicedTransaction,
-    transactionsCount: slicedTransaction.length,
+    accountAddress,
+    contacts,
+    requests: walletConnectRequests,
+    theme,
+    transactions: allTransactions,
+    nativeCurrency,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
   };
-}
+};

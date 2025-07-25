@@ -319,6 +319,14 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.reset_experimental_config')} />}
             />
+
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🍞" isEmoji />}
+              onPress={() => Navigation.handleAction(Routes.DEV_ACTION_SHEET)}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.toasts_actions')} />}
+            />
+
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="👷" isEmoji />}
               onPress={connectToAnvil}

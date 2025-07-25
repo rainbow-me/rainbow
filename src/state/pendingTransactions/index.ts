@@ -4,6 +4,9 @@ import create from 'zustand';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { nonceStore } from '../nonces';
 import { ChainId } from '@/state/backendNetworks/types';
+import { getAccountAddress } from '@/state/wallets/walletsStore';
+import { logger } from '@/logger';
+import { IS_DEV } from '@/env';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
@@ -48,6 +51,12 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
       });
     },
     setPendingTransactions: ({ address, pendingTransactions }) => {
+      if (IS_DEV) {
+        if (get().pendingTransactions[getAccountAddress()]?.some(p => p.isMocked)) {
+          logger.info(`Avoiding setting pending transactions due to mocked dev transactions`);
+          return;
+        }
+      }
       const { pendingTransactions: currentPendingTransactions } = get();
       set({
         pendingTransactions: {
