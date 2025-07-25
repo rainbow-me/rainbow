@@ -10,7 +10,7 @@ import { LegendList, LegendListRef } from '@legendapp/list';
 import chroma from 'chroma-js';
 import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
-import React, { memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -62,7 +62,8 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
     }
   }, []);
 
-  useEffect(() => {
+  // effect to account for switching dark to light mode
+  useLayoutEffect(() => {
     try {
       if (tokenDominantColor) {
         const chillColor = makeColorMoreChill(tokenDominantColor);

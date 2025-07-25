@@ -166,7 +166,7 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
       // even if it was at the top before sometimes. so changing the key here
       // ensures the list fully re-renders and has the correct scroll position
       key={accountAddress}
-      ref={listRef as any}
+      ref={listRef}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
