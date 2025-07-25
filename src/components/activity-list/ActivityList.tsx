@@ -77,8 +77,7 @@ const ITEM_HEIGHT = 59;
 const ActivityList = lazyMount(() => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-
-  const { sections, nextPage, transactionsCount, remainingItemsLabel, pendingTransactions } = useAccountTransactions();
+  const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
 
   const theme = useTheme();
 
@@ -166,11 +165,6 @@ const ActivityList = lazyMount(() => {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
-      extraData={{
-        hasPendingTransaction: pendingTransactions.length > 0,
-        nativeCurrency,
-        pendingTransactionsCount: pendingTransactions.length,
-      }}
       testID={'wallet-activity-list'}
       ListEmptyComponent={<ActivityListEmptyState />}
       ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}

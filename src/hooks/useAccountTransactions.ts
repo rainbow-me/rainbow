@@ -15,7 +15,7 @@ export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
   const accountState = useLatestAccountTransactions();
-  const { hasNextPage, isLoading, fetchNextPage, transactions, pendingTransactions } = accountState;
+  const { hasNextPage, isLoading, fetchNextPage, transactions } = accountState;
 
   const { sections } = buildTransactionsSections(accountState);
 
@@ -27,7 +27,6 @@ export default function useAccountTransactions() {
   }, [hasNextPage]);
 
   return {
-    pendingTransactions,
     isLoadingTransactions: isLoading,
     nextPage: fetchNextPage,
     remainingItemsLabel,
@@ -40,9 +39,11 @@ export default function useAccountTransactions() {
 export const useLatestAccountTransactions = () => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
-  const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
-  const { getPendingTransactionsInReverseOrder } = pendingTransactionsStore.getState();
-  const pendingTransactionsMostRecentFirst = getPendingTransactionsInReverseOrder(accountAddress);
+
+  const pendingTransactionsMostRecentFirst = usePendingTransactionsStore(state =>
+    state.getPendingTransactionsInReverseOrder(accountAddress)
+  );
+
   const walletConnectRequests = getSortedWalletConnectRequests();
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
@@ -120,7 +121,6 @@ export const useLatestAccountTransactions = () => {
   const theme = useTheme();
 
   return {
-    pendingTransactions,
     accountAddress,
     contacts,
     requests: walletConnectRequests,
