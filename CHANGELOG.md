@@ -23,12 +23,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - ActivityList refactor - lazy mount + virtual list (#6706)
 - Brody/cloud backups test (#6723)
 - Run E2E tests on develop (#6743)
-- [koth]: Feature flag page view (#6751)
+- Feature flag page view for KOTH (#6751)
 - Candlestick chart integration (#6687)
 - Candlestick charts data integration (#6724)
 - Live tokens (#6626)
 
-### Changed 
+### Changed
 
 - E2E Unwrap test (#6720)
 - Run e2e android tests on github runner (#6712)
