@@ -20,6 +20,7 @@ import { ButtonPressAnimation } from '../animations';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
+import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -152,6 +153,8 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
   );
 
   const listRef = useRef<LegendListRef | null>(null);
+
+  useLegendListNavBarScrollToTop(listRef);
 
   return (
     <LegendList
