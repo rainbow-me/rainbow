@@ -363,7 +363,7 @@ export type RootStackParamList = {
     ensProfile: ENSProfile;
     isENS: boolean;
     isL2: boolean;
-    isNft: boolean;
+    isUniqueAsset: boolean;
     chainId: ChainId;
     profilesEnabled: boolean;
     to: string;

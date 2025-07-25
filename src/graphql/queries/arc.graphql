@@ -474,6 +474,89 @@ query getNFTs($walletAddress: String!, $sortBy: NFTCollectionSortCriterion, $sor
   }
 }
 
+query getNftCollections($walletAddress: String!, $limit: Int, $pageKey: String) {
+  nftCollections(walletAddress: $walletAddress, limit: $limit, pageKey: $pageKey) {
+    data {
+      id
+      name
+      imageUrl
+      totalCount
+    }
+    totalCollections
+    nextPageKey
+  }
+}
+
+query getNftsByCollection($walletAddress: String!, $collectionId: String!) {
+  nftsByCollection(walletAddress: $walletAddress, collectionId: $collectionId) {
+    name
+    acquiredAt
+    uniqueId
+    description
+    standard
+    isSendable
+    backgroundColor
+    images {
+      highResUrl
+      lowResUrl
+      mimeType
+      animatedUrl
+      animatedMimeType
+    }
+    type
+    backgroundColor
+    collectionName
+    collectionUrl
+    collectionDescription
+    collectionImageUrl
+    discordUrl
+    twitterUrl
+    websiteUrl
+    marketplaceName
+    marketplaceUrl
+    floorPrice
+    traits {
+      trait_type
+      value
+    }
+  }
+}
+
+query getNftsMetadata($walletAddress: String!, $tokens: JSON!) {
+  getNftsMetadata(walletAddress: $walletAddress, tokens: $tokens) {
+    name
+    acquiredAt
+    uniqueId
+    description
+    standard
+    isSendable
+    backgroundColor
+    images {
+      highResUrl
+      lowResUrl
+      mimeType
+      animatedUrl
+      animatedMimeType
+    }
+    type
+    backgroundColor
+    collectionName
+    collectionUrl
+    collectionDescription
+    collectionImageUrl
+    discordUrl
+    twitterUrl
+    websiteUrl
+    marketplaceName
+    marketplaceUrl
+    floorPrice
+    traits {
+      trait_type
+      value
+    }
+  }
+}
+
 query getFeaturedResults($placementId: String!, $walletAddress: String!, $country: String, $limit: Int) {
   featuredResults(placementId: $placementId, walletAddress: $walletAddress, country: $country, limit: $limit) {
     items {

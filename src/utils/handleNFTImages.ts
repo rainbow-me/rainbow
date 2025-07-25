@@ -38,16 +38,12 @@ export function handleNFTImages({
 
   const isSVG = mimeType === MimeType.SVG;
   const isGIF = mimeType === MimeType.GIF;
-  const highResUrl =
-    (isSVG
-      ? // don't sign if SVG, will be handled by UniqueTokenImage component
-        originalUrl
-      : url?.startsWith?.(GOOGLE_USER_CONTENT_URL)
-        ? url.replace(/=s\d+$/, `=s${FULL_NFT_IMAGE_SIZE}`)
-        : maybeSignUri(url, {
-            // decrease size for GIFs to avoid hitting imgix's 10MB limit
-            w: isGIF ? cardSize : FULL_NFT_IMAGE_SIZE,
-          })) ?? null;
+  const highResUrl = url?.startsWith?.(GOOGLE_USER_CONTENT_URL)
+    ? url.replace(/=s\d+$/, `=s${FULL_NFT_IMAGE_SIZE}`)
+    : maybeSignUri(url, {
+        // decrease size for GIFs to avoid hitting imgix's 10MB limit
+        w: isGIF ? cardSize : FULL_NFT_IMAGE_SIZE,
+      }) ?? null;
 
   const lowResUrl =
     previewUrl?.startsWith?.(GOOGLE_USER_CONTENT_URL) && !isGIF

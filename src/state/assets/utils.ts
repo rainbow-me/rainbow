@@ -286,7 +286,7 @@ function transformZerionAssetToUserAsset(asset: ZerionAsset): Asset {
     name: asset.name,
     symbol: asset.symbol,
     decimals: asset.decimals,
-    type: asset.type || AssetType.token,
+    type: asset.type ?? AssetType.token,
     iconUrl: asset.icon_url,
     network: chainName,
     verified: asset.is_verified ?? false,

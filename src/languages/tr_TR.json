@@ -1039,7 +1039,7 @@
         "text": "Linea, ConsenSys tarafından geliştirilen güvenli ve düşük maliyetli, Ethereum eşdeğeri Katman 2 blok zinciridir.\n\nGüvenlik ve merkeziyetsizlikten ödün vermeden daha hızlı ve uygun maliyetli işlemler yapılmasını sağlar, bir sonraki milyar kullanıcıyı web3'e getirmeyi hedefler.",
         "title": "Linea nedir?"
       },
-      "optimism": {
+      "opmainnet": {
         "text": "Optimizm, Ethereum'un üzerinde çalışan ve hala Ethereum'un altında yatan güvenlikten faydalanırken daha ucuz ve hızlı işlemleri mümkün kılan bir Katman 2 ağıdır.\n\nBir sürü işlemi, onları kalıcı olarak Ethereum'a göndermeden önce bir \"roll up\" içinde birleştirir.",
         "title": "Optimizm nedir?"
       },

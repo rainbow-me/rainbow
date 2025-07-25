@@ -7,20 +7,35 @@ import { usePersistentAspectRatio } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow as shadowUtil } from '@/styles';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { ThemeContextProps, useTheme } from '@/theme';
+import { StyleProp, View, ViewStyle } from 'react-native';
+import { UniqueAsset } from '@/entities';
 
 const UniqueTokenCardBorderRadius = 20;
-const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
+const UniqueTokenCardShadowFactory = (colors: ThemeContextProps['colors']) => [0, 2, 6, colors.shadow, 0.08];
 
-const Container = styled.View(({ shadow }) => shadowUtil.buildAsObject(...shadow));
+const Container = styled(View)(({ shadow }: { shadow: number[] }) => shadowUtil.buildAsObject(...shadow));
 
-const Content = styled.View({
+const Content = styled(View)({
   borderRadius: UniqueTokenCardBorderRadius,
-  height: ({ height }) => height || CardSize,
+  height: ({ height }: { height: number }) => height || CardSize,
   overflow: 'hidden',
-  width: ({ width }) => width || CardSize,
+  width: ({ width }: { width: number }) => width || CardSize,
 });
 
-const UniqueTokenCard = ({
+type UniqueTokenCardProps = {
+  borderEnabled?: boolean;
+  disabled?: boolean;
+  enableHapticFeedback?: boolean;
+  item: UniqueAsset;
+  onPress?: (item: UniqueAsset) => void;
+  scaleTo?: number;
+  shadow?: number[];
+  size?: number;
+  style?: StyleProp<ViewStyle>;
+};
+
+export const UniqueTokenCard = React.memo(function UniqueTokenCard({
   borderEnabled = true,
   disabled = false,
   enableHapticFeedback = true,
@@ -31,9 +46,9 @@ const UniqueTokenCard = ({
   size = CardSize,
   style = undefined,
   ...props
-}) => {
-  usePersistentAspectRatio(item.lowResUrl);
-  usePersistentDominantColorFromImage(item.lowResUrl);
+}: UniqueTokenCardProps) {
+  usePersistentAspectRatio(item.images.lowResUrl);
+  usePersistentDominantColorFromImage(item.images.lowResUrl);
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -56,21 +71,19 @@ const UniqueTokenCard = ({
     >
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
-          backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={item.lowResUrl || item.image_url}
+          backgroundColor={item.backgroundColor || colors.lightestGrey}
+          imageUrl={item.images.lowResUrl || item.images.highResUrl || item.images.animatedUrl}
           isCard
-          fullUniqueId={item.fullUniqueId}
-          id={item.id}
-          collectionName={item.collection?.name ?? ''}
+          id={item.tokenId}
+          collectionName={item.collectionName ?? ''}
           name={item.name}
           uniqueId={item.uniqueId}
-          mimeType={item.mimeType}
-          address={item.asset_contract?.address}
+          lowResImageUrl={item.images.lowResUrl}
         />
         {borderEnabled && <InnerBorder opacity={0.04} radius={UniqueTokenCardBorderRadius} width={0.5} />}
       </Content>
     </Container>
   );
-};
+});
 
 export default UniqueTokenCard;

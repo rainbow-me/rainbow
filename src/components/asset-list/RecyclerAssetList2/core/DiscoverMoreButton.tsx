@@ -9,7 +9,7 @@ import lang from 'i18n-js';
 
 export const DISCOVER_MORE_BUTTON_HEIGHT = 40;
 
-export const DiscoverMoreButton = () => {
+export const DiscoverMoreButton = React.memo(function DiscoverMoreButton() {
   const { navigate } = useNavigation();
   const { accentColor } = useAccountAccentColor();
 
@@ -28,4 +28,4 @@ export const DiscoverMoreButton = () => {
       </TintButton>
     </AccentColorProvider>
   );
-};
+});

@@ -26,7 +26,7 @@ export const getGutterSizeForCardAmount = (amount: number) => {
   return 55;
 };
 
-export const RemoteCardCarousel = () => {
+export const RemoteCardCarousel = React.memo(function RemoteCardCarousel() {
   const { isDarkMode } = useColorMode();
   const carouselRef = useRef<FlashList<string>>(null);
   const { name } = useRoute();
@@ -65,4 +65,4 @@ export const RemoteCardCarousel = () => {
       />
     </>
   );
-};
+});
