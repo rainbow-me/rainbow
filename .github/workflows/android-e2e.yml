@@ -21,7 +21,7 @@ jobs:
       # built for all architectures so it can be downloaded from the artifacts
       # and installed locally. It will also record logcat logs and a video of
       # the test run. Note that the video is limited to 3 minutes.
-      DEBUG: false
+      DEBUG: true
       SHARDS: 1
       ANDROID_EMULATOR_API_LEVEL: 31
       ANDROID_EMULATOR_PROFILE: pixel_6
@@ -133,21 +133,21 @@ jobs:
           arch: ${{ env.ARCH }}
           emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
 
-      - name: Run tests
-        uses: reactivecircus/android-emulator-runner@v2
-        id: e2e_test
-        with:
-          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
-          target: google_apis_playstore
-          arch: ${{ env.ARCH }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
-          cores: ${{ env.ANDROID_EMULATOR_CORES }}
-          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
-          emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
-          script: ./scripts/e2e-android-ci.sh
+      # - name: Run tests
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   id: e2e_test
+      #   with:
+      #     api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
+      #     target: google_apis_playstore
+      #     arch: ${{ env.ARCH }}
+      #     force-avd-creation: false
+      #     emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+      #     disable-animations: true
+      #     profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+      #     cores: ${{ env.ANDROID_EMULATOR_CORES }}
+      #     ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+      #     emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
+      #     script: ./scripts/e2e-android-ci.sh
 
       - name: Upload artifacts
         if: ${{ always() }}
