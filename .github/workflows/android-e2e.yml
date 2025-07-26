@@ -82,21 +82,21 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-          key: ${{ runner.os }}-${{ runner.arch }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      # - name: Cache Yarn dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ${{ steps.yarn-cache-dir-path.outputs.dir }}
+      #       .yarn/cache
+      #       .yarn/install-state.gz
+      #     key: ${{ runner.os }}-${{ runner.arch }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-yarn-
 
-      - name: Cache Gradle build
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          cache-read-only: false
+      # - name: Cache Gradle build
+      #   uses: gradle/actions/setup-gradle@v3
+      #   with:
+      #     cache-read-only: false
 
       - name: Install dependencies
         env:
@@ -133,21 +133,21 @@ jobs:
           arch: ${{ env.ARCH }}
           emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
 
-      # - name: Run tests
-      #   uses: reactivecircus/android-emulator-runner@v2
-      #   id: e2e_test
-      #   with:
-      #     api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
-      #     target: google_apis_playstore
-      #     arch: ${{ env.ARCH }}
-      #     force-avd-creation: false
-      #     emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-      #     disable-animations: true
-      #     profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
-      #     cores: ${{ env.ANDROID_EMULATOR_CORES }}
-      #     ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
-      #     emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
-      #     script: ./scripts/e2e-android-ci.sh
+      - name: Run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        id: e2e_test
+        with:
+          api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
+          target: google_apis_playstore
+          arch: ${{ env.ARCH }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
+          cores: ${{ env.ANDROID_EMULATOR_CORES }}
+          ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
+          emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
+          script: ./scripts/e2e-android-ci.sh
 
       - name: Upload artifacts
         if: ${{ always() }}
