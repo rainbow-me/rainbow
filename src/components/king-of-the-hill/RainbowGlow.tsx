@@ -10,18 +10,18 @@ type RainbowGlowProps = {
 export const RainbowGlow = memo(function RainbowGlow({ size }: RainbowGlowProps) {
   const glowSize = size * 4;
   const center = glowSize / 2;
-  const maskRadius = size * 0.8;
+  const maskRadius = size * 0.9;
 
   return (
     <Canvas style={{ width: glowSize, height: glowSize }}>
       <Group
         layer={
           <Paint>
-            <Blur blur={20} />
+            <Blur blur={15} />
           </Paint>
         }
         // move it downwards and skew it wider at the bottom
-        transform={[{ scaleY: 1.3 }, { skewX: 0.08 }, { translateY: -15 }]}
+        transform={[{ scaleX: 1.1 }, { scaleY: 1.16 }, { skewX: 0.15 }, { translateY: -15 }, { translateX: -15 }]}
       >
         <Mask
           mask={

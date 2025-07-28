@@ -188,7 +188,7 @@ const HillBackground = memo(function HillBackground({ scrollY }: { scrollY: Shar
   const { top: topInset } = useSafeAreaInsets();
   const { width: screenWidth } = Dimensions.get('window');
   const hillWidth = Math.min(630, screenWidth);
-  const hillHeight = hillWidth * 0.7;
+  const hillHeight = hillWidth * 0.8;
   const hillImageHiddenByScrollY = 100;
 
   const hillAnimatedStyle = useAnimatedStyle(() => {
