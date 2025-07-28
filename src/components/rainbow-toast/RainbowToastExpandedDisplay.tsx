@@ -14,7 +14,9 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
 
-const springConfig = { damping: 14, mass: 1, stiffness: 121.6 };
+const springConfigEnter = { damping: 14, mass: 1, stiffness: 121.6 };
+const springConfigDismiss = { damping: 20, mass: 0.8, stiffness: 250 };
+
 const CARD_BORDER_RADIUS = 50;
 const CARD_MARGIN = 20;
 
@@ -90,12 +92,12 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
 
   useEffect(() => {
     if (showExpanded) {
-      animateY.value = withSpring(0, springConfig);
-      opacity.value = withSpring(1, springConfig);
+      animateY.value = withSpring(0, springConfigEnter);
+      opacity.value = withSpring(1, springConfigEnter);
       pointerEvents.value = 'auto';
     } else {
-      animateY.value = withSpring(-20, springConfig);
-      opacity.value = withSpring(0, springConfig);
+      animateY.value = withSpring(-20, springConfigDismiss);
+      opacity.value = withSpring(0, springConfigDismiss);
       pointerEvents.value = 'auto';
     }
   }, [opacity, showExpanded, animateY, pointerEvents]);
@@ -128,14 +130,14 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
 
         if (shouldDismiss) {
           const targetY = -100;
-          animateY.value = withSpring(targetY, springConfig, () => {
+          animateY.value = withSpring(targetY, springConfigDismiss, () => {
             runOnJS(setShowExpandedToasts)(false);
           });
-          dragY.value = withSpring(0, springConfig);
-          opacity.value = withSpring(0, springConfig);
+          dragY.value = withSpring(0, springConfigDismiss);
+          opacity.value = withSpring(0, springConfigDismiss);
           pointerEvents.value = 'none';
         } else {
-          dragY.value = withSpring(0, springConfig);
+          dragY.value = withSpring(0, springConfigEnter);
         }
       });
   }, [dragY, height, animateY, opacity, pointerEvents]);
@@ -143,11 +145,11 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   const hide = useCallback(() => {
     return new Promise<void>(res => {
       'worklet';
-      animateY.value = withSpring(-100, springConfig, () => {
+      animateY.value = withSpring(-100, springConfigDismiss, () => {
         runOnJS(setShowExpandedToasts)(false);
       });
-      dragY.value = withSpring(0, springConfig);
-      opacity.value = withSpring(0, springConfig, () => {
+      dragY.value = withSpring(0, springConfigDismiss);
+      opacity.value = withSpring(0, springConfigDismiss, () => {
         runOnJS(res)();
       });
     });

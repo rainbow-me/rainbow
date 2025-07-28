@@ -74,7 +74,6 @@ export function ToastDebugSheet() {
   const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send' | 'contract_interaction', status: TransactionStatus) => {
     const latest = current.findLast(px => px.type === type);
     if (latest) {
-      console.info(`Updating`, latest, 'to', type);
       pendingTransactionsStore.setState(state => ({
         ...state,
         pendingTransactions: {

@@ -3,6 +3,7 @@ import type { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-t
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Mints } from '@/resources/mints';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { skaleTitanTestnet } from 'viem/chains';
 
 export type ToastState = {
   isShowingTransactionDetails: boolean;
@@ -14,6 +15,7 @@ export type ToastState = {
   dismissedToasts: Record<string, boolean>;
   showExpanded: boolean;
   setShowExpandedToasts: (show: boolean) => void;
+  pendingRemoveToastIds: string[];
 };
 
 export const useToastStore = createRainbowStore<ToastState>(
@@ -22,6 +24,10 @@ export const useToastStore = createRainbowStore<ToastState>(
     // we're tracking dismissed toasts here so if transactions update while we're removing
     // we don't re-add them back into the toast stack
     dismissedToasts: {},
+    // an edge case where you open expanded sheet on a confirmed toast before we hide it
+    // we need to keep that toast around until you close expanded toast, then remove it
+    // this tracks pending removes when you open expanded and then is used to remove on close
+    pendingRemoveToastIds: [],
     showExpanded: false,
     isShowingTransactionDetails: false,
 
@@ -31,7 +37,23 @@ export const useToastStore = createRainbowStore<ToastState>(
       });
     },
 
-    setShowExpandedToasts: (show: boolean) => set({ showExpanded: show }),
+    setShowExpandedToasts: (show: boolean) => {
+      set(state => {
+        // were closing the expanded toast drawer, now we can clear completed toasts
+        if (show === false && state.pendingRemoveToastIds.length) {
+          const nextState = { ...state };
+          for (const pendingId of state.pendingRemoveToastIds) {
+            Object.assign(nextState, getToastsStateForStartRemove(state, pendingId, 'finish'));
+          }
+          return {
+            ...nextState,
+            showExpanded: false,
+          };
+        }
+
+        return { showExpanded: show };
+      });
+    },
 
     handleTransactions: ({ transactions, mints }) => {
       set(state => {
@@ -89,25 +111,14 @@ export const useToastStore = createRainbowStore<ToastState>(
     // split into starting to remove and then fully removing so we can animate out
     startRemoveToast: (id, via) => {
       set(state => {
-        const toasts: RainbowToastWithIndex[] = [];
-
-        let currentIndex = 0;
-        for (const toast of state.toasts) {
-          if (toast.id === id) {
-            toasts.push({ ...toast, isRemoving: true, removalReason: via });
-          } else {
-            toasts.push({ ...toast, index: currentIndex });
-            currentIndex += 1;
-          }
+        // if we want to clear a completes toast while expanded, wait until expanded sheet closes
+        if (via === 'finish' && state.showExpanded) {
+          return {
+            pendingRemoveToastIds: [...state.pendingRemoveToastIds, id],
+          };
         }
 
-        return {
-          dismissedToasts: {
-            ...state.dismissedToasts,
-            [id]: true,
-          },
-          toasts,
-        };
+        return getToastsStateForStartRemove(state, id, via);
       });
     },
 
@@ -121,6 +132,28 @@ export const useToastStore = createRainbowStore<ToastState>(
     storageKey: `rainbow-toasts`,
   }
 );
+
+function getToastsStateForStartRemove(state: ToastState, id: string, via: 'swipe' | 'finish') {
+  const toasts: RainbowToastWithIndex[] = [];
+
+  let currentIndex = 0;
+  for (const toast of state.toasts) {
+    if (toast.id === id) {
+      toasts.push({ ...toast, isRemoving: true, removalReason: via });
+    } else {
+      toasts.push({ ...toast, index: currentIndex });
+      currentIndex += 1;
+    }
+  }
+
+  return {
+    dismissedToasts: {
+      ...state.dismissedToasts,
+      [id]: true,
+    },
+    toasts,
+  } satisfies Partial<ToastState>;
+}
 
 export const { handleTransactions, startRemoveToast, finishRemoveToast, setShowExpandedToasts, setIsShowingTransactionDetails } =
   useToastStore.getState();

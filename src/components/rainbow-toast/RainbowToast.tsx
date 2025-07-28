@@ -27,7 +27,7 @@ import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
 import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
-import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -294,7 +294,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
     };
   });
 
-  const showExpanded = useCallback(() => {
+  const setShowExpandedTrue = useCallback(() => {
     isPressed.value = false;
     setShowExpandedToasts(true);
   }, [isPressed]);
@@ -312,16 +312,16 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
         // android doesn't trigger onEnd, do our own logic
         if (IS_ANDROID) {
           if (translateX.value === 0 && Date.now() - touchStartedAt.value < 500) {
-            runOnJS(showExpanded)();
+            runOnJS(setShowExpandedTrue)();
           }
         }
 
         isPressed.value = false;
       })
       .onEnd(() => {
-        runOnJS(showExpanded)();
+        runOnJS(setShowExpandedTrue)();
       });
-  }, [isPressed, showExpanded, touchStartedAt, translateX.value]);
+  }, [isPressed, setShowExpandedTrue, touchStartedAt, translateX.value]);
 
   const combinedGesture = useMemo(() => {
     return Gesture.Simultaneous(pressGesture, panGesture);
@@ -329,7 +329,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
 
   const outerContainerStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: withSpring(isPressed.value ? 0.9 : 1) }],
+      transform: [{ scale: withSpring(isPressed.value ? 0.95 : 1) }],
     };
   });
 
