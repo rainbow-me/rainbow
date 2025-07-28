@@ -52,7 +52,6 @@ export const LaunchButton = memo(function LaunchButton() {
 
 const InnerGlow = memo(function InnerGlow() {
   const [{ width, height }, setDimensions] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
-  console.log('wtf', width, height);
 
   const borderRadius = BORDER_RADIUS;
 
