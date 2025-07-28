@@ -9,7 +9,7 @@ export const formatPriceChange = (relativeChange?: number | null): string => {
   }
   const isPositive = relativeChange > 0;
   const symbol = isPositive ? upSymbol : downSymbol;
-  const formattedNumber = formatNumber(relativeChange, { decimals: 2, useOrderSuffix: true });
+  const formattedNumber = formatNumber(Math.abs(relativeChange), { decimals: 2, useOrderSuffix: true });
   return `${symbol} ${formattedNumber}%`;
 };
 

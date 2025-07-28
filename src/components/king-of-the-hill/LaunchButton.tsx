@@ -1,13 +1,15 @@
+import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
-import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { GradientText } from '@/components/text';
-import { Text, useColorMode } from '@/design-system';
+import { globalColors, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import React, { memo } from 'react';
+import { Canvas, Group, Paint, RoundedRect, Shadow, LinearGradient as SkiaLinearGradient, vec } from '@shopify/react-native-skia';
+import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+
+const BORDER_RADIUS = 28;
 
 export const LaunchButton = memo(function LaunchButton() {
   const { isDarkMode } = useColorMode();
@@ -27,42 +29,53 @@ export const LaunchButton = memo(function LaunchButton() {
             },
           ]}
         >
-          <GradientBorderView
-            borderGradientColors={['#FFEB3B', '#FFA500']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            borderRadius={28}
-            borderWidth={3}
-            backgroundColor={'transparent'}
-            // leaving inline position styles so its easier to see next to the usage
-            style={{
-              height: 52,
-            }}
-          >
-            <View style={styles.launchButtonContent}>
-              <LinearGradient
-                colors={['#EBAF09', '#FFC800']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.launchButtonGradient}
-              >
-                <View style={styles.launchButtonTextContainer}>
-                  <GradientText colors={['#3D1E0A', '#7A600A']}>
-                    <Text color="accent" size="icon 18px" weight="black" style={{ marginTop: -1 }}>
-                      􀅼
-                    </Text>
-                  </GradientText>
-                  <GradientText colors={['#3D1E0A', '#7A600A']}>
-                    <Text color="accent" size="20pt" weight="black" style={{ marginTop: -1 }}>
-                      {i18n.t(i18n.l.king_of_hill.launch)}
-                    </Text>
-                  </GradientText>
-                </View>
-              </LinearGradient>
+          <InnerGlow />
+          <View style={styles.launchButtonContent}>
+            <View style={styles.launchButtonTextContainer}>
+              <GradientText colors={['#3D1E0A', '#7A600A']}>
+                <Text color="accent" size="icon 18px" weight="heavy" style={{ marginTop: -1 }}>
+                  􀅼
+                </Text>
+              </GradientText>
+              <GradientText colors={['#3D1E0A', '#7A600A']}>
+                <Text color="accent" size="20pt" weight="heavy" style={{ marginTop: -1 }}>
+                  {i18n.t(i18n.l.king_of_hill.launch)}
+                </Text>
+              </GradientText>
             </View>
-          </GradientBorderView>
+          </View>
         </View>
       </ButtonPressAnimation>
+    </View>
+  );
+});
+
+const InnerGlow = memo(function InnerGlow() {
+  const [{ width, height }, setDimensions] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  console.log('wtf', width, height);
+
+  const borderRadius = BORDER_RADIUS;
+
+  return (
+    <View
+      onLayout={event => {
+        const { width, height } = event.nativeEvent.layout;
+        setDimensions({ width, height });
+      }}
+      style={[StyleSheet.absoluteFillObject, { borderRadius, overflow: 'hidden', pointerEvents: 'none' }]}
+    >
+      {Boolean(width && height) && (
+        <Canvas style={{ width, height, backgroundColor: 'red' }}>
+          <Group>
+            <RoundedRect x={0} y={0} width={width} height={height} r={borderRadius}>
+              <Paint antiAlias dither>
+                <Shadow blur={3} color={opacity(globalColors.white100, 0.95)} dx={0} dy={3} inner />
+                <SkiaLinearGradient colors={['#EBAF09', '#FFC800']} start={vec(0, 0)} end={vec(width, 0)} />
+              </Paint>
+            </RoundedRect>
+          </Group>
+        </Canvas>
+      )}
     </View>
   );
 });
@@ -85,12 +98,15 @@ const styles = StyleSheet.create({
   },
 
   // separate from launchButton so overflow hidden doesnt mess up shadow
-  launchButtonContent: { borderRadius: 28, overflow: 'hidden', flex: 1 },
-
-  launchButtonGradient: {
+  launchButtonContent: {
+    borderRadius: BORDER_RADIUS,
+    overflow: 'hidden',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#ffee58ff',
+    paddingVertical: 12,
   },
 
   launchButtonTextContainer: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 22 },
