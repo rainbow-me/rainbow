@@ -1,5 +1,5 @@
+import hillImage from '@/assets/hill.png';
 import { ShimmerAnimation } from '@/components/animations';
-import hillImage from '@/components/king-of-the-hill/hill.png';
 import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { KingOfTheHill, KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';

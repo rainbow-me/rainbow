@@ -1,3 +1,4 @@
+import crownImage from '@/assets/crown.png';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
@@ -21,7 +22,6 @@ import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSharedValue } from 'react-native-reanimated';
 import { Address } from 'viem';
-import crownImage from './crown.png';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
 import { formatPriceChange, getPriceChangeColor } from './utils';
