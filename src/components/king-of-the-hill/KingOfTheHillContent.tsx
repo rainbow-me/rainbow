@@ -1,6 +1,7 @@
 import hillImage from '@/assets/hill.png';
 import { ShimmerAnimation } from '@/components/animations';
 import { KingOfTheHillPastWinners } from '@/components/king-of-the-hill/KingOfTheHillPastWinners';
+import { RainbowImage } from '@/components/RainbowImage';
 import { useBackgroundColor, useColorMode } from '@/design-system';
 import { KingOfTheHill, KingOfTheHillRankingElem } from '@/graphql/__generated__/metadata';
 import { formatCurrency } from '@/helpers/strings';
@@ -14,7 +15,6 @@ import { dequal } from 'dequal';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { memo, ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KingOfTheHillHeader } from './KingOfTheHillHeader';
@@ -213,7 +213,11 @@ const HillBackground = memo(function HillBackground({ scrollY }: { scrollY: Shar
         hillAnimatedStyle,
       ]}
     >
-      <FastImage source={hillImage} resizeMode="contain" style={{ width: hillWidth, height: hillHeight, opacity: isDarkMode ? 0.5 : 1 }} />
+      <RainbowImage
+        source={hillImage}
+        resizeMode="contain"
+        style={{ width: hillWidth, height: hillHeight, opacity: isDarkMode ? 0.5 : 1 }}
+      />
     </Animated.View>
   );
 });

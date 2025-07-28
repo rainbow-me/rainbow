@@ -6,7 +6,9 @@ import { withStaticProperties } from '../helpers/withStaticProperties';
 import { memoFn } from '../utils/memoFn';
 
 export type RainbowImageProps = {
-  source: ImageOptions;
+  source: Omit<ImageOptions, 'resizeMode'> | number;
+  // subset of resizeModes they all support
+  resizeMode?: 'contain' | 'cover' | 'center';
   onError?: FasterImageProps['onError'];
   onSuccess?: FasterImageProps['onSuccess'];
   style?: FasterImageProps['style'];
@@ -20,24 +22,25 @@ export type RainbowImageProps = {
  *
  * @param props - source URL and other image properties
  */
-const RainbowImageInternal = ({ style, source, onError, onSuccess }: RainbowImageProps) => {
-  const extension = getImageType(source.url);
-  const handler = getHandlerFromType(extension);
+const RainbowImageInternal = ({
+  style,
+  source,
+  // aligns default resizeMode to match fast-image and RN Image
+  resizeMode = 'cover',
+  onError,
+  onSuccess,
+}: RainbowImageProps) => {
+  const handler = typeof source === 'number' ? 'fast-image' : getHandlerFromType(getImageType(source.url));
 
-  if (handler === 'faster-image') {
+  if (handler === 'faster-image' && typeof source !== 'number') {
     return (
       <FasterImageView
         onError={onError}
         onSuccess={onSuccess}
-        source={
-          typeof source === 'number'
-            ? source
-            : {
-                // aligns default resizeMode to match fast-image and RN Image
-                resizeMode: 'cover',
-                ...source,
-              }
-        }
+        source={{
+          resizeMode: resizeMode,
+          ...source,
+        }}
         style={style || []}
       />
     );
@@ -46,12 +49,17 @@ const RainbowImageInternal = ({ style, source, onError, onSuccess }: RainbowImag
   if (handler === 'fast-image') {
     return (
       <FastImage
-        source={{
-          uri: source.url,
-          headers: source.headers,
-          // for next version of react native faster image
-          // priority: source.priority === 'veryLow' ? 'low' : source.priority === 'veryHigh' ? 'high' : source.priority,
-        }}
+        resizeMode={resizeMode}
+        source={
+          typeof source === 'number'
+            ? source
+            : {
+                uri: source.url,
+                headers: source.headers,
+                // for next version of react native faster image
+                // priority: source.priority === 'veryLow' ? 'low' : source.priority === 'veryHigh' ? 'high' : source.priority,
+              }
+        }
         // @ts-expect-error so fast-image defines their own weird ImageStyle, it's mostly a subset and should be fine
         // we should replace fast-image with something like expo-image as it's no longer maintained and that will fix this
         style={style}
@@ -59,6 +67,7 @@ const RainbowImageInternal = ({ style, source, onError, onSuccess }: RainbowImag
           onError?.({ nativeEvent: { error: 'Error loading image' } });
         }}
         onLoad={e => {
+          if (typeof source === 'number') return; // its imported local bundle no need to onLoad
           onSuccess?.({
             nativeEvent: {
               width: e.nativeEvent.width,
@@ -75,17 +84,19 @@ const RainbowImageInternal = ({ style, source, onError, onSuccess }: RainbowImag
   return (
     <Image
       style={style}
-      source={{ uri: source.url }}
+      source={typeof source === 'number' ? source : { uri: source.url }}
+      resizeMode={resizeMode}
       onError={onError}
-      onLoad={e =>
+      onLoad={e => {
+        if (typeof source === 'number') return; // its imported local bundle no need to onLoad
         onSuccess?.({
           nativeEvent: {
             width: e.nativeEvent.source.width,
             height: e.nativeEvent.source.height,
             source: source.url,
           },
-        })
-      }
+        });
+      }}
     />
   );
 };
