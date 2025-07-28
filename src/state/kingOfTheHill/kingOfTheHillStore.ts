@@ -39,9 +39,9 @@ export const useKingOfTheHillStore = createQueryStore<State | null, KingOfTheHil
   {
     fetcher: kingOfTheHillQueryFunction,
     onFetched: ({ set }) => {
-      // if not on discover screen, disable query store to prevent re-fetching
+      // if not on king of the hill screen, disable query store to prevent re-fetching
       const activeSwipeRoute = useNavigationStore.getState().activeSwipeRoute;
-      if (activeSwipeRoute !== Routes.DISCOVER_SCREEN) {
+      if (activeSwipeRoute !== Routes.KING_OF_THE_HILL) {
         set({ enabled: false });
       }
     },
