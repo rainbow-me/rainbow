@@ -69,7 +69,7 @@ const InnerGlow = memo(function InnerGlow() {
           <Group>
             <RoundedRect x={0} y={0} width={width} height={height} r={borderRadius}>
               <Paint antiAlias dither>
-                <Shadow blur={3} color={opacity(globalColors.white100, 0.95)} dx={0} dy={3} inner />
+                <Shadow blur={3} color={opacity(globalColors.white100, 0.97)} dx={0} dy={3} inner />
                 <SkiaLinearGradient colors={['#EBAF09', '#FFC800']} start={vec(0, 0)} end={vec(width, 0)} />
               </Paint>
             </RoundedRect>
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
-    borderColor: '#ffee58ff',
+    borderColor: '#ffee5888',
     paddingVertical: 12,
   },
 
