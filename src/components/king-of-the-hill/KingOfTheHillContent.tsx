@@ -33,15 +33,11 @@ type LeaderboardListItem = {
   windowTradingVolume: string;
 };
 
-type BottomPadItem = {
-  type: 'bottom-pad';
-};
-
 type PastWinnersItem = {
   type: 'past-winners';
 };
 
-type ListItem = HeaderItem | LeaderboardListItem | PastWinnersItem | BottomPadItem;
+type ListItem = HeaderItem | LeaderboardListItem | PastWinnersItem;
 
 export const KingOfTheHillContent = memo(function KingOfTheHillContent({
   scrollY,
@@ -72,8 +68,8 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
         const chillColor = makeColorMoreChill(tokenDominantColor);
         const adjustedColor = isDarkMode
           ? // these are a bit tricky to get right, these values visually seem similar on light/dark
-            chroma(chillColor).darken(3).desaturate(1.25).css()
-          : chroma(chillColor).brighten(3).desaturate(1.7).css();
+            chroma(chillColor).darken(2.5).desaturate(1.2).css()
+          : chroma(chillColor).brighten(3).desaturate(1.6).css();
         setBackgroundColor(adjustedColor);
         onColorExtracted?.(adjustedColor);
       }
@@ -113,7 +109,6 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
       // ...rankedItems.slice(0, 3),
       // { type: 'past-winners' },
       // ...rankedItems.slice(4),
-      { type: 'bottom-pad' },
     ];
   }, [kingOfTheHill, kingOfTheHillLeaderBoard]);
 
@@ -177,7 +172,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
             scrollY.value = event.nativeEvent.contentOffset.y;
           }
         }}
-        contentContainerStyle={{ paddingTop: topInset + 40 }}
+        contentContainerStyle={{ paddingTop: topInset + 40, paddingBottom: 180 }}
         style={styles.list}
       />
     );

@@ -23,13 +23,16 @@ import crownImage from './crown.png';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
 import { formatPriceChange, getPriceChangeColor } from './utils';
+import { RainbowImage } from '@/components/RainbowImage';
+import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 
 type HeaderProps = {
   kingOfTheHill?: KingOfTheHill | null;
   onColorExtracted?: (color: string | null) => void;
 };
 
-const TOKEN_SIZE = 80;
+const TOKEN_SIZE = 82;
+const TOKEN_GRADIENT_BORDER_SIZE = TOKEN_SIZE + 14;
 const SECONDS_PER_HOUR = 60 * 60;
 
 export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfTheHill, onColorExtracted }: HeaderProps) {
@@ -86,11 +89,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
     return () => clearInterval(interval);
   }, []);
 
-  if (!current) {
-    return null;
-  }
-
-  if (!currentWinningToken) {
+  if (!current || !sizedIconUrl || !currentWinningToken) {
     return null;
   }
 
@@ -121,26 +120,24 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
           {/* gradient circle behind token */}
           <View style={styles.gradientCircleContainer}>
             <Canvas style={styles.gradientCanvas}>
-              <Circle cx={(TOKEN_SIZE + 12) / 2} cy={(TOKEN_SIZE + 12) / 2} r={(TOKEN_SIZE + 12) / 2}>
+              <Circle cx={TOKEN_GRADIENT_BORDER_SIZE / 2} cy={TOKEN_GRADIENT_BORDER_SIZE / 2} r={TOKEN_GRADIENT_BORDER_SIZE / 2}>
                 <LinearGradient
-                  start={vec((TOKEN_SIZE + 12) / 2, 0)}
-                  end={vec((TOKEN_SIZE + 12) / 2, TOKEN_SIZE + 12)}
-                  colors={[
-                    'rgba(34, 197, 94, 1)', // green
-                    'rgba(250, 204, 21, 1)', // yellow
-                    'rgba(239, 68, 68, 1)', // red
-                  ]}
-                  positions={[0, 0.5, 1]}
+                  start={vec(TOKEN_GRADIENT_BORDER_SIZE / 2, 0)}
+                  end={vec(TOKEN_GRADIENT_BORDER_SIZE / 2, TOKEN_GRADIENT_BORDER_SIZE)}
+                  colors={['#02ADDE', '#fff671ff', '#f27c61ff', '#9a86a4ff']}
+                  positions={[0, 0.2, 0.7, 1]}
                 />
               </Circle>
             </Canvas>
           </View>
 
-          <FastImage source={{ uri: sizedIconUrl }} style={styles.tokenImage} />
+          <View style={styles.tokenImage}>
+            <ShinyCoinIcon imageUrl={sizedIconUrl} size={TOKEN_SIZE} />
+          </View>
 
           {/* chain image */}
           <View style={styles.chainImageContainer}>
-            <ChainImage chainId={currentWinningToken.chainId} size={26} position="absolute" style={styles.chainImageShadow} />
+            <ChainImage chainId={currentWinningToken.chainId} size={24} position="absolute" style={styles.chainImageShadow} />
           </View>
 
           <Image source={crownImage} style={styles.crown} />
@@ -282,9 +279,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
   },
   tokenImage: {
-    width: TOKEN_SIZE,
-    height: TOKEN_SIZE,
-    borderRadius: TOKEN_SIZE / 2,
+    overflow: 'hidden',
     zIndex: 2,
   },
   tokenImageContainer: {
@@ -303,27 +298,28 @@ const styles = StyleSheet.create({
   },
   gradientCircleContainer: {
     position: 'absolute',
-    width: TOKEN_SIZE + 12,
-    height: TOKEN_SIZE + 12,
+    width: TOKEN_GRADIENT_BORDER_SIZE,
+    height: TOKEN_GRADIENT_BORDER_SIZE,
     zIndex: 1,
+    opacity: 0.75,
   },
   gradientCanvas: {
-    width: TOKEN_SIZE + 12,
-    height: TOKEN_SIZE + 12,
+    width: TOKEN_GRADIENT_BORDER_SIZE,
+    height: TOKEN_GRADIENT_BORDER_SIZE,
   },
   crown: {
     position: 'absolute',
-    top: 10,
+    top: 11,
     left: TOKEN_SIZE / 2 + 20,
-    width: 35,
+    width: 40,
     height: 35,
-    transform: [{ rotate: '-3deg' }],
+    // transform: [{ rotate: '-3deg' }],
     zIndex: 10,
   },
   chainImageContainer: {
     position: 'absolute',
-    bottom: TOKEN_SIZE / 2 - 9,
-    left: TOKEN_SIZE / 2 - 8,
+    bottom: TOKEN_SIZE / 2 - 8,
+    left: TOKEN_SIZE / 2 - 6,
     zIndex: 3,
   },
   chainImageShadow: {
@@ -338,7 +334,7 @@ const styles = StyleSheet.create({
   },
   roundEndsContainer: {
     alignSelf: 'center',
-    marginTop: -10,
+    marginTop: -14,
     height: 32,
   },
   roundEndsContent: {

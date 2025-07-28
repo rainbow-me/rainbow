@@ -100,7 +100,7 @@ export const LeaderboardItem = memo(function LeaderboardItem({
           <Inline alignVertical="center">
             <Text
               color="label"
-              size="15pt"
+              size="17pt"
               weight="semibold"
               numberOfLines={1}
               style={{
@@ -116,7 +116,7 @@ export const LeaderboardItem = memo(function LeaderboardItem({
             <Text color={priceChangeColor} size="11pt" weight="bold" style={{ marginRight: 3 }}>
               {priceChangeString[0]}
             </Text>
-            <Text color={priceChangeColor} size="15pt" weight="bold">
+            <Text color={priceChangeColor} size="15pt" weight="bold" style={{ transform: [{ translateY: 1 }] }}>
               {priceChangeString.slice(2)}
             </Text>
           </Inline>
@@ -166,11 +166,11 @@ export const LeaderboardItem = memo(function LeaderboardItem({
 const SmallLabeledRow = ({ label, value }: { label: string; value: string }) => {
   return (
     <View style={styles.smallLabelRow}>
-      <Text color="labelQuaternary" size="11pt" weight="medium">
+      <Text color="labelQuaternary" size="11pt" weight="bold">
         {label}
       </Text>
 
-      <Text color="labelTertiary" size="11pt" weight="medium">
+      <Text color="labelTertiary" size="11pt" weight="bold">
         {value}
       </Text>
     </View>
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   contentColumn: {
     flex: 1,
     paddingHorizontal: 12,
-    gap: 5,
+    gap: 4,
     marginTop: 1, // visually more centered due to text capsize
   },
   rankOverlay: {

@@ -8,7 +8,7 @@ type RainbowGlowProps = {
 };
 
 export const RainbowGlow = memo(function RainbowGlow({ size }: RainbowGlowProps) {
-  const glowSize = size * 3.75;
+  const glowSize = size * 4;
   const center = glowSize / 2;
   const maskRadius = size * 0.8;
 
@@ -17,10 +17,10 @@ export const RainbowGlow = memo(function RainbowGlow({ size }: RainbowGlowProps)
       <Group
         layer={
           <Paint>
-            <Blur blur={25} />
+            <Blur blur={20} />
           </Paint>
         }
-        // skew it downwards
+        // move it downwards and skew it wider at the bottom
         transform={[{ scaleY: 1.3 }, { skewX: 0.08 }, { translateY: -15 }]}
       >
         <Mask
@@ -45,7 +45,8 @@ export const RainbowGlow = memo(function RainbowGlow({ size }: RainbowGlowProps)
                 'rgba(239, 68, 68, 1)', // red
                 'rgba(168, 85, 247, 1)', // purple
               ]}
-              positions={[0, 0.3, 0.6, 0]}
+              // for some reason 0.4 and 0.4 as starting values gets the green/yellow to look visually right
+              positions={[0.4, 0.4, 0.6, 0]}
             />
           </Rect>
         </Mask>

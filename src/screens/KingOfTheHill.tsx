@@ -15,24 +15,22 @@ import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore'
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useIsFocused } from '@react-navigation/native';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
 export const KingOfTheHillScreen = () => {
   const { isDarkMode } = useColorMode();
   const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
-  const getNumberOfAirdrops = useAirdropsStore(state => state.getNumberOfAirdrops);
+  const airdropsCount = useAirdropsStore(state => state.getNumberOfAirdrops() || 0);
   const scrollY = useSharedValue(0);
-  const [backgroundColor, setBackgroundColor] = React.useState<string | null>(null);
+  const [backgroundColor, setBackgroundColor] = useState<string | null>(null);
 
-  const onChangeWallet = React.useCallback(() => {
+  const onChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
   }, []);
 
-  const airdropsCount = getNumberOfAirdrops() || 0;
-
-  const handleColorExtracted = React.useCallback((color: string | null) => {
+  const handleColorExtracted = useCallback((color: string | null) => {
     setBackgroundColor(color);
   }, []);
 
