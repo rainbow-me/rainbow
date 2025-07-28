@@ -1,14 +1,18 @@
+import { formatNumber } from '@/helpers/strings';
+
 export const formatPriceChange = (relativeChange?: number | null): string => {
-  if (!relativeChange && relativeChange !== 0) return 'N/A';
-
-  const percentage = (relativeChange * 100).toFixed(2);
+  if (!relativeChange && relativeChange !== 0) {
+    return 'N/A';
+  }
   const isPositive = relativeChange > 0;
-
-  // Use up arrow for positive, dash for negative with consistent spacing
-  return isPositive ? `↑ ${percentage}%` : `- ${Math.abs(parseFloat(percentage))}%`;
+  const symbol = isPositive ? `↑` : `-`;
+  const formattedNumber = formatNumber(relativeChange, { decimals: 2, useOrderSuffix: true });
+  return `${symbol} ${formattedNumber}%`;
 };
 
 export const getPriceChangeColor = (priceChange: string) => {
-  if (priceChange === 'N/A') return 'labelQuaternary';
+  if (priceChange === 'N/A') {
+    return 'labelQuaternary';
+  }
   return priceChange.startsWith('↑') ? 'green' : 'labelQuaternary';
 };
