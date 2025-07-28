@@ -93,5 +93,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  launchButtonTextContainer: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 25 },
+  launchButtonTextContainer: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 22 },
 });
