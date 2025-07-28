@@ -132,7 +132,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
           </View>
 
           <View style={styles.tokenImage}>
-            <ShinyCoinIcon imageUrl={sizedIconUrl} size={TOKEN_SIZE} />
+            <ShinyCoinIcon disableShadow imageUrl={sizedIconUrl} size={TOKEN_SIZE} />
           </View>
 
           {/* chain image */}
