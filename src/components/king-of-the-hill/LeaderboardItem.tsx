@@ -141,13 +141,13 @@ export const LeaderboardItem = memo(function LeaderboardItem({
               </View>
 
               <View style={styles.statsRow}>
-                <SmallLabeledRow label={i18n.t(i18n.l.king_of_hill.vol)} value={volume} />
+                <SmallLabeledRow label={i18n.t(i18n.l.market_data.vol)} value={volume} />
 
                 <View
                   style={[styles.statsSeparator, { backgroundColor: isDarkMode ? 'rgba(245, 248, 255, 0.08)' : 'rgba(9, 17, 31, 0.08)' }]}
                 />
 
-                <SmallLabeledRow label={i18n.t(i18n.l.king_of_hill.mcap)} value={marketCap} />
+                <SmallLabeledRow label={i18n.t(i18n.l.market_data.mcap)} value={marketCap} />
               </View>
             </Inline>
           </View>

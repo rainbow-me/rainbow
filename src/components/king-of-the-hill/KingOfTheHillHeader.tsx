@@ -3,8 +3,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
-import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
-import { Separator, Text } from '@/design-system';
+import { Box, Separator, Text } from '@/design-system';
 import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
 import { formatCurrency } from '@/helpers/strings';
@@ -19,6 +18,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
 import React, { memo, useEffect, useLayoutEffect, useState } from 'react';
 import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
 import FastImage from 'react-native-fast-image';
 import { useSharedValue } from 'react-native-reanimated';
 import { Address } from 'viem';
@@ -146,13 +146,12 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
 
       {/* round ends */}
       <View style={styles.roundEndsContainer}>
-        <GradientBorderContent borderRadius={12} height={28}>
-          <View style={styles.roundEndsContent}>
-            <Text color="labelSecondary" size="13pt" weight="heavy">
-              {i18n.t(i18n.l.king_of_hill.round_ends_in)} {timeRemaining}
-            </Text>
-          </View>
-        </GradientBorderContent>
+        <BlurView blurStyle="light" blurIntensity={10} style={[StyleSheet.absoluteFill, { opacity: 0.3 }]} />
+        <Box paddingHorizontal="12px" borderWidth={1.5} borderColor="fillTertiary" borderRadius={11} justifyContent="center" flexGrow={1}>
+          <Text color="labelSecondary" size="13pt" weight="heavy">
+            {i18n.t(i18n.l.king_of_hill.round_ends_in)} {timeRemaining}
+          </Text>
+        </Box>
       </View>
 
       {/* symbol, price change */}
@@ -187,7 +186,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         )}
         <View style={styles.statItem}>
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.king_of_hill.vol)}
+            {i18n.t(i18n.l.market_data.vol)}
           </Text>
           <Text color="labelTertiary" size="13pt" weight="bold">
             {volume}
@@ -198,7 +197,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         </View>
         <View style={styles.statItem}>
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {i18n.t(i18n.l.king_of_hill.mcap)}
+            {i18n.t(i18n.l.market_data.mcap)}
           </Text>
           <Text color="labelTertiary" size="13pt" weight="bold">
             {marketCap}
@@ -335,12 +334,10 @@ const styles = StyleSheet.create({
   roundEndsContainer: {
     alignSelf: 'center',
     marginTop: -14,
-    height: 32,
-  },
-  roundEndsContent: {
-    paddingHorizontal: 12,
-    height: '100%',
-    justifyContent: 'center',
+    marginBottom: 10,
+    height: 28,
+    borderRadius: 11,
+    overflow: 'hidden',
   },
   symbolPriceContainer: {
     flexDirection: 'row',

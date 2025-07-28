@@ -126,10 +126,6 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
         return <KingOfTheHillPastWinners />;
       }
 
-      if (item.type === 'bottom-pad') {
-        return <View style={styles.bottomPadding} />;
-      }
-
       const price = item.token.price?.value ? formatCurrency(item.token.price.value) : 'N/A';
       const volume = item.windowTradingVolume ? `$${abbreviateNumber(parseFloat(item.windowTradingVolume), 1)}` : 'N/A';
       const marketCap = item.token.marketCap ? `$${abbreviateNumber(item.token.marketCap, 1)}` : 'N/A';
