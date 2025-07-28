@@ -48,6 +48,9 @@ export const useLegendListNavBarScrollToTop = (listRef: RefObject<LegendListRef 
         }
         listRef.current.scrollToIndex({
           index: 0,
+          // for some reason legend list wasnt scrolling all the way to the top by ~50px
+          // this just forces it, adding extra padding just in case:
+          viewOffset: 200,
           animated: true,
         });
       },
