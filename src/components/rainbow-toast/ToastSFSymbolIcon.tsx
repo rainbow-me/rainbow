@@ -2,7 +2,7 @@ import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 const sfSymbols = {
   check: '􀆅',
@@ -48,23 +48,20 @@ export function ToastSFSymbolIcon({
             opacity: 0.85,
             alignItems: 'center',
             justifyContent: 'center',
+            // for mint / semi-rounded transactions it refuses to touch the outer without this
             transform: [{ scale: 1.02 }],
           },
         ]}
       >
-        {typeof content === 'string' ? (
-          <Text
-            size="12pt"
-            color={{ custom: colors.white }}
-            weight="bold"
-            // somehow this does make a difference, 0.25 specifically vs 0.5 in centering it right
-            style={{ transform: [{ translateX: 0.25 }] }}
-          >
-            {content}
-          </Text>
-        ) : (
-          content
-        )}
+        <Text
+          size="12pt"
+          color={{ custom: colors.white }}
+          weight="bold"
+          // this does help center it visually
+          style={{ transform: [{ translateX: StyleSheet.hairlineWidth }] }}
+        >
+          {content}
+        </Text>
       </View>
     </View>
   );
