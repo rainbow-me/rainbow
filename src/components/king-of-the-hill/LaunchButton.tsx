@@ -1,9 +1,10 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
+import { GradientText } from '@/components/text';
 import { Text, useColorMode } from '@/design-system';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -36,7 +37,6 @@ export const LaunchButton = memo(function LaunchButton() {
             // leaving inline position styles so its easier to see next to the usage
             style={{
               height: 52,
-              width: 150,
             }}
           >
             <View style={styles.launchButtonContent}>
@@ -46,24 +46,18 @@ export const LaunchButton = memo(function LaunchButton() {
                 end={{ x: 1, y: 0 }}
                 style={styles.launchButtonGradient}
               >
-                <MaskedView
-                  maskElement={
-                    <View style={styles.launchButtonTextContainer}>
-                      <Text color="accent" size="20pt" weight="black" style={{ marginTop: -1 }}>
-                        + Launch
-                      </Text>
-                    </View>
-                  }
-                >
-                  <LinearGradient
-                    colors={['#3D1E0A', '#7A600A']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    // leaving inline position styles so its easier to see next to the usage
-                    // this is hard-coded based on text width
-                    style={{ height: 24, width: 100 }}
-                  />
-                </MaskedView>
+                <View style={styles.launchButtonTextContainer}>
+                  <GradientText colors={['#3D1E0A', '#7A600A']}>
+                    <Text color="accent" size="icon 18px" weight="black" style={{ marginTop: -1 }}>
+                      􀅼
+                    </Text>
+                  </GradientText>
+                  <GradientText colors={['#3D1E0A', '#7A600A']}>
+                    <Text color="accent" size="20pt" weight="black" style={{ marginTop: -1 }}>
+                      {i18n.t(i18n.l.king_of_hill.launch)}
+                    </Text>
+                  </GradientText>
+                </View>
               </LinearGradient>
             </View>
           </GradientBorderView>
@@ -99,5 +93,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  launchButtonTextContainer: { alignItems: 'center', justifyContent: 'center' },
+  launchButtonTextContainer: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 25 },
 });

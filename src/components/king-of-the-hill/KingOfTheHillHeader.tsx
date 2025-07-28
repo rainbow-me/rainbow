@@ -1,5 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
 import { GradientBorderContent } from '@/components/king-of-the-hill/GradientBorderContent';
 import { Separator, Text } from '@/design-system';
@@ -8,6 +9,7 @@ import { getSizedImageUrl } from '@/handlers/imgix';
 import { formatCurrency } from '@/helpers/strings';
 import { abbreviateNumber } from '@/helpers/utilities';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
@@ -23,8 +25,6 @@ import crownImage from './crown.png';
 import { HeaderButton } from './HeaderButton';
 import { RainbowGlow } from './RainbowGlow';
 import { formatPriceChange, getPriceChangeColor } from './utils';
-import { RainbowImage } from '@/components/RainbowImage';
-import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 
 type HeaderProps = {
   kingOfTheHill?: KingOfTheHill | null;
@@ -149,7 +149,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
         <GradientBorderContent borderRadius={12} height={28}>
           <View style={styles.roundEndsContent}>
             <Text color="labelSecondary" size="13pt" weight="heavy">
-              Round ends in {timeRemaining}
+              {i18n.t(i18n.l.king_of_hill.round_ends_in)} {timeRemaining}
             </Text>
           </View>
         </GradientBorderContent>
@@ -186,10 +186,10 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
           </>
         )}
         <View style={styles.statItem}>
-          <Text color="labelQuaternary" size="13pt" weight="semibold">
-            VOL
+          <Text color="labelQuaternary" size="13pt" weight="bold">
+            {i18n.t(i18n.l.king_of_hill.vol)}
           </Text>
-          <Text color="labelTertiary" size="13pt" weight="semibold">
+          <Text color="labelTertiary" size="13pt" weight="bold">
             {volume}
           </Text>
         </View>
@@ -197,10 +197,10 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
           <Separator direction="vertical" color="separatorSecondary" />
         </View>
         <View style={styles.statItem}>
-          <Text color="labelQuaternary" size="13pt" weight="semibold">
-            MCAP
+          <Text color="labelQuaternary" size="13pt" weight="bold">
+            {i18n.t(i18n.l.king_of_hill.mcap)}
           </Text>
-          <Text color="labelTertiary" size="13pt" weight="semibold">
+          <Text color="labelTertiary" size="13pt" weight="bold">
             {marketCap}
           </Text>
         </View>
@@ -218,13 +218,13 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
             </View>
           )}
           <Text color="labelQuaternary" size="13pt" weight="bold">
-            {lastWinner ? 'Last winner ' : 'No Previous Winner'}
+            {lastWinner ? i18n.t(i18n.l.king_of_hill.last_winner) : i18n.t(i18n.l.king_of_hill.no_previous_winner)}
           </Text>
         </HeaderButton>
 
         <HeaderButton onPress={navigateToExplainSheet}>
           <Text color="labelTertiary" size="13pt" weight="bold">
-            How it works
+            {i18n.t(i18n.l.king_of_hill.how_it_works)}
           </Text>
         </HeaderButton>
       </View>
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     height: 32,
   },
   roundEndsContent: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     height: '100%',
     justifyContent: 'center',
   },
