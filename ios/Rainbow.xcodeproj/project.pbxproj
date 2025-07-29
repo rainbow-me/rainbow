@@ -1904,7 +1904,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.72;
+				MARKETING_VERSION = 1.9.73;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1972,7 +1972,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.72;
+				MARKETING_VERSION = 1.9.73;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2093,7 +2093,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.72;
+				MARKETING_VERSION = 1.9.73;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2213,7 +2213,7 @@ Upload Debug Symbols to Sentry */ = {
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.72;
+				MARKETING_VERSION = 1.9.73;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
