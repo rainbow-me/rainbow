@@ -47,7 +47,7 @@ if [[ $FLOW == *"transaction"* || $FLOW == "e2e" ]]; then
   sleep 1
 
   # Start Anvil in the background (show logs in terminal + save to file)
-  bash ./scripts/anvil.sh --host 0.0.0.0 2>&1 | grep -v "eth_" | tee anvil.log &
+  bash ./scripts/anvil.sh --host 0.0.0.0 2>&1 &
   ANVIL_PID=$!
   echo "Anvil started (PID: $ANVIL_PID)"
 
