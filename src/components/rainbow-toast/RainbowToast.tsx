@@ -19,6 +19,7 @@ import {
   startRemoveToast,
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
+import { RAINBOW_TOASTS, useExperimentalFlag } from '@/config';
 import { Box, useColorMode } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -45,7 +46,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 
-export function RainbowToastDisplay() {
+export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
+  const rainbowToastsEnabled = useExperimentalFlag(RAINBOW_TOASTS);
+
+  if (!rainbowToastsEnabled) {
+    return null;
+  }
+
+  return <RainbowToastDisplayContent />;
+});
+
+function RainbowToastDisplayContent() {
   const { toasts, isShowingTransactionDetails } = useToastStore();
   const { transactions } = useLatestAccountTransactions();
 

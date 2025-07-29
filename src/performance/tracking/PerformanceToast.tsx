@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { toast } from 'sonner-native';
-import { getExperimetalFlag, PERFORMANCE_TOAST } from '@/config';
+import { getExperimentalFlag, PERFORMANCE_TOAST } from '@/config';
 import { globalColors } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { IS_IOS, IS_TEST } from '@/env';
@@ -13,7 +13,7 @@ import { isDarkTheme } from '@/theme/ThemeContext';
 import { time } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-let shouldCollectStats = !IS_TEST && getExperimetalFlag(PERFORMANCE_TOAST);
+let shouldCollectStats = !IS_TEST && getExperimentalFlag(PERFORMANCE_TOAST);
 
 export async function showPerformanceToast(results: Record<string, number>) {
   if (!shouldCollectStats) return;

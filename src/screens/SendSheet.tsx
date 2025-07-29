@@ -1,7 +1,7 @@
 import { analytics } from '@/analytics';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
-import { PROFILES, useExperimentalFlag } from '@/config';
+import { getExperimentalFlag, PROFILES, RAINBOW_TOASTS, useExperimentalFlag } from '@/config';
 import { AssetType, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { isNativeAsset } from '@/handlers/assets';
@@ -670,6 +670,14 @@ export default function SendSheet() {
       const goBackAndNavigate = () => {
         goBack();
         navigate(Routes.WALLET_SCREEN);
+
+        // with toasts we don't navigate we just show the toast
+        // without them we push user to the activity list
+        if (getExperimentalFlag(RAINBOW_TOASTS) === false) {
+          InteractionManager.runAfterInteractions(() => {
+            navigate(Routes.PROFILE_SCREEN);
+          });
+        }
       };
 
       if (submitSuccessful) {

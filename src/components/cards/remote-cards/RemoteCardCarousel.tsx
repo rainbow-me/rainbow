@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { CarouselCard } from '../CarouselCard';
 
 import { RemoteCard } from '@/components/cards/remote-cards';
-import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
+import { REMOTE_CARDS, getExperimentalFlag } from '@/config';
 import { Separator, useColorMode } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -33,7 +33,7 @@ export const RemoteCardCarousel = React.memo(function RemoteCardCarousel() {
   const config = useRemoteConfig();
   const { width } = useDimensions();
 
-  const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
+  const remoteCardsEnabled = getExperimentalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen(name as keyof typeof Routes));
 
   const gutterSize = getGutterSizeForCardAmount(cardIds.length);
