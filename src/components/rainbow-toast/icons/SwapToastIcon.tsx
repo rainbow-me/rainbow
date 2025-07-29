@@ -26,14 +26,26 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
   return isWideSwapIcon(toast) ? (
     <View style={styles.wideContainer}>
       <View style={styles.chainImageContainer}>{chainImage}</View>
-      <MaskedView maskElement={<Mask />}>
+      <MaskedView maskElement={<Mask size={size} />}>
         <View style={styles.imageContainer}>
-          <RainbowImage style={styles.image} source={{ url: toast.fromAssetImage }} />
+          <RainbowImage
+            style={{
+              width: size,
+              height: size,
+            }}
+            source={{ url: toast.fromAssetImage }}
+          />
         </View>
       </MaskedView>
       <View style={styles.secondImageContainer}>
         <View style={styles.imageContainer}>
-          <RainbowImage style={styles.image} source={{ url: toast.toAssetImage }} />
+          <RainbowImage
+            style={{
+              width: size,
+              height: size,
+            }}
+            source={{ url: toast.toAssetImage }}
+          />
         </View>
       </View>
     </View>
@@ -42,10 +54,10 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
   );
 };
 
-const Mask = memo(function Mask() {
+const Mask = memo(function Mask({ size = TOAST_ICON_SIZE }: { size?: number }) {
   const cutoutSize = 3;
-  const circleRadius = TOAST_ICON_SIZE / 2 + cutoutSize;
-  const shiftX = TOAST_ICON_SIZE - SWAP_ICON_INTERSECT - cutoutSize;
+  const circleRadius = size / 2 + cutoutSize;
+  const shiftX = size - SWAP_ICON_INTERSECT - cutoutSize;
   const circleCx = circleRadius + shiftX;
   const circleCy = circleRadius - cutoutSize;
 
@@ -78,17 +90,13 @@ const styles = StyleSheet.create({
   },
   chainImageContainer: {
     position: 'absolute',
-    bottom: -4,
-    right: 10,
+    bottom: '-4%',
+    right: '26%',
     zIndex: 10,
   },
   imageContainer: {
     borderRadius: 100,
     overflow: 'hidden',
-  },
-  image: {
-    width: TOAST_ICON_SIZE,
-    height: TOAST_ICON_SIZE,
   },
   secondImageContainer: {
     marginLeft: -SWAP_ICON_INTERSECT,

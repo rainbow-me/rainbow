@@ -1,5 +1,5 @@
 import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
-import { SWAP_ICON_WIDTH } from '@/components/rainbow-toast/constants';
+import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
 import { getStatusLabel, getSwapToastNetworkLabel } from '@/components/rainbow-toast/ToastContent';
@@ -62,16 +62,11 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
   const subtitle = getStatusLabel(toast);
   const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
   const isWideIcon = isWideSwapIcon(toast);
-  const marginHorizontalAdjust = isWideIcon ? -(SWAP_ICON_WIDTH - EXPANDED_ICON_SIZE) / 4 : 0;
 
   return (
     <ToastExpandedContentDisplay
       isLoading={isLoading}
-      icon={
-        <View style={{ marginHorizontal: marginHorizontalAdjust }}>
-          <SwapToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />
-        </View>
-      }
+      icon={<SwapToastIcon size={isWideIcon ? TOAST_ICON_SIZE - 3 : EXPANDED_ICON_SIZE} toast={toast} />}
       statusLabel={subtitle}
       label={title}
       transaction={transaction}
@@ -149,7 +144,7 @@ function ToastExpandedContentDisplay({
           </Text>
 
           <Text
-            style={{ flex: 1 }}
+            style={styles.bottomInfoText}
             ellipsizeMode="tail"
             numberOfLines={1}
             color={{ custom: colors.foreground }}
@@ -190,7 +185,7 @@ const styles = StyleSheet.create({
   mainSection: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    gap: 11,
+    gap: 9,
     flex: 1,
     overflow: 'hidden',
   },
@@ -200,6 +195,11 @@ const styles = StyleSheet.create({
   },
   bottomRow: {
     flexDirection: 'row',
+  },
+  bottomInfoText: {
+    flex: 1,
+    // visually adjusting for line height difference
+    transform: [{ translateY: 1 }],
   },
   statusText: {
     flexDirection: 'row',
