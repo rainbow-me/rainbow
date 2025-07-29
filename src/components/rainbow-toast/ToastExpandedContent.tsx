@@ -147,7 +147,7 @@ function ToastExpandedContentDisplay({
             style={styles.bottomInfoText}
             ellipsizeMode="tail"
             numberOfLines={1}
-            color={{ custom: colors.foreground }}
+            color="labelSecondary"
             size="15pt"
             weight="medium"
             align="right"
