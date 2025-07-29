@@ -26,6 +26,13 @@ tags:
       - assertVisible:
           id: 'balance-coin-row-Ethereum'
 
+- retry:
+    maxRetries: 3
+    commands:
+      - swipe:
+          direction: UP
+      - assertVisible: '.*Rainbow Pooly.*'
+
 - tapOn: '.*Rainbow Pooly.*'
 
 - tapOn:
