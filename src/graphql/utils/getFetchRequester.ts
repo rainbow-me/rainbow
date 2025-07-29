@@ -40,6 +40,11 @@ const additionalConfig: {
       'x-api-key': ARC_GRAPHQL_API_KEY,
     },
   },
+  arcLocal: {
+    headers: {
+      'x-api-key': ARC_GRAPHQL_API_KEY,
+    },
+  },
   metadata: {
     headers: {
       Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
