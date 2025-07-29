@@ -71,7 +71,6 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 type ListItems =
   | { key: string; type: 'item'; value: TransactionItemForSectionList }
   | { key: string; type: 'header'; value: TransactionSections }
-  | { key: string; type: 'loading' }
   | { key: string; type: 'paddingTopForNavBar' };
 
 // keeping everything the same height here since we basically can pretty easily
@@ -89,26 +88,26 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
   const flatData = useMemo(() => {
     const items: ListItems[] = [];
 
+    if (isLoadingTransactions) {
+      return items;
+    }
+
     if (paddingTopForNavBar) {
       items.push({ key: 'paddingTopForNavBar', type: 'paddingTopForNavBar' });
     }
 
-    if (isLoadingTransactions) {
-      items.push({ key: 'loading', type: 'loading' });
-    } else {
-      sections.forEach(section => {
-        if (section.data.length > 0) {
-          items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
-          for (const item of section.data) {
-            items.push({
-              key: `${accountAddress}${item.chainId}${'requestId' in item ? item.requestId : item.hash}-entry`,
-              type: 'item',
-              value: item,
-            });
-          }
+    sections.forEach(section => {
+      if (section.data.length > 0) {
+        items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
+        for (const item of section.data) {
+          items.push({
+            key: `${accountAddress}${item.chainId}${'requestId' in item ? item.requestId : item.hash}-entry`,
+            type: 'item',
+            value: item,
+          });
         }
-      });
-    }
+      }
+    });
 
     return items;
   }, [accountAddress, isLoadingTransactions, paddingTopForNavBar, sections]);
@@ -116,18 +115,7 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
   const renderItem = useCallback(
     ({ item }: { item: ListItems }) => {
       if (item.type === 'paddingTopForNavBar') {
-        return <View style={{ height: 68 }} />;
-      }
-
-      if (item.type === 'loading') {
-        return (
-          <>
-            <LoadingActivityItem />
-            <LoadingActivityItem />
-            <LoadingActivityItem />
-            <LoadingActivityItem />
-          </>
-        );
+        return <PaddingTopForNavBar />;
       }
 
       if (item.type === 'header') {
@@ -155,6 +143,18 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
   const listRef = useRef<LegendListRef | null>(null);
 
   useLegendListNavBarScrollToTop(listRef);
+
+  if (isLoadingTransactions) {
+    return (
+      <>
+        {paddingTopForNavBar && <PaddingTopForNavBar />}
+        <LoadingActivityItem />
+        <LoadingActivityItem />
+        <LoadingActivityItem />
+        <LoadingActivityItem />
+      </>
+    );
+  }
 
   return (
     <LegendList
@@ -197,6 +197,10 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
     />
   );
 });
+
+const PaddingTopForNavBar = () => {
+  return <View style={{ height: 68 }} />;
+};
 
 const LoadingActivityItem = memo(function LoadingActivityItem() {
   return (
