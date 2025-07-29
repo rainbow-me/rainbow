@@ -68,7 +68,7 @@ export const KingOfTheHillContent = memo(function KingOfTheHillContent({
         const chillColor = makeColorMoreChill(tokenDominantColor);
         const adjustedColor = isDarkMode
           ? // these are a bit tricky to get right, these values visually seem similar on light/dark
-            chroma(chillColor).darken(2.5).desaturate(1.2).css()
+            chroma(chillColor).darken(2.5).desaturate(1).css()
           : chroma(chillColor).brighten(3).desaturate(1.6).css();
         setBackgroundColor(adjustedColor);
         onColorExtracted?.(adjustedColor);

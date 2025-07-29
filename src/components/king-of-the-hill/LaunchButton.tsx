@@ -59,12 +59,12 @@ const InnerGlow = memo(function InnerGlow() {
     <View
       onLayout={event => {
         const { width, height } = event.nativeEvent.layout;
-        setDimensions({ width, height });
+        setDimensions({ width: width + 1, height: height + 1 });
       }}
       style={[StyleSheet.absoluteFillObject, { borderRadius, overflow: 'hidden', pointerEvents: 'none' }]}
     >
       {Boolean(width && height) && (
-        <Canvas style={{ width, height, backgroundColor: 'red' }}>
+        <Canvas style={{ width, height }}>
           <Group>
             <RoundedRect x={0} y={0} width={width} height={height} r={borderRadius}>
               <Paint antiAlias dither>

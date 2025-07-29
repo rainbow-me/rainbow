@@ -3,6 +3,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ShinyCoinIcon } from '@/components/coin-icon/ShinyCoinIcon';
 import { CHEVRON_RIGHT_SYMBOL } from '@/components/king-of-the-hill/constants';
+import { RainbowImage } from '@/components/RainbowImage';
 import { Box, Separator, Text } from '@/design-system';
 import { KingOfTheHill } from '@/graphql/__generated__/metadata';
 import { getSizedImageUrl } from '@/handlers/imgix';
@@ -17,9 +18,8 @@ import { time } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Canvas, Circle, LinearGradient, vec } from '@shopify/react-native-skia';
 import React, { memo, useEffect, useLayoutEffect, useState } from 'react';
-import { Image, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
-import FastImage from 'react-native-fast-image';
 import { useSharedValue } from 'react-native-reanimated';
 import { Address } from 'viem';
 import { HeaderButton } from './HeaderButton';
@@ -140,7 +140,7 @@ export const KingOfTheHillHeader = memo(function KingOfTheHillHeader({ kingOfThe
             <ChainImage chainId={currentWinningToken.chainId} size={24} position="absolute" style={styles.chainImageShadow} />
           </View>
 
-          <Image source={crownImage} style={styles.crown} />
+          <RainbowImage resizeMode="contain" source={crownImage} style={styles.crown} />
         </View>
       </ButtonPressAnimation>
 
@@ -255,7 +255,7 @@ const CreatorDisplay = memo(function CreatorDisplay({ creatorAddress }: { creato
 
   return (
     <View style={styles.creatorDisplayContainer}>
-      {creatorData.avatar && <FastImage source={{ uri: creatorData.avatar }} style={styles.creatorAvatar} />}
+      {creatorData.avatar && <RainbowImage source={{ url: creatorData.avatar }} style={styles.creatorAvatar} />}
       <Text color="labelTertiary" size="11pt" weight="black">
         {displayName}
       </Text>
@@ -308,11 +308,10 @@ const styles = StyleSheet.create({
   },
   crown: {
     position: 'absolute',
-    top: 11,
+    top: 10,
     left: TOKEN_SIZE / 2 + 20,
     width: 40,
-    height: 35,
-    // transform: [{ rotate: '-3deg' }],
+    height: 38,
     zIndex: 10,
   },
   chainImageContainer: {
