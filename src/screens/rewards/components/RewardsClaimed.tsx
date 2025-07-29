@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { analytics } from '@/analytics';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
+import { getNumberFormatter } from '@/helpers/intl';
 
 type Props = {
   assetPrice?: number;
@@ -78,7 +79,7 @@ export const RewardsClaimed: React.FC<Props> = ({
   } else {
     const claimed = totalAvailableRewardsInToken - remainingRewards;
     const progress = claimed / totalAvailableRewardsInToken;
-    const claimedTokenFormatted = Math.floor(claimed).toLocaleString('en-US');
+    const claimedTokenFormatted = getNumberFormatter('en-US').format(Math.floor(claimed));
 
     const navigateToAmountsExplainer = () => {
       analytics.track(analytics.event.rewardsPressedAvailableCard);
