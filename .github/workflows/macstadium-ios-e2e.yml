@@ -76,6 +76,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           configuration: Debug
           comment-bot: false
+          re-sign: true
 
   # iOS e2e tests job
   e2e-ios:
