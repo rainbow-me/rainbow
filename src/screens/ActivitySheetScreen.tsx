@@ -13,7 +13,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import { ActivityList } from '../components/activity-list';
 
 export function ActivitySheetScreen() {
-  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
+  const { accountSymbol, accountColor, accountImage, accountAddress } = useAccountProfileInfo();
   const scrollY = useSharedValue(0);
   const { colors } = useTheme();
 
@@ -36,7 +36,7 @@ export function ActivitySheetScreen() {
       />
 
       <View style={{ flex: 1 }}>
-        <ActivityList scrollY={scrollY} paddingTopForNavBar />
+        <ActivityList key={accountAddress} scrollY={scrollY} paddingTopForNavBar />
       </View>
       <PendingTransactionWatcher />
     </View>
