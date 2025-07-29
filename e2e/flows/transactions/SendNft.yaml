@@ -35,8 +35,7 @@ tags:
 - waitForAnimationToEnd:
     timeout: 2000
 
-- tapOn:
-    id: 'send-action-button'
+- tapOn: '.*Send.*'
 
 # Test ENS address input
 - inputText: 'rainbowwallet.eth'
