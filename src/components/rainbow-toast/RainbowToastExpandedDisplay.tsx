@@ -1,14 +1,11 @@
 import { TOAST_EXPANDED_DISMISS_SENSITIVITY, TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER } from '@/components/rainbow-toast/constants';
 import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import { Panel } from '@/components/SmoothPager/ListPanel';
 import { Box, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
-import { Canvas, Path } from '@shopify/react-native-skia';
-import { getSvgPath } from 'figma-squircle';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import { BlurView } from 'react-native-blur-view';
 import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,7 +20,6 @@ const CARD_MARGIN = 20;
 const ExpandedToastCard = ({
   width,
   height,
-  borderRadius,
   children,
 }: {
   width: number;
@@ -31,37 +27,10 @@ const ExpandedToastCard = ({
   borderRadius: number;
   children: React.ReactNode;
 }) => {
-  const { shadowColor, background, borderColor } = useToastColors();
-
-  const squirclePath = getSvgPath({
-    width,
-    height,
-    cornerRadius: borderRadius,
-    cornerSmoothing: 0.6,
-  });
-
-  const borderWidth = 1;
-  const innerSquirclePath = getSvgPath({
-    width: width - borderWidth * 2,
-    height: height - borderWidth * 2,
-    cornerRadius: borderRadius - borderWidth,
-    cornerSmoothing: 0.6,
-  });
-
   return (
-    <View style={{ borderRadius, width, height, shadowColor, shadowOffset: { width: 0, height: 5 }, shadowRadius: 10, shadowOpacity: 1 }}>
-      <Canvas style={[styles.canvasStyle, { width, height }]}>
-        <Path path={squirclePath} color={background} />
-        <Path
-          path={innerSquirclePath}
-          color={borderColor}
-          style="stroke"
-          strokeWidth={1}
-          transform={[{ translateX: borderWidth }, { translateY: borderWidth }]}
-        />
-      </Canvas>
+    <Panel style={{ width, height }}>
       <View style={StyleSheet.absoluteFillObject}>{children}</View>
-    </View>
+    </Panel>
   );
 };
 
@@ -80,7 +49,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   const pointerEvents = useSharedValue<'auto' | 'none'>('none');
 
   // we know hardcoded height
-  const paddingY = 20;
+  const paddingY = 8;
   const itemHeight = 66;
   const height = toasts.length * itemHeight + paddingY * 2;
 
@@ -165,19 +134,12 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     return null;
   }
 
-  const backdropBackgroundColor = IS_IOS
-    ? isDarkMode
-      ? 'rgba(0,0,0,0.3)'
-      : 'rgba(255,255,255,0.2)'
-    : isDarkMode
-      ? 'rgba(0,0,0,0.6)'
-      : 'rgba(255,255,255,0.5)';
+  const backdropBackgroundColor = isDarkMode ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.5)';
 
   return (
     <>
       {/* backdrop */}
       <Animated.View style={[styles.backdrop, pointerEventsStyle, opacityStyle]}>
-        {IS_IOS && <BlurView blurIntensity={1} blurStyle={isDarkMode ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />}
         <TouchableWithoutFeedback onPress={hide}>
           <Box style={{ ...StyleSheet.absoluteFillObject, backgroundColor: backdropBackgroundColor }} />
         </TouchableWithoutFeedback>

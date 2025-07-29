@@ -1,7 +1,7 @@
 import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
 import { SWAP_ICON_WIDTH } from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
-import { SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
+import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
 import { getStatusLabel, getSwapToastNetworkLabel } from '@/components/rainbow-toast/ToastContent';
 import type { RainbowToast, RainbowToastContract, RainbowToastSend, RainbowToastSwap } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
@@ -60,14 +60,15 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
 
   const title = getSwapToastNetworkLabel({ toast });
   const subtitle = getStatusLabel(toast);
-  const isSwapped = toast.status === TransactionStatus.swapped;
   const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
+  const isWideIcon = isWideSwapIcon(toast);
+  const marginHorizontalAdjust = isWideIcon ? -(SWAP_ICON_WIDTH - EXPANDED_ICON_SIZE) / 4 : 0;
 
   return (
     <ToastExpandedContentDisplay
       isLoading={isLoading}
       icon={
-        <View style={{ marginLeft: isSwapped ? 0 : -(SWAP_ICON_WIDTH - EXPANDED_ICON_SIZE) / 2 }}>
+        <View style={{ marginHorizontal: marginHorizontalAdjust }}>
           <SwapToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />
         </View>
       }
@@ -93,35 +94,6 @@ function ToastExpandedContentDisplay({
   isLoading?: boolean;
 }) {
   const colors = useToastColors();
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.iconSection}>
-        <View style={styles.iconWrapper}>{icon}</View>
-      </View>
-
-      <View style={styles.middleSection}>
-        <View style={styles.textSection}>
-          <View style={styles.statusRow}>
-            {isLoading ? <Spinner color={colors.loadingText} size={11} style={styles.spinnerStyle} /> : null}
-            <Text color={isLoading ? { custom: colors.loadingText } : 'labelTertiary'} size="13pt" weight="semibold">
-              {statusLabel}
-            </Text>
-          </View>
-
-          <Text numberOfLines={1} ellipsizeMode="tail" color="label" size="17pt" weight="medium" style={styles.labelText}>
-            {label}
-          </Text>
-        </View>
-
-        <ToastExpandedAfterTransaction transaction={transaction} />
-      </View>
-    </View>
-  );
-}
-
-function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTransaction }) {
-  const colors = useToastColors();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const [topValueIn, bottomValueIn] = activityValues(transaction, nativeCurrency) ?? [];
 
@@ -145,13 +117,50 @@ function ToastExpandedAfterTransaction({ transaction }: { transaction: RainbowTr
   })();
 
   return (
-    <View style={styles.valueSection}>
-      <Text ellipsizeMode="tail" numberOfLines={1} color={{ custom: colors.foregroundDim }} size="13pt" weight="medium">
-        {topValue || ''}
-      </Text>
-      <Text ellipsizeMode="tail" numberOfLines={1} color={{ custom: colors.foreground }} size="15pt" weight="medium" align="right">
-        {bottomValueWithoutSymbol || ''}
-      </Text>
+    <View style={styles.container}>
+      <View style={styles.iconSection}>
+        <View style={styles.iconWrapper}>{icon}</View>
+      </View>
+
+      <View style={styles.mainSection}>
+        <View style={styles.topRow}>
+          <View style={styles.statusText}>
+            {isLoading ? <Spinner color={colors.loadingText} size={11} style={styles.spinnerStyle} /> : null}
+            <Text color={isLoading ? { custom: colors.loadingText } : 'labelTertiary'} size="13pt" weight="semibold">
+              {statusLabel}
+            </Text>
+          </View>
+
+          <Text
+            style={styles.topInfoText}
+            ellipsizeMode="tail"
+            numberOfLines={1}
+            color={{ custom: colors.foregroundDim }}
+            size="13pt"
+            weight="medium"
+          >
+            {topValue || ''}
+          </Text>
+        </View>
+
+        <View style={styles.bottomRow}>
+          <Text style={styles.labelText} numberOfLines={1} ellipsizeMode="tail" color="label" size="17pt" weight="medium">
+            {label}
+          </Text>
+
+          <Text
+            style={{ flex: 1 }}
+            ellipsizeMode="tail"
+            numberOfLines={1}
+            color={{ custom: colors.foreground }}
+            size="15pt"
+            weight="medium"
+            align="right"
+          >
+            {bottomValueWithoutSymbol || ''}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -162,12 +171,12 @@ const styles = StyleSheet.create({
     gap: 24,
     alignItems: 'center',
     overflow: 'hidden',
-    paddingHorizontal: 28,
+    paddingHorizontal: 24,
     paddingVertical: 16,
     flex: 1,
   },
   iconSection: {
-    width: EXPANDED_ICON_SIZE + 12,
+    width: EXPANDED_ICON_SIZE,
     height: EXPANDED_ICON_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
@@ -178,35 +187,39 @@ const styles = StyleSheet.create({
     width: EXPANDED_ICON_SIZE,
     height: EXPANDED_ICON_SIZE,
   },
-  middleSection: {
-    flexDirection: 'row',
-    gap: 12,
-    alignItems: 'center',
+  mainSection: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    gap: 11,
     flex: 1,
     overflow: 'hidden',
   },
-  textSection: {
-    flex: 10,
-    gap: 8,
-    // visually this looks a bit better being slightly up due to the smaller top title text
-    marginTop: -1,
-  },
-  statusRow: {
+  topRow: {
     flexDirection: 'row',
-    flex: 1,
+    alignItems: 'center',
+  },
+  bottomRow: {
+    flexDirection: 'row',
+  },
+  statusText: {
+    flexDirection: 'row',
+    marginRight: 16,
     minHeight: 16,
     alignItems: 'center',
     flexWrap: 'nowrap',
   },
+  topInfoText: { flex: 1, textAlign: 'right' },
   labelText: {
     lineHeight: 28,
     marginTop: -10,
+    marginRight: 10,
+    maxWidth: '70%',
   },
   valueSection: {
     maxWidth: '38%',
     flexDirection: 'column',
     minHeight: '100%',
-    gap: 12,
+    justifyContent: 'space-between',
     marginVertical: -4,
   },
   spinnerStyle: {

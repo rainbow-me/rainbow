@@ -5,7 +5,7 @@ import { RainbowToastSwap } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities';
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
@@ -42,12 +42,12 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
   );
 };
 
-const Mask = () => {
-  const cutoutSize = 4;
-  const circleRadius = TOAST_ICON_SIZE / 2;
+const Mask = memo(function Mask() {
+  const cutoutSize = 3;
+  const circleRadius = TOAST_ICON_SIZE / 2 + cutoutSize;
   const shiftX = TOAST_ICON_SIZE - SWAP_ICON_INTERSECT - cutoutSize;
   const circleCx = circleRadius + shiftX;
-  const circleCy = circleRadius;
+  const circleCy = circleRadius - cutoutSize;
 
   // Create a path that fills the 34x34 area but cuts out a circle
   const pathData = `
@@ -67,7 +67,7 @@ const Mask = () => {
       <Path d={pathData} fill="black" fillRule="evenodd" />
     </Svg>
   );
-};
+});
 
 const styles = StyleSheet.create({
   wideContainer: {

@@ -27,7 +27,7 @@ import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
 import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
-import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -300,6 +300,15 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
   }, [isPressed]);
 
   const pressGesture = useMemo(() => {
+    const maxPressDuration = 2000;
+
+    function doPress() {
+      'worklet';
+      if (Date.now() - touchStartedAt.value < maxPressDuration) {
+        runOnJS(setShowExpandedTrue)();
+      }
+    }
+
     return Gesture.Tap()
       .maxDuration(time.minutes(10)) // doesn't accept Infinity
       .onTouchesDown(() => {
@@ -310,16 +319,15 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
       .onTouchesUp(() => {
         'worklet';
         // android doesn't trigger onEnd, do our own logic
-        if (IS_ANDROID) {
-          if (translateX.value === 0 && Date.now() - touchStartedAt.value < 500) {
-            runOnJS(setShowExpandedTrue)();
-          }
+        if (IS_ANDROID && translateX.value === 0) {
+          doPress();
         }
 
         isPressed.value = false;
       })
       .onEnd(() => {
-        runOnJS(setShowExpandedTrue)();
+        'worklet';
+        doPress();
       });
   }, [isPressed, setShowExpandedTrue, touchStartedAt, translateX.value]);
 
