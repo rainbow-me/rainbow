@@ -134,14 +134,12 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     return null;
   }
 
-  const backdropBackgroundColor = isDarkMode ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.5)';
-
   return (
     <>
       {/* backdrop */}
       <Animated.View style={[styles.backdrop, pointerEventsStyle, opacityStyle]}>
         <TouchableWithoutFeedback onPress={hide}>
-          <Box style={{ ...StyleSheet.absoluteFillObject, backgroundColor: backdropBackgroundColor }} />
+          <Box style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.7)' }]} />
         </TouchableWithoutFeedback>
       </Animated.View>
 

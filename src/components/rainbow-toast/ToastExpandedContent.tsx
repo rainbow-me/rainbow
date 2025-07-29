@@ -1,5 +1,5 @@
 import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
-import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
 import { getStatusLabel, getSwapToastNetworkLabel } from '@/components/rainbow-toast/ToastContent';

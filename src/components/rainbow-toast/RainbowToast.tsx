@@ -400,7 +400,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
                   colors={
                     isDarkMode
                       ? ['rgba(57, 58, 64, 0.36)', 'rgba(57, 58, 64, 0.32)']
-                      : ['rgba(255, 255, 255, 0.56)', 'rgba(255, 255, 255, 0.52)']
+                      : ['rgba(255, 255, 255, 0.72)', 'rgba(255, 255, 255, 0.62)']
                   }
                   style={StyleSheet.absoluteFill}
                 />
