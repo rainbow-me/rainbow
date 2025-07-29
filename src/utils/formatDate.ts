@@ -1,3 +1,4 @@
+import { getDateFormatter } from '@/helpers/intl';
 import * as i18n from '@/languages';
 
 export const formatDate = (dateString: string, precision: 'hours' | 'minutes' | 'days' = 'days') => {
@@ -39,6 +40,6 @@ export const formatDate = (dateString: string, precision: 'hours' | 'minutes' | 
   } else if (diffDays < 365.25) {
     return `${diffMonths} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.months_ago)}`;
   } else {
-    return date.toLocaleString('default', { month: 'short', year: 'numeric' });
+    return getDateFormatter(undefined, { month: 'short', year: 'numeric' }).format(date);
   }
 };
