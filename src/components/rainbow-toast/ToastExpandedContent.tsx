@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   bottomInfoText: {
     flex: 1,
     // visually adjusting for line height difference
-    transform: [{ translateY: 1 }],
+    transform: [{ translateY: 0.5 }],
   },
   statusText: {
     flexDirection: 'row',
