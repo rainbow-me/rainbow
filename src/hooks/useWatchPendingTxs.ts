@@ -14,6 +14,8 @@ import { GetAssetsResponse, UserAsset } from '@/state/assets/types';
 import { SupportedCurrencyKey } from '@/references';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { usePositionsStore } from '@/state/positions/positions';
+import { useClaimablesStore } from '@/state/claimables/claimables';
 
 const ASSET_DETECTION_TIMEOUT = time.seconds(30) / 1000;
 
@@ -52,8 +54,12 @@ async function fetchTransaction({
 }
 
 async function refetchUserAssets({ address }: { address: string }) {
-  // TODO: add claimables and positions here
-  await Promise.all([userAssetsStore.getState().fetch(undefined, { force: true }), invalidateAddressNftsQueries(address)]);
+  await Promise.all([
+    userAssetsStore.getState().fetch(undefined, { force: true }),
+    usePositionsStore.getState().fetch(undefined, { force: true }),
+    useClaimablesStore.getState().fetch(undefined, { force: true }),
+    invalidateAddressNftsQueries(address),
+  ]);
 }
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
@@ -99,9 +105,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         pendingTransactions: newPendingTransactions,
       });
 
-      // TODO: We should implement similar polling logic for fetching this until we get the tx hashes we're expecting
       if (minedTransactions.length) {
-        // TODO: Only need to fetch for the chains that the mined transactions are on
         const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
 
         await queryClient.refetchQueries({

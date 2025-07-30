@@ -9,8 +9,6 @@ import {
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
-import { rainbowFetch } from '@/rainbow-fetch';
-import { ADDYS_BASE_URL, ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -21,6 +19,7 @@ import { Platform } from 'react-native';
 import { IS_TEST } from '@/env';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { getAddysHttpClient } from '@/resources/addys/client';
 
 export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
 
@@ -129,20 +128,14 @@ export const fetchTransaction = async ({
     }
   }
   try {
-    const url = `${ADDYS_BASE_URL}/${chainId}/${address}/transactions/${hash}`;
-    // TODO (kane): use the addys singleton
-    const response = await rainbowFetch<{ payload: { transaction: TransactionApiResponse } }>(url, {
-      method: 'get',
+    const url = `/${chainId}/${address}/transactions/${hash}`;
+    const { data } = await getAddysHttpClient().get<{ payload: { transaction: TransactionApiResponse } }>(url, {
       params: {
         currency: currency.toLowerCase(),
       },
-      timeout: 20000,
-      headers: {
-        Authorization: `Bearer ${ADDYS_API_KEY}`,
-      },
     });
 
-    const tx = response?.data?.payload?.transaction;
+    const tx = data?.payload?.transaction;
     if (!tx || !tx?.status || (tx?.status as string) === '') {
       return null;
     }

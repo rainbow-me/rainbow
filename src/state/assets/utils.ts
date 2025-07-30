@@ -189,7 +189,6 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
   const amount = convertRawAmountToDecimalFormat(userAsset.quantity, decimals);
   const nativeBalance = convertAmountAndPriceToNativeDisplay(1, userAsset.value, currency);
 
-  // TODO (kane): is price supposed to be an optional?
   return {
     uniqueId,
     address: asset.address as AddressOrEth,
@@ -205,8 +204,7 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
     networks: asset.networks as Record<ChainId, { address: Address; decimals: number }>,
     symbol: asset.symbol,
     price: {
-      // TODO (kane): change the type this back in
-      // changedAt: asset.price.changedAt,
+      changed_at: asset.price.changedAt,
       relative_change_24h: asset.price?.relativeChange24h,
       value: asset.price?.value,
     },
@@ -227,23 +225,9 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
         display: convertAmountToNativeDisplayWorklet(price?.value ?? 0, currency),
       },
     },
-    // TODO (kane): these are required in the type, but we don't have them
-    highLiquidity: true,
+    // These are required in the type, but the new platform endpoint does not return them.
+    highLiquidity: false,
     isRainbowCurated: false,
-
-    // Optionals of the ParsedSearchAsset type that we don't have from backend. Are these ever used?
-    // standard: 'erc-721' | 'erc-1155';
-    // rainbowMetadataId?: number;
-    // sectionId?: 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
-    // type?: 'nft' | 'aave-v2' | 'balancer' | 'curve' | 'compound' | 'compound-v3' | 'maker' | 'one-inch' | 'piedao-pool' | 'yearn' | 'yearn-v2' | 'uniswap-v2' | 'aave-v3' | 'harvest' | 'lido' | 'uniswap-v3' | 'convex' | 'convex-frax' | 'pancake-swap' | 'balancer-v2' | 'frax' | 'gmx' | 'aura' | 'pickle' | 'yearn-v3' | 'venus' | 'sushiswap' | 'native' | 'wrappedNative' | 'stablecoin' | 'rainbow';
-    // isPopular?: boolean;
-    // market?: {
-    //   market_cap: {
-    //     value: number;
-    //   };
-    //   volume_24h: number;
-    //   circulating_supply: number;
-    // };
   };
 }
 
@@ -384,39 +368,6 @@ export function calculateHiddenAssetsBalance({
 function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {
   return assets.filter(asset => greaterThan(asset.value, 0));
 }
-
-// TODO (kane): ensure this is okay to remove
-// export function parseUserAssets({
-//   assets,
-//   chainIds,
-//   currency,
-// }: {
-//   assets: UserAsset[];
-//   chainIds: ChainId[];
-//   currency: SupportedCurrencyKey;
-// }): ParsedAssetsDictByChain {
-//   const parsedAssetsDict = chainIds.reduce((dict, currentChainId) => ({ ...dict, [currentChainId]: {} }), {}) as ParsedAssetsDictByChain;
-//   for (const { asset, quantity, smallBalance } of assets) {
-//     if (greaterThan(quantity, 0)) {
-//       const parsedUserAsset = transformUserAssetToParsedUserAsset(asset);
-//       const parsedAsset = parseUserAsset({
-//         asset: transformUserAssetToZerionAsset(asset),
-//         balance: quantity,
-//         currency,
-//         smallBalance,
-//       });
-//       parsedAssetsDict[parsedAsset?.chainId][parsedAsset.uniqueId] = parsedAsset;
-//     }
-//   }
-//   return parsedAssetsDict;
-// }
-
-// function transformUserAssetToParsedUserAsset(asset: UserAsset): ParsedUserAsset {
-//   return {
-//     ...asset,
-//     asset: transformUserAssetToZerionAsset(asset),
-//   };
-// }
 
 // ============ Search Utils =================================================== //
 
