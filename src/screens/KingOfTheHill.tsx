@@ -15,8 +15,8 @@ import { useKingOfTheHillStore } from '@/state/kingOfTheHill/kingOfTheHillStore'
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useIsFocused } from '@react-navigation/native';
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { Keyboard, StatusBar, StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
 export const KingOfTheHillScreen = () => {
@@ -38,6 +38,7 @@ export const KingOfTheHillScreen = () => {
     <>
       <KeyboardDismissHandler />
       <SyncStoreEnabled />
+      <DynamicStatusBar />
 
       <View style={{ flex: 1, backgroundColor: backgroundColor || 'transparent' }}>
         <Navbar
@@ -87,6 +88,20 @@ export const KingOfTheHillScreen = () => {
       </View>
     </>
   );
+};
+
+const DynamicStatusBar = () => {
+  const { isDarkMode } = useColorMode();
+  const activeSwipeRoute = useNavigationStore(state => state.activeSwipeRoute);
+  const isActive = activeSwipeRoute === Routes.KING_OF_THE_HILL;
+
+  useLayoutEffect(() => {
+    if (isActive) {
+      StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content');
+    }
+  }, [isActive, isDarkMode]);
+
+  return null;
 };
 
 const SyncStoreEnabled = memo(function SyncStoreEnabled() {

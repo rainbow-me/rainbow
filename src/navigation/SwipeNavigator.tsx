@@ -393,14 +393,14 @@ function SwipeNavigatorScreens() {
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, points_enabled, king_of_the_hill_tab_enabled } = useRemoteConfig(
+  const { dapp_browser, points_enabled, king_of_the_hill2_enabled } = useRemoteConfig(
     'dapp_browser',
     'points_enabled',
-    'king_of_the_hill_tab_enabled'
+    'king_of_the_hill2_enabled'
   );
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
+  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill2_enabled) && !IS_TEST;
 
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }) => {

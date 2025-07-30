@@ -82,7 +82,7 @@ export interface RainbowConfig extends Record<string, string | boolean | number 
   prince_of_the_hill_enabled: boolean;
   king_of_the_hill_enabled: boolean;
   candlestick_charts_enabled: boolean;
-  king_of_the_hill_tab_enabled: boolean;
+  king_of_the_hill2_enabled: boolean;
 }
 
 const Bips = {
@@ -199,10 +199,10 @@ export const DEFAULT_CONFIG = {
   trending_tokens_enabled: false,
   new_discover_cards_enabled: false,
   rainbow_trending_tokens_list_enabled: false,
+  king_of_the_hill2_enabled: false,
   king_of_the_hill_enabled: false,
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: IS_DEV || isTestFlight || false,
-  king_of_the_hill_tab_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;

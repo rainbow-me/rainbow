@@ -157,8 +157,8 @@ function MainStack() {
 
 function NativeStackNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
+  const { king_of_the_hill2_enabled } = useRemoteConfig('king_of_the_hill2_enabled');
+  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill2_enabled) && !IS_TEST;
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>

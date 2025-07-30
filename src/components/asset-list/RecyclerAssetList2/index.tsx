@@ -123,8 +123,8 @@ function handleNavigateToActivity(): void {
 const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
-  const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
+  const { king_of_the_hill2_enabled } = useRemoteConfig('king_of_the_hill2_enabled');
+  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill2_enabled) && !IS_TEST;
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
   const shadowOpacityStyle = useMemo(
