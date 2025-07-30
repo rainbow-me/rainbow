@@ -6,7 +6,6 @@ import { RainbowToast, RainbowToastContract, type RainbowToastSend, type Rainbow
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
 import { TransactionStatus } from '@/entities';
-import * as i18n from '@/languages';
 import React, { memo } from 'react';
 import { Text as RNText, StyleSheet, View } from 'react-native';
 
@@ -142,17 +141,32 @@ function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
 }
 
 export const getToastTitle = (toast: RainbowToast): string => {
+  // handle alternative statuses for pending/confirmed so we show better titles
   const isPending = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
-  // for swap/send we set the "pending" label to be the more active name, swapping/sending
-  if (toast.type === 'swap' && isPending) {
-    return allTransactionStatuses.swapping;
+  const isConfirmed = toast.status === TransactionStatus.confirmed;
+
+  if (toast.type === 'swap') {
+    if (isPending) {
+      return allTransactionStatuses.swapping;
+    }
+    if (isConfirmed) {
+      return allTransactionStatuses.swapped;
+    }
   }
-  if (toast.type === 'send' && isPending) {
-    return allTransactionStatuses.sending;
+
+  if (toast.type === 'send') {
+    if (isPending) {
+      return allTransactionStatuses.sending;
+    }
+    if (isConfirmed) {
+      return allTransactionStatuses.sent;
+    }
   }
+
+  // show "Pending" instead of "Contract Interaction"
   if (isPending) {
-    // don't know "Contract Interaction" just show "Pending"
-    return i18n.t(i18n.l.toasts.statuses.pending);
+    return allTransactionStatuses.pending;
   }
-  return allTransactionStatuses[toast.status] || i18n.t(i18n.l.toasts.statuses.pending);
+
+  return allTransactionStatuses[toast.status] || allTransactionStatuses.pending;
 };
