@@ -4,23 +4,13 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
+import { GestureDetector, Pressable } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
-
-const springConfigEnter = { damping: 14, mass: 1, stiffness: 121.6 };
-
-// increased speed and quicker settling, faster exit feels better
-const springConfigDismiss = {
-  restDisplacementThreshold: 0.5,
-  restSpeedThreshold: 5,
-  damping: 20,
-  mass: 0.8,
-  stiffness: 250,
-};
+import { springConfigDismiss, springConfigEnter, useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
 const CARD_BORDER_RADIUS = 50;
 const CARD_MARGIN = 20;
@@ -50,8 +40,6 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   const { pressColor } = useToastColors();
 
   const restingTranslateY = insets.top + 20;
-  const animateY = useSharedValue(-20);
-  const dragY = useSharedValue(0);
   const opacity = useSharedValue(0);
   const pointerEvents = useSharedValue<'auto' | 'none'>('none');
 
@@ -59,6 +47,22 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   const paddingY = 8;
   const itemHeight = 66;
   const height = toasts.length * itemHeight + paddingY * 2;
+
+  const { dragY, pan, animateTo } = useVerticalDismissPanGesture({
+    onDismiss: useCallback(() => {
+      setShowExpandedToasts(false);
+    }, []),
+    onStartDismiss: useCallback(() => {
+      'worklet';
+      opacity.value = withSpring(0, springConfigDismiss);
+      pointerEvents.value = 'none';
+    }, [opacity, pointerEvents]),
+    height,
+    upwardSensitivityMultiplier: TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER,
+    dismissSensitivity: TOAST_EXPANDED_DISMISS_SENSITIVITY,
+    initialY: -20,
+    dismissTargetY: -100,
+  });
 
   useEffect(() => {
     if (!hasToasts) {
@@ -68,18 +72,18 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
 
   useEffect(() => {
     if (showExpanded) {
-      animateY.value = withSpring(0, springConfigEnter);
+      animateTo(0, springConfigEnter);
       opacity.value = withSpring(1, springConfigEnter);
       pointerEvents.value = 'auto';
     } else {
-      animateY.value = withSpring(-20, springConfigDismiss);
+      animateTo(-20, springConfigDismiss);
       opacity.value = withSpring(0, springConfigDismiss);
       pointerEvents.value = 'none';
     }
-  }, [opacity, showExpanded, animateY, pointerEvents]);
+  }, [opacity, showExpanded, animateTo, pointerEvents]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: animateY.value + dragY.value }],
+    transform: [{ translateY: dragY.value }],
     opacity: opacity.value,
   }));
 
@@ -89,55 +93,17 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     };
   });
 
-  const pan = useMemo(() => {
-    return Gesture.Pan()
-      .onUpdate(e => {
-        'worklet';
-        const rawTranslation = e.translationY;
-        // friction as you drag down
-        if (rawTranslation > 0) {
-          // reduce movement as distance increases
-          const friction = 0.05; // lower = more friction
-          dragY.value = rawTranslation * friction + (rawTranslation * (1 - friction)) / (1 + rawTranslation * 0.01);
-        } else {
-          dragY.value = rawTranslation;
-        }
-      })
-      .onEnd(e => {
-        'worklet';
-        const dragDistance = dragY.value;
-        const adjustedDistance = dragDistance < 0 ? dragDistance * TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER : dragDistance;
-        const distanceRatio = Math.abs(adjustedDistance) / height;
-        const velocityFactor = Math.abs(e.velocityY) / 1000;
-        const dismissScore = distanceRatio + velocityFactor;
-        const shouldDismiss = dismissScore > TOAST_EXPANDED_DISMISS_SENSITIVITY;
-
-        if (shouldDismiss) {
-          const targetY = -100;
-          animateY.value = withSpring(targetY, springConfigDismiss, () => {
-            runOnJS(setShowExpandedToasts)(false);
-          });
-          dragY.value = withSpring(0, springConfigDismiss);
-          opacity.value = withSpring(0, springConfigDismiss);
-          pointerEvents.value = 'none';
-        } else {
-          dragY.value = withSpring(0, springConfigEnter);
-        }
-      });
-  }, [dragY, height, animateY, opacity, pointerEvents]);
-
   const hide = useCallback(() => {
     return new Promise<void>(res => {
       'worklet';
-      animateY.value = withSpring(-100, springConfigDismiss, () => {
+      dragY.value = withSpring(-100, springConfigDismiss, () => {
         runOnJS(setShowExpandedToasts)(false);
       });
-      dragY.value = withSpring(0, springConfigDismiss);
       opacity.value = withSpring(0, springConfigDismiss, () => {
         runOnJS(res)();
       });
     });
-  }, [opacity, animateY, dragY]);
+  }, [opacity, dragY]);
 
   const opacityStyle = useAnimatedStyle(() => {
     return {

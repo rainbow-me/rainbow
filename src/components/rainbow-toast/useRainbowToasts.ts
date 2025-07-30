@@ -3,7 +3,6 @@ import type { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-t
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Mints } from '@/resources/mints';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { skaleTitanTestnet } from 'viem/chains';
 
 export type ToastState = {
   isShowingTransactionDetails: boolean;
@@ -12,6 +11,7 @@ export type ToastState = {
   handleTransactions: (props: { transactions: RainbowTransaction[]; mints?: Mints }) => void;
   startRemoveToast: (id: string, via: 'swipe' | 'finish') => void;
   finishRemoveToast: (id: string) => void;
+  removeAllToasts: () => void;
   dismissedToasts: Record<string, boolean>;
   showExpanded: boolean;
   setShowExpandedToasts: (show: boolean) => void;
@@ -127,6 +127,19 @@ export const useToastStore = createRainbowStore<ToastState>(
         toasts: state.toasts.filter(t => t.id !== id).map((t, index) => ({ ...t, index })),
       }));
     },
+
+    removeAllToasts: () => {
+      set(state => {
+        const dismissedToasts = Object.fromEntries(state.toasts.map(t => [t.id, true]));
+        return {
+          toasts: [],
+          dismissedToasts: {
+            ...state.dismissedToasts,
+            ...dismissedToasts,
+          },
+        };
+      });
+    },
   }),
   {
     storageKey: `rainbow-toasts`,
@@ -155,5 +168,11 @@ function getToastsStateForStartRemove(state: ToastState, id: string, via: 'swipe
   } satisfies Partial<ToastState>;
 }
 
-export const { handleTransactions, startRemoveToast, finishRemoveToast, setShowExpandedToasts, setIsShowingTransactionDetails } =
-  useToastStore.getState();
+export const {
+  handleTransactions,
+  startRemoveToast,
+  finishRemoveToast,
+  removeAllToasts,
+  setShowExpandedToasts,
+  setIsShowingTransactionDetails,
+} = useToastStore.getState();
