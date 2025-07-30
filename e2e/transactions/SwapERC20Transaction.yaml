@@ -1,21 +1,3 @@
-# CHECKLIST:
-# [x] RNBW-4855 - ERC20 > ETH
-#     - Blockers:
-#       - Quotes aren't generating for ETH output swaps
-#       - Need to figure out where in the flow it's getting stuck
-# [x] RNBW-4857 - Swaps entry from Discover page
-# [x] RNBW-4856 - Approvals ??? Since were swapping an ERC20 ?
-# [ ] RNBW-4861 - Check the viability of Swaps Warnings on Anvil / CI.
-
-# So the flow should look like:
-# 1. Maybe look into account impersonation
-# 2. Start with DAI on an account were impersonating
-# 3. Select DAI as input token VIA Discover page
-# 4. Select ETH as output token
-# 6. Check the viability of Swaps Warnings on Anvil / CI.
-# 7. Execute Approval + Swap
-# 8. Update balance check
-
 appId: ${APP_ID}
 tags:
   - wallet
@@ -45,6 +27,7 @@ tags:
           id: swap-button
       - assertVisible:
           id: swap-screen
+
       # Select DAI as output token
       - tapOn: 'Find a token to buy'
       - inputText: 'DAI'
@@ -58,7 +41,7 @@ tags:
           id: swap-bottom-action-button
       - runFlow: ../utils/MaybeSetupPin.yaml
 
-      # On Android, pull to refresh
+      # On Android, pull to refresh + copy balance before swap
       - retry:
           maxRetries: 3
           commands:
@@ -89,11 +72,13 @@ tags:
           id: chart-header-Dai
       - tapOn:
           id: swap-action-button
+
       # Execute Swap
       - longPressOn:
           id: swap-bottom-action-button
       - runFlow: ../utils/MaybeSetupPin.yaml
 
+      # On Android, pull to refresh + copy balance after swap
       - retry:
           maxRetries: 3
           commands:
@@ -110,16 +95,16 @@ tags:
                       id: balance-coin-row-value-Dai
                   - evalScript: ${output.afterValue = maestro.copiedText}
 
-      # Check if the balance went down post swap
+      # Check if the balance went down post swap (success)
       - runFlow:
           when:
             true: ${output.beforeValue > output.afterValue}
           commands:
-            - evalScript: ${console.log('Held balance went down after a swap!')}
+            - evalScript: ${console.log('SUCCESS - Held balance went down after a swap!')}
 
-      # Compare the values:
+      # Check if the balance didnt go down post swap (failure)
       - runFlow:
           when:
             true: ${output.beforeValue <= output.afterValue}
           commands:
-            - evalScript: ${console.log("Balance didnt go down after swap! Values are beforeValue - " + output.beforeValue + ", afterValue - " + output.afterValue)}
+            - evalScript: ${console.log("FAILURE - Balance didnt go down after swap! Values are beforeValue - " + output.beforeValue + ", afterValue - " + output.afterValue)}

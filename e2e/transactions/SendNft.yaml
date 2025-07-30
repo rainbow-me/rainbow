@@ -43,7 +43,7 @@ tags:
 
       # we need to wait for the sheet to be done before clicking on the send else Maestro will click on the image
       - waitForAnimationToEnd:
-          timeout: 10000
+          timeout: 2000
 
       - tapOn: '.*Send'
 
