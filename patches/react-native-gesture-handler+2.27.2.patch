@@ -1,3 +1,16 @@
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
+index d515011..813c69c 100644
+--- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
++++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
+@@ -140,7 +140,7 @@ class RNGestureHandlerButtonViewManager :
+ 
+   override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? = mDelegate
+ 
+-  class ButtonViewGroup(context: Context?) :
++  open class ButtonViewGroup(context: Context?) :
+     ViewGroup(context),
+     NativeViewGestureHandler.NativeViewGestureHandlerHook {
+     // Using object because of handling null representing no value set.
 diff --git a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm b/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
 index 667d600..9054037 100644
 --- a/node_modules/react-native-gesture-handler/apple/Handlers/RNNativeViewHandler.mm
