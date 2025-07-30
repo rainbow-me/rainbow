@@ -17,6 +17,7 @@ import {
   monotoneCubicInterpolation,
   simplifyData,
 } from '@/react-native-animated-charts/src';
+import {getNumberFormatter} from '@/helpers/intl';
 
 export const {width: SIZE} = Dimensions.get('window');
 
@@ -25,9 +26,9 @@ export const formatUSD = (value) => {
   if (value === '') {
     return '';
   }
-  return `$ ${value.toLocaleString('en-US', {
+  return `$ ${getNumberFormatter('en-US', {
     currency: 'USD',
-  })}`;
+  }).format(value)}`;
 };
 
 export const formatDatetime = (value) => {

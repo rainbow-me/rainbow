@@ -45,7 +45,13 @@ tags:
       - waitForAnimationToEnd:
           timeout: 2000
 
-      - tapOn: '.*Send'
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible:
+                id: 'send-action-button'
+      - tapOn:
+          id: 'send-action-button'
 
       # Test ENS address input
       - inputText: 'rainbowwallet.eth'
