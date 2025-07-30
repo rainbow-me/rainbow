@@ -2,7 +2,7 @@ import { TOAST_EXPANDED_DISMISS_SENSITIVITY, TOAST_EXPANDED_UPWARD_SENSITIVITY_M
 import { ToastExpandedContent } from '@/components/rainbow-toast/ToastExpandedContent';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Panel } from '@/components/SmoothPager/ListPanel';
-import { Box, useColorMode } from '@/design-system';
+import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
@@ -36,7 +36,6 @@ const ExpandedToastCard = ({
 
 export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDisplay() {
   const insets = useSafeAreaInsets();
-  const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const { toasts, showExpanded } = useToastStore();
   const hasToasts = !!toasts.length;
