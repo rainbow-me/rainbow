@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
 });
 
 function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
-  const title = getStatusLabel(toast);
+  const title = getToastTitle(toast);
   const subtitle = getSwapToastNetworkLabel({ toast });
   return (
     <ToastContentDisplay
@@ -112,7 +112,7 @@ export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap })
 };
 
 function SendToastContent({ toast }: { toast: RainbowToastSend }) {
-  const title = getStatusLabel(toast);
+  const title = getToastTitle(toast);
   const subtitle = toast.displayAmount;
 
   return (
@@ -128,7 +128,7 @@ function SendToastContent({ toast }: { toast: RainbowToastSend }) {
 
 function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
   const icon = <ContractToastIcon toast={toast} />;
-  const title = getStatusLabel(toast);
+  const title = getToastTitle(toast);
   const subtitle = toast.name;
 
   return (
@@ -141,13 +141,18 @@ function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
   );
 }
 
-export const getStatusLabel = (toast: RainbowToast): string => {
+export const getToastTitle = (toast: RainbowToast): string => {
+  const isPending = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
   // for swap/send we set the "pending" label to be the more active name, swapping/sending
-  if (toast.type === 'swap' && toast.status === TransactionStatus.pending) {
+  if (toast.type === 'swap' && isPending) {
     return allTransactionStatuses.swapping;
   }
-  if (toast.type === 'send' && toast.status === TransactionStatus.pending) {
+  if (toast.type === 'send' && isPending) {
     return allTransactionStatuses.sending;
   }
-  return allTransactionStatuses[toast.status] || i18n.t(i18n.l.toasts.statuses.unknown);
+  if (isPending) {
+    // don't know "Contract Interaction" just show "Pending"
+    return i18n.t(i18n.l.toasts.statuses.pending);
+  }
+  return allTransactionStatuses[toast.status] || i18n.t(i18n.l.toasts.statuses.pending);
 };

@@ -19,12 +19,12 @@ export const ContractToastIcon = memo(function ContractToastIcon({
 }) {
   const colors = useToastColors();
 
-  if (toast.status in doneTransactionStatuses) {
-    return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="check" />;
-  }
-
   if (toast.status === TransactionStatus.failed) {
     return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="exclamationMark" />;
+  }
+
+  if (toast.status in doneTransactionStatuses) {
+    return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="check" />;
   }
 
   return (

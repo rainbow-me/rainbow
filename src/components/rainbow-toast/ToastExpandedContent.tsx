@@ -2,7 +2,7 @@ import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
-import { getStatusLabel, getSwapToastNetworkLabel } from '@/components/rainbow-toast/ToastContent';
+import { getToastTitle, getSwapToastNetworkLabel } from '@/components/rainbow-toast/ToastContent';
 import type { RainbowToast, RainbowToastContract, RainbowToastSend, RainbowToastSwap } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
@@ -32,7 +32,7 @@ export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
 function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }) {
   const icon = <ContractToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
   const title = toast.name;
-  const subtitle = getStatusLabel(toast);
+  const subtitle = getToastTitle(toast);
   const isLoading = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
   return (
     <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />
@@ -42,7 +42,7 @@ function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }
 function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
   const title = `${toast.token}`;
   const isLoading = toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending;
-  const subtitle = getStatusLabel(toast);
+  const subtitle = getToastTitle(toast);
 
   return (
     <ToastExpandedContentDisplay
@@ -59,7 +59,7 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
   const { transaction } = toast;
 
   const title = getSwapToastNetworkLabel({ toast });
-  const subtitle = getStatusLabel(toast);
+  const subtitle = getToastTitle(toast);
   const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
   const isWideIcon = isWideSwapIcon(toast);
 
