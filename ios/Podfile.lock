@@ -2009,7 +2009,7 @@ PODS:
     - Yoga
   - react-native-screen-corner-radius (0.2.2):
     - React
-  - react-native-skia (2.0.1):
+  - react-native-skia (2.1.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2821,7 +2821,7 @@ PODS:
   - RNRudderSdk (2.0.0):
     - React
     - Rudder (< 2.0.0, >= 1.31.0)
-  - RNScreens (4.10.0):
+  - RNScreens (4.13.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2845,9 +2845,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.10.0)
+    - RNScreens/common (= 4.13.1)
     - Yoga
-  - RNScreens/common (4.10.0):
+  - RNScreens/common (4.13.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3735,7 +3735,7 @@ SPEC CHECKSUMS:
   react-native-restart: f6f591aeb40194c41b9b5013901f00e6cf7d0f29
   react-native-safe-area-context: 562163222d999b79a51577eda2ea8ad2c32b4d06
   react-native-screen-corner-radius: 81229df69e6f990502b813b92a0e8267c64d9dd9
-  react-native-skia: 0c8e08883dcb9d938de09791b4921bbcfcc4b5be
+  react-native-skia: 7a802520c5c311f831e93dbe9377ce192697ee7b
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
   react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
@@ -3798,7 +3798,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 851adf794e1fcdc0664d80820fa3272ee8a6a538
   RNReanimated: 8a8270c2f6189ad9a7bba3b10f1a34b40b2ecc2f
   RNRudderSdk: cea1f6a95ceab29ceaf75bdadccba5f78121a4ce
-  RNScreens: 5621e3ad5a329fbd16de683344ac5af4192b40d3
+  RNScreens: 7e56b051227a1a11c3068849d1a9a5dd457537df
   RNSentry: a668f2659e9ac463db403a1f081fd0ca5375d840
   RNShare: c6c861ad593bdd4856342724c00d5da64c4ff22f
   RNSound: 314cc5226453ef4a3314a196c65e8a65e5106a7b

@@ -16,27 +16,25 @@ const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px'
 
   return (
     // ios scroll fix
-    <Inset bottom={{ custom: safeAreaInsets.bottom }} top={ios ? '12px' : undefined}>
-      <ScrollView
-        ref={scrollviewRef}
-        scrollEventThrottle={32}
-        // ios scroll fix
-        {...(ios && { style: { overflow: 'visible' } })}
-        testID={testID}
+    <ScrollView
+      ref={scrollviewRef}
+      scrollEventThrottle={32}
+      // ios scroll fix
+      style={ios && { height: '100%', overflow: 'visible' }}
+      testID={testID}
+    >
+      <Box
+        paddingHorizontal="19px (Deprecated)"
+        // fix clipped shadows on android
+        {...(android && {
+          paddingBottom: { custom: 22 },
+          paddingTop: { custom: 7 },
+        })}
       >
-        <Box
-          paddingHorizontal="19px (Deprecated)"
-          // fix clipped shadows on android
-          {...(android && {
-            paddingBottom: { custom: 22 },
-            paddingTop: { custom: 7 },
-          })}
-        >
-          <Stack space={space}>{children}</Stack>
-        </Box>
-        {Footer}
-      </ScrollView>
-    </Inset>
+        <Stack space={space}>{children}</Stack>
+      </Box>
+      {Footer}
+    </ScrollView>
   );
 };
 
