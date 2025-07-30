@@ -1,17 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useRef } from 'react';
-import { LongPressGestureHandler, PanGestureHandler, TapGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-import Animated, {
-  cancelAnimation,
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withDecay,
-} from 'react-native-reanimated';
+import Animated, { cancelAnimation, useAnimatedStyle, useDerivedValue, useSharedValue, withDecay } from 'react-native-reanimated';
 import { withSpeed } from '@/utils';
+import { runOnJS } from 'react-native-worklets';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const DECCELERATION = 0.998;
 
@@ -46,6 +40,7 @@ const SingleElement = ({ transX, offset = { value: 0 }, sumWidth, children, onLa
 
 const SwipeableList = ({ components, height, speed, testID }) => {
   const transX = useSharedValue(0);
+  const start = useSharedValue(0);
   const swiping = useSharedValue(0);
   const offset = useSharedValue(100000);
   const isPanStarted = useRef(false);
@@ -59,29 +54,26 @@ const SwipeableList = ({ components, height, speed, testID }) => {
     }, [speed, swiping])
   );
 
-  const onGestureEvent = useAnimatedGestureHandler({
-    onActive: (event, ctx) => {
-      android && runOnJS(startPan)();
-      transX.value = ctx.start + event.translationX;
-    },
-    onCancel: () => {
-      android && runOnJS(endPan)();
-    },
-    onEnd: event => {
-      android && runOnJS(endPan)();
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-6, 10])
+    .onBegin(() => {
+      start.value = transX.value;
+    })
+    .onUpdate(event => {
+      IS_ANDROID && runOnJS(startPan)();
+      transX.value = start.value + event.translationX;
+    })
+    .onEnd(event => {
+      IS_ANDROID && runOnJS(endPan)();
       transX.value = withDecay({
         deceleration: DECCELERATION,
         velocity: event.velocityX,
       });
       swiping.value = withSpeed({ targetSpeed: speed });
-    },
-    onFail: () => {
-      android && runOnJS(endPan)();
-    },
-    onStart: (_, ctx) => {
-      ctx.start = transX.value;
-    },
-  });
+    })
+    .onFinalize(() => {
+      IS_ANDROID && runOnJS(endPan)();
+    });
 
   const restoreAnimation = useCallback(() => {
     setTimeout(() => {
@@ -96,118 +88,71 @@ const SwipeableList = ({ components, height, speed, testID }) => {
     cancelAnimation(swiping);
   }, [swiping, transX]);
 
-  const onTapGestureEvent = useAnimatedGestureHandler({
-    onCancel: () => {
-      ios && (swiping.value = withSpeed({ targetSpeed: speed }));
-    },
-    onEnd: () => {
+  const tapGesture = Gesture.Tap()
+    .onBegin(() => {
+      if (IS_IOS) {
+        cancelAnimation(transX);
+        cancelAnimation(swiping);
+      }
+    })
+    .onEnd(() => {
       swiping.value = withSpeed({ targetSpeed: speed });
-    },
-    onFail: () => {
-      ios && (swiping.value = withSpeed({ targetSpeed: speed }));
-    },
-    onStart: () => {
-      if (ios) {
-        cancelAnimation(transX);
-        cancelAnimation(swiping);
-      }
-    },
-  });
+    })
+    .onFinalize(() => {
+      IS_IOS && (swiping.value = withSpeed({ targetSpeed: speed }));
+    });
 
-  const onLongGestureEvent = useAnimatedGestureHandler({
-    onEnd: () => {
-      android && (swiping.value = withSpeed({ targetSpeed: speed }));
-    },
-  });
+  const longPressGesture = Gesture.LongPress()
+    .maxDistance(100000)
+    .onEnd(() => {
+      IS_ANDROID && (swiping.value = withSpeed({ targetSpeed: speed }));
+    });
 
-  const panRef = useRef(undefined);
-  const lpRef = useRef(undefined);
-  const tapRef = useRef(undefined);
-  const onHandlerStateChangeAndroid = useCallback(
-    event => {
-      if (event.nativeEvent.state === 3 || event.nativeEvent.state === 5) {
-        swiping.value = withSpeed({ targetSpeed: speed });
-      }
-
-      if (event.nativeEvent.state === 2) {
-        cancelAnimation(transX);
-        cancelAnimation(swiping);
-      }
-    },
-    [speed, swiping, transX]
-  );
+  const composedGesture = Gesture.Simultaneous(panGesture, tapGesture, longPressGesture);
 
   const translate = useDerivedValue(() => swiping.value + transX.value, []);
 
   return (
-    <LongPressGestureHandler
-      maxDist={100000}
-      maxPointers={1}
-      onGestureEvent={onLongGestureEvent}
-      onHandlerStateChange={onLongGestureEvent}
-      ref={lpRef}
-      simultaneousHandlers={[panRef, tapRef]}
-    >
-      <Animated.View>
-        <TapGestureHandler
-          onGestureEvent={onTapGestureEvent}
-          onHandlerStateChang={onTapGestureEvent}
-          ref={tapRef}
-          simultaneousHandlers={[panRef, lpRef]}
+    <GestureDetector gesture={composedGesture}>
+      <Animated.View style={{ height, width: '100%' }} testID={testID}>
+        <Animated.View
+          style={{
+            flexDirection: 'row',
+          }}
         >
-          <Animated.View>
-            <PanGestureHandler
-              activeOffsetX={[-6, 10]}
-              onGestureEvent={onGestureEvent}
-              {...(android && {
-                onHandlerStateChange: onHandlerStateChangeAndroid,
-              })}
-              ref={panRef}
-              simultaneousHandlers={[lpRef, tapRef]}
-            >
-              <Animated.View style={{ height, width: '100%' }} testID={testID}>
-                <Animated.View
-                  style={{
-                    flexDirection: 'row',
-                  }}
-                >
-                  <SingleElement
-                    onLayout={e => {
-                      offset.value = e.nativeEvent.layout.width;
-                    }}
-                    sumWidth={offset}
-                    transX={translate}
-                  >
-                    {components.map(({ view }) =>
-                      ios
-                        ? view({
-                            testID: null,
-                          })
-                        : view({
-                            onPressCancel: restoreAnimation,
-                            onPressStart: startAnimation,
-                          })
-                    )}
-                  </SingleElement>
-                  <SingleElement offset={offset} sumWidth={offset} transX={translate}>
-                    {components.map(({ view }) =>
-                      ios
-                        ? view({
-                            testID: testID,
-                          })
-                        : view({
-                            onPressCancel: restoreAnimation,
-                            onPressStart: startAnimation,
-                          })
-                    )}
-                  </SingleElement>
-                </Animated.View>
-              </Animated.View>
-            </PanGestureHandler>
-          </Animated.View>
-        </TapGestureHandler>
+          <SingleElement
+            onLayout={e => {
+              offset.value = e.nativeEvent.layout.width;
+            }}
+            sumWidth={offset}
+            transX={translate}
+          >
+            {components.map(({ view }) =>
+              IS_IOS
+                ? view({
+                    testID: null,
+                  })
+                : view({
+                    onPressCancel: restoreAnimation,
+                    onPressStart: startAnimation,
+                  })
+            )}
+          </SingleElement>
+          <SingleElement offset={offset} sumWidth={offset} transX={translate}>
+            {components.map(({ view }) =>
+              IS_IOS
+                ? view({
+                    testID: testID,
+                  })
+                : view({
+                    onPressCancel: restoreAnimation,
+                    onPressStart: startAnimation,
+                  })
+            )}
+          </SingleElement>
+        </Animated.View>
       </Animated.View>
-    </LongPressGestureHandler>
+    </GestureDetector>
   );
 };
 

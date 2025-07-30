@@ -1,11 +1,10 @@
 import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   SharedValue,
   interpolate,
   runOnUI,
-  useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
@@ -233,29 +232,35 @@ const SmoothPagerComponent = (
     return enableSwipeToGoForward === 'always' || (enableSwipeToGoForward && deepestReachedPageIndex.value > currentPageIndex.value);
   });
 
-  const swipeGestureHandler = useAnimatedGestureHandler({
-    onStart: (event, context: { startX: number; startPage: number }) => {
-      context.startPage = Math.round(currentPageIndex.value);
-      context.startX = event.translationX;
-    },
-    onActive: (event, context: { startX: number; startPage: number }) => {
-      const dragDistance = event.translationX - context.startX;
+  const startPage = useSharedValue(0);
+  const startX = useSharedValue(0);
+
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-5, 5])
+    .failOffsetY([-10, 10])
+    .enabled(enableSwipeToGoBack || enableSwipeToGoForward !== false)
+    .onStart(event => {
+      startPage.value = Math.round(currentPageIndex.value);
+      startX.value = event.translationX;
+    })
+    .onUpdate(event => {
+      const dragDistance = event.translationX - startX.value;
       const dragPages = dragDistance / (DEVICE_WIDTH + pageGap);
-      let newPageIndex = context.startPage - dragPages;
+      let newPageIndex = startPage.value - dragPages;
 
       if (enableSwipeToGoBack && forwardSwipeEnabled.value) {
         newPageIndex = clamp(newPageIndex, 0, numberOfPages - 1);
       } else if (enableSwipeToGoBack && dragDistance > 0) {
-        newPageIndex = clamp(newPageIndex, 0, context.startPage);
+        newPageIndex = clamp(newPageIndex, 0, startPage.value);
       } else if (forwardSwipeEnabled.value && dragDistance < 0) {
-        newPageIndex = clamp(newPageIndex, context.startPage, numberOfPages - 1);
+        newPageIndex = clamp(newPageIndex, startPage.value, numberOfPages - 1);
       } else {
-        newPageIndex = context.startPage;
+        newPageIndex = startPage.value;
       }
 
       currentPageIndex.value = newPageIndex;
-    },
-    onEnd: (event, context: { startX: number; startPage: number }) => {
+    })
+    .onEnd(event => {
       const swipeVelocityThreshold = 300;
       let targetPage = currentPageIndex.value;
 
@@ -268,24 +273,18 @@ const SmoothPagerComponent = (
       }
 
       if (enableSwipeToGoBack && !forwardSwipeEnabled.value) {
-        targetPage = clamp(targetPage, 0, context.startPage);
+        targetPage = clamp(targetPage, 0, startPage.value);
       } else if (!enableSwipeToGoBack && forwardSwipeEnabled.value) {
-        targetPage = clamp(targetPage, context.startPage, numberOfPages - 1);
+        targetPage = clamp(targetPage, startPage.value, numberOfPages - 1);
       } else {
         targetPage = clamp(targetPage, 0, numberOfPages - 1);
       }
 
       currentPageIndex.value = withTiming(targetPage, PAGE_ANIMATION_CONFIG);
-    },
-  });
+    });
 
   return (
-    <PanGestureHandler
-      activeOffsetX={[-5, 5]}
-      failOffsetY={[-10, 10]}
-      enabled={enableSwipeToGoBack || enableSwipeToGoForward !== false}
-      onGestureEvent={swipeGestureHandler}
-    >
+    <GestureDetector gesture={panGesture}>
       <Animated.View style={styles.pagerContainer}>
         <Animated.View
           style={[
@@ -332,7 +331,7 @@ const SmoothPagerComponent = (
           })}
         </Animated.View>
       </Animated.View>
-    </PanGestureHandler>
+    </GestureDetector>
   );
 };
 

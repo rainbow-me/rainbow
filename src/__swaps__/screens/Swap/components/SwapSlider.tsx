@@ -1,12 +1,11 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as i18n from '@/languages';
-import { PanGestureHandler, State, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureStateChangeEvent, TapGestureHandlerEventPayload } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -65,10 +64,6 @@ export const SwapSlider = ({
     sliderXPosition,
     swapInfo,
   } = useSwapContext();
-
-  const panRef = useRef(undefined);
-  const tapRef = useRef(undefined);
-  const maxButtonRef = useRef(undefined);
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -136,53 +131,54 @@ export const SwapSlider = ({
     []
   );
 
-  const onPressDown = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
-    onStart: () => {
+  const tapGesture = Gesture.Tap()
+    .onBegin(() => {
       sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
       quoteFetchingInterval.stop();
       triggerHaptics('soft');
-    },
-    onActive: () => {
+    })
+    .onStart(() => {
       sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
-    },
-  });
+    });
 
-  const onSlide = useAnimatedGestureHandler({
-    onStart: (_, ctx: { exceedsMax?: boolean; startX: number }) => {
-      ctx.exceedsMax = undefined;
-      ctx.startX = sliderXPosition.value;
+  const startX = useSharedValue(0);
+  const exceedsMax = useSharedValue(false);
+
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([0, 0])
+    .activeOffsetY([0, 0])
+    .onStart(() => {
+      exceedsMax.value = false;
+      startX.value = sliderXPosition.value;
       sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
       if (!hasBalance.value) return;
 
       inputMethod.value = 'slider';
 
       // Check if the slider is at the right limit
-      if (ctx.startX >= width) {
+      if (startX.value >= width) {
         const currentInputValue = inputValues.value.inputAmount;
         const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
-        const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
+        const exceedsMaxCheck = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
 
-        if (exceedsMax) {
-          ctx.exceedsMax = true;
+        if (exceedsMaxCheck) {
+          exceedsMax.value = true;
           isQuoteStale.value = 1;
           sliderXPosition.value = width * 0.999;
           triggerHaptics('impactMedium');
         }
       }
 
-      // On Android, for some reason waiting until onActive to set SwapInputController.isQuoteStale.value = 1 causes
-      // the outputAmount text color to break. It's preferable to set it in onActive, so we're setting it in onStart
-      // for Android only. It's possible that migrating this handler to the RNGH v2 API will remove the need for this.
       if (!IS_IOS) isQuoteStale.value = 1;
-    },
-    onActive: (event, ctx: { exceedsMax?: boolean; startX: number }) => {
+    })
+    .onUpdate(event => {
       const hasSwappableBalance = hasBalance.value;
 
       if (IS_IOS && sliderXPosition.value > 0 && isQuoteStale.value !== 1 && hasSwappableBalance) {
         isQuoteStale.value = 1;
       }
 
-      const rawX = ctx.startX + event.translationX;
+      const rawX = startX.value + event.translationX;
 
       const calculateOvershoot = (distance: number, maxOverscroll: number): number => {
         if (distance === 0) return 0;
@@ -194,7 +190,7 @@ export const SwapSlider = ({
         return adjustedMovement;
       };
 
-      if (ctx.startX === width && !ctx.exceedsMax && clamp(rawX, 0, width) >= width * 0.995 && hasSwappableBalance) {
+      if (startX.value === width && !exceedsMax.value && clamp(rawX, 0, width) >= width * 0.995 && hasSwappableBalance) {
         isQuoteStale.value = 0;
       }
 
@@ -211,8 +207,8 @@ export const SwapSlider = ({
         );
         overshoot.value = calculateOvershoot(overshootX, maxOverscroll);
       }
-    },
-    onFinish: (event, ctx: { exceedsMax?: boolean; startX: number }) => {
+    })
+    .onEnd(event => {
       const hasSwappableBalance = hasBalance.value;
 
       const onFinished = () => {
@@ -224,15 +220,12 @@ export const SwapSlider = ({
               runOnJS(onChangeWrapper)(1);
             }
             sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
-          } else if (event.state === State.FAILED) {
-            quoteFetchingInterval.start();
-            return;
           } else if (xPercentage.value < 0.005) {
             runOnJS(onChangeWrapper)(0);
             sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
             isQuoteStale.value = 0;
             isFetching.value = false;
-          } else if (ctx.startX !== sliderXPosition.value) {
+          } else if (startX.value !== sliderXPosition.value) {
             runOnJS(onChangeWrapper)(xPercentage.value);
           } else {
             quoteFetchingInterval.start();
@@ -252,7 +245,7 @@ export const SwapSlider = ({
 
       if (snapPoints) {
         // If snap points are provided and velocity is high enough, snap to the nearest point
-        const rawX = ctx.startX + event.translationX;
+        const rawX = startX.value + event.translationX;
 
         // Skip snapping if the slider is already at 0% or 100% and the user is overscrolling
         const needsToSnap =
@@ -310,8 +303,7 @@ export const SwapSlider = ({
           }
         );
       }
-    },
-  });
+    });
 
   const sliderContainerStyle = useAnimatedStyle(() => {
     const collapsedPercentage = SLIDER_COLLAPSED_HEIGHT / height;
@@ -403,97 +395,87 @@ export const SwapSlider = ({
 
   const sellingOrBridgingLabelStyle = useAnimatedStyle(() => ({ marginRight: hasBalance.value ? 3 : 0 }));
 
+  const composedGesture = Gesture.Simultaneous(panGesture, tapGesture);
+
   return (
-    <PanGestureHandler
-      activeOffsetX={[0, 0]}
-      activeOffsetY={[0, 0]}
-      onGestureEvent={onSlide}
-      simultaneousHandlers={[tapRef]}
-      waitFor={maxButtonRef}
-    >
+    <GestureDetector gesture={composedGesture}>
       <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
-        <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[maxButtonRef, panRef]} waitFor={maxButtonRef}>
-          <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20 }}>
-            <View style={{ zIndex: 10 }}>
-              <Columns alignHorizontal="justify" alignVertical="center">
-                <Inline alignVertical="center" space="6px" wrap={false}>
-                  <Bleed vertical="4px">
-                    <AnimatedSwapCoinIcon showBadge={false} assetType={'input'} size={16} />
-                  </Bleed>
-                  <Inline alignVertical="bottom" wrap={false}>
-                    <AnimatedText
-                      color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'}
-                      size="15pt"
-                      style={sellingOrBridgingLabelStyle}
-                      weight="bold"
-                    >
-                      {sellingOrBridgingLabel}
-                    </AnimatedText>
-                    <AnimatedText color="labelSecondary" size="15pt" style={percentageTextStyle} weight="heavy">
-                      {percentageText}
-                    </AnimatedText>
-                  </Inline>
-                </Inline>
-                <Column width="content">
-                  <GestureHandlerV1Button
-                    onPressWorklet={setValueToMaxSwappableAmount}
-                    ref={maxButtonRef}
-                    style={{ margin: -12, padding: 12 }}
+        <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20 }}>
+          <View style={{ zIndex: 10 }}>
+            <Columns alignHorizontal="justify" alignVertical="center">
+              <Inline alignVertical="center" space="6px" wrap={false}>
+                <Bleed vertical="4px">
+                  <AnimatedSwapCoinIcon showBadge={false} assetType={'input'} size={16} />
+                </Bleed>
+                <Inline alignVertical="bottom" wrap={false}>
+                  <AnimatedText
+                    color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'}
+                    size="15pt"
+                    style={sellingOrBridgingLabelStyle}
+                    weight="bold"
                   >
-                    <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
-                      {MAX_LABEL}
-                    </AnimatedText>
-                  </GestureHandlerV1Button>
-                </Column>
-              </Columns>
-            </View>
+                    {sellingOrBridgingLabel}
+                  </AnimatedText>
+                  <AnimatedText color="labelSecondary" size="15pt" style={percentageTextStyle} weight="heavy">
+                    {percentageText}
+                  </AnimatedText>
+                </Inline>
+              </Inline>
+              <Column width="content">
+                <GestureHandlerV1Button onPressWorklet={setValueToMaxSwappableAmount} style={{ margin: -12, padding: 12 }}>
+                  <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
+                    {MAX_LABEL}
+                  </AnimatedText>
+                </GestureHandlerV1Button>
+              </Column>
+            </Columns>
+          </View>
+          <Animated.View
+            style={[
+              sliderContainerStyle,
+              {
+                alignItems: 'center',
+                flexDirection: 'row',
+                width,
+              },
+            ]}
+          >
+            {/* The slider's left bar */}
             <Animated.View
               style={[
-                sliderContainerStyle,
+                styles.sliderBox,
                 {
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  width,
+                  borderColor: separatorSecondary,
+                },
+                leftBarContainerStyle,
+              ]}
+            />
+            {/* The scrubber handle */}
+            <Box style={styles.sliderScrubberContainer}>
+              <Box
+                style={[
+                  styles.sliderScrubber,
+                  {
+                    backgroundColor: isDarkMode ? globalColors.white100 : globalColors.grey80,
+                  },
+                ]}
+              />
+            </Box>
+            {/* The slider's right bar */}
+            <Box
+              as={Animated.View}
+              style={[
+                styles.sliderBox,
+                rightBarContainerStyle,
+                {
+                  borderColor: dualColor ? separatorSecondary : isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)',
                 },
               ]}
-            >
-              {/* The slider's left bar */}
-              <Animated.View
-                style={[
-                  styles.sliderBox,
-                  {
-                    borderColor: separatorSecondary,
-                  },
-                  leftBarContainerStyle,
-                ]}
-              />
-              {/* The scrubber handle */}
-              <Box style={styles.sliderScrubberContainer}>
-                <Box
-                  style={[
-                    styles.sliderScrubber,
-                    {
-                      backgroundColor: isDarkMode ? globalColors.white100 : globalColors.grey80,
-                    },
-                  ]}
-                />
-              </Box>
-              {/* The slider's right bar */}
-              <Box
-                as={Animated.View}
-                style={[
-                  styles.sliderBox,
-                  rightBarContainerStyle,
-                  {
-                    borderColor: dualColor ? separatorSecondary : isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)',
-                  },
-                ]}
-              />
-            </Animated.View>
+            />
           </Animated.View>
-        </TapGestureHandler>
+        </Animated.View>
       </Animated.View>
-    </PanGestureHandler>
+    </GestureDetector>
   );
 };
 

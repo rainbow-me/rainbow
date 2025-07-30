@@ -42,7 +42,6 @@ const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Prop
         <View key={`categoryEmoji${rowContent[0]}`} style={[cx.rowContainer, { height: cellSize }]}>
           {touchableNet.map((singleLine, index) => {
             const touchableProps = {
-              key: `categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`,
               onPress: () => onEmojiSelect(singleLine),
               style: {
                 backgroundColor: colors.white,
@@ -51,7 +50,11 @@ const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Prop
               },
             };
             return ios ? (
-              <TouchableOpacity activeOpacity={0.5} {...touchableProps}>
+              <TouchableOpacity
+                key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
+                activeOpacity={0.5}
+                {...touchableProps}
+              >
                 <Text
                   style={{
                     backgroundColor: colors.white,
@@ -66,7 +69,11 @@ const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Prop
                 </Text>
               </TouchableOpacity>
             ) : (
-              <GHTouchableOpacity activeOpacity={0.7} {...touchableProps}>
+              <GHTouchableOpacity
+                key={`categoryEmojiTouchableOpacity${rowContent[0]}${singleLine.sort_order}`}
+                activeOpacity={0.7}
+                {...touchableProps}
+              >
                 <Text
                   style={{
                     backgroundColor: colors.white,

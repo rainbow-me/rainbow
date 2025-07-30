@@ -1,7 +1,6 @@
 // TODO: Add proper typings here
 // @ts-nocheck
 import { useRef } from 'react';
-import { useWorkletCallback } from 'react-native-reanimated';
 import { d3Interpolate } from './d3Interpolate';
 
 // cache for worklet modules
@@ -77,7 +76,7 @@ export function useWorkletValue() {
 
   const { current } = idRef;
 
-  return useWorkletCallback(() => {
+  return () => {
     'worklet';
 
     if (!global.remoteValues) {
@@ -92,5 +91,5 @@ export function useWorkletValue() {
         global.remoteValues[current] = value;
       },
     };
-  });
+  };
 }
