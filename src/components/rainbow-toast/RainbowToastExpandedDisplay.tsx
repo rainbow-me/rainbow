@@ -15,8 +15,8 @@ const springConfigEnter = { damping: 14, mass: 1, stiffness: 121.6 };
 
 // increased speed and quicker settling, faster exit feels better
 const springConfigDismiss = {
-  restDisplacementThreshold: 1,
-  restSpeedThreshold: 20,
+  restDisplacementThreshold: 0.5,
+  restSpeedThreshold: 5,
   damping: 20,
   mass: 0.8,
   stiffness: 250,
