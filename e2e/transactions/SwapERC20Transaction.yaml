@@ -95,22 +95,19 @@ tags:
                       id: balance-coin-row-value-Dai
                   - evalScript: ${output.afterValue = maestro.copiedText}
 
-      - evalScript: ${output.beforeValueNum = Number(output.beforeValue.replace(/[^0-9.]/g, ''))}
-      - evalScript: ${output.afterValueNum = Number(output.afterValue.replace(/[^0-9.]/g, ''))}
+                  # Check if the balance went down post swap (success)
+                  - runFlow:
+                      when:
+                        true: ${output.beforeValueNum > output.afterValueNum}
+                      commands:
+                        - evalScript: ${console.log('SUCCESS - Held balance went down after a swap!')}
+                        - assertTrue: ${output.beforeValueNum > output.afterValueNum}
 
-      # Check if the balance went down post swap (success)
-      - runFlow:
-          when:
-            true: ${output.beforeValueNum > output.afterValueNum}
-          commands:
-            - evalScript: ${console.log('SUCCESS - Held balance went down after a swap!')}
-            - assertTrue: ${output.beforeValueNum > output.afterValueNum}
-
-      # Check if the balance didnt go down post swap (failure)
-      - runFlow:
-          when:
-            true: ${output.beforeValueNum <= output.afterValueNum}
-          commands:
-            - evalScript: ${console.log("FAILURE - Balance didnt go down after swap! Values are beforeValue - " + output.beforeValue + ", afterValue - " + output.afterValue)}
-            # The test should fail here if the balance didnt go down - Intended behavior.
-            - assertTrue: ${output.beforeValueNum > output.afterValueNum}
+                  # Check if the balance didnt go down post swap (failure)
+                  - runFlow:
+                      when:
+                        true: ${output.beforeValueNum <= output.afterValueNum}
+                      commands:
+                        - evalScript: ${console.log("FAILURE - Balance didnt go down after swap! Values are beforeValue - " + output.beforeValue + ", afterValue - " + output.afterValue)}
+                        # The test should fail here if the balance didnt go down - Intended behavior.
+                        - assertTrue: ${output.beforeValueNum > output.afterValueNum}
