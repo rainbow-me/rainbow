@@ -12,6 +12,7 @@ import {
 } from '@/components/rainbow-toast/constants';
 import { ToastContent } from '@/components/rainbow-toast/ToastContent';
 import { type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
+import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import {
   finishRemoveToast,
   handleTransactions,
@@ -19,7 +20,6 @@ import {
   startRemoveToast,
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
-import { RAINBOW_TOASTS, useExperimentalFlag } from '@/config';
 import { Box, useColorMode } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -47,7 +47,7 @@ import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
-  const rainbowToastsEnabled = useExperimentalFlag(RAINBOW_TOASTS);
+  const rainbowToastsEnabled = useRainbowToastEnabled();
 
   if (!rainbowToastsEnabled) {
     return null;
