@@ -32,7 +32,7 @@ for DEVICE in $DEVICES; do
 done
 
 # Run the tests
-./scripts/e2e-android.sh --flow e2e/transactions/SwapERC20Transaction.yaml --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG
+./scripts/e2e-android.sh --flow e2e/transactions/SendNft.yaml --device $DEVICES_LIST --debug-output $ARTIFACTS_FOLDER --flatten-debug-output $SHARDS_FLAG
 TEST_STATUS=$?
 
 # Clean up
