@@ -154,6 +154,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
           onHandlerStateChang={onTapGestureEvent}
           ref={tapRef}
           simultaneousHandlers={[panRef, lpRef]}
+          cancelsTouchesInView={false}
         >
           <Animated.View>
             <PanGestureHandler

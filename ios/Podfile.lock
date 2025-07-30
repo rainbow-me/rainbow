@@ -2360,7 +2360,7 @@ PODS:
     - Yoga
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (2.25.0):
+  - RNGestureHandler (2.27.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3370,7 +3370,7 @@ SPEC CHECKSUMS:
   RNFBRemoteConfig: d93e54405d06127f58a51c6f96780840f7f47cff
   RNFlashList: bf81b67825dd3fca7c3a0624b9c93dd129f2c903
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
-  RNGestureHandler: 428d7b57ca46b96f09b79597167dda208d1ecf31
+  RNGestureHandler: 43ff77261c9f3cfcfd195aa16860bfdcfe108ef5
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 836d59da651a7c8771ed811485d65ecb64e9b3fe
   RNKeychain: b060a891b105741c67da179f4d88ed87960f22e7

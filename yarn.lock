@@ -8926,7 +8926,7 @@ __metadata:
     react-native-extra-dimensions-android: "npm:1.2.2"
     react-native-fast-image: "npm:8.5.11"
     react-native-fs: "npm:2.16.6"
-    react-native-gesture-handler: "npm:2.25.0"
+    react-native-gesture-handler: "npm:2.27.2"
     react-native-get-random-values: "npm:1.5.0"
     react-native-haptic-feedback: "npm:2.2.0"
     react-native-indicators: "npm:0.17.0"
@@ -22477,9 +22477,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:2.25.0":
-  version: 2.25.0
-  resolution: "react-native-gesture-handler@npm:2.25.0"
+"react-native-gesture-handler@npm:2.27.2":
+  version: 2.27.2
+  resolution: "react-native-gesture-handler@npm:2.27.2"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     hoist-non-react-statics: "npm:^3.3.0"
@@ -22487,7 +22487,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/95eccc67fb07418ef76b84bcee4b29c16865e78afa367ec82d94b08554cfa7337158ab23937b785bd9a732e62c9c815b294a93d1b2c2cbdc7a8a1e7029f2ba35
+  checksum: 10c0/f671664b29e738b99aa25f4a1acd3c069af506fa1945f03f297158dc655896d441c1be113e9fb5f6cf4eb7eda58fd0471e0dab3e3c498dabd294f2652a0b9575
   languageName: node
   linkType: hard
 
