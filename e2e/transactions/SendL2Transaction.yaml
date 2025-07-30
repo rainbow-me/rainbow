@@ -1,0 +1,105 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- retry:
+    maxRetries: 3
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
+
+      # Send ETH to test wallet
+      - tapOn:
+          id: fund-test-wallet-button
+
+      # Connect to Anvil first (base setup)
+      - tapOn:
+          id: dev-button-anvil
+
+      # Wait for wallet to load
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible:
+                id: 'balance-coin-row-Ethereum'
+
+      # Switch to Base L2 network using deep link
+      - openLink: rainbow://e2e/switchNetwork?network=base
+
+      # Wait for network switch to complete
+      - retry:
+          maxRetries: 5
+          commands:
+            - assertVisible:
+                id: 'balance-coin-row-Ethereum'
+
+      # Open send sheet
+      - tapOn:
+          id: send-button
+      - assertVisible:
+          id: send-asset-form-field
+
+      # Test ENS address input
+      - inputText: 'rainbowwallet.eth'
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible:
+                id: send-asset-list
+
+      # Select ETH for sending on L2
+      - runFlow:
+          when:
+            platform: iOS
+          commands:
+            - tapOn:
+                text: '.*Ethereum.*'
+      - runFlow:
+          when:
+            platform: Android
+          commands:
+            - tapOn:
+                id: send-asset
+
+      # Use smaller amount for L2 (lower minimum requirements)
+      - inputText: '0.01'
+
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible: .*Review
+      - tapOn: .*Review
+
+      # Test L2 send confirmation screen
+      # Should show Base network details and lower gas fees
+      - assertVisible: 'Sending'
+      - assertVisible: 'rainbowwallet.eth'
+
+      # L2 transactions should have noticeably lower gas fees
+      # The review screen should indicate we're on Base network
+
+      - runFlow:
+          when:
+            platform: Android
+          commands:
+            - longPressOn: 'Hold to Send'
+            - runFlow: ../utils/MaybeSetupPin.yaml
+
+            # Test L2 transaction completion
+            - assertVisible: 'Pending'
+            - assertVisible: 'Sending*.'
+
+            - tapOn: Sending*.
+
+            - assertVisible: 'Sending'
+            - assertVisible: '.*Tx Hash*.'
+            # Should show Base block explorer for true L2 transaction
+            - assertVisible: 'View on Basescan'
+            - swipe:
+                direction: DOWN
