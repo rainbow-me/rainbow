@@ -12,7 +12,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
 
 const springConfigEnter = { damping: 14, mass: 1, stiffness: 121.6 };
-const springConfigDismiss = { damping: 20, mass: 0.8, stiffness: 250 };
+
+// increased speed and quicker settling, faster exit feels better
+const springConfigDismiss = {
+  restDisplacementThreshold: 0.05,
+  restSpeedThreshold: 2,
+  damping: 20,
+  mass: 0.8,
+  stiffness: 250,
+};
 
 const CARD_BORDER_RADIUS = 50;
 const CARD_MARGIN = 20;
@@ -85,7 +93,15 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     return Gesture.Pan()
       .onUpdate(e => {
         'worklet';
-        dragY.value = e.translationY;
+        const rawTranslation = e.translationY;
+        // friction as you drag down
+        if (rawTranslation > 0) {
+          // reduce movement as distance increases
+          const friction = 0.05; // lower = more friction
+          dragY.value = rawTranslation * friction + (rawTranslation * (1 - friction)) / (1 + rawTranslation * 0.01);
+        } else {
+          dragY.value = rawTranslation;
+        }
       })
       .onEnd(e => {
         'worklet';
