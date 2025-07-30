@@ -15,8 +15,8 @@ const springConfigEnter = { damping: 14, mass: 1, stiffness: 121.6 };
 
 // increased speed and quicker settling, faster exit feels better
 const springConfigDismiss = {
-  restDisplacementThreshold: 0.05,
-  restSpeedThreshold: 2,
+  restDisplacementThreshold: 1,
+  restSpeedThreshold: 20,
   damping: 20,
   mass: 0.8,
   stiffness: 250,
@@ -74,7 +74,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     } else {
       animateY.value = withSpring(-20, springConfigDismiss);
       opacity.value = withSpring(0, springConfigDismiss);
-      pointerEvents.value = 'auto';
+      pointerEvents.value = 'none';
     }
   }, [opacity, showExpanded, animateY, pointerEvents]);
 
