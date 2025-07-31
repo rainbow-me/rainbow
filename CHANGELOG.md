@@ -15,6 +15,43 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.72] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.72)
+
+### Added
+
+- Candlestick charts (#6659)
+- ActivityList refactor - lazy mount + virtual list (#6706)
+- Brody/cloud backups test (#6723)
+- Run E2E tests on develop (#6743)
+- Feature flag page view for KOTH (#6751)
+- Candlestick chart integration (#6687)
+- Candlestick charts data integration (#6724)
+- Live tokens (#6626)
+
+### Changed
+
+- E2E Unwrap test (#6720)
+- Run e2e android tests on github runner (#6712)
+- Bump iOS and Android to v1.9.72 (#6742)
+- Improve google sign in in e2e tests (#6747)
+
+### Fixed
+
+- Fixed ERC20 Token Transfer Stuck on "Loading" (#6721)
+- Fixed yarn android launching the activity v2, remove uninstall (#6728)
+- Fixed text input issues on Android (#6716)
+- Fixed ios e2e Discover test failing (#6746)
+- Fixed keyboard issue on android (#6748)
+- Fixed and run wallet connect test (#6741)
+- Fixed E2E calculate bottom inset w/ screen height vs window height (#6753)
+- Fixed E2E retry the failing block (#6754)
+- Fixed failing iOS builds by using sentry token from secrets (#6758)
+- Fixed activity list scrolling down after switching wallets (#6749)
+- Small live pricing fixes (#6762)
+- Fixed equality function usage for useListen on balance section (#6765)
+- Fixed enable Swap Fees for TestFlight (#6764)
+- Fixed prevent ProfileScreen Bottom Sheet View (#6770)
+
 ## [1.9.71] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.71)
 
 ### Added
