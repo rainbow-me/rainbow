@@ -19,6 +19,8 @@ export const ContractToastIcon = memo(function ContractToastIcon({
 }) {
   const colors = useToastColors();
 
+  const borderRadius = toast.subType === 'claim' ? 100 : 10;
+
   if (toast.status === TransactionStatus.failed) {
     return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="exclamationMark" />;
   }
@@ -31,7 +33,7 @@ export const ContractToastIcon = memo(function ContractToastIcon({
     <View
       style={{
         backgroundColor: colors.background,
-        borderRadius: 10,
+        borderRadius,
         overflow: 'hidden',
         width: size,
         height: size,

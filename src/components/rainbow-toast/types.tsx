@@ -1,4 +1,4 @@
-import { RainbowTransaction, TransactionStatus } from '@/entities';
+import { RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
 
 type BaseToast = {
   id: string;
@@ -29,6 +29,7 @@ export type RainbowToastSend = BaseToast & {
 
 export type RainbowToastContract = BaseToast & {
   type: 'contract';
+  subType: TransactionType;
   name: string;
   image: string;
 };

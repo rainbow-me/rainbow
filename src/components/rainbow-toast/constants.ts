@@ -1,4 +1,4 @@
-import { TransactionStatus } from '@/entities';
+import { TransactionStatus, TransactionType, TransactionTypeMap } from '@/entities';
 import * as i18n from '@/languages';
 import { time } from '@/utils';
 
@@ -58,4 +58,33 @@ export const allTransactionStatuses: Record<TransactionStatus, string> = {
   [TransactionStatus.unknown]: i18n.t(i18n.l.toasts.statuses.unknown),
   [TransactionStatus.withdrawing]: i18n.t(i18n.l.toasts.statuses.withdrawing),
   ...doneTransactionStatuses,
+};
+
+export const transactionTypeToPendingStatus: Record<TransactionType, string> = {
+  airdrop: i18n.t(i18n.l.toasts.statuses.airdropping),
+  approve: allTransactionStatuses.approving,
+  bid: i18n.t(i18n.l.toasts.statuses.bidding),
+  borrow: i18n.t(i18n.l.toasts.statuses.borrowing),
+  bridge: allTransactionStatuses.bridging,
+  burn: i18n.t(i18n.l.toasts.statuses.burning),
+  cancel: allTransactionStatuses.cancelling,
+  claim: i18n.t(i18n.l.toasts.statuses.claiming),
+  contract_interaction: allTransactionStatuses.pending,
+  deployment: i18n.t(i18n.l.toasts.statuses.deploying),
+  deposit: allTransactionStatuses.depositing,
+  launch: allTransactionStatuses.launching,
+  mint: allTransactionStatuses.minting,
+  purchase: allTransactionStatuses.purchasing,
+  receive: allTransactionStatuses.receiving,
+  repay: i18n.t(i18n.l.toasts.statuses.repaying),
+  revoke: i18n.t(i18n.l.toasts.statuses.revoking),
+  sale: allTransactionStatuses.selling,
+  send: allTransactionStatuses.sending,
+  speed_up: allTransactionStatuses[TransactionStatus.speeding_up],
+  stake: i18n.t(i18n.l.toasts.statuses.staking),
+  swap: allTransactionStatuses.swapping,
+  unstake: i18n.t(i18n.l.toasts.statuses.unstaking),
+  unwrap: i18n.t(i18n.l.toasts.statuses.unwrapping),
+  withdraw: allTransactionStatuses.withdrawing,
+  wrap: i18n.t(i18n.l.toasts.statuses.wrapping),
 };

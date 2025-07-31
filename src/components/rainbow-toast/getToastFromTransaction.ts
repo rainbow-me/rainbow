@@ -103,15 +103,23 @@ export function getToastFromTransaction({
 
   const mint = tx.type === 'mint' ? mints?.find(mint => mint.contractAddress === tx.hash) : null;
 
+  const name = tx.contract?.name || tx.description;
+
+  if (!name) {
+    console.error(`Unknown transaction for toast`, tx);
+    return null;
+  }
+
   return {
     id: txIdToToastId(tx),
     transaction: tx,
     chainId: tx.chainId,
     transactionHash: tx.hash,
     type: 'contract',
+    subType: tx.type,
     status: tx.status,
-    name: tx.contract?.name || tx.title || 'NFT',
-    image: tx.contract?.iconUrl || mint?.imageURL || '',
+    name,
+    image: tx.contract?.iconUrl || tx.asset?.icon_url || mint?.imageURL || '',
     action: () => {
       Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
         transaction: tx,

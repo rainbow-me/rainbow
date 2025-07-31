@@ -1,4 +1,4 @@
-import { exampleDappSwaps, exampleMints, exampleSends, exampleSwaps } from '@/components/rainbow-toast/mockToastData';
+import { exampleClaims, exampleDappSwaps, exampleMints, exampleSends, exampleSwaps } from '@/components/rainbow-toast/mockToastData';
 import { useToastStore } from '@/components/rainbow-toast/useRainbowToasts';
 import { Sheet } from '@/components/sheet';
 import { Box, Text } from '@/design-system';
@@ -6,7 +6,7 @@ import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React from 'react';
-import { Button, ScrollView } from 'react-native';
+import { Button, ScrollView, View } from 'react-native';
 
 let lastSwap = 0;
 let lastSend = 0;
@@ -43,6 +43,13 @@ export function ToastDebugSheet() {
     };
   };
 
+  const createMockClaimTransaction = (status: TransactionStatus): RainbowTransaction => {
+    return {
+      ...exampleClaims[lastMint++ % exampleClaims.length],
+      status,
+    };
+  };
+
   let current: RainbowTransaction[] = [];
 
   function addThenUpdate(transaction: RainbowTransaction) {
@@ -69,6 +76,10 @@ export function ToastDebugSheet() {
 
   const addDappSwapTransaction = () => {
     addThenUpdate(createMockDappSwapTransaction(TransactionStatus.contract_interaction));
+  };
+
+  const addClaimTransaction = () => {
+    addThenUpdate(createMockClaimTransaction(TransactionStatus.pending));
   };
 
   const updateLatestTransactionOfType = (type: 'mint' | 'swap' | 'send' | 'contract_interaction', status: TransactionStatus) => {
@@ -137,33 +148,51 @@ export function ToastDebugSheet() {
               Send
             </Text>
 
-            <Button onPress={addSendTransaction} title="Add Send Transaction" />
-            <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="Update Send → Sent" />
-            <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="Update Send → Failed" />
+            <View style={{ flexDirection: 'row' }}>
+              <Button onPress={addSendTransaction} title="Add" />
+              <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="→ Sent" />
+              <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="→ Failed" />
+            </View>
 
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
               Swap
             </Text>
 
-            <Button onPress={addSwapTransaction} title="Add Swap Transaction" />
-            <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="Update Swap → Swapped" />
-            <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="Update Swap → Failed" />
+            <View style={{ flexDirection: 'row' }}>
+              <Button onPress={addSwapTransaction} title="Add" />
+              <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="→ Swapped" />
+              <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="→ Failed" />
+            </View>
 
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
               Mint
             </Text>
 
-            <Button onPress={addMintTransaction} title="Add Mint Transaction" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="Update Mint → Minted" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Mint → Failed" />
+            <View style={{ flexDirection: 'row' }}>
+              <Button onPress={addMintTransaction} title="Add" />
+              <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="→ Minted" />
+              <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="→ Failed" />
+            </View>
 
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
               Dapp Swap
             </Text>
 
-            <Button onPress={addDappSwapTransaction} title="Add Dapp Swap Transaction" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.swapped)} title="Update Contract → Swapped" />
-            <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="Update Contract → Failed" />
+            <View style={{ flexDirection: 'row' }}>
+              <Button onPress={addDappSwapTransaction} title="Add" />
+              <Button onPress={() => updateLastMintTo(TransactionStatus.swapped)} title="→ Swapped" />
+              <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="→ Failed" />
+            </View>
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Claim
+            </Text>
+
+            <View style={{ flexDirection: 'row' }}>
+              <Button onPress={addClaimTransaction} title="Add" />
+              {/* <Button onPress={() => updateLastMintTo(TransactionStatus.swapped)} title="→ Swapped" />
+              <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="→ Failed" /> */}
+            </View>
           </Box>
         </ScrollView>
       </Box>

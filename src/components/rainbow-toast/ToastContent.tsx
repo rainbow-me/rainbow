@@ -1,4 +1,9 @@
-import { allTransactionStatuses, SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import {
+  allTransactionStatuses,
+  SWAP_ICON_WIDTH,
+  TOAST_ICON_SIZE,
+  transactionTypeToPendingStatus,
+} from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
 import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
@@ -145,6 +150,17 @@ export const getToastTitle = (toast: RainbowToast): string => {
   const isPending = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
   const isConfirmed = toast.status === TransactionStatus.confirmed;
 
+  if (toast.type === 'contract') {
+    return (
+      // direct status matching names
+      (!isPending && allTransactionStatuses[toast.status]) ||
+      // direct type pending names
+      transactionTypeToPendingStatus[toast.subType] ||
+      //  otherwise always show pending
+      allTransactionStatuses.pending
+    );
+  }
+
   if (toast.type === 'swap') {
     if (isPending) {
       return allTransactionStatuses.swapping;
@@ -161,11 +177,6 @@ export const getToastTitle = (toast: RainbowToast): string => {
     if (isConfirmed) {
       return allTransactionStatuses.sent;
     }
-  }
-
-  // show "Pending" instead of "Contract Interaction"
-  if (isPending) {
-    return allTransactionStatuses.pending;
   }
 
   return allTransactionStatuses[toast.status] || allTransactionStatuses.pending;

@@ -80,7 +80,11 @@ export const useToastStore = createRainbowStore<ToastState>(
             // this is because you can have contract-type toasts that change to swap on confirmation
             // but we want to always display them as contract-type, we also want to keep their icon and name
             // the same, but they often don't have icon/name information in the confirmed states we get
-            activeToasts.set(existingToast.id, { ...existingToast, status: tx.status, transaction: tx });
+            const updatedToast = { ...existingToast, status: tx.status, transaction: tx };
+            if (updatedToast.type === 'contract') {
+              updatedToast.subType = tx.type;
+            }
+            activeToasts.set(existingToast.id, updatedToast);
           } else {
             const toast = getToastFromTransaction({ transaction: tx, mints });
             if (!toast) continue;

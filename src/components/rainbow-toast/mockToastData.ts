@@ -1216,3 +1216,101 @@ export const exampleDappSwaps: RainbowTransaction[] = [
     timestamp: 1753118384813,
   } as unknown as RainbowTransaction,
 ];
+
+export const exampleClaims: RainbowTransaction[] = [
+  {
+    amount: '0x0',
+    gasLimit: {
+      type: 'BigNumber',
+      hex: '0xa8e4',
+    },
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    to: '0x66371f26808598194F5EeEca4b7AEd5B56047D0C',
+    chainId: 8453,
+    hash: '0x33c3b09070c3677a333633b3ff5d035e3c3bb18e6faa49ecc563143923e8618e',
+    network: 'base',
+    status: 'pending',
+    type: 'claim',
+    nonce: 1230,
+    asset: {
+      address: '0x0000000000000000000000000000000000000000',
+      color: '#808088',
+      colors: {
+        primary: '#808088',
+        fallback: '#E8EAF5',
+      },
+      chainId: 8453,
+      chainName: 'base',
+      decimals: 18,
+      id: '0x0000000000000000000000000000000000000000',
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+      isNativeAsset: true,
+      name: 'Ethereum',
+      mainnet_address: 'eth',
+      mainnetAddress: 'eth',
+      network: 'base',
+      networks: {
+        '1': {
+          address: 'eth',
+          decimals: 18,
+        },
+        '10': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '56': {
+          address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+          decimals: 18,
+        },
+        '130': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '324': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '8453': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '42161': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '57073': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '59144': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '81457': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '534352': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+        '7777777': {
+          address: '0x0000000000000000000000000000000000000000',
+          decimals: 18,
+        },
+      },
+      price: {
+        value: 3754.8400000000006,
+        changed_at: 1753990560,
+        relative_change_24h: 1.74063837858347,
+      },
+      symbol: 'ETH',
+      type: 'native',
+      uniqueId: '0x0000000000000000000000000000000000000000_8453',
+      transferable: true,
+    },
+    title: 'claim.pending',
+    description: 'Ethereum',
+    timestamp: 1753991005418,
+  } as unknown as RainbowTransaction,
+];
