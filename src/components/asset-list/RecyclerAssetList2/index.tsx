@@ -3,15 +3,13 @@ import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/NavbarTextIcon';
-import { KING_OF_THE_HILL_TAB, useExperimentalFlag } from '@/config';
 import { Box, Cover, Text } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { UniqueAsset } from '@/entities';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { useAccountAccentColor, usePendingTransactions, useWalletSectionsData } from '@/hooks';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as lang from '@/languages';
-import { useRemoteConfig } from '@/model/remoteConfig';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -23,6 +21,7 @@ import RawMemoRecyclerAssetList, { ViewableItemsChangedCallback } from './core/R
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -123,8 +122,7 @@ function handleNavigateToActivity(): void {
 const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
-  const { king_of_the_hill2_enabled } = useRemoteConfig('king_of_the_hill2_enabled');
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill2_enabled) && !IS_TEST;
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
   const shadowOpacityStyle = useMemo(

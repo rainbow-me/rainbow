@@ -63,7 +63,7 @@ import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { deviceUtils } from '@/utils';
-import useExperimentalFlag, { KING_OF_THE_HILL_TAB, PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
@@ -100,9 +100,8 @@ import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { IS_TEST } from '@/env';
 import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -149,8 +148,7 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { king_of_the_hill2_enabled } = useRemoteConfig('king_of_the_hill2_enabled');
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill2_enabled) && !IS_TEST;
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   return (
     <BSStack.Navigator>

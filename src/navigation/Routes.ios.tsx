@@ -83,7 +83,7 @@ import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
-import useExperimentalFlag, { KING_OF_THE_HILL_TAB, PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import createNativeStackCoolModalNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
@@ -117,9 +117,8 @@ import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { IS_TEST } from '@/env';
 import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -157,8 +156,7 @@ function MainStack() {
 
 function NativeStackNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { king_of_the_hill2_enabled } = useRemoteConfig('king_of_the_hill2_enabled');
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill2_enabled) && !IS_TEST;
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>

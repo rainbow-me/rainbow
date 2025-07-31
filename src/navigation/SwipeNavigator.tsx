@@ -7,7 +7,7 @@ import { FlexItem } from '@/components/layout';
 import { TabBarIcon } from '@/components/tab-bar/TabBarIcon';
 import { TAB_BAR_PILL_HEIGHT, TAB_BAR_PILL_WIDTH } from '@/components/tab-bar/dimensions';
 import { TestnetToast } from '@/components/toasts';
-import { DAPP_BROWSER, KING_OF_THE_HILL_TAB, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
+import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, Stack, useForegroundColor, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
@@ -54,6 +54,7 @@ import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 export const BASE_TAB_BAR_HEIGHT = 48;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
@@ -393,14 +394,10 @@ function SwipeNavigatorScreens() {
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, points_enabled, king_of_the_hill2_enabled } = useRemoteConfig(
-    'dapp_browser',
-    'points_enabled',
-    'king_of_the_hill2_enabled'
-  );
+  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill2_enabled) && !IS_TEST;
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }) => {
