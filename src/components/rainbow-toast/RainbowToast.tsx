@@ -1,3 +1,4 @@
+import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import {
   doneTransactionStatuses,
@@ -429,6 +430,10 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
                 start={{ x: 0.5, y: 0 }}
                 style={StyleSheet.absoluteFill}
               />
+            )}
+
+            {!(toast.status in doneTransactionStatuses) && (
+              <ShimmerAnimation color="rgba(255, 255, 255, 0)" gradientColor="rgba(255, 255, 255, 0.08)" animationDuration={2500} />
             )}
 
             <Animated.View style={innerContainerStyle}>
