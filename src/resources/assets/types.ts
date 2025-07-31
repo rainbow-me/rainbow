@@ -60,6 +60,7 @@ export interface ParsedAsset {
   decimals: number;
   icon_url?: string;
   isNativeAsset?: boolean;
+  isCoin?: boolean;
   name: string;
   mainnet_address?: string;
   network: string;
@@ -72,6 +73,11 @@ export interface ParsedAsset {
   symbol: string;
   type?: string;
   uniqueId: string;
+  images?: {
+    highResUrl: string;
+    lowResUrl: string;
+    mimeType: string;
+  };
 }
 
 export type RainbowAddressAssets = Record<string, ParsedAddressAsset>;

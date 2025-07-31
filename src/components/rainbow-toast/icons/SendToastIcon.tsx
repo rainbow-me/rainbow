@@ -16,7 +16,7 @@ export const SendToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
     return <ToastSFSymbolIcon size={size} name="exclamationMark" />;
   }
 
-  const assetImage = toast.transaction.asset?.icon_url;
+  const assetImage = toast.transaction.asset?.icon_url || toast.transaction.asset?.images?.lowResUrl;
 
   // show asset image + chain floating icon
   if (assetImage) {
