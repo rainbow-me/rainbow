@@ -11,6 +11,7 @@ import React, { memo } from 'react';
 import { View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { ActivityList } from '../components/activity-list';
+import { IS_ANDROID } from '@/env';
 
 export function ActivitySheetScreen() {
   const { accountSymbol, accountColor, accountImage, accountAddress } = useAccountProfileInfo();
@@ -18,7 +19,19 @@ export function ActivitySheetScreen() {
   const { colors } = useTheme();
 
   return (
-    <View style={{ backgroundColor: colors.white, flex: 1 }} testID="king-of-the-hill-profile-screen">
+    <View
+      style={{
+        backgroundColor: colors.white,
+        flex: 1,
+        // android border radius
+        ...(IS_ANDROID && {
+          borderTopRightRadius: 40,
+          borderTopLeftRadius: 40,
+          overflow: 'hidden',
+        }),
+      }}
+      testID="king-of-the-hill-profile-screen"
+    >
       <Navbar
         floating
         topInset={10}

@@ -183,6 +183,7 @@ function BSNavigator() {
           component={ActivitySheetScreen}
           name={Routes.PROFILE_SCREEN}
           options={{
+            ...bottomSheetPreset,
             snapPoints: ['88%'],
           }}
         />
