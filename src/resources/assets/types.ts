@@ -74,9 +74,11 @@ export interface ParsedAsset {
   type?: string;
   uniqueId: string;
   images?: {
-    highResUrl: string;
-    lowResUrl: string;
-    mimeType: string;
+    highResUrl?: string | null | undefined;
+    lowResUrl?: string | null | undefined;
+    mimeType?: string | null | undefined;
+    animatedUrl?: string | null | undefined;
+    animatedMimeType?: string | null | undefined;
   };
 }
 
