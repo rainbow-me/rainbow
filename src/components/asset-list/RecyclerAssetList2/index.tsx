@@ -232,7 +232,7 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
           }
           rightComponent={
             showKingOfTheHillTab ? (
-              <Box flexDirection="row" gap={16}>
+              <Box flexDirection="row" gap={12}>
                 <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
                   <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
                 </DropdownMenu>
