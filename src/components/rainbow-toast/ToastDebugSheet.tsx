@@ -1,4 +1,11 @@
-import { exampleClaims, exampleDappSwaps, exampleMints, exampleSends, exampleSwaps } from '@/components/rainbow-toast/mockToastData';
+import {
+  exampleClaims,
+  exampleDappSwaps,
+  exampleMints,
+  exampleSends,
+  exampleSendThenSpeedupFlow,
+  exampleSwaps,
+} from '@/components/rainbow-toast/mockToastData';
 import { useToastStore } from '@/components/rainbow-toast/useRainbowToasts';
 import { Sheet } from '@/components/sheet';
 import { Box, Text } from '@/design-system';
@@ -154,6 +161,21 @@ export function ToastDebugSheet() {
               <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="→ Failed" />
             </View>
 
+            <View style={{ flexDirection: 'row' }}>
+              <Button
+                title="Send"
+                onPress={() => {
+                  addThenUpdate(exampleSendThenSpeedupFlow[0]);
+                }}
+              />
+              <Button
+                onPress={() => {
+                  addThenUpdate(exampleSendThenSpeedupFlow[1]);
+                }}
+                title="→ Speedup"
+              />
+            </View>
+
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
               Swap
             </Text>
@@ -190,8 +212,6 @@ export function ToastDebugSheet() {
 
             <View style={{ flexDirection: 'row' }}>
               <Button onPress={addClaimTransaction} title="Add" />
-              {/* <Button onPress={() => updateLastMintTo(TransactionStatus.swapped)} title="→ Swapped" />
-              <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="→ Failed" /> */}
             </View>
           </Box>
         </ScrollView>
