@@ -2,7 +2,8 @@ import {
   allTransactionStatuses,
   SWAP_ICON_WIDTH,
   TOAST_ICON_SIZE,
-  transactionTypeToPendingStatus,
+  transactionTypeToConfirmedLabel,
+  transactionTypeToPendingLabel,
 } from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
 import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
@@ -119,6 +120,8 @@ function SendToastContent({ toast }: { toast: RainbowToastSend }) {
   const title = getToastTitle(toast);
   const subtitle = toast.transaction.asset?.isCoin ? toast.displayAmount : toast.transaction.description || '';
 
+  console.log('??123', subtitle, toast.transaction.type, toast.transaction.status);
+
   return (
     <ToastContentDisplay
       key={toast.status}
@@ -146,38 +149,20 @@ function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
 }
 
 export const getToastTitle = (toast: RainbowToast): string => {
+  const toastType = toast.type === 'contract' ? toast.currentType : toast.currentType || toast.type;
+
   // handle alternative statuses for pending/confirmed so we show better titles
   const isPending = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
   const isConfirmed = toast.status === TransactionStatus.confirmed;
 
-  if (toast.type === 'contract') {
-    return (
-      // direct status matching names
-      (!isPending && allTransactionStatuses[toast.status]) ||
-      // direct type pending names
-      transactionTypeToPendingStatus[toast.subType] ||
-      //  otherwise always show pending
-      allTransactionStatuses.pending
-    );
-  }
-
-  if (toast.type === 'swap') {
-    if (isPending) {
-      return allTransactionStatuses.swapping;
-    }
-    if (isConfirmed) {
-      return allTransactionStatuses.swapped;
-    }
-  }
-
-  if (toast.type === 'send') {
-    if (isPending) {
-      return allTransactionStatuses.sending;
-    }
-    if (isConfirmed) {
-      return allTransactionStatuses.sent;
-    }
-  }
-
-  return allTransactionStatuses[toast.status] || allTransactionStatuses.pending;
+  return (
+    // confirmed labels
+    (isConfirmed && transactionTypeToConfirmedLabel[toastType]) ||
+    // direct status matching names
+    (!isPending && allTransactionStatuses[toast.status]) ||
+    // direct type pending names
+    transactionTypeToPendingLabel[toastType] ||
+    //  otherwise always show pending
+    allTransactionStatuses.pending
+  );
 };

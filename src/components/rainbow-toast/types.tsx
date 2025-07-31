@@ -3,6 +3,10 @@ import { RainbowTransaction, TransactionStatus, TransactionType } from '@/entiti
 type BaseToast = {
   id: string;
   status: TransactionStatus;
+  // we keep the same base type to show the toast the same
+  // but update currentType to if a new transaction comes in with a diff type
+  // example of this is send => speed_up, the type changes
+  currentType: TransactionType;
   transactionHash: string;
   chainId: number;
   transaction: RainbowTransaction;
@@ -29,7 +33,6 @@ export type RainbowToastSend = BaseToast & {
 
 export type RainbowToastContract = BaseToast & {
   type: 'contract';
-  subType: TransactionType;
   name: string;
   image: string;
 };

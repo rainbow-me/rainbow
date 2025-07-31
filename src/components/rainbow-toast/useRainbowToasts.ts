@@ -63,8 +63,7 @@ export const useToastStore = createRainbowStore<ToastState>(
 
         // we can have both pending + confirmed in transactions at the same time
         // pending store will have it still in there right after it confirms
-        // pending will always occur in the array before the confirmed so lets
-        // grab the last of each
+        // pendingTransactions order from [oldest => newest] so our loop should update
         for (const tx of transactions) {
           const id = txIdToToastId(tx);
           allToastIds.add(id);
@@ -77,10 +76,7 @@ export const useToastStore = createRainbowStore<ToastState>(
             if (existingToast.isRemoving) continue;
 
             // update - in the case of updates we only ever update the transaction, status and subType
-            const updatedToast = { ...existingToast, status: tx.status, transaction: tx };
-            if (updatedToast.type === 'contract') {
-              updatedToast.subType = tx.type;
-            }
+            const updatedToast = { ...existingToast, status: tx.status, transaction: tx, currentType: tx.type };
             activeToasts.set(existingToast.id, updatedToast);
           } else {
             const toast = getToastFromTransaction({ transaction: tx, mints });

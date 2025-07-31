@@ -34,7 +34,7 @@ function getSendToastStatus(status: TransactionStatus): keyof typeof RainbowToas
   return null;
 }
 
-export const txIdToToastId = (tx: RainbowTransaction) => tx.hash + (tx.chainId || tx.asset?.chainId);
+export const txIdToToastId = (tx: RainbowTransaction): string => (tx.nonce ? `${tx.nonce}` : tx.hash + (tx.chainId || tx.asset?.chainId));
 
 export function getToastFromTransaction({
   transaction: tx,
@@ -53,9 +53,10 @@ export function getToastFromTransaction({
 
       return {
         id: txIdToToastId(tx),
+        type: 'swap',
+        currentType: tx.type,
         transaction: tx,
         transactionHash: tx.hash,
-        type: 'swap',
         status,
         chainId: tx.swap ? tx.swap.fromChainId : tx.chainId,
         fromAssetSymbol: outAsset?.symbol || '',
@@ -77,10 +78,11 @@ export function getToastFromTransaction({
       const symbol = tx.asset?.symbol || tx.symbol || '';
       return {
         id: txIdToToastId(tx),
+        type: 'send',
+        currentType: tx.type,
         transaction: tx,
         chainId: tx.chainId,
         transactionHash: tx.hash,
-        type: 'send',
         status,
         // @ts-expect-error it is there
         displayAmount: tx.asset?.balance?.display || '0',
@@ -112,11 +114,11 @@ export function getToastFromTransaction({
 
   return {
     id: txIdToToastId(tx),
+    type: 'contract',
     transaction: tx,
     chainId: tx.chainId,
     transactionHash: tx.hash,
-    type: 'contract',
-    subType: tx.type,
+    currentType: tx.type,
     status: tx.status,
     name,
     image: tx.contract?.iconUrl || tx.asset?.icon_url || mint?.imageURL || '',

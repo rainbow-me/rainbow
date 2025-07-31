@@ -18,8 +18,7 @@ export const ContractToastIcon = memo(function ContractToastIcon({
   size?: number;
 }) {
   const colors = useToastColors();
-
-  const borderRadius = toast.subType === 'claim' ? 100 : 10;
+  const borderRadius = toast.currentType === 'claim' ? 100 : 10;
 
   if (toast.status === TransactionStatus.failed) {
     return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="exclamationMark" />;
