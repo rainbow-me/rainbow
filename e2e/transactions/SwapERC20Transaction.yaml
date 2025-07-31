@@ -4,7 +4,7 @@ tags:
   - parallel
 ---
 - retry:
-    maxRetries: 3
+    maxRetries: 5
     commands:
       - launchApp:
           clearState: true
@@ -43,7 +43,7 @@ tags:
 
       # On Android, pull to refresh + copy balance before swap
       - retry:
-          maxRetries: 3
+          maxRetries: 1
           commands:
             - runFlow:
                 when:
@@ -80,7 +80,7 @@ tags:
 
       # On Android, pull to refresh + copy balance after swap
       - retry:
-          maxRetries: 3
+          maxRetries: 1
           commands:
             - runFlow:
                 when:
