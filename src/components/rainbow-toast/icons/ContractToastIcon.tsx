@@ -31,7 +31,6 @@ export const ContractToastIcon = memo(function ContractToastIcon({
   return (
     <View
       style={{
-        backgroundColor: colors.background,
         borderRadius,
         overflow: 'hidden',
         width: size,

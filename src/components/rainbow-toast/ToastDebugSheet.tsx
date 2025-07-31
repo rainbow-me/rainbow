@@ -2,6 +2,7 @@ import {
   exampleClaims,
   exampleDappSwaps,
   exampleMints,
+  exampleSaleFlow,
   exampleSends,
   exampleSendThenSpeedupFlow,
   exampleSwaps,
@@ -212,6 +213,25 @@ export function ToastDebugSheet() {
 
             <View style={{ flexDirection: 'row' }}>
               <Button onPress={addClaimTransaction} title="Add" />
+            </View>
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Sale
+            </Text>
+
+            <View style={{ flexDirection: 'row' }}>
+              <Button
+                title="Sell"
+                onPress={() => {
+                  addThenUpdate(exampleSaleFlow[0]);
+                }}
+              />
+              <Button
+                onPress={() => {
+                  addThenUpdate(exampleSaleFlow[1]);
+                }}
+                title="→ Sold"
+              />
             </View>
           </Box>
         </ScrollView>

@@ -121,7 +121,16 @@ export function getToastFromTransaction({
     currentType: tx.type,
     status: tx.status,
     name,
-    image: tx.contract?.iconUrl || tx.asset?.icon_url || mint?.imageURL || '',
+    image:
+      // mint or other
+      tx.contract?.iconUrl ||
+      // nft/token
+      tx.asset?.icon_url ||
+      //  mint
+      mint?.imageURL ||
+      // sale
+      tx.changes?.[0]?.asset?.images?.lowResUrl ||
+      '',
     action: () => {
       Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
         transaction: tx,

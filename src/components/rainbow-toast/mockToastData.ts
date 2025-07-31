@@ -1435,6 +1435,271 @@ export const exampleClaims: RainbowTransaction[] = [
   } as unknown as RainbowTransaction,
 ];
 
+export const exampleSaleFlow: RainbowTransaction[] = [
+  {
+    isMocked: true,
+    status: 'pending',
+    chainId: 1,
+    to: '0x79ce8f93063f8be4573a58f250b003859ebb7a24',
+    from: '0x2e67869829c734ac13723a138a952f7a8b56e774',
+    hash: '0xa9cae3313ade3830ae49107b8e6ab8ac4e83e757cdb0c6ce30952e9631cd6b4b',
+    network: 'mainnet',
+    nonce: 2695,
+    asset: {
+      address: 'eth',
+      symbol: 'ETH',
+      decimals: 18,
+      name: 'Ether',
+      chainId: 1,
+      network: 'mainnet',
+      uniqueId: 'eth_1',
+    },
+    changes: [
+      {
+        direction: 'out',
+        asset: {
+          type: 'nft',
+          standard: 'ERC721',
+          images: {
+            highResUrl:
+              'https://rainbow.imgix.net/https%3A%2F%2Fnft-cdn.alchemy.com%2Feth-mainnet%2F75a4c925f73f12b2f5535d894c2318a7?w=10854&s=d1a22de844dafd94b7f8d827c86a3779',
+            lowResUrl:
+              'https://rainbow.imgix.net/https%3A%2F%2Fnft-cdn.alchemy.com%2Feth-mainnet%2F75a4c925f73f12b2f5535d894c2318a7?w=525&fm=png&s=493147c1391eacfa651bc6a938672f47',
+            animatedMimeType: 'image/svg+xml',
+            mimeType: 'image/svg+xml',
+          },
+          uniqueId: 'mainnet_0xca21d4228cdcc68d4e23807e5e370c07577dd152_12598',
+          tokenId: '12598',
+          name: 'Zorb #12598',
+          chainId: 1,
+          contractAddress: '0xca21d4228cdcc68d4e23807e5e370c07577dd152',
+          network: 'mainnet',
+          isSendable: true,
+          backgroundColor: null,
+          description:
+            'Zorbs were distributed for free by ZORA on New Year’s 2022. Each NFT imbues the properties of its wallet holder, and whe...',
+          collectionName: 'ZORBS by ZORA',
+          collectionImageUrl:
+            'https://i2.seadn.io/ethereum/caa5636eb5834052b333a9bb317680d3/67350f6beb3d6f7a3c68949ee1433a/a367350f6beb3d6f7a3c68949ee1433a.png',
+          collectionDescription:
+            'In celebration of the one-year anniversary of the Zora protocol and the initial release of zorb, we invite you to mint a...',
+          collectionUrl: '',
+          traits: [],
+          discordUrl: 'https://discord.gg/Va58aMrcwk',
+          websiteUrl: '',
+          marketplaceName: 'OpenSea',
+          marketplaceUrl: 'https://opensea.io/collection/zorbs-eth',
+          address: '0xca21d4228cdcc68d4e23807e5e370c07577dd152',
+          symbol: 'NFT',
+          decimals: 18,
+        },
+        value: 1,
+      },
+      {
+        direction: 'in',
+        asset: {
+          address: 'eth',
+          symbol: 'ETH',
+          decimals: 18,
+          name: 'Ether',
+          network: 'mainnet',
+          chainId: 1,
+          uniqueId: 'eth_1',
+        },
+        value: '1970000000000000',
+      },
+    ],
+    type: 'sale',
+    title: 'sale.pending',
+    description: 'Zorb #12598',
+    timestamp: 1754001625286,
+  } as unknown as RainbowTransaction,
+
+  {
+    isMocked: true,
+    chainId: 1,
+    from: '0x2e67869829c734ac13723a138a952f7a8b56e774',
+    to: '0x79ce8f93063f8be4573a58f250b003859ebb7a24',
+    title: 'sale.confirmed',
+    description: 'NFT',
+    hash: '0xa9cae3313ade3830ae49107b8e6ab8ac4e83e757cdb0c6ce30952e9631cd6b4b',
+    network: 'mainnet',
+    status: 'confirmed',
+    nonce: 2695,
+    type: 'sale',
+    direction: 'out',
+    value: '1953255000000000.000000000000000000',
+    changes: [
+      {
+        asset: {
+          address: 'eth',
+          color: '#808088',
+          colors: {
+            primary: '#808088',
+            fallback: '#E8EAF5',
+          },
+          chainId: 1,
+          chainName: 'mainnet',
+          decimals: 18,
+          id: 'eth',
+          icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+          isNativeAsset: true,
+          name: 'Ethereum',
+          mainnet_address: 'eth',
+          mainnetAddress: 'eth',
+          network: 'mainnet',
+          networks: {
+            '1': {
+              address: 'eth',
+              decimals: 18,
+            },
+            '10': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '56': {
+              address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+              decimals: 18,
+            },
+            '130': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '324': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '8453': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '42161': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '57073': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '59144': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '81457': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '534352': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+            '7777777': {
+              address: '0x0000000000000000000000000000000000000000',
+              decimals: 18,
+            },
+          },
+          price: {
+            value: 3713.41,
+            changed_at: 0,
+            relative_change_24h: 0,
+          },
+          symbol: 'ETH',
+          type: 'native',
+          uniqueId: 'eth_1',
+          transferable: true,
+          balance: {
+            amount: '0.001953255',
+            display: '0.00195 ETH',
+          },
+        },
+        direction: 'in',
+        address_from: '0xa97727370e2592f83602bc92975c49c4fea4491f',
+        address_to: '0x2e67869829c734ac13723a138a952f7a8b56e774',
+        price: 3713.41,
+        quantity: '1953255000000000',
+        value: 1953255000000000,
+      },
+      {
+        asset: {
+          address: '0xca21d4228cdcc68d4e23807e5e370c07577dd152',
+          colors: {},
+          chainId: 1,
+          chainName: 'mainnet',
+          decimals: 0,
+          id: '0xca21d4228cdcc68d4e23807e5e370c07577dd152',
+          icon_url: '',
+          isNativeAsset: false,
+          name: 'Zorb #12598',
+          network: 'mainnet',
+          price: {
+            value: 0,
+            changed_at: 0,
+            relative_change_24h: 0,
+          },
+          symbol: 'NFT',
+          type: 'nft',
+          uniqueId: '0xca21d4228cdcc68d4e23807e5e370c07577dd152_1',
+          balance: {
+            amount: '12598',
+            display: '12,598.00 NFT',
+          },
+        },
+        direction: 'out',
+        address_from: '0x2e67869829c734ac13723a138a952f7a8b56e774',
+        address_to: '0xa97727370e2592f83602bc92975c49c4fea4491f',
+        quantity: '1',
+        value: 12598,
+      },
+    ],
+    asset: {
+      address: '0xca21d4228cdcc68d4e23807e5e370c07577dd152',
+      colors: {},
+      chainId: 1,
+      chainName: 'mainnet',
+      decimals: 0,
+      id: '0xca21d4228cdcc68d4e23807e5e370c07577dd152',
+      icon_url: '',
+      isNativeAsset: false,
+      name: 'Zorb #12598',
+      network: 'mainnet',
+      price: {
+        value: 0,
+        changed_at: 0,
+        relative_change_24h: 0,
+      },
+      symbol: 'NFT',
+      type: 'nft',
+      uniqueId: '0xca21d4228cdcc68d4e23807e5e370c07577dd152_1',
+      balance: {
+        amount: '12598',
+        display: '12,598.00 NFT',
+      },
+    },
+    approvalAmount: '1',
+    minedAt: 1754001647,
+    blockNumber: 23042119,
+    contract: {
+      name: 'ReservoirApprovalProxy',
+    },
+    native: {
+      amount: '7253236649550000000',
+      display: '$7,253,236,649,550,000,000.00',
+    },
+    fee: {
+      value: {
+        amount: '0.000124010415753752',
+        display: '0.000124 ETH',
+      },
+      native: {
+        amount: '0.46050151796414021432',
+        display: '$0.46',
+      },
+    },
+    explorerUrl: 'https://etherscan.io/tx/0xa9cae3313ade3830ae49107b8e6ab8ac4e83e757cdb0c6ce30952e9631cd6b4b',
+    explorerLabel: 'Etherscan',
+  } as unknown as RainbowTransaction,
+];
+
 export const exampleSendThenSpeedupFlow: RainbowTransaction[] = [
   {
     isMocked: true,
