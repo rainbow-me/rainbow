@@ -120,8 +120,6 @@ function SendToastContent({ toast }: { toast: RainbowToastSend }) {
   const title = getToastTitle(toast);
   const subtitle = toast.transaction.asset?.isCoin ? toast.displayAmount : toast.transaction.description || '';
 
-  console.log('??123', subtitle, toast.transaction.type, toast.transaction.status);
-
   return (
     <ToastContentDisplay
       key={toast.status}

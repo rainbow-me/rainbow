@@ -79,8 +79,6 @@ function RainbowToastDisplayContent() {
     walletAddress: accountAddress,
   });
 
-  console.log('transactions', JSON.stringify(transactions, null, 2));
-
   useEffect(() => {
     handleTransactions({ transactions, mints });
   }, [mints, transactions]);

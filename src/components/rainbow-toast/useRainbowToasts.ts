@@ -3,7 +3,6 @@ import type { RainbowToast, RainbowToastWithIndex } from '@/components/rainbow-t
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Mints } from '@/resources/mints';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { skaleTitanTestnet } from 'viem/chains';
 
 export type ToastState = {
   isShowingTransactionDetails: boolean;
