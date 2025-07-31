@@ -75,7 +75,7 @@ function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_IC
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    gap: 13,
+    gap: 16,
     alignItems: 'center',
     minWidth: 130,
   },

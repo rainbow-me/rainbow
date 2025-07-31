@@ -781,6 +781,66 @@ export const exampleSwaps: RainbowTransaction[] = [
 export const exampleSends: RainbowTransaction[] = [
   {
     isMocked: true,
+    amount: '12.06172476',
+    asset: {
+      isCoin: true,
+      isSmall: false,
+      address: '0x080550540c7655541281995516a6aed47c847484',
+      balance: {
+        amount: '702.953481809942513266',
+        display: '702.953 RAINBUBB',
+      },
+      network: 'base',
+      name: '🌈 Bubble',
+      chainId: 8453,
+      color: '#B9B380',
+      colors: {
+        primary: '#B9B380',
+        fallback: '#5A4F4B',
+      },
+      decimals: 18,
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1742286972/assets/base/0x080550540c7655541281995516a6aed47c847484.png',
+      isNativeAsset: false,
+      price: {
+        relative_change_24h: 0.21518325850749506,
+        value: 0.0829068827205,
+      },
+      native: {
+        balance: {
+          amount: '58.279681874384034018191277420153',
+          display: '$58.28',
+        },
+        change: '0.215%',
+        price: {
+          amount: '0.0829068827205',
+          display: '$0.08',
+        },
+      },
+      symbol: 'RAINBUBB',
+      type: 'rainbow',
+      uniqueId: '0x080550540c7655541281995516a6aed47c847484_8453',
+    },
+    from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+    gasLimit: '38137',
+    network: 'base',
+    chainId: 8453,
+    nonce: 1231,
+    to: '0x49B1318bF58Fe42FE42cFE0E54B9F82479A857A7',
+    maxFeePerGas: '0x01fc3492',
+    maxPriorityFeePerGas: '0x96',
+    hash: '0x7ec5e0b8d14dc12bdfca7ab89d42f77c5bb6e98bd3a68ea71bc561475d573320',
+    data: '0xa9059cbb00000000000000000000000049b1318bf58fe42fe42cfe0e54b9f82479a857a7000000000000000000000000000000000000000000000000a763dac372557000',
+    value: '0x0',
+    txTo: '0x080550540c7655541281995516a6aed47c847484',
+    type: 'send',
+    status: 'pending',
+    title: 'send.pending',
+    description: '🌈 Bubble',
+    timestamp: 1753994100034,
+  } as unknown as RainbowTransaction,
+
+  {
+    isMocked: true,
     amount: '0.0003255',
     asset: {
       isCoin: true,
@@ -1114,6 +1174,7 @@ export const exampleMints = [
 
 export const exampleDappSwaps: RainbowTransaction[] = [
   {
+    isMocked: true,
     status: 'pending',
     chainId: 8453,
     asset: {
@@ -1219,6 +1280,7 @@ export const exampleDappSwaps: RainbowTransaction[] = [
 
 export const exampleClaims: RainbowTransaction[] = [
   {
+    isMocked: true,
     amount: '0x0',
     gasLimit: {
       type: 'BigNumber',
