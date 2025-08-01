@@ -16,6 +16,7 @@ import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { RootStackParamList } from '@/navigation/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -95,12 +96,10 @@ export default function ProfileSheet() {
 }
 
 function AndroidWrapper({ children }: { children: React.ReactElement }) {
-  const screenHeight = Dimensions.get('screen').height;
-  const windowHeight = Dimensions.get('window').height;
-  const navbarHeight = screenHeight - windowHeight;
+  const safeAreaInsets = useSafeAreaInsets();
 
   return android ? (
-    <Box borderTopRadius={30} style={{ overflow: 'hidden' }} top={{ custom: navbarHeight }}>
+    <Box borderTopRadius={30} style={{ overflow: 'hidden' }} top={{ custom: safeAreaInsets.top }}>
       {children}
     </Box>
   ) : (

@@ -62,7 +62,6 @@ import {
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
-import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { KING_OF_THE_HILL_TAB, PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
@@ -74,7 +73,6 @@ import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
-import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
@@ -227,14 +225,7 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />
-      <BSStack.Screen
-        component={SettingsSheet}
-        name={Routes.SETTINGS_SHEET}
-        options={{
-          ...bottomSheetPreset,
-          height: deviceUtils.dimensions.height - CUSTOM_MARGIN_TOP_ANDROID,
-        }}
-      />
+      <BSStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}

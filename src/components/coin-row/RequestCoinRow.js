@@ -46,7 +46,7 @@ const TopRow = ({ expirationColor, expiresAt }) => {
 };
 
 const RequestCoinRow = ({ item, ...props }) => {
-  const buttonRef = useRef();
+  const buttonRef = useRef(undefined);
   const [expiresAt, setExpiresAt] = useState(null);
   const [expirationColor, setExpirationColor] = useState(null);
   const [percentElapsed, setPercentElapsed] = useState(null);

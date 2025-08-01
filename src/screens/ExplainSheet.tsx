@@ -742,7 +742,7 @@ const ExplainSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={sheetHeight} scrollEnabled={false}>
+      <SlackSheet additionalTopPadding contentHeight={sheetHeight} scrollEnabled={false}>
         <Centered direction="column" height={sheetHeight} testID={`explain-sheet-${params.type}`} width="100%">
           <ColumnWithMargins
             margin={15}

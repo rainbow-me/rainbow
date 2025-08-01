@@ -61,15 +61,8 @@ export function generatePaintMatrix(
   } = {}
 ): SkiaColorMatrix {
   'worklet';
-  // Process the color.
-  const processedColor = processColor(baseColor);
-  if (processedColor === null || processedColor === undefined) {
-    // If the color is invalid, return the identity matrix
-    return IDENTITY_MATRIX;
-  }
-
   // Extract original color components and convert to HSV
-  const [r, g, b] = convertToRGBA(processedColor);
+  const [r, g, b] = convertToRGBA(baseColor);
   const { h, s, v } = rgbToHsv(r * 255, g * 255, b * 255);
 
   let { brightness = 1, saturation = 1 } = options;

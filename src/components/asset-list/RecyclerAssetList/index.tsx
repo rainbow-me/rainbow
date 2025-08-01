@@ -118,7 +118,7 @@ export function useRecyclerListViewRef(): {
   readonly ref: RecyclerListViewRef | undefined;
   readonly _ref: React.MutableRefObject<RecyclerListViewRef | undefined>;
 } {
-  const ref = useRef<RecyclerListViewRef>();
+  const ref = useRef<RecyclerListViewRef>(undefined);
   const handleRef = React.useCallback(
     (nextRef: RecyclerListViewRef): void => {
       ref.current = nextRef;
@@ -175,7 +175,7 @@ function RecyclerAssetList({
   const { isSmallBalancesOpen: openSmallBalances } = useOpenSmallBalances();
   const openCollections = useOpenCollectionsStore(state => state.openCollections);
   const { ref, handleRef } = useRecyclerListViewRef();
-  const stickyCoinDividerRef = React.useRef<View>() as React.RefObject<View>;
+  const stickyCoinDividerRef = React.useRef<View>(undefined) as React.RefObject<View>;
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(0);
   const { areSmallCollectibles, items, itemsCount, sectionsIndices, stickyComponentsIndices } = useMemo(() => {
     const sectionsIndices: number[] = [];

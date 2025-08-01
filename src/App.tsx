@@ -147,7 +147,11 @@ const RootWithSentry = Sentry.wrap(Root);
 const PlaygroundWithReduxStore = () => (
   // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
   <ReduxProvider store={store}>
-    <Playground />
+    <MainThemeProvider>
+      <GestureHandlerRootView style={sx.container}>
+        <Playground />
+      </GestureHandlerRootView>
+    </MainThemeProvider>
   </ReduxProvider>
 );
 

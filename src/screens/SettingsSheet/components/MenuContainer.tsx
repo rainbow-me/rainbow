@@ -1,9 +1,10 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
 import { Box, Inset, Space, Stack } from '@/design-system';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface MenuContainerProps {
-  scrollviewRef?: React.RefObject<ScrollView>;
+  scrollviewRef?: React.RefObject<ScrollView | null>;
   children: React.ReactNode;
   Footer?: React.ReactNode;
   testID?: string;
@@ -11,14 +12,11 @@ interface MenuContainerProps {
 }
 
 const MenuContainer = ({ scrollviewRef, children, testID, Footer, space = '36px' }: MenuContainerProps) => {
+  const safeAreaInsets = useSafeAreaInsets();
+
   return (
     // ios scroll fix
-    <Inset
-      {...(ios && {
-        bottom: '42px (Deprecated)',
-        top: '12px',
-      })}
-    >
+    <Inset bottom={{ custom: safeAreaInsets.bottom }} top={ios ? '12px' : undefined}>
       <ScrollView
         ref={scrollviewRef}
         scrollEventThrottle={32}

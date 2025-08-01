@@ -5,14 +5,13 @@ import org.apache.tools.ant.taskdefs.condition.Os
 buildscript {
 
     ext {
-        buildToolsVersion = "34.0.0"
+        buildToolsVersion = "35.0.0"
         minSdkVersion = 26
-        compileSdkVersion = 34
-        targetSdkVersion = 34
-        ndkVersion = "26.3.11579264"
-        kotlin_version = "1.9.22"
-        kotlinVersion = "1.9.22"
-        androidXCore = "1.6.0"
+        compileSdkVersion = 35
+        targetSdkVersion = 35
+        ndkVersion = "27.1.12297006"
+        kotlin_version = "2.1.20"
+        kotlinVersion = "2.1.20"
     }
 
     repositories {
@@ -26,7 +25,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.20"
         classpath("de.undercouch:gradle-download-task:5.0.1")
         classpath 'com.google.gms:google-services:4.3.15'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
@@ -47,17 +46,6 @@ buildscript {
             }
         }
         jcenter()
-        maven {
-            url 'https://maven.google.com'
-        }
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../node_modules/react-native/android")
-        }
-        maven {
-            // Android JSC is installed from npm
-            url("$rootDir/../node_modules/jsc-android/dist")
-        }
         maven { url 'https://www.jitpack.io' }
     }
     afterEvaluate { project ->
@@ -75,3 +63,6 @@ buildscript {
 }
 
 }
+
+apply plugin: "com.facebook.react.rootproject"
+apply plugin: "expo-root-project"

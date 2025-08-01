@@ -1,13 +1,12 @@
 import { Dimensions, PixelRatio, Platform, NativeModules } from 'react-native';
 import { getRealWindowHeight } from 'react-native-extra-dimensions-android';
-import SafeAreaView from 'react-native-safe-area-view';
 import { IS_ANDROID, IS_IOS } from '@/env';
 
 const scale = Dimensions.get('screen').scale;
 const { height, width } = Dimensions.get('window');
 
 export const NAVIGATION_BAR_HEIGHT = IS_ANDROID ? NativeModules.NavbarHeight.getNavigationBarHeight() / scale : 0;
-const PLATFORM_ADJUSTED_HEIGHT = IS_IOS ? height : getRealWindowHeight() - (isUsingButtonNavigation() ? getAndroidBottomInset() : 0);
+const PLATFORM_ADJUSTED_HEIGHT = IS_IOS ? height : getRealWindowHeight();
 
 const deviceUtils = (function () {
   const iPhone15ProHeight = 852,
@@ -46,15 +45,6 @@ export function isUsingButtonNavigation() {
   return NAVIGATION_BAR_HEIGHT > 40;
 }
 
-// The extra space moves the safe area inset slightly so that the top of the navigation bar is not directly on the bottom of the content
-export const ANDROID_EXTRA_BOTTOM_INSET = isUsingButtonNavigation() ? 12 : 0;
-
-export function getAndroidBottomInset() {
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'getInset' does not exist on type 'Compon... Remove this comment to see the full error message
-  return isUsingButtonNavigation() ? (SafeAreaView.getInset('bottom') ?? 0) + NAVIGATION_BAR_HEIGHT : SafeAreaView.getInset('bottom') ?? 0;
-}
-
-export const ANDROID_BOTTOM_INSET = getAndroidBottomInset();
 export const DEVICE_WIDTH = deviceUtils.dimensions.width;
 export const DEVICE_HEIGHT = deviceUtils.dimensions.height;
 export const PIXEL_RATIO = PixelRatio.get();

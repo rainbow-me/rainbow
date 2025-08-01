@@ -11,6 +11,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import io.branch.rnbranch.RNBranchModule
 import me.rainbow.NativeModules.Haptics.RNHapticsPackage
@@ -20,7 +21,6 @@ import me.rainbow.NativeModules.RNBip39.RNBip39Package
 import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage
-import me.rainbow.NativeModules.SystemNavigationBar.SystemNavigationBarPackage
 import me.rainbow.NativeModules.NavbarHeight.NavbarHeightPackage
 import com.shopify.reactnativeperformance.ReactNativePerformance;
 
@@ -34,7 +34,6 @@ class MainApplication : Application(), ReactApplication {
             val packages: MutableList<ReactPackage> = PackageList(this).packages
             // Packages that cannot be autolinked yet can be added manually here, for example:
             packages.add(RNBip39Package())
-            packages.add(SystemNavigationBarPackage())
             packages.add(RNBackHandlerPackage())
             packages.add(RNTextAnimatorPackage())
             packages.add(RNZoomableButtonPackage())
@@ -45,9 +44,7 @@ class MainApplication : Application(), ReactApplication {
             return packages
         }
 
-        override fun getJSMainModuleName(): String {
-            return ".expo/.virtual-metro-entry"
-        }
+        override fun getJSMainModuleName(): String = "index"
 
         override val isNewArchEnabled: Boolean
             get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
@@ -59,7 +56,7 @@ class MainApplication : Application(), ReactApplication {
         ReactNativePerformance.onAppStarted();
         super.onCreate()
         appContext = this
-        SoLoader.init(this,  /* native exopackage */false)
+        SoLoader.init(this, OpenSourceMergedSoMapping)
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
             // If you opted-in for the New Architecture, we load the native entry point for this app.
             load()

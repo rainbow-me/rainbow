@@ -48,7 +48,7 @@ import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { format } from 'date-fns';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { StatusBar, View } from 'react-native';
+import { View } from 'react-native';
 import { BlurView } from 'react-native-blur-view';
 import { useSharedValue } from 'react-native-reanimated';
 import { createWalletClient, http } from 'viem';
@@ -141,7 +141,7 @@ const MintSheet = () => {
   const [gasError, setGasError] = useState(false);
   const [ensName, setENSName] = useState<string>('');
   const [mintStatus, setMintStatus] = useState<'none' | 'minting' | 'minted' | 'error'>('none');
-  const txRef = useRef<string>();
+  const txRef = useRef<string>(undefined);
   const [isGasReady, setIsGasReady] = useState<boolean>(false);
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
@@ -197,7 +197,7 @@ const MintSheet = () => {
 
   const imageColor = usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
 
-  const sheetRef = useRef();
+  const sheetRef = useRef(undefined);
   const yPosition = useSharedValue(0);
 
   useFocusEffect(() => {
@@ -532,7 +532,7 @@ const MintSheet = () => {
         {...(IS_IOS ? { height: '100%' } : {})}
         ref={sheetRef}
         scrollEnabled
-        additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+        additionalTopPadding
         testID="nft-mint-sheet"
         yPosition={yPosition}
       >

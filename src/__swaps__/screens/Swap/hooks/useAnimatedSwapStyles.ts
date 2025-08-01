@@ -138,6 +138,7 @@ export function useAnimatedSwapStyles({
     const progress = Math.min(inputProgress.value + outputProgress.value, 1);
 
     return {
+      pointerEvents: progress === 0 ? 'auto' : 'none',
       opacity: withTiming(1 - progress, TIMING_CONFIGS.fadeConfig),
       transform: [
         {

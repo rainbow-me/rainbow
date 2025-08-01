@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 export default function useIsMounted() {
-  const isMounted = useRef();
+  const isMounted = useRef(undefined);
 
   useEffect(() => {
     // @ts-expect-error ts-migrate(2322) FIXME: Type 'true' is not assignable to type 'undefined'.
