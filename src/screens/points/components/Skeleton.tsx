@@ -1,7 +1,7 @@
-import React from 'react';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { ShimmerAnimation } from '@/components/animations';
 import { AccentColorProvider, Box, useBackgroundColor, useColorMode } from '@/design-system';
-import { opacity } from '@/__swaps__/utils/swaps';
+import React from 'react';
 import { DimensionValue } from 'react-native';
 
 export const Skeleton = ({ width, height }: { width: DimensionValue; height: DimensionValue }) => {

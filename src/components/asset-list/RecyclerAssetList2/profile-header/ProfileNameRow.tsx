@@ -1,6 +1,7 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import { Icon } from '@/components/icons';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { NAVBAR_HORIZONTAL_INSET } from '@/components/navbar/Navbar';
 import { NAVBAR_ICON_SIZE } from '@/components/navbar/NavbarTextIcon';
 import { Bleed, Box, Inset, Text, useForegroundColor } from '@/design-system';
@@ -27,7 +28,7 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
 }: {
   disableOnPress?: boolean;
   testIDPrefix?: string;
-  variant?: string;
+  variant?: 'header';
 }) {
   // ////////////////////////////////////////////////////
   // Account
@@ -78,8 +79,11 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
   // Spacings
 
   const { width: deviceWidth } = useDimensions();
+  const kingOfTheHillEnabled = useShowKingOfTheHill();
 
-  const maxWidth = deviceWidth - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP;
+  const EXTRA_KOTH_WIDTH = kingOfTheHillEnabled && variant === 'header' ? NAVBAR_ICON_SIZE + 50 : 0;
+
+  const maxWidth = deviceWidth - 2 * (NAVBAR_ICON_SIZE + NAVBAR_HORIZONTAL_INSET + HIT_SLOP) - CARET_ICON_WIDTH - GAP - EXTRA_KOTH_WIDTH;
 
   return (
     <Box
@@ -89,7 +93,7 @@ export const ProfileNameRow = React.memo(function ProfileNameRow({
         zIndex: 100,
       }}
     >
-      {name && (
+      {Boolean(name) && (
         <Bleed space={`${HIT_SLOP}px`}>
           <ButtonPressAnimation
             onLongPress={onLongPressName}

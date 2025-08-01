@@ -43,7 +43,7 @@ export function onHandleStatusBar(currentState, prevState) {
 
   const isRoutesLengthDecrease = prevState?.routes.length > currentState?.routes.length;
   switch (routeName) {
-    case Routes.EXPANDED_ASSET_SHEET:
+    case Routes.EXPANDED_ASSET_SHEET: {
       // handles the status bar when opening nested modals
       if (isRoutesLengthDecrease && isFromWalletScreen && routeName === Routes.EXPANDED_ASSET_SHEET) {
         StatusBarHelper.setDarkContent();
@@ -53,13 +53,18 @@ export function onHandleStatusBar(currentState, prevState) {
         break;
       }
       break;
-    case Routes.EXPANDED_ASSET_SHEET_V2:
+    }
+
+    case Routes.KING_OF_THE_HILL:
+    case Routes.EXPANDED_ASSET_SHEET_V2: {
       if (currentColors.theme === 'dark') {
         StatusBarHelper.setLightContent();
       } else {
         StatusBarHelper.setDarkContent();
       }
       break;
+    }
+
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:
@@ -70,12 +75,14 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
     case Routes.SWAP_NAVIGATOR:
-    case Routes.SWAP:
+    case Routes.SWAP: {
       StatusBarHelper.setDarkContent();
       break;
+    }
 
-    default:
+    default: {
       StatusBarHelper.setLightContent();
+    }
   }
 }
 
