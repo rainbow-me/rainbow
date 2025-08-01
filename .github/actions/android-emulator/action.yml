@@ -17,11 +17,6 @@ inputs:
   arch:
     description: 'The architecture to use for the emulator'
     required: true
-  emulators:
-    description: 'The number of emulators to run'
-    default: '1'
-  emulator-build:
-    description: 'The emulator build to use'
 
 runs:
   using: "composite"
@@ -40,7 +35,7 @@ runs:
         path: |
           ~/.android/avd/*
           ~/.android/adb*
-        key: avd-${{ inputs.api-level }}-${{ inputs.emulators }}-${{ inputs.cores }}-${{ inputs.profile }}-${{ inputs.ram-size }}-${{ inputs.arch }}-${{ inputs.emulator-build }}
+        key: avd-${{ inputs.api-level }}-${{ inputs.cores }}-${{ inputs.profile }}-${{ inputs.ram-size }}-${{ inputs.arch }}
 
     - name: Create AVD and Generate Snapshot for Caching
       if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -55,6 +50,5 @@ runs:
         profile: ${{ inputs.profile }}
         cores: ${{ inputs.cores }}
         ram-size: ${{ inputs.ram-size }}
-        emulator-build: ${{ inputs.emulator-build }}
         script: |
           echo "Generated AVD snapshot for caching."

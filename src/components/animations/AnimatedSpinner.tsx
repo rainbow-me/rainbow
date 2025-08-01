@@ -14,6 +14,7 @@ import Animated, {
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useForegroundColor } from '@/design-system';
 import { useCleanup } from '@/hooks/useCleanup';
+import { IS_TEST } from '@/env';
 
 export const spinnerExitConfig = TIMING_CONFIGS.slowerFadeConfig;
 
@@ -87,6 +88,10 @@ export const AnimatedSpinner = ({
   );
 
   useCleanup(() => spinnerImage?.dispose?.(), [spinnerImage]);
+
+  if (IS_TEST) {
+    return <View style={{ height: size, width: size }} />;
+  }
 
   return (
     <View
