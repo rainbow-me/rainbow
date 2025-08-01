@@ -53,6 +53,7 @@ import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
 
 export const BASE_TAB_BAR_HEIGHT = 48;
@@ -465,6 +466,7 @@ export function SwipeNavigator() {
       </BrowserTabBarContextProvider>
 
       <TestnetToast chainId={chainId} />
+      <PendingTransactionWatcher />
     </FlexItem>
   );
 }
