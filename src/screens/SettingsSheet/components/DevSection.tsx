@@ -1,5 +1,5 @@
 import { ImgixImage } from '@/components/images';
-import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
+import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config';
 import { IS_DEV } from '@/env';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { RainbowContext } from '@/helpers/RainbowContext';
@@ -319,6 +319,14 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.reset_experimental_config')} />}
             />
+
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🍞" isEmoji />}
+              onPress={() => Navigation.handleAction(Routes.DEV_ACTION_SHEET)}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.toasts_actions')} />}
+            />
+
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="👷" isEmoji />}
               onPress={connectToAnvil}
@@ -375,7 +383,7 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_fcm_token')} />}
             />
-            {getExperimetalFlag(LOG_PUSH) && (
+            {getExperimentalFlag(LOG_PUSH) && (
               <MenuItem
                 leftComponent={<MenuItem.TextIcon icon="📋" isEmoji />}
                 onPress={async () => {

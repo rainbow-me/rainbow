@@ -70,6 +70,15 @@ const addContactInfo =
     };
   };
 
+export type TransactionSectionInfo = {
+  accountAddress: string;
+  contacts: { [address: string]: Contact };
+  requests: WalletconnectRequestData[];
+  theme: ThemeContextProps;
+  transactions: RainbowTransaction[];
+  nativeCurrency: NativeCurrencyKey;
+};
+
 export const buildTransactionsSections = ({
   accountAddress,
   contacts,
@@ -77,14 +86,7 @@ export const buildTransactionsSections = ({
   theme,
   transactions,
   nativeCurrency,
-}: {
-  accountAddress: string;
-  contacts: { [address: string]: Contact };
-  requests: WalletconnectRequestData[];
-  theme: ThemeContextProps;
-  transactions: RainbowTransaction[];
-  nativeCurrency: NativeCurrencyKey;
-}): TransactionSectionsResult => {
+}: TransactionSectionInfo): TransactionSectionsResult => {
   if (!transactions) {
     return { sections: [] };
   }

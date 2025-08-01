@@ -40,6 +40,7 @@ export const LAZY_TABS = 'Lazy Tabs';
 export const CANDLESTICK_CHARTS = 'Candlestick Charts';
 export const CANDLESTICK_DATA_MONITOR = 'Candlestick Data Monitor';
 export const KING_OF_THE_HILL_TAB = 'King of the Hill Tab';
+export const RAINBOW_TOASTS = 'Rainbow Toasts';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -88,6 +89,7 @@ const config = {
   [CANDLESTICK_CHARTS]: { settings: true, value: IS_DEV || isTestFlight || false },
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
   [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
+  [RAINBOW_TOASTS]: { settings: true, value: false },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
@@ -107,7 +109,7 @@ const storage = new MMKV({
   id: STORAGE_IDS.EXPERIMENTAL_CONFIG,
 });
 
-export function getExperimetalFlag(key: ExperimentalConfigKey): boolean {
+export function getExperimentalFlag(key: ExperimentalConfigKey): boolean {
   const config = storage.getString(storageKey);
   if (typeof config !== 'string') {
     return defaultConfig[key].value;

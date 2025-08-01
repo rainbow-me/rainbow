@@ -7,7 +7,7 @@ import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
 import { device } from '@/storage';
 import { push } from '@/logger/logDump';
-import { getExperimetalFlag, LOG_PUSH } from '@/config/experimental';
+import { getExperimentalFlag, LOG_PUSH } from '@/config/experimental';
 
 export enum LogLevel {
   Debug = 'debug',
@@ -90,7 +90,7 @@ function withColor([x, y]: [number, number]) {
  * A developer setting that pushes log lines to an array in-memory so that
  * they can be "dumped" or copied out of the app and analyzed.
  */
-const LOG_PUSH_ENABLED = getExperimetalFlag(LOG_PUSH);
+const LOG_PUSH_ENABLED = getExperimentalFlag(LOG_PUSH);
 
 /**
  * Used in dev mode to nicely log to the console
