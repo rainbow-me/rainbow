@@ -15,6 +15,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.73] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.73)
+
+### Changed
+
+- Migrate NFTs to createQueryStore (#6649)
+- Small cleanup on activity list (#6769)
+- Bump iOS and Android to v1.9.73 (#6775)
+
+### Fixed
+
+- Cleaned up old react-query keys for legacy nft store (#6771)
+- E2E Fix send button regex (#6768)
+- E2E skip android backup flow (#6766)
+- Fixed dapp unsupported network switch requests spam (#6772)
+- Fixed discover bug with E2E (#6776)
+
 ## [1.9.72] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.72)
 
 ### Added

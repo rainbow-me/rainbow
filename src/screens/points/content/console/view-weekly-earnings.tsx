@@ -14,6 +14,7 @@ import { LineBreak } from '../../components/LineBreak';
 import { NeonButton } from '../../components/NeonButton';
 import { Paragraph } from '../../components/Paragraph';
 import { rainbowColors, textColors } from '../../constants';
+import { getNumberFormatter } from '@/helpers/intl';
 
 export const ViewWeeklyEarnings = () => {
   const [showCloseButton, setShowCloseButton] = useState(false);
@@ -112,7 +113,7 @@ export const ViewWeeklyEarnings = () => {
                 delayStart={1000}
                 enableHapticTyping
                 textAlign="right"
-                textContent={`+ ${retroactive.toLocaleString('en-US')}`}
+                textContent={`+ ${getNumberFormatter('en-US').format(retroactive)}`}
                 typingSpeed={100}
               />
             </Line>
@@ -129,7 +130,7 @@ export const ViewWeeklyEarnings = () => {
                 delayStart={1000}
                 enableHapticTyping
                 textAlign="right"
-                textContent={`+ ${bonus.toLocaleString('en-US')}`}
+                textContent={`+ ${getNumberFormatter('en-US').format(bonus)}`}
                 typingSpeed={100}
               />
             </Line>
@@ -145,7 +146,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`+ ${transaction.toLocaleString('en-US')}`}
+              textContent={`+ ${getNumberFormatter('en-US').format(transaction)}`}
               typingSpeed={100}
             />
           </Line>
@@ -161,7 +162,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`+ ${existingReferrals.toLocaleString('en-US')}`}
+              textContent={`+ ${getNumberFormatter('en-US').format(existingReferrals)}`}
               typingSpeed={100}
             />
           </Line>
@@ -177,7 +178,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`+ ${newReferrals.toLocaleString('en-US')}`}
+              textContent={`+ ${getNumberFormatter('en-US').format(newReferrals)}`}
               typingSpeed={100}
             />
           </Line>
@@ -216,7 +217,7 @@ export const ViewWeeklyEarnings = () => {
                 }, 500);
                 return () => clearTimeout(complete);
               }}
-              textContent={`+ ${totalWeeklyEarnings.toLocaleString('en-US')} ${i18n.t(i18n.l.points.console.points)}`}
+              textContent={`+ ${getNumberFormatter('en-US').format(totalWeeklyEarnings)} ${i18n.t(i18n.l.points.console.points)}`}
               typingSpeed={100}
             />
           </Line>
@@ -241,7 +242,7 @@ export const ViewWeeklyEarnings = () => {
               enableHapticTyping
               hapticType="impactHeavy"
               textAlign="right"
-              textContent={`${newTotalEarnings.toLocaleString('en-US')} ${i18n.t(i18n.l.points.console.points)}`}
+              textContent={`${getNumberFormatter('en-US').format(newTotalEarnings)} ${i18n.t(i18n.l.points.console.points)}`}
               onComplete={() => {
                 const complete = setTimeout(() => {
                   setShowCloseButton(true);

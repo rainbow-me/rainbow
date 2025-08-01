@@ -1,0 +1,113 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- retry:
+    maxRetries: 5
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
+
+      # Send ETH to test wallet
+      - tapOn:
+          id: fund-test-wallet-button
+
+      # Connect to Anvil (test network)
+      - tapOn:
+          id: dev-button-anvil
+
+      # Open swap screen
+      - tapOn:
+          id: swap-button
+      - assertVisible:
+          id: swap-screen
+
+      # Select DAI as output token
+      - tapOn: 'Find a token to buy'
+      - inputText: 'DAI'
+      - hideKeyboard
+      - tapOn:
+          id: token-to-buy-dai-1
+      - assertVisible: 'DAI.*'
+
+      # Execute Swap
+      - longPressOn:
+          id: swap-bottom-action-button
+      - runFlow: ../utils/MaybeSetupPin.yaml
+
+      # On Android, pull to refresh + copy balance before swap
+      - retry:
+          maxRetries: 1
+          commands:
+            - runFlow:
+                when:
+                  platform: Android
+                commands:
+                  - swipe:
+                      from:
+                        id: wallet-screen
+                      direction: down
+                  # Copy the balance before the swap
+                  - copyTextFrom:
+                      id: balance-coin-row-value-Dai
+                  - evalScript: ${output.beforeValue = maestro.copiedText}
+
+      # Open Discover screen select DAI then go to swap screen
+      - tapOn:
+          id: 'tab-bar-icon-DiscoverScreen'
+      - tapOn:
+          id: discover-search-icon
+      - assertVisible:
+          id: done-button
+      - inputText: 'DAI'
+      - tapOn:
+          id: discover-currency-select-list-exchange-coin-row-DAI-1
+      - assertVisible:
+          id: chart-header-Dai
+      - tapOn:
+          id: swap-action-button
+
+      # Execute Swap
+      - longPressOn:
+          id: swap-bottom-action-button
+      - runFlow: ../utils/MaybeSetupPin.yaml
+
+      # On Android, pull to refresh + copy balance after swap
+      - retry:
+          maxRetries: 1
+          commands:
+            - runFlow:
+                when:
+                  platform: Android
+                commands:
+                  - swipe:
+                      from:
+                        id: wallet-screen
+                      direction: down
+                  # Copy the balance after the swap
+                  - copyTextFrom:
+                      id: balance-coin-row-value-Dai
+                  - evalScript: ${output.afterValue = maestro.copiedText}
+
+                  # Check if the balance went down post swap (success)
+                  - runFlow:
+                      when:
+                        true: ${output.beforeValueNum > output.afterValueNum}
+                      commands:
+                        - evalScript: ${console.log('SUCCESS - Held balance went down after a swap!')}
+                        - assertTrue: ${output.beforeValueNum > output.afterValueNum}
+
+                  # Check if the balance didnt go down post swap (failure)
+                  - runFlow:
+                      when:
+                        true: ${output.beforeValueNum <= output.afterValueNum}
+                      commands:
+                        - evalScript: ${console.log("FAILURE - Balance didnt go down after swap! Values are beforeValue - " + output.beforeValue + ", afterValue - " + output.afterValue)}
+                        # The test should fail here if the balance didnt go down - Intended behavior.
+                        - assertTrue: ${output.beforeValueNum > output.afterValueNum}
