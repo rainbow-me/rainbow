@@ -48,7 +48,7 @@ flashlight test --bundleId "$APP_ID" \
   --testCommand "maestro test -e APP_ID=\"$APP_ID\" e2e/perf/TTI.yaml" \
   --duration 20000 \
   --resultsFilePath e2e-artifacts/tti.json \
-  "$@"
+  --iterationCount 1
 
 echo "Current directory: $(pwd)"
 ls -a .
