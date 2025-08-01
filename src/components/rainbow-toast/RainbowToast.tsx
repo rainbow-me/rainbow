@@ -17,6 +17,7 @@ import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToa
 import {
   finishRemoveToast,
   handleTransactions,
+  removeAllToasts,
   setShowExpandedToasts,
   startRemoveToast,
   useToastStore,
@@ -46,6 +47,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
+import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
@@ -60,6 +62,7 @@ export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
 function RainbowToastDisplayContent() {
   const { toasts, isShowingTransactionDetails } = useToastStore();
   const { transactions } = useLatestAccountTransactions();
+  const { height: deviceHeight } = useDimensions();
 
   const showingTransactionDetails = useSharedValue(false);
 
@@ -67,9 +70,19 @@ function RainbowToastDisplayContent() {
     showingTransactionDetails.value = isShowingTransactionDetails;
   }, [isShowingTransactionDetails, showingTransactionDetails]);
 
+  const { dragY, pan, isDismissed } = useVerticalDismissPanGesture({
+    onDismiss: useCallback(() => {
+      removeAllToasts();
+    }, []),
+    height: deviceHeight,
+    dismissSensitivity: 0.05,
+    dismissTargetY: -100,
+  });
+
   const hiddenAnimatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: withSpring(showingTransactionDetails.value ? 0 : 1, springConfig),
+      opacity: withSpring(isDismissed.value || showingTransactionDetails.value ? 0 : 1, springConfig),
+      transform: [{ translateY: dragY.value }],
     };
   });
 
@@ -111,11 +124,13 @@ function RainbowToastDisplayContent() {
     <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
       <RainbowToastExpandedDisplay />
 
-      <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
-        {visibleToasts.map(toast => {
-          return <RainbowToastItem hasWideToast={hasWideToast} key={toast.id} toast={toast} />;
-        })}
-      </Animated.View>
+      <GestureDetector gesture={pan}>
+        <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
+          {visibleToasts.map(toast => {
+            return <RainbowToastItem hasWideToast={hasWideToast} key={toast.id} toast={toast} />;
+          })}
+        </Animated.View>
+      </GestureDetector>
     </Box>
   );
 
@@ -246,6 +261,8 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()
       .minDistance(10)
+      .activeOffsetX([-10, 10])
+      .failOffsetY([-10, 10])
       .onUpdate(event => {
         'worklet';
         translateX.value = event.translationX;
