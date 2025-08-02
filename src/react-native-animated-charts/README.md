@@ -17,7 +17,7 @@ It's a part of the [Rainbow.me project](https://rainbow.me/).
 
 ## Installation
 
-1. Install [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/next/installation) in the newest version.
+1. Install [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) in the newest version.
 2.
 
 ```bash
