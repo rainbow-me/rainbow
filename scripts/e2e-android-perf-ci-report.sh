@@ -100,7 +100,7 @@ if [[ -n "$BASELINE_TTI_JSON" && -f "$BASELINE_TTI_JSON" ]]; then
     printf "| %s | %s %s | %s %s %s (%s%%) |\n" "$label" "$current" "$unit" "$color" "$diff" "$unit" "$pct"
   }
 
-  TTI_ROW=$(diff_row "Time to Interactive (TTI)" "ms" "$TTI" "$BASELINE_TTI")
+  TTI_ROW=$(diff_row "Time to Interactive (TTI)" "ms" "$AVG_TTI" "$BASELINE_TTI")
   FPS_ROW=$(diff_row "Average FPS" "" "$AVG_FPS" "$BASELINE_FPS")
   RAM_ROW=$(diff_row "Average RAM" "MB" "$AVG_RAM" "$BASELINE_RAM")
 fi
