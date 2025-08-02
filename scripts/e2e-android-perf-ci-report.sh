@@ -78,7 +78,7 @@ if [[ -n "$BASELINE_TTI_JSON" && -f "$BASELINE_TTI_JSON" ]]; then
     local pct=$(awk "BEGIN { print ($current - $baseline) / $baseline * 100 }")
 
     local arrow color abs_pct
-    abs_pct=$(awk "BEGIN { print ($pct < 0 ? -$pct : $pct) }")
+    abs_pct=$(awk -v pct="$pct" 'BEGIN { print (pct < 0 ? -pct : pct) }')
 
     if (( $(echo "$abs_pct < 1" | bc -l) )); then
       arrow="–"
@@ -111,7 +111,7 @@ COMMENT_BODY=$(cat <<EOF
 $COMMENT_MARKER
 🧪 **Flashlight Performance Report (AWS Device Farm)**
 
-🔀 Commit: ${GIT_COMMIT}
+🔀 Commit: ${GITHUB_COMMIT}
 
 📎 [View Artifacts](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}#artifacts)
 
