@@ -51,8 +51,8 @@ TEST_UPLOAD_URL=$(echo "$TEST_UPLOAD_RESULT" | jq -r '.upload.url')
 curl --fail --upload-file "$BUNDLE_NAME" "$TEST_UPLOAD_URL"
 
 # Wait for uploads
+echo "⏳ Waiting for uploads to complete..."
 for UPLOAD_ARN in "$APP_UPLOAD_ARN" "$TEST_UPLOAD_ARN"; do
-  echo "⏳ Waiting for upload to complete..."
   while true; do
     STATUS=$(aws devicefarm get-upload --arn "$UPLOAD_ARN" --query "upload.status" --output text)
     if [[ "$STATUS" == "SUCCEEDED" ]]; then break; fi
