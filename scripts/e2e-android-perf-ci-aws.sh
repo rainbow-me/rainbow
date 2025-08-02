@@ -14,7 +14,6 @@ GITHUB_REPOSITORY="rainbow-me/rainbow"
 : "${DEVICE_POOL_ARN:?Environment variable DEVICE_POOL_ARN is required}"
 : "${GITHUB_TOKEN:?Missing GITHUB_TOKEN}"
 : "${GITHUB_RUN_ID:?Missing GITHUB_RUN_ID}"
-: "${GITHUB_PR_NUMBER:?Missing GITHUB_PR_NUMBER}"
 
 # Create a temporary folder structure
 rm -rf "$TMP_DIR"
@@ -133,6 +132,11 @@ fi
 # Copy to a location that is easily accessible for GitHub Actions
 mkdir -p "$ARTIFACTS_DIR/perf"
 cp "$TTI_JSON_PATH" "$ARTIFACTS_DIR/perf/tti.json"
+
+# Skip posting comment if not a PR
+if [[ -z "${GITHUB_PR_NUMBER:-}" ]]; then
+  exit 0
+fi
 
 echo "📊 Parsing performance metrics from $TTI_JSON_PATH..."
 TTI=$(jq -r '.iterations[-1].time' "$TTI_JSON_PATH")
