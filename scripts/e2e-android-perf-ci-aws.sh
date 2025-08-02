@@ -100,6 +100,10 @@ fi
 PERF_DIR="e2e-artifacts"
 mkdir -p "$PERF_DIR"
 
+DEBUG_RES=$(aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE --output json)
+
+echo "$DEBUG_RES"
+
 # Find the correct artifact ARN for tti.json
 echo "📥 Locating and downloading tti.json artifact..."
 ARTIFACT_ARN=$(aws devicefarm list-artifacts \
