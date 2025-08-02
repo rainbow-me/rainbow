@@ -41,15 +41,11 @@ echo "✅ Maestro session is ready."
 echo "Running prepare step..."
 maestro test -e APP_ID="$APP_ID" e2e/utils/PreparePerf.yaml
 
-mkdir -p ~/artifacts
+mkdir -p /tmp/e2e-artifacts
 
 echo "Running Flashlight performance test..."
 flashlight test --bundleId "$APP_ID" \
   --testCommand "maestro test -e APP_ID=\"$APP_ID\" e2e/perf/TTI.yaml" \
   --duration 20000 \
-  --resultsFilePath ~/artifacts/tti.json \
+  --resultsFilePath /tmp/e2e-artifacts/tti.json \
   --iterationCount 1
-
-echo "Current directory: $(pwd)"
-ls -a .
-ls -a ../
