@@ -30,7 +30,7 @@ chmod +x "$TMP_DIR/run-test.sh"
 echo "✅ Created test bundle: $BUNDLE_NAME"
 
 # Upload APK
-echo "Uploading APK..."
+echo "📤 Uploading APK..."
 APP_UPLOAD_RESULT=$(aws devicefarm create-upload \
   --project-arn "$PROJECT_ARN" \
   --name "$(basename "$ARTIFACT_PATH_FOR_E2E")" \
@@ -41,7 +41,7 @@ APP_UPLOAD_URL=$(echo "$APP_UPLOAD_RESULT" | jq -r '.upload.url')
 curl --fail --upload-file "$ARTIFACT_PATH_FOR_E2E" "$APP_UPLOAD_URL"
 
 # Upload test bundle
-echo "Uploading test bundle..."
+echo "📤 Uploading test bundle..."
 TEST_UPLOAD_RESULT=$(aws devicefarm create-upload \
   --project-arn "$PROJECT_ARN" \
   --name "$BUNDLE_NAME" \
@@ -53,7 +53,7 @@ curl --fail --upload-file "$BUNDLE_NAME" "$TEST_UPLOAD_URL"
 
 # Wait for uploads
 for UPLOAD_ARN in "$APP_UPLOAD_ARN" "$TEST_UPLOAD_ARN"; do
-  echo "Waiting for upload $UPLOAD_ARN..."
+  echo "⏳ Waiting for upload to complete..."
   while true; do
     STATUS=$(aws devicefarm get-upload --arn "$UPLOAD_ARN" --query "upload.status" --output text)
     if [[ "$STATUS" == "SUCCEEDED" ]]; then break; fi
@@ -76,7 +76,7 @@ RUN_ARN=$(aws devicefarm schedule-run \
   --test "$TEST_JSON" \
   --query "run.arn" --output text)
 
-echo "✅ Test scheduled: $RUN_ARN"
+echo "✅ Test scheduled successfully."
 
 echo "⏳ Waiting for test to complete..."
 while true; do
@@ -100,35 +100,40 @@ fi
 PERF_DIR="e2e-artifacts"
 mkdir -p "$PERF_DIR"
 
-DEBUG_RES=$(aws devicefarm list-artifacts --arn "$RUN_ARN" --type FILE --output json)
+echo "📥 Downloading Customer Artifacts..."
 
-echo "$DEBUG_RES"
-
-# Find the correct artifact ARN for tti.json
-echo "📥 Locating and downloading tti.json artifact..."
-ARTIFACT_ARN=$(aws devicefarm list-artifacts \
+# Locate the ZIP artifact
+ARTIFACT_ZIP_URL=$(aws devicefarm list-artifacts \
   --arn "$RUN_ARN" \
   --type FILE \
-  --query "artifacts[?name=='tti.json'].arn" \
+  --query "artifacts[?type=='CUSTOMER_ARTIFACT'].url" \
   --output text)
 
-if [[ -z "$ARTIFACT_ARN" ]]; then
-  echo "❌ Could not find 'tti.json' in Device Farm artifacts."
+if [[ -z "$ARTIFACT_ZIP_URL" ]]; then
+  echo "❌ Could not find CUSTOMER_ARTIFACT zip."
   exit 1
 fi
 
-ARTIFACT_URL=$(aws devicefarm get-artifact \
-  --arn "$ARTIFACT_ARN" \
-  --query "artifact.url" \
-  --output text)
+# Download and extract
+ARTIFACTS_DIR="e2e-artifacts"
+mkdir -p "$ARTIFACTS_DIR"
+curl -s -o "$ARTIFACTS_DIR/results.zip" "$ARTIFACT_ZIP_URL"
+unzip -o "$ARTIFACTS_DIR/results.zip" -d "$ARTIFACTS_DIR"
 
-curl -s -o "$PERF_DIR/tti.json" "$ARTIFACT_URL"
+# Locate tti.json within extracted ZIP
+TTI_JSON_PATH=$(find "$PERF_DIR" -name "tti.json" | head -n1)
 
-# Parse metrics
-echo "📊 Parsing performance metrics..."
-TTI=$(jq -r '.iterations[-1].time' "$PERF_DIR/tti.json")
-AVG_FPS=$(jq '[.iterations[].measures[].fps] | add / length' "$PERF_DIR/tti.json")
-AVG_RAM=$(jq '[.iterations[].measures[].ram] | add / length' "$PERF_DIR/tti.json")
+if [[ -z "$TTI_JSON_PATH" || ! -f "$TTI_JSON_PATH" ]]; then
+  echo "❌ Could not find tti.json in extracted artifact."
+  echo "✅ DEBUG: Listing files in $PERF_DIR:"
+  find "$PERF_DIR"
+  exit 1
+fi
+
+echo "📊 Parsing performance metrics from $TTI_JSON_PATH..."
+TTI=$(jq -r '.iterations[-1].time' "$TTI_JSON_PATH")
+AVG_FPS=$(jq '[.iterations[].measures[].fps] | add / length' "$TTI_JSON_PATH")
+AVG_RAM=$(jq '[.iterations[].measures[].ram] | add / length' "$TTI_JSON_PATH")
 
 # Format nicely
 TTI=$(printf "%.0f" "$TTI")
