@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - develop
+      - 'e2e-baseline-test'
 jobs:
   android-e2e-build:
     if: github.event.pull_request.draft == false
@@ -255,9 +256,27 @@ jobs:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
 
-      - name: Upload artifacts
-        if: ${{ always() }}
+      - name: Download Baseline Perf JSON
+        if: github.event_name == 'pull_request'
+        run: |
+          gh api \
+            -H "Accept: application/vnd.github.v3+json" \
+            "/repos/${{ github.repository }}/actions/artifacts" \
+            -q ".artifacts | map(select(.name==\"perf-results-e2e-baseline-test\")) | sort_by(.updated_at) | reverse | .[0].id" > develop_artifact_id.txt
+          DEVELOP_ARTIFACT_ID=$(cat develop_artifact_id.txt)
+          curl -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -o develop-artifact.zip \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$DEVELOP_ARTIFACT_ID/zip"
+          unzip develop-artifact.zip -d baseline-artifacts
+          echo "BASELINE_TTI_JSON=$(find baseline-artifacts -name 'tti.json')" >> $GITHUB_ENV
+
+      - name: Generate Flashlight Comparison Report
+        if: github.event_name == 'pull_request'
+        run: |
+          flashlight report $BASELINE_TTI_JSON e2e-artifacts/perf/tti.json --output-dir e2e-artifacts/perf/report
+
+      - name: Upload Current Perf JSON
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-perf
+          name: perf-results-${{ github.ref_name }}
           path: ${{ env.ARTIFACTS_FOLDER }}/perf

@@ -130,6 +130,10 @@ if [[ -z "$TTI_JSON_PATH" || ! -f "$TTI_JSON_PATH" ]]; then
   exit 1
 fi
 
+# Copy to a location that is easily accessible for GitHub Actions
+mkdir -p "$ARTIFACTS_DIR/perf"
+cp "$TTI_JSON_PATH" "$ARTIFACTS_DIR/perf/tti.json"
+
 echo "📊 Parsing performance metrics from $TTI_JSON_PATH..."
 TTI=$(jq -r '.iterations[-1].time' "$TTI_JSON_PATH")
 AVG_FPS=$(jq '[.iterations[].measures[].fps] | add / length' "$TTI_JSON_PATH")
