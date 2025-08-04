@@ -1,64 +1,25 @@
-/*
-# Tab Coordinates for Maestro Tests
-
-## Usage
-
-1. **Load the coordinates** at the beginning of your test file:
-   ```yaml
-   - runScript:
-       file: e2e/utils/coordinates.js
-   ```
-
-2. **Access coordinates** using the `output` prefix:
-   ```yaml
-   - tapOn:
-       point: ${output.tabCoordinates.discoverTab}
-   ```
-
-## Available Coordinates
-
-- `homeTab`: '20%,92%'
-- `discoverTab`: '35%,92%'
-- `browserTab`: '50%,92%'
-- `activityTab`: '65%,92%'
-- `pointsTab`: '80%,92%'
-
-## Important Notes
-
-- The coordinates MUST be loaded with `runScript` before use
-- Always use `${output.tabCoordinates.NAME}` syntax (not `${tabCoordinates.NAME}`)
-- The Y coordinate (92%) may need adjustment based on device/screen size
-
-## Example
-
-```yaml
-appId: com.rainbow
----
-# Load coordinates first
-- runScript:
-    file: e2e/utils/coordinates.js
-
-# Navigate through tabs
-- tapOn:
-    point: ${output.tabCoordinates.homeTab}
-- tapOn:
-    point: ${output.tabCoordinates.discoverTab}
-``` 
-
-*/
-
-// Tab coordinates for Maestro tests
-// Usage: - runScript: { file: e2e/utils/coordinates.js }
-// Access: ${output.tabCoordinates.homeTab}
+/**
+ * Tab bar coordinates for Maestro E2E tests
+ *
+ * Why this exists:
+ * - Our tab bar can't be interacted with in Maestro tests
+ * - Maestro needs percentage-based coordinates to tap on tab bar items
+ * - Tab bars don't have unique IDs, so we use position-based tapping
+ * - Centralizing coordinates here makes tests more maintainable
+ *
+ * Usage in Maestro tests:
+ * 1. Load: - runScript: { file: e2e/utils/coordinates.js }
+ * 2. Tap:  - tapOn: { point: ${output.tabCoordinates.discoverTab} }
+ */
 
 const tabCoordinates = {
-  homeTab: '20%,92%',
-  discoverTab: '35%,92%',
-  browserTab: '50%,92%',
-  activityTab: '65%,92%',
-  pointsTab: '80%,92%',
+  homeTab: '20%,92%', // Wallet tab
+  discoverTab: '35%,92%', // Discover tab
+  browserTab: '50%,92%', // Browser tab
+  activityTab: '65%,92%', // Activity tab
+  pointsTab: '80%,92%', // Points tab
 };
 
-// Make available to Maestro tests
+// Export to Maestro's output object
 // eslint-disable-next-line no-undef
 output.tabCoordinates = tabCoordinates;
