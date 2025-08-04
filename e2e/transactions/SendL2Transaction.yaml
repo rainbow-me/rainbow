@@ -14,30 +14,32 @@ tags:
       - runFlow: ../utils/Prepare.yaml
       - runFlow: ../utils/ImportWalletWithKey.yaml
 
-      # Send ETH to test wallet
-      - tapOn:
-          id: fund-test-wallet-button
+      # # Send ETH to test wallet
+      # - tapOn:
+      #     id: fund-test-wallet-button
 
       # Connect to Anvil first (base setup)
       - tapOn:
           id: dev-button-anvil
 
-      # Wait for wallet to load
-      - retry:
-          maxRetries: 3
-          commands:
-            - assertVisible:
-                id: 'balance-coin-row-Ethereum'
+      # # Wait for wallet to load
+      # - retry:
+      #     maxRetries: 3
+      #     commands:
+      #       - assertVisible:
+      #           id: 'balance-coin-row-Ethereum'
 
-      # Switch to Base L2 network using deep link
-      - openLink: rainbow://e2e/switchNetwork?network=base
+      # Switch to Polygon L2 network using deep link
+      - openLink: rainbow://e2e/switchNetwork?network=polygon
+
+      - runFlow: ../utils/FundPolygonWallet.yaml
 
       # Wait for network switch to complete
       - retry:
           maxRetries: 5
           commands:
             - assertVisible:
-                id: 'balance-coin-row-Ethereum'
+                id: 'balance-coin-row-Polygon'
 
       # Open send sheet
       - tapOn:
@@ -53,13 +55,12 @@ tags:
             - assertVisible:
                 id: send-asset-list
 
-      # Select ETH for sending on L2
       - runFlow:
           when:
             platform: iOS
           commands:
             - tapOn:
-                text: '.*Ethereum.*'
+                text: '.*Polygon.*'
       - runFlow:
           when:
             platform: Android
@@ -67,7 +68,6 @@ tags:
             - tapOn:
                 id: send-asset
 
-      # Use smaller amount for L2 (lower minimum requirements)
       - inputText: '0.01'
 
       - retry:
@@ -77,12 +77,12 @@ tags:
       - tapOn: .*Review
 
       # Test L2 send confirmation screen
-      # Should show Base network details and lower gas fees
+      # Should show Polygon network details and lower gas fees
       - assertVisible: 'Sending'
       - assertVisible: 'rainbowwallet.eth'
 
       # L2 transactions should have noticeably lower gas fees
-      # The review screen should indicate we're on Base network
+      # The review screen should indicate we're on Polygon network
 
       - runFlow:
           when:
@@ -99,7 +99,7 @@ tags:
 
             - assertVisible: 'Sending'
             - assertVisible: '.*Tx Hash*.'
-            # Should show Base block explorer for true L2 transaction
-            - assertVisible: 'View on Basescan'
+
+            - assertVisible: 'View on Polygonscan'
             - swipe:
                 direction: DOWN
