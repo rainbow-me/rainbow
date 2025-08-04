@@ -1,15 +1,9 @@
-import React, { memo, useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
 import { Text } from '@/design-system';
+import MaskedView from '@react-native-masked-view/masked-view';
+import React, { memo, useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -49,35 +43,20 @@ export const ShimmerText = memo(function ShimmerText({
   }));
 
   return (
-    <View 
-      style={styles.container}
-      onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
-    >
+    <View style={styles.container} onLayout={e => setContainerWidth(e.nativeEvent.layout.width)}>
       <MaskedView
         style={styles.maskedView}
         maskElement={
-          <Text
-            color={{ custom: color }}
-            size={size}
-            weight={weight}
-            numberOfLines={numberOfLines}
-            ellipsizeMode={ellipsizeMode}
-          >
+          <Text color={{ custom: color }} size={size} weight={weight} numberOfLines={numberOfLines} ellipsizeMode={ellipsizeMode}>
             {children}
           </Text>
         }
       >
         {/* Base text layer */}
-        <Text
-          color={{ custom: color }}
-          size={size}
-          weight={weight}
-          numberOfLines={numberOfLines}
-          ellipsizeMode={ellipsizeMode}
-        >
+        <Text color={{ custom: color }} size={size} weight={weight} numberOfLines={numberOfLines} ellipsizeMode={ellipsizeMode}>
           {children}
         </Text>
-        
+
         {/* Shimmer overlay */}
         <AnimatedLinearGradient
           colors={[
