@@ -1,5 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
+import ConditionalWrap from 'conditional-wrap';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
@@ -56,8 +57,14 @@ export const TextShadow = ({
       }),
     [blur, color, disabled, enableInLightMode, inferredTextColor, isAnimatedText, isDarkMode, shadowOpacity, x, y]
   );
-
-  if (IS_TEST || (IS_ANDROID && !enableOnAndroid)) return children;
+  if (IS_TEST || (IS_ANDROID && !enableOnAndroid)) {
+    // Make sure to apply containerStyle if we have one.
+    return (
+      <ConditionalWrap condition={!!containerStyle} wrap={children => <View style={containerStyle}>{children}</View>}>
+        {children}
+      </ConditionalWrap>
+    );
+  }
 
   return isAnimatedText ? (
     // eslint-disable-next-line react/jsx-props-no-spreading
