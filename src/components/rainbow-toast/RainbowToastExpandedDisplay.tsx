@@ -4,9 +4,9 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import { Gesture, GestureDetector, Pressable } from 'react-native-gesture-handler';
+import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
@@ -42,23 +42,22 @@ const ExpandedToastCard = ({
   );
 };
 
+const PADDING_Y = 8;
+const ITEM_HEIGHT = 66;
+
 export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDisplay() {
   const insets = useSafeAreaInsets();
   const { width: deviceWidth } = useDimensions();
   const { toasts, showExpanded } = useToastStore();
   const hasToasts = !!toasts.length;
-  const { pressColor } = useToastColors();
 
   const restingTranslateY = insets.top + 20;
   const animateY = useSharedValue(-20);
   const dragY = useSharedValue(0);
   const opacity = useSharedValue(0);
-  const pointerEvents = useSharedValue<'auto' | 'none'>('none');
+  const [pointerEvents, setPointerEvents] = useState<'auto' | 'none'>('none');
 
-  // we know hardcoded height
-  const paddingY = 8;
-  const itemHeight = 66;
-  const height = toasts.length * itemHeight + paddingY * 2;
+  const height = toasts.length * ITEM_HEIGHT + PADDING_Y * 2;
 
   useEffect(() => {
     if (!hasToasts) {
@@ -70,11 +69,11 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     if (showExpanded) {
       animateY.value = withSpring(0, springConfigEnter);
       opacity.value = withSpring(1, springConfigEnter);
-      pointerEvents.value = 'auto';
+      setPointerEvents('auto');
     } else {
       animateY.value = withSpring(-20, springConfigDismiss);
       opacity.value = withSpring(0, springConfigDismiss);
-      pointerEvents.value = 'none';
+      setPointerEvents('none');
     }
   }, [opacity, showExpanded, animateY, pointerEvents]);
 
@@ -83,13 +82,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     opacity: opacity.value,
   }));
 
-  const pointerEventsStyle = useAnimatedStyle(() => {
-    return {
-      pointerEvents: pointerEvents.value,
-    };
-  });
-
-  const pan = useMemo(() => {
+  const panGesture = useMemo(() => {
     return Gesture.Pan()
       .onUpdate(e => {
         'worklet';
@@ -119,12 +112,14 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
           });
           dragY.value = withSpring(0, springConfigDismiss);
           opacity.value = withSpring(0, springConfigDismiss);
-          pointerEvents.value = 'none';
+          runOnJS(() => {
+            setPointerEvents('none');
+          });
         } else {
           dragY.value = withSpring(0, springConfigEnter);
         }
       });
-  }, [dragY, height, animateY, opacity, pointerEvents]);
+  }, [dragY, height, animateY, opacity]);
 
   const hide = useCallback(() => {
     return new Promise<void>(res => {
@@ -152,32 +147,22 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   return (
     <>
       {/* backdrop */}
-      <Animated.View style={[styles.backdrop, pointerEventsStyle, opacityStyle]}>
+      <Animated.View style={[styles.backdrop, opacityStyle, { pointerEvents: pointerEvents }]}>
         <TouchableWithoutFeedback onPress={hide}>
           <Box style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.7)' }]} />
         </TouchableWithoutFeedback>
       </Animated.View>
 
       {/* content card */}
-      <View style={styles.contentContainer}>
-        <GestureDetector gesture={pan}>
-          <Animated.View
-            style={[
-              animatedStyle,
-              pointerEventsStyle,
-              { position: 'absolute', top: restingTranslateY, left: CARD_MARGIN, right: CARD_MARGIN },
-            ]}
-          >
+      <View style={[styles.contentContainer, { pointerEvents: pointerEvents }]}>
+        <GestureDetector gesture={panGesture}>
+          <Animated.View style={[animatedStyle, { position: 'absolute', top: restingTranslateY, left: CARD_MARGIN, right: CARD_MARGIN }]}>
             <ExpandedToastCard width={deviceWidth - 2 * CARD_MARGIN} height={height} borderRadius={CARD_BORDER_RADIUS}>
-              <View style={[styles.toastContentWrapper, { paddingVertical: paddingY }]}>
+              <View style={[styles.toastContentWrapper, { paddingVertical: PADDING_Y }]}>
                 {toasts.map(toast => {
                   return (
-                    <Pressable
+                    <ToastPressable
                       key={toast.id}
-                      style={({ pressed }) => ({
-                        backgroundColor: pressed ? pressColor : 'transparent',
-                        height: itemHeight,
-                      })}
                       onPress={() => {
                         if (opacity.value !== 1) {
                           // avoid press after dismiss
@@ -188,7 +173,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
                       }}
                     >
                       <ToastExpandedContent toast={toast} />
-                    </Pressable>
+                    </ToastPressable>
                   );
                 })}
               </View>
@@ -199,6 +184,22 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     </>
   );
 });
+
+const ToastPressable = ({ children, onPress }: { onPress: () => void; children: ReactNode }) => {
+  const { pressColor } = useToastColors();
+
+  return (
+    <Pressable
+      style={({ pressed }) => ({
+        backgroundColor: pressed ? pressColor : 'transparent',
+        height: ITEM_HEIGHT,
+      })}
+      onPress={onPress}
+    >
+      {children}
+    </Pressable>
+  );
+};
 
 const styles = StyleSheet.create({
   backdrop: {
