@@ -88,8 +88,10 @@ tags:
       - retry:
           maxRetries: 3
           commands:
+            - runScript:
+                file: ../utils/coordinates.js
             - tapOn:
-                id: tab-bar-icon-ProfileScreen
+                point: ${output.tabCoordinates.profileTab}
 
             # ios view hierarchy takes too long to load, so some of the elements are loaded
             # at signifigantly differnt times than expected... this works fine on Android.

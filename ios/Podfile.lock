@@ -2632,7 +2632,7 @@ PODS:
   - TOCropViewController (2.7.4)
   - ToolTipMenu (5.2.2):
     - React
-  - TurboHaptics (1.0.5):
+  - TurboHaptics (1.0.8):
     - DoubleConversion
     - glog
     - hermes-engine

@@ -8,8 +8,8 @@ appId: ${APP_ID}
       - tapOn:
           text: '1'
           repeat: 4
-          delay: 1000
+          delay: 100
       - tapOn:
           text: '1'
           repeat: 4
-          delay: 1000
+          delay: 100
