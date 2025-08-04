@@ -2632,7 +2632,7 @@ PODS:
   - TOCropViewController (2.7.4)
   - ToolTipMenu (5.2.2):
     - React
-  - TurboHaptics (1.0.8):
+  - TurboHaptics (1.0.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3249,8 +3249,8 @@ SPEC CHECKSUMS:
   hermes-engine: f03b0e06d3882d71e67e45b073bb827da1a21aae
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   MetricsReporter: 364b98791e868b10e9d512eb50af28d8c11e5cdb
-  MMKV: b4802ebd5a7c68fc0c4a5ccb4926fbdfb62d68e0
-  MMKVCore: a255341a3746955f50da2ad9121b18cb2b346e61
+  MMKV: ce484c1ac40bf76d5f09a0195d2ec5b3d3840d55
+  MMKVCore: 1eb661c6c498ab88e3df9ce5d8ff94d05fcc0567
   mobile-wallet-protocol-host: 3f9bb3b14f3648e06f6181cace6737cd0371db42
   MultiplatformBleAdapter: b1fddd0d499b96b607e00f0faa8e60648343dc1d
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
