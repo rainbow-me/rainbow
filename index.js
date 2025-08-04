@@ -1,5 +1,7 @@
 /* eslint-disable import/no-commonjs */
 
+require('react-native-release-profiler').startProfiling();
+
 /*
 It needs to be an import statement because otherwise it doesn't load properly
 likely because of typescript.
@@ -23,3 +25,7 @@ require('react-native-gesture-handler');
 require('./shim');
 require('./src/App');
 PerformanceTracking.finishReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.loadMainModule);
+
+setTimeout(() => {
+  require('react-native-release-profiler').stopProfiling(true);
+}, 20000);
