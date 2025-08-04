@@ -4,10 +4,12 @@ import { time } from '@/utils';
 
 export const TOAST_ICON_SIZE = 28;
 
+export const TOAST_MIN_WIDTH = 180;
+
 export const SWAP_ICON_INTERSECT = TOAST_ICON_SIZE * 0.2;
 export const SWAP_ICON_WIDTH = TOAST_ICON_SIZE * 2 - SWAP_ICON_INTERSECT;
 
-export const TOAST_HEIGHT = 60;
+export const TOAST_HEIGHT = 52;
 export const TOAST_GAP_NEAR = 4; // gap for first two items
 export const TOAST_GAP_FAR = 3.5; // gap for third item
 export const TOAST_TOP_OFFSET = 10;

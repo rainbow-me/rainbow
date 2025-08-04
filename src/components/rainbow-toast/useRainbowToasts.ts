@@ -4,6 +4,9 @@ import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Mints } from '@/resources/mints';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
+// dev tool for seeing helpful formatted logs, only really useful for dev as they are large
+const DEBUG_INCOMING = true || process.env.DEBUG_RAINBOW_TOASTS === '1';
+
 export type ToastState = {
   isShowingTransactionDetails: boolean;
   setIsShowingTransactionDetails: (val: boolean) => void;
@@ -77,6 +80,10 @@ export const useToastStore = createRainbowStore<ToastState>(
             // update - in the case of updates we only ever update the transaction, status and subType
             const updatedToast = { ...existingToast, status: tx.status, transaction: tx, currentType: tx.type };
             activeToasts.set(existingToast.id, updatedToast);
+
+            if (DEBUG_INCOMING) {
+              console.log('updating toast', JSON.stringify(updatedToast, null, 2));
+            }
           } else {
             const toast = getToastFromTransaction({ transaction: tx, mints });
             if (!toast) continue;
@@ -96,6 +103,10 @@ export const useToastStore = createRainbowStore<ToastState>(
 
         // always put additions at top, and update index based on current order
         const toasts = [...additions, ...activeToasts.values()].map((toast, index) => ({ ...toast, index }));
+
+        if (DEBUG_INCOMING && additions.length) {
+          console.log('adding toasts', JSON.stringify(additions, null, 2));
+        }
 
         return {
           toasts,

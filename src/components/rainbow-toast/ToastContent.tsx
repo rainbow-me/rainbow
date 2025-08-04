@@ -55,7 +55,14 @@ function ToastContentDisplay({ icon, title, subtitle, type, iconWidth = TOAST_IC
       </View>
 
       <View style={styles.textContainer}>
-        <Text color={{ custom: colors.foreground }} size="15pt" weight="bold" numberOfLines={1} ellipsizeMode="tail">
+        <Text
+          style={{ flex: 1, marginBottom: -5 }}
+          color={{ custom: colors.foreground }}
+          size="15pt"
+          weight="heavy"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {title}
         </Text>
         <Text
@@ -87,6 +94,7 @@ const styles = StyleSheet.create({
   textContainer: {
     gap: 9,
     minWidth: 100,
+    maxWidth: 200,
   },
   arrowSeparator: {
     fontWeight: '200',

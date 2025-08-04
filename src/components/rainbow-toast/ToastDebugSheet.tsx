@@ -1,6 +1,7 @@
 import {
   exampleClaims,
   exampleDappSwaps,
+  exampleLaunchFlow,
   exampleMints,
   exampleSaleFlow,
   exampleSends,
@@ -138,7 +139,7 @@ export function ToastDebugSheet() {
             sent into sent state if they&apos;ve been processed by this wallet already.
           </Text>
 
-          <Box gap={12} paddingVertical="32px">
+          <Box gap={5} paddingVertical="32px">
             <Button
               onPress={() => {
                 current = [];
@@ -205,6 +206,25 @@ export function ToastDebugSheet() {
               <Button onPress={addDappSwapTransaction} title="Add" />
               <Button onPress={() => updateLastMintTo(TransactionStatus.swapped)} title="→ Swapped" />
               <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="→ Failed" />
+            </View>
+
+            <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>
+              Launch
+            </Text>
+
+            <View style={{ flexDirection: 'row' }}>
+              <Button
+                title="Launch"
+                onPress={() => {
+                  addThenUpdate(exampleLaunchFlow[0]);
+                }}
+              />
+              <Button
+                onPress={() => {
+                  addThenUpdate(exampleLaunchFlow[1]);
+                }}
+                title="→ Launched"
+              />
             </View>
 
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>

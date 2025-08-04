@@ -1,3 +1,4 @@
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import {
@@ -7,8 +8,10 @@ import {
   TOAST_GAP_NEAR,
   TOAST_HEIGHT,
   TOAST_HIDE_TIMEOUT_MS,
+  TOAST_ICON_SIZE,
   TOAST_INITIAL_OFFSET_ABOVE,
   TOAST_INITIAL_OFFSET_BELOW,
+  TOAST_MIN_WIDTH,
   TOAST_TOP_OFFSET,
 } from '@/components/rainbow-toast/constants';
 import { ToastContent } from '@/components/rainbow-toast/ToastContent';
@@ -21,16 +24,15 @@ import {
   startRemoveToast,
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
-import { Box, useColorMode } from '@/design-system';
-import { TransactionStatus } from '@/entities';
+import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useDimensions } from '@/hooks';
 import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
 import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
-import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -103,9 +105,22 @@ function RainbowToastDisplayContent() {
     return [...removingToasts, ...toastsToShow];
   }, [toasts]);
 
-  const hasWideToast = visibleToasts.some(
-    t => t.type === 'swap' && (t.status === TransactionStatus.swapping || t.status === TransactionStatus.pending)
-  );
+  const [widths, setWidths] = useState<Record<string, number>>({});
+
+  const minWidth = useMemo(() => {
+    return Object.values(widths).reduce((acc, cur) => Math.max(acc, cur), TOAST_MIN_WIDTH);
+  }, [widths]);
+
+  const setToastWidth = useCallback((id: string, value: number) => {
+    setWidths(prev => {
+      return prev[id] !== value
+        ? {
+            ...prev,
+            [id]: value,
+          }
+        : prev;
+    });
+  }, []);
 
   const content = (
     <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
@@ -113,7 +128,7 @@ function RainbowToastDisplayContent() {
 
       <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
         {visibleToasts.map(toast => {
-          return <RainbowToastItem hasWideToast={hasWideToast} key={toast.id} toast={toast} />;
+          return <RainbowToastItem minWidth={minWidth} onWidth={setToastWidth} key={toast.id} toast={toast} />;
         })}
       </Animated.View>
     </Box>
@@ -141,14 +156,14 @@ const DISMISS_VELOCITY_THRESHOLD = 80;
 type Props = PropsWithChildren<{
   testID?: string;
   toast: RainbowToastWithIndex;
-  hasWideToast: boolean;
+  minWidth?: number;
+  onWidth: (id: string, width: number) => void;
 }>;
 
-const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToast }: Props) {
+const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: minWidthProp, onWidth }: Props) {
   const insets = useSafeAreaInsets();
   const { index, id } = toast;
 
-  const height = TOAST_HEIGHT;
   const gap = index > 1 ? TOAST_GAP_FAR : TOAST_GAP_NEAR;
   const distance = index * gap + insets.top + TOAST_TOP_OFFSET;
   const { isDarkMode } = useColorMode();
@@ -166,15 +181,24 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
       }
     })()
   );
+
   const lastChangeX = useSharedValue(0);
   const isPressed = useSharedValue(false);
   const touchStartedAt = useSharedValue(0);
   const isSimulator = useSharedValue(false);
-  const isWide = useSharedValue(hasWideToast);
+  const minWidth = useSharedValue(TOAST_MIN_WIDTH);
 
   useEffect(() => {
-    isWide.value = hasWideToast;
-  }, [isWide, hasWideToast]);
+    if (typeof minWidthProp === 'number') {
+      minWidth.value = minWidthProp;
+    }
+  }, [minWidth, minWidthProp]);
+
+  useEffect(() => {
+    return () => {
+      onWidth(id, 0);
+    };
+  }, [onWidth, id]);
 
   useEffect(() => {
     DeviceInfo.isEmulator().then(result => {
@@ -189,13 +213,17 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
     }
   }, [opacity, translateY, distance, startedHiddenBelow]);
 
+  const isRemoving = useRef(false);
+
   const finishRemoveToastCallback = useCallback(() => {
     finishRemoveToast(id);
   }, [id]);
 
   const swipeRemoveToastCallback = useCallback(() => {
+    isRemoving.current = true;
+    onWidth(id, 0);
     startRemoveToast(id, 'swipe');
-  }, [id]);
+  }, [onWidth, id]);
 
   const hideToast = useCallback(() => {
     'worklet';
@@ -349,7 +377,14 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
 
   const outerContainerStyle = useAnimatedStyle(() => {
     return {
+      minWidth: withSpring(minWidth.value, SPRING_CONFIGS.snappierSpringConfig),
       transform: [{ scale: withSpring(isPressed.value ? 0.95 : 1) }],
+    };
+  });
+
+  const contentContainerStyle = useAnimatedStyle(() => {
+    return {
+      minWidth: withSpring(minWidth.value, SPRING_CONFIGS.snappierSpringConfig),
     };
   });
 
@@ -358,41 +393,50 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
     const pressOpacity = isPressed.value ? 0.6 : 0.9;
 
     return {
-      minWidth: withTiming(isWide.value ? 170 : 130),
       opacity: withTiming(pressOpacity * stackOpacity),
     };
   });
 
   const shadowOpacity = interpolate(index, [0, 2], [0.45, 0.2], 'clamp');
+  const borderDark = useForegroundColor('separatorSecondary');
+
+  const handleLayout = useCallback(
+    (e: LayoutChangeEvent) => {
+      if (!isRemoving.current) {
+        onWidth(toast.id, Math.round(e.nativeEvent.layout.width + TOAST_ICON_SIZE + 12));
+      }
+    },
+    [onWidth, toast.id]
+  );
 
   return (
     <GestureDetector gesture={combinedGesture}>
       <Animated.View style={[dragStyle, { zIndex: 3 - index }]}>
         <Animated.View
+          testID={testID}
           style={[
-            styles.shadowContainer,
+            styles.outerContainer,
+            outerContainerStyle,
             {
               shadowRadius: interpolate(index, [0, 2], [8, 2], 'clamp'),
               shadowOpacity,
               shadowColor: `rgba(0,0,0,${shadowOpacity})`,
               shadowOffset: { height: interpolate(index, [0, 2], [4, 1], 'clamp'), width: 0 },
             },
-            outerContainerStyle,
           ]}
         >
-          <Box
-            borderRadius={100}
-            paddingVertical="8px"
-            paddingHorizontal="20px"
-            pointerEvents="auto"
-            position="absolute"
-            height={52}
-            alignItems="center"
-            justifyContent="center"
-            top="0px"
-            borderColor={isDarkMode ? 'separatorSecondary' : { custom: IS_ANDROID ? 'rgba(150,150,150,0.5)' : 'rgba(255, 255, 255, 0.72)' }}
-            testID={testID}
-          >
+          {/* separate background to avoid being blurred by blurview */}
+          <View
+            style={[
+              styles.background,
+              {
+                borderColor: isDarkMode ? borderDark : IS_ANDROID ? 'rgba(150,150,150,0.5)' : 'rgba(255, 255, 255, 0.72)',
+              },
+            ]}
+          />
+
+          {/* separate inner view because overflow hidden + shadow breaks */}
+          <View style={[contentContainerStyle, styles.innerContent]}>
             {IS_IOS ? (
               <>
                 <BlurGradient
@@ -400,11 +444,11 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
                     { x: 0.5, y: 1.2 },
                     { x: 0.5, y: 0 },
                   ]}
-                  height={height}
+                  height={TOAST_HEIGHT + 5}
                   intensity={16}
                   saturation={1.5}
                   style={StyleSheet.absoluteFill}
-                  width={450}
+                  width={deviceWidth}
                 />
                 <LinearGradient
                   start={{ x: 0.5, y: 0 }}
@@ -436,10 +480,10 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
               <ShimmerAnimation color="rgba(255, 255, 255, 0)" gradientColor="rgba(255, 255, 255, 0.08)" animationDuration={2500} />
             )}
 
-            <Animated.View style={innerContainerStyle}>
+            <Animated.View style={innerContainerStyle} onLayout={handleLayout}>
               <ToastContent toast={toast} />
             </Animated.View>
-          </Box>
+          </View>
         </Animated.View>
       </Animated.View>
     </GestureDetector>
@@ -447,8 +491,34 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, hasWideToas
 });
 
 const styles = StyleSheet.create({
-  shadowContainer: {
+  outerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 100,
+    alignSelf: 'center',
+    position: 'absolute',
+    flex: 1,
+    minHeight: TOAST_HEIGHT,
+  },
+  background: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 100,
+    borderWidth: 1,
+    flex: 1,
+    zIndex: 1000000,
+  },
+  innerContent: {
+    overflow: 'hidden',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
   },
 });

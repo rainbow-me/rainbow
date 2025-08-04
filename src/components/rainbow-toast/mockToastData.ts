@@ -783,7 +783,7 @@ export const exampleSends: RainbowTransaction[] = [
     isMocked: true,
     amount: '1',
     asset: {
-      name: 'Rainbow Groupie ',
+      name: 'Rainbow Groupie Rainbow Groupies Rainbow Groupies',
       acquiredAt: '0',
       uniqueId: 'base_0x242df97a76794033ab5c9772789ed8acaaa48295_1',
       description: null,
@@ -800,7 +800,7 @@ export const exampleSends: RainbowTransaction[] = [
         animatedMimeType: null,
       },
       type: 'nft',
-      collectionName: 'Rainbow Groupies',
+      collectionName: 'Rainbow Groupies Rainbow Groupies Rainbow Groupies',
       collectionUrl: 'https://opensea.io/collection/rainbow-groupies',
       collectionDescription: '',
       collectionImageUrl:
@@ -833,7 +833,7 @@ export const exampleSends: RainbowTransaction[] = [
     type: 'send',
     status: 'pending',
     title: 'send.pending',
-    description: 'Rainbow Groupie ',
+    description: 'Rainbow Groupie Rainbow Groupies Rainbow Groupies',
     timestamp: 1753994990683,
   } as unknown as RainbowTransaction,
 
@@ -1825,5 +1825,86 @@ export const exampleSendThenSpeedupFlow: RainbowTransaction[] = [
     timestamp: 1753995918246,
     contact: null,
     accountAddress: '0x2e67869829c734ac13723A138a952F7A8B56e774',
+  } as unknown as RainbowTransaction,
+];
+
+export const exampleLaunchFlow = [
+  {
+    status: 'pending',
+    chainId: 8453,
+    asset: {
+      address: '0x252CD76554ec3d30a3188B021cbD27a7B464c13D',
+      decimals: 18,
+      name: 'Bsth',
+      symbol: 'AAAA',
+      chainId: 8453,
+      color: '#f6a400',
+      icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
+      uniqueId: '0x252CD76554ec3d30a3188B021cbD27a7B464c13D_8453',
+      isNativeAsset: false,
+      network: 'base',
+    },
+    data: '0xcdc06e3e00000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000033b2e3c9fd0803ce8000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd2e2039547ae32de5a0d25439f2f8d7758558a0ba9801623e26cbd33c6eb0f0a3de43000000000000000000000000bf563ca72e4c3720fa429e3b7fc9a919ae8ae8a20000000000000000000000000000000000000000000000000000000000000004427374680000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000044141414100000000000000000000000000000000000000000000000000000000',
+    from: '0xBF563CA72e4C3720Fa429e3b7FC9A919aE8ae8a2',
+    gasLimit: {
+      type: 'BigNumber',
+      hex: '0x7a1200',
+    },
+    hash: '0x0c9a8d1243d10912d56f5eade507ac120d726f5c344e7fbdd36569dfc41fddae',
+    network: 'base',
+    nonce: 1,
+    to: '0x48033c4a1c834AA1aEf91ef6FBfa8fD68fb54229',
+    value: '0',
+    type: 'launch',
+    gasPrice: null,
+    maxFeePerGas: {
+      type: 'BigNumber',
+      hex: '0x6a2655',
+    },
+    maxPriorityFeePerGas: {
+      type: 'BigNumber',
+      hex: '0x115dca',
+    },
+    title: 'launch.pending',
+    description: 'Bsth',
+    timestamp: 1754341078140,
+  } as unknown as RainbowTransaction,
+
+  {
+    chainId: 8453,
+    from: '0xbf563ca72e4c3720fa429e3b7fc9a919ae8ae8a2',
+    to: '0x48033c4a1c834aa1aef91ef6fbfa8fd68fb54229',
+    title: 'launch.confirmed',
+    description: 'launchRainbowSuperToken',
+    hash: '0x0c9a8d1243d10912d56f5eade507ac120d726f5c344e7fbdd36569dfc41fddae',
+    network: 'base',
+    status: 'confirmed',
+    nonce: 1,
+    type: 'launch',
+    direction: 'out',
+    value: 'NaN',
+    changes: [],
+    minedAt: 1754341079,
+    blockNumber: 33775866,
+    contract: {
+      name: 'RainbowSuperTokenFactory',
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1694722625/dapps/rainbow-icon-large.png',
+    },
+    native: {
+      amount: 'NaN',
+      display: '$NaN',
+    },
+    fee: {
+      value: {
+        amount: '0.000033260844518494',
+        display: '0.0000333 ETH',
+      },
+      native: {
+        amount: '0.12324839197172470194',
+        display: '$0.12',
+      },
+    },
+    explorerUrl: 'https://basescan.org/tx/0x0c9a8d1243d10912d56f5eade507ac120d726f5c344e7fbdd36569dfc41fddae',
+    explorerLabel: 'Basescan',
   } as unknown as RainbowTransaction,
 ];
