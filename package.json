@@ -253,6 +253,7 @@
     "react-native-randombytes": "3.5.3",
     "react-native-reanimated": "3.16.6",
     "react-native-redash": "16.3.0",
+    "react-native-release-profiler": "0.4.0",
     "react-native-restart": "0.0.22",
     "react-native-safe-area-context": "4.14.0",
     "react-native-safe-area-view": "rainbow-me/react-native-safe-area-view",

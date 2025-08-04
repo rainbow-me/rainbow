@@ -4275,6 +4275,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@margelo/hermes-profile-transformer@npm:^0.0.10":
+  version: 0.0.10
+  resolution: "@margelo/hermes-profile-transformer@npm:0.0.10"
+  dependencies:
+    source-map: "npm:^0.7.3"
+  checksum: 10c0/21aea9ece1f879991ad90aca69642ba238df5cc1adaafb0b69b0ac30dceff43e089a5f27320043b6028689c0c63a9b27c27d2aa8bd6d4e30427f66a88d309269
+  languageName: node
+  linkType: hard
+
 "@metamask/abi-utils@npm:^2.0.2":
   version: 2.0.4
   resolution: "@metamask/abi-utils@npm:2.0.4"
@@ -8828,6 +8837,7 @@ __metadata:
     react-native-randombytes: "npm:3.5.3"
     react-native-reanimated: "npm:3.16.6"
     react-native-redash: "npm:16.3.0"
+    react-native-release-profiler: "npm:0.4.0"
     react-native-restart: "npm:0.0.22"
     react-native-safe-area-context: "npm:4.14.0"
     react-native-safe-area-view: rainbow-me/react-native-safe-area-view
@@ -11400,6 +11410,13 @@ __metadata:
   version: 10.0.1
   resolution: "commander@npm:10.0.1"
   checksum: 10c0/53f33d8927758a911094adadda4b2cbac111a5b377d8706700587650fd8f45b0bbe336de4b5c3fe47fd61f420a3d9bd452b6e0e6e5600a7e74d7bf0174f6efe3
+  languageName: node
+  linkType: hard
+
+"commander@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "commander@npm:11.1.0"
+  checksum: 10c0/13cc6ac875e48780250f723fb81c1c1178d35c5decb1abb1b628b3177af08a8554e76b2c0f29de72d69eef7c864d12613272a71fabef8047922bc622ab75a179
   languageName: node
   linkType: hard
 
@@ -22416,6 +22433,21 @@ __metadata:
     react-native-gesture-handler: "*"
     react-native-reanimated: ">=2.0.0"
   checksum: 10c0/0913cebe9dba4a013568e3bc2dd3ea7c5b7f6df783d0b4cd9591a75f57af6de0a879773a49b834a521d3d106dafcdf53f49029d1c021deba2ca103c26c98af4d
+  languageName: node
+  linkType: hard
+
+"react-native-release-profiler@npm:0.4.0":
+  version: 0.4.0
+  resolution: "react-native-release-profiler@npm:0.4.0"
+  dependencies:
+    "@margelo/hermes-profile-transformer": "npm:^0.0.10"
+    commander: "npm:^11.1.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  bin:
+    react-native-release-profiler: lib/commonjs/cli.js
+  checksum: 10c0/e0520546ece96ae91a5ae35fc4d43fd2771fe4c9b76d1d056a6e5e71db3156e437ac3eabc1ad373424ca6cf64f11e8ce0ce6984f69df65e16be692538bfc92bd
   languageName: node
   linkType: hard
 
