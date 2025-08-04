@@ -49,7 +49,7 @@ flashlight test --bundleId "$APP_ID" \
   --duration 20000 \
   --resultsFilePath $DEVICEFARM_LOG_DIR/tti.json \
   --iterationCount 10 \
-  --resultsTitle $RESULTS_TITLE
+  --resultsTitle "$RESULTS_TITLE"
 
 echo "✅ Performance tests completed"
 exit 0
