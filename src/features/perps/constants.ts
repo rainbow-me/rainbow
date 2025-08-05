@@ -1,0 +1,5 @@
+export const DEFAULT_SLIPPAGE_BIPS = 50;
+export const RAINBOW_BUILDER_SETTINGS = {
+  b: '0xREPLACE_WITH_RAINBOW_BUILDER_ADDRESS',
+  f: 10,
+} as const;
