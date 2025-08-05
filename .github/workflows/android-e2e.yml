@@ -98,7 +98,6 @@ jobs:
         with:
           cache-read-only: false
 
-      - run: cd rainbow-scripts && git checkout @janic/rn79
 
       - name: Install dependencies
         env:
