@@ -148,7 +148,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
       // Mint POL tokens to the test wallet
       try {
-        const mintAmount = ethers.utils.parseEther('100');
+        const mintAmount = ethers.utils.parseEther('10000');
         const mintTx = await tokenContract.mint(testWalletAddress, mintAmount, {
           gasLimit: 150000,
         });
@@ -158,8 +158,11 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
         // Contract deployed but mint failed - that's okay for testing
       }
 
-      // Send ETH for gas fees
-      const ethAmount = ethers.utils.parseEther('0.5');
+      // Fund the test wallet with ETH directly (this will be detected as the native asset)
+      // The issue is that Polygon on Anvil should use ETH as the gas token, not POL
+
+      // Send substantial ETH for gas fees and testing transfers
+      const ethAmount = ethers.utils.parseEther('10.0'); // 10 ETH for plenty of transactions
       const ethTx = await deployer.sendTransaction({
         to: testWalletAddress,
         value: ethAmount,
@@ -167,15 +170,14 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       });
       await ethTx.wait();
 
-      console.log('✅ Successfully deployed POL token contract and funded test wallet');
-
       logger.debug('[fundPolygonWallet]: Successfully deployed POL token and funded test wallet', {
         testWalletAddress,
         tokenAddress,
-        ethAmount: '0.5 ETH',
+        polTokens: '10,000 POL',
+        ethAmount: '10.0 ETH',
         deployTxHash: deployTx.hash,
         ethTxHash: ethTx.hash,
-        note: 'POL token contract deployed for L2 testing',
+        note: 'POL token contract deployed with substantial funds for comprehensive L2 testing. Using ETH as native gas token for Polygon on Anvil.',
       });
     } catch (e) {
       console.log('❌ Failed to fund polygon wallet:', e);

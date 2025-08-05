@@ -125,7 +125,7 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
   // Polygon Assets (for use with Anvil when switched to Polygon context)
   [ChainId.polygon]: {
     // Native MATIC
-    matic_137: {
+    'matic_137': {
       asset: {
         asset_code: 'eth', // Using 'eth' as asset_code for native token
         mainnet_address: 'eth',
@@ -150,6 +150,33 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
         isNativeAsset: true,
       },
       quantity: '0',
+    },
+    // Test POL token for Polygon network testing
+    '0x0000000000000000000000000000000000001010_137': {
+      asset: {
+        asset_code: '0x0000000000000000000000000000000000001010',
+        mainnet_address: '0x0000000000000000000000000000000000001010',
+        colors: {
+          fallback: '#8B47DB',
+          primary: '#6E41BB',
+        },
+        decimals: 18,
+        icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/polygon/matic.png',
+        name: 'Polygon Ecosystem Token',
+        network: ChainName.polygon,
+        implementations: {},
+        bridging: {
+          bridgeable: true,
+          networks: {},
+        },
+        price: {
+          relative_change_24h: 2.5,
+          value: 0.85,
+        },
+        symbol: 'POL',
+        isNativeAsset: true,
+      },
+      quantity: '10000',
     },
   },
   // Anvil Assets (when using Anvil as local testnet)
@@ -193,7 +220,7 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
         decimals: 18,
         icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/polygon/matic.png',
         name: 'Polygon Ecosystem Token',
-        network: ChainName.mainnet, // Using mainnet network for Anvil context
+        network: ChainName.polygon, // L2 network for proper categorization
         implementations: {},
         bridging: {
           bridgeable: true,
@@ -204,9 +231,9 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
           value: 0.85,
         },
         symbol: 'POL',
-        isNativeAsset: false,
+        isNativeAsset: true, // Native gas token for Polygon L2
       },
-      quantity: '0',
+      quantity: '10000',
     },
   },
 };

@@ -14,23 +14,9 @@ tags:
       - runFlow: ../utils/Prepare.yaml
       - runFlow: ../utils/ImportWalletWithKey.yaml
 
-      # # Send ETH to test wallet
-      # - tapOn:
-      #     id: fund-test-wallet-button
-
       # Connect to Anvil first (base setup)
       - tapOn:
           id: dev-button-anvil
-
-      # # Wait for wallet to load
-      # - retry:
-      #     maxRetries: 3
-      #     commands:
-      #       - assertVisible:
-      #           id: 'balance-coin-row-Ethereum'
-
-      # Switch to Polygon L2 network using deep link
-      - openLink: rainbow://e2e/switchNetwork?network=polygon
 
       - runFlow: ../utils/FundPolygonWallet.yaml
 
@@ -39,7 +25,7 @@ tags:
           maxRetries: 5
           commands:
             - assertVisible:
-                id: 'balance-coin-row-Polygon'
+                id: 'balance-coin-row-Polygon Ecosystem Token'
 
       # Open send sheet
       - tapOn:
