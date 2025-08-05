@@ -1,8 +1,8 @@
 import Foundation
 import React
 
-@objc(RainbowSplashScreenManager)
-class RainbowSplashScreenManager: NSObject {
+@objc(RainbowSplashScreen)
+class RainbowSplashScreen: NSObject {
 
   @objc
   func hideAnimated() {
