@@ -91,15 +91,16 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
   }, [setConnectedToAnvil]);
 
+  const TEST_WALLET_ADDRESS = '0x4d14289265eb7c166cF111A76B6D742e3b85dF85';
+  const RPC_URL = IS_ANDROID ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
+
   const fundTestWallet = useCallback(async () => {
     if (!IS_TEST) return;
-    const RPC_URL = IS_ANDROID ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
     try {
       const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
       const wallet = new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
-      const testWalletAddress = '0x4d14289265eb7c166cF111A76B6D742e3b85dF85';
       await wallet.sendTransaction({
-        to: testWalletAddress,
+        to: TEST_WALLET_ADDRESS,
         value: ethers.utils.parseEther('20'),
       });
     } catch (e) {
@@ -116,20 +117,16 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
    */
   const fundPolygonWallet = useCallback(async () => {
     if (!IS_TEST) return;
-
-    // Configuration constants
-    const ANVIL_RPC_URL = IS_ANDROID ? 'http://10.0.2.2:8545' : 'http://127.0.0.1:8545';
-    const ANVIL_PRIVATE_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'; // Anvil account #0
-    const TEST_WALLET_ADDRESS = '0x4d14289265eb7c166cF111A76B6D742e3b85dF85';
+    const ANVIL_PRIVATE_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'; // Anvil default account #0 from test mnemonic "test test test test test test test test test test test junk"
     const POL_TOKENS_AMOUNT = '10000'; // 10,000 POL tokens
     const ETH_AMOUNT = '10.0'; // 10 ETH for gas fees
 
     try {
-      const provider = new ethers.providers.JsonRpcProvider(ANVIL_RPC_URL);
+      const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
       const deployer = new ethers.Wallet(ANVIL_PRIVATE_KEY, provider);
       const testWalletAddress = TEST_WALLET_ADDRESS;
 
-      // Simple ERC20 token contract interface for POL token
+      // ERC20 token ABI in Human Readable format (ethers.js) - https://docs.ethers.org/v5/api/utils/abi/formats/#abi-formats--human-readable-abi
       const tokenABI = [
         'function mint(address to, uint256 amount) external',
         'function transfer(address to, uint256 amount) external returns (bool)',
@@ -198,7 +195,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       logger.error(new RainbowError('Failed to fund polygon test wallet'), {
         message: e instanceof Error ? e.message : String(e),
         testWalletAddress: TEST_WALLET_ADDRESS,
-        rpcUrl: ANVIL_RPC_URL,
+        rpcUrl: RPC_URL,
       });
       throw e;
     }
