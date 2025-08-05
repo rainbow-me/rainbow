@@ -11,25 +11,49 @@ jobs:
   # iOS build job
   build-ios:
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    runs-on: ["self-hosted"]
+    runs-on: macos-15-xlarge
     concurrency:
-      group: ${{ github.workflow }}-build-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+      group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    permissions:
-      contents: read
-    timeout-minutes: 45
+    timeout-minutes: 30
     outputs:
       artifact-id: ${{ steps.rnef-remote-build-ios.outputs.artifact-id }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up github keys
-        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+      - name: Setup env key
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
 
-      - name: Set sanitized branch name
-        id: sanitize
-        run: echo "SANITIZED_REF_NAME=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+      - name: Setup scripts key
+        uses: ./.github/actions/ssh/
+        with:
+          name: scripts
+          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+
+      - name: Setup sandbox key
+        uses: ./.github/actions/ssh/
+        with:
+          name: sandbox
+          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+
+      - name: Setup env
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+            git clone git@github.com:rainbow-me/rainbow-env.git
+            mv rainbow-env/dotenv .env
+            rm -rf rainbow-env
+            sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+      - name: Setup scripts
+        env:
+            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+        run: |
+            eval $CI_SCRIPTS
 
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
@@ -47,31 +71,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Set up ENV vars & scripts
-        env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-        run: |
-          source ~/.zshrc
-          git clone git@github.com:rainbow-me/rainbow-env.git
-          mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          eval $CI_SCRIPTS
-
       - name: Install dependencies
-        run: |
-          yarn install && yarn setup
-
-      - name: Modify env for testing
-        run: |
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+        run: yarn install && yarn setup
 
       - name: RNEF Remote Build - iOS simulator
         id: rnef-remote-build-ios
         uses: callstackincubator/ios@v2
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
           scheme: Rainbow
           destination: simulator
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration: Debug
+          configuration: Release
           comment-bot: false
           re-sign: true
 
@@ -79,34 +93,44 @@ jobs:
   e2e-ios:
     needs: build-ios
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    runs-on: ["self-hosted"]
+    runs-on: macos-15-xlarge
+    strategy:
+      fail-fast: false
+      matrix:
+        shard-index: [1, 2, 3, 4]
     concurrency:
-      group: ${{ github.workflow }}-e2e-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
-      cancel-in-progress: true
-    permissions:
-      contents: read
-    timeout-minutes: 60
+      group: e2e-ios-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
+      cancel-in-progress: false
+    timeout-minutes: 30
     env:
+      SHARD_TOTAL: 4
+      SHARD_INDEX: ${{ matrix.shard-index }}
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up github keys
-        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+      - name: Setup env key
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
 
-      - name: Set up ENV vars & scripts
+      - name: Setup env
         env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-          source ~/.zshrc
-          git clone git@github.com:rainbow-me/rainbow-env.git
-          mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          eval $CI_SCRIPTS
+            git clone git@github.com:rainbow-me/rainbow-env.git
+            mv rainbow-env/dotenv .env
+            rm -rf rainbow-env
 
-      - name: Modify env for testing
-        run: |
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+      - name: Install Maestro
+        run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+      - name: Install Anvil
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
 
       - name: Download and Unpack IPA artifact
         run: |
@@ -117,9 +141,6 @@ jobs:
           tar -xzf "$APP_ARCHIVE_PATH" -C downloaded-artifacts
           APP_PATH=$(find downloaded-artifacts -name "*.app" -type d | head -n 1)
           echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> $GITHUB_ENV
-
-      - name: Install Maestro
-        run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - uses: futureware-tech/simulator-action@v4
         id: simulator
@@ -151,5 +172,5 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts
+          name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}

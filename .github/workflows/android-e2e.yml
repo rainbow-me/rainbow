@@ -17,15 +17,6 @@ jobs:
     outputs:
       artifact-id: ${{ steps.rnef-remote-build-android.outputs.artifact-id }}
 
-    env:
-      # Can be used to help debug test failures. This will cause the apk to be
-      # This is a debug keystore for now.
-      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-      KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
-      KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -95,7 +86,16 @@ jobs:
 
       - name: RNEF Remote Build - Android
         id: rnef-remote-build-android
-        uses: callstackincubator/android@v1
+        uses: callstackincubator/android@v2
+        env:
+          # Can be used to help debug test failures. This will cause the apk to be
+          # This is a debug keystore for now.
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
           variant: release
           sign: true

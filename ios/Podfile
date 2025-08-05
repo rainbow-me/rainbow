@@ -57,7 +57,7 @@ target 'Rainbow' do
     end
   end
   # Pods for Rainbow
-  config = use_native_modules!(['npx', 'rnef', 'config', '-p', 'ios'])
+  config = use_native_modules!
 
   # Flags change depending on the env values.
   flags = get_default_flags()
