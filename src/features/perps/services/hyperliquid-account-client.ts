@@ -69,7 +69,7 @@ export class HyperliquidAccountClient {
 
       return {
         symbol: position.coin,
-        side: greaterThan(position.szi, 0) ? ('LONG' as PositionSide) : ('SHORT' as PositionSide),
+        side: greaterThan(position.szi, 0) ? PositionSide.LONG : PositionSide.SHORT,
         leverage: position.leverage.value,
         liquidationPrice: position.liquidationPx,
         entryPrice: position.entryPx,

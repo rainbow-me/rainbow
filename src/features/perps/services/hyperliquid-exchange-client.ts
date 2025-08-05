@@ -72,12 +72,14 @@ export class HyperliquidExchangeClient {
     }
 
     let orderPrice = limitPrice;
-    if (orderType === 'MARKET' && !orderPrice) {
+    if (orderType === OrderType.MARKET && !orderPrice) {
       const slippage = slippageBips / 10_000;
       const slippageMultiplier = 1 + slippage;
 
       orderPrice =
-        side === 'LONG' ? (parseFloat(midPrice) * slippageMultiplier).toFixed(8) : (parseFloat(midPrice) / slippageMultiplier).toFixed(8);
+        side === PositionSide.LONG
+          ? (parseFloat(midPrice) * slippageMultiplier).toFixed(8)
+          : (parseFloat(midPrice) / slippageMultiplier).toFixed(8);
     }
 
     if (!orderPrice) {
@@ -94,11 +96,11 @@ export class HyperliquidExchangeClient {
 
     return {
       a: assetId,
-      b: side === 'LONG',
+      b: side === PositionSide.LONG,
       p: orderPrice,
       s: orderSize,
       r: reduceOnly ?? false,
-      t: orderType === 'MARKET' ? { limit: { tif: 'Ioc' } } : { limit: { tif: 'Gtc' } },
+      t: orderType === OrderType.MARKET ? { limit: { tif: 'Ioc' } } : { limit: { tif: 'Gtc' } },
       c: clientOrderId,
     };
   }
@@ -125,7 +127,7 @@ export class HyperliquidExchangeClient {
   }): OrderParams {
     return {
       a: assetId,
-      b: side !== 'LONG',
+      b: side !== PositionSide.LONG,
       p: orderPrice,
       s: size,
       r: true,
@@ -237,8 +239,8 @@ export class HyperliquidExchangeClient {
     slippageBips?: number;
     clientOrderId?: Hex;
   }): Promise<void> {
-    const accountSummary = await this.accountClient.getPerpAccountSummary();
-    const position = accountSummary.positions.find(p => p.symbol === symbol);
+    const account = await this.accountClient.getPerpAccount();
+    const position = account.positions.find(p => p.symbol === symbol);
 
     if (!position) {
       throw new RainbowError('[HyperliquidExchangeClient] No open position found', { symbol });
@@ -288,7 +290,7 @@ export class HyperliquidExchangeClient {
       side: getOppositePositionSide(position.side),
       size: positionSize,
       slippageBips,
-      orderType: 'MARKET',
+      orderType: OrderType.MARKET,
       reduceOnly: true,
       clientOrderId,
     });

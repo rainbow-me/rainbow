@@ -8,7 +8,6 @@ export async function fetchHyperliquidPrices(symbols: string[]): Promise<Record<
     const allAssetsInfo = await hyperliquidMarketsClient.getAllAssetsInfo();
     const result: Record<string, TokenData> = {};
 
-    // Filter and transform only the requested symbols
     allAssetsInfo.forEach(assetInfo => {
       if (assetInfo && symbols.includes(assetInfo.symbol)) {
         const tokenId = hyperliquidSymbolToTokenId(assetInfo.symbol);

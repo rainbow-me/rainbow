@@ -2,7 +2,7 @@ import { PositionSide } from '@/features/perps/types';
 import * as hl from '@nktkas/hyperliquid';
 
 export function getOppositePositionSide(side: PositionSide): PositionSide {
-  return side === 'LONG' ? 'SHORT' : 'LONG';
+  return side === PositionSide.LONG ? PositionSide.SHORT : PositionSide.LONG;
 }
 
 export function convertHyperliquidPerpAssetIdToSpotAssetId(assetId: number): number {

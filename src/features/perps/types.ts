@@ -59,6 +59,19 @@ export type PerpAccount = {
   positions: Position[];
 };
 
-export type PositionSide = 'LONG' | 'SHORT';
-export type OrderType = 'MARKET' | 'LIMIT';
-export type MarketSortOrder = 'volume' | 'price' | 'change' | 'symbol';
+export enum PositionSide {
+  LONG = 'LONG',
+  SHORT = 'SHORT',
+}
+
+export enum OrderType {
+  MARKET = 'MARKET',
+  LIMIT = 'LIMIT',
+}
+
+export enum MarketSortOrder {
+  VOLUME = 'volume',
+  PRICE = 'price',
+  CHANGE = 'change',
+  SYMBOL = 'symbol',
+}

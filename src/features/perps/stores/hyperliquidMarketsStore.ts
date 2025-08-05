@@ -46,7 +46,7 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsQue
 
   (set, get) => ({
     markets: {},
-    sortOrder: 'volume' as MarketSortOrder,
+    sortOrder: MarketSortOrder.VOLUME,
     searchQuery: '',
 
     setSortOrder: (sortOrder: MarketSortOrder) => set({ sortOrder }),
@@ -63,13 +63,13 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsQue
 
       return filtered.sort((a, b) => {
         switch (sortOrder) {
-          case 'volume':
+          case MarketSortOrder.VOLUME:
             return Number(b.volume['24h']) - Number(a.volume['24h']);
-          case 'price':
+          case MarketSortOrder.PRICE:
             return Number(b.price) - Number(a.price);
-          case 'change':
+          case MarketSortOrder.CHANGE:
             return Number(b.priceChange['24h']) - Number(a.priceChange['24h']);
-          case 'symbol':
+          case MarketSortOrder.SYMBOL:
             return a.symbol.localeCompare(b.symbol);
           default:
             return 0;
