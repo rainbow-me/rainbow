@@ -22,7 +22,7 @@ tags:
       - runScript:
           file: ../utils/coordinates.js
       - tapOn:
-          point: ${output.tabCoordinates.profileTab}
+          point: ${output.tabCoordinates.activityTab}
       - assertVisible:
           id: profile-screen
       - swipe:
