@@ -2,7 +2,9 @@ import * as hl from '@nktkas/hyperliquid';
 
 export type FrontendOrder = hl.FrontendOrder;
 
+// TODO: this is a bad name / type, we need to figure out how we want to handle multiple tp/sl orders on the same position
 export type Order = {
+  orders: FrontendOrder[];
   price: string;
 };
 

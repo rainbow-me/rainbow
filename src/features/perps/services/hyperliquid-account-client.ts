@@ -56,15 +56,17 @@ export class HyperliquidAccountClient {
       const takeProfit =
         takeProfitOrders.length > 0
           ? {
+              // TODO: transform needed fields into our own type
+              orders: takeProfitOrders,
               price: takeProfitOrders[0].triggerPx,
-              // TODO: what other fields do we need for the UI?
             }
           : null;
       const stopLoss =
         stopLossOrders.length > 0
           ? {
+              // TODO: transform needed fields into our own type
+              orders: stopLossOrders,
               price: stopLossOrders[0].triggerPx,
-              // TODO: what other fields do we need for the UI?
             }
           : null;
 
