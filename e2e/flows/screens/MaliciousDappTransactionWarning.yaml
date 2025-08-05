@@ -3,51 +3,48 @@ tags:
   - browser
   - parallel
 ---
-- retry:
-    maxRetries: 3
-    commands:
-      - launchApp:
-          clearState: true
-          clearKeychain: true
-          arguments:
-            isE2ETest: true
-      - runFlow: ../utils/Prepare.yaml
-      - runFlow: ../utils/ImportWalletWithKey.yaml
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
 
-      # Navigate to browser
-      - runScript:
-          file: ../utils/coordinates.js
-      - tapOn:
-          point: ${output.tabCoordinates.browserTab}
-      - assertVisible:
-          id: browser-screen
-      - runFlow:
-          when:
-            # Maestro cannot interact with content in webviews on iOS so run
-            # the flow only on Android.
-            platform: Android
+# Navigate to browser
+- runScript:
+    file: ../../utils/coordinates.js
+- tapOn:
+    point: ${output.tabCoordinates.browserTab}
+- assertVisible:
+    id: browser-screen
+- runFlow:
+    when:
+      # Maestro cannot interact with content in webviews on iOS so run
+      # the flow only on Android.
+      platform: Android
+    commands:
+      # tap on browser search input
+      - tapOn: 'Search or enter website'
+      - inputText: 'https://bx-test-dapp.vercel.app/'
+      - pressKey: enter
+      - retry:
+          maxRetries: 3
           commands:
-            # tap on browser search input
-            - tapOn: 'Search or enter website'
-            - inputText: 'https://bx-test-dapp.vercel.app/'
-            - pressKey: enter
-            - retry:
-                maxRetries: 3
-                commands:
-                  - assertVisible: '.*Test Dapp.*'
-            # tap on wallet pfp to open the control panel
-            - tapOn:
-                id: account-icon
-            - tapOn:
-                id: connect-button
-              # control panel assertions
             - assertVisible: '.*Test Dapp.*'
-            - assertVisible: 'Disconnect'
-            # tap somewhere arbitrary to close the control panel sheet
-            - tapOn:
-                point: 50%,15%
-            - scroll
-            - tapOn: 'sign malicious permit'
-            - extendedWaitUntil:
-                visible: '.*Suspicious Transaction'
-                timeout: 30000
+      # tap on wallet pfp to open the control panel
+      - tapOn:
+          id: account-icon
+      - tapOn:
+          id: connect-button
+        # control panel assertions
+      - assertVisible: '.*Test Dapp.*'
+      - assertVisible: 'Disconnect'
+      # tap somewhere arbitrary to close the control panel sheet
+      - tapOn:
+          point: 50%,15%
+      - scroll
+      - tapOn: 'sign malicious permit'
+      - extendedWaitUntil:
+          visible: '.*Suspicious Transaction'
+          timeout: 30000

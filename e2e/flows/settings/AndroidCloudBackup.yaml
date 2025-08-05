@@ -12,66 +12,63 @@ tags:
       platform: Android
       true: ${RUN_TEST}
     commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../../utils/Prepare.yaml
+      - runFlow: ../../utils/ImportWalletWithKey.yaml
+
+      # Navigate to settings and backup section
       - retry:
           maxRetries: 3
           commands:
-            - launchApp:
-                clearState: true
-                clearKeychain: true
-                arguments:
-                  isE2ETest: true
-            - runFlow: ../utils/Prepare.yaml
-            - runFlow: ../utils/ImportWalletWithKey.yaml
+            - tapOn:
+                id: settings-menu
+            - tapOn: 'Settings'
+      - tapOn:
+          id: backup-section
 
-            # Navigate to settings and backup section
-            - retry:
-                maxRetries: 3
-                commands:
-                  - tapOn:
-                      id: settings-menu
-                  - tapOn: 'Settings'
-            - tapOn:
-                id: backup-section
+      # Begin backup flow by tapping backup now button
+      - tapOn:
+          id: backup-now-button
+      - runFlow: ../../utils/GoogleSignIn.yaml
+      - runFlow: ../../utils/MaybeSetupPin.yaml
 
-            # Begin backup flow by tapping backup now button
-            - tapOn:
-                id: backup-now-button
-            - runFlow: ../utils/GoogleSignIn.yaml
-            - runFlow: ../utils/MaybeSetupPin.yaml
+      # Set up Rainbow Cloud password
+      - tapOn:
+          id: password-input
+      - inputText: 12345678
+      - tapOn:
+          id: confirm-password-input
+      - inputText: 12345678
+      - tapOn:
+          id: backup-button
+      - runFlow: ../../utils/MaybeSetupPin.yaml
 
-            # Set up Rainbow Cloud password
-            - tapOn:
-                id: password-input
-            - inputText: 12345678
-            - tapOn:
-                id: confirm-password-input
-            - inputText: 12345678
-            - tapOn:
-                id: backup-button
-            - runFlow: ../utils/MaybeSetupPin.yaml
+      # Check that backup is successful
+      - assertVisible: '.*Up to Date.*'
+      - assertVisible: 'Latest Backup:.*'
 
-            # Check that backup is successful
-            - assertVisible: '.*Up to Date.*'
-            - assertVisible: 'Latest Backup:.*'
+      # Scroll down to see all backups settings buttons then check both menu items
+      - scrollUntilVisible:
+          element:
+            id: cloud-backups-settings
+      - tapOn:
+          id: view-cloud-backups
+      - assertVisible: '.*Most Recent Backup.*'
+      - tapOn: ' , back'
+      - tapOn:
+          id: cloud-backups-settings
+      - tapOn: 'Delete All Google Drive Backups'
+      - tapOn: 'Confirm and Delete Backups'
+      - tapOn:
+          text: '1'
+          repeat: 4
+          delay: 1000
+      - assertVisible: '(Sign in|Choose an account)'
+      - tapOn: ${CLOUD_BACKUP_EMAIL}
 
-            # Scroll down to see all backups settings buttons then check both menu items
-            - scrollUntilVisible:
-                element:
-                  id: cloud-backups-settings
-            - tapOn:
-                id: view-cloud-backups
-            - assertVisible: '.*Most Recent Backup.*'
-            - tapOn: ' , back'
-            - tapOn:
-                id: cloud-backups-settings
-            - tapOn: 'Delete All Google Drive Backups'
-            - tapOn: 'Confirm and Delete Backups'
-            - tapOn:
-                text: '1'
-                repeat: 4
-                delay: 1000
-            - assertVisible: '(Sign in|Choose an account)'
-            - tapOn: ${CLOUD_BACKUP_EMAIL}
-
-            # Verify backsups are wiped
-            - assertVisible: 'Not Enabled'
+      # Verify backsups are wiped
+      - assertVisible: 'Not Enabled'

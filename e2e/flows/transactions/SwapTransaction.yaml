@@ -10,101 +10,98 @@ tags:
   - wallet
   - parallel
 ---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Send ETH to test wallet
+- tapOn:
+    id: fund-test-wallet-button
+
+# Connect to Anvil (test network)
+- tapOn:
+    id: dev-button-anvil
+
+# Open swap screen
+- tapOn:
+    id: swap-button
+- assertVisible:
+    id: swap-screen
+# Select DAI as output token
+- tapOn: 'Find a token to buy'
+- inputText: 'DAI'
+- hideKeyboard
+- tapOn:
+    id: token-to-buy-dai-1
+- assertVisible: 'DAI.*'
+
+# Navigate to swap settings
+- tapOn:
+    id: swap-settings-button
+
+# Toggle Degen Mode off and on and back off
+- tapOn:
+    id: swap-settings-panel-degen-mode-button
+- assertNotVisible: 'Max Slippage'
+- tapOn:
+    id: swap-settings-panel-degen-mode-button
+- assertVisible: 'Max Slippage'
+- tapOn:
+    id: swap-settings-panel-degen-mode-button
+- assertNotVisible: 'Max Slippage'
+# Close settings
+- tapOn:
+    id: swap-bottom-action-button
+# Go to review
+- tapOn:
+    id: swap-bottom-action-button
+- assertVisible:
+    id: review-panel
+- runFlow:
+    when:
+      platform: ios
+    commands:
+      - assertVisible:
+          id: review-panel-min-received-or-max-sold-label
+      - assertVisible:
+          id: review-panel-network-label
+      - assertVisible:
+          id: review-panel-rainbow-fee-label
+- tapOn:
+    id: gas-speed-pager
+- assertVisible: '.*Custom.*'
+- assertVisible: '.*Normal.*'
+- assertVisible: '.*Fast.*'
+- tapOn: '.*Urgent.*'
+
+# Execute Swap
+- longPressOn:
+    id: swap-bottom-action-button
+- runFlow: ../../utils/MaybeSetupPin.yaml
 - retry:
     maxRetries: 3
     commands:
-      - launchApp:
-          clearState: true
-          clearKeychain: true
-          arguments:
-            isE2ETest: true
-      - runFlow: ../utils/Prepare.yaml
-      - runFlow: ../utils/ImportWalletWithKey.yaml
+      - runScript:
+          file: ../../utils/coordinates.js
+      - tapOn:
+          point: ${output.tabCoordinates.activityTab}
 
-      # Send ETH to test wallet
-      - tapOn:
-          id: fund-test-wallet-button
-
-      # Connect to Anvil (test network)
-      - tapOn:
-          id: dev-button-anvil
-
-      # Open swap screen
-      - tapOn:
-          id: swap-button
-      - assertVisible:
-          id: swap-screen
-      # Select DAI as output token
-      - tapOn: 'Find a token to buy'
-      - inputText: 'DAI'
-      - hideKeyboard
-      - tapOn:
-          id: token-to-buy-dai-1
-      - assertVisible: 'DAI.*'
-
-      # Navigate to swap settings
-      - tapOn:
-          id: swap-settings-button
-
-      # Toggle Degen Mode off and on and back off
-      - tapOn:
-          id: swap-settings-panel-degen-mode-button
-      - assertNotVisible: 'Max Slippage'
-      - tapOn:
-          id: swap-settings-panel-degen-mode-button
-      - assertVisible: 'Max Slippage'
-      - tapOn:
-          id: swap-settings-panel-degen-mode-button
-      - assertNotVisible: 'Max Slippage'
-      # Close settings
-      - tapOn:
-          id: swap-bottom-action-button
-      # Go to review
-      - tapOn:
-          id: swap-bottom-action-button
-      - assertVisible:
-          id: review-panel
+      # ios view hierarchy takes too long to load, so some of the elements are loaded
+      # at signifigantly differnt times than expected... this works fine on Android.
       - runFlow:
           when:
-            platform: ios
+            platform: Android
           commands:
-            - assertVisible:
-                id: review-panel-min-received-or-max-sold-label
-            - assertVisible:
-                id: review-panel-network-label
-            - assertVisible:
-                id: review-panel-rainbow-fee-label
-      - tapOn:
-          id: gas-speed-pager
-      - assertVisible: '.*Custom.*'
-      - assertVisible: '.*Normal.*'
-      - assertVisible: '.*Fast.*'
-      - tapOn: '.*Urgent.*'
+            # Test transaction was done
+            - assertVisible: 'Pending'
+            - assertVisible: 'Swapping*.'
 
-      # Execute Swap
-      - longPressOn:
-          id: swap-bottom-action-button
-      - runFlow: ../utils/MaybeSetupPin.yaml
-      - retry:
-          maxRetries: 3
-          commands:
-            - runScript:
-                file: ../utils/coordinates.js
+            - tapOn: Swapping*.
             - tapOn:
-                point: ${output.tabCoordinates.activityTab}
-
-            # ios view hierarchy takes too long to load, so some of the elements are loaded
-            # at signifigantly differnt times than expected... this works fine on Android.
-            - runFlow:
-                when:
-                  platform: Android
-                commands:
-                  # Test transaction was done
-                  - assertVisible: 'Pending'
-                  - assertVisible: 'Swapping*.'
-
-                  - tapOn: Swapping*.
-                  - tapOn:
-                      id: transaction-details-context-menu-button
-                  - assertVisible: 'Speed Up'
-                  - assertVisible: 'Cancel'
+                id: transaction-details-context-menu-button
+            - assertVisible: 'Speed Up'
+            - assertVisible: 'Cancel'
