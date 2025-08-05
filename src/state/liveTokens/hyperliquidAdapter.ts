@@ -12,18 +12,16 @@ export function hyperliquidSymbolToTokenId(symbol: string): string {
   return `hl:${symbol}`;
 }
 
-/**
- * Transforms Hyperliquid asset info into the TokenData format used by liveTokensStore
- */
-export function transformHyperliquidAssetInfo(assetInfo: Market, updateTime: string = new Date().toISOString()): TokenData {
+export function transformHyperliquidMarketToTokenData(market: Market, updateTime: string = new Date().toISOString()): TokenData {
   return {
-    price: assetInfo.price,
+    price: market.price,
     change: {
-      change5mPct: '0', // Not available from Hyperliquid
-      change1hPct: assetInfo.priceChange['1h'] || '0',
-      change4hPct: '0', // Not available from Hyperliquid
-      change12hPct: '0', // Not available from Hyperliquid
-      change24hPct: assetInfo.priceChange['24h'] || '0',
+      // TODO: Some of these timespans are possible to retrieve from hyperliquid, but require multiple candlestick snapshot calls and are not likely needed in the UI
+      change5mPct: '0',
+      change1hPct: market.priceChange['1h'] || '0',
+      change4hPct: '0',
+      change12hPct: '0',
+      change24hPct: market.priceChange['24h'] || '0',
     },
     marketData: {
       // TODO: this is actually available on another endpoint

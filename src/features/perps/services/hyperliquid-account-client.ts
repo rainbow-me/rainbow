@@ -52,18 +52,19 @@ export class HyperliquidAccountClient {
         order => order.triggerCondition === 'sl' || order.orderType === 'Stop Market' || order.orderType === 'Stop Limit'
       );
 
+      // TODO: it's possible to have multiple tp/sl orders, need to figure out how we want to handle this in the UI
       const takeProfit =
         takeProfitOrders.length > 0
           ? {
               price: takeProfitOrders[0].triggerPx,
-              orders: takeProfitOrders,
+              // TODO: what other fields do we need for the UI?
             }
           : null;
       const stopLoss =
         stopLossOrders.length > 0
           ? {
               price: stopLossOrders[0].triggerPx,
-              orders: stopLossOrders,
+              // TODO: what other fields do we need for the UI?
             }
           : null;
 

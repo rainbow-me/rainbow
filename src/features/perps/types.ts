@@ -1,7 +1,9 @@
+import * as hl from '@nktkas/hyperliquid';
+
+export type FrontendOrder = hl.FrontendOrder;
+
 export type Order = {
   price: string;
-  // TODO:
-  orders: any[];
 };
 
 export type Market = {

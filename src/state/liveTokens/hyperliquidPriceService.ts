@@ -1,17 +1,17 @@
 import { hyperliquidMarketsClient } from '@/features/perps/services/hyperliquid-markets-client';
-import { hyperliquidSymbolToTokenId, transformHyperliquidAssetInfo } from './hyperliquidAdapter';
+import { hyperliquidSymbolToTokenId, transformHyperliquidMarketToTokenData } from './hyperliquidAdapter';
 import { TokenData } from './liveTokensStore';
 import { logger, RainbowError } from '@/logger';
 
 export async function fetchHyperliquidPrices(symbols: string[]): Promise<Record<string, TokenData>> {
   try {
-    const allAssetsInfo = await hyperliquidMarketsClient.getAllAssetsInfo();
+    const allMarketsInfo = await hyperliquidMarketsClient.getAllMarketsInfo();
     const result: Record<string, TokenData> = {};
 
-    allAssetsInfo.forEach(assetInfo => {
-      if (assetInfo && symbols.includes(assetInfo.symbol)) {
-        const tokenId = hyperliquidSymbolToTokenId(assetInfo.symbol);
-        result[tokenId] = transformHyperliquidAssetInfo(assetInfo);
+    allMarketsInfo.forEach(market => {
+      if (market && symbols.includes(market.symbol)) {
+        const tokenId = hyperliquidSymbolToTokenId(market.symbol);
+        result[tokenId] = transformHyperliquidMarketToTokenData(market);
       }
     });
 

@@ -22,10 +22,10 @@ type HyperliquidMarketsStoreActions = {
 type HyperliquidMarketsStore = HyperliquidMarketsStoreState & HyperliquidMarketsStoreActions;
 
 async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsQueryData> {
-  const allAssetsInfo = await hyperliquidMarketsClient.getAllAssetsInfo();
+  const allMarketsInfo = await hyperliquidMarketsClient.getAllMarketsInfo();
 
   return {
-    markets: allAssetsInfo.reduce(
+    markets: allMarketsInfo.reduce(
       (acc, asset) => {
         if (asset) {
           acc[asset.symbol] = asset;

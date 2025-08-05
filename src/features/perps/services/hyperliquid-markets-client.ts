@@ -5,7 +5,7 @@ import { convertHyperliquidPerpAssetIdToSpotAssetId } from '@/features/perps/uti
 import { Market } from '@/features/perps/types';
 
 export class HyperliquidMarketsClient {
-  async getAllAssetsInfo(): Promise<Market[]> {
+  async getAllMarketsInfo(): Promise<Market[]> {
     const response = await infoClient.metaAndAssetCtxs();
     const assetsBasicInfo = response[0].universe;
     const assetsPricingInfo = response[1];

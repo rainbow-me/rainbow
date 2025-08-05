@@ -19,7 +19,7 @@ type HyperliquidAccountStoreActions = {
   withdraw: ({ asset, amount }: { asset: string; amount: string }) => Promise<void>;
   createIsolatedMarginPosition: ({ asset, side, leverage }: { asset: string; side: PositionSide; leverage: number }) => Promise<void>;
   checkIfHyperliquidAccountExists: () => Promise<boolean>;
-  markFilledOrdersAsSeen: (orders: Set<string>) => void;
+  markFilledOrdersAsSeen: (orderIds: number[]) => void;
   // derivative state
   getTotalUnrealizedPnl: () => string;
   getTotalPositionsValue: () => string;
@@ -90,7 +90,7 @@ export const useHyperliquidAccountStore = createQueryStore<
       return await accountClient.hasAccount();
     },
     markFilledOrdersAsSeen: orderIds => {
-      return;
+      orderIds.forEach(id => get().seenFilledOrders.add(id.toString()));
     },
     getTotalUnrealizedPnl: () => {
       return get().positions.reduce((acc, position) => {
