@@ -4,7 +4,7 @@ import Text from './Text';
 import { abbreviations } from '@/utils';
 
 const TruncatedENS = ({ ens, truncationLength, ...props }, ref) => {
-  const text = useMemo(
+  const text = React.useMemo(
     () => (ens ? abbreviations.abbreviateEnsForDisplay(ens, truncationLength) : lang.t('wallet.error_displaying_address')),
     [ens, truncationLength]
   );

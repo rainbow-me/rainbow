@@ -1,18 +1,9 @@
 import { IS_ANDROID } from '@/env';
 import { getGlobal, saveGlobal } from './common';
-import { NativeModules } from 'react-native';
-import { colors } from '@/styles';
 import { Themes, ThemesType } from '@/theme';
-import { isUsingButtonNavigation } from '@/utils/deviceUtils';
-
-const { NavigationBar } = NativeModules;
+import { SystemBars } from 'react-native-edge-to-edge';
 
 const THEME = 'theme';
-
-export const getColorForThemeAndNavigationStyle = (theme: ThemesType) => {
-  if (!isUsingButtonNavigation()) return 'transparent';
-  return theme === Themes.DARK ? '#191A1C' : colors.white;
-};
 
 /**
  * @desc get theme
@@ -26,11 +17,7 @@ export const getTheme = (): Promise<ThemesType> => getGlobal(THEME, 'system');
 export const saveTheme = (theme: ThemesType, isSystemDarkMode: boolean) => {
   if (IS_ANDROID) {
     const themeToUse = theme === Themes.SYSTEM ? (isSystemDarkMode ? Themes.DARK : Themes.LIGHT) : theme;
-    NavigationBar.changeBarColors(
-      themeToUse === Themes.DARK,
-      getColorForThemeAndNavigationStyle('light'),
-      getColorForThemeAndNavigationStyle('dark')
-    );
+    SystemBars.setStyle({ statusBar: themeToUse === Themes.DARK ? 'light' : 'dark' });
   }
 
   return saveGlobal(THEME, theme);

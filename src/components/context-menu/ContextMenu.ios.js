@@ -24,7 +24,7 @@ export default function ContextMenu({
   options = [],
   ...props
 }) {
-  const actionsheetRef = useRef();
+  const actionsheetRef = useRef(undefined);
   const [isOpen, setIsOpen] = useState(false);
 
   const handlePressActionSheet = useCallback(

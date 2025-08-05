@@ -1,14 +1,12 @@
 import { analytics } from '@/analytics';
 import { DynamicHeightSheet } from '@/components/sheet';
 import { BackgroundProvider, Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
 import { useDimensions } from '@/hooks';
 import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const RewardsSheet: React.FC = () => {
@@ -52,7 +50,7 @@ export const RewardsSheet: React.FC = () => {
         // @ts-expect-error JS component
         <DynamicHeightSheet
           backgroundColor={backgroundColor}
-          additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+          additionalTopPadding
           limitScrollViewContent
           // sheetHeightRatio={0.67}
           sheetHeight={568}

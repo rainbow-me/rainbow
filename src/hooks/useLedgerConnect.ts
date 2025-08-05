@@ -19,7 +19,7 @@ export function useLedgerConnect({
   successCallback: (deviceId: string) => void;
   errorCallback?: (errorType: LEDGER_ERROR_CODES) => void;
 }) {
-  const transport = useRef<TransportBLE | undefined>();
+  const transport = useRef<TransportBLE | undefined>(undefined);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isReady = useRecoilValue(LedgerIsReadyAtom);
   const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(triggerPollerCleanupAtom);

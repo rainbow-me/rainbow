@@ -61,12 +61,8 @@ export function generateRainbowGradient(color: string, options: GradientOptions 
   // Ensure minimum of 3 colors
   const numColors = Math.max(3, numberOfColors);
 
-  // Process the input color
-  const processedColor = processColor(color);
-  if (!processedColor) return Array(numColors).fill('#FF1493'); // Default if invalid
-
   // Convert to RGBA
-  const [r, g, b] = convertToRGBA(processedColor);
+  const [r, g, b] = convertToRGBA(color);
 
   // Convert to Oklab
   const { L, a: aLab, b: bLab } = rgbToOklab(r, g, b);

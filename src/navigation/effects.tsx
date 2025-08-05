@@ -1,8 +1,8 @@
 import React from 'react';
-import { Animated, StatusBar, View } from 'react-native';
+import { Animated, View } from 'react-native';
 import { StackNavigationOptions, TransitionPreset } from '@react-navigation/stack';
 
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
@@ -14,7 +14,7 @@ import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/Recycler
 import { BottomSheetNavigationOptions } from './bottom-sheet/types';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 
-const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
+const statusBarHeight = safeAreaInsetValues.top;
 export const sheetVerticalOffset = statusBarHeight;
 
 export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 4;
