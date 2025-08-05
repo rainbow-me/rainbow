@@ -49,7 +49,7 @@ import { NativeCurrencyKey } from '@/entities';
 import { IS_TEST } from '@/env';
 
 const DEFAULT_SLIPPAGE_BIPS = 500;
-const TEST_MODE_SLIPPAGE_BIPS = 5000; // 50% slippage for test mode
+const TEST_MODE_SLIPPAGE_BIPS = 9999; // 99.99% slippage for test mode
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
