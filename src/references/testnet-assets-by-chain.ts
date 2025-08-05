@@ -122,63 +122,6 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
       quantity: '0',
     },
   },
-  // Polygon Assets (for use with Anvil when switched to Polygon context)
-  [ChainId.polygon]: {
-    // Native MATIC
-    'matic_137': {
-      asset: {
-        asset_code: 'eth', // Using 'eth' as asset_code for native token
-        mainnet_address: 'eth',
-        colors: {
-          fallback: '#8B47DB',
-          primary: '#6E41BB',
-        },
-        decimals: 18,
-        icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/polygon/matic.png',
-        name: 'Polygon',
-        network: ChainName.polygon,
-        implementations: {},
-        bridging: {
-          bridgeable: true,
-          networks: {},
-        },
-        price: {
-          relative_change_24h: 2.5,
-          value: 0.85,
-        },
-        symbol: 'MATIC',
-        isNativeAsset: true,
-      },
-      quantity: '0',
-    },
-    // Test POL token for Polygon network testing
-    '0x0000000000000000000000000000000000001010_137': {
-      asset: {
-        asset_code: '0x0000000000000000000000000000000000001010',
-        mainnet_address: '0x0000000000000000000000000000000000001010',
-        colors: {
-          fallback: '#8B47DB',
-          primary: '#6E41BB',
-        },
-        decimals: 18,
-        icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/polygon/matic.png',
-        name: 'Polygon Ecosystem Token',
-        network: ChainName.polygon,
-        implementations: {},
-        bridging: {
-          bridgeable: true,
-          networks: {},
-        },
-        price: {
-          relative_change_24h: 2.5,
-          value: 0.85,
-        },
-        symbol: 'POL',
-        isNativeAsset: true,
-      },
-      quantity: '10000',
-    },
-  },
   // Anvil Assets (when using Anvil as local testnet)
   [ChainId.anvil]: {
     // Test ETH
