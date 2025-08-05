@@ -62,13 +62,8 @@ tags:
             - assertVisible: .*Review
       - tapOn: .*Review
 
-      # Test L2 send confirmation screen
-      # Should show Polygon network details and lower gas fees
       - assertVisible: 'Sending'
       - assertVisible: 'rainbowwallet.eth'
-
-      # L2 transactions should have noticeably lower gas fees
-      # The review screen should indicate we're on Polygon network
 
       - runFlow:
           when:
@@ -77,7 +72,6 @@ tags:
             - longPressOn: 'Hold to Send'
             - runFlow: ../utils/MaybeSetupPin.yaml
 
-            # Test L2 transaction completion
             - assertVisible: 'Pending'
             - assertVisible: 'Sending*.'
 
