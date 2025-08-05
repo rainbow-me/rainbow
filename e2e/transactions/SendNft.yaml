@@ -38,6 +38,10 @@ tags:
 
       - tapOn: '.*Rainbow Pooly.*'
 
+      # Need to scroll a bit more after expanding the section.
+      - swipe:
+          direction: UP
+
       - tapOn:
           id: 'wrapped-nft-Rainbow Pooly 104'
 
@@ -45,11 +49,6 @@ tags:
       - waitForAnimationToEnd:
           timeout: 2000
 
-      - retry:
-          maxRetries: 3
-          commands:
-            - assertVisible:
-                id: 'send-action-button'
       - tapOn:
           id: 'send-action-button'
 
