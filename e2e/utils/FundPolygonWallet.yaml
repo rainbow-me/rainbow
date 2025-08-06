@@ -1,5 +1,0 @@
-appId: ${APP_ID}
----
-# Fund the test wallet with Polygon tokens
-- tapOn:
-    id: fund-polygon-wallet-button

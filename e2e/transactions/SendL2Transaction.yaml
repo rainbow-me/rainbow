@@ -18,7 +18,8 @@ tags:
       - tapOn:
           id: dev-button-anvil
 
-      - runFlow: ../utils/FundPolygonWallet.yaml
+      - tapOn:
+          id: fund-polygon-wallet-button
 
       # Wait for network switch to complete
       - retry:
@@ -45,14 +46,13 @@ tags:
           when:
             platform: iOS
           commands:
-            - tapOn:
-                text: '.*Polygon.*'
+            - tapOn: '.*Polygon Ecosystem Token.*'
       - runFlow:
           when:
             platform: Android
           commands:
             - tapOn:
-                id: send-asset
+                id: send-asset-POL-polygon
 
       - inputText: '0.01'
 
@@ -65,21 +65,19 @@ tags:
       - assertVisible: 'Sending'
       - assertVisible: 'rainbowwallet.eth'
 
-      - runFlow:
-          when:
-            platform: Android
-          commands:
-            - longPressOn: 'Hold to Send'
-            - runFlow: ../utils/MaybeSetupPin.yaml
+      - tapOn:
+          id: has-wallet-that-supports
+      - tapOn: '.*Tap to Send.*'
+      - runFlow: ../utils/MaybeSetupPin.yaml
 
-            - assertVisible: 'Pending'
-            - assertVisible: 'Sending*.'
+      - assertVisible: 'Pending'
+      - assertVisible: 'Sending*.'
 
-            - tapOn: Sending*.
+      - tapOn: Sending*.
 
-            - assertVisible: 'Sending'
-            - assertVisible: '.*Tx Hash*.'
+      - assertVisible: 'Sending'
+      - assertVisible: '.*Tx Hash.*'
 
-            - assertVisible: 'View on Polygonscan'
-            - swipe:
-                direction: DOWN
+      - assertVisible: '.*View on Polygonscan.*'
+      - swipe:
+          direction: DOWN
