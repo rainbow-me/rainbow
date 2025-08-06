@@ -39,8 +39,6 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     NotificationCenter.default.addObserver(self, selector: #selector(handleRapComplete), name: NSNotification.Name("rapCompleted"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(handleRsEscape), name: NSNotification.Name("rsEscape"), object: nil)
 
-    RCTSetDefaultColorSpace(RCTColorSpace.displayP3)
-
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
@@ -140,5 +138,9 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
 #else
     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
+  }
+
+  override func defaultColorSpace() -> RCTColorSpace {
+    RCTColorSpace.displayP3
   }
 }
