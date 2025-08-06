@@ -70,22 +70,6 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     return success
   }
 
-  func hideSplashScreenAnimated() {
-    guard let rootVC = window?.rootViewController,
-          let subview = rootVC.view.subviews.last,
-          let rainbowIcon = subview.subviews.first as? UIImageView else {
-      return
-    }
-
-    UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveEaseIn, animations: {
-      rainbowIcon.transform = CGAffineTransform(scaleX: 0.0000000001, y: 0.0000000001)
-      subview.alpha = 0.0
-    }) { _ in
-      rainbowIcon.isHidden = true
-      RNSplashScreen.hide()
-    }
-  }
-
   @objc func handleRsEscape(notification: Notification) {
     guard let url = notification.userInfo?["url"] as? String else { return }
     let msg = "Escape via \(url)"
