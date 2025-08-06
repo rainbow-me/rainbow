@@ -129,9 +129,7 @@ export function NanoXDeviceAnimation({
       <Animated.View style={[animatedCirclesWrapperStyle, styles.circlesWrapper, wrapperStyle]}>
         <Canvas style={styles.circlesCanvas}>
           <Group antiAlias dither>
-            <Rect height={CIRCLES_HEIGHT} width={CIRCLES_WIDTH}>
-              <Paint color={backgroundColor || defaultBackgroundColor} />
-            </Rect>
+            <Rect height={CIRCLES_HEIGHT} width={CIRCLES_WIDTH} color={backgroundColor || defaultBackgroundColor} />
             {circleColors.map((color, index) => (
               <AnimatedCircle
                 circleRadius={circleRadius}

@@ -247,7 +247,7 @@ const ChartTypeToggle = memo(function ChartTypeToggle({
   backgroundColor: string;
   color: string;
   initialChartType: ChartType;
-  scrollViewRef: RefObject<ScrollView>;
+  scrollViewRef: RefObject<ScrollView | null>;
   selectedIndex: SharedValue<number>;
 }) {
   const selectedChartType = useSharedValue(initialChartType);
@@ -381,7 +381,7 @@ function getScrollViewProps(
   };
 }
 
-function toggleChartTypeAndScroll(scrollViewRef: RefObject<ScrollView>, selectedIndex: SharedValue<number>): void {
+function toggleChartTypeAndScroll(scrollViewRef: RefObject<ScrollView | null>, selectedIndex: SharedValue<number>): void {
   const newChartType = chartsActions.toggleChartType();
   const newSelectedIndex = getInitialSelectedIndex(newChartType);
   const isLineChart = newChartType === ChartType.Line;

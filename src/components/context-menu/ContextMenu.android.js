@@ -1,10 +1,10 @@
 import React, { Fragment, useCallback } from 'react';
-import { TouchableWithoutFeedback } from 'react-native';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { omitFlatten } from '@/helpers/utilities';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
+import { ButtonPressAnimation } from '@/components/animations';
 
 const ActionSheetProps = ['cancelButtonIndex', 'destructiveButtonIndex', 'message', 'onPress', 'options', 'tintColor', 'title'];
 
@@ -47,9 +47,9 @@ export default function ContextMenu({
   return (
     <Fragment>
       {onPressActionSheet && (
-        <TouchableWithoutFeedback activeOpacity={activeOpacity} onPress={handleShowActionSheet} radiusAndroid={20}>
+        <ButtonPressAnimation activeOpacity={activeOpacity} onPress={handleShowActionSheet}>
           {children || <ContextButton {...omitFlatten(props, ActionSheetProps)} />}
-        </TouchableWithoutFeedback>
+        </ButtonPressAnimation>
       )}
     </Fragment>
   );

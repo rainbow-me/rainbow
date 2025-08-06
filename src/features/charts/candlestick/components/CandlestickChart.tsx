@@ -1,6 +1,6 @@
 import {
   BlendMode,
-  Canvas2 as Canvas,
+  Canvas,
   ClipOp,
   PaintStyle,
   Picture,

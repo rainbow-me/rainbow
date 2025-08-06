@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { ScrollView, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import RainbowContextWrapper from '../../helpers/RainbowContext';
 import { Box, DesignSystemProvider, Separator, Inline, Inset, Stack, Text } from '../';
 import { ColorMode } from '../color/palettes';
@@ -141,7 +141,6 @@ export const Playground = () => {
         <DesignSystemProvider colorMode={colorMode}>
           <Box background="body (Deprecated)" flexGrow={1}>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
-              {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
               <Inset space="20px">
                 <Stack space="24px">
                   <TouchableOpacity onPress={toggleColorMode}>

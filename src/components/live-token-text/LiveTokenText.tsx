@@ -14,6 +14,7 @@ interface LiveTokenValueParams {
   initialValue: string;
   autoSubscriptionEnabled?: boolean;
   selector: (token: TokenData) => string;
+  testId?: string;
 }
 
 export function useLiveTokenSharedValue({
@@ -128,7 +129,7 @@ export function useLiveTokenValue({
 }
 
 type LiveTokenTextProps = LiveTokenValueParams &
-  Omit<TextProps, 'children'> & {
+  Omit<TextProps, 'children' | 'ref'> & {
     animateTrendChange?: boolean;
   } & (
     | {
@@ -154,6 +155,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   animateTrendChange = false,
   usePriceChangeColor = false,
   priceChangeChangeColors,
+  testId,
   ...textProps
 }) {
   const liveValue = useLiveTokenSharedValue({
@@ -162,6 +164,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
     initialValue,
     autoSubscriptionEnabled,
     selector,
+    testId,
   });
 
   const theme = useTheme();
@@ -207,7 +210,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <AnimatedText {...textProps} style={textProps.style ? [textStyle, textProps.style] : textStyle}>
+    <AnimatedText testID={testId} {...textProps} style={textProps.style ? [textStyle, textProps.style] : textStyle}>
       {liveValue}
     </AnimatedText>
   );

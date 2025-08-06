@@ -4,6 +4,7 @@
         <item name="android:windowDisablePreview">true</item>
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
         <item name="colorAccent">@color/blue60</item>
+        <item name="enforceNavigationBarContrast">false</item>
     </style>
 
     <style name="BootTheme" parent="Theme.BootSplash.EdgeToEdge">

@@ -47,7 +47,7 @@ const EditButtonWrapper = styled(Row).attrs({
 
 const useInterpolationRange = isCoinListEdited => {
   const position = useRecyclerAssetListPosition();
-  const ref = useRef();
+  const ref = useRef(undefined);
   const { top: safeAreaInsetTop } = useSafeAreaInsets();
 
   const { scrollViewRef } = useContext(StickyHeaderContext) || {};
