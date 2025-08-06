@@ -15,8 +15,10 @@ tags:
       - runFlow: ../utils/ImportWalletWithKey.yaml
 
       # Navigate to browser
+      - runScript:
+          file: ../utils/coordinates.js
       - tapOn:
-          id: 'tab-bar-icon-DappBrowserScreen'
+          point: ${output.tabCoordinates.browserTab}
 
       # connect to bx-test-dapp
       - tapOn:
