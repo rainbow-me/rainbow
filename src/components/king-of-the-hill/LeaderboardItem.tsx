@@ -205,7 +205,8 @@ const styles = StyleSheet.create({
   rankingBadge: {
     paddingHorizontal: 3,
     paddingVertical: 4,
-    borderRadius: 4,
+    borderRadius: 5.5,
+    borderCurve: 'continuous',
     alignItems: 'center',
   },
   chainImageContainer: {
