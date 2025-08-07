@@ -125,7 +125,7 @@ export function SwapNavbar() {
         width={{ custom: 36 }}
       />
       <Navbar
-        hasStatusBarInset={IS_IOS}
+        hasStatusBarInset
         leftComponent={
           <Bleed space="10px">
             <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} style={{ padding: 10 }}>

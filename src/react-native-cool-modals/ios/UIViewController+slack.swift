@@ -143,11 +143,12 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     while !viewsToTraverse.isEmpty {
       let last = viewsToTraverse.last!
       viewsToTraverse.removeLast()
-      if last is UIScrollView {
+      let maybeScrollView = last as? UIScrollView
+      if maybeScrollView?.isScrollEnabled == true {
         foundScrollViews += 1
         if foundScrollViews == relevantScrollViewDepth {
-          panScrollableCache = last as? UIScrollView
-          return last as? UIScrollView
+          panScrollableCache = maybeScrollView
+          return maybeScrollView
         }
       }
       last.subviews.forEach { subview in

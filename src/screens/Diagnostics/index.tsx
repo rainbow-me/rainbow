@@ -32,7 +32,7 @@ export const WalletDiagnosticsSheet = () => {
   const [pinRequired, setPinRequired] = useState(false);
   const [uuid, setUuid] = useState<string | undefined>();
   const [toastVisible, setToastVisible] = useState(false);
-  const toastTimeout = useRef<NodeJS.Timeout>();
+  const toastTimeout = useRef<NodeJS.Timeout>(undefined);
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 

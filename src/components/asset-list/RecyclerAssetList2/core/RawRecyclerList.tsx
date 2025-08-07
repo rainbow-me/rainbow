@@ -100,7 +100,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
 
   const topMarginRef = useRef<number>(0);
-  const ref = useRef<RecyclerListViewRef>();
+  const ref = useRef<RecyclerListViewRef>(undefined);
 
   useEffect(() => {
     if (ios) {

@@ -3,10 +3,8 @@ import { Row } from '../layout';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { safeAreaInsetValues } from '@/utils';
-import { StatusBar } from 'react-native';
-import { IS_IOS } from '@/env';
 
-const StatusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
+const StatusBarHeight = safeAreaInsetValues.top;
 export const HeaderHeight = 44;
 export const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 

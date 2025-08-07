@@ -59,8 +59,10 @@ tags:
                   - evalScript: ${output.beforeValue = maestro.copiedText}
 
       # Open Discover screen select DAI then go to swap screen
+      - runScript:
+          file: ../utils/coordinates.js
       - tapOn:
-          id: 'tab-bar-icon-DiscoverScreen'
+          point: ${output.tabCoordinates.discoverTab}
       - tapOn:
           id: discover-search-icon
       - assertVisible:

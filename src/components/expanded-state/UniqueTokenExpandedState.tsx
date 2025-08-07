@@ -396,7 +396,7 @@ const UniqueTokenExpandedState = ({ asset, external }: UniqueTokenExpandedStateP
     }
   }, [isENS, navigate, startRegistration, asset.name, asset.images.lowResUrl]);
 
-  const sheetRef = useRef();
+  const sheetRef = useRef(undefined);
   const yPosition = useSharedValue(0);
 
   const profilesEnabled = useExperimentalFlag(PROFILES);

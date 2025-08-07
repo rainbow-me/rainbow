@@ -223,7 +223,7 @@ const CandleField = ({
   currency: NativeCurrencyKey;
   field: Field;
   style?: AnimatedTextProps['style'];
-  wrap?: ComponentType<{ children: ReactElement }>;
+  wrap?: ComponentType<{ children: ReactElement<TextProps | AnimatedTextProps> }>;
 }) => {
   const animatedText = (
     <AnimatedText
