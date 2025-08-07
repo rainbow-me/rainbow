@@ -171,8 +171,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
         // Contract deployed but mint failed - that's okay for testing
       }
 
-      // Fund the test wallet with ETH directly (this will be detected as the native asset)
-      // The issue is that Polygon on Anvil should use ETH as the gas token, not POL
+      // Fund the test wallet with ETH - Anvil uses ETH for gas instead of POL
 
       // Send substantial ETH for gas fees and testing transfers
       const ethAmount = ethers.utils.parseEther(ETH_AMOUNT);
