@@ -17,7 +17,11 @@ export const HeaderButton: React.FC<HeaderButtonProps> = ({ onPress, children, i
     <ButtonPressAnimation onPress={onPress}>
       <GradientBorderContent height={26}>
         <View style={styles.buttonContent}>
-          {iconUrl && <RainbowImage source={{ url: iconUrl }} style={styles.buttonIcon} />}
+          {iconUrl && (
+            <View style={styles.buttonIcon}>
+              <RainbowImage source={{ url: iconUrl }} style={styles.buttonIcon} />
+            </View>
+          )}
           <View style={styles.buttonChildren}>{children}</View>
           <Text color="labelQuaternary" size="icon 9px" weight="heavy">
             {CHEVRON_RIGHT_SYMBOL}
