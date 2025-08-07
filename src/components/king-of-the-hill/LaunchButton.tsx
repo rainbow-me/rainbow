@@ -5,7 +5,7 @@ import { globalColors, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { Canvas, Group, Paint, RoundedRect, Shadow, LinearGradient as SkiaLinearGradient, vec } from '@shopify/react-native-skia';
+import { Canvas, Group, Paint, RoundedRect, Shadow, LinearGradient, vec } from '@shopify/react-native-skia';
 import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -69,8 +69,8 @@ const InnerGlow = memo(function InnerGlow() {
             <RoundedRect x={0} y={0} width={width} height={height} r={borderRadius}>
               <Paint antiAlias dither>
                 <Shadow blur={3} color={opacity(globalColors.white100, 0.97)} dx={0} dy={3} inner />
-                <SkiaLinearGradient colors={['#EBAF09', '#FFC800']} start={vec(0, 0)} end={vec(width, 0)} />
               </Paint>
+              <LinearGradient colors={['#EBAF09', '#FFC800']} start={vec(0, 0)} end={vec(width, 0)} />
             </RoundedRect>
           </Group>
         </Canvas>
