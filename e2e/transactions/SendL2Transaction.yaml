@@ -67,7 +67,7 @@ tags:
 
       - tapOn:
           id: has-wallet-that-supports
-      - tapOn: '.*Tap to Send.*'
+      - longPressOn: '.*Hold to Send.*'
       - runFlow: ../utils/MaybeSetupPin.yaml
 
       - assertVisible: 'Pending'
