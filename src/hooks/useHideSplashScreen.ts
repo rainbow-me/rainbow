@@ -33,10 +33,10 @@ export const hideSplashScreen = async () => {
     onHandleStatusBar();
 
     if (IS_IOS) {
-      StatusBarHelper.setHidden(false, 'fade');
+      StatusBarHelper.setHidden(false);
     } else {
       InteractionManager.runAfterInteractions(() => {
-        StatusBarHelper.setHidden(false, 'fade');
+        StatusBarHelper.setHidden(false);
       });
     }
 
@@ -68,7 +68,5 @@ export const hideSplashScreen = async () => {
 
 function handleAndroidStatusBar() {
   didSetStatusBar = true;
-  StatusBarHelper.setBackgroundColor('transparent', false);
-  StatusBarHelper.setTranslucent(true);
   StatusBarHelper.setDarkContent();
 }

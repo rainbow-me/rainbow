@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 
 export function usePoll(callback: () => void, delay: number) {
-  const cbRef = useRef<() => void>();
+  const cbRef = useRef<() => void>(undefined);
 
   useLayoutEffect(() => {
     cbRef.current = callback;

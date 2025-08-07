@@ -1,4 +1,3 @@
-import { StatusBar } from 'react-native';
 import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
@@ -14,7 +13,7 @@ export const SPACE_BETWEEN_SWAP_BUBBLES = 12;
 // TODO: Need a more reliable way to get the keyboard height
 export const NATIVE_KEYBOARD_HEIGHT = getDefaultKeyboardHeight();
 
-const TOP_INSET = IS_IOS ? Math.max(safeAreaInsetValues.top, 20) : StatusBar.currentHeight ?? 40;
+const TOP_INSET = Math.max(safeAreaInsetValues.top, 20);
 
 export const REVIEW_SHEET_ROW_HEIGHT = 10;
 export const REVIEW_SHEET_ROW_GAP = 24;

@@ -1,5 +1,7 @@
-import { MenuView, NativeActionEvent } from '@react-native-menu/menu';
-import React, { PropsWithChildren, useMemo } from 'react';
+import { MenuView, NativeActionEvent, MenuComponentRef } from '@react-native-menu/menu';
+import React, { PropsWithChildren, useMemo, useRef } from 'react';
+import { View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useLatestCallback } from '@/hooks';
 import { NativeMenuComponentProps } from '@react-native-menu/menu/lib/typescript/src/types';
 import { MenuConfig } from './contextMenu';
@@ -20,6 +22,7 @@ export default function ContextMenuAndroid({
   style?: NativeMenuComponentProps['style'];
   testID?: string;
 }>) {
+  const menuRef = useRef<MenuComponentRef | null>(null);
   const actions = useMemo(() => {
     const items = [];
 
@@ -56,17 +59,24 @@ export default function ContextMenuAndroid({
     return onPressMenuItem({ nativeEvent: { actionKey: event } });
   });
 
+  const gesture = (shouldOpenOnLongPress ? Gesture.LongPress() : Gesture.Tap()).runOnJS(true).onStart(() => {
+    menuRef.current?.show();
+  });
+
   return (
-    <MenuView
-      actions={actions}
-      isAnchoredToRight={isAnchoredToRight}
-      onPressAction={onPressAction}
-      shouldOpenOnLongPress={shouldOpenOnLongPress}
-      style={style}
-      // @ts-expect-error This is missing from the type defs, but works.
-      testID={testID}
-    >
-      {children}
-    </MenuView>
+    <GestureDetector gesture={gesture}>
+      <View style={style} testID={testID}>
+        <MenuView
+          ref={menuRef}
+          actions={actions}
+          isAnchoredToRight={isAnchoredToRight}
+          onPressAction={onPressAction}
+          shouldOpenOnLongPress={shouldOpenOnLongPress}
+          // Using the component for touch handling is not reliable, so use RNGH and open manually with the ref.
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none' }}
+        />
+        {children}
+      </View>
+    </GestureDetector>
   );
 }

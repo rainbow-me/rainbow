@@ -528,10 +528,10 @@ export const ZoomableWrapper = ({
     };
   });
 
-  const pan = useRef();
-  const pinch = useRef();
-  const doubleTap = useRef();
-  const singleTap = useRef();
+  const pan = useRef(undefined);
+  const pinch = useRef(undefined);
+  const doubleTap = useRef(undefined);
+  const singleTap = useRef(undefined);
 
   return (
     <ButtonPressAnimation enableHapticFeedback={false} onPress={() => {}} scaleTo={1} style={{ alignItems: 'center', zIndex: 1 }}>

@@ -117,7 +117,7 @@ export default function styled(Component: any) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'shouldForwardProp' does not exist on typ... Remove this comment to see the full error message
     let shouldForwardProp = StyledComponentFactory.shouldForwardProp;
 
-    function StyledComponent({ style, ...props }: any, ref: any) {
+    function StyledComponent({ style, ref, ...props }: any) {
       const theme = useTheme() ?? {};
 
       const [context, attributes] = useResolvedAttrs(theme, props, WrappedStyledComponent.attrs);
@@ -163,7 +163,7 @@ export default function styled(Component: any) {
       return React.createElement(elementToBeCreated, forwardedProps);
     }
 
-    WrappedStyledComponent = React.memo(React.forwardRef(StyledComponent), isEqual);
+    WrappedStyledComponent = React.memo(StyledComponent, isEqual);
 
     WrappedStyledComponent.displayName = `StyledThing${Component.name}`;
 
@@ -252,7 +252,6 @@ const aliases = [
   'Slider',
   'SliderIOS',
   'SnapshotViewIOS',
-  'StatusBar',
   'SwipeableListView',
   'Switch',
   'SwitchAndroid',

@@ -157,14 +157,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
       const openHelper = () => openGasHelper(type);
 
       return (
-        <Box
-          as={ButtonPressAnimation}
-          paddingVertical="8px"
-          marginVertical="-8px"
-          onPress={openHelper}
-          backgroundColor="accent"
-          style={{ maxWidth: 175 }}
-        >
+        <Box as={ButtonPressAnimation} paddingVertical="8px" marginVertical="-8px" onPress={openHelper} style={{ maxWidth: 175 }}>
           <Inline horizontalSpace="4px" alignVertical="center">
             <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy" numberOfLines={2}>
               {`${label} `}
