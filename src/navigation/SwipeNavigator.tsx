@@ -13,8 +13,8 @@ import {
 } from '@/components/tab-bar/dimensions';
 import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, Stack, useForegroundColor, useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
+import { Box, Columns, globalColors, useColorMode, Column } from '@/design-system';
+import { IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import {
@@ -70,6 +70,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 export const BASE_TAB_BAR_HEIGHT = 52;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
@@ -608,6 +609,7 @@ function SwipeNavigatorScreens() {
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const showKingOfTheHillTab = useShowKingOfTheHill();
+  console.log('showKingOfTheHillTab', showKingOfTheHillTab);
 
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }): MaterialTopTabNavigationOptions => {
