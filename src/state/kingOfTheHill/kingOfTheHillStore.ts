@@ -53,5 +53,5 @@ export const useKingOfTheHillStore = createQueryStore<State | null, KingOfTheHil
     staleTime: time.seconds(5),
   },
 
-  { storageKey: 'kingOfTheHill', version: 1 }
+  { storageKey: 'kingOfTheHill', version: 2 }
 );
