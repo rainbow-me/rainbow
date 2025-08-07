@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 });
 
 export default function SimpleVideo({ style, uri, posterUri, loading, setLoading }: SimpleVideoProps): JSX.Element {
-  const ref = useRef<VideoRef>();
+  const ref = useRef<VideoRef>(undefined);
   const [opacity] = useState<Animated.Value>(() => new Animated.Value(loading ? 1 : 0));
 
   useEffect(() => {

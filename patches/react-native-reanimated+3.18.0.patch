@@ -1,0 +1,74 @@
+diff --git a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
+index 0726b31..b44c0d7 100644
+--- a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
++++ b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
+@@ -411,6 +411,10 @@ void NativeProxy::progressLayoutAnimation(
+       tag, newPropsJNI, isSharedTransition);
+ }
+ 
++void NativeProxy::endLayoutAnimation(int tag, bool shouldRemove) {
++  layoutAnimations_->cthis()->endLayoutAnimation(tag, shouldRemove);
++}
++
+ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
+ #ifdef RCT_NEW_ARCH_ENABLED
+   // nothing
+@@ -450,14 +454,7 @@ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
+   auto progressLayoutAnimation =
+       bindThis(&NativeProxy::progressLayoutAnimation);
+ 
+-  auto endLayoutAnimation = [weakThis = weak_from_this()](
+-                                int tag, bool removeView) {
+-    auto strongThis = weakThis.lock();
+-    if (!strongThis) {
+-      return;
+-    }
+-    strongThis->layoutAnimations_->cthis()->endLayoutAnimation(tag, removeView);
+-  };
++  auto endLayoutAnimation = bindThis(&NativeProxy::endLayoutAnimation);
+ 
+   auto maybeFlushUiUpdatesQueueFunction =
+       bindThis(&NativeProxy::maybeFlushUIUpdatesQueue);
+diff --git a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
+index 2ee2cc8..2edb5c9 100644
+--- a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
++++ b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
+@@ -234,6 +234,8 @@ class NativeProxy : public jni::HybridClass<NativeProxy>,
+       const jsi::Object &newProps,
+       bool isSharedTransition);
+ 
++  void endLayoutAnimation(int tag, bool shouldRemove);
++
+   /***
+    * Wraps a method of `NativeProxy` in a function object capturing `this`
+    * @tparam TReturn return type of passed method
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+index 91ba53e..8c589e6 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+@@ -175,7 +175,11 @@ - (READisplayLink *)getDisplayLink
+   if (!_displayLink) {
+     _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+ #if !TARGET_OS_OSX
+-    _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++    if (@available(iOS 15.0, *)) {
++      _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 80);
++    } else {
++      _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++    }
+ #endif // TARGET_OS_OSX
+     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+   }
+diff --git a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+index d9817af..eef353d 100644
+--- a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
++++ b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+@@ -582,7 +582,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
+     };
+   }, [areAnimationsActive]);
+ 
+-  checkSharedValueUsage(initial.value);
++  if (__DEV__) checkSharedValueUsage(initial.value);
+ 
+   const animatedStyleHandle = useRef<
+     | AnimatedStyleHandle<Style | AnimatedProps>

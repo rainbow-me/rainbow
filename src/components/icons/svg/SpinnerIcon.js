@@ -4,7 +4,7 @@ import { Path } from 'react-native-svg';
 import { SpinAnimation } from '../../animations';
 import Svg from '../Svg';
 
-const SpinnerIcon = ({ color, colors, size }) => (
+const SpinnerIcon = ({ color, colors, size = 12 }) => (
   <SpinAnimation>
     <Svg height={size} width={size}>
       <Path
@@ -18,10 +18,6 @@ const SpinnerIcon = ({ color, colors, size }) => (
 SpinnerIcon.propTypes = {
   color: PropTypes.string,
   size: PropTypes.number,
-};
-
-SpinnerIcon.defaultProps = {
-  size: 12,
 };
 
 export default SpinnerIcon;

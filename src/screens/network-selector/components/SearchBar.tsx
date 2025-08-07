@@ -12,7 +12,7 @@ export const SEARCH_BAR_HEIGHT = 48;
 const SEARCH_BAR_BORDER_RADIUS = SEARCH_BAR_HEIGHT / 2;
 
 type SearchBarProps = {
-  inputRef: React.RefObject<TextInput>;
+  inputRef: React.RefObject<TextInput | null>;
   onFocus?: () => void;
   onBlur?: () => void;
 };

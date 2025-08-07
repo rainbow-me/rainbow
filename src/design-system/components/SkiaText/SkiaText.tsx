@@ -134,7 +134,7 @@ export const SkiaText = ({
             shadows: segShadows,
             weight: segWeight,
             opacity: segOpacity,
-          }: SkiaTextChildProps = child.props;
+          } = child.props as SkiaTextChildProps;
           return {
             color: getSegmentColor(segColor),
             opacity: segOpacity,

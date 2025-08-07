@@ -133,6 +133,7 @@ const MemoizedBalanceCoinRow = React.memo(
                   size={'16px / 22px (Deprecated)'}
                   weight="bold"
                   align="right"
+                  testId={`balance-coin-row-value-${item?.name}`}
                 />
               </View>
 

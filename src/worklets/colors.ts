@@ -78,12 +78,7 @@ export function linearToGamma(value: number): number {
  */
 export function getLuminanceWorklet(color: string): number {
   'worklet';
-  const processedColor = processColor(color);
-  if (processedColor === null || processedColor === undefined) {
-    console.warn(`Invalid color input: ${color}`);
-    return 0; // Return 0 luminance for invalid colors
-  }
-  const [r, g, b] = convertToRGBA(processedColor);
+  const [r, g, b] = convertToRGBA(color);
   const rLum = gammaToLinear(r);
   const gLum = gammaToLinear(g);
   const bLum = gammaToLinear(b);
@@ -451,16 +446,9 @@ export function getSolidColorEquivalent({
   opacity: number;
 }): string {
   'worklet';
-  const processedForeground = processColor(foreground);
-  const processedBackground = processColor(background);
 
-  if (processedForeground == null || processedBackground == null) {
-    logger.warn('[getSolidColorEquivalent]: Invalid foreground or background color', { foreground, background });
-    return background;
-  }
-
-  const [fgR, fgG, fgB] = convertToRGBA(processedForeground);
-  const [bgR, bgG, bgB] = convertToRGBA(processedBackground);
+  const [fgR, fgG, fgB] = convertToRGBA(foreground);
+  const [bgR, bgG, bgB] = convertToRGBA(background);
 
   const blendedR = fgR * opacity + bgR * (1 - opacity);
   const blendedG = fgG * opacity + bgG * (1 - opacity);

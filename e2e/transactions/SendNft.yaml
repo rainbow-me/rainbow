@@ -33,19 +33,41 @@ tags:
           maxRetries: 3
           commands:
             - swipe:
+                from:
+                  id: wallet-screen
                 direction: UP
             - assertVisible: '.*Rainbow Pooly.*'
 
-      - tapOn: '.*Rainbow Pooly.*'
+      - retry:
+          maxRetries: 3
+          commands:
+            - swipe:
+                from:
+                  id: wallet-screen
+                direction: UP
+            - tapOn: '.*Rainbow Pooly.*'
 
-      - tapOn:
-          id: 'wrapped-nft-Rainbow Pooly 104'
+      - retry:
+          maxRetries: 3
+          commands:
+            - swipe:
+                from:
+                  id: wallet-screen
+                direction: UP
+            - tapOn:
+                id: 'wrapped-nft-Rainbow Pooly 104'
 
       # we need to wait for the sheet to be done before clicking on the send else Maestro will click on the image
       - waitForAnimationToEnd:
           timeout: 2000
 
-      - tapOn: '.*Send'
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible:
+                id: 'send-action-button'
+      - tapOn:
+          id: 'send-action-button'
 
       # Test ENS address input
       - inputText: 'rainbowwallet.eth'
