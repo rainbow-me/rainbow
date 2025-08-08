@@ -5,15 +5,21 @@ let unsubscribe: (() => void) | null = null;
 
 /**
  * Sets up a subscription to the positions store to reprocess assets
- * when positions data changes.
+ * only when position token addresses actually change.
+ * Uses Zustand's subscribe to compare previous and current addresses.
  */
 export function setupPositionsAssetsSync() {
   cleanupPositionsAssetsSync();
 
   unsubscribe = usePositionsStore.subscribe(
-    state => state.getData(),
-    positionsData => {
-      if (positionsData) {
+    state => state.getPositionTokenAddresses(),
+    (currentAddresses, prevAddresses) => {
+      const addressesChanged =
+        currentAddresses.size !== prevAddresses.size ||
+        [...currentAddresses].some(addr => !prevAddresses.has(addr)) ||
+        [...prevAddresses].some(addr => !currentAddresses.has(addr));
+
+      if (addressesChanged) {
         userAssetsStore.getState().reprocessAssetsData();
       }
     }
