@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import * as i18n from '@/languages';
 import { View, StyleSheet, Text as NativeText } from 'react-native';
 import { Panel, PANEL_WIDTH, TapToDismiss } from '@/components/SmoothPager/ListPanel';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { safeAreaInsetValues } from '@/utils';
 import { SheetHandle } from '@/components/sheet';
 import { Box, Text, Separator, AnimatedText, ColorModeProvider } from '@/design-system';
@@ -11,7 +11,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import LinearGradient from 'react-native-linear-gradient';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Extrapolation, interpolate, SharedValue, useDerivedValue } from 'react-native-reanimated';
+import { Extrapolation, interpolate, SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useNavigation } from '@/navigation';
 import chroma from 'chroma-js';
 import { Canvas, LinearGradient as SkiaLinearGradient, RadialGradient, vec, Circle, Group, Blur } from '@shopify/react-native-skia';
@@ -210,6 +210,11 @@ const Step = memo(function Step({
     return interpolate(currentPageIndex.value, [stepIndex - 1, stepIndex, stepIndex + 1], [3, 0, 3], Extrapolation.CLAMP);
   });
 
+  // This is a hack until the BlurView is fixed in react-native-blur-view with mismatched system color and app color setting
+  const blurViewHackFix = useAnimatedStyle(() => ({
+    transform: [{ translateX: currentPageIndex.value ? 0 : DEVICE_WIDTH }],
+  }));
+
   return (
     <Box width={PANEL_WIDTH} justifyContent={'flex-end'} alignItems={'center'} style={styles.flex}>
       <SunraysBackground />
@@ -227,7 +232,7 @@ const Step = memo(function Step({
           blurStyle={'plain'}
           // @ts-expect-error the type created when using createAnimatedComponent is not correct
           blurIntensity={blurIntensity}
-          style={[StyleSheet.absoluteFill, { top: -8, bottom: -8 }]}
+          style={[StyleSheet.absoluteFill, { top: -8, bottom: -8 }, blurViewHackFix]}
         />
       </Box>
     </Box>

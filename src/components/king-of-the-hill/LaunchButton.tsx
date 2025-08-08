@@ -8,6 +8,7 @@ import Routes from '@/navigation/routesNames';
 import { Canvas, Group, Paint, RoundedRect, Shadow, LinearGradient, vec } from '@shopify/react-native-skia';
 import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 const BORDER_RADIUS = 28;
 
@@ -15,7 +16,7 @@ export const LaunchButton = memo(function LaunchButton() {
   const { isDarkMode } = useColorMode();
 
   return (
-    <View style={styles.launchButtonPosition}>
+    <View style={[styles.launchButtonPosition, { bottom: TAB_BAR_HEIGHT + 12 }]}>
       <ButtonPressAnimation
         onPress={() => {
           Navigation.handleAction(Routes.TOKEN_LAUNCHER_SCREEN);
@@ -82,7 +83,6 @@ const InnerGlow = memo(function InnerGlow() {
 const styles = StyleSheet.create({
   launchButtonPosition: {
     position: 'absolute',
-    bottom: 100,
     alignSelf: 'center',
     zIndex: 10,
   },

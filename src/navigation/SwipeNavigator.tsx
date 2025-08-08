@@ -209,6 +209,9 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           case TAB_BAR_ICONS[Routes.PROFILE_SCREEN]:
             mainList?.scrollToTop();
             break;
+          case TAB_BAR_ICONS[Routes.KING_OF_THE_HILL]:
+            mainList?.scrollToTop();
+            break;
         }
       }
 
@@ -252,7 +255,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
         const tabBarIcon = options.title as TabIconKey;
 
         return tabBarIcon === TAB_BAR_ICONS[Routes.DAPP_BROWSER_SCREEN] ? (
-          <Column width="content">
+          <Column key={route.name} width="content">
             <BrowserTabIconWrapper
               accentColor={accentColor}
               activeIndex={reanimatedPosition}
@@ -266,6 +269,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           </Column>
         ) : (
           <BaseTabIcon
+            key={route.name}
             accentColor={accentColor}
             activeIndex={reanimatedPosition}
             index={index}
@@ -422,7 +426,6 @@ export const BaseTabIcon = memo(function BaseTabIcon({
   return (
     <Box
       height="full"
-      key={route.key}
       justifyContent="flex-start"
       paddingTop={{ custom: TAB_BAR_INNER_PADDING }}
       testID={`tab-bar-icon-${route.name}`}
@@ -566,16 +569,12 @@ const TabBarContainer = ({ descriptors, jumpTo, navigation, state }: MaterialTop
   const stateRef = useRef(state);
 
   const focusedIndexRef = useRef<number | undefined>(state.index);
-  const lastNumberOfTabsRef = useRef<number | undefined>(state.routes.length);
 
   const currentIndex = state.index;
   const activeIndex = useDerivedValue(() => currentIndex, [currentIndex]);
 
-  if (lastNumberOfTabsRef.current !== state.routes.length) {
-    lastNumberOfTabsRef.current = state.routes.length;
-    descriptorsRef.current = descriptors;
-    stateRef.current = state;
-  }
+  stateRef.current = state;
+  descriptorsRef.current = descriptors;
 
   if (focusedIndexRef.current !== state.index) {
     focusedIndexRef.current = state.index;
@@ -609,7 +608,6 @@ function SwipeNavigatorScreens() {
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const showKingOfTheHillTab = useShowKingOfTheHill();
-  console.log('showKingOfTheHillTab', showKingOfTheHillTab);
 
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }): MaterialTopTabNavigationOptions => {
