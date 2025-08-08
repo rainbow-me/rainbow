@@ -34,7 +34,7 @@ function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }
   const icon = <ContractToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
   const title = toast.name;
   const subtitle = getToastTitle(toast);
-  const isLoading = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
+  const isLoading = toast.status === TransactionStatus.pending;
   return (
     <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />
   );
@@ -42,7 +42,7 @@ function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }
 
 function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
   const title = `${toast.token}`;
-  const isLoading = toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending;
+  const isLoading = toast.status === TransactionStatus.pending;
   const subtitle = getToastTitle(toast);
 
   return (
@@ -61,7 +61,7 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
 
   const title = getSwapToastNetworkLabel({ toast });
   const subtitle = getToastTitle(toast);
-  const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
+  const isLoading = toast.status === TransactionStatus.pending;
   const isWideIcon = isWideSwapIcon(toast);
 
   return (

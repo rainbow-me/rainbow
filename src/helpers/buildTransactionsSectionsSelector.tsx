@@ -61,7 +61,8 @@ const addContactInfo =
     contact: Contact | null;
   } => {
     const { from, to, status } = txn;
-    const isSent = status === TransactionStatus.sent;
+    // TODO: Is this ok?
+    const isSent = status === TransactionStatus.confirmed;
     const contactAddress = (isSent ? to : from) || '';
     const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
     return {

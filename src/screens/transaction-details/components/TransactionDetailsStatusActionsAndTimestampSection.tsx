@@ -31,6 +31,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
   const canBeResubmitted = isOutgoing && !minedAt;
+  // TODO: Is cancelling possible?
   const canBeCancelled = canBeResubmitted && status !== TransactionStatus.cancelling;
 
   const menuConfig = useMemo(

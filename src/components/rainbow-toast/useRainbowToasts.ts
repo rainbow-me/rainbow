@@ -87,8 +87,8 @@ export const useToastStore = createRainbowStore<ToastState>(
           } else {
             const toast = getToastFromTransaction({ transaction: tx, mints });
             if (!toast) continue;
-            // we only add if it's pending or contract_interaction
-            if (tx.status === TransactionStatus.pending || tx.status === TransactionStatus.contract_interaction) {
+            // we only add if it's pending
+            if (tx.status === TransactionStatus.pending) {
               additions.push(toast);
             }
           }

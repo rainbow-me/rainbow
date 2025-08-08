@@ -1,3 +1,5 @@
+/* eslint-disable no-plusplus */
+
 import {
   exampleClaims,
   exampleDappSwaps,
@@ -28,6 +30,7 @@ export function ToastDebugSheet() {
     return {
       ...exampleSends[lastSend++ % exampleSends.length],
       status,
+      title: `send.${status}`,
     };
   };
 
@@ -35,6 +38,7 @@ export function ToastDebugSheet() {
     return {
       ...exampleSwaps[lastSwap++ % exampleSwaps.length],
       status,
+      title: `swap.${status}`,
     };
   };
 
@@ -42,6 +46,7 @@ export function ToastDebugSheet() {
     return {
       ...exampleMints[lastMint++ % exampleMints.length],
       status,
+      title: `mint.${status}`,
     };
   };
 
@@ -49,6 +54,7 @@ export function ToastDebugSheet() {
     return {
       ...exampleDappSwaps[lastMint++ % exampleDappSwaps.length],
       status,
+      title: `contract_interaction.${status}`,
     };
   };
 
@@ -56,6 +62,7 @@ export function ToastDebugSheet() {
     return {
       ...exampleClaims[lastMint++ % exampleClaims.length],
       status,
+      title: `claim.${status}`,
     };
   };
 
@@ -84,7 +91,7 @@ export function ToastDebugSheet() {
   };
 
   const addDappSwapTransaction = () => {
-    addThenUpdate(createMockDappSwapTransaction(TransactionStatus.contract_interaction));
+    addThenUpdate(createMockDappSwapTransaction(TransactionStatus.pending));
   };
 
   const addClaimTransaction = () => {
@@ -97,7 +104,7 @@ export function ToastDebugSheet() {
       pendingTransactionsStore.setState(state => ({
         ...state,
         pendingTransactions: {
-          [accountAddress]: current.map(item => (item === latest ? { ...item, status } : item)),
+          [accountAddress]: current.map(item => (item === latest ? { ...item, status, title: `${item.type}.${status}` } : item)),
         },
       }));
       return true;
@@ -115,9 +122,10 @@ export function ToastDebugSheet() {
   };
 
   const updateLastMintTo = (status: TransactionStatus) => {
-    if (updateLatestTransactionOfType('mint', status)) {
-      return;
-    }
+    updateLatestTransactionOfType('mint', status);
+  };
+
+  const updateDappSwapTo = (status: TransactionStatus) => {
     updateLatestTransactionOfType('contract_interaction', status);
   };
 
@@ -159,7 +167,7 @@ export function ToastDebugSheet() {
 
             <View style={{ flexDirection: 'row' }}>
               <Button onPress={addSendTransaction} title="Add" />
-              <Button onPress={() => updateLastSendTo(TransactionStatus.sent)} title="→ Sent" />
+              <Button onPress={() => updateLastSendTo(TransactionStatus.confirmed)} title="→ Sent" />
               <Button onPress={() => updateLastSendTo(TransactionStatus.failed)} title="→ Failed" />
             </View>
 
@@ -184,7 +192,7 @@ export function ToastDebugSheet() {
 
             <View style={{ flexDirection: 'row' }}>
               <Button onPress={addSwapTransaction} title="Add" />
-              <Button onPress={() => updateLastSwapTo(TransactionStatus.swapped)} title="→ Swapped" />
+              <Button onPress={() => updateLastSwapTo(TransactionStatus.confirmed)} title="→ Swapped" />
               <Button onPress={() => updateLastSwapTo(TransactionStatus.failed)} title="→ Failed" />
             </View>
 
@@ -194,7 +202,7 @@ export function ToastDebugSheet() {
 
             <View style={{ flexDirection: 'row' }}>
               <Button onPress={addMintTransaction} title="Add" />
-              <Button onPress={() => updateLastMintTo(TransactionStatus.minted)} title="→ Minted" />
+              <Button onPress={() => updateLastMintTo(TransactionStatus.confirmed)} title="→ Minted" />
               <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="→ Failed" />
             </View>
 
@@ -204,8 +212,8 @@ export function ToastDebugSheet() {
 
             <View style={{ flexDirection: 'row' }}>
               <Button onPress={addDappSwapTransaction} title="Add" />
-              <Button onPress={() => updateLastMintTo(TransactionStatus.swapped)} title="→ Swapped" />
-              <Button onPress={() => updateLastMintTo(TransactionStatus.failed)} title="→ Failed" />
+              <Button onPress={() => updateDappSwapTo(TransactionStatus.confirmed)} title="→ Swapped" />
+              <Button onPress={() => updateDappSwapTo(TransactionStatus.failed)} title="→ Failed" />
             </View>
 
             <Text size="17pt" weight="semibold" color="label" style={{ marginTop: 20 }}>

@@ -8,7 +8,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 export const SendToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastSend; size?: number }) => {
-  if (toast.status === TransactionStatus.sent || toast.status === TransactionStatus.confirmed) {
+  if (toast.status === TransactionStatus.confirmed) {
     return <ToastSFSymbolIcon size={size} name="check" />;
   }
 

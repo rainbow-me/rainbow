@@ -2,7 +2,6 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import {
-  doneTransactionStatuses,
   TOAST_DONE_HIDE_TIMEOUT_MS,
   TOAST_GAP_FAR,
   TOAST_GAP_NEAR,
@@ -48,6 +47,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
+import { TransactionStatus } from '@/entities';
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
@@ -246,7 +246,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
 
   // hide toast - we always hide it eventually, just slower if not in a finished state
   // disable while testing
-  const shouldRemoveToast = toast.status in doneTransactionStatuses;
+  const shouldRemoveToast = toast.status != TransactionStatus.pending;
   useEffect(() => {
     // if removing already and not from us
     if (toast.isRemoving && !toast.removalReason) return;
@@ -476,7 +476,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
               />
             )}
 
-            {!(toast.status in doneTransactionStatuses) && (
+            {toast.status === TransactionStatus.pending && (
               <ShimmerAnimation color="rgba(255, 255, 255, 0)" gradientColor="rgba(255, 255, 255, 0.08)" animationDuration={2500} />
             )}
 
