@@ -10,9 +10,67 @@ SHARD_TOTAL=1
 SHARD_INDEX=0
 TEST_FILES=()
 ANVIL_PID=""
+PLATFORM=""
+RECORD_ON_FAILURE=false
+RECORDING_PID=""
+
+# Stop recording function
+stop_recording() {
+  local recording_dir=$1
+
+  if [ -n "${RECORDING_PID:-}" ]; then
+    echo "🎥 Stopping recording..."
+
+    if [ "$PLATFORM" = "android" ]; then
+      adb shell "kill -2 \$(cat /data/local/tmp/recording_pid.txt)" 2>/dev/null || true
+      sleep 2
+      adb pull /data/local/tmp/recording.mp4 "$recording_dir/recording.mp4" 2>/dev/null || true
+      adb shell "rm -f /data/local/tmp/recording.mp4 /data/local/tmp/recording_pid.txt" 2>/dev/null || true
+    elif [ "$PLATFORM" = "ios" ]; then
+      kill -INT "$RECORDING_PID" 2>/dev/null || true
+      wait "$RECORDING_PID" 2>/dev/null || true
+    fi
+    RECORDING_PID=""
+    echo "🎥 Recording saved to $recording_dir/recording.mp4"
+  fi
+}
+
+# Start recording function
+start_recording() {
+  local recording_dir=$1
+
+  if [ "$RECORD_ON_FAILURE" = "true" ] && [ -n "$PLATFORM" ]; then
+    echo "🎥 Starting screen recording..."
+    mkdir -p "$recording_dir"
+
+    if [ "$PLATFORM" = "android" ]; then
+      adb shell "screenrecord --bugreport /data/local/tmp/recording.mp4 & echo \$! > /data/local/tmp/recording_pid.txt" &
+      # Placeholder recording PID for android, since it is saved on the device.
+      RECORDING_PID="android"
+    elif [ "$PLATFORM" = "ios" ]; then
+      if [ -n "${DEVICE_UDID:-}" ]; then
+        xcrun simctl io "$DEVICE_UDID" recordVideo --codec=h264 "$recording_dir/recording.mp4" &
+        RECORDING_PID=$!
+      else
+        xcrun simctl io booted recordVideo --codec=h264 "$recording_dir/recording.mp4" &
+        RECORDING_PID=$!
+      fi
+    fi
+  fi
+}
 
 # Trap cleanup.
 cleanup() {
+  # Stop any ongoing recording without parameters (for emergency cleanup)
+  if [ -n "${RECORDING_PID:-}" ]; then
+    echo "🎥 Emergency cleanup - stopping recording..."
+    if [ "$PLATFORM" = "android" ]; then
+      adb shell "kill -2 \$(cat /data/local/tmp/recording_pid.txt)" 2>/dev/null || true
+    elif [ "$PLATFORM" = "ios" ]; then
+      kill -INT "$RECORDING_PID" 2>/dev/null || true
+    fi
+    RECORDING_PID=""
+  fi
   if [ -n "${ANVIL_PID:-}" ]; then
     echo "🛑 Killing Anvil (PID: $ANVIL_PID)"
     kill "$ANVIL_PID" 2>/dev/null || true
@@ -43,6 +101,13 @@ while [[ $# -gt 0 ]]; do
       # Ensure SHARD_INDEX is zero-based.
       SHARD_INDEX=$(( $2 - 1 ))
       shift
+      ;;
+    --platform)
+      PLATFORM="$2"
+      shift
+      ;;
+    --record-on-failure)
+      RECORD_ON_FAILURE=true
       ;;
     *)
       ARGS+=("$1")
@@ -105,11 +170,17 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
   echo "🚀 Running test: $TEST_NAME"
 
   SUCCESS=false
+  SHOULD_RECORD=false
   for ATTEMPT in {1..3}; do
     echo "🔁 Attempt $ATTEMPT for $TEST_NAME"
 
     START_TIME=$(date +%s)
     DEBUG_OUTPUT="$ARTIFACTS_FOLDER/maestro/⏱️-$TEST_NAME-$ATTEMPT"
+
+    # Start recording for attempts after first failure
+    if [ "$SHOULD_RECORD" = "true" ]; then
+      start_recording "$DEBUG_OUTPUT"
+    fi
 
     CMD=(maestro test
       --config e2e/config.yaml
@@ -130,6 +201,12 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       SUCCESS=true
       echo "✅ Passed: $TEST_NAME (${DURATION}s, $ATTEMPT attempt(s))"
       echo
+      
+      # Stop recording (if recording was active)
+      if [ "$SHOULD_RECORD" = "true" ]; then
+        stop_recording "$DEBUG_OUTPUT"
+      fi
+      
       mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/✅-$TEST_NAME-$ATTEMPT"
       break
     else
@@ -137,9 +214,21 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       DURATION=$((END_TIME - START_TIME))
       echo "⚠️ Attempt $ATTEMPT failed for $TEST_NAME (${DURATION}s)"
       echo
+      
+      # Stop recording (if recording was active)
+      if [ "$SHOULD_RECORD" = "true" ]; then
+        stop_recording "$DEBUG_OUTPUT"
+      fi
+      
       mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/❌-$TEST_NAME-$ATTEMPT"
+
+      # Enable recording for subsequent attempts after first failure
+      if [ "$ATTEMPT" -eq 1 ]; then
+        SHOULD_RECORD=true
+      fi
     fi
   done
+
 
   if ! $SUCCESS; then
     echo "❌ Failed after 3 attempts: $TEST_NAME"
