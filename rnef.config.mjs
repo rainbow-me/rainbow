@@ -14,4 +14,7 @@ export default {
     android: platformAndroid({ assets }),
   },
   remoteCacheProvider: 'github-actions',
+  fingerprint: {
+    extraSources: ['.env'],
+  },
 };
