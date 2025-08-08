@@ -100,10 +100,12 @@ export function setUserAssets({
   address,
   state,
   userAssets,
+  positionTokenAddresses,
 }: {
   address: Address | string;
   state: UserAssetsState;
   userAssets: UserAsset[] | null;
+  positionTokenAddresses: Set<string>;
 }): UserAssetsState {
   if (!userAssets || address !== state.address) return state;
 
@@ -112,8 +114,12 @@ export function setUserAssets({
   const newUserAssetsMap = new Map<UniqueId, ParsedSearchAsset>();
   const allIds: UniqueId[] = [];
 
-  // Collect all assets in a flat array and sort by value
-  const allAssets: ParsedSearchAsset[] = userAssets.map(asset => transformUserAssetToParsedSearchAsset(asset));
+  // Check if this asset's address matches any position pool_address
+  const filteredUserAssets = userAssets.filter(asset => {
+    return !positionTokenAddresses.has(asset.asset.address.toLowerCase());
+  });
+
+  const allAssets: ParsedSearchAsset[] = filteredUserAssets.map(asset => transformUserAssetToParsedSearchAsset(asset));
 
   // Sort all assets by chain balance first, then by individual asset value
   allAssets.sort((a, b) => {

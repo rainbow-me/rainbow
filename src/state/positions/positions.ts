@@ -13,6 +13,7 @@ type PositionsStoreParams = {
 
 type PositionStoreActions = {
   getPosition: (uniqueId: string) => RainbowPosition | undefined;
+  getPositionTokenAddresses: () => Set<string>;
 };
 
 export const usePositionsStore = createQueryStore<RainbowPositions, PositionsStoreParams, PositionStoreActions>(
@@ -31,6 +32,27 @@ export const usePositionsStore = createQueryStore<RainbowPositions, PositionsSto
   (_, get) => ({
     getPosition: (uniqueId: string) => {
       return get().getData()?.positions[uniqueId];
+    },
+    getPositionTokenAddresses: () => {
+      const positionTokenAddresses = new Set<string>();
+      const data = get().getData();
+
+      if (data?.positions) {
+        Object.values(data.positions).forEach(position => {
+          position.deposits?.forEach(deposit => {
+            if (deposit.pool_address) {
+              positionTokenAddresses.add(deposit.pool_address.toLowerCase());
+            }
+          });
+          position.stakes?.forEach(stake => {
+            if (stake.pool_address) {
+              positionTokenAddresses.add(stake.pool_address.toLowerCase());
+            }
+          });
+        });
+      }
+
+      return positionTokenAddresses;
     },
   }),
   {

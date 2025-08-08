@@ -66,6 +66,7 @@ export interface UserAssetsState {
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
   updateTokens: (tokens: LiveTokensData) => void;
+  reprocessAssetsData: () => void;
 }
 
 export type Asset = {

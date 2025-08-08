@@ -21,6 +21,7 @@ import {
 import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
 import { toUnixTime } from '@/worklets/dates';
+import { usePositionsStore } from '@/state/positions/positions';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
@@ -31,7 +32,8 @@ export const createUserAssetsStore = (address: Address | string) =>
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
         if (data?.userAssets) {
-          set(state => setUserAssets({ address, state, userAssets: data.userAssets }));
+          const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+          set(state => setUserAssets({ address, state, userAssets: data.userAssets, positionTokenAddresses }));
         }
       },
       keepPreviousData: true,
@@ -215,6 +217,14 @@ export const createUserAssetsStore = (address: Address | string) =>
           // We return the same state object to skip triggering selectors
           return state;
         });
+      },
+
+      reprocessAssetsData: () => {
+        const lastData = get().getData();
+        if (lastData?.userAssets) {
+          const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+          set(state => setUserAssets({ address, state, userAssets: lastData.userAssets, positionTokenAddresses }));
+        }
       },
     }),
 
