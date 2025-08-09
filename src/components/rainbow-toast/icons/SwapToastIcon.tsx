@@ -4,6 +4,7 @@ import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon'
 import { RainbowToastSwap } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities';
+import { ChainId } from '@/state/backendNetworks/types';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -18,7 +19,7 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
 
   return isWideSwapIcon(toast) ? (
     <View style={styles.wideContainer}>
-      <View style={styles.chainImageContainer}>{chainImage}</View>
+      {toast.chainId !== ChainId.mainnet && <View style={styles.chainImageContainer}>{chainImage}</View>}
       <MaskedView maskElement={<Mask size={size} />}>
         <View style={styles.imageContainer}>
           <RainbowImage

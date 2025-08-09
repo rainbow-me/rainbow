@@ -1,4 +1,5 @@
 import { RainbowTransaction, TransactionStatus } from '@/entities';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export const exampleSwaps: RainbowTransaction[] = [
   {
@@ -84,7 +85,7 @@ export const exampleSwaps: RainbowTransaction[] = [
           },
         },
       },
-      chainId: 8453,
+      chainId: ChainId.mainnet,
       transferable: true,
       isNativeAsset: false,
       mainnetAddress: '',
@@ -821,7 +822,7 @@ export const exampleSends: RainbowTransaction[] = [
     from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
     gasLimit: '65077',
     network: 'base',
-    chainId: 8453,
+    chainId: ChainId.mainnet,
     nonce: 1233,
     to: '0xc94EF86008c1d8BAEc8FEf6a7fAeA5326a8B4A09',
     maxFeePerGas: '0x01446a50',

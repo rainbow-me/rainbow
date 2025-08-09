@@ -13,7 +13,6 @@ import React, { useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SendToastIcon } from './icons/SendToastIcon';
 import { useToastColors } from './useToastColors';
-import { IS_ANDROID } from '@/env';
 
 const EXPANDED_ICON_SIZE = 34;
 
@@ -164,11 +163,9 @@ function ToastExpandedContentDisplay({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    gap: 24,
     alignItems: 'center',
     overflow: 'hidden',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+    padding: 22,
     flex: 1,
   },
   iconSection: {
@@ -176,6 +173,7 @@ const styles = StyleSheet.create({
     height: EXPANDED_ICON_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 18,
   },
   iconWrapper: {
     alignItems: 'center',
@@ -188,8 +186,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 9,
     flex: 1,
-    overflow: 'hidden',
-    marginTop: IS_ANDROID ? -4 : 0,
   },
   topRow: {
     flexDirection: 'row',
@@ -213,7 +209,6 @@ const styles = StyleSheet.create({
   topInfoText: { flex: 1, textAlign: 'right' },
   labelText: {
     lineHeight: 28,
-    marginTop: IS_ANDROID ? -5 : -10,
     marginRight: 10,
     maxWidth: '70%',
   },

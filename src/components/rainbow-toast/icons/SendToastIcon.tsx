@@ -4,6 +4,7 @@ import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon'
 import type { RainbowToastSend } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities';
+import { ChainId } from '@/state/backendNetworks/types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -26,9 +27,11 @@ export const SendToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
           <RainbowImage source={{ url: assetImage }} style={{ width: size, height: size }} />
         </View>
 
-        <View style={styles.chainImageContainer}>
-          <ChainImage chainId={toast.chainId} size={16} />
-        </View>
+        {toast.chainId !== ChainId.mainnet && (
+          <View style={styles.chainImageContainer}>
+            <ChainImage chainId={toast.chainId} size={16} />
+          </View>
+        )}
       </View>
     );
   }
@@ -40,8 +43,8 @@ export const SendToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
 const styles = StyleSheet.create({
   chainImageContainer: {
     position: 'absolute',
-    bottom: '-4%',
-    right: '26%',
+    bottom: -2,
+    right: 8,
     zIndex: 10,
   },
 });
