@@ -14,7 +14,7 @@ export function getToastFromTransaction({
   mints?: Mints;
 }): RainbowToast | null {
   if (tx.type === 'swap') {
-    // only pending trasactions hvae this, but for failed or success we don't show asset icons
+    // only pending transactions have this, but for failed or success we don't show asset icons
     // we just show a check or x so we don't need it
     const outAsset = tx.changes?.find(c => c?.direction === 'out')?.asset;
     const inAsset = tx.changes?.find(c => c?.direction === 'in')?.asset;

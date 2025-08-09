@@ -46,7 +46,28 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
-import { TransactionStatus } from '@/entities';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
+
+const TRANSACTION_RELEVANT_KEYS = ['type', 'status', 'nonce', 'hash', 'chainId'] as const;
+
+function areTransactionsEqual(txs1: RainbowTransaction[], txs2: RainbowTransaction[]): boolean {
+  if (txs1 === txs2) return true;
+  if (txs1.length !== txs2.length) return false;
+  return txs1.every((tx, index) => {
+    return TRANSACTION_RELEVANT_KEYS.every(key => tx[key] === txs2[index][key]);
+  });
+}
+
+function useStableTransactions(transactions: RainbowTransaction[]) {
+  const previousTransactions = useRef(transactions);
+
+  if (areTransactionsEqual(previousTransactions.current, transactions)) {
+    return previousTransactions.current;
+  }
+
+  previousTransactions.current = transactions;
+  return transactions;
+}
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
@@ -81,9 +102,10 @@ function RainbowToastDisplayContent() {
     walletAddress: accountAddress,
   });
 
+  const stableTransactions = useStableTransactions(transactions);
   useEffect(() => {
-    handleTransactions({ transactions, mints });
-  }, [mints, transactions]);
+    handleTransactions({ transactions: stableTransactions, mints });
+  }, [mints, stableTransactions]);
 
   // show all removing and 3 latest toasts
   const visibleToasts = useMemo(() => {
