@@ -32,7 +32,6 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -185,7 +184,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
   const lastChangeX = useSharedValue(0);
   const isPressed = useSharedValue(false);
   const touchStartedAt = useSharedValue(0);
-  const isSimulator = useSharedValue(false);
   const minWidth = useSharedValue(TOAST_MIN_WIDTH);
 
   useEffect(() => {
@@ -199,12 +197,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
       onWidth(id, 0);
     };
   }, [onWidth, id]);
-
-  useEffect(() => {
-    DeviceInfo.isEmulator().then(result => {
-      isSimulator.value = result;
-    });
-  }, [isSimulator]);
 
   useEffect(() => {
     if (!startedHiddenBelow) {
@@ -278,24 +270,14 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
         'worklet';
         translateX.value = event.translationX;
       })
-      .onChange(event => {
-        'worklet';
-        // on iOS simulator velocityX is always 0 so using changeX as workaround
-        if (IS_IOS && isSimulator.value) {
-          lastChangeX.value = event.changeX;
-        }
-      })
       .onEnd(event => {
         'worklet';
-        const velocityX = IS_IOS && isSimulator.value ? lastChangeX.value : event.velocityX;
+        const velocityX = event.velocityX;
         lastChangeX.value = 0;
 
         const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
         const isDraggedFarEnough = Math.abs(event.translationX) > dismissThreshold;
-        const isDraggedFastEnough =
-          Math.abs(velocityX) >=
-          // on emulator velocity is always far less, without this you can't swipe to dismiss
-          (isSimulator.value ? 5 : DISMISS_VELOCITY_THRESHOLD);
+        const isDraggedFastEnough = Math.abs(velocityX) >= DISMISS_VELOCITY_THRESHOLD;
 
         if (isDraggedFarEnough && isDraggedFastEnough) {
           runOnJS(swipeRemoveToastCallback)();
@@ -321,7 +303,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
       });
 
     return pan;
-  }, [translateX, isSimulator.value, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback, isPressed]);
+  }, [translateX, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback, isPressed]);
 
   const dragStyle = useAnimatedStyle(() => {
     const opacityY = opacity.value;
