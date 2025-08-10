@@ -2,7 +2,6 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import {
-  doneTransactionStatuses,
   TOAST_DONE_HIDE_TIMEOUT_MS,
   TOAST_GAP_FAR,
   TOAST_GAP_NEAR,
@@ -33,7 +32,6 @@ import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { time } from '@/utils';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -48,6 +46,28 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
+
+const TRANSACTION_RELEVANT_KEYS = ['type', 'status', 'nonce', 'hash', 'chainId'] as const;
+
+function areTransactionsEqual(txs1: RainbowTransaction[], txs2: RainbowTransaction[]): boolean {
+  if (txs1 === txs2) return true;
+  if (txs1.length !== txs2.length) return false;
+  return txs1.every((tx, index) => {
+    return TRANSACTION_RELEVANT_KEYS.every(key => tx[key] === txs2[index][key]);
+  });
+}
+
+function useStableTransactions(transactions: RainbowTransaction[]) {
+  const previousTransactions = useRef(transactions);
+
+  if (areTransactionsEqual(previousTransactions.current, transactions)) {
+    return previousTransactions.current;
+  }
+
+  previousTransactions.current = transactions;
+  return transactions;
+}
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
@@ -82,9 +102,10 @@ function RainbowToastDisplayContent() {
     walletAddress: accountAddress,
   });
 
+  const stableTransactions = useStableTransactions(transactions);
   useEffect(() => {
-    handleTransactions({ transactions, mints });
-  }, [mints, transactions]);
+    handleTransactions({ transactions: stableTransactions, mints });
+  }, [mints, stableTransactions]);
 
   // show all removing and 3 latest toasts
   const visibleToasts = useMemo(() => {
@@ -185,7 +206,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
   const lastChangeX = useSharedValue(0);
   const isPressed = useSharedValue(false);
   const touchStartedAt = useSharedValue(0);
-  const isSimulator = useSharedValue(false);
   const minWidth = useSharedValue(TOAST_MIN_WIDTH);
 
   useEffect(() => {
@@ -199,12 +219,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
       onWidth(id, 0);
     };
   }, [onWidth, id]);
-
-  useEffect(() => {
-    DeviceInfo.isEmulator().then(result => {
-      isSimulator.value = result;
-    });
-  }, [isSimulator]);
 
   useEffect(() => {
     if (!startedHiddenBelow) {
@@ -246,7 +260,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
 
   // hide toast - we always hide it eventually, just slower if not in a finished state
   // disable while testing
-  const shouldRemoveToast = toast.status in doneTransactionStatuses;
+  const shouldRemoveToast = toast.status !== TransactionStatus.pending;
   useEffect(() => {
     // if removing already and not from us
     if (toast.isRemoving && !toast.removalReason) return;
@@ -278,24 +292,14 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
         'worklet';
         translateX.value = event.translationX;
       })
-      .onChange(event => {
-        'worklet';
-        // on iOS simulator velocityX is always 0 so using changeX as workaround
-        if (IS_IOS && isSimulator.value) {
-          lastChangeX.value = event.changeX;
-        }
-      })
       .onEnd(event => {
         'worklet';
-        const velocityX = IS_IOS && isSimulator.value ? lastChangeX.value : event.velocityX;
+        const velocityX = event.velocityX;
         lastChangeX.value = 0;
 
         const dismissThreshold = deviceWidth * DISMISS_THRESHOLD_PERCENTAGE;
         const isDraggedFarEnough = Math.abs(event.translationX) > dismissThreshold;
-        const isDraggedFastEnough =
-          Math.abs(velocityX) >=
-          // on emulator velocity is always far less, without this you can't swipe to dismiss
-          (isSimulator.value ? 5 : DISMISS_VELOCITY_THRESHOLD);
+        const isDraggedFastEnough = Math.abs(velocityX) >= DISMISS_VELOCITY_THRESHOLD;
 
         if (isDraggedFarEnough && isDraggedFastEnough) {
           runOnJS(swipeRemoveToastCallback)();
@@ -321,7 +325,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
       });
 
     return pan;
-  }, [translateX, isSimulator.value, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback, isPressed]);
+  }, [translateX, lastChangeX, deviceWidth, swipeRemoveToastCallback, finishRemoveToastCallback, isPressed]);
 
   const dragStyle = useAnimatedStyle(() => {
     const opacityY = opacity.value;
@@ -476,7 +480,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
               />
             )}
 
-            {!(toast.status in doneTransactionStatuses) && (
+            {toast.status === TransactionStatus.pending && (
               <ShimmerAnimation color="rgba(255, 255, 255, 0)" gradientColor="rgba(255, 255, 255, 0.08)" animationDuration={2500} />
             )}
 

@@ -1,4 +1,5 @@
 import { RainbowTransaction, TransactionStatus } from '@/entities';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export const exampleSwaps: RainbowTransaction[] = [
   {
@@ -84,14 +85,14 @@ export const exampleSwaps: RainbowTransaction[] = [
           },
         },
       },
-      chainId: 8453,
+      chainId: ChainId.mainnet,
       transferable: true,
       isNativeAsset: false,
       mainnetAddress: '',
       favorite: false,
       sectionId: 'popular',
       listItemType: 'coinRow',
-      chainName: 'base',
+      chainName: 'mainnet',
       native: {
         balance: {
           amount: '0.15474900884324971728450192606276692',
@@ -820,8 +821,8 @@ export const exampleSends: RainbowTransaction[] = [
     },
     from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
     gasLimit: '65077',
-    network: 'base',
-    chainId: 8453,
+    network: 'mainnet',
+    chainId: ChainId.mainnet,
     nonce: 1233,
     to: '0xc94EF86008c1d8BAEc8FEf6a7fAeA5326a8B4A09',
     maxFeePerGas: '0x01446a50',
@@ -1014,7 +1015,7 @@ export const exampleSends: RainbowTransaction[] = [
     value: '0x0250ac16c49400',
     txTo: '0x49B1318bF58Fe42FE42cFE0E54B9F82479A857A7',
     type: 'send',
-    status: TransactionStatus.sending,
+    status: TransactionStatus.pending,
     title: 'send.pending',
     description: 'Ethereum',
     timestamp: 1752606363082,
@@ -1118,10 +1119,10 @@ export const exampleMints = [
     nonce: 792,
     to: '0xa5f565650890fba1824ee0f21ebbbf660a179934',
     value: '507813239171051',
-    type: 'contract_interaction',
+    type: 'mint',
     maxFeePerGas: '0x0e1f',
     maxPriorityFeePerGas: '0x64',
-    title: 'contract_interaction.pending',
+    title: 'mint.pending',
     description: 'Ethereum',
     timestamp: 1752774596231,
   } as unknown as RainbowTransaction,
@@ -1221,10 +1222,10 @@ export const exampleMints = [
     nonce: 791,
     to: '0xa5f565650890fba1824ee0f21ebbbf660a179934',
     value: '507730024236717',
-    type: 'contract_interaction',
+    type: 'mint',
     maxFeePerGas: '0x0e9d',
     maxPriorityFeePerGas: '0x64',
-    title: 'contract_interaction.pending',
+    title: 'mint.pending',
     description: 'Ethereum',
     timestamp: 1752773535981,
   } as unknown as RainbowTransaction,

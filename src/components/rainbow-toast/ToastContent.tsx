@@ -1,15 +1,10 @@
-import {
-  allTransactionStatuses,
-  SWAP_ICON_WIDTH,
-  TOAST_ICON_SIZE,
-  transactionTypeToConfirmedLabel,
-  transactionTypeToPendingLabel,
-} from '@/components/rainbow-toast/constants';
+import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
 import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
 import { RainbowToast, RainbowToastContract, type RainbowToastSend, type RainbowToastSwap } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
+import * as lang from '@/languages';
 import { Text } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import React, { memo } from 'react';
@@ -155,20 +150,6 @@ function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
 }
 
 export const getToastTitle = (toast: RainbowToast): string => {
-  const toastType = toast.type === 'contract' ? toast.currentType : toast.currentType || toast.type;
-
-  // handle alternative statuses for pending/confirmed so we show better titles
-  const isPending = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
-  const isConfirmed = toast.status === TransactionStatus.confirmed;
-
-  return (
-    // confirmed labels
-    (isConfirmed && transactionTypeToConfirmedLabel[toastType]) ||
-    // direct status matching names
-    (!isPending && allTransactionStatuses[toast.status]) ||
-    // direct type pending names
-    transactionTypeToPendingLabel[toastType] ||
-    //  otherwise always show pending
-    allTransactionStatuses.pending
-  );
+  // @ts-expect-error - some of these are dot.notation and some are strings
+  return lang.t(lang.l.transactions.type[toast.transaction.title]);
 };

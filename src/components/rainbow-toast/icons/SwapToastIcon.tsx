@@ -4,20 +4,14 @@ import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon'
 import { RainbowToastSwap } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities';
+import { ChainId } from '@/state/backendNetworks/types';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 export const isWideSwapIcon = (toast: RainbowToastSwap) => {
-  if (
-    toast.status === TransactionStatus.swapped ||
-    toast.status === TransactionStatus.confirmed ||
-    toast.status === TransactionStatus.failed
-  ) {
-    return false;
-  }
-  return true;
+  return toast.status === TransactionStatus.pending;
 };
 
 export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastSwap; size?: number }) => {
@@ -25,7 +19,7 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
 
   return isWideSwapIcon(toast) ? (
     <View style={styles.wideContainer}>
-      <View style={styles.chainImageContainer}>{chainImage}</View>
+      {toast.chainId !== ChainId.mainnet && <View style={styles.chainImageContainer}>{chainImage}</View>}
       <MaskedView maskElement={<Mask size={size} />}>
         <View style={styles.imageContainer}>
           <RainbowImage
@@ -63,14 +57,14 @@ const Mask = memo(function Mask({ size = TOAST_ICON_SIZE }: { size?: number }) {
 
   // Create a path that fills the 34x34 area but cuts out a circle
   const pathData = `
-    M 0,0 
-    L 34,0 
-    L 34,34 
-    L 0,34 
-    Z 
-    M ${circleCx + circleRadius},${circleCy} 
-    A ${circleRadius},${circleRadius} 0 0,0 ${circleCx - circleRadius},${circleCy} 
-    A ${circleRadius},${circleRadius} 0 0,0 ${circleCx + circleRadius},${circleCy} 
+    M 0,0
+    L 34,0
+    L 34,34
+    L 0,34
+    Z
+    M ${circleCx + circleRadius},${circleCy}
+    A ${circleRadius},${circleRadius} 0 0,0 ${circleCx - circleRadius},${circleCy}
+    A ${circleRadius},${circleRadius} 0 0,0 ${circleCx + circleRadius},${circleCy}
     Z
   `;
 

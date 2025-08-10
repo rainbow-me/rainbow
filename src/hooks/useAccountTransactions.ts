@@ -112,9 +112,7 @@ export const useLatestAccountTransactions = () => {
 
   const allTransactions = useMemo(
     () => pendingTransactionsMostRecentFirst.concat(transactions),
-    // if you don't do this it updates constantly
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify([pendingTransactionsMostRecentFirst, transactions])]
+    [pendingTransactionsMostRecentFirst, transactions]
   );
 
   const { contacts } = useContacts();

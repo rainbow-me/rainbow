@@ -13,7 +13,6 @@ import React, { useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SendToastIcon } from './icons/SendToastIcon';
 import { useToastColors } from './useToastColors';
-import { IS_ANDROID } from '@/env';
 
 const EXPANDED_ICON_SIZE = 34;
 
@@ -34,7 +33,7 @@ function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }
   const icon = <ContractToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
   const title = toast.name;
   const subtitle = getToastTitle(toast);
-  const isLoading = toast.status === TransactionStatus.pending || toast.status === TransactionStatus.contract_interaction;
+  const isLoading = toast.status === TransactionStatus.pending;
   return (
     <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />
   );
@@ -42,7 +41,7 @@ function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }
 
 function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
   const title = `${toast.token}`;
-  const isLoading = toast.status === TransactionStatus.sending || toast.status === TransactionStatus.pending;
+  const isLoading = toast.status === TransactionStatus.pending;
   const subtitle = getToastTitle(toast);
 
   return (
@@ -61,7 +60,7 @@ function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
 
   const title = getSwapToastNetworkLabel({ toast });
   const subtitle = getToastTitle(toast);
-  const isLoading = toast.status === TransactionStatus.swapping || toast.status === TransactionStatus.pending;
+  const isLoading = toast.status === TransactionStatus.pending;
   const isWideIcon = isWideSwapIcon(toast);
 
   return (
@@ -164,11 +163,9 @@ function ToastExpandedContentDisplay({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    gap: 24,
     alignItems: 'center',
     overflow: 'hidden',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+    padding: 22,
     flex: 1,
   },
   iconSection: {
@@ -176,6 +173,7 @@ const styles = StyleSheet.create({
     height: EXPANDED_ICON_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 18,
   },
   iconWrapper: {
     alignItems: 'center',
@@ -188,8 +186,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 9,
     flex: 1,
-    overflow: 'hidden',
-    marginTop: IS_ANDROID ? -4 : 0,
   },
   topRow: {
     flexDirection: 'row',
@@ -213,7 +209,6 @@ const styles = StyleSheet.create({
   topInfoText: { flex: 1, textAlign: 'right' },
   labelText: {
     lineHeight: 28,
-    marginTop: IS_ANDROID ? -5 : -10,
     marginRight: 10,
     maxWidth: '70%',
   },

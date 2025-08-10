@@ -1,7 +1,7 @@
 import { RainbowImage } from '@/components/RainbowImage';
 import { ShimmerAnimation } from '@/components/animations';
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
-import { doneTransactionStatuses, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
+import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import type { RainbowToastContract } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { TransactionStatus } from '@/entities';
@@ -24,7 +24,7 @@ export const ContractToastIcon = memo(function ContractToastIcon({
     return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="exclamationMark" />;
   }
 
-  if (toast.status in doneTransactionStatuses) {
+  if (toast.status === TransactionStatus.confirmed) {
     return <ToastSFSymbolIcon borderRadius={BORDER_RADIUS} name="check" />;
   }
 
