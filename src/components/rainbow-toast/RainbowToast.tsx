@@ -260,7 +260,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
 
   // hide toast - we always hide it eventually, just slower if not in a finished state
   // disable while testing
-  const shouldRemoveToast = toast.status != TransactionStatus.pending;
+  const shouldRemoveToast = toast.status !== TransactionStatus.pending;
   useEffect(() => {
     // if removing already and not from us
     if (toast.isRemoving && !toast.removalReason) return;

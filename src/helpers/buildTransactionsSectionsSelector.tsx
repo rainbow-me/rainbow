@@ -60,8 +60,8 @@ const addContactInfo =
   ): RainbowTransaction & {
     contact: Contact | null;
   } => {
-    const { from, to, status } = txn;
-    const isSent = status === TransactionStatus.confirmed;
+    const { from, to, status, type } = txn;
+    const isSent = type === 'send' && status === TransactionStatus.confirmed;
     const contactAddress = (isSent ? to : from) || '';
     const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
     return {

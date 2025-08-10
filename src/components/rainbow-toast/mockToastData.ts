@@ -92,7 +92,7 @@ export const exampleSwaps: RainbowTransaction[] = [
       favorite: false,
       sectionId: 'popular',
       listItemType: 'coinRow',
-      chainName: 'base',
+      chainName: 'mainnet',
       native: {
         balance: {
           amount: '0.15474900884324971728450192606276692',
@@ -821,7 +821,7 @@ export const exampleSends: RainbowTransaction[] = [
     },
     from: '0x2e67869829c734ac13723A138a952F7A8B56e774',
     gasLimit: '65077',
-    network: 'base',
+    network: 'mainnet',
     chainId: ChainId.mainnet,
     nonce: 1233,
     to: '0xc94EF86008c1d8BAEc8FEf6a7fAeA5326a8B4A09',
