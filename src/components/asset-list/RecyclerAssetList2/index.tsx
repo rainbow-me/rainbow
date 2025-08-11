@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
@@ -122,8 +122,23 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
   const insets = useSafeAreaInsets();
   const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
   const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
+  const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
+
+  useEffect(() => {
+    const listener = position.addListener(({ value }) => {
+      const shouldBeInteractive = value >= yOffset + 38;
+      if (shouldBeInteractive !== isHeaderInteractive) {
+        setIsHeaderInteractive(shouldBeInteractive);
+      }
+    });
+
+    return () => {
+      position.removeListener(listener);
+    };
+  }, [position, yOffset, isHeaderInteractive]);
+
   const shadowOpacityStyle = useMemo(
     () => ({
       shadowOpacity: position.interpolate({
@@ -221,8 +236,10 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
           right: 0,
           zIndex: 100,
         }}
+        pointerEvents={isHeaderInteractive ? 'auto' : 'box-none'}
       >
         <Navbar
+          isTitleInteractive={isHeaderInteractive}
           hasStatusBarInset
           leftComponent={
             <Navbar.Item onPress={handlePressQRScanner}>
@@ -252,6 +269,7 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
               as={RNAnimated.View}
               height={{ custom: navbarHeight }}
               justifyContent="center"
+              pointerEvents={isHeaderInteractive ? 'auto' : 'none'}
               style={[walletNameStyle, { alignSelf: 'center', bottom: IS_ANDROID ? 8 : 2 }]}
             >
               <ProfileNameRow variant="header" />
