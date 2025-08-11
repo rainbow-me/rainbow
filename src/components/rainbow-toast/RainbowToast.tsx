@@ -414,7 +414,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
 
   return (
     <GestureDetector gesture={combinedGesture}>
-      <Animated.View style={[dragStyle, { zIndex: 3 - index }]}>
+      <Animated.View style={[dragStyle, { alignSelf: 'center', zIndex: 3 - index }]}>
         <Animated.View
           testID={testID}
           style={[
@@ -498,9 +498,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
-    alignSelf: 'center',
-    position: 'absolute',
-    flex: 1,
     minHeight: TOAST_HEIGHT,
   },
   background: {
