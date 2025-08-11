@@ -160,7 +160,7 @@ function RainbowToastDisplayContent() {
       <RainbowToastExpandedDisplay />
 
       <GestureDetector gesture={panGesture}>
-        <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
+        <Animated.View style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
           {visibleToasts.map(toast => {
             return <RainbowToastItem minWidth={minWidth} onWidth={setToastWidth} key={toast.id} toast={toast} />;
           })}
