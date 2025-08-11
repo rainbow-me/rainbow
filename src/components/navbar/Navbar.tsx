@@ -110,7 +110,7 @@ export function Navbar({
   }
 
   return (
-    <Box testID={testID} style={containerStyle}>
+    <Box testID={testID} style={containerStyle} pointerEvents={pointerEvents}>
       {NavbarContent}
     </Box>
   );
