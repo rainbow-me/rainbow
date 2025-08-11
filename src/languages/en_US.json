@@ -3398,12 +3398,17 @@
       "mcap": "MCAP"
     },
     "king_of_hill": {
+      "title": "Launchpad",
+      "launch": "Launch",
       "current_king": "CURRENT KING",
-      "last_winner": "LAST WINNER",
-      "how_it_works": "How It Works",
+      "last_winner": "Last winner",
+      "no_previous_winner": "No previous winner",
+      "round_ends_in": "Round ends in",
+      "how_it_works": "How it works",
       "starting_next_round": "Starting next round",
       "left": "LEFT",
       "king_of_the_hill": "King of the Hill",
+      "name": "Name",
       "explain_sheet": {
         "next": "Next",
         "got_it": "Got it",

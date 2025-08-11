@@ -1,25 +1,27 @@
-import React, { useMemo } from 'react';
+import { analytics } from '@/analytics';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
+import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
+import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/NavbarTextIcon';
+import { Box, Cover, Text } from '@/design-system';
+import { TextSize } from '@/design-system/typography/typeHierarchy';
+import { UniqueAsset } from '@/entities';
+import { IS_ANDROID } from '@/env';
+import { useAccountAccentColor, usePendingTransactions, useWalletSectionsData } from '@/hooks';
+import { useStableValue } from '@/hooks/useStableValue';
+import * as lang from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { useTheme } from '@/theme';
+import React, { memo, useMemo } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
 import RawMemoRecyclerAssetList, { ViewableItemsChangedCallback } from './core/RawRecyclerList';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import useMemoBriefSectionData from './core/useMemoBriefSectionData';
-import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
-import { Box } from '@/design-system';
-import { UniqueAsset } from '@/entities';
-import Navigation from '@/navigation/Navigation';
-import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
-import { analytics } from '@/analytics';
-import * as lang from '@/languages';
-import { useWalletSectionsData } from '@/hooks';
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { IS_ANDROID, IS_TEST } from '@/env';
-import { useStableValue } from '@/hooks/useStableValue';
-import { KING_OF_THE_HILL_TAB, useExperimentalFlag } from '@/config';
-import { useRemoteConfig } from '@/model/remoteConfig';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -122,8 +124,7 @@ function handleNavigateToActivity(): void {
 const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
-  const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
   const shadowOpacityStyle = useMemo(
@@ -233,13 +234,13 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
           }
           rightComponent={
             showKingOfTheHillTab ? (
-              <Box flexDirection="row" gap={16}>
+              <Box flexDirection="row" gap={12}>
                 <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
                   <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
                 </DropdownMenu>
 
                 <Navbar.Item onPress={handleNavigateToActivity}>
-                  <Navbar.TextIcon color={accentColor as string} icon="􀐫" />
+                  <ActivityIcon />
                 </Navbar.Item>
               </Box>
             ) : (
@@ -262,5 +263,36 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
         />
       </Box>
     </>
+  );
+});
+
+const ActivityIcon = memo(function ActivityIcon() {
+  const { highContrastAccentColor: accentColor } = useAccountAccentColor();
+  const { pendingTransactions } = usePendingTransactions();
+  const pendingCount = pendingTransactions.length;
+
+  const textSize: TextSize = useMemo(() => {
+    if (pendingCount < 10) {
+      return '15pt';
+    } else if (pendingCount < 20) {
+      return '12pt';
+    } else {
+      return '11pt';
+    }
+  }, [pendingCount]);
+
+  return pendingCount > 0 ? (
+    <NavBarTextIconFrame color={accentColor}>
+      <AnimatedSpinner color={accentColor} isLoading requireSrc={require('@/assets/tabSpinner.png')} size={NAVBAR_ICON_SIZE - 1} />
+      <Cover>
+        <Box width="full" height="full" alignItems="center" justifyContent="center">
+          <Text color={{ custom: accentColor }} size={textSize} weight="heavy" align="center">
+            {pendingCount}
+          </Text>
+        </Box>
+      </Cover>
+    </NavBarTextIconFrame>
+  ) : (
+    <Navbar.TextIcon color={accentColor as string} icon="􀐫" />
   );
 });
