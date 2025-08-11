@@ -30,7 +30,6 @@ import { useDimensions } from '@/hooks';
 import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
 import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { time } from '@/utils';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -97,7 +96,7 @@ function RainbowToastDisplayContent() {
       removeAllToasts();
     }, []),
     height: deviceHeight,
-    dismissSensitivity: 0.05,
+    dismissSensitivity: 0.5,
     dismissTargetY: -100,
   });
 
@@ -220,7 +219,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
 
   const lastChangeX = useSharedValue(0);
   const isPressed = useSharedValue(false);
-  const touchStartedAt = useSharedValue(0);
   const minWidth = useSharedValue(TOAST_MIN_WIDTH);
 
   useEffect(() => {
@@ -361,36 +359,20 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
   }, [isPressed]);
 
   const pressGesture = useMemo(() => {
-    const maxPressDuration = 2000;
-
-    function doPress() {
-      'worklet';
-      if (Date.now() - touchStartedAt.value < maxPressDuration) {
-        runOnJS(setShowExpandedTrue)();
-      }
-    }
-
     return Gesture.Tap()
-      .maxDuration(time.minutes(10)) // doesn't accept Infinity
+      .maxDeltaX(5)
+      .maxDeltaY(5)
+      .maxDuration(2000)
       .onTouchesDown(() => {
-        'worklet';
-        touchStartedAt.value = Date.now();
         isPressed.value = true;
       })
-      .onTouchesUp(() => {
-        'worklet';
-        // android doesn't trigger onEnd, do our own logic
-        if (IS_ANDROID && translateX.value === 0) {
-          doPress();
-        }
-
-        isPressed.value = false;
+      .onStart(() => {
+        runOnJS(setShowExpandedTrue)();
       })
-      .onEnd(() => {
-        'worklet';
-        doPress();
+      .onFinalize(() => {
+        isPressed.value = false;
       });
-  }, [isPressed, setShowExpandedTrue, touchStartedAt, translateX.value]);
+  }, [isPressed, setShowExpandedTrue]);
 
   const combinedGesture = useMemo(() => {
     return Gesture.Simultaneous(pressGesture, panGesture);
