@@ -19,6 +19,7 @@ import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToa
 import {
   finishRemoveToast,
   handleTransactions,
+  removeAllToasts,
   setShowExpandedToasts,
   startRemoveToast,
   useToastStore,
@@ -29,7 +30,6 @@ import { useDimensions } from '@/hooks';
 import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
 import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
-import { time } from '@/utils';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -45,8 +45,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
-import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
+import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
+import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
 const TRANSACTION_RELEVANT_KEYS = ['type', 'status', 'nonce', 'hash', 'chainId'] as const;
 
@@ -82,6 +83,7 @@ export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
 function RainbowToastDisplayContent() {
   const { toasts, isShowingTransactionDetails } = useToastStore();
   const { transactions } = useLatestAccountTransactions();
+  const { height: deviceHeight } = useDimensions();
 
   const showingTransactionDetails = useSharedValue(false);
 
@@ -89,9 +91,19 @@ function RainbowToastDisplayContent() {
     showingTransactionDetails.value = isShowingTransactionDetails;
   }, [isShowingTransactionDetails, showingTransactionDetails]);
 
+  const { dragY, panGesture, isDismissed } = useVerticalDismissPanGesture({
+    onDismiss: useCallback(() => {
+      removeAllToasts();
+    }, []),
+    height: deviceHeight,
+    dismissSensitivity: 0.5,
+    dismissTargetY: -100,
+  });
+
   const hiddenAnimatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: withSpring(showingTransactionDetails.value ? 0 : 1, springConfig),
+      opacity: withSpring(isDismissed.value || showingTransactionDetails.value ? 0 : 1, springConfig),
+      transform: [{ translateY: dragY.value }],
     };
   });
 
@@ -147,11 +159,13 @@ function RainbowToastDisplayContent() {
     <Box position="absolute" top="0px" left="0px" right="0px" bottom="0px" pointerEvents="box-none">
       <RainbowToastExpandedDisplay />
 
-      <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
-        {visibleToasts.map(toast => {
-          return <RainbowToastItem minWidth={minWidth} onWidth={setToastWidth} key={toast.id} toast={toast} />;
-        })}
-      </Animated.View>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
+          {visibleToasts.map(toast => {
+            return <RainbowToastItem minWidth={minWidth} onWidth={setToastWidth} key={toast.id} toast={toast} />;
+          })}
+        </Animated.View>
+      </GestureDetector>
     </Box>
   );
 
@@ -205,7 +219,6 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
 
   const lastChangeX = useSharedValue(0);
   const isPressed = useSharedValue(false);
-  const touchStartedAt = useSharedValue(0);
   const minWidth = useSharedValue(TOAST_MIN_WIDTH);
 
   useEffect(() => {
@@ -288,6 +301,8 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()
       .minDistance(10)
+      .activeOffsetX([-10, 10])
+      .failOffsetY([-10, 10])
       .onUpdate(event => {
         'worklet';
         translateX.value = event.translationX;
@@ -344,36 +359,20 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
   }, [isPressed]);
 
   const pressGesture = useMemo(() => {
-    const maxPressDuration = 2000;
-
-    function doPress() {
-      'worklet';
-      if (Date.now() - touchStartedAt.value < maxPressDuration) {
-        runOnJS(setShowExpandedTrue)();
-      }
-    }
-
     return Gesture.Tap()
-      .maxDuration(time.minutes(10)) // doesn't accept Infinity
+      .maxDeltaX(5)
+      .maxDeltaY(5)
+      .maxDuration(2000)
       .onTouchesDown(() => {
-        'worklet';
-        touchStartedAt.value = Date.now();
         isPressed.value = true;
       })
-      .onTouchesUp(() => {
-        'worklet';
-        // android doesn't trigger onEnd, do our own logic
-        if (IS_ANDROID && translateX.value === 0) {
-          doPress();
-        }
-
-        isPressed.value = false;
+      .onStart(() => {
+        runOnJS(setShowExpandedTrue)();
       })
-      .onEnd(() => {
-        'worklet';
-        doPress();
+      .onFinalize(() => {
+        isPressed.value = false;
       });
-  }, [isPressed, setShowExpandedTrue, touchStartedAt, translateX.value]);
+  }, [isPressed, setShowExpandedTrue]);
 
   const combinedGesture = useMemo(() => {
     return Gesture.Simultaneous(pressGesture, panGesture);
@@ -415,7 +414,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
 
   return (
     <GestureDetector gesture={combinedGesture}>
-      <Animated.View style={[dragStyle, { zIndex: 3 - index }]}>
+      <Animated.View style={[dragStyle, { alignSelf: 'center', zIndex: 3 - index }]}>
         <Animated.View
           testID={testID}
           style={[
@@ -499,9 +498,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
-    alignSelf: 'center',
-    position: 'absolute',
-    flex: 1,
     minHeight: TOAST_HEIGHT,
   },
   background: {

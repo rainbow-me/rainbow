@@ -1,5 +1,3 @@
-import { TransactionStatus, TransactionType } from '@/entities';
-import * as i18n from '@/languages';
 import { time } from '@/utils';
 
 export const TOAST_ICON_SIZE = 28;
@@ -19,6 +17,6 @@ export const TOAST_DONE_HIDE_TIMEOUT_MS = time.seconds(4);
 export const TOAST_HIDE_TIMEOUT_MS = time.seconds(120); // max time to show a toast
 
 // make dismissing easier (lower) or harder (higher)
-export const TOAST_EXPANDED_DISMISS_SENSITIVITY = 0.5;
+export const TOAST_EXPANDED_DISMISS_SENSITIVITY = 1;
 // upward dragging more sensitive
-export const TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER = 2;
+export const TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER = 1.5;

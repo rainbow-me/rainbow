@@ -4,46 +4,25 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import React, { memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import React, { memo, ReactNode, useCallback, useEffect, useState } from 'react';
+import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Gesture, GestureDetector, PanGesture } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
+import { springConfigDismiss, springConfigEnter, useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
-const springConfigEnter = { damping: 14, mass: 1, stiffness: 121.6 };
-
-// increased speed and quicker settling, faster exit feels better
-const springConfigDismiss = {
-  restDisplacementThreshold: 0.5,
-  restSpeedThreshold: 5,
-  damping: 20,
-  mass: 0.8,
-  stiffness: 250,
-};
-
-const CARD_BORDER_RADIUS = 50;
 const CARD_MARGIN = 20;
+const CARD_PADDING = 8;
+const ITEM_HEIGHT = 66;
 
-const ExpandedToastCard = ({
-  width,
-  height,
-  children,
-}: {
-  width: number;
-  height: number;
-  borderRadius: number;
-  children: React.ReactNode;
-}) => {
+const ExpandedToastCard = ({ width, height, children }: { width: number; height: number; children: React.ReactNode }) => {
   return (
     <Panel style={{ width, height }}>
       <View style={StyleSheet.absoluteFillObject}>{children}</View>
     </Panel>
   );
 };
-
-const PADDING_Y = 8;
-const ITEM_HEIGHT = 66;
 
 export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDisplay() {
   const insets = useSafeAreaInsets();
@@ -52,12 +31,24 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   const hasToasts = !!toasts.length;
 
   const restingTranslateY = insets.top + 20;
-  const animateY = useSharedValue(-20);
-  const dragY = useSharedValue(0);
   const opacity = useSharedValue(0);
   const [pointerEvents, setPointerEvents] = useState<'auto' | 'none'>('none');
 
-  const height = toasts.length * ITEM_HEIGHT + PADDING_Y * 2;
+  const height = toasts.length * ITEM_HEIGHT + CARD_PADDING * 2;
+
+  const { dragY, panGesture, animateTo } = useVerticalDismissPanGesture({
+    onDismiss: useCallback(() => {
+      setShowExpandedToasts(false);
+    }, []),
+    onStartDismiss: useCallback(() => {
+      'worklet';
+      opacity.value = withSpring(0, springConfigDismiss);
+    }, [opacity]),
+    height,
+    upwardSensitivityMultiplier: TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER,
+    dismissSensitivity: TOAST_EXPANDED_DISMISS_SENSITIVITY,
+    dismissTargetY: -100,
+  });
 
   useEffect(() => {
     if (!hasToasts) {
@@ -67,72 +58,32 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
 
   useEffect(() => {
     if (showExpanded) {
-      animateY.value = withSpring(0, springConfigEnter);
+      animateTo(0, springConfigEnter);
       opacity.value = withSpring(1, springConfigEnter);
       setPointerEvents('auto');
     } else {
-      animateY.value = withSpring(-20, springConfigDismiss);
+      animateTo(-20, springConfigDismiss);
       opacity.value = withSpring(0, springConfigDismiss);
       setPointerEvents('none');
     }
-  }, [opacity, showExpanded, animateY, pointerEvents]);
+  }, [opacity, showExpanded, animateTo, pointerEvents]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: animateY.value + dragY.value }],
+    transform: [{ translateY: dragY.value }],
     opacity: opacity.value,
   }));
-
-  const panGesture = useMemo(() => {
-    return Gesture.Pan()
-      .onUpdate(e => {
-        'worklet';
-        const rawTranslation = e.translationY;
-        // friction as you drag down
-        if (rawTranslation > 0) {
-          // reduce movement as distance increases
-          const friction = 0.05; // lower = more friction
-          dragY.value = rawTranslation * friction + (rawTranslation * (1 - friction)) / (1 + rawTranslation * 0.01);
-        } else {
-          dragY.value = rawTranslation;
-        }
-      })
-      .onEnd(e => {
-        'worklet';
-        const dragDistance = dragY.value;
-        const adjustedDistance = dragDistance < 0 ? dragDistance * TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER : dragDistance;
-        const distanceRatio = Math.abs(adjustedDistance) / height;
-        const velocityFactor = Math.abs(e.velocityY) / 1000;
-        const dismissScore = distanceRatio + velocityFactor;
-        const shouldDismiss = dismissScore > TOAST_EXPANDED_DISMISS_SENSITIVITY;
-
-        if (shouldDismiss) {
-          const targetY = -100;
-          animateY.value = withSpring(targetY, springConfigDismiss, () => {
-            runOnJS(setShowExpandedToasts)(false);
-          });
-          dragY.value = withSpring(0, springConfigDismiss);
-          opacity.value = withSpring(0, springConfigDismiss);
-          runOnJS(() => {
-            setPointerEvents('none');
-          });
-        } else {
-          dragY.value = withSpring(0, springConfigEnter);
-        }
-      });
-  }, [dragY, height, animateY, opacity]);
 
   const hide = useCallback(() => {
     return new Promise<void>(res => {
       'worklet';
-      animateY.value = withSpring(-100, springConfigDismiss, () => {
+      dragY.value = withSpring(-100, springConfigDismiss, () => {
         runOnJS(setShowExpandedToasts)(false);
       });
-      dragY.value = withSpring(0, springConfigDismiss);
       opacity.value = withSpring(0, springConfigDismiss, () => {
         runOnJS(res)();
       });
     });
-  }, [opacity, animateY, dragY]);
+  }, [opacity, dragY]);
 
   const opacityStyle = useAnimatedStyle(() => {
     return {
@@ -157,12 +108,13 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
       <View style={[styles.contentContainer, { pointerEvents: pointerEvents }]}>
         <GestureDetector gesture={panGesture}>
           <Animated.View style={[animatedStyle, { position: 'absolute', top: restingTranslateY, left: CARD_MARGIN, right: CARD_MARGIN }]}>
-            <ExpandedToastCard width={deviceWidth - 2 * CARD_MARGIN} height={height} borderRadius={CARD_BORDER_RADIUS}>
-              <View style={[styles.toastContentWrapper, { paddingVertical: PADDING_Y }]}>
+            <ExpandedToastCard width={deviceWidth - 2 * CARD_MARGIN} height={height}>
+              <View style={styles.toastContentWrapper}>
                 {toasts.map(toast => {
                   return (
                     <ToastPressable
                       key={toast.id}
+                      panGesture={panGesture}
                       onPress={() => {
                         if (opacity.value !== 1) {
                           // avoid press after dismiss
@@ -185,19 +137,32 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   );
 });
 
-const ToastPressable = ({ children, onPress }: { onPress: () => void; children: ReactNode }) => {
+const ToastPressable = ({ children, panGesture, onPress }: { onPress: () => void; children: ReactNode; panGesture: PanGesture }) => {
   const { pressColor } = useToastColors();
+  const isPressed = useSharedValue(false);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    backgroundColor: isPressed.value ? pressColor : 'transparent',
+  }));
+
+  const tapGesture = Gesture.Tap()
+    .maxDeltaY(5)
+    .maxDuration(2000)
+    .onTouchesDown(() => {
+      isPressed.value = true;
+    })
+    .onStart(() => {
+      runOnJS(onPress)();
+    })
+    .onFinalize(() => {
+      isPressed.value = false;
+    })
+    .simultaneousWithExternalGesture(panGesture);
 
   return (
-    <Pressable
-      style={({ pressed }) => ({
-        backgroundColor: pressed ? pressColor : 'transparent',
-        height: ITEM_HEIGHT,
-      })}
-      onPress={onPress}
-    >
-      {children}
-    </Pressable>
+    <GestureDetector gesture={tapGesture}>
+      <Animated.View style={[{ height: ITEM_HEIGHT, borderRadius: 10 }, animatedStyle]}>{children}</Animated.View>
+    </GestureDetector>
   );
 };
 
@@ -222,10 +187,10 @@ const styles = StyleSheet.create({
   toastContentWrapper: {
     flex: 1,
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+    top: CARD_PADDING,
+    left: CARD_PADDING,
+    right: CARD_PADDING,
     overflow: 'hidden',
-    borderRadius: 50,
+    borderRadius: 36,
   },
 });
