@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { SeparatorColor } from '../../color/palettes';
 import { CustomColor, useForegroundColor } from '../../color/useForegroundColor';
 
@@ -15,7 +15,7 @@ export interface SeparatorProps {
 export function Separator({ color, direction = 'horizontal', thickness = 2 }: SeparatorProps) {
   const foregroundColor = useForegroundColor(color ?? 'separator'); // Fallback for JS consumers
   const style = useMemo(
-    () => ({
+    (): ViewStyle => ({
       backgroundColor: foregroundColor,
       borderRadius: thickness / 2,
       ...(direction === 'horizontal'

@@ -626,6 +626,19 @@ export const portalSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
+export const activitySheetConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.8,
+      headerHeight: 0,
+      springDamping: 1,
+      topOffset: safeAreaInsetValues.top + 15,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const tokenLauncherConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
