@@ -3318,7 +3318,7 @@ SPEC CHECKSUMS:
   react-native-skia: 0103edd4daf17e1917297ef4576a57806a909c32
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
-  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
+  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: 6fa10431df5753a4f40ff054898a3634f7123c5e
   react-native-view-shot: 2e5535ddb51e7b54fbe710e65733bb8bedfedabb
@@ -3403,6 +3403,6 @@ SPEC CHECKSUMS:
   VisionCamera: 7aaae584148bbc250e81b5662e45a7f25c18be2e
   Yoga: adb397651e1c00672c12e9495babca70777e411e
 
-PODFILE CHECKSUM: 0070104e25a17c23e87711103487fac3bff228bb
+PODFILE CHECKSUM: 754d98a2a31c61d171b60dae100d0fd55f5733fa
 
 COCOAPODS: 1.16.2
