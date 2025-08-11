@@ -47,7 +47,6 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     height,
     upwardSensitivityMultiplier: TOAST_EXPANDED_UPWARD_SENSITIVITY_MULTIPLIER,
     dismissSensitivity: TOAST_EXPANDED_DISMISS_SENSITIVITY,
-    initialY: 0,
     dismissTargetY: -100,
   });
 

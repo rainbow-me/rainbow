@@ -18,7 +18,6 @@ interface UseVerticalDismissPanGestureProps {
   height?: number;
   upwardSensitivityMultiplier?: number;
   dismissSensitivity?: number;
-  initialY?: number;
   dismissTargetY?: number;
 }
 
@@ -28,10 +27,9 @@ export function useVerticalDismissPanGesture({
   height = 200,
   upwardSensitivityMultiplier = 2,
   dismissSensitivity = 0.3,
-  initialY = 0,
   dismissTargetY = -100,
 }: UseVerticalDismissPanGestureProps) {
-  const dragY = useSharedValue(initialY);
+  const dragY = useSharedValue(0);
   const isDismissed = useSharedValue(false);
 
   const animateTo = useCallback(
@@ -55,14 +53,14 @@ export function useVerticalDismissPanGesture({
         if (rawTranslation > 0) {
           // reduce movement as distance increases
           const friction = 0.05; // lower = more friction
-          dragY.value = initialY + (rawTranslation * friction + (rawTranslation * (1 - friction)) / (1 + rawTranslation * 0.01));
+          dragY.value = rawTranslation * friction + (rawTranslation * (1 - friction)) / (1 + rawTranslation * 0.01);
         } else {
-          dragY.value = initialY + rawTranslation;
+          dragY.value = rawTranslation;
         }
       })
       .onEnd(e => {
         'worklet';
-        const dragDistance = dragY.value - initialY;
+        const dragDistance = dragY.value;
         const adjustedDistance = dragDistance < 0 ? dragDistance * upwardSensitivityMultiplier : dragDistance;
         const distanceRatio = Math.abs(adjustedDistance) / height;
         const velocityFactor = Math.abs(e.velocityY) / 1000;
@@ -76,14 +74,14 @@ export function useVerticalDismissPanGesture({
             runOnJS(onDismiss)();
 
             // reset state now since its fully dismissed
-            dragY.value = withSpring(initialY, springConfigEnter);
+            dragY.value = withSpring(0, springConfigEnter);
             isDismissed.value = false;
           });
         } else {
-          dragY.value = withSpring(initialY, springConfigEnter);
+          dragY.value = withSpring(0, springConfigEnter);
         }
       });
-  }, [dragY, initialY, upwardSensitivityMultiplier, height, dismissSensitivity, onStartDismiss, isDismissed, dismissTargetY, onDismiss]);
+  }, [dragY, upwardSensitivityMultiplier, height, dismissSensitivity, onStartDismiss, isDismissed, dismissTargetY, onDismiss]);
 
   return {
     dragY,
