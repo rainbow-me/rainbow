@@ -129,15 +129,13 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
   useEffect(() => {
     const listener = position.addListener(({ value }) => {
       const shouldBeInteractive = value >= yOffset + 38;
-      if (shouldBeInteractive !== isHeaderInteractive) {
-        setIsHeaderInteractive(shouldBeInteractive);
-      }
+      setIsHeaderInteractive(shouldBeInteractive);
     });
 
     return () => {
       position.removeListener(listener);
     };
-  }, [position, yOffset, isHeaderInteractive]);
+  }, [position, yOffset]);
 
   const shadowOpacityStyle = useMemo(
     () => ({
