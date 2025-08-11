@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import * as i18n from '@/languages';
 import { Box, Text, TextIcon, TextShadow } from '@/design-system';
