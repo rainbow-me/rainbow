@@ -4,13 +4,13 @@ import { useTheme } from '@/theme';
 
 export const NAVBAR_ICON_SIZE = 36;
 
-type NavbarIconProps = {
+type NavBarTextIconFrameProps = {
   backgroundOpacity?: number;
-  icon: string;
   color: string;
+  children: React.ReactNode;
 };
 
-export function NavbarTextIcon({ backgroundOpacity, icon, color }: NavbarIconProps) {
+export function NavBarTextIconFrame({ backgroundOpacity, color, children }: NavBarTextIconFrameProps) {
   const { colors, isDarkMode } = useTheme();
   const accentColor = color ?? colors.appleBlue;
 
@@ -34,11 +34,25 @@ export function NavbarTextIcon({ backgroundOpacity, icon, color }: NavbarIconPro
         width="full"
       >
         <Cover alignHorizontal="center" alignVertical="center">
-          <Text align="center" color={{ custom: accentColor }} size="icon 17px" weight="bold">
-            {icon}
-          </Text>
+          {children}
         </Cover>
       </Box>
     </Box>
+  );
+}
+
+type NavbarIconProps = {
+  backgroundOpacity?: number;
+  icon: string;
+  color: string;
+};
+
+export function NavbarTextIcon({ backgroundOpacity, icon, color }: NavbarIconProps) {
+  return (
+    <NavBarTextIconFrame backgroundOpacity={backgroundOpacity} color={color}>
+      <Text align="center" color={{ custom: color }} size="icon 17px" weight="bold">
+        {icon}
+      </Text>
+    </NavBarTextIconFrame>
   );
 }
