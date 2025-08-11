@@ -19,6 +19,7 @@ import { useAccountAccentColor, useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters } from '@/raps/references';
@@ -36,11 +37,9 @@ import { View } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { RewardsActionButton } from '../components/RewardsActionButton';
 import { EthRewardsCoinIcon } from '../content/PointsContent';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
-type ClaimNetwork = '10' | '8453' | '7777777';
-
-const CLAIM_NETWORKS = [ChainId.base, ChainId.optimism, ChainId.zora];
 
 const PAGES = {
   CHOOSE_CLAIM_NETWORK: 'choose-claim-network',
@@ -56,7 +55,7 @@ export const ClaimRewardsPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
-  const [selectedNetwork, setSelectedNetwork] = useState<ClaimNetwork>();
+  const [selectedNetwork, setSelectedNetwork] = useState<string>();
 
   const chainId = selectedNetwork ? (parseInt(selectedNetwork) as ChainId) : undefined;
 
@@ -91,15 +90,6 @@ export const ClaimRewardsPanel = () => {
   );
 };
 
-const NETWORK_LIST_ITEMS = CLAIM_NETWORKS.map(chainId => {
-  return {
-    IconComponent: <ChainImage chainId={chainId} size={36} />,
-    label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
-    uniqueId: chainId.toString(),
-    selected: false,
-  };
-});
-
 const ChooseClaimNetwork = ({
   claimStatus,
   goBack,
@@ -110,15 +100,26 @@ const ChooseClaimNetwork = ({
   claimStatus: ClaimStatus;
   goBack: () => void;
   goToPage: (id: string) => void;
-  selectNetwork: (network: ClaimNetwork) => void;
+  selectNetwork: (network: string) => void;
   setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
 }) => {
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
+  const { rewards_claim_networks } = useRemoteConfig('rewards_claim_networks');
+
+  const networkListItems = useMemo(() => {
+    const claimNetworks = rewards_claim_networks as ChainId[];
+    return claimNetworks.map(chainId => ({
+      IconComponent: <ChainImage chainId={chainId} size={36} />,
+      label: useBackendNetworksStore.getState().getChainsLabel()[chainId],
+      uniqueId: chainId.toString(),
+      selected: false,
+    }));
+  }, [rewards_claim_networks]);
 
   const handleOnSelect = useCallback(
     (selectedItemId: string) => {
-      selectNetwork(selectedItemId as ClaimNetwork);
+      selectNetwork(selectedItemId);
       goToPage(PAGES.CLAIMING_REWARDS);
 
       if (isClaimError(claimStatus)) {
@@ -139,7 +140,7 @@ const ChooseClaimNetwork = ({
       }
       disableSelectedStyle
       goBack={goBack}
-      items={NETWORK_LIST_ITEMS}
+      items={networkListItems}
       onSelect={handleOnSelect}
       pageTitle={i18n.t(i18n.l.points.points.choose_claim_network)}
       renderLabelComponent={label => (
@@ -180,6 +181,7 @@ const ClaimingRewards = ({
     chainId: ChainId.optimism,
     enabled: true,
   });
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   const green = useBackgroundColor('green');
   const red = useBackgroundColor('red');
@@ -531,7 +533,7 @@ const ClaimingRewards = ({
                   style={{
                     alignItems: 'center',
                     alignSelf: 'center',
-                    bottom: 4,
+                    bottom: bottomInset + 24,
                     left: 0,
                     height: 80,
                     justifyContent: 'center',
