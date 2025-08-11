@@ -28,7 +28,7 @@ export function Navbar({
   titleComponent = <Box />,
   testID,
   title,
-  isTitleInteractive,
+  isTitleInteractive = true,
 }: NavbarProps) {
   const { top: topInset } = useSafeAreaInsets();
   const pointerEvents = isTitleInteractive ? 'auto' : 'box-none';
