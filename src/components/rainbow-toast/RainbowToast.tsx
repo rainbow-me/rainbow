@@ -119,6 +119,12 @@ function RainbowToastDisplayContent() {
     handleTransactions({ transactions: stableTransactions, mints });
   }, [mints, stableTransactions]);
 
+  // Dismiss all toasts when changing account.
+  const address = useAccountAddress();
+  useEffect(() => {
+    removeAllToasts();
+  }, [address]);
+
   // show all removing and 3 latest toasts
   const visibleToasts = useMemo(() => {
     const toastsToShow: RainbowToastWithIndex[] = [];

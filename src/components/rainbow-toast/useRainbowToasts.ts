@@ -138,6 +138,8 @@ export const useToastStore = createRainbowStore<ToastState>(
 
     removeAllToasts: () => {
       set(state => {
+        if (state.toasts.length === 0) return state;
+
         const dismissedToasts = Object.fromEntries(state.toasts.map(t => [t.id, true]));
         return {
           toasts: [],
@@ -151,6 +153,10 @@ export const useToastStore = createRainbowStore<ToastState>(
   }),
   {
     storageKey: `rainbow-toasts`,
+    partialize: state => ({
+      // Only persist dismissed toasts.
+      dismissedToasts: state.dismissedToasts,
+    }),
   }
 );
 
