@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
-import { NativeCurrencyKey, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
+import { AssetType, NativeCurrencyKey, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -72,10 +72,23 @@ const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowT
   return [valueOut, valueIn];
 };
 
+const checkForPendingSend = (transaction: RainbowTransaction) => {
+  return transaction.status === TransactionStatus.pending && transaction.type === 'send';
+};
+
+const pendingSendTypeValues = (transaction: RainbowTransaction, nativeCurrency: NativeCurrencyKey) => {
+  if (transaction.asset?.type === AssetType.nft || transaction.amount == null || transaction.asset?.price?.value == null) return;
+  return [
+    `${transaction.amount} ${transaction.asset?.symbol}`,
+    `- ${convertAmountAndPriceToNativeDisplay(transaction.amount, transaction.asset?.price?.value, nativeCurrency)?.display}`,
+  ];
+};
+
 export const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeCurrencyKey) => {
   const { changes, direction, type, status } = transaction;
   if (checkForPendingSwap(transaction)) return swapTypeValues(changes, status);
-  if (['approve', 'revoke'].includes(type)) return approvalTypeValues(transaction as RainbowTransaction);
+  if (checkForPendingSend(transaction)) return pendingSendTypeValues(transaction, nativeCurrency);
+  if (['approve', 'revoke'].includes(type)) return approvalTypeValues(transaction);
 
   const change = changes?.filter(c => c?.direction === direction && c?.asset.type !== 'nft')[0];
   let valueSymbol = direction === 'out' ? '-' : '+';

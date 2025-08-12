@@ -88,8 +88,15 @@ tags:
             - longPressOn: 'Hold to Send'
             - runFlow: ../utils/MaybeSetupPin.yaml
 
-            - assertVisible: 'Sending'
-            - assertVisible: 'Rainbow Pooly 104'
+            # Check toast data
+            - assertVisible:
+                text: 'Sending'
+                childOf:
+                  id: toast-.*
+            - assertVisible:
+                text: 'Rainbow Pooly 104'
+                childOf:
+                  id: toast-.*
             # Open toast
             - tapOn:
                 id: toast-.*
@@ -97,7 +104,7 @@ tags:
             - assertVisible: 'Rainbow Pooly'
             - tapOn:
                 id: toast-expanded-.*
-
+            # Check transaction sheet
             - assertVisible: 'Sending'
             - assertVisible: '.*Tx Hash.*'
             - assertVisible: 'View on Etherscan'

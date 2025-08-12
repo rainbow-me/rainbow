@@ -55,6 +55,8 @@ tags:
             - tapOn:
                 id: send-asset
 
+      - tapOn:
+          id: selected-asset-field-input
       - inputText: '0.01'
 
       - retry:
@@ -65,7 +67,7 @@ tags:
 
       # Test enter amount
       - assertVisible: 'Sending'
-      - assertVisible: '$0.01'
+      - assertVisible: '0.01 ETH'
       - assertVisible: 'rainbowwallet.eth'
 
       # iOS is 'Hold to Send' button is stuck on 'Loading...'
@@ -77,17 +79,30 @@ tags:
             - longPressOn: 'Hold to Send'
             - runFlow: ../utils/MaybeSetupPin.yaml
 
-            # Test transaction was done
-            - assertVisible: 'Sending'
-            - assertVisible: '20.00 ETH'
+            # Check toast data
+            - assertVisible:
+                text: 'Sending'
+                childOf:
+                  id: toast-.*
+            - assertVisible:
+                text: '0.01 ETH'
+                childOf:
+                  id: toast-.*
             # Open toast
             - tapOn:
                 id: toast-.*
-            - assertVisible: 'Sending'
-            - assertVisible: '20.00 ETH'
+            # Check expended toast data
+            - assertVisible:
+                text: 'Sending'
+                childOf:
+                  id: toast-expanded-.*
+            - assertVisible:
+                text: '- 0.01 ETH'
+                childOf:
+                  id: toast-expanded-.*
             - tapOn:
                 id: toast-expanded-.*
-
+            # Check transaction sheet
             - assertVisible: 'Sending'
             - assertVisible: '.*Tx Hash*.'
             - assertVisible: 'View on Etherscan'

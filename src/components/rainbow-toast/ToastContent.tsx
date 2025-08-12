@@ -6,7 +6,7 @@ import { RainbowToast, RainbowToastContract, type RainbowToastSend, type Rainbow
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import * as lang from '@/languages';
 import { Text } from '@/design-system';
-import { TransactionStatus } from '@/entities';
+import { AssetType, TransactionStatus } from '@/entities';
 import React, { memo } from 'react';
 import { Text as RNText, StyleSheet, View } from 'react-native';
 
@@ -121,13 +121,14 @@ export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap })
 
 function SendToastContent({ toast }: { toast: RainbowToastSend }) {
   const title = getToastTitle(toast);
+  const subtitle = toast.transaction.asset?.type === AssetType.nft ? toast.tokenName : toast.displayAmount;
 
   return (
     <ToastContentDisplay
       key={toast.status}
       icon={<SendToastIcon toast={toast} />}
       title={title}
-      subtitle={toast.displayAmount}
+      subtitle={subtitle}
       type={toast.status === TransactionStatus.failed ? 'error' : undefined}
     />
   );

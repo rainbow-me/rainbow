@@ -62,7 +62,7 @@ export const useToastStore = createRainbowStore<ToastState>(
 
     handleTransactions: ({ transactions, mints }) => {
       set(state => {
-        const toasts: Record<string, RainbowToast> = {};
+        const toasts = { ...state.toasts };
 
         // we can have both pending + confirmed in transactions at the same time
         // pending store will have it still in there right after it confirms

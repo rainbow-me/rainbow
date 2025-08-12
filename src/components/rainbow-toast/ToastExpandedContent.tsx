@@ -105,9 +105,6 @@ function ToastExpandedContentDisplay({
     if (topValueIn) {
       return topValueIn;
     }
-    if (transaction.type === 'send' && transaction.asset?.symbol && transaction.amount) {
-      return `- ${transaction.amount} ${transaction.asset.symbol}`;
-    }
     return '';
   })();
 
