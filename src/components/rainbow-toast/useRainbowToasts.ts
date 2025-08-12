@@ -1,9 +1,10 @@
-import { getToastFromTransaction, txIdToToastId } from '@/components/rainbow-toast/getToastFromTransaction';
+import { getToastFromTransaction, getToastUpdatedAt, txIdToToastId } from '@/components/rainbow-toast/getToastFromTransaction';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { Mints } from '@/resources/mints';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { isEmpty, mapValues } from 'lodash';
+import { useMemo } from 'react';
 
 // dev tool for seeing helpful formatted logs, only really useful for dev as they are large
 const DEBUG_INCOMING = process.env.DEBUG_RAINBOW_TOASTS === '1';
@@ -12,7 +13,6 @@ export type ToastState = {
   isShowingTransactionDetails: boolean;
   setIsShowingTransactionDetails: (val: boolean) => void;
   toasts: Record<string, RainbowToast>;
-  sortedToastIds: string[];
   handleTransactions: (props: { transactions: RainbowTransaction[]; mints?: Mints }) => void;
   startRemoveToast: (id: string, via: 'swipe' | 'finish') => void;
   finishRemoveToast: (id: string) => void;
@@ -26,7 +26,6 @@ export type ToastState = {
 export const useToastStore = createRainbowStore<ToastState>(
   set => ({
     toasts: {},
-    sortedToastIds: [],
     // we're tracking dismissed toasts here so if transactions update while we're removing
     // we don't re-add them back into the toast stack
     dismissedToasts: {},
@@ -63,9 +62,7 @@ export const useToastStore = createRainbowStore<ToastState>(
 
     handleTransactions: ({ transactions, mints }) => {
       set(state => {
-        const toasts = { ...state.toasts };
-        const activeToastIds: string[] = [];
-        const additionIds: string[] = [];
+        const toasts: Record<string, RainbowToast> = {};
 
         // we can have both pending + confirmed in transactions at the same time
         // pending store will have it still in there right after it confirms
@@ -74,16 +71,21 @@ export const useToastStore = createRainbowStore<ToastState>(
           const id = txIdToToastId(tx);
           if (state.dismissedToasts[id]) continue;
 
-          const existingToast = toasts[id];
+          const existingToast = state.toasts[id];
 
           if (existingToast) {
             // if already removing never update
             if (existingToast.isRemoving) continue;
 
-            // update - in the case of updates we only ever update the transaction, status and subType
-            const updatedToast = { ...existingToast, status: tx.status, transaction: tx, currentType: tx.type };
+            // update - in the case of updates we only ever update the transaction, updatedAt, status and subType
+            const updatedToast = {
+              ...existingToast,
+              status: tx.status,
+              transaction: tx,
+              currentType: tx.type,
+              updatedAt: getToastUpdatedAt(tx),
+            };
             toasts[existingToast.id] = updatedToast;
-            activeToastIds.push(existingToast.id);
 
             if (DEBUG_INCOMING) {
               console.log('updating toast', JSON.stringify(updatedToast, null, 2));
@@ -94,7 +96,6 @@ export const useToastStore = createRainbowStore<ToastState>(
             // we only add if it's pending
             if (tx.status === TransactionStatus.pending) {
               toasts[toast.id] = toast;
-              additionIds.push(toast.id);
 
               if (DEBUG_INCOMING) {
                 console.log('adding toast', JSON.stringify(toast, null, 2));
@@ -112,7 +113,6 @@ export const useToastStore = createRainbowStore<ToastState>(
 
         return {
           toasts,
-          sortedToastIds: [...additionIds, ...activeToastIds],
           dismissedToasts,
         };
       });
@@ -136,7 +136,7 @@ export const useToastStore = createRainbowStore<ToastState>(
       set(state => {
         const toasts = { ...state.toasts };
         delete toasts[id];
-        return { toasts, sortedToastIds: state.sortedToastIds.filter(tid => tid !== id) };
+        return { toasts };
       });
     },
 
@@ -146,7 +146,6 @@ export const useToastStore = createRainbowStore<ToastState>(
 
         return {
           toasts: {},
-          sortedToastIds: [],
           dismissedToasts: {
             ...state.dismissedToasts,
             ...mapValues(state.toasts, () => true),
@@ -167,7 +166,9 @@ export const useToastStore = createRainbowStore<ToastState>(
 function getToastsStateForStartRemove(state: ToastState, id: string, via: 'swipe' | 'finish') {
   const toasts = { ...state.toasts };
 
-  toasts[id] = { ...toasts[id], isRemoving: true, removalReason: via };
+  if (toasts[id]) {
+    toasts[id] = { ...toasts[id], isRemoving: true, removalReason: via };
+  }
 
   return {
     toasts,
@@ -189,6 +190,7 @@ export const {
 
 export function useToasts() {
   const toasts = useToastStore(state => state.toasts);
-  const sortedToastIds = useToastStore(state => state.sortedToastIds);
-  return sortedToastIds.map(id => toasts[id]);
+  return useMemo(() => {
+    return Object.values(toasts).sort((a, b) => b.updatedAt - a.updatedAt);
+  }, [toasts]);
 }

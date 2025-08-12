@@ -13,7 +13,7 @@ type BaseToast = {
   action?: () => void;
   isRemoving?: boolean;
   removalReason?: 'swipe' | 'finish';
-  updatedAt?: number;
+  updatedAt: number;
 };
 
 export type RainbowToastSwap = BaseToast & {

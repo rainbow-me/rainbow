@@ -121,14 +121,13 @@ export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap })
 
 function SendToastContent({ toast }: { toast: RainbowToastSend }) {
   const title = getToastTitle(toast);
-  const subtitle = toast.transaction.asset?.isCoin ? toast.displayAmount : toast.transaction.description || '';
 
   return (
     <ToastContentDisplay
       key={toast.status}
       icon={<SendToastIcon toast={toast} />}
       title={title}
-      subtitle={subtitle}
+      subtitle={toast.displayAmount}
       type={toast.status === TransactionStatus.failed ? 'error' : undefined}
     />
   );

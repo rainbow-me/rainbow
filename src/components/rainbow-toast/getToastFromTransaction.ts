@@ -6,6 +6,12 @@ import { Mints } from '@/resources/mints';
 
 export const txIdToToastId = (tx: RainbowTransaction): string => (tx.nonce ? `${tx.nonce}` : tx.hash + (tx.chainId || tx.asset?.chainId));
 
+export function getToastUpdatedAt(tx: RainbowTransaction): number {
+  // pending transactions use the timestamp field, while mined ones use the minedAt field.
+  // minedAt is in seconds, but timestamp is in milliseconds.
+  return (tx.minedAt != null ? tx.minedAt * 1000 : tx.timestamp) ?? 0;
+}
+
 export function getToastFromTransaction({
   transaction: tx,
   mints,
@@ -21,6 +27,7 @@ export function getToastFromTransaction({
 
     return {
       id: txIdToToastId(tx),
+      updatedAt: getToastUpdatedAt(tx),
       type: 'swap',
       currentType: tx.type,
       transaction: tx,
@@ -43,14 +50,14 @@ export function getToastFromTransaction({
     const symbol = tx.asset?.symbol || tx.symbol || '';
     return {
       id: txIdToToastId(tx),
+      updatedAt: getToastUpdatedAt(tx),
       type: 'send',
       currentType: tx.type,
       transaction: tx,
       chainId: tx.chainId,
       transactionHash: tx.hash,
       status: tx.status,
-      // @ts-expect-error it is there
-      displayAmount: tx.asset?.balance?.display || '0',
+      displayAmount: `${tx.amount} ${tx.asset?.symbol}`,
       token: symbol,
       tokenName: tx.asset?.name || tx.name || '',
       action: () => {
@@ -78,6 +85,7 @@ export function getToastFromTransaction({
 
   return {
     id: txIdToToastId(tx),
+    updatedAt: getToastUpdatedAt(tx),
     type: 'contract',
     transaction: tx,
     chainId: tx.chainId,
