@@ -42,8 +42,3 @@ export type RainbowToast = RainbowToastSwap | RainbowToastSend | RainbowToastCon
 export type RainbowToastWithIndex = RainbowToast & {
   index: number;
 };
-
-export interface RainbowToastState {
-  toasts: RainbowToast[];
-  showToast(toast: RainbowToast): void;
-}
