@@ -26,7 +26,7 @@ import {
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { useDimensions } from '@/hooks';
 import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
 import { useMints } from '@/resources/mints';
@@ -211,14 +211,13 @@ const DISMISS_THRESHOLD_PERCENTAGE = 0.1;
 const DISMISS_VELOCITY_THRESHOLD = 80;
 
 type Props = PropsWithChildren<{
-  testID?: string;
   toast: RainbowToast;
   minWidth?: number;
   onWidth: (id: string, width: number) => void;
   index: number;
 }>;
 
-const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: minWidthProp, onWidth, index }: Props) {
+const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthProp, onWidth, index }: Props) {
   const insets = useSafeAreaInsets();
   const { id } = toast;
 
@@ -439,7 +438,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
     <Animated.View pointerEvents="box-none" style={[styles.outerGestureView, dragStyle, { zIndex: 3 - index }]}>
       <GestureDetector gesture={combinedGesture}>
         <Animated.View
-          testID={testID}
+          testID={`toast-${toast.id}`}
           style={[
             styles.outerContainer,
             outerContainerStyle,
@@ -519,13 +518,16 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
 const styles = StyleSheet.create({
   outerGestureView: {
     alignSelf: 'center',
+    // Maestro cannot detect views that overflow their parent, so
+    // avoid stacking toasts in test.
+    minHeight: IS_TEST ? TOAST_HEIGHT : 0,
   },
   outerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
     alignSelf: 'center',
-    position: 'absolute',
+    position: IS_TEST ? 'relative' : 'absolute',
     minHeight: TOAST_HEIGHT,
   },
   background: {

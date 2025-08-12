@@ -106,39 +106,55 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
       </Animated.View>
 
       {/* content card */}
-      <View style={[styles.contentContainer, { pointerEvents: pointerEvents }]}>
-        <GestureDetector gesture={panGesture}>
-          <Animated.View style={[animatedStyle, { position: 'absolute', top: restingTranslateY, left: CARD_MARGIN, right: CARD_MARGIN }]}>
-            <ExpandedToastCard width={deviceWidth - 2 * CARD_MARGIN} height={height}>
-              <View style={styles.toastContentWrapper}>
-                {toasts.map(toast => {
-                  return (
-                    <ToastPressable
-                      key={toast.id}
-                      panGesture={panGesture}
-                      onPress={() => {
-                        if (opacity.value !== 1) {
-                          // avoid press after dismiss
-                          return;
-                        }
-                        hide();
-                        toast.action?.();
-                      }}
-                    >
-                      <ToastExpandedContent toast={toast} />
-                    </ToastPressable>
-                  );
-                })}
-              </View>
-            </ExpandedToastCard>
-          </Animated.View>
-        </GestureDetector>
-      </View>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View
+          pointerEvents={pointerEvents}
+          style={[
+            styles.contentContainer,
+            animatedStyle,
+            { position: 'absolute', top: restingTranslateY, left: CARD_MARGIN, right: CARD_MARGIN },
+          ]}
+        >
+          <ExpandedToastCard width={deviceWidth - 2 * CARD_MARGIN} height={height}>
+            <View style={styles.toastContentWrapper}>
+              {toasts.map(toast => {
+                return (
+                  <ToastPressable
+                    key={toast.id}
+                    testID={`toast-expanded-${toast.id}`}
+                    panGesture={panGesture}
+                    onPress={() => {
+                      if (opacity.value !== 1) {
+                        // avoid press after dismiss
+                        return;
+                      }
+                      hide();
+                      toast.action?.();
+                    }}
+                  >
+                    <ToastExpandedContent toast={toast} />
+                  </ToastPressable>
+                );
+              })}
+            </View>
+          </ExpandedToastCard>
+        </Animated.View>
+      </GestureDetector>
     </>
   );
 });
 
-const ToastPressable = ({ children, panGesture, onPress }: { onPress: () => void; children: ReactNode; panGesture: PanGesture }) => {
+const ToastPressable = ({
+  children,
+  panGesture,
+  onPress,
+  testID,
+}: {
+  onPress: () => void;
+  children: ReactNode;
+  panGesture: PanGesture;
+  testID: string;
+}) => {
   const { pressColor } = useToastColors();
   const isPressed = useSharedValue(false);
 
@@ -162,7 +178,9 @@ const ToastPressable = ({ children, panGesture, onPress }: { onPress: () => void
 
   return (
     <GestureDetector gesture={tapGesture}>
-      <Animated.View style={[{ height: ITEM_HEIGHT, borderRadius: 10 }, animatedStyle]}>{children}</Animated.View>
+      <Animated.View style={[{ height: ITEM_HEIGHT, borderRadius: 10 }, animatedStyle]} testID={testID}>
+        {children}
+      </Animated.View>
     </GestureDetector>
   );
 };
