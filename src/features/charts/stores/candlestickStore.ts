@@ -259,7 +259,7 @@ function buildCandlestickRequest(params: CandlestickParams): string | null {
   const barCount = barCountParam ?? INITIAL_BAR_COUNT;
 
   const existingData = useCandlestickStore.getState().getData(params) ?? null;
-  const isPrepending = startTimestamp !== null;
+  const isPrepending = startTimestamp !== undefined;
   const resolutionMinutes = getResolutionMinutes(candleResolution);
 
   const candlesToRequest = isPrepending
