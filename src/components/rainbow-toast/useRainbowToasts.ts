@@ -91,10 +91,11 @@ export const useToastStore = createRainbowStore<ToastState>(
               console.log('updating toast', JSON.stringify(updatedToast, null, 2));
             }
           } else {
-            const toast = getToastFromTransaction({ transaction: tx, mints });
-            if (!toast) continue;
             // we only add if it's pending
             if (tx.status === TransactionStatus.pending) {
+              const toast = getToastFromTransaction({ transaction: tx, mints });
+              if (!toast) continue;
+
               toasts[toast.id] = toast;
 
               if (DEBUG_INCOMING) {
