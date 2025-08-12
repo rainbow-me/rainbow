@@ -123,9 +123,9 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
     // Remove timed out waiting transactions
     const now = Math.floor(Date.now() / 1000);
-    const validWaitingMindedTransactions = waitingMinedTransactions.filter(tx => now - tx.minedAt < ASSET_DETECTION_TIMEOUT);
+    const validWaitingMinedTransactions = waitingMinedTransactions.filter(tx => now - tx.minedAt < ASSET_DETECTION_TIMEOUT);
 
-    if (validWaitingMindedTransactions.length < waitingMinedTransactions.length) {
+    if (validWaitingMinedTransactions.length < waitingMinedTransactions.length) {
       waitingMinedTransactions.forEach(tx => {
         if (now - tx.minedAt >= ASSET_DETECTION_TIMEOUT) {
           logger.warn('[watchPendingTransactions]: Timed out waiting for asset updates for transaction', {
@@ -135,7 +135,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       });
     }
 
-    const updatedWaitingMinedTransactions = [...validWaitingMindedTransactions, ...newWaiting];
+    const updatedWaitingMinedTransactions = [...validWaitingMinedTransactions, ...newWaiting];
 
     if (updatedWaitingMinedTransactions.length) {
       const expectedUniqueIds = new Set<string>();
