@@ -14,7 +14,7 @@ import {
   TOAST_TOP_OFFSET,
 } from '@/components/rainbow-toast/constants';
 import { ToastContent } from '@/components/rainbow-toast/ToastContent';
-import { type RainbowToastWithIndex } from '@/components/rainbow-toast/types';
+import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import {
   finishRemoveToast,
@@ -22,6 +22,7 @@ import {
   removeAllToasts,
   setShowExpandedToasts,
   startRemoveToast,
+  useToasts,
   useToastStore,
 } from '@/components/rainbow-toast/useRainbowToasts';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
@@ -80,8 +81,23 @@ export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   return <RainbowToastDisplayContent />;
 });
 
+/**
+ * Returns the toasts with their index adjusted by not counting the ones being removed.
+ */
+function toastsWithAdjustedIndex(toasts: RainbowToast[]): [RainbowToast, number][] {
+  let currentIndex = 0;
+  return toasts.map(toast => {
+    const index = currentIndex;
+    if (!toast.isRemoving) {
+      currentIndex += 1;
+    }
+    return [toast, index];
+  });
+}
+
 function RainbowToastDisplayContent() {
-  const { toasts, isShowingTransactionDetails } = useToastStore();
+  const isShowingTransactionDetails = useToastStore(state => state.isShowingTransactionDetails);
+  const toasts = useToasts();
   const { transactions } = useLatestAccountTransactions();
   const { height: deviceHeight } = useDimensions();
 
@@ -127,8 +143,8 @@ function RainbowToastDisplayContent() {
 
   // show all removing and 3 latest toasts
   const visibleToasts = useMemo(() => {
-    const toastsToShow: RainbowToastWithIndex[] = [];
-    const removingToasts: RainbowToastWithIndex[] = [];
+    const toastsToShow: RainbowToast[] = [];
+    const removingToasts: RainbowToast[] = [];
     for (const toast of toasts) {
       if (toast.isRemoving) {
         removingToasts.push(toast);
@@ -167,8 +183,8 @@ function RainbowToastDisplayContent() {
 
       <GestureDetector gesture={panGesture}>
         <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
-          {visibleToasts.map(toast => {
-            return <RainbowToastItem minWidth={minWidth} onWidth={setToastWidth} key={toast.id} toast={toast} />;
+          {toastsWithAdjustedIndex(visibleToasts).map(([toast, index]) => {
+            return <RainbowToastItem minWidth={minWidth} onWidth={setToastWidth} key={toast.id} toast={toast} index={index} />;
           })}
         </Animated.View>
       </GestureDetector>
@@ -196,14 +212,15 @@ const DISMISS_VELOCITY_THRESHOLD = 80;
 
 type Props = PropsWithChildren<{
   testID?: string;
-  toast: RainbowToastWithIndex;
+  toast: RainbowToast;
   minWidth?: number;
   onWidth: (id: string, width: number) => void;
+  index: number;
 }>;
 
-const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: minWidthProp, onWidth }: Props) {
+const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: minWidthProp, onWidth, index }: Props) {
   const insets = useSafeAreaInsets();
-  const { index, id } = toast;
+  const { id } = toast;
 
   const gap = index > 1 ? TOAST_GAP_FAR : TOAST_GAP_NEAR;
   const distance = index * gap + insets.top + TOAST_TOP_OFFSET;

@@ -9,7 +9,7 @@ import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Gesture, GestureDetector, PanGesture } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { setShowExpandedToasts, useToastStore } from './useRainbowToasts';
+import { setShowExpandedToasts, useToasts, useToastStore } from './useRainbowToasts';
 import { springConfigDismiss, springConfigEnter, useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
 const CARD_MARGIN = 20;
@@ -27,7 +27,8 @@ const ExpandedToastCard = ({ width, height, children }: { width: number; height:
 export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDisplay() {
   const insets = useSafeAreaInsets();
   const { width: deviceWidth } = useDimensions();
-  const { toasts, showExpanded } = useToastStore();
+  const showExpanded = useToastStore(state => state.showExpanded);
+  const toasts = useToasts();
   const hasToasts = !!toasts.length;
 
   const restingTranslateY = insets.top + 20;

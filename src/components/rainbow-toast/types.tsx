@@ -38,7 +38,3 @@ export type RainbowToastContract = BaseToast & {
 };
 
 export type RainbowToast = RainbowToastSwap | RainbowToastSend | RainbowToastContract;
-
-export type RainbowToastWithIndex = RainbowToast & {
-  index: number;
-};
