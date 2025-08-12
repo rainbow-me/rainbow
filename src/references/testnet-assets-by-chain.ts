@@ -210,6 +210,63 @@ export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
       quantity: '0',
     },
   },
+  // Anvil Assets (when using Anvil as local testnet)
+  [ChainId.anvil]: {
+    // Test ETH
+    'eth_31337': {
+      asset: {
+        asset_code: 'eth',
+        mainnet_address: 'eth',
+        colors: {
+          fallback: '#E8EAF5',
+          primary: '#808088',
+        },
+        decimals: 18,
+        icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
+        name: 'Ethereum',
+        network: ChainName.mainnet,
+        implementations: {},
+        bridging: {
+          bridgeable: true,
+          networks: {},
+        },
+        price: {
+          relative_change_24h: -4.586615622469276,
+          value: 2590.2,
+        },
+        symbol: 'ETH',
+        isNativeAsset: true,
+      },
+      quantity: '0',
+    },
+    // Test Polygon Ecosystem Token (POL)
+    '0x0000000000000000000000000000000000001010_31337': {
+      asset: {
+        asset_code: '0x0000000000000000000000000000000000001010',
+        mainnet_address: '0x0000000000000000000000000000000000001010',
+        colors: {
+          fallback: '#8B47DB',
+          primary: '#6E41BB',
+        },
+        decimals: 18,
+        icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/polygon/matic.png',
+        name: 'Polygon Ecosystem Token',
+        network: ChainName.polygon, // L2 network for proper categorization
+        implementations: {},
+        bridging: {
+          bridgeable: true,
+          networks: {},
+        },
+        price: {
+          relative_change_24h: 2.5,
+          value: 0.85,
+        },
+        symbol: 'POL',
+        isNativeAsset: true, // Native gas token for Polygon L2
+      },
+      quantity: '10000',
+    },
+  },
 };
 
 export default chainAssets;

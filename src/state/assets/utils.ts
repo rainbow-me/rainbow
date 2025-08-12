@@ -34,7 +34,19 @@ export async function fetchUserAssets(
   const { address, currency, testnetMode } = params;
 
   if (testnetMode) {
-    const { assets, chainIdsInResponse } = await fetchAnvilBalancesByChainId(address, ChainId.mainnet);
+    const { assets: mainnetAssets, chainIdsInResponse: mainnetChainIdsInResponse } = await fetchAnvilBalancesByChainId(
+      address,
+      ChainId.mainnet
+    );
+    const { assets: anvilAssets, chainIdsInResponse: anvilChainIdsInResponse = [] } = await fetchAnvilBalancesByChainId(
+      address,
+      ChainId.anvil
+    );
+    const assets = {
+      ...mainnetAssets,
+      ...(anvilAssets ?? {}),
+    };
+    const chainIdsInResponse = [...mainnetChainIdsInResponse, ...anvilChainIdsInResponse];
     const parsedAssets: Array<{
       asset: ZerionAsset;
       quantity: string;

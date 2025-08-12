@@ -1,0 +1,83 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- retry:
+    maxRetries: 3
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          arguments:
+            isE2ETest: true
+      - runFlow: ../utils/Prepare.yaml
+      - runFlow: ../utils/ImportWalletWithKey.yaml
+
+      # Connect to Anvil first (base setup)
+      - tapOn:
+          id: dev-button-anvil
+
+      - tapOn:
+          id: fund-polygon-wallet-button
+
+      # Wait for network switch to complete
+      - retry:
+          maxRetries: 5
+          commands:
+            - assertVisible:
+                id: 'balance-coin-row-Polygon Ecosystem Token'
+
+      # Open send sheet
+      - tapOn:
+          id: send-button
+      - assertVisible:
+          id: send-asset-form-field
+
+      # Test ENS address input
+      - inputText: 'rainbowwallet.eth'
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible:
+                id: send-asset-list
+
+      - runFlow:
+          when:
+            platform: iOS
+          commands:
+            - tapOn: '.*Polygon Ecosystem Token.*'
+      - runFlow:
+          when:
+            platform: Android
+          commands:
+            - tapOn:
+                id: send-asset-POL-polygon
+
+      - inputText: '0.01'
+
+      - retry:
+          maxRetries: 3
+          commands:
+            - assertVisible: .*Review
+      - tapOn: .*Review
+
+      - assertVisible: 'Sending'
+      - assertVisible: 'rainbowwallet.eth'
+
+      - tapOn:
+          id: has-wallet-that-supports
+      - longPressOn: '.*Hold to Send.*'
+      - runFlow: ../utils/MaybeSetupPin.yaml
+
+      - assertVisible: 'Pending'
+      - assertVisible: 'Sending*.'
+
+      - tapOn: Sending*.
+
+      - assertVisible: 'Sending'
+      - assertVisible: '.*Tx Hash.*'
+
+      - assertVisible: '.*View on Polygonscan.*'
+      - swipe:
+          direction: DOWN
