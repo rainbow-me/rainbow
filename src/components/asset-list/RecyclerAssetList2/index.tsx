@@ -25,9 +25,7 @@ import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingO
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
-type Item = MenuItem<(typeof Routes)[keyof typeof Routes]>;
-
-const menuItems: Item[] = [
+const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
   {
     actionKey: Routes.SETTINGS_SHEET,
     actionTitle: lang.t(lang.l.settings.label),

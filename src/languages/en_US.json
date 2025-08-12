@@ -547,7 +547,6 @@
       "not_applied": "NOT APPLIED",
       "notifications_debug": "Notifications Debug",
       "remove_all_backups": "Remove All Backups",
-      "toasts_actions": "Toasts Debug Actions",
       "keychain": {
         "menu_title": "Reset Keychain",
         "delete_wallets": "Delete All Wallets",
@@ -2482,13 +2481,7 @@
     },
     "toasts": {
       "copied": "Copied \"%{copiedText}\"",
-      "invalid_paste": "You can't paste that here",
-      "statuses": {
-        "confirmed": "Confirmed",
-        "dropped": "Dropped",
-        "failed": "Failed",
-        "pending": "Pending"
-      }
+      "invalid_paste": "You can't paste that here"
     },
     "tokens_tab": {
       "unknown_token": "Unknown Token"

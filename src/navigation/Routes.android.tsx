@@ -62,6 +62,7 @@ import {
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
+import { deviceUtils } from '@/utils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';

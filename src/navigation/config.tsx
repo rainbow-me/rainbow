@@ -414,17 +414,6 @@ export const recieveModalSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const devActionsModalSheetConfig: PartialNavigatorConfigOptions = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
-      scrollEnabled: false,
-      springDamping: 1,
-    }),
-  }),
-};
-
 export const qrScannerConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({

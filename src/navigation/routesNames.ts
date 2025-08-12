@@ -115,7 +115,6 @@ const Routes = {
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
   KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',
-  DEV_ACTION_SHEET: 'DevActionSheet',
 } as const;
 
 export const NATIVE_ROUTES = [

@@ -76,7 +76,6 @@ import {
   expandedAssetSheetV2Config,
   tokenLauncherConfig,
   kingOfTheHillExplainSheetConfig,
-  devActionsModalSheetConfig,
   activitySheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';

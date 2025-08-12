@@ -2,7 +2,6 @@ import { useMemo, useCallback } from 'react';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
-import { IS_DEV } from '@/env';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { queryClient } from '@/react-query/queryClient';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
@@ -91,13 +90,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       }
     );
 
-    if (IS_DEV) {
-      if (newPendingTransactions.some(p => p.isMocked)) {
-        logger.info(`Avoiding updating transactions to avoid clearing mocked dev transactions`);
-        return;
-      }
-    }
-
     if (minedTransactions.length) {
       minedTransactions.forEach(tx => {
         if (tx.changes?.length) {
@@ -132,7 +124,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         });
       }, 2000);
     }
-
     setPendingTransactions({
       address,
       pendingTransactions: newPendingTransactions,
