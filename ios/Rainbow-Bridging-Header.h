@@ -14,5 +14,3 @@
 
 #import "RNCMScreen.h"
 #import "RNCMScreenStack.h"
-
-#import "RNSplashScreen.h"
