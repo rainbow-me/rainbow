@@ -299,36 +299,13 @@ export const ActivityIcon = ({
 
   if (contractIconUrl) {
     return (
-      <View
-        style={{
-          shadowColor: globalColors.grey100,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.02,
-          shadowRadius: 3,
-          overflow: 'visible',
-        }}
-      >
-        <View
-          style={{
-            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.24,
-            shadowRadius: 9,
-          }}
-        >
-          <ImgixImage
-            size={CardSize}
-            style={{
-              width: size,
-              height: size,
-              borderRadius: 10,
-            }}
-            source={{
-              uri: contractIconUrl,
-            }}
-          />
-        </View>
-        <ChainImage chainId={transaction.chainId} showBadge={badge && transaction.chainId !== ChainId.mainnet} />
+      <View style={sx.iconContainer}>
+        <RainbowCoinIcon
+          icon={contractIconUrl}
+          chainId={transaction?.asset?.chainId || ChainId.mainnet}
+          symbol={transaction?.asset?.symbol || ''}
+          color={transaction?.asset?.colors?.primary || transaction?.asset?.colors?.fallback || undefined}
+        />
       </View>
     );
   }
