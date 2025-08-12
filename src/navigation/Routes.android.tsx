@@ -62,7 +62,8 @@ import {
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
-import useExperimentalFlag, { KING_OF_THE_HILL_TAB, PROFILES } from '@/config/experimentalHooks';
+import { deviceUtils } from '@/utils';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
@@ -98,9 +99,8 @@ import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
 import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
-import ProfileScreen from '@/screens/ProfileScreen';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { IS_TEST } from '@/env';
+import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -147,8 +147,7 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { king_of_the_hill_tab_enabled } = useRemoteConfig('king_of_the_hill_tab_enabled');
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   return (
     <BSStack.Navigator>
@@ -178,7 +177,16 @@ function BSNavigator() {
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         options={hardwareWalletTxNavigatorPreset}
       />
-      {showKingOfTheHillTab && <BSStack.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} />}
+      {showKingOfTheHillTab && (
+        <BSStack.Screen
+          component={ActivitySheetScreen}
+          name={Routes.PROFILE_SCREEN}
+          options={{
+            ...bottomSheetPreset,
+            snapPoints: ['88%'],
+          }}
+        />
+      )}
       {profilesEnabled && (
         <>
           <BSStack.Screen component={ENSConfirmRegisterSheet} name={Routes.ENS_CONFIRM_REGISTER_SHEET} />

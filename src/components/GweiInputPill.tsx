@@ -4,13 +4,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 import { ButtonPressAnimation } from '@/components/animations';
 import styled from '@/styled-thing';
-import { buildTextStyles, margin, padding } from '@/styles';
+import { buildTextStyles, padding } from '@/styles';
 import { useTheme } from '@/theme';
 import { TextInput } from 'react-native';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
-
-const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
 type GweiInputPillProps = {
   color: string;
@@ -30,23 +28,23 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     interval: 1,
     keyboardAppearance: 'dark',
     keyboardType: 'decimal-pad',
-    letterSpacing: 'rounded',
+    // On android using letterSpacing causes wrong text input width
+    // which causes numbers to be cut off a little bit.
+    letterSpacing: IS_ANDROID ? null : 'rounded',
     size: 'lmedium',
     textAlign: 'left',
     timing: 'linear',
     weight: 'heavy',
     maxWidth: 80,
     minWidth: 12,
-    height: IS_ANDROID ? 32 : undefined,
-    top: IS_ANDROID ? 1 : undefined,
+    includeFontPadding: false,
   })
 )(
   // @ts-expect-error
   props => ({
     // @ts-expect-error
     ...buildTextStyles.object(props),
-    ...(android ? padding.object(0, 0, 0, 0) : {}),
-    ...margin.object(android ? -ANDROID_EXTRA_LINE_HEIGHT : 0, 0, android ? -ANDROID_EXTRA_LINE_HEIGHT : 0, 0),
+    ...(IS_ANDROID ? padding.object(0, 0, 0, 0) : {}),
   })
 );
 
