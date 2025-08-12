@@ -6,6 +6,7 @@ import { createUserAssetsStore } from './createUserAssetsStore';
 import { UserAssetsStateToPersist } from './persistence';
 import { QueryEnabledUserAssetsState, UserAssetsRouter, UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
+import { setupPositionsAssetsSync, cleanupPositionsAssetsSync } from './positionsSync';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<UserAssetsStoreType, UserAssetsStateToPersist>(
   getOrCreateStore
@@ -28,6 +29,9 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
   if (cachedStore) rebindSubscriptions(cachedStore, newStore);
 
   userAssetsStoreManager.setState({ address: accountAddress, cachedStore: newStore });
+
+  setupPositionsAssetsSync();
+
   return newStore;
 }
 
@@ -43,7 +47,10 @@ function useUserAssetsStoreInternal<T>(
 }
 
 export const useUserAssetsStore: UserAssetsRouter = Object.assign(useUserAssetsStoreInternal, {
-  destroy: () => getOrCreateStore().destroy(),
+  destroy: () => {
+    cleanupPositionsAssetsSync();
+    return getOrCreateStore().destroy();
+  },
   getInitialState: () => getOrCreateStore().getInitialState(),
   getState: (address?: Address | string) => getOrCreateStore(address).getState(),
   persist,
