@@ -160,7 +160,7 @@ function RainbowToastDisplayContent() {
       <RainbowToastExpandedDisplay />
 
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
+        <Animated.View pointerEvents="box-none" style={[StyleSheet.absoluteFillObject, hiddenAnimatedStyle]}>
           {visibleToasts.map(toast => {
             return <RainbowToastItem minWidth={minWidth} onWidth={setToastWidth} key={toast.id} toast={toast} />;
           })}
@@ -413,8 +413,8 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
   );
 
   return (
-    <GestureDetector gesture={combinedGesture}>
-      <Animated.View style={[dragStyle, { alignSelf: 'center', zIndex: 3 - index }]}>
+    <Animated.View pointerEvents="box-none" style={[styles.outerGestureView, dragStyle, { zIndex: 3 - index }]}>
+      <GestureDetector gesture={combinedGesture}>
         <Animated.View
           testID={testID}
           style={[
@@ -488,16 +488,21 @@ const RainbowToastItem = memo(function RainbowToast({ toast, testID, minWidth: m
             </Animated.View>
           </View>
         </Animated.View>
-      </Animated.View>
-    </GestureDetector>
+      </GestureDetector>
+    </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
+  outerGestureView: {
+    alignSelf: 'center',
+  },
   outerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
+    alignSelf: 'center',
+    position: 'absolute',
     minHeight: TOAST_HEIGHT,
   },
   background: {
