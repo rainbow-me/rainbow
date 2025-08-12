@@ -13,7 +13,7 @@ import * as lang from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
@@ -123,8 +123,21 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
   const showKingOfTheHillTab = useShowKingOfTheHill();
+  const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
+
+  useEffect(() => {
+    const listener = position.addListener(({ value }) => {
+      const shouldBeInteractive = value >= yOffset + 38;
+      setIsHeaderInteractive(shouldBeInteractive);
+    });
+
+    return () => {
+      position.removeListener(listener);
+    };
+  }, [position, yOffset]);
+
   const shadowOpacityStyle = useMemo(
     () => ({
       shadowOpacity: position.interpolate({
@@ -222,8 +235,10 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
           right: 0,
           zIndex: 100,
         }}
+        pointerEvents={isHeaderInteractive ? 'auto' : 'box-none'}
       >
         <Navbar
+          isTitleInteractive={isHeaderInteractive}
           hasStatusBarInset
           leftComponent={
             <Navbar.Item onPress={handlePressQRScanner}>
@@ -253,6 +268,7 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
               as={RNAnimated.View}
               height={{ custom: navbarHeight }}
               justifyContent="center"
+              pointerEvents={isHeaderInteractive ? 'auto' : 'none'}
               style={[walletNameStyle, { alignSelf: 'center', bottom: IS_ANDROID ? 8 : 2 }]}
             >
               <ProfileNameRow variant="header" />

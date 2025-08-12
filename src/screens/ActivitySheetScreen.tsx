@@ -2,12 +2,11 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
-import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import React, { memo } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { ActivityList } from '../components/activity-list';
@@ -51,7 +50,6 @@ export function ActivitySheetScreen() {
       <View style={{ flex: 1 }}>
         <ActivityList key={accountAddress} scrollY={scrollY} paddingTopForNavBar />
       </View>
-      <PendingTransactionWatcher />
     </View>
   );
 }
@@ -59,9 +57,3 @@ export function ActivitySheetScreen() {
 function onChangeWallet(): void {
   Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
 }
-
-const PendingTransactionWatcher = memo(function PendingTransactionWatcher() {
-  const accountAddress = useAccountAddress();
-  usePendingTransactionWatcher({ address: accountAddress });
-  return null;
-});
