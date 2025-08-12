@@ -26,6 +26,7 @@ export enum TransactionStatus {
 
 export interface RainbowTransaction {
   address?: string;
+  amount?: string;
   asset?:
     | (ParsedAsset &
         (
