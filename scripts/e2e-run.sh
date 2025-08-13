@@ -39,22 +39,20 @@ stop_recording() {
 start_recording() {
   local recording_dir=$1
 
-  if [ "$RECORD_ON_FAILURE" = "true" ] && [ -n "$PLATFORM" ]; then
-    echo "🎥 Starting screen recording..."
-    mkdir -p "$recording_dir"
+  echo "🎥 Starting screen recording..."
+  mkdir -p "$recording_dir"
 
-    if [ "$PLATFORM" = "android" ]; then
-      adb shell "screenrecord --bugreport /data/local/tmp/recording.mp4 & echo \$! > /data/local/tmp/recording_pid.txt" &
-      # Placeholder recording PID for android, since it is saved on the device.
-      RECORDING_PID="android"
-    elif [ "$PLATFORM" = "ios" ]; then
-      if [ -n "${DEVICE_UDID:-}" ]; then
-        xcrun simctl io "$DEVICE_UDID" recordVideo --codec=h264 "$recording_dir/recording.mp4" &
-        RECORDING_PID=$!
-      else
-        xcrun simctl io booted recordVideo --codec=h264 "$recording_dir/recording.mp4" &
-        RECORDING_PID=$!
-      fi
+  if [ "$PLATFORM" = "android" ]; then
+    adb shell "screenrecord --bugreport /data/local/tmp/recording.mp4 & echo \$! > /data/local/tmp/recording_pid.txt" &
+    # Placeholder recording PID for android, since it is saved on the device.
+    RECORDING_PID="android"
+  elif [ "$PLATFORM" = "ios" ]; then
+    if [ -n "${DEVICE_UDID:-}" ]; then
+      xcrun simctl io "$DEVICE_UDID" recordVideo --codec=h264 "$recording_dir/recording.mp4" &
+      RECORDING_PID=$!
+    else
+      xcrun simctl io booted recordVideo --codec=h264 "$recording_dir/recording.mp4" &
+      RECORDING_PID=$!
     fi
   fi
 }
@@ -201,12 +199,12 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       SUCCESS=true
       echo "✅ Passed: $TEST_NAME (${DURATION}s, $ATTEMPT attempt(s))"
       echo
-      
+
       # Stop recording (if recording was active)
       if [ "$SHOULD_RECORD" = "true" ]; then
         stop_recording "$DEBUG_OUTPUT"
       fi
-      
+
       mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/✅-$TEST_NAME-$ATTEMPT"
       break
     else
@@ -214,16 +212,16 @@ for TEST_FILE in "${TEST_FILES[@]}"; do
       DURATION=$((END_TIME - START_TIME))
       echo "⚠️ Attempt $ATTEMPT failed for $TEST_NAME (${DURATION}s)"
       echo
-      
+
       # Stop recording (if recording was active)
       if [ "$SHOULD_RECORD" = "true" ]; then
         stop_recording "$DEBUG_OUTPUT"
       fi
-      
+
       mv "$DEBUG_OUTPUT" "$ARTIFACTS_FOLDER/maestro/❌-$TEST_NAME-$ATTEMPT"
 
-      # Enable recording for subsequent attempts after first failure
-      if [ "$ATTEMPT" -eq 1 ]; then
+      # Enable recording for subsequent attempts after failure
+      if [ "$RECORD_ON_FAILURE" = "true" ]; then
         SHOULD_RECORD=true
       fi
     fi
