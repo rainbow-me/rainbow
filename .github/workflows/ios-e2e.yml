@@ -146,7 +146,6 @@ jobs:
         id: simulator
         with:
           model: 'iPhone 16'
-          wait_for_boot: true
 
       - name: Ensure Simulator is fully booted
         run: |
