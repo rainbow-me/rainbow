@@ -2,20 +2,21 @@ import { useMemo, useCallback, useState } from 'react';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
-import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { queryClient } from '@/react-query/queryClient';
+import { fetchConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getPlatformClient } from '@/resources/platform/client';
-import { GetAssetsResponse, UserAsset } from '@/state/assets/types';
+import { GetAssetsResponse } from '@/state/assets/types';
 import { SupportedCurrencyKey } from '@/references';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 
 const ASSET_DETECTION_TIMEOUT = time.seconds(30) / 1000;
 
@@ -72,6 +73,8 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
   const watchPendingTransactions = useCallback(async () => {
     if (!pendingTransactions.length && !waitingMinedTransactions.length) return;
+    const now = Math.floor(Date.now() / 1000);
+    const allChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
 
     let newlyMinedTransactions: MinedTransaction[] = [];
 
@@ -89,6 +92,11 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
             acc.newPendingTransactions.push(tx);
           } else {
             acc.minedTransactions.push(tx as MinedTransaction);
+            analytics.track(event.pendingTransactionResolved, {
+              chainId: tx.chainId,
+              type: tx.type,
+              timeToResolve: tx.minedAt ? (now - tx.minedAt) * 1000 : undefined,
+            });
           }
           return acc;
         },
@@ -97,7 +105,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           minedTransactions: [],
         }
       );
-
       newlyMinedTransactions = minedTransactions;
 
       usePendingTransactionsStore.getState().setPendingTransactions({
@@ -106,15 +113,16 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       });
 
       if (minedTransactions.length) {
-        const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
-
-        await queryClient.refetchQueries({
-          queryKey: consolidatedTransactionsQueryKey({
+        await fetchConsolidatedTransactions(
+          {
             address,
             currency: nativeCurrency,
-            chainIds: supportedMainnetChainIds,
-          }),
-        });
+            chainIds: allChainIds,
+          },
+          {
+            staleTime: 0,
+          }
+        );
       }
     }
 
@@ -122,12 +130,15 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     const newWaiting = newlyMinedTransactions.filter(tx => (tx.changes?.length || tx.asset) && !allExistingHashes.has(tx.hash));
 
     // Remove timed out waiting transactions
-    const now = Math.floor(Date.now() / 1000);
     const validWaitingMinedTransactions = waitingMinedTransactions.filter(tx => now - tx.minedAt < ASSET_DETECTION_TIMEOUT);
 
     if (validWaitingMinedTransactions.length < waitingMinedTransactions.length) {
       waitingMinedTransactions.forEach(tx => {
         if (now - tx.minedAt >= ASSET_DETECTION_TIMEOUT) {
+          analytics.track(event.minedTransactionAssetsTimedOut, {
+            chainId: tx.chainId,
+            type: tx.type,
+          });
           logger.warn('[watchPendingTransactions]: Timed out waiting for asset updates for transaction', {
             txHash: tx.hash,
           });
@@ -164,14 +175,16 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           },
           timeout: time.seconds(20),
         });
+        const assetsMap = assetsUpdateResult.data.result ?? {};
 
-        const assetsMap: Record<string, UserAsset> = assetsUpdateResult.data.result;
         // unique id -> legacy unique id
         const updatedUniqueIds = Object.keys(assetsMap).map(id => id.split(':').join('_'));
-
         const allExpectedUniqueIdsSeen = expectedUniqueIds.size === 0 || [...expectedUniqueIds].every(id => updatedUniqueIds.includes(id));
 
         if (allExpectedUniqueIdsSeen) {
+          analytics.track(event.minedTransactionAssetsResolved, {
+            timeToResolve: now * 1000 - oldestMinedTransactionTimestamp,
+          });
           refetchUserAssets({ address });
           setWaitingMinedTransactions([]);
           return;
