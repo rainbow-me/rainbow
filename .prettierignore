@@ -12,3 +12,4 @@ __generated__
 coverage
 InjectedJSBundle.js
 .yarn
+.claude/settings.local.json

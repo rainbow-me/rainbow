@@ -62,7 +62,7 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     if isE2E { return success }
 
     if success, let rootView = window?.rootViewController?.view {
-      RNSplashScreen.showSplash("LaunchScreen", inRootView: rootView)
+      RainbowSplashScreen.showSplash("LaunchScreen", inRootView: rootView)
     }
 
     return success

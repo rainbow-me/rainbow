@@ -9240,7 +9240,6 @@ __metadata:
     react-native-section-list-get-item-layout: "npm:2.2.3"
     react-native-share: "npm:8.2.1"
     react-native-sound: "npm:0.11.2"
-    react-native-splash-screen: "npm:3.3.0"
     react-native-storage: "npm:1.0.1"
     react-native-svg: "npm:15.11.2"
     react-native-tab-view: "npm:3.5.2"
@@ -23399,15 +23398,6 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   peerDependencies:
     react-native: ">=0.8.0"
   checksum: 10c0/823014876fead0034c4aecaab70c1cd32b26a1bfaef2283d5d689ceff20b226e1d53de991cc5baa98f21bd1081d3322d027093a70ea31336c4da95cb4bc03bab
-  languageName: node
-  linkType: hard
-
-"react-native-splash-screen@npm:3.3.0":
-  version: 3.3.0
-  resolution: "react-native-splash-screen@npm:3.3.0"
-  peerDependencies:
-    react-native: ">=0.57.0"
-  checksum: 10c0/0979585b4087dba0825c94393477fc0301210cfa09eae4a98336e91865765f3c774cf8b20c525b3cea74c588e1e4ff0aa9d7500292ad52979670aa59ab83f0a4
   languageName: node
   linkType: hard
 

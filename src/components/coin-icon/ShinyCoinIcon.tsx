@@ -18,13 +18,14 @@ type ShinyCoinIconProps = {
   imageUrl: string;
   size?: number;
   color?: string;
+  disableShadow?: boolean;
 };
 
 const DROP_SHADOW_BLUR = 9 / 2;
 const DROP_SHADOW_OFFSET_Y = 3;
 const DROP_SHADOW_OVERFLOW_BUFFER = DROP_SHADOW_BLUR * 4 + DROP_SHADOW_OFFSET_Y;
 
-export const ShinyCoinIcon = memo(function ShinyCoinIcon({ imageUrl, size = 40, color }: ShinyCoinIconProps) {
+export const ShinyCoinIcon = memo(function ShinyCoinIcon({ imageUrl, size = 40, color, disableShadow }: ShinyCoinIconProps) {
   const roundedRect = useMemo(() => {
     return rrect(rect(0, 0, size, size), size / 2, size / 2);
   }, [size]);
@@ -49,9 +50,11 @@ export const ShinyCoinIcon = memo(function ShinyCoinIcon({ imageUrl, size = 40, 
   return (
     <Canvas style={{ width: size + DROP_SHADOW_OVERFLOW_BUFFER, height: size + DROP_SHADOW_OVERFLOW_BUFFER }}>
       <Group transform={[{ translateX: DROP_SHADOW_OVERFLOW_BUFFER / 2 }, { translateY: DROP_SHADOW_OVERFLOW_BUFFER / 2 }]}>
-        <SkBox box={roundedRect}>
-          <Shadow dx={0} dy={DROP_SHADOW_OFFSET_Y} blur={DROP_SHADOW_BLUR} color={accentColors.opacity30} shadowOnly />
-        </SkBox>
+        {!disableShadow && (
+          <SkBox box={roundedRect}>
+            <Shadow dx={0} dy={DROP_SHADOW_OFFSET_Y} blur={DROP_SHADOW_BLUR} color={accentColors.opacity30} shadowOnly />
+          </SkBox>
+        )}
         <Image clip={roundedRect} x={0} y={0} width={size} height={size} image={tokenImage} fit="cover" />
         <SkBox box={roundedRect}>
           <Shadow dx={0} dy={0.7} blur={3.52 / 2} color={'rgba(255, 255, 255, 1)'} inner shadowOnly />

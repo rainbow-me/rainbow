@@ -12,8 +12,8 @@ import {
   TAB_BAR_WIDTH,
 } from '@/components/tab-bar/dimensions';
 import { TestnetToast } from '@/components/toasts';
-import { DAPP_BROWSER, KING_OF_THE_HILL_TAB, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Column, Columns, globalColors, useColorMode } from '@/design-system';
+import { DAPP_BROWSER, LAZY_TABS, POINTS, useExperimentalFlag } from '@/config';
+import { Box, Columns, globalColors, useColorMode, Column } from '@/design-system';
 import { IS_IOS, IS_TEST } from '@/env';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -61,6 +61,7 @@ import { ActivityTabIcon } from '@/components/tab-bar/ActivityTabIcon';
 import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
 import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
@@ -70,6 +71,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { PANEL_COLOR_DARK } from '@/components/SmoothPager/ListPanel';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 export const BASE_TAB_BAR_HEIGHT = 52;
 export const TAB_BAR_HEIGHT = getTabBarHeight();
@@ -208,6 +210,9 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           case TAB_BAR_ICONS[Routes.PROFILE_SCREEN]:
             mainList?.scrollToTop();
             break;
+          case TAB_BAR_ICONS[Routes.KING_OF_THE_HILL]:
+            mainList?.scrollToTop();
+            break;
         }
       }
 
@@ -251,7 +256,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
         const tabBarIcon = options.title as TabIconKey;
 
         return tabBarIcon === TAB_BAR_ICONS[Routes.DAPP_BROWSER_SCREEN] ? (
-          <Column width="content">
+          <Column key={route.name} width="content">
             <BrowserTabIconWrapper
               accentColor={accentColor}
               activeIndex={reanimatedPosition}
@@ -265,6 +270,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
           </Column>
         ) : (
           <BaseTabIcon
+            key={route.name}
             accentColor={accentColor}
             activeIndex={reanimatedPosition}
             index={index}
@@ -421,7 +427,6 @@ export const BaseTabIcon = memo(function BaseTabIcon({
   return (
     <Box
       height="full"
-      key={route.key}
       justifyContent="flex-start"
       paddingTop={{ custom: TAB_BAR_INNER_PADDING }}
       testID={`tab-bar-icon-${route.name}`}
@@ -565,16 +570,12 @@ const TabBarContainer = ({ descriptors, jumpTo, navigation, state }: MaterialTop
   const stateRef = useRef(state);
 
   const focusedIndexRef = useRef<number | undefined>(state.index);
-  const lastNumberOfTabsRef = useRef<number | undefined>(state.routes.length);
 
   const currentIndex = state.index;
   const activeIndex = useDerivedValue(() => currentIndex, [currentIndex]);
 
-  if (lastNumberOfTabsRef.current !== state.routes.length) {
-    lastNumberOfTabsRef.current = state.routes.length;
-    descriptorsRef.current = descriptors;
-    stateRef.current = state;
-  }
+  stateRef.current = state;
+  descriptorsRef.current = descriptors;
 
   if (focusedIndexRef.current !== state.index) {
     focusedIndexRef.current = state.index;
@@ -604,14 +605,10 @@ function SwipeNavigatorScreens() {
   const enableLazyTabs = useExperimentalFlag(LAZY_TABS);
   const lazy = useNavigationStore(state => enableLazyTabs || !state.isWalletScreenMounted);
 
-  const { dapp_browser, points_enabled, king_of_the_hill_tab_enabled } = useRemoteConfig(
-    'dapp_browser',
-    'points_enabled',
-    'king_of_the_hill_tab_enabled'
-  );
+  const { dapp_browser, points_enabled } = useRemoteConfig('dapp_browser', 'points_enabled');
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
-  const showKingOfTheHillTab = (useExperimentalFlag(KING_OF_THE_HILL_TAB) || king_of_the_hill_tab_enabled) && !IS_TEST;
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }): MaterialTopTabNavigationOptions => {
@@ -671,6 +668,7 @@ export function SwipeNavigator() {
       </BrowserTabBarContextProvider>
 
       <TestnetToast chainId={chainId} />
+      <PendingTransactionWatcher />
     </FlexItem>
   );
 }
