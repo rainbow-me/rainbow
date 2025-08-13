@@ -2383,8 +2383,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - RNInputMask (4.1.0)
-  - RNKeyboard (1.0.6):
-    - React
   - RNKeychain (10.0.0):
     - DoubleConversion
     - glog
@@ -2815,7 +2813,6 @@ DEPENDENCIES:
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
-  - RNKeyboard (from `../node_modules/react-native-keyboard-area`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNOS (from `../node_modules/react-native-os`)
@@ -3156,8 +3153,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNInputMask:
     :path: "../node_modules/react-native-text-input-mask/ios/InputMask"
-  RNKeyboard:
-    :path: "../node_modules/react-native-keyboard-area"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
   RNNotifee:
@@ -3312,7 +3307,7 @@ SPEC CHECKSUMS:
   react-native-screen-corner-radius: 81229df69e6f990502b813b92a0e8267c64d9dd9
   react-native-skia: 0103edd4daf17e1917297ef4576a57806a909c32
   react-native-text-input-mask: b83b8b571cba4bf18fb9b7a0bb8319a14201db9e
-  react-native-udp: afd81d997ff141501da6ac680667fd8319545da1
+  react-native-udp: 33844c2b4a0430271e46cd069a6152cc4c482095
   react-native-version-number: 3d74b5224ca4e1032b1593937d86d3f3c94bf95c
   react-native-video: 6fa10431df5753a4f40ff054898a3634f7123c5e
   react-native-view-shot: 2e5535ddb51e7b54fbe710e65733bb8bedfedabb
@@ -3366,7 +3361,6 @@ SPEC CHECKSUMS:
   RNFS: 3557d4b8e51925b011e787094600d6e05dca414e
   RNGestureHandler: 43ff77261c9f3cfcfd195aa16860bfdcfe108ef5
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
-  RNKeyboard: 836d59da651a7c8771ed811485d65ecb64e9b3fe
   RNKeychain: b060a891b105741c67da179f4d88ed87960f22e7
   RNNotifee: 8768d065bf1e2f9f8f347b4bd79147431c7eacd6
   RNOS: 5589ece6158813d4a9b7e098c8cbd35162f63fae

@@ -7295,15 +7295,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-native@npm:0.62.16":
-  version: 0.62.16
-  resolution: "@types/react-native@npm:0.62.16"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/e4432c0b2f7c46fcd9df8aad4e0bafc0d1ee3d2f9bcef9c1f75f8476bda8ea6da173e9b36a0085a9b97cf69cb0866e712d6f0a2f39a0fb9ae912770c051e4f81
-  languageName: node
-  linkType: hard
-
 "@types/react-redux@npm:7.1.9":
   version: 7.1.9
   resolution: "@types/react-redux@npm:7.1.9"
@@ -8931,7 +8922,6 @@ __metadata:
     react-native-haptic-feedback: "npm:2.2.0"
     react-native-indicators: "npm:0.17.0"
     react-native-ios-context-menu: "npm:1.15.3"
-    react-native-keyboard-area: "npm:1.0.6"
     react-native-keyboard-controller: "npm:1.16.7"
     react-native-keychain: "npm:10.0.0"
     react-native-level-fs: "npm:3.0.1"
@@ -22541,18 +22531,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/b7a37437f439b1e27a4d980de01994aa71b9091dc3ed00c21172d5505fb11978cd5ed3a43f97c89d502a3a08cf26e5cea6435b8d6e93d3557a92dd43563f7021
-  languageName: node
-  linkType: hard
-
-"react-native-keyboard-area@npm:1.0.6":
-  version: 1.0.6
-  resolution: "react-native-keyboard-area@npm:1.0.6"
-  dependencies:
-    "@types/react-native": "npm:0.62.16"
-  peerDependencies:
-    react: ">=16.0.0"
-    react-native: ">=0.59.5"
-  checksum: 10c0/7ed1a65ea80f0fca24477a672a60986ad7e2e8c70e147e30d2bdbfc25aa93160baf51063021b9f247792d2e88299def6e499f3090a3fc2b266c66eac6b888bf1
   languageName: node
   linkType: hard
 
