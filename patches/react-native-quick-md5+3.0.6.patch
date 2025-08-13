@@ -1,0 +1,14 @@
+diff --git a/node_modules/react-native-quick-md5/android/build.gradle b/node_modules/react-native-quick-md5/android/build.gradle
+index 53a7471..7eda4fe 100644
+--- a/node_modules/react-native-quick-md5/android/build.gradle
++++ b/node_modules/react-native-quick-md5/android/build.gradle
+@@ -55,7 +55,8 @@ android {
+         cmake {
+             cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
+             abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+-            arguments "-DNODE_MODULES_DIR=${nodeModules}"
++            arguments "-DNODE_MODULES_DIR=${nodeModules}",
++                      "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+         }
+     }
+     
