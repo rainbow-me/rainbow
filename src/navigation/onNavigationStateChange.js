@@ -1,12 +1,11 @@
 import { NativeModules } from 'react-native';
 import { analytics } from '@/analytics';
 import { StatusBarHelper } from '@/helpers';
-import { POINTS_ROUTES } from '@/screens/points/PointsScreen';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { isSwipeRoute } from '@/state/navigation/navigationStore';
 import { currentColors } from '@/theme';
 import { sentryUtils } from '../utils';
 import { Navigation } from './index';
-import Routes from './routesNames';
+import Routes, { POINTS_ROUTES } from './routesNames';
 
 let memState;
 let memRouteName;
@@ -14,19 +13,8 @@ let memPrevRouteName;
 
 let action = null;
 
-const isOnSwipeScreen = name =>
-  [
-    Routes.WALLET_SCREEN,
-    Routes.DISCOVER_SCREEN,
-    Routes.PROFILE_SCREEN,
-    Routes.POINTS_SCREEN,
-    POINTS_ROUTES.CLAIM_CONTENT,
-    POINTS_ROUTES.REFERRAL_CONTENT,
-    Routes.DAPP_BROWSER_SCREEN,
-  ].includes(name);
-
 export function triggerOnSwipeLayout(newAction) {
-  if (isOnSwipeScreen(Navigation.getActiveRoute()?.name)) {
+  if (isSwipeRoute(Navigation.getActiveRoute()?.name)) {
     newAction();
   } else {
     action = newAction;
@@ -43,7 +31,7 @@ export function onHandleStatusBar(currentState, prevState) {
 
   const isRoutesLengthDecrease = prevState?.routes.length > currentState?.routes.length;
   switch (routeName) {
-    case Routes.EXPANDED_ASSET_SHEET: {
+    case Routes.EXPANDED_ASSET_SHEET:
       // handles the status bar when opening nested modals
       if (isRoutesLengthDecrease && isFromWalletScreen && routeName === Routes.EXPANDED_ASSET_SHEET) {
         StatusBarHelper.setDarkContent();
@@ -53,18 +41,13 @@ export function onHandleStatusBar(currentState, prevState) {
         break;
       }
       break;
-    }
-
-    case Routes.KING_OF_THE_HILL:
-    case Routes.EXPANDED_ASSET_SHEET_V2: {
+    case Routes.EXPANDED_ASSET_SHEET_V2:
       if (currentColors.theme === 'dark') {
         StatusBarHelper.setLightContent();
       } else {
         StatusBarHelper.setDarkContent();
       }
       break;
-    }
-
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:
@@ -75,18 +58,14 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
     case Routes.SWAP_NAVIGATOR:
-    case Routes.SWAP: {
+    case Routes.SWAP:
       StatusBarHelper.setDarkContent();
       break;
-    }
 
-    default: {
+    default:
       StatusBarHelper.setLightContent();
-    }
   }
 }
-
-const setActiveRoute = useNavigationStore.getState().setActiveRoute;
 
 export function onNavigationStateChange(currentState) {
   const routeName = Navigation.getActiveRouteName();
@@ -99,9 +78,7 @@ export function onNavigationStateChange(currentState) {
     setTimeout(NativeModules.MenuViewModule.dismiss, 400);
   }
 
-  setActiveRoute(routeName);
-
-  if (isOnSwipeScreen(routeName)) {
+  if (isSwipeRoute(routeName)) {
     action?.();
     action = undefined;
   }

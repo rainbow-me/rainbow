@@ -2,7 +2,24 @@ import { Keyboard } from 'react-native';
 import { onDidPop, onWillPop } from './Navigation';
 import { appearListener } from './nativeStackHelpers';
 
-export const nativeStackConfig = {
+type NativeStackConfig = {
+  mode: 'modal';
+  screenOptions: {
+    contentStyle: {
+      backgroundColor: string;
+    };
+    onAppear: () => void;
+    onDismissed: () => void;
+    onTouchTop: ({ nativeEvent: { dismissing } }: { nativeEvent: { dismissing: boolean } }) => void;
+    onWillDismiss: () => void;
+    showDragIndicator: boolean;
+    springDamping: number;
+    stackPresentation: 'modal';
+    transitionDuration: number;
+  };
+};
+
+export const nativeStackConfig: NativeStackConfig = {
   mode: 'modal',
   screenOptions: {
     contentStyle: {
@@ -12,7 +29,7 @@ export const nativeStackConfig = {
       appearListener.current && appearListener.current();
     },
     onDismissed: onDidPop,
-    onTouchTop: ({ nativeEvent: { dismissing } }) => {
+    onTouchTop: ({ nativeEvent: { dismissing } }: { nativeEvent: { dismissing: boolean } }) => {
       if (dismissing) {
         Keyboard.dismiss();
       } else {
