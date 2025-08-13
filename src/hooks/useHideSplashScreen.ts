@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { InteractionManager, NativeModules } from 'react-native';
-import SplashScreen from 'react-native-splash-screen';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { StatusBarHelper } from '@/helpers';
@@ -21,8 +20,6 @@ export const hideSplashScreen = async () => {
       handleAndroidStatusBar();
       const RNBootSplash = require('react-native-bootsplash');
       await RNBootSplash.hide({ fade: true });
-    } else {
-      SplashScreen.hide();
     }
 
     if (IS_ANDROID && !didSetStatusBar) {

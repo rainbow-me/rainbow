@@ -63,17 +63,17 @@ tags:
 
       # Interact with slippage settings
       - assertVisible: 'Max Slippage'
-      - assertVisible: '1.0'
-      - tapOn:
-          id: slippage-increment-button
-          repeat: 3
-          delay: 500
-      - assertVisible: '2.5'
+      - assertVisible: '100.0'
       - tapOn:
           id: slippage-decrement-button
           repeat: 3
           delay: 500
-      - assertVisible: '1.0'
+      - assertVisible: '98.5'
+      - tapOn:
+          id: slippage-increment-button
+          repeat: 3
+          delay: 500
+      - assertVisible: '100.0'
 
       # Check preferred network settings
       - tapOn:

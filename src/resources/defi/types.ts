@@ -58,6 +58,7 @@ export type Claimable = {
 export type Deposit = {
   asset: PositionAsset;
   quantity: string;
+  pool_address: string;
   apr?: string;
   apy?: string;
   total_asset?: string; // what does this mean?
@@ -68,6 +69,7 @@ export type Borrow = {
   apr: string;
   apy: string;
   asset: PositionAsset;
+  pool_address: string;
   quantity: string;
   total_asset: string; // what does this mean?
   omit_from_total?: boolean;
@@ -76,6 +78,7 @@ export type Borrow = {
 export type Stake = {
   asset: PositionAsset;
   quantity: string;
+  pool_address: string;
   apr?: string;
   apy?: string;
   total_asset?: string; // what does this mean?
@@ -95,6 +98,7 @@ export type RainbowClaimable = {
 export type RainbowDeposit = {
   asset: PositionAsset;
   quantity: string;
+  pool_address: string;
   isLp: boolean;
   isConcentratedLiquidity: boolean;
   totalValue: string;
@@ -119,6 +123,7 @@ export type RainbowBorrow = {
 export type RainbowStake = {
   asset: PositionAsset;
   quantity: string;
+  pool_address: string;
   isLp: boolean;
   isConcentratedLiquidity: boolean;
   totalValue: string;

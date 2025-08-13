@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.74-1",
+  "version": "1.9.75-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -236,7 +236,6 @@
     "react-native-haptic-feedback": "2.2.0",
     "react-native-indicators": "0.17.0",
     "react-native-ios-context-menu": "1.15.3",
-    "react-native-keyboard-area": "1.0.6",
     "react-native-keyboard-controller": "1.16.7",
     "react-native-keychain": "10.0.0",
     "react-native-level-fs": "3.0.1",
@@ -262,7 +261,6 @@
     "react-native-section-list-get-item-layout": "2.2.3",
     "react-native-share": "8.2.1",
     "react-native-sound": "0.11.2",
-    "react-native-splash-screen": "3.3.0",
     "react-native-storage": "1.0.1",
     "react-native-svg": "15.11.2",
     "react-native-tab-view": "3.5.2",

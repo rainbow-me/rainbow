@@ -19,8 +19,10 @@ tags:
           direction: LEFT
       - assertVisible:
           id: discover-header
+      - runScript:
+          file: ../utils/coordinates.js
       - tapOn:
-          id: tab-bar-icon-ProfileScreen
+          point: ${output.tabCoordinates.activityTab}
       - assertVisible:
           id: profile-screen
       - swipe:
@@ -28,7 +30,7 @@ tags:
       - assertVisible:
           id: points-screen
       - tapOn:
-          id: tab-bar-icon-DiscoverScreen
+          point: ${output.tabCoordinates.discoverTab}
       - assertVisible:
           id: discover-header
 
