@@ -12,4 +12,4 @@ ARTIFACTS_FOLDER="${ARTIFACTS_FOLDER:-e2e-artifacts}"
 xcrun simctl install "$DEVICE_UDID" "$ARTIFACT_PATH_FOR_E2E"
 
 # Run the tests
-./scripts/e2e-run.sh --shard-total ${SHARD_TOTAL:-1} --shard-index ${SHARD_INDEX:-1}
+./scripts/e2e-run.sh --platform ios --record-on-failure --shard-total ${SHARD_TOTAL:-1} --shard-index ${SHARD_INDEX:-1}

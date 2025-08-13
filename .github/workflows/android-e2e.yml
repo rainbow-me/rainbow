@@ -123,11 +123,6 @@ jobs:
       cancel-in-progress: false
 
     env:
-      # Can be used to help debug test failures. This will cause the apk to be
-      # built for all architectures so it can be downloaded from the artifacts
-      # and installed locally. It will also record logcat logs and a video of
-      # the test run. Note that the video is limited to 3 minutes.
-      DEBUG: false
       SHARD_TOTAL: 4
       SHARD_INDEX: ${{ matrix.shard-index }}
       ANDROID_EMULATOR_API_LEVEL: 31
