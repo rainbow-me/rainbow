@@ -191,7 +191,8 @@ function RainbowToastDisplayContent() {
     </Box>
   );
 
-  if (IS_IOS) {
+  // FullWindowOverlay blocks all views for maestro.
+  if (IS_IOS && !IS_TEST) {
     return <FullWindowOverlay>{content}</FullWindowOverlay>;
   }
 
