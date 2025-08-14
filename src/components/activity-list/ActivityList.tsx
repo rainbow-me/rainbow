@@ -1,5 +1,5 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
-import { FastTransactionCoinRow } from '@/components/coin-row';
+import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
 import { lazyMount } from '@/helpers/lazyMount';
 import { useAccountTransactions } from '@/hooks';
@@ -21,6 +21,7 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
+import { WalletconnectRequestData } from '@/walletConnect/types';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -69,7 +70,7 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 }
 
 type ListItems =
-  | { key: string; type: 'item'; value: TransactionItemForSectionList }
+  | { key: string; type: 'transaction' | 'request'; value: TransactionItemForSectionList }
   | { key: string; type: 'header'; value: TransactionSections }
   | { key: string; type: 'paddingTopForNavBar' };
 
@@ -102,7 +103,7 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
         for (const item of section.data) {
           items.push({
             key: `${accountAddress}${item.chainId}${'requestId' in item ? item.requestId : item.hash}-entry`,
-            type: 'item',
+            type: section.type,
             value: item,
           });
         }
@@ -126,6 +127,10 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
             <ActivityListHeader title={item.value.title} />
           </View>
         );
+      }
+
+      if (item.type === 'request') {
+        return <RequestCoinRow item={item.value} theme={theme} nativeCurrency={nativeCurrency} />;
       }
 
       return (
