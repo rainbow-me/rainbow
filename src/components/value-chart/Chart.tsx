@@ -8,9 +8,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { analytics } from '@/analytics';
+import { event } from '@/analytics/event';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { Box, useColorMode } from '@/design-system';
+import { IS_DEV } from '@/env';
 import { CandlestickChart, PartialCandlestickConfig } from '@/features/charts/candlestick/components/CandlestickChart';
 import { arePricesEqual } from '@/features/charts/candlestick/utils';
 import { TimeframeSelector } from '@/features/charts/components/TimeframeSelector';
@@ -19,6 +22,7 @@ import { chartsActions, useChartsStore, useChartType } from '@/features/charts/s
 import { ChartType, LineChartTimePeriod } from '@/features/charts/types';
 import { useCleanup } from '@/hooks/useCleanup';
 import { AssetAccentColors, ExpandedSheetAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { useListen } from '@/state/internal/hooks/useListen';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
@@ -162,6 +166,8 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
 
         <TimeframeSelector backgroundColor={backgroundColor} color={accentColors.color} />
       </Box>
+
+      {!IS_DEV && <ChartsTelemetry />}
     </Box>
   );
 });
@@ -212,6 +218,32 @@ const ChartHeader = memo(function ChartHeader({
   );
 
   return headerComponent;
+});
+
+const ChartsTelemetry = memo(function ChartsTelemetry() {
+  // -- Chart Type --
+  useListen(
+    useChartsStore,
+    state => state.chartType,
+    chartType =>
+      requestIdleCallback(() => {
+        analytics.identify({ chartType });
+        analytics.track(event.chartTypeChanged, { chartType });
+      })
+  );
+
+  // -- Candle Resolution --
+  useListen(
+    useChartsStore,
+    state => state.candleResolution,
+    candleResolution =>
+      requestIdleCallback(() => {
+        analytics.identify({ candleResolution });
+        analytics.track(event.candleResolutionChanged, { candleResolution });
+      })
+  );
+
+  return null;
 });
 
 function useCandlestickConfig(accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'>): PartialCandlestickConfig {
