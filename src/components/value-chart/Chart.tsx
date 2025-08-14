@@ -225,13 +225,3 @@ function useCandlestickConfig(accentColors: Pick<AssetAccentColors, 'color' | 'o
     [accentColors.color, accentColors.opacity12, accentColors.opacity24, isDarkMode]
   );
 }
-
-function liveTokenPercentageChangeSelector({ change }: TokenData): string {
-  const selectedTimespan = useChartsStore.getState().lineChartTimePeriod;
-  if (selectedTimespan === LineChartTimePeriod.D1) {
-    return change.change24hPct;
-  } else if (selectedTimespan === LineChartTimePeriod.H1) {
-    return change.change1hPct;
-  }
-  return '0';
-}
