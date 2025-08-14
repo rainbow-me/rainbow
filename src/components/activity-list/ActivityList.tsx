@@ -1,9 +1,9 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
-import { FastTransactionCoinRow } from '@/components/coin-row';
+import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
 import { lazyMount } from '@/helpers/lazyMount';
 import { useAccountTransactions } from '@/hooks';
-import { useMainList } from '@/navigation/MainListContext';
+import { Skeleton } from '@/screens/points/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
@@ -11,14 +11,17 @@ import { useTheme } from '@/theme';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList, LegendListRef } from '@legendapp/list';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { SharedValue } from 'react-native-reanimated';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
+import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
+import { WalletconnectRequestData } from '@/walletConnect/types';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -67,45 +70,56 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 }
 
 type ListItems =
-  | { key: string; type: 'item'; value: TransactionItemForSectionList }
-  | { key: string; type: 'header'; value: TransactionSections };
+  | { key: string; type: 'transaction' | 'request'; value: TransactionItemForSectionList }
+  | { key: string; type: 'header'; value: TransactionSections }
+  | { key: string; type: 'paddingTopForNavBar' };
 
 // keeping everything the same height here since we basically can pretty easily
 // improves performance and reduces jitter (until move to new architecture)
 const ITEM_HEIGHT = 59;
 
-const ActivityList = lazyMount(() => {
+const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: SharedValue<number>; paddingTopForNavBar?: boolean }) => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
+  const { sections, nextPage, transactionsCount, remainingItemsLabel, isLoadingTransactions } = useAccountTransactions();
 
   const theme = useTheme();
-
-  const { setScrollToTopRef } = useMainList() || {};
 
   // Flatten sections into a single data array for LegendList
   const flatData = useMemo(() => {
     const items: ListItems[] = [];
 
+    if (isLoadingTransactions) {
+      return items;
+    }
+
+    if (paddingTopForNavBar) {
+      items.push({ key: 'paddingTopForNavBar', type: 'paddingTopForNavBar' });
+    }
+
     sections.forEach(section => {
       if (section.data.length > 0) {
         items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
         for (const item of section.data) {
-          const key = `${item.chainId}${'requestId' in item ? item.requestId : item.hash}`;
           items.push({
-            key: `${accountAddress}${key}-entry`,
-            type: 'item',
+            key: `${accountAddress}${item.chainId}${'requestId' in item ? item.requestId : item.hash}-entry`,
+            type: section.type,
             value: item,
           });
         }
       }
     });
+
     return items;
-  }, [accountAddress, sections]);
+  }, [accountAddress, isLoadingTransactions, paddingTopForNavBar, sections]);
 
   const renderItem = useCallback(
     ({ item }: { item: ListItems }) => {
-      if ('type' in item && item.type === 'header') {
+      if (item.type === 'paddingTopForNavBar') {
+        return <PaddingTopForNavBar />;
+      }
+
+      if (item.type === 'header') {
         return (
           <View style={[sx.sectionHeader, { backgroundColor: theme.colors.white, height: ITEM_HEIGHT }]}>
             {/* push month header to bottom */}
@@ -113,6 +127,10 @@ const ActivityList = lazyMount(() => {
             <ActivityListHeader title={item.value.title} />
           </View>
         );
+      }
+
+      if (item.type === 'request') {
+        return <RequestCoinRow item={item.value} theme={theme} nativeCurrency={nativeCurrency} />;
       }
 
       return (
@@ -129,30 +147,27 @@ const ActivityList = lazyMount(() => {
 
   const listRef = useRef<LegendListRef | null>(null);
 
-  const scrollToTopRef = useMemo(() => {
-    return {
-      scrollToTop() {
-        if (!listRef.current) {
-          return;
-        }
-        if (listRef.current.getState().isAtStart) {
-          return;
-        }
-        listRef.current.scrollToIndex({
-          index: 0,
-          animated: true,
-        });
-      },
-    };
-  }, []);
+  useLegendListNavBarScrollToTop(listRef);
 
-  useEffect(() => {
-    setScrollToTopRef?.(scrollToTopRef);
-  }, [scrollToTopRef, setScrollToTopRef]);
+  if (isLoadingTransactions) {
+    return (
+      <>
+        {paddingTopForNavBar && <PaddingTopForNavBar />}
+        <LoadingActivityItem />
+        <LoadingActivityItem />
+        <LoadingActivityItem />
+        <LoadingActivityItem />
+      </>
+    );
+  }
 
   return (
     <LegendList
       data={flatData}
+      style={{
+        // needs flex 1 or else going from loading => loaded scroll doesn't work
+        flex: 1,
+      }}
       // changing key - we had a bug with key calculation where headers were
       // matching causing legend list to see the key move index and scroll to a
       // bad position i tried fixing just the key to avoid changing the key
@@ -167,14 +182,36 @@ const ActivityList = lazyMount(() => {
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
       testID={'wallet-activity-list'}
       ListEmptyComponent={<ActivityListEmptyState />}
-      ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
-      recycleItems
+      ListFooterComponent={() =>
+        !isLoadingTransactions && remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />
+      }
+      // recycleItems
       // this caused issues when going from a wallet with many items that had scrolling
       // to a wallet that has no scrollable area, causing it to show blank
       // maintainVisibleContentPosition
       drawDistance={PANEL_HEIGHT / 2}
       estimatedItemSize={ITEM_HEIGHT}
+      {...(scrollY && {
+        onScroll: event => {
+          'worklet';
+          if (scrollY) {
+            scrollY.value = event.nativeEvent.contentOffset.y;
+          }
+        },
+      })}
     />
+  );
+});
+
+const PaddingTopForNavBar = () => {
+  return <View style={{ height: 68 }} />;
+};
+
+const LoadingActivityItem = memo(function LoadingActivityItem() {
+  return (
+    <View style={{ height: 44, marginHorizontal: 20, marginVertical: 3 }}>
+      <Skeleton width="100%" height={44} />
+    </View>
   );
 });
 

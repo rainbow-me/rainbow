@@ -8,7 +8,7 @@ jobs:
   # Job to install dependencies
   build:
     runs-on: ["self-hosted"]
-    timeout-minutes: 75
+    timeout-minutes: 100
     if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -49,8 +49,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
-
-      - run: cd rainbow-scripts && git checkout @janic/rn79
 
       - name: Install dependencies
         run: |

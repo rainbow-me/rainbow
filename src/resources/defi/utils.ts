@@ -238,6 +238,7 @@ function parsePosition(position: Position, currency: NativeCurrencyKey): Rainbow
       isConcentratedLiquidity: CONCENTRATED_LIQUIDITY_ONLY_DAPPS.includes(position.type),
       totalValue: underlying.reduce((acc, underlying) => add(acc, underlying.native.amount), '0'),
       underlying,
+      pool_address: parsedDeposit.pool_address,
     };
   });
 
@@ -274,6 +275,7 @@ function parsePosition(position: Position, currency: NativeCurrencyKey): Rainbow
       isConcentratedLiquidity: CONCENTRATED_LIQUIDITY_ONLY_DAPPS.includes(position.type),
       totalValue: underlying.reduce((acc, underlying) => add(acc, underlying.native.amount), '0'),
       underlying,
+      pool_address: parsedStake.pool_address,
     };
   });
 

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import Navigation from '@/navigation/Navigation';
@@ -9,8 +9,7 @@ import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
-import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
-import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -37,7 +36,6 @@ export default function ProfileScreen() {
       />
 
       <ActivityList />
-      <PendingTransactionWatcher />
     </ProfileScreenPage>
   );
 }
@@ -45,9 +43,3 @@ export default function ProfileScreen() {
 function onChangeWallet(): void {
   Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
 }
-
-const PendingTransactionWatcher = memo(function PendingTransactionWatcher() {
-  const accountAddress = useAccountAddress();
-  usePendingTransactionWatcher({ address: accountAddress });
-  return null;
-});

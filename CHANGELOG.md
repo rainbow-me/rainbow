@@ -15,6 +15,46 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.74] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.74)
+
+### Added
+
+- [e2e] erc20>native e2e swap (#6745)
+
+### Changed
+
+- New tab bar (#6767)
+- Update to react-native 0.79 (#6607)
+- Remove build artifacts from patch (#6779)
+- Cache Intl instances and replace usages to toLocaleString (#6773)
+- [e2e] Dont check initial theme state (#6777)
+- Bump iOS and Android to v1.9.74 (#6784)
+
+### Fixed
+
+- [e2e] Enhance SendNft flow with retry logic for send action visibility (#6781)
+- Bump turbo haptics to fix android crash (#6782)
+- Fixed splash screen animation (#6787)
+- Fixed P3 colors (#6790)
+- Fixed podfile lock after turbohaptics update (#6789)
+- Fixed e2e tests for bottom tab bar (#6785)
+
+## [1.9.73] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.73)
+
+### Changed
+
+- Migrate NFTs to createQueryStore (#6649)
+- Small cleanup on activity list (#6769)
+- Bump iOS and Android to v1.9.73 (#6775)
+
+### Fixed
+
+- Cleaned up old react-query keys for legacy nft store (#6771)
+- E2E Fix send button regex (#6768)
+- E2E skip android backup flow (#6766)
+- Fixed dapp unsupported network switch requests spam (#6772)
+- Fixed discover bug with E2E (#6776)
+
 ## [1.9.72] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.72)
 
 ### Added

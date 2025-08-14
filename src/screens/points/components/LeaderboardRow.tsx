@@ -21,6 +21,7 @@ import { Keyboard, Share } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
 import { switchWallet } from '@/state/wallets/switchWallet';
+import { getNumberFormatter } from '@/helpers/intl';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -181,7 +182,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
       break;
   }
 
-  const formattedPoints = points.toLocaleString('en-US');
+  const formattedPoints = getNumberFormatter('en-US').format(points);
 
   return (
     <ContextMenuButton

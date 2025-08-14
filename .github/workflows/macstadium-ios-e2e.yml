@@ -54,8 +54,6 @@ jobs:
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS
 
-      - run: cd rainbow-scripts && git checkout @janic/rn79
-
       - name: Install dependencies
         run: |
           yarn install && yarn setup

@@ -1,12 +1,9 @@
 import { format } from 'date-fns';
 import { capitalize, groupBy, isEmpty } from 'lodash';
-import React from 'react';
-import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
 import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
 import { NativeCurrencyKey, RainbowTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
 import { WalletconnectRequestData } from '@/walletConnect/types';
-import { ThemeContextProps } from '@/theme';
 import { Contact } from '@/redux/contacts';
 import { SectionListData } from 'react-native';
 
@@ -17,7 +14,7 @@ export type RainbowTransactionWithContact = RainbowTransaction & {
 type Section<T> = {
   title: string;
   data: T[];
-  renderItem: ({ item }: { item: T }) => JSX.Element;
+  type: 'request' | 'transaction';
 };
 
 export type WalletconnectSection = Section<WalletconnectRequestData>;
@@ -74,14 +71,11 @@ export const buildTransactionsSections = ({
   accountAddress,
   contacts,
   requests,
-  theme,
   transactions,
-  nativeCurrency,
 }: {
   accountAddress: string;
   contacts: { [address: string]: Contact };
   requests: WalletconnectRequestData[];
-  theme: ThemeContextProps;
   transactions: RainbowTransaction[];
   nativeCurrency: NativeCurrencyKey;
 }): TransactionSectionsResult => {
@@ -113,10 +107,8 @@ export const buildTransactionsSections = ({
 
       return {
         data: sectionData,
-        renderItem: ({ item }: { item: RainbowTransactionWithContact }) => (
-          <FastTransactionCoinRow item={item} theme={theme} nativeCurrency={nativeCurrency} />
-        ),
         title: section,
+        type: 'transaction',
       };
     });
     sectionedTransactions = sectioned;
@@ -131,8 +123,8 @@ export const buildTransactionsSections = ({
   if (!isEmpty(requests)) {
     sectionedTransactions.unshift({
       data: requests,
-      renderItem: ({ item }: { item: WalletconnectRequestData }) => <RequestCoinRow item={item} theme={theme} />,
       title: i18n.t(i18n.l.walletconnect.requests),
+      type: 'request',
     });
   }
   return {

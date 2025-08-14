@@ -1,10 +1,10 @@
 diff --git a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
-index 053c046..65814d8 100644
+index d515011..813c69c 100644
 --- a/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
 +++ b/node_modules/react-native-gesture-handler/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt
-@@ -140,7 +140,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
-     return mDelegate
-   }
+@@ -140,7 +140,7 @@ class RNGestureHandlerButtonViewManager :
+ 
+   override fun getDelegate(): ViewManagerDelegate<ButtonViewGroup>? = mDelegate
  
 -  class ButtonViewGroup(context: Context?) :
 +  open class ButtonViewGroup(context: Context?) :
@@ -25,22 +25,22 @@ index 667d600..9054037 100644
  
  - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
 diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
-index 5bf0d32..ef1b74f 100644
+index 708172f..7f1d550 100644
 --- a/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
 +++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandler.mm
-@@ -390,12 +390,28 @@ - (void)setManualActivation:(BOOL)manualActivation
+@@ -425,12 +425,28 @@ - (void)setManualActivation:(BOOL)manualActivation
      if (_recognizer.view != nil) {
        [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
      }
 +
 +    [[NSNotificationCenter defaultCenter] addObserver:self
-+                                             selector:@selector(handleAppWillResignActive:)
-+                                                 name:UIApplicationWillResignActiveNotification
-+                                               object:nil];
++                                            selector:@selector(handleAppWillResignActive:)
++                                                name:UIApplicationWillResignActiveNotification
++                                              object:nil];
    } else if (_manualActivationRecognizer != nil) {
 +    [[NSNotificationCenter defaultCenter] removeObserver:self
-+                                                    name:UIApplicationWillResignActiveNotification
-+                                                  object:nil];
++                                                   name:UIApplicationWillResignActiveNotification
++                                                 object:nil];
      [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
      _manualActivationRecognizer = nil;
    }
@@ -56,4 +56,4 @@ index 5bf0d32..ef1b74f 100644
 +
  - (void)bindManualActivationToView:(RNGHUIView *)view
  {
-   if (_manualActivationRecognizer != nil) {
+   if (_manualActivationRecognizer != nil) {      

@@ -19,6 +19,7 @@ const SWIPE_ROUTES = [
   Routes.DAPP_BROWSER_SCREEN,
   Routes.PROFILE_SCREEN,
   Routes.POINTS_SCREEN,
+  Routes.KING_OF_THE_HILL,
   POINTS_ROUTES['CLAIM_CONTENT'],
   POINTS_ROUTES['REFERRAL_CONTENT'],
 ] as const;
@@ -49,7 +50,6 @@ export const useNavigationStore = createRainbowStore<NavigationState>((set, get)
       if (onSwipeRoute) state.animatedActiveSwipeRoute.value = route;
 
       return {
-        ...state,
         activeRoute: route,
         activeSwipeRoute: onSwipeRoute ? route : state.activeSwipeRoute,
       };

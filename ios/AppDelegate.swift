@@ -39,8 +39,6 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     NotificationCenter.default.addObserver(self, selector: #selector(handleRapComplete), name: NSNotification.Name("rapCompleted"), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(handleRsEscape), name: NSNotification.Name("rsEscape"), object: nil)
 
-    RCTSetDefaultColorSpace(RCTColorSpace.displayP3)
-
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
@@ -64,26 +62,10 @@ class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
     if isE2E { return success }
 
     if success, let rootView = window?.rootViewController?.view {
-      RNSplashScreen.showSplash("LaunchScreen", inRootView: rootView)
+      RainbowSplashScreen.showSplash("LaunchScreen", inRootView: rootView)
     }
 
     return success
-  }
-
-  func hideSplashScreenAnimated() {
-    guard let rootVC = window?.rootViewController,
-          let subview = rootVC.view.subviews.last,
-          let rainbowIcon = subview.subviews.first as? UIImageView else {
-      return
-    }
-
-    UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveEaseIn, animations: {
-      rainbowIcon.transform = CGAffineTransform(scaleX: 0.0000000001, y: 0.0000000001)
-      subview.alpha = 0.0
-    }) { _ in
-      rainbowIcon.isHidden = true
-      RNSplashScreen.hide()
-    }
   }
 
   @objc func handleRsEscape(notification: Notification) {
@@ -156,5 +138,9 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
 #else
     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
+  }
+
+  override func defaultColorSpace() -> RCTColorSpace {
+    RCTColorSpace.displayP3
   }
 }
