@@ -1112,6 +1112,7 @@ export type EventProperties = {
   [event.minedTransactionAssetsTimedOut]: {
     chainId: number;
     type: string;
+  };
   [event.chartTypeChanged]: {
     chartType: ChartType;
   };
