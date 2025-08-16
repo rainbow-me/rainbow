@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native';
 import { analytics } from '@/analytics';
 import { StatusBarHelper } from '@/helpers';
-import { isSwipeRoute } from '@/state/navigation/navigationStore';
+import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
 import { currentColors } from '@/theme';
 import { sentryUtils } from '../utils';
 import { Navigation } from './index';
@@ -79,6 +79,7 @@ export function onNavigationStateChange(currentState) {
   }
 
   if (isSwipeRoute(routeName)) {
+    setActiveRoute(routeName);
     action?.();
     action = undefined;
   }
