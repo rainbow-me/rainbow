@@ -23,7 +23,6 @@ import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { useAccountAddress } from '../../../../state/wallets/walletsStore';
-import { NavigateFunction } from '@/navigation/Navigation';
 
 const dimensions = {
   height: deviceUtils.dimensions.height,

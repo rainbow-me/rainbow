@@ -25,7 +25,9 @@ import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingO
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
-const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
+type MenuItemRoute = typeof Routes.SETTINGS_SHEET | typeof Routes.RECEIVE_MODAL | typeof Routes.CONNECTED_DAPPS;
+
+const menuItems: MenuItem<MenuItemRoute>[] = [
   {
     actionKey: Routes.SETTINGS_SHEET,
     actionTitle: lang.t(lang.l.settings.label),
@@ -108,7 +110,7 @@ function handlePressQRScanner(): void {
   Navigation.handleAction(Routes.QR_SCANNER_SCREEN);
 }
 
-function handlePressMenuItem(route: (typeof Routes)[keyof typeof Routes]): void {
+function handlePressMenuItem(route: MenuItemRoute): void {
   if (route === Routes.RECEIVE_MODAL) {
     analytics.track(analytics.event.navigationMyQrCode, { category: 'home screen' });
   }
