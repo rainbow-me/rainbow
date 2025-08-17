@@ -16,7 +16,7 @@ import { useDimensions } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { setIsShowingTransactionDetails } from '@/components/rainbow-toast/useRainbowToasts';
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 
 export const TransactionDetails = () => {
   const {
@@ -31,9 +31,9 @@ export const TransactionDetails = () => {
   const { bottom } = useSafeAreaInsets();
 
   useEffect(() => {
-    setIsShowingTransactionDetails(true);
+    useRainbowToastsStore.getState().setIsShowingTransactionDetails(true);
     return () => {
-      setIsShowingTransactionDetails(false);
+      useRainbowToastsStore.getState().setIsShowingTransactionDetails(false);
     };
   }, []);
 

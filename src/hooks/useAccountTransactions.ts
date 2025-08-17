@@ -1,4 +1,5 @@
 import { RainbowTransaction } from '@/entities';
+import { useNavigation } from '@/navigation';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -14,29 +15,6 @@ import useContacts from './useContacts';
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
-  const accountState = useLatestAccountTransactions();
-  const { hasNextPage, isLoading, fetchNextPage, transactions } = accountState;
-
-  const { sections } = buildTransactionsSections(accountState);
-
-  const remainingItemsLabel = useMemo(() => {
-    if (!hasNextPage) {
-      return null;
-    }
-    return `Show ${NOE_PAGE} more transactions...`;
-  }, [hasNextPage]);
-
-  return {
-    isLoadingTransactions: isLoading,
-    nextPage: fetchNextPage,
-    remainingItemsLabel,
-    sections,
-    transactions: transactions,
-    transactionsCount: transactions.length,
-  };
-}
-
-export const useLatestAccountTransactions = () => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
 
@@ -115,18 +93,37 @@ export const useLatestAccountTransactions = () => {
     [pendingTransactionsMostRecentFirst, transactions]
   );
 
+  const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
+
   const { contacts } = useContacts();
   const theme = useTheme();
+  const { navigate } = useNavigation();
 
-  return {
+  const accountState = {
     accountAddress,
     contacts,
+    navigate,
     requests: walletConnectRequests,
     theme,
-    transactions: allTransactions,
+    transactions: slicedTransaction,
     nativeCurrency,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
   };
-};
+
+  const { sections } = buildTransactionsSections(accountState);
+
+  const remainingItemsLabel = useMemo(() => {
+    if (!hasNextPage) {
+      return null;
+    }
+    return `Show ${NOE_PAGE} more transactions...`;
+  }, [hasNextPage]);
+
+  return {
+    isLoadingTransactions: isLoading,
+    nextPage: fetchNextPage,
+    remainingItemsLabel,
+    sections,
+    transactions: ios ? allTransactions : slicedTransaction,
+    transactionsCount: slicedTransaction.length,
+  };
+}

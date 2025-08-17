@@ -6,6 +6,7 @@ import { consolidatedTransactionsQueryKey } from '@/resources/transactions/conso
 import { queryClient } from '@/react-query/queryClient';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -104,6 +105,8 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         address,
         pendingTransactions: newPendingTransactions,
       });
+
+      newlyMinedTransactions.forEach(tx => useRainbowToastsStore.getState().handleTransaction(tx));
 
       if (minedTransactions.length) {
         const supportedMainnetChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();

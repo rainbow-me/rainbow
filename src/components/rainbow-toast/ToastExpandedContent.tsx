@@ -1,9 +1,9 @@
 import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
-import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
+import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
 import { getToastTitle, getSwapToastNetworkLabel } from '@/components/rainbow-toast/ToastContent';
-import type { RainbowToast, RainbowToastContract, RainbowToastSend, RainbowToastSwap } from '@/components/rainbow-toast/types';
+import type { RainbowToast } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
@@ -17,31 +17,29 @@ import { useToastColors } from './useToastColors';
 const EXPANDED_ICON_SIZE = 34;
 
 export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
-  if (toast.type === 'swap') {
+  if (toast.transaction.type === 'swap') {
     return <SwapToastExpandedContent toast={toast} />;
   }
-  if (toast.type === 'send') {
+  if (toast.transaction.type === 'send') {
     return <SendToastExpandedContent toast={toast} />;
   }
-  if (toast.type === 'contract') {
-    return <ContractToastExpandedContent toast={toast} />;
-  }
-  return null;
+
+  return <BaseToastExpandedContent toast={toast} />;
 }
 
-function ContractToastExpandedContent({ toast }: { toast: RainbowToastContract }) {
-  const icon = <ContractToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
-  const title = toast.name;
+function BaseToastExpandedContent({ toast }: { toast: RainbowToast }) {
+  const { transaction } = toast;
+  const icon = <BaseToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
+  const title = transaction.contract?.name || transaction.description;
   const subtitle = getToastTitle(toast);
-  const isLoading = toast.status === TransactionStatus.pending;
-  return (
-    <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={toast.transaction} />
-  );
+  const isLoading = transaction.status === TransactionStatus.pending;
+  return <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={transaction} />;
 }
 
-function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
-  const title = `${toast.token}`;
-  const isLoading = toast.status === TransactionStatus.pending;
+function SendToastExpandedContent({ toast }: { toast: RainbowToast }) {
+  const { transaction } = toast;
+  const title = transaction.asset?.symbol || transaction.symbol || '';
+  const isLoading = transaction.status === TransactionStatus.pending;
   const subtitle = getToastTitle(toast);
 
   return (
@@ -50,17 +48,17 @@ function SendToastExpandedContent({ toast }: { toast: RainbowToastSend }) {
       icon={<SendToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />}
       statusLabel={subtitle}
       label={title}
-      transaction={toast.transaction}
+      transaction={transaction}
     />
   );
 }
 
-function SwapToastExpandedContent({ toast }: { toast: RainbowToastSwap }) {
+function SwapToastExpandedContent({ toast }: { toast: RainbowToast }) {
   const { transaction } = toast;
 
-  const title = getSwapToastNetworkLabel({ toast });
+  const title = getSwapToastNetworkLabel(toast);
   const subtitle = getToastTitle(toast);
-  const isLoading = toast.status === TransactionStatus.pending;
+  const isLoading = transaction.status === TransactionStatus.pending;
   const isWideIcon = isWideSwapIcon(toast);
 
   return (

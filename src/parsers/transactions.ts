@@ -6,8 +6,10 @@ import {
   TransactionApiResponse,
   TransactionChanges,
   TransactionStatus,
-  TransactionTypeMap,
   TransactionType,
+  TransactionTypeMap,
+  TransactionWithChangesType,
+  TransactionWithoutChangesType,
 } from '@/entities';
 
 import {
@@ -17,12 +19,7 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 
-import {
-  NewTransaction,
-  RainbowTransactionFee,
-  TransactionWithChangesType,
-  TransactionWithoutChangesType,
-} from '@/entities/transactions/transaction';
+import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 

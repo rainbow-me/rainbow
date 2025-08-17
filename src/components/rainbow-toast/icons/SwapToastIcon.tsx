@@ -1,7 +1,7 @@
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SWAP_ICON_INTERSECT, SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { ToastSFSymbolIcon } from '@/components/rainbow-toast/ToastSFSymbolIcon';
-import { RainbowToastSwap } from '@/components/rainbow-toast/types';
+import { RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowImage } from '@/components/RainbowImage';
 import { TransactionStatus } from '@/entities';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -10,16 +10,19 @@ import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-export const isWideSwapIcon = (toast: RainbowToastSwap) => {
-  return toast.status === TransactionStatus.pending;
+export const isWideSwapIcon = (toast: RainbowToast) => {
+  return toast.transaction.status === TransactionStatus.pending;
 };
 
-export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToastSwap; size?: number }) => {
-  const chainImage = <ChainImage chainId={toast.chainId} size={16} />;
+export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: RainbowToast; size?: number }) => {
+  const { transaction } = toast;
+  const chainImage = <ChainImage chainId={transaction.chainId} size={16} />;
+  const outAsset = transaction.changes?.find(c => c?.direction === 'out')?.asset;
+  const inAsset = transaction.changes?.find(c => c?.direction === 'in')?.asset;
 
   return isWideSwapIcon(toast) ? (
     <View style={styles.wideContainer}>
-      {toast.chainId !== ChainId.mainnet && <View style={styles.chainImageContainer}>{chainImage}</View>}
+      {transaction.chainId !== ChainId.mainnet && <View style={styles.chainImageContainer}>{chainImage}</View>}
       <MaskedView maskElement={<Mask size={size} />}>
         <View style={styles.imageContainer}>
           <RainbowImage
@@ -27,7 +30,7 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
               width: size,
               height: size,
             }}
-            source={{ url: toast.fromAssetImage }}
+            source={{ url: outAsset?.icon_url ?? '' }}
           />
         </View>
       </MaskedView>
@@ -38,13 +41,13 @@ export const SwapToastIcon = ({ toast, size = TOAST_ICON_SIZE }: { toast: Rainbo
               width: size,
               height: size,
             }}
-            source={{ url: toast.toAssetImage }}
+            source={{ url: inAsset?.icon_url ?? '' }}
           />
         </View>
       </View>
     </View>
   ) : (
-    <ToastSFSymbolIcon size={size} name={toast.status === TransactionStatus.failed ? 'exclamationMark' : 'check'} />
+    <ToastSFSymbolIcon size={size} name={transaction.status === TransactionStatus.failed ? 'exclamationMark' : 'check'} />
   );
 };
 

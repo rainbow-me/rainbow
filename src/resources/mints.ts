@@ -62,8 +62,6 @@ export function useMintsFilter() {
   return { filter: filterState, setFilter };
 }
 
-export type Mints = ReturnType<typeof useMints>['data']['mints'];
-
 /**
  * Hook that returns the mintable collections for a given wallet address.
  */

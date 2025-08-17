@@ -4,12 +4,14 @@ import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import React, { memo, ReactNode, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Gesture, GestureDetector, PanGesture } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { setShowExpandedToasts, useToasts, useToastStore } from './useRainbowToasts';
+import { useRainbowToasts, useRainbowToastsStore } from './useRainbowToastsStore';
 import { springConfigDismiss, springConfigEnter, useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
 const CARD_MARGIN = 20;
@@ -27,8 +29,9 @@ const ExpandedToastCard = ({ width, height, children }: { width: number; height:
 export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDisplay() {
   const insets = useSafeAreaInsets();
   const { width: deviceWidth } = useDimensions();
-  const showExpanded = useToastStore(state => state.showExpanded);
-  const toasts = useToasts();
+  const showExpanded = useRainbowToastsStore(state => state.showExpanded);
+  const { setShowExpandedToasts } = useRainbowToastsStore();
+  const toasts = useRainbowToasts();
   const hasToasts = !!toasts.length;
 
   const restingTranslateY = insets.top + 20;
@@ -40,7 +43,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
   const { dragY, panGesture, animateTo } = useVerticalDismissPanGesture({
     onDismiss: useCallback(() => {
       setShowExpandedToasts(false);
-    }, []),
+    }, [setShowExpandedToasts]),
     onStartDismiss: useCallback(() => {
       'worklet';
       opacity.value = withSpring(0, springConfigDismiss);
@@ -55,7 +58,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
     if (!hasToasts) {
       setShowExpandedToasts(false);
     }
-  }, [hasToasts]);
+  }, [hasToasts, setShowExpandedToasts]);
 
   useEffect(() => {
     if (showExpanded) {
@@ -84,7 +87,7 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
         runOnJS(res)();
       });
     });
-  }, [opacity, dragY]);
+  }, [opacity, dragY, setShowExpandedToasts]);
 
   const opacityStyle = useAnimatedStyle(() => {
     return {
@@ -129,7 +132,9 @@ export const RainbowToastExpandedDisplay = memo(function RainbowToastExpandedDis
                         return;
                       }
                       hide();
-                      toast.action?.();
+                      Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+                        transaction: toast.transaction,
+                      });
                     }}
                   >
                     <ToastExpandedContent toast={toast} />

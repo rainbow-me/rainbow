@@ -1,12 +1,12 @@
 import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
-import { ContractToastIcon } from '@/components/rainbow-toast/icons/ContractToastIcon';
+import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
-import { RainbowToast, RainbowToastContract, type RainbowToastSend, type RainbowToastSwap } from '@/components/rainbow-toast/types';
+import { RainbowToast } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
-import * as lang from '@/languages';
 import { Text } from '@/design-system';
 import { AssetType, TransactionStatus } from '@/entities';
+import * as lang from '@/languages';
 import React, { memo } from 'react';
 import { Text as RNText, StyleSheet, View } from 'react-native';
 
@@ -19,16 +19,14 @@ type ToastContentProps = {
 };
 
 export const ToastContent = memo(function ToastContent({ toast }: { toast: RainbowToast }) {
-  if (toast.type === 'swap') {
+  if (toast.transaction.type === 'swap') {
     return <SwapToastContent toast={toast} />;
   }
-  if (toast.type === 'send') {
+  if (toast.transaction.type === 'send') {
     return <SendToastContent toast={toast} />;
   }
-  if (toast.type === 'contract') {
-    return <ContractToastContent toast={toast} />;
-  }
-  return null;
+
+  return <BaseToastContent toast={toast} />;
 });
 
 // used by each toast type to display their inner contents
@@ -96,13 +94,13 @@ const styles = StyleSheet.create({
   },
 });
 
-function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
+function SwapToastContent({ toast }: { toast: RainbowToast }) {
   const title = getToastTitle(toast);
-  const subtitle = getSwapToastNetworkLabel({ toast });
+  const subtitle = getSwapToastNetworkLabel(toast);
   return (
     <ToastContentDisplay
       iconWidth={isWideSwapIcon(toast) ? SWAP_ICON_WIDTH : TOAST_ICON_SIZE}
-      type={toast.status === TransactionStatus.failed ? 'error' : undefined}
+      type={toast.transaction.status === TransactionStatus.failed ? 'error' : undefined}
       icon={<SwapToastIcon toast={toast} />}
       title={title}
       subtitle={subtitle}
@@ -110,41 +108,46 @@ function SwapToastContent({ toast }: { toast: RainbowToastSwap }) {
   );
 }
 
-export const getSwapToastNetworkLabel = ({ toast }: { toast: RainbowToastSwap }) => {
+export const getSwapToastNetworkLabel = ({ transaction }: RainbowToast) => {
+  const outAsset = transaction.changes?.find(c => c?.direction === 'out')?.asset;
+  const inAsset = transaction.changes?.find(c => c?.direction === 'in')?.asset;
   // using RNText because it can inherit the color/size from ToastContentDisplay
   return (
     <RNText>
-      {toast.fromAssetSymbol} <RNText style={styles.arrowSeparator}>􀄫</RNText> {toast.toAssetSymbol}
+      {outAsset?.symbol} <RNText style={styles.arrowSeparator}>􀄫</RNText> {inAsset?.symbol}
     </RNText>
   );
 };
 
-function SendToastContent({ toast }: { toast: RainbowToastSend }) {
+function SendToastContent({ toast }: { toast: RainbowToast }) {
+  const { transaction } = toast;
   const title = getToastTitle(toast);
-  const subtitle = toast.transaction.asset?.type === AssetType.nft ? toast.tokenName : toast.displayAmount;
+  const subtitle =
+    toast.transaction.asset?.type === AssetType.nft ? transaction.asset?.name : `${transaction.amount} ${transaction.asset?.symbol}`;
 
   return (
     <ToastContentDisplay
-      key={toast.status}
+      key={toast.transaction.status}
       icon={<SendToastIcon toast={toast} />}
       title={title}
       subtitle={subtitle}
-      type={toast.status === TransactionStatus.failed ? 'error' : undefined}
+      type={toast.transaction.status === TransactionStatus.failed ? 'error' : undefined}
     />
   );
 }
 
-function ContractToastContent({ toast }: { toast: RainbowToastContract }) {
-  const icon = <ContractToastIcon toast={toast} />;
+function BaseToastContent({ toast }: { toast: RainbowToast }) {
+  const { transaction } = toast;
+  const icon = <BaseToastIcon toast={toast} />;
   const title = getToastTitle(toast);
-  const subtitle = toast.name;
+  const subtitle = transaction.contract?.name || transaction.description;
 
   return (
     <ToastContentDisplay
       icon={icon}
       title={title}
       subtitle={subtitle}
-      type={toast.status === TransactionStatus.failed ? 'error' : undefined}
+      type={transaction.status === TransactionStatus.failed ? 'error' : undefined}
     />
   );
 }

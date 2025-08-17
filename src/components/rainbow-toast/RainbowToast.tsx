@@ -16,20 +16,11 @@ import {
 import { ToastContent } from '@/components/rainbow-toast/ToastContent';
 import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
-import {
-  finishRemoveToast,
-  handleTransactions,
-  removeAllToasts,
-  setShowExpandedToasts,
-  startRemoveToast,
-  useToasts,
-  useToastStore,
-} from '@/components/rainbow-toast/useRainbowToasts';
+import { useRainbowToasts, useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
+import { TransactionStatus } from '@/entities';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { useDimensions } from '@/hooks';
-import { useLatestAccountTransactions } from '@/hooks/useAccountTransactions';
-import { useMints } from '@/resources/mints';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
@@ -46,30 +37,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
-import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { RainbowToastExpandedDisplay } from './RainbowToastExpandedDisplay';
 import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
-
-const TRANSACTION_RELEVANT_KEYS = ['type', 'status', 'nonce', 'hash', 'chainId'] as const;
-
-function areTransactionsEqual(txs1: RainbowTransaction[], txs2: RainbowTransaction[]): boolean {
-  if (txs1 === txs2) return true;
-  if (txs1.length !== txs2.length) return false;
-  return txs1.every((tx, index) => {
-    return TRANSACTION_RELEVANT_KEYS.every(key => tx[key] === txs2[index][key]);
-  });
-}
-
-function useStableTransactions(transactions: RainbowTransaction[]) {
-  const previousTransactions = useRef(transactions);
-
-  if (areTransactionsEqual(previousTransactions.current, transactions)) {
-    return previousTransactions.current;
-  }
-
-  previousTransactions.current = transactions;
-  return transactions;
-}
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
@@ -96,9 +65,9 @@ function toastsWithAdjustedIndex(toasts: RainbowToast[]): [RainbowToast, number]
 }
 
 function RainbowToastDisplayContent() {
-  const isShowingTransactionDetails = useToastStore(state => state.isShowingTransactionDetails);
-  const toasts = useToasts();
-  const { transactions } = useLatestAccountTransactions();
+  const isShowingTransactionDetails = useRainbowToastsStore(state => state.isShowingTransactionDetails);
+  const toasts = useRainbowToasts();
+  const { removeAllToasts } = useRainbowToastsStore();
   const { height: deviceHeight } = useDimensions();
 
   const showingTransactionDetails = useSharedValue(false);
@@ -110,7 +79,7 @@ function RainbowToastDisplayContent() {
   const { dragY, panGesture, isDismissed } = useVerticalDismissPanGesture({
     onDismiss: useCallback(() => {
       removeAllToasts();
-    }, []),
+    }, [removeAllToasts]),
     height: deviceHeight,
     dismissSensitivity: 0.5,
     dismissTargetY: -100,
@@ -123,23 +92,11 @@ function RainbowToastDisplayContent() {
     };
   });
 
-  const accountAddress = useAccountAddress();
-  const {
-    data: { mints },
-  } = useMints({
-    walletAddress: accountAddress,
-  });
-
-  const stableTransactions = useStableTransactions(transactions);
-  useEffect(() => {
-    handleTransactions({ transactions: stableTransactions, mints });
-  }, [mints, stableTransactions]);
-
   // Dismiss all toasts when changing account.
   const address = useAccountAddress();
   useEffect(() => {
     removeAllToasts();
-  }, [address]);
+  }, [address, removeAllToasts]);
 
   // show all removing and 3 latest toasts
   const visibleToasts = useMemo(() => {
@@ -220,6 +177,7 @@ type Props = PropsWithChildren<{
 
 const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthProp, onWidth, index }: Props) {
   const insets = useSafeAreaInsets();
+  const { finishRemoveToast, startRemoveToast, setShowExpandedToasts } = useRainbowToastsStore();
   const { id } = toast;
 
   const gap = index > 1 ? TOAST_GAP_FAR : TOAST_GAP_NEAR;
@@ -267,13 +225,13 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
 
   const finishRemoveToastCallback = useCallback(() => {
     finishRemoveToast(id);
-  }, [id]);
+  }, [id, finishRemoveToast]);
 
   const swipeRemoveToastCallback = useCallback(() => {
     isRemoving.current = true;
     onWidth(id, 0);
     startRemoveToast(id, 'swipe');
-  }, [onWidth, id]);
+  }, [onWidth, id, startRemoveToast]);
 
   const hideToast = useCallback(() => {
     'worklet';
@@ -296,7 +254,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
 
   // hide toast - we always hide it eventually, just slower if not in a finished state
   // disable while testing
-  const shouldRemoveToast = toast.status !== TransactionStatus.pending;
+  const shouldRemoveToast = toast.transaction.status !== TransactionStatus.pending;
   useEffect(() => {
     // if removing already and not from us
     if (toast.isRemoving && !toast.removalReason) return;
@@ -319,7 +277,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
     if (toast.removalReason === 'finish') {
       hideToast();
     }
-  }, [hideToast, id, shouldRemoveToast, toast]);
+  }, [hideToast, id, shouldRemoveToast, toast, startRemoveToast]);
 
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()
@@ -379,7 +337,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
   const setShowExpandedTrue = useCallback(() => {
     isPressed.value = false;
     setShowExpandedToasts(true);
-  }, [isPressed]);
+  }, [isPressed, setShowExpandedToasts]);
 
   const pressGesture = useMemo(() => {
     return Gesture.Tap()
@@ -502,7 +460,7 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
               />
             )}
 
-            {toast.status === TransactionStatus.pending && (
+            {toast.transaction.status === TransactionStatus.pending && (
               <ShimmerAnimation color="rgba(255, 255, 255, 0)" gradientColor="rgba(255, 255, 255, 0.08)" animationDuration={2500} />
             )}
 
