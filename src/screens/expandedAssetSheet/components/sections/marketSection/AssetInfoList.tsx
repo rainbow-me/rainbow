@@ -18,7 +18,6 @@ import Animated, {
 import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { formatDate } from '@/utils/formatDate';
-import { useAccountSettings } from '@/hooks';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ShimmerAnimation } from '@/components/animations';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -31,6 +30,8 @@ import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { Address } from 'viem';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { sliderConfig, pulsingConfig } from '@/__swaps__/screens/Swap/constants';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 3;
 const LAYOUT_ANIMATION = FadeIn.duration(160);
@@ -213,7 +214,7 @@ const CreatedBySection = memo(function CreatedBySection() {
 });
 
 export function AssetInfoList() {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { accentColors, assetMetadata: metadata, basicAsset: asset, isLoadingMetadata } = useExpandedAssetSheetContext();
 
   const isExpanded = useSharedValue(true);
@@ -237,6 +238,13 @@ export function AssetInfoList() {
     };
   });
 
+  const liveTokenMarketCap = useLiveTokenValue({
+    tokenId: `${asset.address}_${asset.chainId}`,
+    initialValue: String(metadata?.marketCap ?? 0),
+    initialValueLastUpdated: 0,
+    selector: state => state.marketData.circulatingMarketCap,
+  });
+
   const hasCreatedBySection = useMemo(() => {
     return metadata?.rainbowTokenDetails?.onchainData?.creatorAddress !== undefined;
   }, [metadata]);
@@ -249,7 +257,7 @@ export function AssetInfoList() {
     if (metadata.marketCap) {
       items.push({
         title: i18n.t(i18n.l.expanded_state.sections.market_stats.market_cap),
-        value: bigNumberFormat(metadata.marketCap, nativeCurrency, true),
+        value: bigNumberFormat(liveTokenMarketCap, nativeCurrency, true),
         icon: '􁎢',
       });
     }
@@ -267,6 +275,7 @@ export function AssetInfoList() {
         icon: '􁖩',
       });
     }
+    // TODO: will fully diluted valuation be available? If not, should we calculate it?
     if (metadata.fullyDilutedValuation) {
       items.push({
         title: i18n.t(i18n.l.expanded_state.sections.market_stats.fully_diluted_valuation),
@@ -298,7 +307,7 @@ export function AssetInfoList() {
     }
 
     return items;
-  }, [metadata, asset, nativeCurrency]);
+  }, [metadata, asset, nativeCurrency, liveTokenMarketCap]);
 
   const ITEMS_COUNT = hasCreatedBySection ? DEFAULT_VISIBLE_ITEM_COUNT - 1 : DEFAULT_VISIBLE_ITEM_COUNT;
 

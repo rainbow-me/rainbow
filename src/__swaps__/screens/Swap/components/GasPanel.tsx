@@ -1,8 +1,9 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
+import React, { PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { LayoutChangeEvent } from 'react-native';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ACTION_BUTTON_HEIGHT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -15,6 +16,7 @@ import {
   useIsChainEIP1559,
   useMeteorologySuggestion,
   useMeteorologySuggestions,
+  useChainSupportsPriorityFee,
 } from '@/__swaps__/utils/meteorology';
 import { add, greaterThan, multiply, subtract, lessThan, formatNumber } from '@/helpers/utilities';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -27,12 +29,11 @@ import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
-import { upperFirst } from 'lodash';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { CurrentBaseFeeTypeKey, ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
+import { ExplainSheetParams, gasTrendToTrendType } from '@/navigation/types';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -57,14 +58,7 @@ function UnmountWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildre
 
 function PressableLabel({ onPress, children }: PropsWithChildren<{ onPress: VoidFunction }>) {
   return (
-    <Box
-      as={ButtonPressAnimation}
-      paddingVertical="8px"
-      marginVertical="-8px"
-      onPress={onPress}
-      backgroundColor="accent"
-      style={{ maxWidth: 175 }}
-    >
+    <Box as={ButtonPressAnimation} paddingVertical="8px" marginVertical="-8px" onPress={onPress} style={{ maxWidth: 175 }}>
       <Inline horizontalSpace="4px" alignVertical="center">
         <Text color="labelTertiary" size="15pt" weight="semibold" numberOfLines={2}>
           {`${children} `}
@@ -385,10 +379,10 @@ function MaxTransactionFee() {
   );
 }
 
-const chainsThatIgnoreThePriorityFee = [ChainId.arbitrum, ChainId.arbitrumNova, ChainId.arbitrumSepolia];
 function EditableGasSettings() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const isEIP1559 = useIsChainEIP1559(chainId);
+  const showPriorityFee = useChainSupportsPriorityFee(chainId);
 
   if (!isEIP1559) return <EditGasPrice />;
 
@@ -398,7 +392,7 @@ function EditableGasSettings() {
         <CurrentBaseFee />
       </UnmountWhenGasPanelIsClosed>
       <EditMaxBaseFee />
-      {!chainsThatIgnoreThePriorityFee.includes(chainId) && <EditPriorityFee />}
+      {showPriorityFee && <EditPriorityFee />}
     </>
   );
 }
@@ -416,8 +410,18 @@ function saveCustomGasSettings() {
 }
 
 export function GasPanel() {
-  const { configProgress } = useSwapContext();
+  const { configProgress, gasPanelHeight } = useSwapContext();
   const separator = useForegroundColor('separator');
+
+  const onLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const height = event.nativeEvent.layout.height;
+      if (height > 0) {
+        gasPanelHeight.value = height + ACTION_BUTTON_HEIGHT;
+      }
+    },
+    [gasPanelHeight]
+  );
 
   useAnimatedReaction(
     () => configProgress.value,
@@ -442,14 +446,14 @@ export function GasPanel() {
   });
 
   return (
-    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={[styles, { flex: 1 }]} testID="gas-panel" width="full">
+    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={styles} testID="gas-panel" width="full" onLayout={onLayout}>
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           {i18n.t(i18n.l.gas.gas_settings)}
         </Text>
 
-        <Box gap={24} width="full" alignItems="stretch">
-          <Box gap={24} height="104px">
+        <Box gap={24} width="full" alignItems="stretch" marginBottom={{ custom: 30 }}>
+          <Box gap={24}>
             <EditableGasSettings />
           </Box>
 

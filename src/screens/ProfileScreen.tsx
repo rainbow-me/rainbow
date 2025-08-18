@@ -1,16 +1,17 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import Navigation from '@/navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useAccountProfile, useAccountSettings } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
-import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { DelayedMount } from '@/components/utilities/DelayedMount';
+import { time } from '@/utils/time';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -18,7 +19,7 @@ const ProfileScreenPage = styled(Page)({
 });
 
 export default function ProfileScreen() {
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
 
   return (
     <ProfileScreenPage testID="profile-screen">
@@ -36,8 +37,9 @@ export default function ProfileScreen() {
         }
       />
 
-      <ActivityList />
-      <PendingTransactionWatcher />
+      <DelayedMount delay="idle" maxWait={time.ms(300)}>
+        <ActivityList />
+      </DelayedMount>
     </ProfileScreenPage>
   );
 }
@@ -45,9 +47,3 @@ export default function ProfileScreen() {
 function onChangeWallet(): void {
   Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
 }
-
-const PendingTransactionWatcher = memo(function PendingTransactionWatcher() {
-  const { accountAddress } = useAccountSettings();
-  usePendingTransactionWatcher({ address: accountAddress });
-  return null;
-});

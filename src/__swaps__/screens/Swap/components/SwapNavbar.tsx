@@ -23,11 +23,11 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { useAccountProfile } from '@/hooks';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { safeAreaInsetValues } from '@/utils';
 import { GestureHandlerButton } from './GestureHandlerButton';
 
@@ -71,6 +71,7 @@ function SwapSettings() {
               borderColor: isDarkMode ? separatorTertiary : opacity(separatorTertiary, 0.01),
             },
           ]}
+          testID="swap-settings-button"
         >
           <IconContainer opacity={0.8} size={34}>
             <Bleed space={isDarkMode ? '12px' : undefined}>
@@ -88,7 +89,7 @@ function SwapSettings() {
 }
 
 export function SwapNavbar() {
-  const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  const { accountSymbol, accountColor, accountImage } = useAccountProfileInfo();
   const { isDarkMode } = useColorMode();
   const { navigate, goBack } = useNavigation();
 
@@ -124,7 +125,7 @@ export function SwapNavbar() {
         width={{ custom: 36 }}
       />
       <Navbar
-        hasStatusBarInset={IS_IOS}
+        hasStatusBarInset
         leftComponent={
           <Bleed space="10px">
             <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} style={{ padding: 10 }}>

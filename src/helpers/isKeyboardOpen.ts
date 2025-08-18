@@ -1,8 +1,12 @@
-import { RNKeyboard } from 'react-native-keyboard-area';
+import { Keyboard } from 'react-native';
 let keyboardOpen = false;
 
-RNKeyboard.addKeyboardListener(height => {
-  keyboardOpen = height > 0;
+Keyboard.addListener('keyboardDidShow', () => {
+  keyboardOpen = true;
+});
+
+Keyboard.addListener('keyboardDidHide', () => {
+  keyboardOpen = false;
 });
 
 export default function isKeyboardOpen() {

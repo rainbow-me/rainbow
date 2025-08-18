@@ -1,18 +1,19 @@
+import { analytics } from '@/analytics';
+import { enableActionsOnReadOnlyWallet } from '@/config';
+import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
+import { prefetchENSAvatar, prefetchENSRecords, useAccountENSDomains, useDimensions } from '@/hooks';
+import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
+import { watchingAlert } from '@/utils';
+import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import ImgixImage from '../images/ImgixImage';
-import { enableActionsOnReadOnlyWallet } from '@/config';
-import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
-import { prefetchENSAvatar, prefetchENSRecords, useAccountENSDomains, useDimensions, useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import { watchingAlert } from '@/utils';
 import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
-import * as i18n from '@/languages';
-import { analytics } from '@/analytics';
-import { useRoute } from '@react-navigation/native';
 
 const ASPECT_RATIO = 112 / 350;
 const ARBITRARILY_LARGE_NUMBER = 1000;
@@ -25,7 +26,6 @@ const GRADIENT: Gradient = {
 
 export const ENSCreateProfileCard = () => {
   const { navigate } = useNavigation();
-  const { isReadOnlyWallet } = useWallets();
   const { width: deviceWidth } = useDimensions();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
@@ -36,7 +36,7 @@ export const ENSCreateProfileCard = () => {
   const { uniqueDomain } = useAccountENSDomains();
 
   const handlePress = useCallback(() => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       if (uniqueDomain?.name) {
         prefetchENSAvatar(uniqueDomain.name);
         prefetchENSRecords(uniqueDomain.name);
@@ -51,7 +51,7 @@ export const ENSCreateProfileCard = () => {
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate, routeName, uniqueDomain?.name]);
+  }, [navigate, routeName, uniqueDomain?.name]);
 
   return (
     <ColorModeProvider value="lightTinted">

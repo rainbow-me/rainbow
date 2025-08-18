@@ -1,5 +1,5 @@
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
-platform :ios, '15.0'
+platform :ios, '15.1'
 source 'https://github.com/CocoaPods/Specs.git'
 #use_modular_headers!
 
@@ -17,8 +17,14 @@ pod 'GoogleUtilities', :modular_headers => true
 pod 'nanopb', :modular_headers => true
 
 install! 'cocoapods', :deterministic_uuids => false
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+prepare_react_native_project!
 
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -61,7 +67,7 @@ target 'Rainbow' do
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO',
-    :fabric_enabled => flags[:fabric_enabled],
+    :new_arch_enabled => false,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -103,9 +109,6 @@ target 'Rainbow' do
           config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
       end
-    end
-    installer.pods_project.build_configurations.each do |config|
-      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     end
   end
 end

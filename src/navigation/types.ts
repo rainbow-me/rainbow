@@ -230,7 +230,7 @@ export type PairHardwareWalletNavigatorParams = {
 };
 
 export type ModalParams = {
-  actionType?: 'Import' | 'Create';
+  actionType?: 'Import' | 'Create' | 'Switch';
   additionalPadding?: boolean;
   address?: string | undefined;
   asset?: (ParsedAddressAsset | UniqueAsset)[];
@@ -241,7 +241,7 @@ export type ModalParams = {
   ens?: string | undefined;
   numWalletGroups?: number;
   nickname?: string | undefined;
-  type: 'contact_profile' | 'wallet_profile' | 'send' | 'request' | 'new_wallet_group';
+  type: 'contact_profile' | 'wallet_profile' | 'send' | 'request' | 'new_wallet_group' | 'dev_test_backup';
   onRefocusInput?: () => void;
   onCloseModal?: ({ color, name, image }: { color: number; name: string; image?: string }) => void;
   profile?: { image?: string; name: string; color?: number | null };
@@ -363,7 +363,7 @@ export type RootStackParamList = {
     ensProfile: ENSProfile;
     isENS: boolean;
     isL2: boolean;
-    isNft: boolean;
+    isUniqueAsset: boolean;
     chainId: ChainId;
     profilesEnabled: boolean;
     to: string;

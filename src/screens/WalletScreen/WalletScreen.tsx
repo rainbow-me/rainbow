@@ -1,25 +1,33 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
+import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { Box } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useHideSplashScreen, useWalletSectionsData } from '@/hooks';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { useRecoilValue } from 'recoil';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Box } from '@/design-system';
+import { useAccountAccentColor, useAccountSettings, useFetchOpenCollectionsOnMount, useWalletSectionsData } from '@/hooks';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
+import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
+import { useInitializeWalletAndSetParams } from '@/hooks/useInitializeWalletAndSetParams';
+import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
+import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
+import { useWalletCohort } from '@/hooks/useWalletCohort';
+import Routes from '@/navigation/Routes';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { addSubscribedTokens, removeSubscribedTokens } from '@/state/liveTokens/liveTokensStore';
+import { debounce } from 'lodash';
+import { useRoute } from '@react-navigation/native';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
-import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
-import Routes from '@/navigation/Routes';
-import { useWalletCohort } from '@/hooks/useWalletCohort';
-import { useRemoveScreen } from '@/hooks/useRemoveFirstScreen';
-import { useInitializeWalletAndSetParams } from '@/hooks/useInitiailizeWalletAndSetParams';
-import { useLoadDeferredWalletData } from '@/hooks/useLoadDeferredWalletData';
-import { useAppIconIdentify } from '@/hooks/useIdentifyAppIcon';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { PerformanceMeasureView } from '@shopify/react-native-performance';
 import { InteractionManager } from 'react-native';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRecoilValue } from 'recoil';
+import { useNftsStore } from '@/state/nfts/nfts';
+import { useStableValue } from '@/hooks/useStableValue';
 
 const UtilityComponents = memo(function UtilityComponents() {
   return (
@@ -46,13 +54,19 @@ const WalletScreenEffects = memo(function WalletScreenEffects() {
   useLoadDeferredWalletData();
   useWalletCohort();
   useAppIconIdentify();
+  useFetchOpenCollectionsOnMount();
   return null;
 });
 
+function extractTokenRowIds(items: CellTypes[]) {
+  return items.filter(item => item.type === 'COIN').map(item => item.uid.replace('coin-', ''));
+}
+
 function WalletScreen() {
-  const { network: currentNetwork, accountAddress } = useAccountSettings();
+  const { network: currentNetwork } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
-  const hideSplashScreen = useHideSplashScreen();
+  const route = useRoute();
 
   const {
     isWalletEthZero,
@@ -78,7 +92,38 @@ function WalletScreen() {
         useNavigationStore.setState({ isWalletScreenMounted: true });
       });
     });
-  }, [hideSplashScreen]);
+  }, []);
+
+  // We cannot rely on `onMomentumScrollEnd` because it's not called when the user scrolls directly rather than swiping
+  const debouncedAddSubscribedTokens = useStableValue(() =>
+    debounce((viewableItems, routeName) => {
+      const viewableTokenUniqueIds = extractTokenRowIds(viewableItems);
+      if (viewableTokenUniqueIds.length > 0) {
+        addSubscribedTokens({ route: routeName, tokenIds: viewableTokenUniqueIds });
+      }
+    }, 250)
+  );
+
+  const handleViewableItemsChanged = useCallback(
+    ({
+      viewableItems,
+      viewableItemsRemoved,
+    }: {
+      viewableItems: CellTypes[];
+      viewableItemsAdded: CellTypes[];
+      viewableItemsRemoved: CellTypes[];
+    }) => {
+      const viewableTokenUniqueIdsRemoved = extractTokenRowIds(viewableItemsRemoved);
+
+      // removal cannot be debounced
+      if (viewableTokenUniqueIdsRemoved.length > 0) {
+        removeSubscribedTokens({ route: route.name, tokenIds: viewableTokenUniqueIdsRemoved });
+      }
+
+      debouncedAddSubscribedTokens(viewableItems, route.name);
+    },
+    [route.name, debouncedAddSubscribedTokens]
+  );
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
@@ -88,7 +133,9 @@ function WalletScreen() {
           disableRefreshControl={disableRefreshControl}
           isWalletEthZero={isWalletEthZero}
           network={currentNetwork}
+          onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
           walletBriefSectionsData={walletBriefSectionsData}
+          onViewableItemsChanged={handleViewableItemsChanged}
         />
         <ToastComponent />
         <UtilityComponents />

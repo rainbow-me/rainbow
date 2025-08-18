@@ -1,23 +1,27 @@
+import { RainbowTransaction } from '@/entities';
+import { useNavigation } from '@/navigation';
+import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
 import { useEffect, useMemo } from 'react';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
-import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
-import { useNavigation } from '@/navigation';
-import { useTheme } from '@/theme';
-import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
-import { RainbowTransaction } from '@/entities';
-import { pendingTransactionsStore } from '@/state/pendingTransactions';
-import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const accountAddress = useAccountAddress();
 
-  const { getPendingTransactionsInReverseOrder } = pendingTransactionsStore.getState();
-  const pendingTransactionsMostRecentFirst = getPendingTransactionsInReverseOrder(accountAddress);
+  const pendingTransactionsMostRecentFirst = usePendingTransactionsStore(state =>
+    state.getPendingTransactionsInReverseOrder(accountAddress)
+  );
+
   const walletConnectRequests = getSortedWalletConnectRequests();
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useConsolidatedTransactions({

@@ -1,16 +1,19 @@
 import { useSelector } from 'react-redux';
 import { useMemo } from 'react';
-import { useAccountSettings, usePendingTransactions } from '.';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { usePendingTransactions } from '.';
 import { ENSRegistrationState, RainbowTransaction } from '@/entities';
 import { AppState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 /**
  * @description Returns the local ENS transactions for a given name.
  * */
 export default function useENSLocalTransactions({ name }: { name: string }) {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const accountAddress = useAccountAddress();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { getPendingTransactionByHash } = usePendingTransactions();
   const { data } = useConsolidatedTransactions({
     address: accountAddress,

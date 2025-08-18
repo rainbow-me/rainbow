@@ -1,6 +1,6 @@
 import '@/languages';
 import * as Sentry from '@sentry/react-native';
-import React, { useCallback, useEffect, useState, memo } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
@@ -33,7 +33,7 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
-import { IS_DEV, IS_TEST } from '@/env';
+import { IS_DEV, IS_PROD, IS_TEST } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
 import { AbsolutePortalRoot } from './components/AbsolutePortal';
@@ -114,7 +114,7 @@ function Root() {
   }, [setInitializing]);
 
   return initializing ? null : (
-    <PerformanceProfiler useRenderTimeouts={false} onReportPrepared={onReportPrepared}>
+    <PerformanceProfiler useRenderTimeouts={false} enabled={IS_PROD} onReportPrepared={onReportPrepared}>
       {/* @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>' */}
       <ReduxProvider store={store}>
         <RecoilRoot>
@@ -147,7 +147,11 @@ const RootWithSentry = Sentry.wrap(Root);
 const PlaygroundWithReduxStore = () => (
   // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
   <ReduxProvider store={store}>
-    <Playground />
+    <MainThemeProvider>
+      <GestureHandlerRootView style={sx.container}>
+        <Playground />
+      </GestureHandlerRootView>
+    </MainThemeProvider>
   </ReduxProvider>
 );
 
@@ -170,7 +174,7 @@ async function initializeApplication() {
   const isReturningUser = ls.device.get(['isReturningUser']);
   const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
 
-  // Initial telemetry; amended with wallet context later in `useInitializeWallet`
+  // Initial telemetry; amended with wallet context later in `initializeWallet`
   Sentry.setUser({ id: deviceId });
   analytics.setDeviceId(deviceId);
   analytics.identify();

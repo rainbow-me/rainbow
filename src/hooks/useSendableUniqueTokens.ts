@@ -1,19 +1,15 @@
 import { groupBy } from 'lodash';
-import { useAccountSettings } from '.';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useLegacyNFTs } from '@/resources/nfts';
-import { useNftSort } from './useNFTsSortBy';
 import { useMemo } from 'react';
 
 export default function useUniqueTokens() {
-  const { nftSort, nftSortDirection } = useNftSort();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const {
     data: { nfts: uniqueTokens },
     isLoading: isFetchingNfts,
   } = useLegacyNFTs({
     address: accountAddress,
-    sortBy: nftSort,
-    sortDirection: nftSortDirection,
     config: {
       enabled: !!accountAddress,
     },
@@ -23,13 +19,13 @@ export default function useUniqueTokens() {
     if (!uniqueTokens?.length) return [];
 
     const sendableTokens = uniqueTokens.filter(uniqueToken => uniqueToken.isSendable);
-    const grouped = groupBy(sendableTokens, token => token.familyName);
+    const grouped = groupBy(sendableTokens, token => token.collectionName);
     const families = Object.keys(grouped).sort();
 
     return families.map((family, index) => ({
       data: grouped[family],
       familyId: index,
-      familyImage: grouped[family][0].familyImage ?? null,
+      familyImage: grouped[family][0].collectionImageUrl ?? null,
       name: family,
     }));
   }, [uniqueTokens]);

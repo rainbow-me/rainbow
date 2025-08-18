@@ -1,38 +1,38 @@
-import { Box, Inline, Stack, Text, AccentColorProvider, Bleed } from '@/design-system';
-import { useTheme } from '@/theme';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { GenericCard } from './GenericCard';
-import { ButtonPressAnimation } from '../animations';
-import { useAccountSettings, useChartThrottledPoints, useColorForAsset, useWallets } from '@/hooks';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { deviceUtils } from '@/utils';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
-import { ETH_ADDRESS } from '@/references';
-import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
-import Labels from '../value-chart/ExtremeLabels';
-import showWalletErrorAlert from '@/helpers/support';
-import { IS_IOS } from '@/env';
-import Spinner from '../Spinner';
-import Skeleton, { FakeText } from '../skeleton/Skeleton';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { useRoute } from '@react-navigation/native';
-import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { AccentColorProvider, Bleed, Box, Inline, Stack, Text } from '@/design-system';
+import { IS_IOS } from '@/env';
+import showWalletErrorAlert from '@/helpers/support';
+import { useChartThrottledPoints, useColorForAsset } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { ChartDot, ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
+import { ETH_ADDRESS } from '@/references';
 import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import assetTypes from '@/entities/assetTypes';
-import { Network, ChainId } from '@/state/backendNetworks/types';
+import { ChainId, Network } from '@/state/backendNetworks/types';
+import { getIsDamagedWallet } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme';
+import { deviceUtils } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Spinner from '../Spinner';
+import { ButtonPressAnimation } from '../animations';
+import Skeleton, { FakeText } from '../skeleton/Skeleton';
+import { ExtremeLabels } from '@/components/value-chart/ExtremeLabels';
+import { GenericCard } from './GenericCard';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
 export const EthCard = () => {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
-  const { isDamaged } = useWallets();
   const { data: externalEthAsset } = useExternalToken({
     address: ETH_ADDRESS,
     chainId: ChainId.mainnet,
@@ -59,7 +59,7 @@ export const EthCard = () => {
         e.stopPropagation();
       }
 
-      if (isDamaged) {
+      if (getIsDamagedWallet()) {
         showWalletErrorAlert();
         return;
       }
@@ -71,7 +71,7 @@ export const EthCard = () => {
         routeName,
       });
     },
-    [isDamaged, navigate, routeName]
+    [navigate, routeName]
   );
 
   const handleAssetPress = useCallback(() => {
@@ -92,7 +92,7 @@ export const EthCard = () => {
     {
       address: ETH_ADDRESS,
       mainnet_address: ETH_ADDRESS,
-      type: assetTypes.token,
+      type: 'token',
     },
     colors.appleBlue
   );
@@ -103,6 +103,7 @@ export const EthCard = () => {
 
   const { throttledData } = useChartThrottledPoints({
     asset: ethAsset,
+    timespan: 'day',
   });
 
   const CHART_WIDTH = deviceUtils.dimensions.width - 80;
@@ -243,7 +244,7 @@ export const EthCard = () => {
                   shadowRadius: 4.5,
                 }}
               />
-              <Labels color={colorForAsset} width={CHART_WIDTH} isCard />
+              <ExtremeLabels color={colorForAsset} isCard />
             </ChartPathProvider>
           )}
         </Box>

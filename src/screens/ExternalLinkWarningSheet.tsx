@@ -44,7 +44,7 @@ const ExternalLinkWarningSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={ExternalLinkWarningSheetHeight} insets={insets}>
-      <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={ExternalLinkWarningSheetHeight} scrollEnabled={false}>
+      <SlackSheet additionalTopPadding contentHeight={ExternalLinkWarningSheetHeight} scrollEnabled={false}>
         <Centered direction="column" height={ExternalLinkWarningSheetHeight} width="100%">
           <ColumnWithMargins
             margin={15}

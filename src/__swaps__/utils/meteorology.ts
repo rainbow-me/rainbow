@@ -2,7 +2,7 @@ import { NotifyOnChangeProps, useQuery } from '@tanstack/react-query';
 
 import { ChainId } from '@/state/backendNetworks/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { abs, lessThan, subtract } from '@/helpers/utilities';
+import { abs, lessThan, subtract, isZero } from '@/helpers/utilities';
 import { gweiToWei } from '@/parsers';
 import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useCallback } from 'react';
@@ -11,6 +11,50 @@ import { getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSe
 import { GasSpeed } from '../types/gas';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 import { getMinimalTimeUnitStringForMs } from '@/helpers/time';
+import { IS_TEST } from '@/env';
+
+// mocked data for testing. should be compatible with our anvil setup.
+const defaultTestMeteorologyData: MeteorologyResponse = {
+  data: {
+    currentBaseFee: '3574694345',
+    baseFeeSuggestion: '4659422459',
+    baseFeeTrend: 1,
+    blocksToConfirmationByBaseFee: {
+      '4': '4385338784',
+      '8': '4127377679',
+      '40': '3884590757',
+      '120': '3656085418',
+      '240': '3441021570',
+    },
+    blocksToConfirmationByPriorityFee: {
+      '1': '765220123',
+      '2': '80328580',
+      '3': '75063929',
+      '4': '100',
+    },
+    confirmationTimeByPriorityFee: {
+      '15': '765220123',
+      '30': '80328580',
+      '45': '75063929',
+      '60': '100',
+    },
+    maxPriorityFeeSuggestions: {
+      fast: '765220124',
+      normal: '80328581',
+      urgent: '1325069176',
+    },
+    secondsPerNewBlock: 12,
+    meta: {
+      blockNumber: 22719166,
+      provider: 'rpc',
+    },
+  },
+  meta: {
+    feeType: 'eip1559',
+    blockNumber: '22719166',
+    provider: 'rpc',
+  },
+};
 
 // Query Types
 
@@ -76,6 +120,7 @@ export function useMeteorology<Selected = MeteorologyResult>(
     cacheTime: 36_000, // 36 seconds
     refetchInterval: 12_000, // 12 seconds
     staleTime: staleTime ?? 12_000, // 12 seconds
+    initialData: IS_TEST ? () => defaultTestMeteorologyData : undefined,
   });
 }
 
@@ -253,6 +298,18 @@ export const useIsChainEIP1559 = (chainId: ChainId) => {
   const { data } = useMeteorology({ chainId }, { select: selectIsEIP1559 });
   if (data === undefined) return true;
   return data;
+};
+
+export const useChainSupportsPriorityFee = (chainId: ChainId) => {
+  const isEIP1559 = useIsChainEIP1559(chainId);
+  const { data: suggestions } = useMeteorologySuggestions({ chainId, enabled: isEIP1559 });
+
+  // Default to true to avoid hiding the fee input while data is loading.
+  if (suggestions === undefined) {
+    return true;
+  }
+
+  return suggestions.normal.isEIP1559 && !isZero(suggestions.normal.maxPriorityFee);
 };
 
 export const getCachedGasSuggestions = (chainId: ChainId) => {

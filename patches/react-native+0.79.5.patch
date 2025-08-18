@@ -1,0 +1,27 @@
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index 0a2fa36..21a5099 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -240,7 +240,10 @@ - (NSString *)accessibilityLabel
+   if (label) {
+     return label;
+   }
+-  return RCTRecursiveAccessibilityLabel(self);
++  if (self.isAccessibilityElement) {
++    return RCTRecursiveAccessibilityLabel(self);
++  }
++  return nil;
+ }
+ 
+ - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
+@@ -827,6 +830,10 @@ - (void)displayLayer:(CALayer *)layer
+ 
+   UIColor *backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
+ 
++  if (@available(iOS 13.0, *)) {
++    layer.cornerCurve = kCACornerCurveContinuous;
++  }
++
+   if (useIOSBorderRendering) {
+     layer.cornerRadius = cornerRadii.topLeftHorizontal;
+     layer.borderColor = borderColors.left.CGColor;

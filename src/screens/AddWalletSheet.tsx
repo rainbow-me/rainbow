@@ -11,6 +11,7 @@ import { InteractionManager } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import WalletsAndBackup from '@/assets/WalletsAndBackup.png';
 import CreateNewWallet from '@/assets/CreateNewWallet.png';
+import BackupWarning from '@/assets/BackupWarning.png';
 import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
 import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
 import WatchWalletIcon from '@/assets/watchWallet.png';
@@ -18,15 +19,12 @@ import { cloudPlatform } from '@/utils/platform';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { executeFnIfCloudBackupAvailable } from '@/model/backup';
 import { RootStackParamList } from '@/navigation/types';
+import { IS_DEV } from '@/env';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
 export type AddWalletSheetParams = {
   isFirstWallet: boolean;
-};
-
-type RouteParams = {
-  AddWalletSheetParams: AddWalletSheetParams;
 };
 
 export const AddWalletSheet = () => {
@@ -48,9 +46,7 @@ export const AddWalletSheet = () => {
 
       navigate(Routes.CHOOSE_WALLET_GROUP);
     } catch (e) {
-      logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
-        error: e,
-      });
+      logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', e));
     }
   };
 
@@ -152,6 +148,19 @@ export const AddWalletSheet = () => {
     onPress: onPressConnectHardwareWallet,
   };
 
+  const restoreDevBackup: AddWalletItem = {
+    title: `Dev: Restore from Paste`,
+    description: `Restore from a development backup string`,
+    icon: BackupWarning,
+    iconColor: globalColors.yellow60,
+    onPress: () => {
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.MODAL_SCREEN, {
+          type: 'dev_test_backup',
+        });
+      });
+    },
+  };
   return (
     <Box height="full" width="full" background="surfaceSecondary" testID="add-wallet-sheet">
       <Inset horizontal="28px" top="36px">
@@ -163,6 +172,7 @@ export const AddWalletSheet = () => {
             restoreFromSeed,
             ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
             watch,
+            ...(IS_DEV ? [restoreDevBackup] : []),
           ]}
         />
       </Inset>

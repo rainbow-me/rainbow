@@ -35,9 +35,11 @@ export type OptionallyPersistedRainbowStore<S, PersistedState> = RainbowStore<S>
 
 // ============ Common Utility Types =========================================== //
 
-export type Listener<S> = (state: S, prevState: S) => void;
+export type Timeout = ReturnType<typeof setTimeout>;
+
+export type Listener<S> = (state: S, previousState: S) => void;
 export type Selector<S, Selected> = (state: S) => Selected;
-export type EqualityFn<T = unknown> = (a: T, b: T) => boolean;
+export type EqualityFn<T = unknown> = (previousState: T, state: T) => boolean;
 
 export type UseStoreCallSignatures<S> = {
   (): S;

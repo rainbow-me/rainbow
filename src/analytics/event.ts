@@ -4,6 +4,7 @@ import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
+import { CandleResolution, ChartType } from '@/features/charts/types';
 import { TrendingToken } from '@/resources/trendingTokens/trendingTokens';
 import { TokenLauncherAnalyticsParams } from '@/screens/token-launcher/state/tokenLauncherStore';
 import { ChainId, Network } from '@/state/backendNetworks/types';
@@ -305,6 +306,10 @@ export const event = {
 
   // refresh account data
   refreshAccountData: 'refresh_account_data',
+
+  // charts
+  chartTypeChanged: 'Changed Chart Type',
+  candleResolutionChanged: 'Changed Candle Resolution',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -824,8 +829,8 @@ export type EventProperties = {
     usdValue: string;
   };
 
-  [event.errorBoundary]: { error: Error | null };
-  [event.errorBoundaryReset]: { error: Error | null };
+  [event.errorBoundary]: { error: unknown; componentStack: string | undefined; eventId: string };
+  [event.errorBoundaryReset]: { error: unknown; componentStack: string | null | undefined; eventId: string };
 
   [event.tokenDetailsErc20]: {
     token: {
@@ -1007,7 +1012,7 @@ export type EventProperties = {
   [event.toggledAnNFTAsHidden]: {
     isHidden: boolean;
     collectionContractAddress?: string | null;
-    collectionName?: string;
+    collectionName?: string | null;
   };
   [event.viewedEnsProfile]: {
     category: string;
@@ -1090,5 +1095,11 @@ export type EventProperties = {
   };
   [event.refreshAccountData]: {
     duration: number;
+  };
+  [event.chartTypeChanged]: {
+    chartType: ChartType;
+  };
+  [event.candleResolutionChanged]: {
+    candleResolution: CandleResolution;
   };
 };

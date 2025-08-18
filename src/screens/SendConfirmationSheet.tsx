@@ -1,14 +1,45 @@
+import { opacity } from '@/__swaps__/utils/swaps';
+import Divider from '@/components/Divider';
+import { ShimmerAnimation } from '@/components/animations';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
+import { AssetType } from '@/entities';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import {
+  estimateENSReclaimGasLimit,
+  estimateENSSetAddressGasLimit,
+  estimateENSSetRecordsGasLimit,
+  formatRecordsForTransaction,
+} from '@/handlers/ens';
+import svgToPngIfNeeded from '@/handlers/svgs';
+import { assetIsParsedAddressAsset, assetIsUniqueAsset, estimateGasLimit, getProvider } from '@/handlers/web3';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
+import { useColorForAsset, useContacts, useDimensions, useENSAvatar, useGas, useUserAccounts } from '@/hooks';
+import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import { useInteractionsCount } from '@/resources/addys/interactions';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
+import { useTheme } from '@/theme';
+import { promiseUtils } from '@/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
-import * as i18n from '@/languages';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
-import Divider from '@/components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -25,48 +56,10 @@ import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
+import { useAccountAddress, useWalletsStore } from '@/state/wallets/walletsStore';
 import { address } from '../utils/abbreviations';
 import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { Box, Heading, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import {
-  estimateENSReclaimGasLimit,
-  estimateENSSetAddressGasLimit,
-  estimateENSSetRecordsGasLimit,
-  formatRecordsForTransaction,
-} from '@/handlers/ens';
-import svgToPngIfNeeded from '@/handlers/svgs';
-import { estimateGasLimit, getProvider, assetIsParsedAddressAsset, assetIsUniqueAsset } from '@/handlers/web3';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import {
-  useAccountSettings,
-  useColorForAsset,
-  useContacts,
-  useDimensions,
-  useENSAvatar,
-  useGas,
-  useUserAccounts,
-  useWallets,
-} from '@/hooks';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
-import { logger, RainbowError } from '@/logger';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { RootStackParamList } from '@/navigation/types';
-import { ParsedAddressAsset, UniqueAsset } from '@/entities';
-import { useInteractionsCount } from '@/resources/addys/interactions';
-import { ShimmerAnimation } from '@/components/animations';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -188,7 +181,8 @@ const ChevronDown = () => {
 export const SendConfirmationSheet = () => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const accountAddress = useAccountAddress();
   const { goBack, navigate, setParams } = useNavigation<typeof Routes.SEND_SHEET>();
   const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -203,11 +197,11 @@ export const SendConfirmationSheet = () => {
   }, []);
 
   const {
-    params: { amountDetails, asset, callback, ensProfile, isL2, isNft, chainId, to, toAddress },
+    params: { amountDetails, asset, callback, ensProfile, isL2, isUniqueAsset, chainId, to, toAddress },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.SEND_CONFIRMATION_SHEET>>();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
-  const { walletNames } = useWallets();
+  const walletNames = useWalletsStore(state => state.walletNames);
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return account.address.toLowerCase() === toAddress?.toLowerCase();
@@ -228,8 +222,7 @@ export const SendConfirmationSheet = () => {
     return contacts?.[toAddress?.toLowerCase()];
   }, [contacts, toAddress]);
 
-  const uniqueTokenType = getUniqueTokenType(asset as UniqueAsset);
-  const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
+  const isENS = asset.type === AssetType.ens && profilesEnabled;
 
   const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, chainId, toAddress }));
 
@@ -347,7 +340,7 @@ export const SendConfirmationSheet = () => {
 
   let color = useColorForAsset(asset);
 
-  if (isNft) {
+  if (isUniqueAsset) {
     color = theme.colors.appleBlue;
   }
 
@@ -429,10 +422,10 @@ export const SendConfirmationSheet = () => {
 
   const imageUrl = useMemo(() => {
     if (assetIsUniqueAsset(asset)) {
-      return svgToPngIfNeeded(asset.image_thumbnail_url || asset.image_url, true);
+      return svgToPngIfNeeded(asset.images.lowResUrl || asset.images.highResUrl, true);
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const contentHeight = getSheetHeight({
     checkboxes,
@@ -448,14 +441,14 @@ export const SendConfirmationSheet = () => {
       return `${amountDetails.assetAmount} ${asset.symbol}`;
     }
     return '';
-  }, [asset, isNft, amountDetails]);
+  }, [asset, amountDetails]);
 
   const assetSymbolForDisclaimer = useMemo(() => {
     if (assetIsParsedAddressAsset(asset)) {
       return asset.symbol;
     }
     return undefined;
-  }, [asset, isNft]);
+  }, [asset]);
 
   const getMessage = () => {
     let message;
@@ -482,15 +475,15 @@ export const SendConfirmationSheet = () => {
             <Row>
               <Column justify="center" width={deviceWidth - 117}>
                 <Heading numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
-                  {isNft ? asset?.name : nativeDisplayAmount}
+                  {isUniqueAsset ? asset?.name : nativeDisplayAmount}
                 </Heading>
                 <Row marginTop={12}>
                   <Text
                     color={{
-                      custom: isNft ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
+                      custom: isUniqueAsset ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
                     }}
                     size="16px / 22px (Deprecated)"
-                    weight={isNft ? 'bold' : 'heavy'}
+                    weight={isUniqueAsset ? 'bold' : 'heavy'}
                   >
                     {subHeadingText}
                   </Text>
@@ -501,7 +494,7 @@ export const SendConfirmationSheet = () => {
                   {assetIsUniqueAsset(asset) ? (
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
-                      backgroundColor={asset.background || theme.colors.lightestGrey}
+                      backgroundColor={asset.backgroundColor || theme.colors.lightestGrey}
                       borderRadius={10}
                       chainId={asset?.chainId}
                       imageUrl={imageUrl}

@@ -1,30 +1,28 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { analytics } from '@/analytics';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { Box, Inline } from '@/design-system';
+import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
+import * as lang from '@/languages';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import { useTheme } from '@/theme';
+import { showActionSheetWithOptions } from '@/utils';
+import { changeAccount, disconnectSession } from '@/walletConnect';
 import { SessionTypes } from '@walletconnect/types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-
+import { getAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
 import { TruncatedText } from '../text';
-import { analytics } from '@/analytics';
-import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { changeConnectionMenuItems } from '@/helpers/walletConnectNetworks';
-import { useWallets } from '@/hooks';
-import { Navigation, useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { padding, position } from '@/styles';
-import { showActionSheetWithOptions } from '@/utils';
-import * as lang from '@/languages';
-import { useTheme } from '@/theme';
-import { changeAccount, disconnectSession } from '@/walletConnect';
-import { Box, Inline } from '@/design-system';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { isValidHex } from '@/handlers/web3';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -44,10 +42,9 @@ const columnStyle = padding.object(0, 10, 0, 12);
 export function WalletConnectV2ListItem({ session, reload }: { session: SessionTypes.Struct; reload(): void }) {
   const { goBack } = useNavigation();
   const { colors } = useTheme();
-  const { wallets, walletNames } = useWallets();
 
   const [address, setAddress] = useState<string | undefined>(undefined);
-  const [accountInfo, setAccountInfo] = useState<ReturnType<typeof getAccountProfileInfo> | undefined>(undefined);
+  const [accountInfo, updateAccountInfo] = useState<ReturnType<typeof getAccountProfileInfo> | undefined>(undefined);
 
   const radialGradientProps = {
     center: [0, 1],
@@ -69,10 +66,10 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   }, [session]);
 
   useEffect(() => {
-    if (address) {
-      setAccountInfo(getAccountProfileInfo(findWalletWithAccount(wallets || {}, address), walletNames, address));
+    if (address && isValidHex(address)) {
+      updateAccountInfo(getAccountProfileInfo(address));
     }
-  }, [address, walletNames, wallets]);
+  }, [address]);
 
   const chains = useMemo(() => namespaces?.eip155?.chains || [], [namespaces]);
   const chainIds = useMemo(

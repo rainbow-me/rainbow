@@ -1,17 +1,17 @@
+import { IS_TEST } from '@/env';
+import { useRoute } from '@react-navigation/native';
 import React, { useRef } from 'react';
 import { CarouselCard } from '../CarouselCard';
-import { useRoute } from '@react-navigation/native';
-import { IS_TEST } from '@/env';
 
 import { RemoteCard } from '@/components/cards/remote-cards';
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
-import { useDimensions, useWallets } from '@/hooks';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { FlashList } from '@shopify/flash-list';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import Routes from '@/navigation/routesNames';
 import { Separator, useColorMode } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { useDimensions } from '@/hooks';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import Routes from '@/navigation/routesNames';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
+import { getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { FlashList } from '@shopify/flash-list';
 
 type RenderItemProps = {
   item: string;
@@ -26,12 +26,11 @@ export const getGutterSizeForCardAmount = (amount: number) => {
   return 55;
 };
 
-export const RemoteCardCarousel = () => {
+export const RemoteCardCarousel = React.memo(function RemoteCardCarousel() {
   const { isDarkMode } = useColorMode();
   const carouselRef = useRef<FlashList<string>>(null);
   const { name } = useRoute();
   const config = useRemoteConfig();
-  const { isReadOnlyWallet } = useWallets();
   const { width } = useDimensions();
 
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
@@ -43,7 +42,7 @@ export const RemoteCardCarousel = () => {
     return <RemoteCard id={item} gutterSize={gutterSize} carouselRef={carouselRef} />;
   };
 
-  if (isReadOnlyWallet || IS_TEST || !remoteCardsEnabled || !cardIds.length) {
+  if (getIsReadOnlyWallet() || IS_TEST || !remoteCardsEnabled || !cardIds.length) {
     return null;
   }
 
@@ -66,4 +65,4 @@ export const RemoteCardCarousel = () => {
       />
     </>
   );
-};
+});

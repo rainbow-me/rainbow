@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Source } from 'react-native-fast-image';
-import { KeyboardArea } from 'react-native-keyboard-area';
 
 import * as lang from '@/languages';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
@@ -16,7 +15,6 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Box, Inset, Stack } from '@/design-system';
 import { ImgixImage } from '../images';
-import { IS_ANDROID } from '@/env';
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
@@ -139,6 +137,7 @@ export function BackupCloudStep() {
               ref={passwordRef}
               returnKeyType="next"
               textContentType="newPassword"
+              testID="password-input"
             />
             {isCloudBackupPasswordValid(password) && (
               <PasswordField
@@ -154,6 +153,7 @@ export function BackupCloudStep() {
                 password={confirmPassword}
                 placeholder={lang.t(lang.l.back_up.cloud.password.confirm_placeholder)}
                 ref={confirmPasswordRef}
+                testID="confirm-password-input"
               />
             )}
 
@@ -172,6 +172,7 @@ export function BackupCloudStep() {
                 cloudPlatformName: cloudPlatform,
               })}`}
               onPress={() => onSuccessAndNavigateBack(password)}
+              testID="backup-button"
             />
           )}
 
@@ -191,8 +192,6 @@ export function BackupCloudStep() {
               </ButtonText>
             </Box>
           )}
-
-          {IS_ANDROID ? <KeyboardSizeView /> : null}
         </Box>
       </Inset>
     </Box>
@@ -208,10 +207,6 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) =
   size: 'lmedium',
   weight: 'medium',
 }))({});
-
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ theme: { colors } }: any) => colors.transparent,
-});
 
 const ImportantText = styled(DescriptionText).attrs(({ theme: { colors } }: any) => ({
   color: colors.red,

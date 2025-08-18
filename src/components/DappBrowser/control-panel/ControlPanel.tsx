@@ -1,13 +1,10 @@
-import chroma from 'chroma-js';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ImgixImage } from '@/components/images';
 import {
@@ -28,37 +25,39 @@ import {
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames } from '@/hooks';
+import { greaterThan } from '@/helpers/utilities';
+import WalletTypes from '@/helpers/walletTypes';
+import { useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
+import store from '@/redux/store';
+import { useAppSessionsStore } from '@/state/appSessions';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
+import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
+import { getWalletWithAccount, setSelectedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
 import { colors } from '@/styles';
+import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
+import { address } from '@/utils/abbreviations';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
-import { TOP_INSET } from '../Dimensions';
-import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import chroma from 'chroma-js';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { toHex } from 'viem';
-import * as i18n from '@/languages';
-import { useDispatch } from 'react-redux';
-import store from '@/redux/store';
-import { getDappHost } from '@/utils/connectedApps';
+import { TOP_INSET } from '../Dimensions';
 import Navigation from '@/navigation/Navigation';
-import { address } from '@/utils/abbreviations';
-import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
-import { useAppSessionsStore } from '@/state/appSessions';
 import { RAINBOW_HOME } from '../constants';
-import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import WalletTypes from '@/helpers/walletTypes';
-import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
-import { greaterThan } from '@/helpers/utilities';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { RootStackParamList } from '@/navigation/types';
-import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import Routes from '@/navigation/routesNames';
+import { getDappHost } from '../handleProviderRequest';
+import { formatUrl } from '../utils';
+import { initializeWallet } from '@/state/wallets/initializeWallet';
 
 const PAGES = {
   HOME: 'home',
@@ -72,13 +71,13 @@ const HOME_PANEL_DAPP_SECTION = 44 + 24;
 
 export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const {
     params: { activeTabRef },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.DAPP_BROWSER_CONTROL_PANEL>>();
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
-  const activeTabHost = getDappHost(activeTabUrl || '') || RAINBOW_HOME;
+  const activeTabHost = getDappHost(activeTabUrl) || RAINBOW_HOME;
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
   const addSession = useAppSessionsStore(state => state.addSession);
@@ -96,14 +95,17 @@ export const ControlPanel = () => {
     [hostSessions]
   );
 
-  const [isConnected, setIsConnected] = useState(!!(activeTabHost && currentSession?.address));
+  const [isConnected, setIsConnected] = useState(() => !!(activeTabHost && currentSession?.address));
   const [currentAddress, setCurrentAddress] = useState<string>(
-    currentSession?.address || hostSessions?.activeSessionAddress || accountAddress
+    () => currentSession?.address || hostSessions?.activeSessionAddress || accountAddress
   );
   const [currentChainId, setCurrentChainId] = useState<ChainId>(currentSession?.chainId || ChainId.mainnet);
 
   // listens to the current active tab and sets the account
   useEffect(() => {
+    const isOnHomepage = useBrowserStore.getState().isOnHomepage();
+    if (isOnHomepage) setIsConnected(false);
+
     if (activeTabHost) {
       if (!currentSession) {
         setIsConnected(false);
@@ -141,7 +143,7 @@ export const ControlPanel = () => {
             IconComponent: account.image ? (
               <ListAvatar url={account.image} />
             ) : (
-              <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
+              <ListEmojiAvatar address={account.address} color={account.color} emoji={account.emoji} label={account.label} />
             ),
             label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
             secondaryLabel: wallet.type === WalletTypes.readOnly ? i18n.t(i18n.l.wallet.change_wallet.watching) : balanceText,
@@ -366,10 +368,7 @@ const HomePanel = memo(function HomePanel({
   onConnect: () => void;
   onDisconnect: () => void;
 }) {
-  const { accountAddress } = useAccountSettings();
-  const { wallets } = useWallets();
-  const initializeWallet = useInitializeWallet();
-  const dispatch = useDispatch();
+  const accountAddress = useAccountAddress();
 
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
@@ -406,9 +405,9 @@ const HomePanel = memo(function HomePanel({
   }, [allNetworkItems, animatedAccentColor, goToPage, selectedChainId, selectedWallet]);
 
   const runWalletChecksBeforeSwapOrBridge = useCallback(async () => {
-    if (!selectedWallet || !wallets) return false;
+    if (!selectedWallet) return false;
     // check if read only
-    const walletInPanel = findWalletWithAccount(wallets, selectedWallet.uniqueId);
+    const walletInPanel = getWalletWithAccount(selectedWallet.uniqueId);
     if (!walletInPanel) return false;
     if (walletInPanel?.type === WalletTypes.readOnly) {
       // show alert
@@ -419,13 +418,15 @@ const HomePanel = memo(function HomePanel({
     // Check if it's different to the globally selected wallet
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
-      const p1 = dispatch(walletsSetSelected(walletInPanel));
-      const p2 = dispatch(addressSetSelected(selectedWallet.uniqueId));
-      await Promise.all([p1, p2]);
-      initializeWallet(null, null, null, false, false, null, true, null);
+      await setSelectedWallet(walletInPanel, selectedWallet.uniqueId);
+      await initializeWallet({
+        shouldRunMigrations: false,
+        overwrite: false,
+        switching: true,
+      });
     }
     return true;
-  }, [accountAddress, dispatch, initializeWallet, selectedWallet, wallets]);
+  }, [accountAddress, selectedWallet]);
 
   const handleOnPressSwap = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
@@ -799,17 +800,19 @@ const ListAvatar = memo(function ListAvatar({ size = 36, url }: { size?: number;
 const ListEmojiAvatar = memo(function ListEmojiAvatar({
   address,
   color,
+  emoji,
   label,
   size = 36,
 }: {
   address: string;
   color: number | string;
+  emoji: string | undefined;
   label: string;
   size?: number;
 }) {
   const fillTertiary = useForegroundColor('fillTertiary');
   const emojiAvatar = returnStringFirstEmoji(label);
-  const accountSymbol = returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address)) || '';
+  const accountSymbol = emoji || returnStringFirstEmoji(emojiAvatar || addressHashedEmoji(address)) || '';
 
   const backgroundColor =
     typeof color === 'number'

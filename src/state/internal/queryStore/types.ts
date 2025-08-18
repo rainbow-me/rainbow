@@ -306,7 +306,7 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
   enabled?: boolean | ParamResolvable<boolean, TParams, S, TData>;
   /**
    * When `true`, the store's `getData` method will always return existing data from the cache if it exists,
-   * regardless of whether the cached data is expired, until the data is pruned following a successful fetch.
+   * regardless of whether the cached data is expired, until the data is pruned following a successful refetch.
    *
    * Additionally, when params change while the store is enabled, `getData` will return the previous data until
    * data for the new params is available.
@@ -323,7 +323,7 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * Accepts a number (ms) or debounce options:
    *
    * `{ delay: number, leading?: boolean, trailing?: boolean, maxWait?: number }`
-   * @default 0
+   * @default undefined // (No throttle)
    */
   paramChangeThrottle?: number | DebounceOptions;
   /**
@@ -431,3 +431,20 @@ export type QueryStoreParams<TParams extends Record<string, unknown>, S extends 
         [K in keyof TParams]: ParamResolvable<TParams[K], TParams, S, TData>;
       };
     };
+
+/**
+ * Helper type for defining `setData` parameters.
+ */
+export type SetDataParams<TData, TParams extends Record<string, unknown>, TState> = {
+  data: TData;
+  params: TParams;
+  queryKey: string;
+  set: (
+    partial:
+      | QueryStoreState<TData, TParams, TState>
+      | Partial<QueryStoreState<TData, TParams, TState>>
+      | ((
+          state: QueryStoreState<TData, TParams, TState>
+        ) => QueryStoreState<TData, TParams, TState> | Partial<QueryStoreState<TData, TParams, TState>>)
+  ) => void;
+};

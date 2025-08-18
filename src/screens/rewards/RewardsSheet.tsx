@@ -1,21 +1,18 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { DynamicHeightSheet } from '@/components/sheet';
-import { useDimensions } from '@/hooks';
-import { BackgroundProvider, Box } from '@/design-system';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
-import { IS_ANDROID } from '@/env';
-import { StatusBar } from 'react-native';
-import { useRewards } from '@/resources/rewards/rewardsQuery';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
-import { useFocusEffect } from '@react-navigation/native';
 import { analytics } from '@/analytics';
+import { DynamicHeightSheet } from '@/components/sheet';
+import { BackgroundProvider, Box } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { useRewards } from '@/resources/rewards/rewardsQuery';
+import { RewardsContent } from '@/screens/rewards/components/RewardsContent';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
   const { top } = useSafeAreaInsets();
-  const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
+  const accountAddress = useAccountAddress();
   const [isLoading, setIsLoading] = useState(true);
   const {
     data,
@@ -53,7 +50,7 @@ export const RewardsSheet: React.FC = () => {
         // @ts-expect-error JS component
         <DynamicHeightSheet
           backgroundColor={backgroundColor}
-          additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
+          additionalTopPadding
           limitScrollViewContent
           // sheetHeightRatio={0.67}
           sheetHeight={568}

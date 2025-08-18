@@ -1,4 +1,4 @@
-import React, { Children, ReactElement, ReactNode } from 'react';
+import React, { Children, Fragment, ReactElement, ReactNode } from 'react';
 import { AlignHorizontal, alignHorizontalToFlexAlign, AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
 import { Space, space as spaceTokens } from '../../layout/space';
 import { Box, resolveToken } from '../Box/Box';
@@ -10,6 +10,7 @@ export type InlineProps = {
   space?: Space;
   horizontalSpace?: Space;
   verticalSpace?: Space;
+  testID?: string;
 } & (
   | {
       separator?: undefined;
@@ -34,6 +35,7 @@ export function Inline({
   verticalSpace: verticalSpaceProp,
   separator,
   wrap = true,
+  testID,
 }: InlineProps) {
   const verticalSpace = verticalSpaceProp ?? space;
   const horizontalSpace = horizontalSpaceProp ?? space;
@@ -48,16 +50,17 @@ export function Inline({
         columnGap: horizontalSpace ? resolveToken(spaceTokens, horizontalSpace) : undefined,
         rowGap: verticalSpace ? resolveToken(spaceTokens, verticalSpace) : undefined,
       }}
+      testID={testID}
     >
       {wrap || !separator
         ? children
         : Children.toArray(children).map((child, index) => {
             if (!child) return null;
             return (
-              <>
+              <Fragment key={index}>
                 {index > 0 && separator}
                 {child}
-              </>
+              </Fragment>
             );
           })}
     </Box>

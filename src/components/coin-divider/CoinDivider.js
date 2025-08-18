@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState, memo } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { Row, RowWithMargins } from '../layout';
@@ -10,10 +9,12 @@ import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditAction from '@/helpers/EditAction';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { useAccountSettings, useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions, useOpenSmallBalances } from '@/hooks';
+import { useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;
@@ -46,7 +47,7 @@ const EditButtonWrapper = styled(Row).attrs({
 
 const useInterpolationRange = isCoinListEdited => {
   const position = useRecyclerAssetListPosition();
-  const ref = useRef();
+  const ref = useRef(undefined);
   const { top: safeAreaInsetTop } = useSafeAreaInsets();
 
   const { scrollViewRef } = useContext(StickyHeaderContext) || {};
@@ -61,7 +62,9 @@ const useInterpolationRange = isCoinListEdited => {
       (_left, top) => {
         setRanges([top - (navbarHeight + safeAreaInsetTop), top]);
       },
-      () => {}
+      () => {
+        // empty (avoid formatter messing up)
+      }
     );
   }, [scrollViewRef]);
   return {
@@ -84,10 +87,10 @@ const useInterpolationRange = isCoinListEdited => {
   };
 };
 
-export default function CoinDivider({ balancesSum, defaultToEditButton, extendedState }) {
+const CoinDivider = memo(function CoinDivider({ balancesSum, defaultToEditButton, extendedState }) {
   const { isCoinListEdited, setIsCoinListEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const { width: deviceWidth } = useDimensions();
 
@@ -149,4 +152,6 @@ export default function CoinDivider({ balancesSum, defaultToEditButton, extended
       </Container>
     </Animated.View>
   );
-}
+});
+
+export default CoinDivider;

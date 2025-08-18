@@ -6,7 +6,7 @@ import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
 import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
-import { useAccountSettings, useDimensions, useENSAvatar, useExternalWalletSectionsData } from '@/hooks';
+import { useDimensions, useENSAvatar, useExternalWalletSectionsData } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -15,6 +15,8 @@ import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTran
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { RootStackParamList } from '@/navigation/types';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const ProfileSheetConfigContext = createContext<{
   enableZoomableImages: boolean;
@@ -25,7 +27,7 @@ export const ProfileSheetConfigContext = createContext<{
 export default function ProfileSheet() {
   const { params, name } = useRoute<RouteProp<RootStackParamList, typeof Routes.PROFILE_SHEET | typeof Routes.PROFILE_PREVIEW_SHEET>>();
   const { colors } = useTheme();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const { height: deviceHeight } = useDimensions();
   const contentHeight = deviceHeight - sharedCoolModalTopOffset;
@@ -94,12 +96,10 @@ export default function ProfileSheet() {
 }
 
 function AndroidWrapper({ children }: { children: React.ReactElement }) {
-  const screenHeight = Dimensions.get('screen').height;
-  const windowHeight = Dimensions.get('window').height;
-  const navbarHeight = screenHeight - windowHeight;
+  const safeAreaInsets = useSafeAreaInsets();
 
   return android ? (
-    <Box borderTopRadius={30} style={{ overflow: 'hidden' }} top={{ custom: navbarHeight }}>
+    <Box borderTopRadius={30} style={{ overflow: 'hidden' }} top={{ custom: safeAreaInsets.top }}>
       {children}
     </Box>
   ) : (

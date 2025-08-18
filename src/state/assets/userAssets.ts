@@ -1,19 +1,19 @@
-import { useSelector } from 'react-redux';
+import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
-import reduxStore, { AppState } from '@/redux/store';
 import { EqualityFn, Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { UserAssetsStateToPersist } from './persistence';
 import { QueryEnabledUserAssetsState, UserAssetsRouter, UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
+import { setupPositionsAssetsSync, cleanupPositionsAssetsSync } from './positionsSync';
 
 const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<UserAssetsStoreType, UserAssetsStateToPersist>(
   getOrCreateStore
 );
 
 function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
-  const rawAddress = address?.length ? address : reduxStore.getState().settings.accountAddress;
+  const rawAddress = address?.length ? address : getAccountAddress();
   const { address: cachedAddress, cachedStore } = userAssetsStoreManager.getState();
   /**
    * This fallback can be removed once Redux is no longer the source of truth for the current
@@ -29,6 +29,9 @@ function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
   if (cachedStore) rebindSubscriptions(cachedStore, newStore);
 
   userAssetsStoreManager.setState({ address: accountAddress, cachedStore: newStore });
+
+  setupPositionsAssetsSync();
+
   return newStore;
 }
 
@@ -38,13 +41,16 @@ function useUserAssetsStoreInternal<T>(
   selector?: Selector<QueryEnabledUserAssetsState, T>,
   equalityFn?: EqualityFn<T>
 ): QueryEnabledUserAssetsState | T {
-  const address = useSelector((state: AppState) => state.settings.accountAddress);
+  const address = useAccountAddress();
   const store = getOrCreateStore(address);
   return selector ? store(selector, equalityFn) : store();
 }
 
 export const useUserAssetsStore: UserAssetsRouter = Object.assign(useUserAssetsStoreInternal, {
-  destroy: () => getOrCreateStore().destroy(),
+  destroy: () => {
+    cleanupPositionsAssetsSync();
+    return getOrCreateStore().destroy();
+  },
   getInitialState: () => getOrCreateStore().getInitialState(),
   getState: (address?: Address | string) => getOrCreateStore(address).getState(),
   persist,

@@ -1,17 +1,17 @@
 import { makeMutable, SharedValue } from 'react-native-reanimated';
-import Routes from '@/navigation/routesNames';
+import Routes, { Route } from '@/navigation/routesNames';
 import { POINTS_ROUTES } from '@/screens/points/PointsScreen';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
-interface NavigationStore {
-  activeRoute: string;
+export type NavigationState = {
+  activeRoute: Route;
   activeSwipeRoute: SwipeRoute;
-  animatedActiveRoute: SharedValue<string>;
+  animatedActiveRoute: SharedValue<Route>;
   animatedActiveSwipeRoute: SharedValue<SwipeRoute>;
   isWalletScreenMounted: boolean;
-  isRouteActive: (route: string) => boolean;
-  setActiveRoute: (route: string) => void;
-}
+  isRouteActive: (route: Route) => boolean;
+  setActiveRoute: (route: Route) => void;
+};
 
 const SWIPE_ROUTES = [
   Routes.WALLET_SCREEN,
@@ -19,6 +19,7 @@ const SWIPE_ROUTES = [
   Routes.DAPP_BROWSER_SCREEN,
   Routes.PROFILE_SCREEN,
   Routes.POINTS_SCREEN,
+  Routes.KING_OF_THE_HILL,
   POINTS_ROUTES['CLAIM_CONTENT'],
   POINTS_ROUTES['REFERRAL_CONTENT'],
 ] as const;
@@ -27,30 +28,32 @@ type SwipeRoute = (typeof SWIPE_ROUTES)[number];
 
 const SWIPE_ROUTES_SET = new Set<SwipeRoute>(SWIPE_ROUTES);
 
-export function isSwipeRoute(route: string | SwipeRoute): route is SwipeRoute {
+export function isSwipeRoute(route: Route | SwipeRoute): route is SwipeRoute {
   return SWIPE_ROUTES_SET.has(route as SwipeRoute);
 }
 
-export const useNavigationStore = createRainbowStore<NavigationStore>((set, get) => ({
+export const useNavigationStore = createRainbowStore<NavigationState>((set, get) => ({
   activeRoute: Routes.WALLET_SCREEN,
   activeSwipeRoute: Routes.WALLET_SCREEN,
-  animatedActiveRoute: makeMutable<string>(Routes.WALLET_SCREEN),
+  animatedActiveRoute: makeMutable<Route>(Routes.WALLET_SCREEN),
   animatedActiveSwipeRoute: makeMutable<SwipeRoute>(Routes.WALLET_SCREEN),
   isWalletScreenMounted: false,
 
-  isRouteActive: (route: string) => route === get().activeRoute,
+  isRouteActive: route => route === get().activeRoute,
 
-  setActiveRoute: (route: string) =>
+  setActiveRoute: route =>
     set(state => {
+      if (route === state.activeRoute) return state;
       const onSwipeRoute = isSwipeRoute(route);
 
       state.animatedActiveRoute.value = route;
       if (onSwipeRoute) state.animatedActiveSwipeRoute.value = route;
 
       return {
-        ...state,
         activeRoute: route,
         activeSwipeRoute: onSwipeRoute ? route : state.activeSwipeRoute,
       };
     }),
 }));
+
+export const { isRouteActive, setActiveRoute } = useNavigationStore.getState();

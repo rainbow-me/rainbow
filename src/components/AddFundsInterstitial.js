@@ -1,3 +1,16 @@
+import { analytics } from '@/analytics';
+import Divider from '@/components/Divider';
+import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from '@/components/animations';
+import { Icon } from '@/components/icons';
+import { useDimensions } from '@/hooks';
+import Routes from '@/navigation/routesNames';
+import ShadowStack from '@/react-native-shadow-stack';
+import { Network } from '@/state/backendNetworks/types';
+import { getIsDamagedWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { padding, position } from '@/styles';
+import { openInBrowser } from '@/utils/openInBrowser';
+import { useRoute } from '@react-navigation/native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback } from 'react';
@@ -7,20 +20,8 @@ import showWalletErrorAlert from '../helpers/support';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../utils';
-import Divider from '@/components/Divider';
-import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from '@/components/animations';
-import { Icon } from '@/components/icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
-import { analytics } from '@/analytics';
-import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { padding, position } from '@/styles';
-import ShadowStack from '@/react-native-shadow-stack';
-import { useRoute } from '@react-navigation/native';
-import { Network } from '@/state/backendNetworks/types';
-import { openInBrowser } from '@/utils/openInBrowser';
 
 const ContainerWidth = 261;
 
@@ -174,14 +175,13 @@ const AddFundsInterstitial = ({ network }) => {
   const onAddFromFaucet = accountAddress => openInBrowser(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
   const { isSmallPhone } = useDimensions();
   const { navigate } = useNavigation();
-  const { isDamaged } = useWallets();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { colors } = useTheme();
   const { name: routeName } = useRoute();
 
   const handlePressAmount = useCallback(
     amount => {
-      if (isDamaged) {
+      if (getIsDamagedWallet()) {
         showWalletErrorAlert();
         captureMessage('Damaged wallet preventing add cash');
         return;
@@ -198,18 +198,18 @@ const AddFundsInterstitial = ({ network }) => {
         routeName,
       });
     },
-    [isDamaged, navigate, routeName]
+    [navigate, routeName]
   );
 
   const addFundsToAccountAddress = useCallback(() => onAddFromFaucet(accountAddress), [accountAddress]);
 
   const handlePressCopyAddress = useCallback(() => {
-    if (isDamaged) {
+    if (getIsDamagedWallet()) {
       showWalletErrorAlert();
       return;
     }
     navigate(Routes.RECEIVE_MODAL);
-  }, [navigate, isDamaged]);
+  }, [navigate]);
 
   return (
     <Container isSmallPhone={isSmallPhone}>

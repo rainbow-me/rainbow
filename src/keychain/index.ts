@@ -279,7 +279,6 @@ export async function has(key: string): Promise<boolean> {
  */
 export async function remove(key: string) {
   logger.debug(`[keychain]: remove`, { key }, logger.DebugContext.keychain);
-
   cache.delete(key);
   await resetInternetCredentials({ server: key });
 }
@@ -295,10 +294,8 @@ export async function getAllKeys(): Promise<UserCredentials[] | undefined> {
     logger.debug(`[keychain]: getAllKeys`, {}, logger.DebugContext.keychain);
     const res = await getAllInternetCredentials();
     return res ? res.results : [];
-  } catch (e: any) {
-    logger.error(new RainbowError(`[keychain]: getAllKeys() failed`), {
-      message: e.toString(),
-    });
+  } catch (e) {
+    logger.error(new RainbowError(`[keychain]: getAllKeys() failed`, e));
     return undefined;
   }
 }

@@ -1,49 +1,44 @@
+import { ImgixImage } from '@/components/images';
+import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
+import { IS_DEV } from '@/env';
+import { deleteAllBackups } from '@/handlers/cloudBackup';
+import { RainbowContext } from '@/helpers/RainbowContext';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import isTestFlight from '@/helpers/isTestFlight';
+import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
+import { logger, RainbowError } from '@/logger';
+import { serialize } from '@/logger/logDump';
+import { wipeKeychain } from '@/model/keychain';
+import { clearAllStorages } from '@/model/mmkv';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { clearImageMetadataCache } from '@/redux/imageMetadata';
+import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
+import { clearWalletState, updateWallets, useWallets } from '@/state/wallets/walletsStore';
+import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Clipboard from '@react-native-clipboard/clipboard';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
 // @ts-expect-error - react-native-restart is not typed
 import Restart from 'react-native-restart';
-import { useDispatch } from 'react-redux';
-import Clipboard from '@react-native-clipboard/clipboard';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { deleteAllBackups } from '@/handlers/cloudBackup';
-import { RainbowContext } from '@/helpers/RainbowContext';
-import isTestFlight from '@/helpers/isTestFlight';
-import { useWallets } from '@/hooks';
-import { ImgixImage } from '@/components/images';
-import { wipeKeychain } from '@/model/keychain';
-import { clearAllStorages } from '@/model/mmkv';
-import { Navigation } from '@/navigation';
-import { useNavigation } from '@/navigation/Navigation';
-import { clearImageMetadataCache } from '@/redux/imageMetadata';
-import store from '@/redux/store';
-import { walletsUpdate } from '@/redux/wallets';
-import Routes from '@/navigation/routesNames';
-import { logger, RainbowError } from '@/logger';
-import { IS_DEV } from '@/env';
-import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
-import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
-import { serialize } from '@/logger/logDump';
-import { isAuthenticated } from '@/utils/authentication';
 
-import { getFCMToken } from '@/notifications/tokens';
-import { nonceStore } from '@/state/nonces';
-import { pendingTransactionsStore } from '@/state/pendingTransactions';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
 import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
-import FastImage from 'react-native-fast-image';
+import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
-import { analyzeEnvVariables } from '@/utils/analyzeEnvVariables';
+import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { nonceStore } from '@/state/nonces';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
+import FastImage from 'react-native-fast-image';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
-  const { wallets } = useWallets();
+  const wallets = useWallets();
   const setConnectedToAnvil = useConnectedToAnvilStore.getState().setConnectedToAnvil;
 
   const [loadingStates, setLoadingStates] = useState({
@@ -95,7 +90,7 @@ const DevSection = () => {
       delete newWallets[key].backupType;
     });
 
-    await store.dispatch(walletsUpdate(newWallets) as any);
+    await updateWallets(newWallets);
 
     // Delete all backups (debugging)
     await deleteAllBackups();
@@ -172,34 +167,27 @@ const DevSection = () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: false }));
   };
 
-  const wipeKeychainWithAlert = async () => {
-    const confirmKeychainAlert = () =>
-      new Promise<boolean>(resolve => {
-        Alert.alert(lang.t('developer_settings.keychain.alert_title'), lang.t('developer_settings.keychain.alert_body'), [
-          {
-            onPress: () => {
-              resolve(true);
-            },
-            text: lang.t('developer_settings.keychain.delete_wallets'),
-          },
-          {
-            onPress: () => {
-              resolve(false);
-            },
-            style: 'cancel',
-            text: lang.t('button.cancel'),
-          },
-        ]);
-      });
-
+  const clearWallets = async () => {
     const isAuth = await isAuthenticated();
+    if (isAuth) {
+      const shouldWipeKeychain = await confirmKeychainAlert();
+      if (shouldWipeKeychain) {
+        await clearWalletState({ resetKeychain: true });
+      }
+    }
+    // we need to navigate back to the welcome screen
+    navigate(Routes.WELCOME_SCREEN);
+  };
 
+  const wipeKeychainWithAlert = async () => {
+    const isAuth = await isAuthenticated();
     // we should require auth before wiping the keychain
     if (isAuth) {
       const shouldWipeKeychain = await confirmKeychainAlert();
       if (shouldWipeKeychain) {
         await wipeKeychain();
         await clearMMKVStorage();
+        await clearWalletState({ resetKeychain: true });
 
         // we need to navigate back to the welcome screen
         navigate(Routes.WELCOME_SCREEN);
@@ -264,12 +252,14 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.restart_app')} />}
             />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🔍" isEmoji />}
-              onPress={analyzeEnvVariables}
+            {/* TEMP: Removal for public TF */}
+            {/* <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="💳" isEmoji />}
+              onPress={clearWallets}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_env_variables')} />}
-            />
+              testID="reset-keychain-section"
+              titleComponent={<MenuItem.Title text="Remove all wallets" />}
+            /> */}
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}
               onPress={() => analyzeReactQueryStore()}
@@ -316,12 +306,13 @@ const DevSection = () => {
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.crash_app_render_error')} />}
             />
             {errorObj}
-            <MenuItem
+            {/* TEMP: Removal for public TF}
+            {/* <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
               onPress={removeBackups}
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.remove_all_backups')} />}
-            />
+            /> */}
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🤷" isEmoji />}
               onPress={() => AsyncStorage.removeItem('experimentalConfig')}
@@ -416,5 +407,25 @@ const DevSection = () => {
     </MenuContainer>
   );
 };
+
+function confirmKeychainAlert(): Promise<boolean> {
+  return new Promise<boolean>(resolve => {
+    Alert.alert(lang.t('developer_settings.keychain.alert_title'), lang.t('developer_settings.keychain.alert_body'), [
+      {
+        onPress: () => {
+          resolve(true);
+        },
+        text: lang.t('developer_settings.keychain.delete_wallets'),
+      },
+      {
+        onPress: () => {
+          resolve(false);
+        },
+        style: 'cancel',
+        text: lang.t('button.cancel'),
+      },
+    ]);
+  });
+}
 
 export default DevSection;

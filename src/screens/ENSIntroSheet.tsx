@@ -18,6 +18,7 @@ import { useTheme } from '@/theme';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import ContextMenu from '@/components/context-menu/ContextMenu.android';
 import { RootStackParamList } from '@/navigation/types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 enum AnotherENSEnum {
   search = 'search',
@@ -171,6 +172,8 @@ export default function ENSIntroSheet() {
     });
   }, [navigate, navigateToAssignRecords]);
 
+  const insets = useSafeAreaInsets();
+
   return (
     <Box background="body (Deprecated)" paddingTop={{ custom: topPadding }} style={{ height: contentHeight }} testID="ens-intro-sheet">
       <Inset top={isSmallPhone ? '15px (Deprecated)' : '36px'}>
@@ -219,7 +222,7 @@ export default function ENSIntroSheet() {
             </Row>
             <Row height="content">
               <Box paddingBottom="4px">
-                <Inset space="19px (Deprecated)" {...(isSmallPhone && { bottom: '8px' })}>
+                <Inset bottom={{ custom: insets.bottom + 8 }} space="19px (Deprecated)">
                   {isLoading && (
                     <Box alignItems="center" paddingBottom="15px (Deprecated)">
                       <ActivityIndicator />

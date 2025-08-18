@@ -10,7 +10,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { transformRainbowTokenToParsedSearchAsset } from '@/__swaps__/utils/assets';
 import { convertAmountToNativeDisplay, convertStringToNumber, roundToSignificant1or5 } from '@/helpers/utilities';
-import { useAccountAsset, useAccountSettings } from '@/hooks';
+import { useAccountAsset } from '@/hooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { IS_DEV } from '@/env';
 import isTestFlight from '@/helpers/isTestFlight';
@@ -20,6 +20,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { CollapsibleSection, LAYOUT_ANIMATION } from '../shared/CollapsibleSection';
 import { SheetSeparator } from '../shared/Separator';
 import Animated from 'react-native-reanimated';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const GRADIENT_FADE_WIDTH = 24;
 const DEFAULT_PERCENTAGES_OF_BALANCE = [0.05, 0.1, 0.25, 0.5, 0.75];
@@ -37,7 +38,7 @@ function getButtonWidth(numberOfButtons: number) {
 }
 
 function BuyButton({ currencyAmount, numberOfButtons, onPress }: { currencyAmount: number; numberOfButtons: number; onPress: () => void }) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const currencyAmountDisplay = useMemo(
     () => convertAmountToNativeDisplay(currencyAmount, nativeCurrency, 2, true, currencyAmount >= 100_000),
@@ -75,7 +76,7 @@ function BuyButton({ currencyAmount, numberOfButtons, onPress }: { currencyAmoun
 
 export const BuyContent = memo(function BuySection() {
   const { accentColors, basicAsset: asset } = useExpandedAssetSheetContext();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
   const isL2 = isL2Chain({ chainId: asset.chainId });
@@ -253,7 +254,7 @@ type BuySectionProps = {
 
 export function BuySection({ placement }: BuySectionProps) {
   const { basicAsset: asset, isOwnedAsset } = useExpandedAssetSheetContext();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const nativeAssetForChain = useUserAssetsStore(state => state.getNativeAssetForChain(asset.chainId));
   const buyWithAsset = useAccountAsset(nativeAssetForChain?.uniqueId ?? '', nativeCurrency);
   const assetIsBuyWithAsset = asset.uniqueId === buyWithAsset?.uniqueId;
@@ -263,6 +264,7 @@ export function BuySection({ placement }: BuySectionProps) {
 
   return (
     <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={28}>
+      {placement === Placement.AFTER_BALANCE && <SheetSeparator />}
       <CollapsibleSection
         content={<BuyContent />}
         icon="􀡓"

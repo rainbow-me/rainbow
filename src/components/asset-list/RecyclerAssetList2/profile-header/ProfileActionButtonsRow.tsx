@@ -1,27 +1,27 @@
-import Clipboard from '@react-native-clipboard/clipboard';
+import { ButtonPressAnimation } from '@/components/animations';
+import { CopyFloatingEmojis } from '@/components/floating-emojis';
+import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
 import * as lang from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { getIsDamagedWallet, getIsReadOnlyWallet, useAccountAddress } from '@/state/wallets/walletsStore';
+import { watchingAlert } from '@/utils';
+import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { analytics } from '@/analytics';
+import { enableActionsOnReadOnlyWallet } from '@/config';
+import showWalletErrorAlert from '@/helpers/support';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import Clipboard from '@react-native-clipboard/clipboard';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
-import { CopyFloatingEmojis } from '@/components/floating-emojis';
-import { enableActionsOnReadOnlyWallet } from '@/config';
-import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import { useAccountProfile, useWallets } from '@/hooks';
-import Navigation from '@/navigation/Navigation';
-import { watchingAlert } from '@/utils';
-import Routes from '@rainbow-me/routes';
-import showWalletErrorAlert from '@/helpers/support';
-import { analytics } from '@/analytics';
 import { useRecoilState } from 'recoil';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { navigateToSwaps } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 export const ProfileActionButtonsRowHeight = 80;
 
-export function ProfileActionButtonsRow() {
+export const ProfileActionButtonsRow = React.memo(function ProfileActionButtonsRow() {
   const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
   const scale = useDerivedValue(() => (accentColorLoaded ? 1 : 0.9));
@@ -76,7 +76,7 @@ export function ProfileActionButtonsRow() {
       </Inset>
     </Box>
   );
-}
+});
 
 function ActionButton({
   children,
@@ -139,10 +139,8 @@ function ActionButton({
 }
 
 function BuyButton() {
-  const { isDamaged } = useWallets();
-
   const handlePress = React.useCallback(() => {
-    if (isDamaged) {
+    if (getIsDamagedWallet()) {
       showWalletErrorAlert();
       return;
     }
@@ -150,7 +148,7 @@ function BuyButton() {
     analytics.track(analytics.event.navigationAddCash, { category: 'home screen' });
 
     Navigation.handleAction(Routes.ADD_CASH_SHEET);
-  }, [isDamaged]);
+  }, []);
 
   return (
     <Box>
@@ -162,16 +160,14 @@ function BuyButton() {
 }
 
 function SwapButton() {
-  const { isReadOnlyWallet } = useWallets();
-
   const handlePress = React.useCallback(async () => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSwap, { category: 'home screen' });
       navigateToSwaps();
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet]);
+  }, []);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">
@@ -181,17 +177,15 @@ function SwapButton() {
 }
 
 function SendButton() {
-  const { isReadOnlyWallet } = useWallets();
-
   const handlePress = React.useCallback(() => {
-    if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+    if (!getIsReadOnlyWallet() || enableActionsOnReadOnlyWallet) {
       analytics.track(analytics.event.navigationSend, { category: 'home screen' });
 
       Navigation.handleAction(Routes.SEND_FLOW);
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet]);
+  }, []);
 
   return (
     <ActionButton icon="􀈟" onPress={handlePress} testID="send-button">
@@ -202,11 +196,10 @@ function SendButton() {
 
 export function CopyButton() {
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const { accountAddress } = useAccountProfile();
-  const { isDamaged } = useWallets();
+  const accountAddress = useAccountAddress();
 
   const handlePressCopy = React.useCallback(() => {
-    if (isDamaged) {
+    if (getIsDamagedWallet()) {
       showWalletErrorAlert();
       return;
     }
@@ -218,7 +211,7 @@ export function CopyButton() {
       }, 2000);
     }
     Clipboard.setString(accountAddress);
-  }, [accountAddress, isDamaged, isToastActive, setToastActive]);
+  }, [accountAddress, isToastActive, setToastActive]);
 
   return (
     <>

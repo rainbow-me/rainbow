@@ -770,6 +770,17 @@
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Close",
+            "h": "H",
+            "l": "L",
+            "o": "Open",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "None"
+        },
         "all_time": "All Time",
         "date": {
           "months": {
@@ -949,6 +960,8 @@
       "farcaster_title": "You've unlocked\nRainbowcast",
       "redacted_description": "A stupi-exclusive Rainbow icon for the true Gdupi enjoyers.",
       "redacted_title": "You've unlocked\n Redacted Rainbow",
+      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
+      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "Snag the icon"
     },
     "explain": {
@@ -1059,7 +1072,7 @@
         "text": "Linea is a secure, low-cost, Ethereum-equivalent Layer 2 blockchain developed by ConsenSys.\n\nIt enables faster and more affordable transactions without compromising security and decentralization, aiming to onboard the next billion users to web3.",
         "title": "What's Linea?"
       },
-      "optimism": {
+      "opmainnet": {
         "text": "Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Optimism?"
       },
@@ -3380,12 +3393,17 @@
       "mcap": "MCAP"
     },
     "king_of_hill": {
+      "title": "Launchpad",
+      "launch": "Launch",
       "current_king": "CURRENT KING",
-      "last_winner": "LAST WINNER",
-      "how_it_works": "How It Works",
+      "last_winner": "Last winner",
+      "no_previous_winner": "No previous winner",
+      "round_ends_in": "Round ends in",
+      "how_it_works": "How it works",
       "starting_next_round": "Starting next round",
       "left": "LEFT",
       "king_of_the_hill": "King of the Hill",
+      "name": "Name",
       "explain_sheet": {
         "next": "Next",
         "got_it": "Got it",

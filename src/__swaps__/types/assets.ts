@@ -87,6 +87,7 @@ export type ParsedAssetsDictByChain = Record<ChainId | number, ParsedAssetsDict>
 export interface ZerionAssetPrice {
   value: number;
   relative_change_24h?: number;
+  changed_at?: number;
 }
 
 export type AssetApiResponse = {
@@ -136,9 +137,16 @@ export interface ZerionAsset {
   is_verified?: boolean;
   price?: ZerionAssetPrice;
   network?: ChainName;
+  isNativeAsset?: boolean;
   bridging: {
     bridgeable: boolean;
     networks: { [id in ChainId]?: { bridgeable: boolean } };
+  };
+  networks?: {
+    [chainId in ChainId]?: {
+      address: chainId extends ChainId.mainnet ? AddressOrEth : Address;
+      decimals: number;
+    };
   };
   defi_position?: boolean;
 }

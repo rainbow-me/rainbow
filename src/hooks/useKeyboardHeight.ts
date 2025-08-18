@@ -1,11 +1,15 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useRef } from 'react';
 import { EmitterSubscription, Keyboard, KeyboardEventListener } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import KeyboardTypes from '@/helpers/keyboardTypes';
+import { Route } from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
 import { AppState } from '@/redux/store';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { IS_ANDROID } from '@/env';
+import { isRouteActive } from '@/state/navigation/navigationStore';
 
 interface UseKeyboardHeightOptions {
   keyboardType?: keyof typeof KeyboardTypes;
@@ -18,22 +22,25 @@ export default function useKeyboardHeight(options: UseKeyboardHeightOptions = {}
   // keyboards can different heights depending on whether
   // things like "autofill" or "autocomplete" are enabled on the target input.
   const { keyboardType = KeyboardTypes.default, shouldListen = true } = options;
-  const listenerRef = useRef<EmitterSubscription>();
+  const listenerRef = useRef<EmitterSubscription>(undefined);
+  const insets = useSafeAreaInsets();
+  // Android keyboard height doesn't include the bottom inset.
+  const extraHeight = IS_ANDROID ? insets.bottom : 0;
 
   const dispatch = useDispatch();
 
   const cachedKeyboardHeights = useSelector(keyboardHeightsSelector);
   const heightForKeyboardType = cachedKeyboardHeights?.[keyboardType as keyof typeof cachedKeyboardHeights];
 
-  const { name: routeName } = useRoute();
+  const { name: routeName } = useRoute<RouteProp<RootStackParamList, Route>>();
 
   const handleKeyboardDidShow: KeyboardEventListener = useCallback(
     event => {
-      const newHeight = Math.floor(event.endCoordinates.height);
-      const isRouteActive = useNavigationStore.getState().isRouteActive(routeName);
+      const newHeight = Math.floor(event.endCoordinates.height + extraHeight);
+      const isActiveRoute = isRouteActive(routeName);
       if (
         // We don't want to set the height cache when the screen is out of focus.
-        isRouteActive &&
+        isActiveRoute &&
         // Only update if there is no existing height in the cache.
         (!heightForKeyboardType || newHeight !== heightForKeyboardType)
       ) {
@@ -45,7 +52,7 @@ export default function useKeyboardHeight(options: UseKeyboardHeightOptions = {}
         );
       }
     },
-    [dispatch, heightForKeyboardType, keyboardType, routeName]
+    [dispatch, heightForKeyboardType, keyboardType, routeName, extraHeight]
   );
 
   const addListener = useCallback(() => {

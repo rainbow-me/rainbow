@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { ScrollView, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import RainbowContextWrapper from '../../helpers/RainbowContext';
-import useHideSplashScreen from '../../hooks/useHideSplashScreen';
 import { Box, DesignSystemProvider, Separator, Inline, Inset, Stack, Text } from '../';
 import { ColorMode } from '../color/palettes';
 import backgroundPlayground from '../components/BackgroundProvider/BackgroundProvider.playground';
@@ -21,6 +20,7 @@ import textPlayground from '../components/Text/Text.playground';
 import textLinkPlayground from '../components/TextLink/TextLink.playground';
 import { Docs, Example, Meta } from '../docs/types';
 import { getSourceFromExample } from '../docs/utils/getSourceFromExample';
+import { hideSplashScreen } from '@/hooks/useHideSplashScreen';
 
 const allDocs = [
   backgroundPlayground,
@@ -122,10 +122,9 @@ const DocsRow = ({ meta, examples }: Docs) => {
 const colorModes: ColorMode[] = ['light', 'dark', 'darkTinted'];
 
 const HideSplashScreen = ({ children }: { children: ReactNode }) => {
-  const hideSplashScreen = useHideSplashScreen();
   useEffect(() => {
     hideSplashScreen();
-  }, [hideSplashScreen]);
+  }, []);
 
   return <>{children}</>;
 };
@@ -142,7 +141,6 @@ export const Playground = () => {
         <DesignSystemProvider colorMode={colorMode}>
           <Box background="body (Deprecated)" flexGrow={1}>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
-              {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
               <Inset space="20px">
                 <Stack space="24px">
                   <TouchableOpacity onPress={toggleColorMode}>

@@ -1,38 +1,36 @@
-import * as lang from '@/languages';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, TextInput } from 'react-native';
-import { useDispatch } from 'react-redux';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
-import { KeyboardArea } from 'react-native-keyboard-area';
-
-import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
-import { cloudPlatform } from '@/utils/platform';
-import { PasswordField } from '../fields';
-import { Text } from '../text';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { useDimensions, useInitializeWallet } from '@/hooks';
-import { Navigation, useNavigation } from '@/navigation';
-import { addressSetSelected, setAllWalletsWithIdsAsBackedUp, walletsLoadState, walletsSetSelected } from '@/redux/wallets';
-import Routes from '@/navigation/routesNames';
-import styled from '@/styled-thing';
-import { padding } from '@/styles';
-import { logger } from '@/logger';
 import { Box, Inset, Stack } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { sharedCoolModalTopOffset } from '@/navigation/config';
-import { ImgixImage } from '../images';
-import { RainbowButton } from '../buttons';
-import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { Source } from 'react-native-fast-image';
-import { ThemeContextProps, useTheme } from '@/theme';
+import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
-import { isEmpty } from 'lodash';
+import { useDimensions } from '@/hooks';
+import * as lang from '@/languages';
+import { logger } from '@/logger';
+import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
+
+import { Navigation, useNavigation } from '@/navigation';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import Routes from '@/navigation/routesNames';
+import { RootStackParamList } from '@/navigation/types';
 import { backupsStore } from '@/state/backups/backups';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';
-import { RootStackParamList } from '@/navigation/types';
+import { loadWallets } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { padding } from '@/styles';
+import { ThemeContextProps, useTheme } from '@/theme';
+import { cloudPlatform } from '@/utils/platform';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { isEmpty } from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { InteractionManager, TextInput } from 'react-native';
+import { Source } from 'react-native-fast-image';
+import { RainbowButton } from '../buttons';
+import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
+import { PasswordField } from '../fields';
+import { ImgixImage } from '../images';
+import { Text } from '../text';
+import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 
 type ComponentProps = {
   theme: ThemeContextProps;
@@ -71,10 +69,6 @@ const Masthead = styled(Box).attrs({
   flexShrink: 0,
 });
 
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ theme: { colors } }: ComponentProps) => colors.transparent,
-});
-
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.BACKUP_SHEET>>();
   const password = backupsStore(state => state.password);
@@ -90,16 +84,14 @@ export default function RestoreCloudStep() {
     }
   }, [canGoBack, goBack]);
 
-  const dispatch = useDispatch();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const passwordRef = useRef<TextInput | null>(null);
-  const initializeWallet = useInitializeWallet();
 
   useEffect(() => {
     const fetchPasswordIfPossible = async () => {
-      const pwd = await getLocalBackupPassword();
+      const pwd = await getLocalBackupPassword(undefined);
       if (pwd) {
         backupsStore.getState().setStoredPassword(pwd);
         backupsStore.getState().setPassword(pwd);
@@ -127,7 +119,7 @@ export default function RestoreCloudStep() {
     const pwd = password.trim();
     let filename = selectedBackup?.name;
 
-    const prevWalletsState = await dispatch(walletsLoadState());
+    const prevWalletsState = await loadWallets();
 
     try {
       if (!filename) {
@@ -153,46 +145,12 @@ export default function RestoreCloudStep() {
         }
 
         InteractionManager.runAfterInteractions(async () => {
-          const newWalletsState = await dispatch(walletsLoadState());
           if (IS_ANDROID && filename) {
             filename = normalizeAndroidBackupFilename(filename);
           }
 
           logger.debug('[RestoreCloudStep]: Done updating backup state');
-          // NOTE: Marking the restored wallets as backed up
-          // @ts-expect-error TypeScript doesn't play nicely with Redux types here
-          const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
-
-          logger.debug('[RestoreCloudStep]: Updating backup state of wallets with ids', {
-            walletIds: JSON.stringify(walletIdsToUpdate),
-          });
-          logger.debug(`[RestoreCloudStep]: Selected backup name: ${filename}`);
-
-          await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename));
-
-          const oldCloudIds: string[] = [];
-          const oldManualIds: string[] = [];
-          // NOTE: Looping over previous wallets and restoring backup state of that wallet
-          Object.values(prevWalletsState || {}).forEach(wallet => {
-            // NOTE: This handles cloud and manual backups
-            if (wallet.backedUp && wallet.backupType === walletBackupTypes.cloud) {
-              oldCloudIds.push(wallet.id);
-            } else if (wallet.backedUp && wallet.backupType === walletBackupTypes.manual) {
-              oldManualIds.push(wallet.id);
-            }
-          });
-
-          await dispatch(setAllWalletsWithIdsAsBackedUp(oldCloudIds, walletBackupTypes.cloud, filename));
-          await dispatch(setAllWalletsWithIdsAsBackedUp(oldManualIds, walletBackupTypes.manual, filename));
-
-          const walletKeys = Object.keys(newWalletsState || {});
-          // @ts-expect-error TypeScript doesn't play nicely with Redux types here
-          const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
-          const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
-          const p1 = dispatch(walletsSetSelected(firstWallet));
-          const p2 = dispatch(addressSetSelected(firstAddress));
-          await Promise.all([p1, p2]);
-          await initializeWallet(null, null, null, false, false, null, true, null);
+          await updateWalletsBackedUpState({ filename, prevWalletsState });
         });
 
         onRestoreSuccess();
@@ -228,7 +186,7 @@ export default function RestoreCloudStep() {
         loadingState: null,
       });
     }
-  }, [password, selectedBackup?.name, dispatch, onRestoreSuccess, initializeWallet]);
+  }, [password, selectedBackup?.name, onRestoreSuccess]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
@@ -305,8 +263,6 @@ export default function RestoreCloudStep() {
               </ButtonText>
             </Box>
           )}
-
-          {IS_ANDROID ? <KeyboardSizeView /> : null}
         </Box>
       </Inset>
     </Box>

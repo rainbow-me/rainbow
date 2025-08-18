@@ -1,6 +1,13 @@
-import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
-import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useState } from 'react';
+import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { analytics } from '@/analytics';
+import EthIcon from '@/assets/eth-icon.png';
+import { ButtonPressAnimation } from '@/components/animations';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { FloatingEmojis } from '@/components/floating-emojis';
+import { Page } from '@/components/layout';
+import { Toast, ToastPositionContainer } from '@/components/toasts';
+import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import {
   AccentColorProvider,
   Bleed,
@@ -20,49 +27,44 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountAccentColor, useAccountProfile, useAccountSettings, useClipboard, useDimensions, useWallets } from '@/hooks';
-import { useTheme } from '@/theme';
-import { ScrollView } from 'react-native-gesture-handler';
-import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
-import { measureText, safeAreaInsetValues } from '@/utils';
-import { ButtonPressAnimation } from '@/components/animations';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { useRecoilState } from 'recoil';
-import * as i18n from '@/languages';
-import { isNil } from 'lodash';
-import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
-import { address as formatAddress } from '@/utils/abbreviations';
-import { delay } from '@/utils/delay';
-import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { Page } from '@/components/layout';
-import { IS_ANDROID, IS_TEST } from '@/env';
-import { LeaderboardRow } from '../components/LeaderboardRow';
-import { Skeleton } from '../components/Skeleton';
-import { InfoCard } from '../components/InfoCard';
-import { analytics } from '@/analytics';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { RemoteCardCarousel } from '@/components/cards/remote-cards';
-import { usePoints } from '@/resources/points';
-import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { fonts } from '@/styles';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import FastImage, { Source } from 'react-native-fast-image';
-import EthIcon from '@/assets/eth-icon.png';
+import { IS_ANDROID, IS_TEST } from '@/env';
+import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import { useAccountAccentColor, useAccountSettings, useClipboard, useDimensions } from '@/hooks';
+import * as i18n from '@/languages';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import { useNativeAsset } from '@/utils/ethereumUtils';
-import { format, intervalToDuration, isToday } from 'date-fns';
-import { useRemoteConfig } from '@/model/remoteConfig';
-import { ETH_REWARDS, useExperimentalFlag } from '@/config';
-import { RewardsActionButton } from '../components/RewardsActionButton';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { usePoints } from '@/resources/points';
 import { ChainId } from '@/state/backendNetworks/types';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
+import { useAccountAddress, useAccountProfileInfo, useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import { fonts } from '@/styles';
+import { useTheme } from '@/theme';
+import { measureText, safeAreaInsetValues } from '@/utils';
+import { address as formatAddress } from '@/utils/abbreviations';
+import { delay } from '@/utils/delay';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { useNativeAsset } from '@/utils/ethereumUtils';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { format, intervalToDuration, isToday } from 'date-fns';
+import { isNil } from 'lodash';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useState } from 'react';
+import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
+import FastImage, { Source } from 'react-native-fast-image';
+import { ScrollView } from 'react-native-gesture-handler';
+import LinearGradient from 'react-native-linear-gradient';
+import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { useRecoilState } from 'recoil';
+import { InfoCard } from '../components/InfoCard';
+import { LeaderboardRow } from '../components/LeaderboardRow';
+import { RewardsActionButton } from '../components/RewardsActionButton';
+import { Skeleton } from '../components/Skeleton';
+import { getNumberFormatter } from '@/helpers/intl';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -122,19 +124,19 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
     if (rankChange === undefined) return '';
     if (rankChange === 0) return i18n.t(i18n.l.points.points.no_change);
 
-    return Math.abs(rankChange).toLocaleString('en-US');
+    return getNumberFormatter('en-US').format(rankChange);
   };
 
   const getRankCardMainText = () => {
     if (!rank) return '';
-    return isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`;
+    return isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${getNumberFormatter('en-US').format(rank)}`;
   };
 
   const getEarnedLastWeekSubtitle = () => {
     if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.no_weekly_rank);
     if (lastPeriodRank <= 10) return i18n.t(i18n.l.points.points.top_10_earner);
     return i18n.t(i18n.l.points.points.ranking, {
-      rank: lastPeriodRank.toLocaleString('en-US'),
+      rank: getNumberFormatter('en-US').format(lastPeriodRank),
     });
   };
 
@@ -148,7 +150,7 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
               title={i18n.t(i18n.l.points.points.earned_last_week)}
               mainText={
                 lastPeriodEarnings
-                  ? `${lastPeriodEarnings.toLocaleString('en-US')} ${i18n.t(i18n.l.points.points.points_capitalized)}`
+                  ? `${getNumberFormatter('en-US').format(lastPeriodEarnings)} ${i18n.t(i18n.l.points.points.points_capitalized)}`
                   : undefined
               }
               placeholderMainText={i18n.t(i18n.l.points.points.zero_points)}
@@ -159,10 +161,10 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
             <InfoCard
               loading={isLoadingReferralsCard}
               title={i18n.t(i18n.l.points.points.referrals)}
-              mainText={qualifiedReferees ? qualifiedReferees.toLocaleString('en-US') : undefined}
+              mainText={qualifiedReferees ? getNumberFormatter('en-US').format(qualifiedReferees) : undefined}
               placeholderMainText={i18n.t(i18n.l.points.points.none)}
               icon="􀇯"
-              subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points_capitalized)}`}
+              subtitle={`${getNumberFormatter('en-US').format(referralsEarnings ?? 0)} ${i18n.t(i18n.l.points.points.points_capitalized)}`}
               accentColor={yellow}
             />
             <InfoCard
@@ -610,9 +612,10 @@ export function PointsContent() {
   const { name } = useRoute();
   const { width: deviceWidth } = useDimensions();
   const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
-  const { accountAddress, accountENS } = useAccountProfile();
+  const accountAddress = useAccountAddress();
+  const { accountENS } = useAccountProfileInfo();
   const { setClipboard } = useClipboard();
-  const { isReadOnlyWallet } = useWallets();
+  const isReadOnlyWallet = useIsReadOnlyWallet();
   const { highContrastAccentColor: accountColor } = useAccountAccentColor();
   const { nativeCurrency: currency } = useAccountSettings();
   const { rewards_enabled } = useRemoteConfig();
@@ -668,7 +671,8 @@ export function PointsContent() {
     setIsRefreshing(false);
   }, [dataUpdatedAt, refetch]);
 
-  const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString('en-US');
+  const totalPointsString =
+    points?.points?.user?.earnings?.total != null ? getNumberFormatter('en-US').format(points.points.user.earnings.total) : undefined;
 
   const rank = points?.points?.user.stats.position.current;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
@@ -911,7 +915,7 @@ export function PointsContent() {
                           </Text>
                         </Box>
                         <Text color={isUnranked ? 'labelQuaternary' : 'label'} size="17pt" weight="heavy">
-                          {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`}
+                          {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${getNumberFormatter('en-US').format(rank)}`}
                         </Text>
                       </Box>
                     </Box>

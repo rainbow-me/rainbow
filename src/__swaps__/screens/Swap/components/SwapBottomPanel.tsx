@@ -22,10 +22,11 @@ import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useWallets } from '@/hooks';
+import { getIsHardwareWallet } from '@/state/wallets/walletsStore';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
+import { IS_TEST } from '@/env';
 
 const HOLD_TO_SWAP_DURATION_MS = 400;
 
@@ -68,11 +69,22 @@ export function SwapBottomPanel() {
   const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
   const type = useDerivedValue(() => confirmButtonProps.value.type);
 
-  const { isHardwareWallet } = useWallets();
+  // Test mode overrides for disabled and opacity
+  const testModeDisabled = useSharedValue(false);
+  const testModeOpacity = useSharedValue(1);
+
+  const finalDisabled = useDerivedValue(() => {
+    return IS_TEST ? testModeDisabled.value : disabled.value;
+  });
+
+  const finalOpacity = useDerivedValue(() => {
+    return IS_TEST ? testModeOpacity.value : opacity.value;
+  });
+
   const { navigate } = useNavigation();
   const handleHwConnectionAndSwap = useCallback(() => {
     try {
-      if (isHardwareWallet && configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      if (getIsHardwareWallet() && configProgress.value === NavigationSteps.SHOW_REVIEW) {
         navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
           submit: SwapNavigation.handleSwapAction,
         });
@@ -84,7 +96,7 @@ export function SwapBottomPanel() {
         message: (e as Error).message,
       });
     }
-  }, [configProgress.value, navigate, isHardwareWallet, SwapNavigation]);
+  }, [configProgress.value, navigate, SwapNavigation]);
 
   return (
     <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
@@ -94,7 +106,14 @@ export function SwapBottomPanel() {
           gestureHandlerStyles,
           AnimatedSwapStyles.keyboardStyle,
           AnimatedSwapStyles.swapActionWrapperStyle,
+          IS_TEST && {
+            height: 200,
+            opacity: 1,
+            pointerEvents: 'auto',
+            overflow: 'visible',
+          },
         ]}
+        testID="swap-bottom-panel-wrapper"
       >
         <ReviewPanel />
         <SettingsPanel />
@@ -104,7 +123,14 @@ export function SwapBottomPanel() {
           flexDirection="row"
           height={{ custom: 48 }}
           justifyContent="center"
-          style={{ alignSelf: 'center' }}
+          style={[
+            { alignSelf: 'center' },
+            IS_TEST && {
+              opacity: 1,
+              pointerEvents: 'auto',
+              overflow: 'visible',
+            },
+          ]}
           width="full"
           zIndex={20}
         >
@@ -119,16 +145,15 @@ export function SwapBottomPanel() {
               <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} direction="vertical" thickness={1} />
             </Box>
           </Animated.View>
-          <Box style={{ flex: 1 }}>
+          <Box style={{ flex: 1 }} testID="swap-bottom-action-button">
             <SwapActionButton
-              testID="swap-bottom-action-button"
               asset={internalSelectedOutputAsset}
               holdProgress={holdProgress}
               icon={icon}
               iconStyle={confirmButtonIconStyle}
               label={label}
               longPressDuration={HOLD_TO_SWAP_DURATION_MS}
-              disabled={disabled}
+              disabled={finalDisabled}
               onPressWorklet={() => {
                 'worklet';
                 if (type.value !== 'hold') {
@@ -165,7 +190,7 @@ export function SwapBottomPanel() {
                   );
                 }
               }}
-              opacity={opacity}
+              opacity={finalOpacity}
               scaleTo={0.9}
             />
           </Box>

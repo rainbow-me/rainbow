@@ -12,12 +12,13 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
-import { useAccountSettings, useKeyboardHeight } from '@/hooks';
+import { useKeyboardHeight } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
-import { filterList } from '@/utils';
+import { filterList, isLowerCaseMatch } from '@/utils';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,
@@ -73,7 +74,7 @@ export default function SendContactList({
   userAccounts,
   watchedAccounts,
 }) {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { isDarkMode } = useTheme();
@@ -128,7 +129,7 @@ export default function SendContactList({
   const filteredAddresses = useMemo(() => {
     return sortBy(
       filterList(
-        userAccounts.filter(account => account.visible && account.address.toLowerCase() !== accountAddress.toLowerCase()),
+        userAccounts.filter(account => account.visible && !isLowerCaseMatch(account.address, accountAddress)),
         currentInput,
         ['label']
       ),

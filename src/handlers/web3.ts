@@ -27,11 +27,8 @@ import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId, chainAnvil } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-
-export enum TokenStandard {
-  ERC1155 = 'ERC1155',
-  ERC721 = 'ERC721',
-}
+import { NftTokenType } from '@/graphql/__generated__/arc';
+import { Address } from 'viem';
 
 export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 
@@ -192,6 +189,39 @@ export const isHexStringIgnorePrefix = (value: string): boolean => {
 export const addHexPrefix = (value: string): string => (startsWith(value, '0x') ? value : `0x${value}`);
 
 /**
+ * @desc Asserts "0x" prefix on a string.
+ * @param value The potential address string.
+ * @return The same string.
+ */
+export const assertValidHex: (value: string) => asserts value is Address = value => {
+  if (!value.startsWith(`0x`)) throw new Error(`Non address-like string`);
+};
+
+/**
+ * @desc Ensures "0x" prefix on a string.
+ * @param value The potential address string.
+ * @return The same string.
+ */
+export const ensureValidHex = (value: string): Address => {
+  assertValidHex(value);
+  return value;
+};
+
+/**
+ * @desc Ensures "0x" prefix on a string.
+ * @param value The potential address string.
+ * @return The same string.
+ */
+export const isValidHex = (value: any): value is Address => {
+  try {
+    assertValidHex(value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
  * @desc is valid mnemonic
  * @param value The string to check.
  * @return Whether or not the string was a valid mnemonic.
@@ -222,6 +252,9 @@ export const toChecksumAddress = (address: string): string | null => {
   }
 };
 
+// Ensures an address is a checksummed address (just a helper for naming consistency)
+export const ensureChecksumAddress = (address: string): string => getAddress(address);
+
 /**
  * @desc estimate gas limit
  * @param estimateGasData The transaction request to use for the estimate.
@@ -237,8 +270,9 @@ export const estimateGas = async (estimateGasData: TransactionRequest, provider:
   }
 };
 
-export function assetIsUniqueAsset(asset: ParsedAddressAsset | UniqueAsset): asset is UniqueAsset {
-  return 'collection' in asset;
+export function assetIsUniqueAsset(asset: ParsedAddressAsset | UniqueAsset | undefined): asset is UniqueAsset {
+  if (!asset) return false;
+  return asset.type === AssetType.nft || asset.type === AssetType.ens || asset.type === AssetType.poap;
 }
 
 export function assetIsParsedAddressAsset(asset: ParsedAddressAsset | UniqueAsset): asset is ParsedAddressAsset {
@@ -451,8 +485,7 @@ export const getTransferNftTransaction = async (
     throw new Error(`Invalid recipient "${transaction.to}"`);
   }
 
-  const { from, nonce } = transaction;
-  const contractAddress = transaction.asset.asset_contract?.address;
+  const { from, nonce, asset: { contractAddress } = {} } = transaction;
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
@@ -502,8 +535,8 @@ export const createSignableTransaction = async (transaction: NewTransactionNonNu
   if (isNativeAsset(transaction.asset.address, transaction.chainId)) {
     return getTxDetails(transaction);
   }
-  const isNft = transaction.asset.type === AssetType.nft;
-  const result = isNft ? await getTransferNftTransaction(transaction) : await getTransferTokenTransaction(transaction);
+  const isUniqueAsset = assetIsUniqueAsset(transaction.asset);
+  const result = isUniqueAsset ? await getTransferNftTransaction(transaction) : await getTransferTokenTransaction(transaction);
 
   // `result` will conform to `TransactionDetailsInput`, except it will have
   // either { gasPrice: string } | { maxFeePerGas: string; maxPriorityFeePerGas: string }
@@ -519,7 +552,7 @@ export const createSignableTransaction = async (transaction: NewTransactionNonNu
  * @return The estimated portion.
  */
 const estimateAssetBalancePortion = (asset: ParsedAddressAsset | UniqueAsset): string => {
-  if (assetIsParsedAddressAsset(asset) && asset.type !== AssetType.nft && asset.balance?.amount) {
+  if (!assetIsUniqueAsset(asset) && asset.balance?.amount) {
     const assetBalance = asset.balance?.amount;
     const decimals = asset.decimals;
     const portion = multiply(assetBalance, 0.1);
@@ -551,34 +584,32 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
 export const getDataForNftTransfer = (
   from: string,
   to: string,
-  asset: Partial<Pick<UniqueAsset, 'id' | 'asset_contract' | 'chainId'>>
+  { chainId, contractAddress, tokenId, standard }: Partial<Pick<UniqueAsset, 'tokenId' | 'contractAddress' | 'chainId' | 'standard'>>
 ): string | undefined => {
-  if (!asset.id || !asset.asset_contract?.address) return;
-  const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
-  const standard = asset.asset_contract?.schema_name;
+  if (!tokenId || !contractAddress) return;
   let data: string | undefined;
-  if (lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS && asset.chainId === ChainId.mainnet) {
+  if (contractAddress === CRYPTO_KITTIES_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.token_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(asset.id)]);
-  } else if (lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS && asset.chainId === ChainId.mainnet) {
+    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(tokenId)]);
+  } else if (contractAddress === CRYPTO_PUNKS_NFT_ADDRESS && chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.punk_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(asset.id)]);
-  } else if (standard === TokenStandard.ERC1155) {
+    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(tokenId)]);
+  } else if (standard === NftTokenType.Erc1155) {
     const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
     data = ethereumUtils.getDataString(transferMethodHash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
+      convertStringToHex(tokenId),
       convertStringToHex('1'),
       convertStringToHex('160'),
       convertStringToHex('0'),
     ]);
-  } else if (standard === TokenStandard.ERC721) {
+  } else if (standard === NftTokenType.Erc721) {
     const transferMethod = smartContractMethods.erc721_transfer;
     data = ethereumUtils.getDataString(transferMethod.hash, [
       ethereumUtils.removeHexPrefix(from),
       ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
+      convertStringToHex(tokenId),
     ]);
   }
   return data;
@@ -621,13 +652,12 @@ export const buildTransaction = async (
     to: _recipient,
     value,
   };
-  if (assetIsUniqueAsset(asset) && asset.type === AssetType.nft) {
-    const contractAddress = asset.asset_contract?.address;
+  if (assetIsUniqueAsset(asset)) {
     const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,
       from: address,
-      to: contractAddress,
+      to: asset.contractAddress,
     };
   } else if (assetIsParsedAddressAsset(asset) && !isNativeAsset(asset.address, chainId)) {
     const transferData = getDataForTokenTransfer(value, _recipient);

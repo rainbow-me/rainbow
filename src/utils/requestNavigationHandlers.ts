@@ -1,23 +1,25 @@
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
+import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
+import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
+import { enableActionsOnReadOnlyWallet } from '@/config';
+import { maybeSignUri } from '@/handlers/imgix';
+import walletTypes from '@/helpers/walletTypes';
+import { logger, RainbowError } from '@/logger';
+import { getActiveRoute } from '@/navigation/Navigation';
+import { getRequestDisplayDetails } from '@/parsers';
 import store from '@/redux/store';
-import { InteractionManager } from 'react-native';
-import { SEND_TRANSACTION } from './signingMethods';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { ChainId } from '@/state/backendNetworks/types';
+import { removeWalletConnectRequest } from '@/state/walletConnectRequests';
 import { handleSessionRequestResponse } from '@/walletConnect';
 import {
   RequestData,
-  WalletconnectRequestData,
   WalletconnectApprovalSheetRouteParams,
+  WalletconnectRequestData,
   WalletconnectResultType,
 } from '@/walletConnect/types';
-import { getRequestDisplayDetails } from '@/parsers';
-import { maybeSignUri } from '@/handlers/imgix';
-import { getActiveRoute } from '@/navigation/Navigation';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { enableActionsOnReadOnlyWallet } from '@/config';
-import walletTypes from '@/helpers/walletTypes';
-import watchingAlert from './watchingAlert';
 import {
   AppMetadata,
   EthereumAction,
@@ -27,16 +29,14 @@ import {
   RequestMessage,
   useMobileWalletProtocolHost,
 } from '@coinbase/mobile-wallet-protocol-host';
-import { logger, RainbowError } from '@/logger';
-import { noop } from 'lodash';
-import { toUtf8String } from '@ethersproject/strings';
 import { BigNumber } from '@ethersproject/bignumber';
+import { toUtf8String } from '@ethersproject/strings';
+import { noop } from 'lodash';
+import { InteractionManager } from 'react-native';
 import { Address } from 'viem';
-import { ChainId } from '@/state/backendNetworks/types';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
-import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
-import { removeWalletConnectRequest } from '@/state/walletConnectRequests';
+import { getAccountAddress, getIsReadOnlyWallet, getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { SEND_TRANSACTION } from './signingMethods';
+import watchingAlert from './watchingAlert';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -86,13 +86,12 @@ export const handleMobileWalletProtocolRequest = async ({
 }: HandleMobileWalletProtocolRequestProps): Promise<boolean> => {
   logger.debug(`Handling Mobile Wallet Protocol request: ${request.uuid}`);
 
-  const { selected } = store.getState().wallets;
-  const { accountAddress } = store.getState().settings;
+  const accountAddress = getAccountAddress();
 
   let addressToUse = accountAddress;
   let chainIdToUse = ChainId.mainnet;
 
-  const isReadOnlyWallet = selected?.type === walletTypes.readOnly;
+  const isReadOnlyWallet = getIsReadOnlyWallet();
   if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
     logger.debug('Rejecting request due to read-only wallet');
     watchingAlert();
@@ -343,8 +342,7 @@ const findWalletForAddress = async (address: string) => {
     return Promise.reject(new Error('Invalid address'));
   }
 
-  const { wallets } = store.getState().wallets;
-  const selectedWallet = findWalletWithAccount(wallets!, address);
+  const selectedWallet = getWalletWithAccount(address);
   if (!selectedWallet) {
     return Promise.reject(new Error('Wallet not found'));
   }
@@ -403,7 +401,6 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
 export const handleWalletConnectRequest = async (request: WalletconnectRequestData) => {
   const chainId = request?.walletConnectV2RequestValues?.chainId;
   if (!chainId) return;
-  const network = useBackendNetworksStore.getState().getChainsName()[chainId];
   const address = request?.walletConnectV2RequestValues?.address;
 
   const onSuccess = async (result: string) => {

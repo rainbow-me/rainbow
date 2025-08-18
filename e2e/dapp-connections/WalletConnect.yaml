@@ -15,8 +15,10 @@ tags:
       - runFlow: ../utils/ImportWalletWithKey.yaml
 
       # Navigate to browser
+      - runScript:
+          file: ../utils/coordinates.js
       - tapOn:
-          id: 'tab-bar-icon-DappBrowserScreen'
+          point: ${output.tabCoordinates.browserTab}
 
       # connect to bx-test-dapp
       - tapOn:
@@ -33,45 +35,49 @@ tags:
       - assertVisible:
           text: '.*BX Test Dapp.*'
       - assertVisible:
-          text: 'Disconnect'
+          text: '.*Disconnect'
       # tap somewhere arbitrary to close the control panel sheet
       - tapOn:
-          point: 550, 1000
+          point: 50%, 20%
+      # Maestro can't interact with the webview reliably on iOS so skip
+      - runFlow:
+          when:
+            platform: Android
+          commands:
+            # eth_signMessage
+            # tap on send button to initiate a eth_signTransaction
+            - tapOn:
+                id: signTypedData
+            # sign transaction assertions
+            - assertVisible:
+                text: 'Message Request'
+            - assertVisible:
+                text: '.*Simulated Result.*'
+            - assertVisible:
+                text: '.*Confirm.*'
+            # sign transaction
+            - longPressOn:
+                id: sign-transaction-action-button
+            - runFlow: ../utils/MaybeSetupPin.yaml
+            # assert that the typed message data signature is visible
+            - assertVisible:
+                text: '.*typed message data sig.*'
 
-      # eth_signMessage
-      # tap on send button to initiate a eth_signTransaction
-      - tapOn:
-          id: signTypedData
-      # sign transaction assertions
-      - assertVisible:
-          text: 'Message Request'
-      - assertVisible:
-          text: '.*Simulated Result.*'
-      - assertVisible:
-          text: '.*Confirm.*'
-      # sign transaction
-      - longPressOn:
-          id: sign-transaction-action-button
-      - runFlow: ../utils/MaybeSetupPin.yaml
-      # assert that the typed message data signature is visible
-      - assertVisible:
-          text: '.*typed message data sig.*'
-
-      # eth_signTransaction
-      # tap on send button to initiate a eth_signTypedData
-      - tapOn:
-          id: signTx
-      # sign transaction assertions
-      - assertVisible:
-          text: 'Message Request'
-      - assertVisible:
-          text: '.*rainbow rocks.*'
-      - assertVisible:
-          text: '.*Confirm.*'
-      # sign transaction
-      - longPressOn:
-          id: sign-transaction-action-button
-      - runFlow: ../utils/MaybeSetupPin.yaml
-      # assert that the signed message data signature is visible
-      - assertVisible:
-          text: '.*sign message data sig.*'
+            # eth_signTransaction
+            # tap on send button to initiate a eth_signTypedData
+            - tapOn:
+                id: signTx
+            # sign transaction assertions
+            - assertVisible:
+                text: 'Message Request'
+            - assertVisible:
+                text: '.*rainbow rocks.*'
+            - assertVisible:
+                text: '.*Confirm.*'
+            # sign transaction
+            - longPressOn:
+                id: sign-transaction-action-button
+            - runFlow: ../utils/MaybeSetupPin.yaml
+            # assert that the signed message data signature is visible
+            - assertVisible:
+                text: '.*sign message data sig.*'

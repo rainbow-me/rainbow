@@ -2,7 +2,6 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -13,6 +12,7 @@ import { fetchReservoirNFTFloorPrice } from '@/resources/nfts/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { useNativeAsset } from '@/utils/ethereumUtils';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const NONE = 'None';
 
@@ -27,7 +27,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
 
   const { navigate } = useNavigation();
 
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const nativeAsset = useNativeAsset({ chainId: asset.chainId });
 
@@ -46,22 +46,20 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
         setFloorPrice(NONE);
       }
     };
-    if (asset?.floorPriceEth) {
-      setFloorPrice(formatPrice(asset?.floorPriceEth, nativeAsset?.symbol));
+    if (asset?.floorPrice) {
+      setFloorPrice(formatPrice(asset?.floorPrice, nativeAsset?.symbol));
     } else {
       fetchFloorPrice();
     }
   }, [asset, nativeAsset]);
 
   const { data: listing } = useNFTListing({
-    contractAddress: asset?.asset_contract?.address ?? '',
-    tokenId: asset?.id,
+    contractAddress: asset?.contractAddress ?? '',
+    tokenId: asset?.tokenId,
     chainId: asset?.chainId,
   });
 
   const listingValue = listing && convertRawAmountToRoundedDecimal(listing?.price, listing?.payment_token?.decimals, 3);
-
-  const currentPrice = asset?.currentPrice ?? listingValue;
 
   const [showCurrentPriceInNative, setShowCurrentPriceInNative] = useState(true);
   const toggleCurrentPriceDisplayCurrency = useCallback(
@@ -84,26 +82,27 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
     });
   }, [navigate]);
 
-  const lastSalePrice = formatPrice(asset?.lastPrice, asset?.lastSalePaymentToken);
+  const lastSalePrice = NONE;
+  // const lastSalePrice = formatPrice(asset?.lastPrice, asset?.lastSalePaymentToken);
 
   return (
     <Columns space="19px (Deprecated)">
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
-        color={lastSalePrice === NONE && !currentPrice ? colors.alpha(colors.whiteLabel, 0.5) : colors.whiteLabel}
-        enableHapticFeedback={!!currentPrice}
+        color={lastSalePrice === NONE && !listingValue ? colors.alpha(colors.whiteLabel, 0.5) : colors.whiteLabel}
+        enableHapticFeedback={!!listingValue}
         isNft
         onPress={toggleCurrentPriceDisplayCurrency}
         size="big"
         title={
-          currentPrice
+          listingValue
             ? `􀋢 ${lang.t('expanded_state.nft_brief_token_info.for_sale')}`
             : lang.t('expanded_state.nft_brief_token_info.last_sale')
         }
-        weight={lastSalePrice === NONE && !currentPrice ? 'bold' : 'heavy'}
+        weight={lastSalePrice === NONE && !listingValue ? 'bold' : 'heavy'}
       >
-        {showCurrentPriceInNative || nativeCurrency === nativeAsset?.symbol || !currentPrice
-          ? currentPrice || lastSalePrice
+        {showCurrentPriceInNative || nativeCurrency === nativeAsset?.symbol || !listingValue
+          ? listingValue || lastSalePrice
           : convertAmountToNativeDisplay(
               // @ts-expect-error currentPrice is a number?
               parseFloat(currentPrice) * Number(nativeAsset?.price?.value || 0),

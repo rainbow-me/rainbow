@@ -1,14 +1,15 @@
+import ContextMenu from '@/components/native-context-menu/contextMenu';
+import { useLatestCallback, useOnAvatarPress } from '@/hooks';
+import ShadowStack from '@/react-native-shadow-stack';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import styled from '@/styled-thing';
+import { position } from '@/styles';
 import React, { useMemo } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
-import ContextMenu from '@/components/native-context-menu/contextMenu';
-import { useAccountProfile, useLatestCallback, useOnAvatarPress } from '@/hooks';
-import styled from '@/styled-thing';
-import { position } from '@/styles';
-import ShadowStack from '@/react-native-shadow-stack';
 
 const AvatarCircleSize = 60;
 
@@ -40,10 +41,11 @@ export default function AvatarCircle({
   showcaseAccountColor,
   menuOptions = [],
   newProfile = false,
+  disableChangeAvatar = false,
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
-  const { accountColor: profileAccountColor, accountSymbol: profileAccountSymbol } = useAccountProfile();
+  const { accountColor: profileAccountColor, accountSymbol: profileAccountSymbol } = useAccountProfileInfo();
 
   const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
   const resolvedColor =
@@ -81,7 +83,7 @@ export default function AvatarCircle({
         disabled={!isAvatarPickerAvailable}
         enableHapticFeedback={isAvatarPickerAvailable}
         marginTop={2}
-        onPress={onAvatarPressProfile}
+        onPress={disableChangeAvatar ? null : onAvatarPressProfile}
         onLongPress={() => null}
         overflowMargin={30}
         pressOutDuration={200}

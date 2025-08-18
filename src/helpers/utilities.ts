@@ -3,6 +3,7 @@ import currency from 'currency.js';
 import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@/references';
 import { divWorklet, lessThanWorklet, orderOfMagnitudeWorklet, powWorklet } from '@/safe-math/SafeMath';
+import { getNumberFormatter } from '@/helpers/intl';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -271,11 +272,11 @@ export const handleSignificantDecimalsWorklet = (value: number | string, decimal
     dec = Math.min(decimals, buffer);
   }
 
-  return Number(value).toLocaleString('en-US', {
-    useGrouping: true,
-    minimumFractionDigits: Math.min(2, dec),
+  return getNumberFormatter('en-US', {
     maximumFractionDigits: dec,
-  });
+    minimumFractionDigits: Math.min(2, dec),
+    useGrouping: true,
+  }).format(Number(value));
 };
 
 export const handleSignificantDecimals = (
@@ -442,13 +443,13 @@ export const convertAmountToNativeDisplayWorklet = (
   value: number | string,
   nativeCurrency: keyof nativeCurrencyType,
   useThreshold = false,
-  ignoreAlignment = false
+  ignoreAlignment = false,
+  decimalPlaces?: number
 ) => {
   'worklet';
 
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
-  const decimals = Math.min(rawDecimals, 6);
+  const { alignment, decimals: rawDecimals, symbol } = supportedNativeCurrencies[nativeCurrency];
+  const decimals = decimalPlaces ?? Math.min(rawDecimals, 6);
 
   const valueNumber = Number(value);
   const threshold = decimals < 4 ? 0.01 : 0.0001;
@@ -460,11 +461,11 @@ export const convertAmountToNativeDisplayWorklet = (
 
   const nativeValue = thresholdReached
     ? threshold
-    : valueNumber.toLocaleString('en-US', {
-        useGrouping: true,
-        minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
+    : getNumberFormatter('en-US', {
         maximumFractionDigits: decimals,
-      });
+        minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
+        useGrouping: true,
+      }).format(valueNumber);
 
   const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' || ignoreAlignment ? symbol : ''}${nativeValue}${!ignoreAlignment && alignment === 'right' ? symbol : ''}`;
 
@@ -649,3 +650,50 @@ export const formatNumber = (value: string, options?: { decimals?: number }) => 
   if (+whole > 0) return `${whole}${decimalSeparator}${paddedFraction.slice(0, 2)}`;
   return `0${decimalSeparator}${paddedFraction.slice(0, 4)}`;
 };
+
+/**
+ * Formats a number to a specific number of significant digits with optional minimum decimal places
+ * and a minimum representable value threshold.
+ */
+export function toSignificantDigits({
+  value,
+  significantDigits = 3,
+  minDecimalPlaces = 2,
+  minRepresentable = 0.001,
+}: {
+  value: BigNumberish;
+  significantDigits?: number;
+  minDecimalPlaces?: number;
+  minRepresentable?: number;
+}): string {
+  const num = new BigNumber(value);
+
+  if (num.isZero()) {
+    return minDecimalPlaces > 0 ? '0.' + '0'.repeat(minDecimalPlaces) : '0';
+  }
+
+  const absNum = num.abs();
+
+  if (absNum.isLessThan(minRepresentable)) {
+    return `< ${minRepresentable}`;
+  }
+
+  const sign = num.isNegative() ? '-' : '';
+  const withSigDigs = parseFloat(absNum.toPrecision(significantDigits));
+
+  let result = withSigDigs.toString();
+
+  const decimalIndex = result.indexOf('.');
+  const currentDecimalPlaces = decimalIndex === -1 ? 0 : result.length - decimalIndex - 1;
+
+  if (currentDecimalPlaces < minDecimalPlaces) {
+    if (decimalIndex === -1) {
+      // No decimal point, add one
+      result += '.';
+    }
+    // Add zeros to reach minimum decimal places
+    result += '0'.repeat(minDecimalPlaces - currentDecimalPlaces);
+  }
+
+  return sign + result;
+}

@@ -3,7 +3,7 @@ import { ViewProps } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useEasingGradient, UseEasingGradientParams } from '@/hooks/useEasingGradient';
 
-interface EasingGradientProps extends UseEasingGradientParams, ViewProps {}
+type EasingGradientProps = UseEasingGradientParams & ViewProps;
 
 /**
  * ### EasingGradient
@@ -17,9 +17,10 @@ interface EasingGradientProps extends UseEasingGradientParams, ViewProps {}
  * **Optional:**
  * @param easing The easing function to apply to the gradient.
  * @param endOpacity The opacity at the end of the gradient.
- * @param endPosition The end position of the gradient ('top', 'bottom', 'left', 'right').
+ * @param endPosition The end position of the gradient (`'top', 'bottom', 'left', 'right'`). Defaults to `'bottom'`.
+ * @param pointerEvents Defaults to `'none'`.
  * @param startOpacity The opacity at the start of the gradient.
- * @param startPosition The start position of the gradient ('top', 'bottom', 'left', 'right'). Defaults to 'top'.
+ * @param startPosition The start position of the gradient (`'top', 'bottom', 'left', 'right'`). Defaults to `'top'`.
  * @param steps The number of color steps in the gradient. Defaults to 16.
  * @param props Additional ViewProps to apply to the LinearGradient component.
  *
@@ -44,10 +45,11 @@ export const EasingGradient = memo(function EasingGradient({
   endColor,
   endOpacity,
   endPosition,
+  pointerEvents = 'none',
   startColor,
   startOpacity,
-  startPosition = 'top',
-  steps = 16,
+  startPosition,
+  steps,
   ...props
 }: EasingGradientProps) {
   const { colors, end, locations, start } = useEasingGradient({
@@ -62,5 +64,5 @@ export const EasingGradient = memo(function EasingGradient({
   });
 
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return <LinearGradient colors={colors} end={end} locations={locations} start={start} {...props} />;
+  return <LinearGradient colors={colors} end={end} locations={locations} pointerEvents={pointerEvents} start={start} {...props} />;
 });

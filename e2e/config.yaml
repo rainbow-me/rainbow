@@ -1,5 +1,11 @@
 flows:
+  - dapp-connections/*
   - onboarding/*
   - screens/*
   - settings/*
   - transactions/*
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true

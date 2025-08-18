@@ -3,7 +3,6 @@ import {
   BOTTOM_ACTION_BAR_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
   FOCUSED_INPUT_HEIGHT,
-  GAS_SHEET_HEIGHT,
   REVIEW_SHEET_HEIGHT,
   REVIEW_SHEET_ROW_GAP,
   REVIEW_SHEET_ROW_HEIGHT,
@@ -17,26 +16,19 @@ import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
 import { useColorMode } from '@/design-system';
 import { foregroundColors } from '@/design-system/color/palettes';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { NavigationSteps } from './useSwapNavigation';
+import { NavigationSteps } from '../providers/swap-provider';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const INSET_BOTTOM = safeAreaInsetValues.bottom + 16;
-const HEIGHT_FOR_PANEL: { [key in NavigationSteps]: number } = {
-  [NavigationSteps.INPUT_ELEMENT_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
-  [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
-  [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
-  [NavigationSteps.SHOW_REVIEW]: REVIEW_SHEET_HEIGHT,
-  [NavigationSteps.SHOW_GAS]: GAS_SHEET_HEIGHT + INSET_BOTTOM,
-  [NavigationSteps.SHOW_SETTINGS]: SETTINGS_SHEET_HEIGHT,
-};
 
 export function useAnimatedSwapStyles({
   SwapWarning,
   configProgress,
   degenMode,
+  gasPanelHeight,
   inputProgress,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
@@ -47,6 +39,7 @@ export function useAnimatedSwapStyles({
   SwapWarning: ReturnType<typeof useSwapWarning>;
   configProgress: SharedValue<NavigationSteps>;
   degenMode: SharedValue<boolean>;
+  gasPanelHeight: SharedValue<number>;
   inputProgress: SharedValue<number>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
@@ -145,6 +138,7 @@ export function useAnimatedSwapStyles({
     const progress = Math.min(inputProgress.value + outputProgress.value, 1);
 
     return {
+      pointerEvents: progress === 0 ? 'auto' : 'none',
       opacity: withTiming(1 - progress, TIMING_CONFIGS.fadeConfig),
       transform: [
         {
@@ -178,7 +172,21 @@ export function useAnimatedSwapStyles({
     const isSettingsOpen = configProgress.value === NavigationSteps.SHOW_SETTINGS;
     const isBottomSheetOpen = isReviewing || isSettingsOpen || configProgress.value === NavigationSteps.SHOW_GAS;
 
-    let heightForCurrentSheet = HEIGHT_FOR_PANEL[configProgress.value];
+    let heightForCurrentSheet: number;
+    switch (configProgress.value) {
+      case NavigationSteps.SHOW_GAS:
+        heightForCurrentSheet = gasPanelHeight.value + INSET_BOTTOM;
+        break;
+      case NavigationSteps.SHOW_REVIEW:
+        heightForCurrentSheet = REVIEW_SHEET_HEIGHT;
+        break;
+      case NavigationSteps.SHOW_SETTINGS:
+        heightForCurrentSheet = SETTINGS_SHEET_HEIGHT;
+        break;
+      default:
+        heightForCurrentSheet = BOTTOM_ACTION_BAR_HEIGHT;
+    }
+
     if (isReviewing) {
       heightForCurrentSheet -= REVIEW_SHEET_ROW_HEIGHT + REVIEW_SHEET_ROW_GAP;
     } else if (degenMode.value && isSettingsOpen && swapInfo.value.areBothAssetsSet) {
@@ -196,12 +204,18 @@ export function useAnimatedSwapStyles({
         SPRING_CONFIGS.springConfig
       ),
       borderRadius: withSpring(isBottomSheetOpen ? 40 : 0, SPRING_CONFIGS.springConfig),
-      bottom: withSpring(isBottomSheetOpen ? Math.max(safeAreaInsetValues.bottom, 28) : -2, SPRING_CONFIGS.springConfig),
+      bottom: IS_TEST
+        ? isBottomSheetOpen
+          ? 125
+          : -2
+        : withSpring(isBottomSheetOpen ? Math.max(safeAreaInsetValues.bottom, 28) : -2, SPRING_CONFIGS.springConfig),
       height: withSpring(heightForCurrentSheet, SPRING_CONFIGS.springConfig),
       left: withSpring(isBottomSheetOpen ? 12 : -2, SPRING_CONFIGS.springConfig),
       right: withSpring(isBottomSheetOpen ? 12 : -2, SPRING_CONFIGS.springConfig),
       paddingHorizontal: withSpring((isBottomSheetOpen ? 16 : 18) - THICK_BORDER_WIDTH, SPRING_CONFIGS.springConfig),
       paddingTop: withSpring((isBottomSheetOpen ? 28 : 16) - THICK_BORDER_WIDTH, SPRING_CONFIGS.springConfig),
+      overflow: IS_TEST ? 'visible' : 'hidden',
+      position: IS_TEST ? 'relative' : 'absolute',
     };
   });
 

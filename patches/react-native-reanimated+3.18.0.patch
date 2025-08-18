@@ -1,0 +1,699 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
+index f3742ed..da2d111 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
+@@ -13,6 +13,7 @@
+ 
+ #include <worklets/Registries/EventHandlerRegistry.h>
+ #include <worklets/SharedItems/Shareables.h>
++#include <worklets/SharedItems/Synchronizable.h>
+ #include <worklets/Tools/AsyncQueue.h>
+ #include <worklets/Tools/WorkletEventHandler.h>
+ 
+@@ -293,6 +294,17 @@ jsi::Value ReanimatedModuleProxy::scheduleOnRuntime(
+   return jsi::Value::undefined();
+ }
+ 
++jsi::Value ReanimatedModuleProxy::makeSynchronizable(
++    jsi::Runtime &rt,
++    const jsi::Value &value) {
++  if (value.isNumber()) {
++    auto synchronizable =
++        std::make_shared<Synchronizable<double>>(value.asNumber());
++    return jsi::Object::createFromHostObject(rt, synchronizable);
++  }
++  return jsi::Value::undefined();
++}
++
+ jsi::Value ReanimatedModuleProxy::registerEventHandler(
+     jsi::Runtime &rt,
+     const jsi::Value &worklet,
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
+index f9332ea..3bab115 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
+@@ -53,6 +53,10 @@ class ReanimatedModuleProxy
+   jsi::Value executeOnUIRuntimeSync(jsi::Runtime &rt, const jsi::Value &worklet)
+       override;
+ 
++  jsi::Value makeSynchronizable(
++      jsi::Runtime &rt,
++      const jsi::Value &value) override;
++
+   jsi::Value createWorkletRuntime(
+       jsi::Runtime &rt,
+       const jsi::Value &name,
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxySpec.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxySpec.cpp
+index d70c224..d174433 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxySpec.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxySpec.cpp
+@@ -46,6 +46,15 @@ static jsi::Value REANIMATED_SPEC_PREFIX(scheduleOnRuntime)(
+       ->scheduleOnRuntime(rt, std::move(args[0]), std::move(args[1]));
+ }
+ 
++static jsi::Value REANIMATED_SPEC_PREFIX(makeSynchronizable)(
++    jsi::Runtime &rt,
++    TurboModule &turboModule,
++    const jsi::Value *args,
++    size_t) {
++  return static_cast<ReanimatedModuleProxySpec *>(&turboModule)
++      ->makeSynchronizable(rt, std::move(args[0]));
++}
++
+ static jsi::Value REANIMATED_SPEC_PREFIX(registerEventHandler)(
+     jsi::Runtime &rt,
+     TurboModule &turboModule,
+@@ -195,6 +204,8 @@ ReanimatedModuleProxySpec::ReanimatedModuleProxySpec(
+       MethodMetadata{2, REANIMATED_SPEC_PREFIX(createWorkletRuntime)};
+   methodMap_["scheduleOnRuntime"] =
+       MethodMetadata{2, REANIMATED_SPEC_PREFIX(scheduleOnRuntime)};
++  methodMap_["makeSynchronizable"] =
++      MethodMetadata{1, REANIMATED_SPEC_PREFIX(makeSynchronizable)};
+ 
+   methodMap_["registerEventHandler"] =
+       MethodMetadata{3, REANIMATED_SPEC_PREFIX(registerEventHandler)};
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxySpec.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxySpec.h
+index 5a9fd67..191ce58 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxySpec.h
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxySpec.h
+@@ -34,6 +34,10 @@ class JSI_EXPORT ReanimatedModuleProxySpec : public TurboModule {
+       const jsi::Value &workletRuntimeValue,
+       const jsi::Value &shareableWorkletValue) = 0;
+ 
++  virtual jsi::Value makeSynchronizable(
++          jsi::Runtime &rt,
++          const jsi::Value &value) = 0;
++
+   // events
+   virtual jsi::Value registerEventHandler(
+       jsi::Runtime &rt,
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/.DS_Store b/node_modules/react-native-reanimated/Common/cpp/worklets/.DS_Store
+new file mode 100644
+index 0000000..ef0c65e
+Binary files /dev/null and b/node_modules/react-native-reanimated/Common/cpp/worklets/.DS_Store differ
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Synchronizable.cpp b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Synchronizable.cpp
+new file mode 100644
+index 0000000..faa6a47
+--- /dev/null
++++ b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Synchronizable.cpp
+@@ -0,0 +1,19 @@
++#include <jsi/jsi.h>
++#include <worklets/SharedItems/Synchronizable.h>
++
++namespace worklets {
++
++template <>
++auto SynchronizableConverter<double>::jsValue(Runtime &rt, const double &value)
++    -> JSValue {
++  return facebook::jsi::Value(value);
++}
++
++template <>
++auto SynchronizableConverter<double>::hostValue(
++    Runtime &rt,
++    const JSValue &value) -> double {
++  return value.getNumber();
++}
++
++} // namespace worklets
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Synchronizable.h b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Synchronizable.h
+new file mode 100644
+index 0000000..6a7d4cd
+--- /dev/null
++++ b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/Synchronizable.h
+@@ -0,0 +1,197 @@
++#pragma once
++
++#include <jsi/jsi.h>
++#include <worklets/SharedItems/SynchronizableAccess.h>
++
++#include <memory>
++#include <utility>
++#include <vector>
++
++namespace worklets {
++
++template <typename TValue>
++class SynchronizableConverter {
++ public:
++  using JSValue = facebook::jsi::Value;
++  using Runtime = facebook::jsi::Runtime;
++
++  static auto jsValue(Runtime &rt, const TValue &value) -> JSValue;
++  static auto hostValue(Runtime &rt, const JSValue &value) -> TValue;
++};
++
++// TODO: Use CRTP instead.
++template <typename TValue>
++class Synchronizable
++    : public SynchronizableAccess,
++      public SynchronizableConverter<TValue>,
++      public facebook::jsi::HostObject,
++      public std::enable_shared_from_this<Synchronizable<TValue>> {
++ private:
++  using JSValue = facebook::jsi::Value;
++  using Runtime = facebook::jsi::Runtime;
++
++  // TODO: Find a way of taking the unmangled method names in compile
++  // time and use them instead of these hardcoded strings.
++  static constexpr char getDirtyName_[9]{"getDirty"};
++  static constexpr char getBlockingName_[12]{"getBlocking"};
++  static constexpr char setDirtyName_[9]{"setDirty"};
++  static constexpr char setBlockingName_[12]{"setBlocking"};
++  static constexpr char lockName_[5]{"lock"};
++  static constexpr char unlockName_[7]{"unlock"};
++
++ public:
++  auto get(Runtime &rt, const facebook::jsi::PropNameID &name)
++      -> JSValue override {
++    // TODO: Reduce the amount of boilerplate in this method.
++    const auto nameStr = name.utf8(rt);
++    if (nameStr == getDirtyName_) {
++      return facebook::jsi::Function::createFromHostFunction(
++          rt,
++          facebook::jsi::PropNameID::forUtf8(rt, "getDirty"),
++          0,
++
++          [this](
++              facebook::jsi::Runtime &rt,
++              const facebook::jsi::Value &thisVal,
++              const facebook::jsi::Value *args,
++              size_t count) { return jsValue(rt, getDirty()); });
++    } else if (nameStr == getBlockingName_) {
++      return facebook::jsi::Function::createFromHostFunction(
++          rt,
++          facebook::jsi::PropNameID::forUtf8(rt, "getBlocking"),
++          0,
++          [this](
++              facebook::jsi::Runtime &rt,
++              const facebook::jsi::Value &thisVal,
++              const facebook::jsi::Value *args,
++              size_t count) { return jsValue(rt, getBlocking()); });
++    } else if (nameStr == setDirtyName_) {
++      return facebook::jsi::Function::createFromHostFunction(
++          rt,
++          facebook::jsi::PropNameID::forUtf8(rt, "setDirty"),
++          1,
++          [this](
++              facebook::jsi::Runtime &rt,
++              const facebook::jsi::Value &thisVal,
++              const facebook::jsi::Value *args,
++              size_t count) {
++            setDirty(hostValue(rt, args[0]));
++            return facebook::jsi::Value::undefined();
++          });
++    } else if (nameStr == setBlockingName_) {
++      return facebook::jsi::Function::createFromHostFunction(
++          rt,
++          facebook::jsi::PropNameID::forUtf8(rt, "setBlocking"),
++          1,
++          [this](
++              facebook::jsi::Runtime &rt,
++              const facebook::jsi::Value &thisVal,
++              const facebook::jsi::Value *args,
++              size_t count) {
++            setBlocking(hostValue(rt, args[0]));
++            return facebook::jsi::Value::undefined();
++          });
++    } else if (nameStr == lockName_) {
++      return facebook::jsi::Function::createFromHostFunction(
++          rt,
++          facebook::jsi::PropNameID::forUtf8(rt, "lock"),
++          1,
++          [this](
++              facebook::jsi::Runtime &rt,
++              const facebook::jsi::Value &thisVal,
++              const facebook::jsi::Value *args,
++              size_t count) {
++            lock();
++            return facebook::jsi::Value::undefined();
++          });
++    } else if (nameStr == unlockName_) {
++      return facebook::jsi::Function::createFromHostFunction(
++          rt,
++          facebook::jsi::PropNameID::forUtf8(rt, "lock"),
++          1,
++          [this](
++              facebook::jsi::Runtime &rt,
++              const facebook::jsi::Value &thisVal,
++              const facebook::jsi::Value *args,
++              size_t count) {
++            unlock();
++            return facebook::jsi::Value::undefined();
++          });
++    } else {
++      return facebook::jsi::Value::undefined();
++    }
++  }
++
++  auto getPropertyNames(Runtime &rt)
++      -> std::vector<facebook::jsi::PropNameID> override {
++    auto props = std::vector<facebook::jsi::PropNameID>{};
++    props.push_back(facebook::jsi::PropNameID::forUtf8(rt, getDirtyName_));
++    props.push_back(facebook::jsi::PropNameID::forUtf8(rt, getBlockingName_));
++    props.push_back(facebook::jsi::PropNameID::forUtf8(rt, setDirtyName_));
++    props.push_back(facebook::jsi::PropNameID::forUtf8(rt, setBlockingName_));
++    return props;
++  }
++
++  auto getDirty() -> TValue {
++    // Can run concurrently with getDirty, getBlocking, setDirty, setBlocking.
++    return value_;
++  }
++
++  auto getBlocking() -> TValue {
++    // Can run concurrently with getDirty, getBlocking.
++    // Cannot run concurrently with setDirty, setBlocking.
++    getBlockingBefore();
++    auto value = value_;
++    getBlockingAfter();
++    return value;
++  }
++
++  auto setDirty(TValue value) -> void {
++    // Can run concurrently with getDirty, setDirty.
++    // Cannot run concurrently with getBlocking, setBlocking.
++    setDirtyBefore();
++    value_ = value;
++    setDirtyAfter();
++  }
++
++  auto setBlocking(TValue value) -> void {
++    // Can run concurrently with getDirty.
++    // Cannot run concurrently with getBlocking, setDirty, setBlocking.
++    setBlockingBefore();
++    value_ = value;
++    setBlockingAfter();
++  }
++
++  auto jsValue(Runtime &rt, const TValue &value) -> JSValue {
++    return static_cast<SynchronizableConverter<TValue> *>(this)->jsValue(
++        rt, value);
++  }
++
++  auto hostValue(Runtime &rt, const JSValue &value) -> TValue {
++    return static_cast<SynchronizableConverter<TValue> *>(this)->hostValue(
++        rt, value);
++  }
++
++  explicit Synchronizable(TValue &&value) : value_{std::move(value)} {};
++
++  virtual ~Synchronizable() = default;
++
++ private:
++  // TODO: Consider making TValue a template Mixin with getter and setter.
++  // TODO: Perhaps we can use Serializable (old Shareable) as TValue.
++  TValue value_;
++};
++
++// TODO: More base implementations, consult with Serializable (old Shareable)
++// and CSS objects.
++
++template <>
++auto SynchronizableConverter<double>::jsValue(Runtime &rt, const double &value)
++    -> JSValue;
++
++template <>
++auto SynchronizableConverter<double>::hostValue(
++    Runtime &rt,
++    const JSValue &value) -> double;
++
++}; // namespace worklets
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/SynchronizableAccess.cpp b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/SynchronizableAccess.cpp
+new file mode 100644
+index 0000000..f649312
+--- /dev/null
++++ b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/SynchronizableAccess.cpp
+@@ -0,0 +1,74 @@
++#include <worklets/SharedItems/SynchronizableAccess.h>
++#include <mutex>
++
++namespace worklets {
++auto SynchronizableAccess::getBlockingBefore() -> void {
++  std::unique_lock<std::mutex> lock(accessLock_);
++  queue_.wait(lock, [this]() {
++    return !blockingWriter_ && dirtyWriters_ == 0 &&
++        (!imperativelyLocked_ || imperativeOwner_ == pthread_self());
++  });
++  blockingReaders_++;
++}
++
++auto SynchronizableAccess::getBlockingAfter() -> void {
++  std::unique_lock<std::mutex> lock(accessLock_);
++  blockingReaders_--;
++  if (blockingReaders_ == 0) {
++    queue_.notify_all();
++  }
++}
++
++auto SynchronizableAccess::setDirtyBefore() -> void {
++  std::unique_lock<std::mutex> lock(accessLock_);
++  queue_.wait(lock, [this]() {
++    return !blockingWriter_ && blockingReaders_ == 0 &&
++        (!imperativelyLocked_ || imperativeOwner_ == pthread_self());
++  });
++  dirtyWriters_++;
++}
++
++auto SynchronizableAccess::setDirtyAfter() -> void {
++  std::unique_lock<std::mutex> lock(accessLock_);
++  dirtyWriters_--;
++  if (dirtyWriters_ == 0) {
++    queue_.notify_all();
++  }
++}
++
++auto SynchronizableAccess::setBlockingBefore() -> void {
++  std::unique_lock<std::mutex> lock(accessLock_);
++  queue_.wait(lock, [this]() {
++    return !blockingWriter_ && blockingReaders_ == 0 && dirtyWriters_ == 0 &&
++        (!imperativelyLocked_ || imperativeOwner_ == pthread_self());
++  });
++  blockingWriter_ = true;
++}
++
++auto SynchronizableAccess::setBlockingAfter() -> void {
++  std::unique_lock<std::mutex> lock(accessLock_);
++  blockingWriter_ = false;
++  queue_.notify_all();
++}
++
++auto SynchronizableAccess::lock() -> void {
++  std::unique_lock<std::mutex> lock(accessLock_);
++  queue_.wait(lock, [this]() {
++    return !blockingWriter_ && blockingReaders_ == 0 && dirtyWriters_ == 0 &&
++        (!imperativelyLocked_ || imperativeOwner_ == pthread_self());
++  });
++  imperativelyLocked_ = true;
++  imperativeOwner_ = pthread_self();
++}
++
++auto SynchronizableAccess::unlock() -> void {
++  std::unique_lock<std::mutex> lock(accessLock_);
++  if (imperativeOwner_ != pthread_self()) {
++    return;
++  }
++  imperativelyLocked_ = false;
++  imperativeOwner_ = {};
++  queue_.notify_all();
++}
++
++} // namespace worklets
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/SynchronizableAccess.h b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/SynchronizableAccess.h
+new file mode 100644
+index 0000000..97ff93a
+--- /dev/null
++++ b/node_modules/react-native-reanimated/Common/cpp/worklets/SharedItems/SynchronizableAccess.h
+@@ -0,0 +1,34 @@
++#pragma once
++
++#include <condition_variable>
++#include <mutex>
++
++namespace worklets {
++
++class SynchronizableAccess {
++ public:
++  auto lock() -> void;
++  auto unlock() -> void;
++
++ protected:
++  auto getBlockingBefore() -> void;
++  auto getBlockingAfter() -> void;
++
++  auto setDirtyBefore() -> void;
++  auto setDirtyAfter() -> void;
++
++  auto setBlockingBefore() -> void;
++  auto setBlockingAfter() -> void;
++
++ private:
++  int blockingReaders_{0};
++  int dirtyWriters_{0};
++  bool blockingWriter_{false};
++  bool imperativelyLocked_{false};
++  pthread_t imperativeOwner_{};
++  std::mutex accessLock_;
++  std::recursive_mutex imperativeLock_;
++  std::condition_variable queue_;
++};
++
++} // namespace worklets
+diff --git a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
+index 0726b31..b44c0d7 100644
+--- a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
++++ b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.cpp
+@@ -411,6 +411,10 @@ void NativeProxy::progressLayoutAnimation(
+       tag, newPropsJNI, isSharedTransition);
+ }
+ 
++void NativeProxy::endLayoutAnimation(int tag, bool shouldRemove) {
++  layoutAnimations_->cthis()->endLayoutAnimation(tag, shouldRemove);
++}
++
+ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
+ #ifdef RCT_NEW_ARCH_ENABLED
+   // nothing
+@@ -450,14 +454,7 @@ PlatformDepMethodsHolder NativeProxy::getPlatformDependentMethods() {
+   auto progressLayoutAnimation =
+       bindThis(&NativeProxy::progressLayoutAnimation);
+ 
+-  auto endLayoutAnimation = [weakThis = weak_from_this()](
+-                                int tag, bool removeView) {
+-    auto strongThis = weakThis.lock();
+-    if (!strongThis) {
+-      return;
+-    }
+-    strongThis->layoutAnimations_->cthis()->endLayoutAnimation(tag, removeView);
+-  };
++  auto endLayoutAnimation = bindThis(&NativeProxy::endLayoutAnimation);
+ 
+   auto maybeFlushUiUpdatesQueueFunction =
+       bindThis(&NativeProxy::maybeFlushUIUpdatesQueue);
+diff --git a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
+index 2ee2cc8..2edb5c9 100644
+--- a/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
++++ b/node_modules/react-native-reanimated/android/src/main/cpp/reanimated/android/NativeProxy.h
+@@ -234,6 +234,8 @@ class NativeProxy : public jni::HybridClass<NativeProxy>,
+       const jsi::Object &newProps,
+       bool isSharedTransition);
+ 
++  void endLayoutAnimation(int tag, bool shouldRemove);
++
+   /***
+    * Wraps a method of `NativeProxy` in a function object capturing `this`
+    * @tparam TReturn return type of passed method
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+index 91ba53e..8c589e6 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+@@ -175,7 +175,11 @@ - (READisplayLink *)getDisplayLink
+   if (!_displayLink) {
+     _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+ #if !TARGET_OS_OSX
+-    _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++    if (@available(iOS 15.0, *)) {
++      _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 80);
++    } else {
++      _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++    }
+ #endif // TARGET_OS_OSX
+     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+   }
+diff --git a/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts b/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts
+index fa014ee..15d2cf0 100644
+--- a/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts
++++ b/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts
+@@ -10,6 +10,7 @@ import type {
+   Value3D,
+   ValueRotation,
+   WorkletFunction,
++  HostSynchronizableRef,
+ } from '../commonTypes';
+ import { ReanimatedError } from '../errors';
+ import { getShadowNodeWrapperFromRef } from '../fabricUtils';
+@@ -96,6 +97,10 @@ See https://docs.swmansion.com/react-native-reanimated/docs/guides/troubleshooti
+     );
+   }
+ 
++  makeSynchronizable<TValue>(value: TValue): HostSynchronizableRef<TValue> {
++    return this.#reanimatedModuleProxy.makeSynchronizable(value);
++  }
++
+   registerSensor(
+     sensorType: number,
+     interval: number,
+diff --git a/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/JSReanimated.ts b/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/JSReanimated.ts
+index f571528..61c8c8c 100644
+--- a/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/JSReanimated.ts
++++ b/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/JSReanimated.ts
+@@ -301,6 +301,12 @@ class JSReanimated implements IReanimatedModule {
+     );
+   }
+ 
++  makeSynchronizable(): never {
++    throw new ReanimatedError(
++      'makeSynchronizable should never be called in JSWorklets.'
++    );
++  }
++
+   markNodeAsRemovable(_shadowNodeWrapper: ShadowNodeWrapper): void {
+     throw new ReanimatedError(
+       'markNodeAsRemovable is not available in JSReanimated.'
+diff --git a/node_modules/react-native-reanimated/src/ReanimatedModule/reanimatedModuleProxy.ts b/node_modules/react-native-reanimated/src/ReanimatedModule/reanimatedModuleProxy.ts
+index fed3331..002d2a6 100644
+--- a/node_modules/react-native-reanimated/src/ReanimatedModule/reanimatedModuleProxy.ts
++++ b/node_modules/react-native-reanimated/src/ReanimatedModule/reanimatedModuleProxy.ts
+@@ -7,6 +7,7 @@ import type {
+   Value3D,
+   ValueRotation,
+   WorkletFunction,
++  HostSynchronizableRef,
+ } from '../commonTypes';
+ import type { WorkletRuntime } from '../runtimes';
+ 
+@@ -26,6 +27,8 @@ export interface ReanimatedModuleProxy {
+     worklet: ShareableRef<T>
+   ): void;
+ 
++  makeSynchronizable<TValue>(value: TValue): HostSynchronizableRef<TValue>;
++
+   registerEventHandler<T>(
+     eventHandler: ShareableRef<T>,
+     eventName: string,
+diff --git a/node_modules/react-native-reanimated/src/commonTypes.ts b/node_modules/react-native-reanimated/src/commonTypes.ts
+index 4e102c8..d16c058 100644
+--- a/node_modules/react-native-reanimated/src/commonTypes.ts
++++ b/node_modules/react-native-reanimated/src/commonTypes.ts
+@@ -608,3 +608,23 @@ export type AnimateStyle<Style = DefaultStyle> = AnimatedStyle<Style>;
+ export type StylesOrDefault<T> = 'style' extends keyof T
+   ? MaybeSharedValueRecursive<T['style']>
+   : Record<string, unknown>;
++
++export interface HostSynchronizableRef<TValue = unknown> {
++  // TODO: TSDOC with links to documentation.
++  getDirty(): TValue;
++  getBlocking(): TValue;
++  setDirty(value: TValue): void;
++  setBlocking(value: TValue): void;
++  // TODO: Consider allowing `lock` and `unlock` in public API.
++  lock(): void;
++  unlock(): void;
++}
++
++export interface SynchronizableRef<TValue = unknown>
++  extends Omit<HostSynchronizableRef<TValue>, 'lock' | 'unlock'> {
++  // TODO: TSDOC with links to documentation.
++  getDirty(): TValue;
++  getBlocking(): TValue;
++  setDirty(value: TValue | ((prev: TValue) => TValue)): void;
++  setBlocking(value: TValue | ((prev: TValue) => TValue)): void;
++}
+diff --git a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+index d9817af..eef353d 100644
+--- a/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
++++ b/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts
+@@ -582,7 +582,7 @@ For more, see the docs: \`https://docs.swmansion.com/react-native-reanimated/doc
+     };
+   }, [areAnimationsActive]);
+ 
+-  checkSharedValueUsage(initial.value);
++  if (__DEV__) checkSharedValueUsage(initial.value);
+ 
+   const animatedStyleHandle = useRef<
+     | AnimatedStyleHandle<Style | AnimatedProps>
+diff --git a/node_modules/react-native-reanimated/src/mutables.ts b/node_modules/react-native-reanimated/src/mutables.ts
+index 6bc0b66..20a007f 100644
+--- a/node_modules/react-native-reanimated/src/mutables.ts
++++ b/node_modules/react-native-reanimated/src/mutables.ts
+@@ -1,11 +1,12 @@
+ 'use strict';
+-import type { Mutable } from './commonTypes';
++import type { Mutable, SynchronizableRef } from './commonTypes';
+ import { ReanimatedError } from './errors';
+ import { logger } from './logger';
+ import { isJest, shouldBeUseWeb } from './PlatformChecker';
+ import { isFirstReactRender, isReactRendering } from './reactUtils';
+ import { shareableMappingCache } from './shareableMappingCache';
+ import { makeShareableCloneRecursive } from './shareables';
++import { makeSynchronizable } from './synchronizable';
+ import { executeOnUIRuntimeSync, runOnUI } from './threads';
+ import { valueSetter } from './valueSetter';
+ 
+@@ -96,10 +97,11 @@ function hideInternalValueProp<Value>(mutable: PartialMutable<Value>) {
+   });
+ }
+ 
+-export function makeMutableUI<Value>(initial: Value): Mutable<Value> {
++export function makeMutableUI<Value>(initial: Value, isDirtySynchronizable?: SynchronizableRef<number>): Mutable<Value> {
+   'worklet';
+   const listeners = new Map<number, Listener<Value>>();
+   let value = initial;
++  let isDirty = false;
+ 
+   const mutable: PartialMutable<Value> = {
+     get value() {
+@@ -116,6 +118,10 @@ export function makeMutableUI<Value>(initial: Value): Mutable<Value> {
+       listeners.forEach((listener) => {
+         listener(newValue);
+       });
++      if (isDirtySynchronizable && !isDirty && value !== initial) {
++        isDirty = true;
++        isDirtySynchronizable.setBlocking(1);
++      }
+     },
+     modify: (modifier, forceUpdate = true) => {
+       valueSetter(
+@@ -142,20 +148,26 @@ export function makeMutableUI<Value>(initial: Value): Mutable<Value> {
+ }
+ 
+ function makeMutableNative<Value>(initial: Value): Mutable<Value> {
++  const isDirtySynchronizable = makeSynchronizable(0);
++
+   const handle = makeShareableCloneRecursive({
+     __init: () => {
+       'worklet';
+-      return makeMutableUI(initial);
++      return makeMutableUI(initial, isDirtySynchronizable);
+     },
+   });
+ 
+   const mutable: PartialMutable<Value> = {
+     get value(): Value {
+       checkInvalidReadDuringRender();
+-      const uiValueGetter = executeOnUIRuntimeSync((sv: Mutable<Value>) => {
+-        return sv.value;
+-      });
+-      return uiValueGetter(mutable as Mutable<Value>);
++      if (isDirtySynchronizable.getBlocking()) {
++        const uiValueGetter = executeOnUIRuntimeSync((sv: Mutable<Value>) => {
++          return sv.value;
++        });
++        return uiValueGetter(mutable as Mutable<Value>);
++      } else {
++        return initial;
++      }
+     },
+     set value(newValue) {
+       checkInvalidWriteDuringRender();
+diff --git a/node_modules/react-native-reanimated/src/synchronizable.ts b/node_modules/react-native-reanimated/src/synchronizable.ts
+new file mode 100644
+index 0000000..d97c2a8
+--- /dev/null
++++ b/node_modules/react-native-reanimated/src/synchronizable.ts
+@@ -0,0 +1,15 @@
++'use strict';
++
++import type { SynchronizableRef } from './commonTypes';
++import { logger } from './logger';
++import { ReanimatedModule } from './ReanimatedModule';
++
++export function makeSynchronizable<TValue>(
++  initialValue: TValue
++): SynchronizableRef<TValue> {
++  // TODO Support other types than number.
++  if (typeof initialValue !== 'number') {
++    logger.warn("Couldn't make a synchronizable from the given value.");
++  }
++  return ReanimatedModule.makeSynchronizable(initialValue);
++}

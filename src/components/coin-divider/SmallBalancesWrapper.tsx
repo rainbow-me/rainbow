@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { OpacityToggler } from '@/components/animations';
 import { CoinRowHeight } from '@/components/coin-row';
-import { useFrameDelayedValue, useOpenSmallBalances } from '@/hooks';
+import { useFrameDelayedValue } from '@/hooks';
 import { StyleSheet } from 'react-native';
+import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 
 const sx = StyleSheet.create({
   container: {
@@ -17,7 +18,7 @@ type SmallBalancesWrapperProps = {
 export default function SmallBalancesWrapper({ assets = [] }: SmallBalancesWrapperProps) {
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const delayedIsSmallBalancesOpen = useFrameDelayedValue(isSmallBalancesOpen) && isSmallBalancesOpen;
-  const height = useMemo(() => assets.length * CoinRowHeight, [assets]);
+  const height = useMemo(() => assets.length * CoinRowHeight, [assets.length]);
 
   return (
     <OpacityToggler

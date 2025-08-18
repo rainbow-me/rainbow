@@ -1,13 +1,14 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useAccountSettings, useENSAvatar, useENSCover, useENSRecords, useENSRegistration, usePrevious } from '.';
+import { useENSAvatar, useENSCover, useENSRecords, useENSRegistration, usePrevious } from '.';
 import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
 import * as ensRedux from '@/redux/ensRegistration';
-import { getENSNFTAvatarUrl, isENSNFTRecord, parseENSNFTRecord } from '@/utils';
+import { getENSNFTAvatarUrl, isENSNFTRecord, isLowerCaseMatch, parseENSNFTRecord } from '@/utils';
 import { useLegacyNFTs } from '@/resources/nfts';
+import { useAccountAddress } from '@/state/wallets/walletsStore';
 
 const getImageUrl = (
   key: 'avatar' | 'header',
@@ -27,13 +28,13 @@ const getImageUrl = (
     const isNFT = isENSNFTRecord(recordValue);
     if (isNFT) {
       const { contractAddress, tokenId } = parseENSNFTRecord(records?.[key] || '');
-      const uniqueToken = uniqueTokens.find(token => token.asset_contract.address === contractAddress && token.id === tokenId);
-      if (uniqueToken?.image_url) {
-        imageUrl = svgToPngIfNeeded(uniqueToken?.image_url, false);
-      } else if (uniqueToken?.lowResUrl) {
-        imageUrl = uniqueToken?.lowResUrl;
-      } else if (uniqueToken?.image_thumbnail_url) {
-        imageUrl = uniqueToken?.image_thumbnail_url;
+      const uniqueToken = uniqueTokens.find(
+        token => isLowerCaseMatch(token.contractAddress, contractAddress) && isLowerCaseMatch(token.tokenId, tokenId)
+      );
+      if (uniqueToken?.images.highResUrl) {
+        imageUrl = svgToPngIfNeeded(uniqueToken.images.highResUrl, false);
+      } else if (uniqueToken?.images.lowResUrl) {
+        imageUrl = uniqueToken.images.lowResUrl;
       }
     } else if (
       recordValue?.startsWith('http') ||
@@ -56,7 +57,7 @@ export default function useENSModifiedRegistration({
 } = {}) {
   const dispatch = useDispatch();
   const { records, initialRecords, name, mode } = useENSRegistration();
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useAccountAddress();
 
   const {
     data: { nfts: uniqueTokens },

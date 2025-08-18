@@ -1,53 +1,114 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { addHiddenToken as rawAddHiddenToken, removeHiddenToken as rawRemoveHiddenToken } from '../redux/hiddenTokens';
-import useWallets from './useWallets';
-import useWebData from './useWebData';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { analytics } from '@/analytics';
 import { UniqueAsset } from '@/entities';
+import { useAccountAddress, getIsReadOnlyWallet } from '@/state/wallets/walletsStore';
+import useFetchHiddenTokens, { hiddenTokensQueryKey } from './useFetchHiddenTokens';
+import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
 
-export default function useHiddenTokens() {
-  const dispatch = useDispatch();
-  const { updateWebHidden } = useWebData();
-  const { isReadOnlyWallet } = useWallets();
+export default function useHiddenTokens(address?: string) {
+  const queryClient = useQueryClient();
+  const accountAddress = useAccountAddress();
+  const addressToUse = address || accountAddress;
 
-  const hiddenTokens: string[] = useSelector(
-    // @ts-expect-error
-    state => state.hiddenTokens.hiddenTokens
-  );
+  const { data: hiddenTokens = [] } = useFetchHiddenTokens({ address: addressToUse });
+
+  const addHiddenTokenMutation = useMutation({
+    mutationFn: async (asset: UniqueAsset) => {
+      const isReadOnlyWallet = getIsReadOnlyWallet();
+      if (isReadOnlyWallet) return hiddenTokens;
+
+      const lowercasedUniqueId = asset.uniqueId.toLowerCase();
+      const newHiddenTokens = [...hiddenTokens, lowercasedUniqueId];
+      const response = await getPreference('hidden', addressToUse);
+      if (!response || !response.hidden.ids.length) {
+        await setPreference(PreferenceActionType.init, 'hidden', addressToUse, newHiddenTokens);
+      } else {
+        await setPreference(PreferenceActionType.update, 'hidden', addressToUse, newHiddenTokens);
+      }
+
+      analytics.track(analytics.event.toggledAnNFTAsHidden, {
+        collectionContractAddress: asset.contractAddress,
+        collectionName: asset.collectionName,
+        isHidden: true,
+      });
+
+      return newHiddenTokens;
+    },
+    onMutate: async (asset: UniqueAsset) => {
+      const lowercasedUniqueId = asset.uniqueId.toLowerCase();
+
+      await queryClient.cancelQueries({ queryKey: hiddenTokensQueryKey({ address: addressToUse }) });
+
+      const previousHiddenTokens = queryClient.getQueryData(hiddenTokensQueryKey({ address: addressToUse })) || [];
+
+      const newHiddenTokens = [...(previousHiddenTokens as string[]), lowercasedUniqueId];
+      queryClient.setQueryData(hiddenTokensQueryKey({ address: addressToUse }), newHiddenTokens);
+
+      return { previousHiddenTokens };
+    },
+    onError: (err, asset, context) => {
+      queryClient.setQueryData(hiddenTokensQueryKey({ address: addressToUse }), context?.previousHiddenTokens);
+    },
+  });
+
+  const removeHiddenTokenMutation = useMutation({
+    mutationFn: async (asset: UniqueAsset) => {
+      const isReadOnlyWallet = getIsReadOnlyWallet();
+      if (isReadOnlyWallet) return hiddenTokens;
+
+      const lowercasedUniqueId = asset.uniqueId.toLowerCase();
+      const newHiddenTokens = hiddenTokens.filter(id => id !== lowercasedUniqueId);
+      const response = await getPreference('hidden', addressToUse);
+      if (!response || !response.hidden.ids.length) {
+        await setPreference(PreferenceActionType.init, 'hidden', addressToUse, newHiddenTokens);
+      } else {
+        await setPreference(PreferenceActionType.update, 'hidden', addressToUse, newHiddenTokens);
+      }
+
+      analytics.track(analytics.event.toggledAnNFTAsHidden, {
+        collectionContractAddress: asset.contractAddress,
+        collectionName: asset.collectionName,
+        isHidden: false,
+      });
+
+      return newHiddenTokens;
+    },
+    onMutate: async (asset: UniqueAsset) => {
+      const lowercasedUniqueId = asset.uniqueId.toLowerCase();
+
+      await queryClient.cancelQueries({ queryKey: hiddenTokensQueryKey({ address: addressToUse }) });
+
+      const previousHiddenTokens = queryClient.getQueryData(hiddenTokensQueryKey({ address: addressToUse })) || [];
+
+      const newHiddenTokens = (previousHiddenTokens as string[]).filter(id => id !== lowercasedUniqueId);
+      queryClient.setQueryData(hiddenTokensQueryKey({ address: addressToUse }), newHiddenTokens);
+
+      return { previousHiddenTokens };
+    },
+    onError: (err, asset, context) => {
+      queryClient.setQueryData(hiddenTokensQueryKey({ address: addressToUse }), context?.previousHiddenTokens);
+    },
+  });
 
   const addHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
-      dispatch(rawAddHiddenToken(asset.fullUniqueId));
-      !isReadOnlyWallet && updateWebHidden([...hiddenTokens, asset.fullUniqueId]);
-
-      analytics.track(analytics.event.toggledAnNFTAsHidden, {
-        collectionContractAddress: asset.asset_contract.address || null,
-        collectionName: asset.collection.name,
-        isHidden: true,
-      });
+      return addHiddenTokenMutation.mutateAsync(asset);
     },
-    [dispatch, isReadOnlyWallet, hiddenTokens, updateWebHidden]
+    [addHiddenTokenMutation]
   );
 
   const removeHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
-      dispatch(rawRemoveHiddenToken(asset.fullUniqueId));
-      !isReadOnlyWallet && updateWebHidden(hiddenTokens.filter(id => id !== asset.fullUniqueId));
-
-      analytics.track(analytics.event.toggledAnNFTAsHidden, {
-        collectionContractAddress: asset.asset_contract.address || null,
-        collectionName: asset.collection.name,
-        isHidden: false,
-      });
+      return removeHiddenTokenMutation.mutateAsync(asset);
     },
-    [dispatch, isReadOnlyWallet, hiddenTokens, updateWebHidden]
+    [removeHiddenTokenMutation]
   );
 
   return {
     addHiddenToken,
     hiddenTokens,
     removeHiddenToken,
+    isLoading: addHiddenTokenMutation.isLoading || removeHiddenTokenMutation.isLoading,
   };
 }

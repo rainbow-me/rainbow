@@ -15,8 +15,9 @@ import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { isL2Chain } from '@/handlers/web3';
-import { ExplainSheetRouteParams, CurrentBaseFeeTypeKey, RootStackParamList, gasTrendToTrendType } from '@/navigation/types';
+import { CurrentBaseFeeTypeKey, ExplainSheetRouteParams, gasTrendToTrendType, RootStackParamList } from '@/navigation/types';
 import { useNavigation } from '@/navigation';
+import { useChainSupportsPriorityFee } from '@/__swaps__/utils/meteorology';
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 
@@ -48,10 +49,13 @@ type AlertInfo = {
   message: string;
 } | null;
 
+// send sheet fees panel
 export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, validateGasParams, openCustomOptions }: FeesPanelProps) {
   const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, chainId } = useGas();
 
   const { colors } = useTheme();
+
+  const showPriorityFee = useChainSupportsPriorityFee(chainId);
 
   const {
     params: { type, focusTo },
@@ -153,14 +157,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
       const openHelper = () => openGasHelper(type);
 
       return (
-        <Box
-          as={ButtonPressAnimation}
-          paddingVertical="8px"
-          marginVertical="-8px"
-          onPress={openHelper}
-          backgroundColor="accent"
-          style={{ maxWidth: 175 }}
-        >
+        <Box as={ButtonPressAnimation} paddingVertical="8px" marginVertical="-8px" onPress={openHelper} style={{ maxWidth: 175 }}>
           <Inline horizontalSpace="4px" alignVertical="center">
             <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy" numberOfLines={2}>
               {`${label} `}
@@ -590,30 +587,32 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
           </Box>
         </Row>
 
-        <Row>
-          <Box>
-            <Inline alignVertical="center" alignHorizontal="justify">
-              <Box>
-                {renderRowLabel(lang.t('gas.miner_tip'), MINER_TIP_TYPE, maxPriorityFeeError, maxPriorityFeeWarning)}
-                {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
-              </Box>
-              <Box marginRight="-5px (Deprecated)">
-                <FeesGweiInput
-                  buttonColor={colorForAsset}
-                  editable
-                  inputRef={minerTipFieldRef}
-                  minusAction={substMinerTip}
-                  onChange={onMinerTipChange}
-                  onPress={handleMinerTipInputGweiPress}
-                  plusAction={addMinerTip}
-                  testID="max-priority-fee-input"
-                  value={maxPriorityFee}
-                  onBlur={() => null}
-                />
-              </Box>
-            </Inline>
-          </Box>
-        </Row>
+        {showPriorityFee && (
+          <Row>
+            <Box>
+              <Inline alignVertical="center" alignHorizontal="justify">
+                <Box>
+                  {renderRowLabel(lang.t('gas.miner_tip'), MINER_TIP_TYPE, maxPriorityFeeError, maxPriorityFeeWarning)}
+                  {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
+                </Box>
+                <Box marginRight="-5px (Deprecated)">
+                  <FeesGweiInput
+                    buttonColor={colorForAsset}
+                    editable
+                    inputRef={minerTipFieldRef}
+                    minusAction={substMinerTip}
+                    onChange={onMinerTipChange}
+                    onPress={handleMinerTipInputGweiPress}
+                    plusAction={addMinerTip}
+                    testID="max-priority-fee-input"
+                    value={maxPriorityFee}
+                    onBlur={() => null}
+                  />
+                </Box>
+              </Inline>
+            </Box>
+          </Row>
+        )}
 
         <Row>
           <Box paddingTop={{ custom: 14 }}>

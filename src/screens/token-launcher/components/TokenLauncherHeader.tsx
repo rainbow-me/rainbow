@@ -1,18 +1,19 @@
-import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
-import * as i18n from '@/languages';
-import { Box, Text, TextIcon } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { BlurView } from 'react-native-blur-view';
+import { analytics } from '@/analytics';
+import { ButtonPressAnimation } from '@/components/animations';
+import { BlurGradient } from '@/components/blur/BlurGradient';
+import { Box, Text, TextIcon } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
-import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { useAccountProfile, useDimensions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { showActionSheetWithOptions } from '@/utils';
-import { BlurGradient } from '@/components/blur/BlurGradient';
-import { analytics } from '@/analytics';
+import React, { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
+import { BlurView } from 'react-native-blur-view';
+import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
 
 const EXIT_BUTTON_SIZE = 36;
 // padding top + exit button + inner padding + padding bottom + blur padding
@@ -22,7 +23,7 @@ export const TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS = { bottom: 42, top: TOKEN_L
 export function TokenLauncherHeader() {
   const navigation = useNavigation();
   const { width: deviceWidth } = useDimensions();
-  const { accountColor, accountImage, accountAddress } = useAccountProfile();
+  const { accountColorHex, accountImage, accountAddress, accountSymbol } = useAccountProfileInfo();
   const hasEnteredAnyInfo = useTokenLauncherStore(state => state.hasEnteredAnyInfo);
   const step = useTokenLauncherStore(state => state.step);
   const setStep = useTokenLauncherStore(state => state.setStep);
@@ -76,13 +77,16 @@ export function TokenLauncherHeader() {
               onPress={() => navigation.navigate(Routes.CHANGE_WALLET_SHEET, { hideReadOnlyWallets: true })}
               scaleTo={0.8}
             >
-              <AddressAvatar
-                url={accountImage}
-                address={accountAddress}
-                label={accountAddress}
-                color={accountColor}
-                size={EXIT_BUTTON_SIZE}
-              />
+              {accountAddress && (
+                <AddressAvatar
+                  url={accountImage}
+                  address={accountAddress}
+                  emoji={accountSymbol || undefined}
+                  label={accountAddress}
+                  color={accountColorHex}
+                  size={EXIT_BUTTON_SIZE}
+                />
+              )}
             </ButtonPressAnimation>
           )}
           {step === NavigationSteps.REVIEW && (

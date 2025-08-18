@@ -1,5 +1,5 @@
 import { ParsedAddressAsset } from '@/entities';
-import { useAccountSettings, useAdditionalAssetData, useColorForAsset } from '@/hooks';
+import { useAdditionalAssetData, useColorForAsset } from '@/hooks';
 import { TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useAccountAsset from '@/hooks/useAccountAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -19,6 +19,7 @@ import { useTheme } from '@/theme';
 import { time } from '@/utils';
 import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 export enum SectionId {
   PROFIT = 'profit',
@@ -42,7 +43,7 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.ABOUT]: true,
 };
 
-interface AccentColors {
+export interface AssetAccentColors {
   opacity100: string;
   opacity56: string;
   opacity24: string;
@@ -78,7 +79,7 @@ export type BasicAsset = Pick<
 export type ExpandedSheetAsset = BasicAsset | (BasicAsset & FormattedExternalAsset);
 
 type ExpandedAssetSheetContextType = {
-  accentColors: AccentColors;
+  accentColors: AssetAccentColors;
   basicAsset: ExpandedSheetAsset;
   accountAsset: ParsedAddressAsset | undefined;
   assetMetadata: TokenMetadata | null | undefined;
@@ -114,7 +115,7 @@ export function ExpandedAssetSheetContextProvider({
   children,
   hideClaimSection = false,
 }: ExpandedAssetSheetContextProviderProps) {
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
 
@@ -232,7 +233,7 @@ export function ExpandedAssetSheetContextProvider({
 
   const isRainbowToken = superMetadata?.rainbow ?? false;
 
-  const accentColors: AccentColors = useMemo(() => {
+  const accentColors: AssetAccentColors = useMemo(() => {
     const background = isDarkMode
       ? chroma(
           chroma(assetColor)

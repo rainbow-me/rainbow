@@ -32,6 +32,7 @@ const FeesPanelWrapper = styled(Column)(margin.object(19, 24, 29, 24));
 
 const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
+// send sheet gas panel
 export default function CustomGasState({ asset }) {
   const { setParams } = useNavigation();
   const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {} } = useRoute();

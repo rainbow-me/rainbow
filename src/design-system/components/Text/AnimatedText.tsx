@@ -1,4 +1,4 @@
-import React, { ElementRef, forwardRef, useMemo } from 'react';
+import React, { ComponentRef, useMemo } from 'react';
 import { StyleProp, TextStyle } from 'react-native';
 import AnimateableText from 'react-native-animateable-text';
 import { DerivedValue, SharedValue, useAnimatedProps } from 'react-native-reanimated';
@@ -14,64 +14,50 @@ export type SharedOrDerivedValueText =
   | (SharedValue<string | undefined> | DerivedValue<string | undefined>)
   | (SharedValue<string | null | undefined> | DerivedValue<string | null | undefined>);
 
-export type AnimatedTextProps = {
+export type AnimatedTextProps<T extends SharedValue | DerivedValue = SharedValue | DerivedValue> = {
   align?: 'center' | 'left' | 'right';
-  children?: SharedOrDerivedValueText | string | null | undefined;
   color?: TextColor | CustomColor;
   ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip' | undefined;
   numberOfLines?: number;
   selectable?: boolean;
   size: TextSize;
-  /**
-   * @deprecated
-   * Use `children` instead, which now accepts either a string or a shared value that holds a string.
-   */
-  staticText?: string;
   style?: StyleProp<TextStyle>;
   tabularNumbers?: boolean;
-  /**
-   * @deprecated
-   * You can now pass in a value like this:
-   *
-   * ```
-   * <AnimatedText>
-   *   {derivedOrSharedValue}
-   * </AnimatedText>
-   * ```
-   *
-   * `derivedOrSharedValue` should be a Reanimated shared or derived value.
-   *
-   * To create a derived value, use the `useDerivedValue` hook from 'react-native-reanimated'.
-   * For example:
-   * ```
-   * const text = useDerivedValue(() => `Hello ${someOtherValue.value}`);
-   * ```
-   **/
-  text?: SharedOrDerivedValueText;
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
+  ref?: ComponentRef<typeof AnimateableText>;
+} & (AnimatedTextChildProps | AnimatedTextSelectorProps<T>);
+
+export type AnimatedTextChildProps = {
+  children: SharedOrDerivedValueText | string | null | undefined;
+  selector?: undefined;
 };
 
-export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, AnimatedTextProps>(function Text(
-  {
-    align,
-    children,
-    color = 'label',
-    ellipsizeMode,
-    numberOfLines,
-    selectable,
-    size,
-    staticText,
-    tabularNumbers,
-    testID,
-    text,
-    uppercase,
-    weight,
-    style,
-  },
-  ref
-) {
+export type AnimatedTextSelectorProps<T extends SharedValue | DerivedValue> = {
+  children: T;
+  /**
+   * A worklet function that selects text from a shared value provided via `children`.
+   */
+  selector: (sharedValue: T) => string | null | undefined;
+};
+
+export function AnimatedText<T extends SharedValue | DerivedValue>({
+  align,
+  children,
+  color = 'label',
+  ellipsizeMode,
+  numberOfLines,
+  selectable,
+  selector,
+  size,
+  style,
+  tabularNumbers,
+  testID,
+  uppercase,
+  weight,
+  ref,
+}: AnimatedTextProps<T>) {
   const textStyle = useTextStyle({
     align,
     color,
@@ -83,11 +69,9 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
 
   const lineHeightFixNode = useMemo(() => createLineHeightFixNode(textStyle.lineHeight), [textStyle]);
 
-  const animatedText = useAnimatedProps(() => {
-    return {
-      text: typeof children === 'string' ? children : children?.value ?? text?.value ?? staticText ?? '',
-    };
-  });
+  const animatedText = useAnimatedProps(() => ({
+    text: (selector ? selector(children) : typeof children === 'string' ? children : children?.value) ?? '',
+  }));
 
   return (
     <AnimateableText
@@ -97,10 +81,10 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
       ellipsizeMode={ellipsizeMode}
       ref={ref}
       selectable={selectable}
-      style={[textStyle, style || {}]}
+      style={style ? [textStyle, style] : textStyle}
       testID={testID}
     >
       {lineHeightFixNode}
     </AnimateableText>
   );
-});
+}

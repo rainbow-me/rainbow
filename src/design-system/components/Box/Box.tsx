@@ -1,17 +1,18 @@
 import React, { forwardRef, ReactNode, useMemo } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useForegroundColor, useForegroundColors } from '../../color/useForegroundColor';
 import { useColorMode } from '../../color/ColorMode';
 import { Shadow, shadows } from '../../layout/shadow';
 import { Height, heights, Width, widths } from '../../layout/size';
 import { NegativeSpace, negativeSpace, positionSpace, PositionSpace, Space, space } from '../../layout/space';
-import { BackgroundProvider, BackgroundProviderProps } from '../BackgroundProvider/BackgroundProvider';
+import { BackgroundProvider } from '../BackgroundProvider/BackgroundProvider';
 import { Border, BorderProps } from '../Border/Border';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
 import { IS_TEST } from '@/env';
 import LinearGradient from 'react-native-linear-gradient';
+import { BackgroundColor } from '@/design-system/color/palettes';
 
 const COMPONENTS_TO_OVERRIDE_IN_TEST_MODE = [LinearGradient];
 
@@ -86,17 +87,22 @@ export type BoxProps = {
 ) &
   (
     | {
-        background?: BackgroundProviderProps['color'];
+        background?: BackgroundColor | 'accent';
         shadow?: never;
       }
     | {
-        background: BackgroundProviderProps['color'];
+        background: BackgroundColor | 'accent';
+        shadow: Shadow;
+      }
+    | {
+        background?: never;
+        backgroundColor: string;
         shadow: Shadow;
       }
     | {
         background?: never;
         shadow: Shadow;
-        style: ViewStyle & { backgroundColor: string };
+        style: StyleProp<ViewStyle> & { backgroundColor: string };
       }
   );
 
@@ -113,6 +119,7 @@ export const Box = forwardRef(function Box(
     alignItems,
     as: Component = View,
     background,
+    backgroundColor,
     borderBottomLeftRadius,
     borderBottomRadius,
     borderBottomRightRadius,
@@ -149,6 +156,7 @@ export const Box = forwardRef(function Box(
     paddingRight: paddingRightProp,
     paddingTop: paddingTopProp,
     paddingVertical: paddingVerticalProp,
+    pointerEvents,
     position,
     right: rightProp,
     shadow,
@@ -229,6 +237,7 @@ export const Box = forwardRef(function Box(
       paddingRight,
       paddingTop,
       paddingVertical,
+      pointerEvents,
       position,
       right,
       top,
@@ -270,6 +279,7 @@ export const Box = forwardRef(function Box(
     paddingRight,
     paddingTop,
     paddingVertical,
+    pointerEvents,
     position,
     right,
     shadowStylesExist,
@@ -280,32 +290,32 @@ export const Box = forwardRef(function Box(
   const style = useMemo(() => [styles, styleProp], [styles, styleProp]);
 
   const styleHasBackgroundColor = !!(styleProp && 'backgroundColor' in styleProp && styleProp.backgroundColor !== 'transparent');
-  const backgroundToUse = styleHasBackgroundColor && typeof styleProp.backgroundColor === 'string' ? styleProp.backgroundColor : background;
+  const backgroundToUse =
+    styleHasBackgroundColor && typeof styleProp.backgroundColor === 'string' ? styleProp.backgroundColor : background ?? backgroundColor;
 
   return backgroundToUse ? (
     <BackgroundProvider color={backgroundToUse} style={style}>
-      {({ backgroundColor, backgroundStyle }) => (
-        <ApplyShadow
-          backgroundColor={backgroundColor ?? (styleProp && 'backgroundColor' in styleProp ? styleProp.backgroundColor : undefined)}
-          shadows={shadows}
-        >
-          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-          <ComponentToUse style={backgroundStyle} {...restProps} ref={ref}>
-            {children}
-            {borderColor || borderWidth ? (
-              <Border
-                borderBottomLeftRadius={styles.borderBottomLeftRadius}
-                borderBottomRightRadius={styles.borderBottomRightRadius}
-                borderColor={borderColor}
-                borderTopLeftRadius={styles.borderTopLeftRadius}
-                borderTopRightRadius={styles.borderTopRightRadius}
-                borderWidth={borderWidth}
-                enableInLightMode
-              />
-            ) : null}
-          </ComponentToUse>
-        </ApplyShadow>
-      )}
+      {({ backgroundColor, backgroundStyle }) => {
+        return (
+          <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            <ComponentToUse style={backgroundStyle} {...restProps} ref={ref}>
+              {children}
+              {borderColor || borderWidth ? (
+                <Border
+                  borderBottomLeftRadius={styles.borderBottomLeftRadius}
+                  borderBottomRightRadius={styles.borderBottomRightRadius}
+                  borderColor={borderColor}
+                  borderTopLeftRadius={styles.borderTopLeftRadius}
+                  borderTopRightRadius={styles.borderTopRightRadius}
+                  borderWidth={borderWidth}
+                  enableInLightMode
+                />
+              ) : null}
+            </ComponentToUse>
+          </ApplyShadow>
+        );
+      }}
     </BackgroundProvider>
   ) : (
     // eslint-disable-next-line react/jsx-props-no-spreading

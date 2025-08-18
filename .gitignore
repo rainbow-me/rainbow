@@ -43,6 +43,7 @@ build/
 android/app/src/main/java/me/rainbow/NativeModules/Internals/
 .idea
 .gradle
+.kotlin
 local.properties
 *.iml
 android/app/google-services.json
@@ -141,3 +142,5 @@ web-build/
 # E2E CI
 e2e-artifacts/
 anvil.log
+
+.rnef/

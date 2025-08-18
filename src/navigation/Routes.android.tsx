@@ -74,7 +74,6 @@ import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
 import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
-import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
@@ -98,8 +97,10 @@ import WalletLoadingListener from '@/components/WalletLoadingListener';
 import { Portal as CMPortal } from '@/react-native-cool-modals/Portal';
 import { LogSheet } from '@/components/debugging/LogSheet';
 import { TokenLauncherScreen } from '@/screens/token-launcher/TokenLauncherScreen';
-import { NetworkSelector } from '@/screens/NetworkSelector';
+import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
+import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -146,6 +147,7 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const showKingOfTheHillTab = useShowKingOfTheHill();
 
   return (
     <BSStack.Navigator>
@@ -175,13 +177,23 @@ function BSNavigator() {
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         options={hardwareWalletTxNavigatorPreset}
       />
+      {showKingOfTheHillTab && (
+        <BSStack.Screen
+          component={ActivitySheetScreen}
+          name={Routes.PROFILE_SCREEN}
+          options={{
+            ...bottomSheetPreset,
+            snapPoints: ['88%'],
+          }}
+        />
+      )}
       {profilesEnabled && (
         <>
           <BSStack.Screen component={ENSConfirmRegisterSheet} name={Routes.ENS_CONFIRM_REGISTER_SHEET} />
-          <BSStack.Screen component={ProfileSheet} name={Routes.PROFILE_SHEET} />
           <BSStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} />
           <BSStack.Screen component={ENSAdditionalRecordsSheet} name={Routes.ENS_ADDITIONAL_RECORDS_SHEET} />
           <BSStack.Screen component={SelectENSSheet} name={Routes.SELECT_ENS_SHEET} />
+          <BSStack.Screen component={ProfileSheet} name={Routes.PROFILE_SHEET} />
           <BSStack.Screen component={ProfileSheet} name={Routes.PROFILE_PREVIEW_SHEET} />
           <BSStack.Screen
             component={SelectUniqueTokenSheet}
@@ -221,14 +233,7 @@ function BSNavigator() {
         }}
       />
       <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />
-      <BSStack.Screen
-        component={SettingsSheet}
-        name={Routes.SETTINGS_SHEET}
-        options={{
-          ...bottomSheetPreset,
-          height: deviceUtils.dimensions.height - CUSTOM_MARGIN_TOP_ANDROID,
-        }}
-      />
+      <BSStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}

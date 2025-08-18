@@ -8,11 +8,12 @@ import {
   TextAlign as SkiaTextAlign,
 } from '@shopify/react-native-skia';
 import { Platform } from '@shopify/react-native-skia/src/Platform';
-import { Dispatch, MutableRefObject, SetStateAction, useEffect, useRef, useState } from 'react';
+import { Dispatch, MutableRefObject, SetStateAction, useEffect, useState } from 'react';
 import { TextAlign } from '@/components/text/types';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { IS_DEV, IS_IOS } from '@/env';
 import { useCleanup } from '@/hooks/useCleanup';
+import { useLazyRef } from '@/hooks/useLazyRef';
 
 interface FontManager {
   fontManager: SkFontMgr | SkTypefaceFontProvider;
@@ -46,14 +47,13 @@ const FONT_LOADERS: Record<TextWeight, () => DataModule> = {
  * @param additionalWeights - Any extra weights needed
  * @returns An object containing a fontManager and paragraphBuilder
  */
-export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additionalWeights: TextWeight[] = []): FontManager {
-  const [initialFontInfo] = useState<FontInfo>(() => ({
-    prevWeights: IS_IOS ? new Set([weight, ...additionalWeights]) : new Set(),
+export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additionalWeights?: TextWeight[]): FontManager {
+  const [manager, setManager] = useState<FontManager>(() => getInitialFontManager(align));
+
+  const fontInfoRef = useLazyRef<FontInfo>(() => ({
+    prevWeights: IS_IOS ? new Set(additionalWeights ? [weight, ...additionalWeights] : [weight]) : new Set(),
     textAlign: align,
   }));
-
-  const [manager, setManager] = useState<FontManager>(() => getInitialFontManager(initialFontInfo.textAlign));
-  const fontInfoRef = useRef(initialFontInfo);
 
   // ============ [iOS] Handle align prop changes ============================== //
   useEffect(() => {
@@ -61,14 +61,17 @@ export function useSkiaFontManager(align: TextAlign, weight: TextWeight, additio
     setManager(prev => ({ fontManager: prev.fontManager, paragraphBuilder: getParagraphBuilder(align) }));
     releaseParagraphBuilder(fontInfoRef);
     fontInfoRef.current.textAlign = align;
-  }, [align]);
+  }, [align, fontInfoRef]);
 
   // ============ [Android] Handle align and weight prop changes =============== //
-  useEffect(() => {
-    if (IS_IOS || !isAndroidFontManager(manager)) return;
-    handleAndroidFontChanges({ additionalWeights, align, fontInfoRef, manager, setManager, weight });
+  useEffect(
+    () => {
+      if (IS_IOS || !isAndroidFontManager(manager)) return;
+      handleAndroidFontChanges({ additionalWeights, align, fontInfoRef, manager, setManager, weight });
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [align, weight, ...additionalWeights]);
+    additionalWeights ? [align, weight, ...additionalWeights] : [align, weight]
+  );
 
   useCleanup(() => {
     releaseParagraphBuilder(fontInfoRef);
@@ -105,7 +108,7 @@ function handleAndroidFontChanges({
   setManager,
   weight,
 }: {
-  additionalWeights: TextWeight[];
+  additionalWeights: TextWeight[] | undefined;
   align: TextAlign;
   fontInfoRef: MutableRefObject<{
     prevWeights: Set<TextWeight>;
@@ -116,7 +119,7 @@ function handleAndroidFontChanges({
   weight: TextWeight;
 }) {
   const prevWeights = fontInfoRef.current.prevWeights;
-  const nextWeights = new Set([weight, ...additionalWeights]);
+  const nextWeights = new Set(additionalWeights ? [weight, ...additionalWeights] : [weight]);
   const addedWeights = new Set([...nextWeights].filter(w => !prevWeights.has(w)));
 
   fontInfoRef.current.prevWeights = nextWeights;

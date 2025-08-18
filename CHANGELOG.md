@@ -15,6 +15,171 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.74] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.74)
+
+### Added
+
+- [e2e] erc20>native e2e swap (#6745)
+
+### Changed
+
+- New tab bar (#6767)
+- Update to react-native 0.79 (#6607)
+- Remove build artifacts from patch (#6779)
+- Cache Intl instances and replace usages to toLocaleString (#6773)
+- [e2e] Dont check initial theme state (#6777)
+- Bump iOS and Android to v1.9.74 (#6784)
+
+### Fixed
+
+- [e2e] Enhance SendNft flow with retry logic for send action visibility (#6781)
+- Bump turbo haptics to fix android crash (#6782)
+- Fixed splash screen animation (#6787)
+- Fixed P3 colors (#6790)
+- Fixed podfile lock after turbohaptics update (#6789)
+- Fixed e2e tests for bottom tab bar (#6785)
+
+## [1.9.73] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.73)
+
+### Changed
+
+- Migrate NFTs to createQueryStore (#6649)
+- Small cleanup on activity list (#6769)
+- Bump iOS and Android to v1.9.73 (#6775)
+
+### Fixed
+
+- Cleaned up old react-query keys for legacy nft store (#6771)
+- E2E Fix send button regex (#6768)
+- E2E skip android backup flow (#6766)
+- Fixed dapp unsupported network switch requests spam (#6772)
+- Fixed discover bug with E2E (#6776)
+
+## [1.9.72] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.72)
+
+### Added
+
+- Candlestick charts (#6659)
+- ActivityList refactor - lazy mount + virtual list (#6706)
+- Brody/cloud backups test (#6723)
+- Run E2E tests on develop (#6743)
+- Feature flag page view for KOTH (#6751)
+- Candlestick chart integration (#6687)
+- Candlestick charts data integration (#6724)
+- Live tokens (#6626)
+
+### Changed
+
+- E2E Unwrap test (#6720)
+- Run e2e android tests on github runner (#6712)
+- Bump iOS and Android to v1.9.72 (#6742)
+- Improve google sign in in e2e tests (#6747)
+
+### Fixed
+
+- Fixed ERC20 Token Transfer Stuck on "Loading" (#6721)
+- Fixed yarn android launching the activity v2, remove uninstall (#6728)
+- Fixed text input issues on Android (#6716)
+- Fixed ios e2e Discover test failing (#6746)
+- Fixed keyboard issue on android (#6748)
+- Fixed and run wallet connect test (#6741)
+- Fixed E2E calculate bottom inset w/ screen height vs window height (#6753)
+- Fixed E2E retry the failing block (#6754)
+- Fixed failing iOS builds by using sentry token from secrets (#6758)
+- Fixed activity list scrolling down after switching wallets (#6749)
+- Small live pricing fixes (#6762)
+- Fixed equality function usage for useListen on balance section (#6765)
+- Fixed enable Swap Fees for TestFlight (#6764)
+- Fixed prevent ProfileScreen Bottom Sheet View (#6770)
+
+## [1.9.71] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.71)
+
+### Added
+
+- Added execution and validation to L1 swaps test (#6636)
+- Added search bar to network selector (#6660)
+- Execute swap on iOS e2e + Gas mocking (#6670)
+- Added wrap test and go through settings flows (#6700)
+
+### Changed
+
+- Wallet state refactor from Redux to Zustand (#6564)
+- Bump sentry (#6676)
+- Bump fastlane version (#6682)
+- Small swap input caret improvement + SafeMath optimizations (#6693)
+- RainbowImage - unified image component for faster image loads (#6653)
+- Bump iOS and Android to v1.9.71 (#6722)
+- Cleanup wallet store further, improve types, speed and correctness (#6642)
+- Disable react native performance in dev (#6715)
+
+### Fixed
+
+- Fixed incorrect ask of rainbow pin when backing up new wallet (#6675)
+- Fixed adding to backup when creating a new secret phrase (#6673)
+- Fixed backup when using rainbow PIN (#6679)
+- Fixed token over fetching on position card (#6688)
+- Fixed RN keychain crash on android api <= 29 (#6702)
+- Fixed wallet loading bug on migration to new wallet store (#6705)
+- Fixed incorrect rainbow pin prompt on backup restore (#6717)
+- Nate/christian wallet store fixes (#6729)
+- Fixed import bugs - blur after focusing seed input (#6733)
+- Fixed keychain reset not resetting wallet state (#6740)
+
+## [1.9.70] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.70)
+
+### Changed
+
+- Bump iOS and Android to v1.9.70 (#6701)
+
+### Fixed
+
+- Change removed private api access for button gesture (#6718)
+
+## [1.9.69] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.69)
+
+### Changed
+
+- Bump iOS and Android to v1.9.69 (#6691)
+
+### Fixed
+
+- Revert Fix yarn android launching the activity (#6697)
+
+## [1.9.68] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.68)
+
+### Added
+
+- E2E Send Transactions (#6623)
+- Add useListen, new query store options (#6625)
+- yaml linting on commit (#6648)
+- E2E Send NFT flow (#6646)
+- Add createDerivedStore (#6652)
+
+### Changed
+
+- E2E EditContact flow (#6624)
+- E2E retry wrap (#6638)
+- E2E Update blacksmith runner to 2404 (#6643)
+- E2E tests for import secret and basic settings flows (#6614)
+- E2E Enhance Anvil E2E Transaction Handling & Display (#6654)
+- Improve RainbowError toString to show cause toString (#6658)
+- Bump iOS and Android to v1.9.68 (#6661)
+- E2E Add timeout to android e2e tests (#6668)
+
+### Fixed
+
+- Cannot Copy Message Details Fix (#6644)
+- E2E fix hanging tests (#6650)
+- Don't run sentry gradle plugin for debug builds (#6621)
+- Invalidate interactionsCountQueryKey cache on send (#6665)
+- Codified android app link intent filter matching (#6596)
+- Fixed layout for swaps gas menu / remove the priority fee for L2s that don't use it (#6667)
+- Make the fiat onboarding links open in a safari web view context (#6662)
+- KOT small loading logic fix (#6674)
+- Fix yarn android launching the activity (#6678)
+- Fix backup stuck in syncing state (#6681)
+- Fix saving SVG NFTs (#6677)
+
 ## [1.9.67] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.67)
 
 ### Added

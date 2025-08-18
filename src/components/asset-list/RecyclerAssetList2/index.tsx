@@ -1,23 +1,27 @@
-import React, { useMemo } from 'react';
-import { Animated as RNAnimated } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useMemoOne } from 'use-memo-one';
-import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
-import RawMemoRecyclerAssetList from './core/RawRecyclerList';
-import { StickyHeaderManager } from './core/StickyHeaders';
-import useMemoBriefSectionData from './core/useMemoBriefSectionData';
+import { analytics } from '@/analytics';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
 import { Navbar, navbarHeight } from '@/components/navbar/Navbar';
-import { Box } from '@/design-system';
+import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/NavbarTextIcon';
+import { Box, Cover, Text } from '@/design-system';
+import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { UniqueAsset } from '@/entities';
+import { IS_ANDROID } from '@/env';
+import { useAccountAccentColor, usePendingTransactions, useWalletSectionsData } from '@/hooks';
+import { useStableValue } from '@/hooks/useStableValue';
+import * as lang from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { Animated as RNAnimated } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
+import RawMemoRecyclerAssetList, { ViewableItemsChangedCallback } from './core/RawRecyclerList';
+import { StickyHeaderManager } from './core/StickyHeaders';
+import useMemoBriefSectionData from './core/useMemoBriefSectionData';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
-import { analytics } from '@/analytics';
-import * as lang from '@/languages';
-import { useWalletSectionsData } from '@/hooks';
-import { DropdownMenu, MenuItem } from '@/components/DropdownMenu';
-import { IS_ANDROID } from '@/env';
+import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -46,7 +50,10 @@ export interface RecyclerAssetList2Props {
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: ReturnType<typeof useWalletSectionsData>['briefSectionsData'];
+  onEndReached?: () => void;
+  onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
+
 function RecyclerAssetList({
   accentColor,
   disablePullDownToRefresh,
@@ -54,6 +61,8 @@ function RecyclerAssetList({
   onPressUniqueToken,
   type = 'wallet',
   walletBriefSectionsData,
+  onEndReached,
+  onViewableItemsChanged,
 }: RecyclerAssetList2Props) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
@@ -63,7 +72,7 @@ function RecyclerAssetList({
 
   const insets = useSafeAreaInsets();
 
-  const position = useMemoOne(() => new RNAnimated.Value(type === 'wallet' ? -insets.top : 0), []);
+  const position = useStableValue(() => new RNAnimated.Value(0));
 
   const extendedState = useMemo(
     () => ({ additionalData, externalAddress, onPressUniqueToken }),
@@ -78,11 +87,13 @@ function RecyclerAssetList({
           briefSectionsData={briefSectionsData}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           extendedState={extendedState}
+          onEndReached={onEndReached}
           scrollIndicatorInsets={{
             bottom: insets.bottom + 14,
             top: 132,
           }}
           type={type}
+          onViewableItemsChanged={onViewableItemsChanged}
         />
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>
@@ -104,16 +115,34 @@ function handlePressMenuItem(route: (typeof Routes)[keyof typeof Routes]): void 
   Navigation.handleAction(route);
 }
 
-function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
+function handleNavigateToActivity(): void {
+  Navigation.handleAction(Routes.PROFILE_SCREEN);
+}
+
+const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
+  const showKingOfTheHillTab = useShowKingOfTheHill();
+  const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
 
-  const yOffset = IS_ANDROID ? 80 : 0;
+  const yOffset = IS_ANDROID ? navbarHeight : insets.top;
+
+  useEffect(() => {
+    const listener = position.addListener(({ value }) => {
+      const shouldBeInteractive = value >= yOffset + 38;
+      setIsHeaderInteractive(shouldBeInteractive);
+    });
+
+    return () => {
+      position.removeListener(listener);
+    };
+  }, [position, yOffset]);
+
   const shadowOpacityStyle = useMemo(
     () => ({
       shadowOpacity: position.interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 19],
+        inputRange: [yOffset, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 1],
       }),
     }),
@@ -123,19 +152,19 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
     () => ({
       opacity: position.interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 38],
+        inputRange: [yOffset, yOffset, yOffset + 38],
         outputRange: [0, 1, 1],
       }),
       shadowOpacity: position.interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 19],
+        inputRange: [yOffset, yOffset, yOffset + 19],
         outputRange: [0, 0, isDarkMode ? 0.2 : 0],
       }),
       transform: [
         {
           translateY: position.interpolate({
             extrapolate: 'clamp',
-            inputRange: [0, yOffset, yOffset + 38],
+            inputRange: [yOffset, yOffset, yOffset + 38],
             outputRange: [0, 24, 0],
           }),
         },
@@ -147,7 +176,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
     () => ({
       opacity: position.interpolate({
         extrapolate: 'clamp',
-        inputRange: [0, yOffset, yOffset + 38],
+        inputRange: [yOffset, yOffset, yOffset + 38],
         outputRange: [0, 0, 1],
       }),
     }),
@@ -206,8 +235,10 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
           right: 0,
           zIndex: 100,
         }}
+        pointerEvents={isHeaderInteractive ? 'auto' : 'box-none'}
       >
         <Navbar
+          isTitleInteractive={isHeaderInteractive}
           hasStatusBarInset
           leftComponent={
             <Navbar.Item onPress={handlePressQRScanner}>
@@ -215,9 +246,21 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
             </Navbar.Item>
           }
           rightComponent={
-            <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
-              <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-            </DropdownMenu>
+            showKingOfTheHillTab ? (
+              <Box flexDirection="row" gap={12}>
+                <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
+                  <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                </DropdownMenu>
+
+                <Navbar.Item onPress={handleNavigateToActivity}>
+                  <ActivityIcon />
+                </Navbar.Item>
+              </Box>
+            ) : (
+              <DropdownMenu testID={'settings-menu'} menuConfig={{ menuItems }} onPressMenuItem={handlePressMenuItem}>
+                <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+              </DropdownMenu>
+            )
           }
           titleComponent={
             <Box
@@ -225,7 +268,8 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
               as={RNAnimated.View}
               height={{ custom: navbarHeight }}
               justifyContent="center"
-              style={[walletNameStyle, { alignSelf: 'center', bottom: 2 }]}
+              pointerEvents={isHeaderInteractive ? 'auto' : 'none'}
+              style={[walletNameStyle, { alignSelf: 'center', bottom: IS_ANDROID ? 8 : 2 }]}
             >
               <ProfileNameRow variant="header" />
             </Box>
@@ -234,4 +278,35 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
       </Box>
     </>
   );
-}
+});
+
+const ActivityIcon = memo(function ActivityIcon() {
+  const { highContrastAccentColor: accentColor } = useAccountAccentColor();
+  const { pendingTransactions } = usePendingTransactions();
+  const pendingCount = pendingTransactions.length;
+
+  const textSize: TextSize = useMemo(() => {
+    if (pendingCount < 10) {
+      return '15pt';
+    } else if (pendingCount < 20) {
+      return '12pt';
+    } else {
+      return '11pt';
+    }
+  }, [pendingCount]);
+
+  return pendingCount > 0 ? (
+    <NavBarTextIconFrame color={accentColor}>
+      <AnimatedSpinner color={accentColor} isLoading requireSrc={require('@/assets/tabSpinner.png')} size={NAVBAR_ICON_SIZE - 1} />
+      <Cover>
+        <Box width="full" height="full" alignItems="center" justifyContent="center">
+          <Text color={{ custom: accentColor }} size={textSize} weight="heavy" align="center">
+            {pendingCount}
+          </Text>
+        </Box>
+      </Cover>
+    </NavBarTextIconFrame>
+  ) : (
+    <Navbar.TextIcon color={accentColor as string} icon="􀐫" />
+  );
+});

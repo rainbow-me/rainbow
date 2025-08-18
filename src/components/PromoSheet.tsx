@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
-import { ImageSourcePropType, StatusBar, ImageBackground } from 'react-native';
+import { ImageSourcePropType, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
@@ -10,6 +10,7 @@ import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
+import { SystemBars } from 'react-native-edge-to-edge';
 
 type SheetActionButtonProps = {
   label: string;
@@ -84,15 +85,8 @@ export function PromoSheet({
   const contentHeight = deviceHeight - safeAreaInsetValues.top;
 
   return (
-    <SlackSheet
-      additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-      contentHeight={contentHeight}
-      height="100%"
-      hideHandle
-      removeTopPadding
-      scrollEnabled={false}
-    >
-      <StatusBar barStyle="light-content" />
+    <SlackSheet additionalTopPadding contentHeight={contentHeight} height="100%" hideHandle removeTopPadding scrollEnabled={false}>
+      <SystemBars style="light" />
       <AccentColorProvider color={backgroundColor}>
         <Box background="accent" style={{ height: contentHeight }} testID={campaignKey}>
           <Box as={ImageBackground} height="full" source={backgroundImage}>

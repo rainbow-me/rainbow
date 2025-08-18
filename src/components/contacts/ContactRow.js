@@ -7,7 +7,6 @@ import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ENS_DOMAIN } from '@/helpers/ens';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
@@ -61,7 +60,6 @@ const sx = StyleSheet.create({
 });
 
 const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, ref) => {
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
@@ -78,11 +76,11 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const [ensName, setENSName] = useState(initialENSName);
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
-    enabled: profilesEnabled && Boolean(ensName),
+    enabled: Boolean(ensName),
   });
 
   useEffect(() => {
-    if (profilesEnabled && accountType === 'contacts') {
+    if (accountType === 'contacts') {
       const fetchENSName = async () => {
         const name = await fetchReverseRecord(address);
         if (name !== ensName) {
@@ -92,7 +90,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
       };
       fetchENSName();
     }
-  }, [accountType, onAddOrUpdateContacts, address, color, ensName, nickname, profilesEnabled, setENSName]);
+  }, [accountType, onAddOrUpdateContacts, address, color, ensName, nickname, setENSName]);
 
   let cleanedUpLabel = null;
   if (label) {
@@ -103,12 +101,12 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
     if (showcaseItem) {
       onPress(showcaseItem, nickname);
     } else {
-      const recipient = accountType === 'suggestions' && isENSAddressFormat(nickname) ? nickname : ensName || address;
+      const recipient = accountType === 'suggestions' && isENSAddressFormat(nickname) ? nickname : address;
       onPress(recipient, nickname ?? recipient);
     }
-  }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
+  }, [accountType, address, nickname, onPress, showcaseItem]);
 
-  const imageAvatar = profilesEnabled ? ensAvatar?.imageUrl : image;
+  const imageAvatar = ensAvatar?.imageUrl ?? image;
 
   const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [address]);
   const emojiAvatar = avatar || emoji || nickname || label;

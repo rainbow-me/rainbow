@@ -1,36 +1,38 @@
-import React, { useMemo } from 'react';
-import * as i18n from '@/languages';
-import { ScrollView, StyleSheet } from 'react-native';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { ContactAvatar } from '@/components/contacts';
+import { isValidURLWorklet } from '@/components/DappBrowser/utils';
 import { Box, Text, TextShadow } from '@/design-system';
-import { TokenLogo } from './TokenLogo';
+import { TextSize } from '@/design-system/components/Text/Text';
+import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
+import { isENSAddressFormat } from '@/helpers/validators';
+import * as i18n from '@/languages';
+import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
+import { useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { colors } from '@/styles';
+import { formatURLForDisplay } from '@/utils';
+import { address as abbreviateAddress } from '@/utils/abbreviations';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
+import React, { useMemo } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { isAddress } from 'viem';
+import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, LINK_ICON_SIZE } from '../constants';
 import { useTokenLauncherContext } from '../context/TokenLauncherContext';
 import { NavigationSteps, useTokenLauncherStore } from '../state/tokenLauncherStore';
-import { FIELD_BORDER_RADIUS, FIELD_BORDER_WIDTH, LINK_ICON_SIZE } from '../constants';
-import { abbreviateNumber, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
-import { useAccountProfile, useAccountSettings } from '@/hooks';
 import { LINK_SETTINGS } from './LinksSection';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { TOKEN_LAUNCHER_HEADER_HEIGHT, TOKEN_LAUNCHER_SCROLL_INDICATOR_INSETS } from './TokenLauncherHeader';
-import FastImage from 'react-native-fast-image';
-import { address as abbreviateAddress } from '@/utils/abbreviations';
-import { isENSAddressFormat } from '@/helpers/validators';
-import { isAddress } from 'viem';
-import { formatURLForDisplay } from '@/utils';
-import { isValidURLWorklet } from '@/components/DappBrowser/utils';
-import { TextSize } from '@/design-system/components/Text/Text';
-import { ContactAvatar } from '@/components/contacts';
-import { colors } from '@/styles';
-import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
+import { TokenLogo } from './TokenLogo';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const CARD_BACKGROUND_COLOR = 'rgba(255, 255, 255, 0.03)';
 const TOTAL_COST_PILL_HEIGHT = 52;
 
 function TokenAllocationCard() {
   const { accentColors } = useTokenLauncherContext();
-  const { accountColor, accountImage, accountAddress } = useAccountProfile();
+  const { accountColor, accountImage } = useAccountProfileInfo();
+  const accountAddress = useAccountAddress();
 
   const allocationBips = useTokenLauncherStore(state => state.allocationBips());
   const airdropRecipients = useTokenLauncherStore(state => state.validAirdropRecipients());
@@ -271,7 +273,7 @@ function TotalSupplyCard() {
 
 function TotalCostPill() {
   const { accentColors, chainNativeAsset } = useTokenLauncherContext();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const extraBuyAmount = useTokenLauncherStore(state => state.extraBuyAmount);
   const chainNativeAssetNativePrice = useTokenLauncherStore(state => state.chainNativeAssetNativePrice);

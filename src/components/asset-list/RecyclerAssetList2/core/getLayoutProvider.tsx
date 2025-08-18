@@ -42,6 +42,8 @@ const NFTS = [
   CellType.NFTS_LOADING,
   CellType.NFT,
   CellType.FAMILY_HEADER,
+  CellType.LEGACY_FAMILY_HEADER,
+  CellType.LEGACY_NFT,
 ];
 
 const getLayoutProvider = ({

@@ -3,7 +3,6 @@ import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import URL from 'url-parse';
-import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
 import saveToCameraRoll from './saveToCameraRoll';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -12,17 +11,16 @@ import { UniqueAsset } from '@/entities';
 import { useClipboard, useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
+import { ethereumUtils, isLowerCaseMatch, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
-import isSVGImage from '@/utils/isSVG';
 import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ChainId } from '@/state/backendNetworks/types';
 import { openInBrowser } from '@/utils/openInBrowser';
+import { buildUniqueTokenName } from '@/helpers/assets';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -196,20 +194,22 @@ const UniqueTokenExpandedStateHeader = ({
   const { width: deviceWidth } = useDimensions();
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
-  const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.fullUniqueId) as boolean, [hiddenTokens, asset.fullUniqueId]);
-  const isShowcaseAsset = useMemo(() => showcaseTokens.includes(asset.uniqueId) as boolean, [showcaseTokens, asset.uniqueId]);
+  const isHiddenAsset = useMemo(
+    () => !!hiddenTokens.find(token => isLowerCaseMatch(token, asset.uniqueId)),
+    [hiddenTokens, asset.uniqueId]
+  );
+  const isShowcaseAsset = useMemo(
+    () => !!showcaseTokens.find(token => isLowerCaseMatch(token, asset.uniqueId)),
+    [showcaseTokens, asset.uniqueId]
+  );
   const { goBack } = useNavigation();
 
   const formattedCollectionUrl = useMemo(() => {
-    // @ts-expect-error external_link could be null or undefined?
-    const { hostname } = new URL(asset.external_link);
-    const { hostname: hostnameFallback } = new URL(
-      // @ts-expect-error external_url could be null or undefined?
-      asset.collection.external_url
-    );
-    const formattedUrl = hostname || hostnameFallback;
-    return formattedUrl;
-  }, [asset.collection.external_url, asset.external_link]);
+    if (!asset.websiteUrl && !asset.collectionUrl) return;
+
+    const { hostname } = new URL(asset.websiteUrl || asset.collectionUrl || '');
+    return hostname;
+  }, [asset.websiteUrl, asset.collectionUrl]);
 
   const familyMenuConfig = useMemo(() => {
     return {
@@ -222,7 +222,7 @@ const UniqueTokenExpandedStateHeader = ({
               },
             ]
           : []),
-        ...(asset.external_link || asset.collection.external_url
+        ...(asset.websiteUrl
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.collectionWebsite],
@@ -230,14 +230,14 @@ const UniqueTokenExpandedStateHeader = ({
               },
             ]
           : []),
-        ...(asset.collection.twitter_username
+        ...(asset.twitterUrl
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.twitter],
               },
             ]
           : []),
-        ...(asset.collection.discord_url
+        ...(asset.discordUrl
           ? [
               {
                 ...FamilyActions[FamilyActionsEnum.discord],
@@ -247,19 +247,10 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [
-    asset.collection.discord_url,
-    asset.collection.external_url,
-    asset.collection.twitter_username,
-    asset.external_link,
-    asset.marketplaceName,
-    hideNftMarketplaceAction,
-    formattedCollectionUrl,
-  ]);
+  }, [asset.discordUrl, asset.websiteUrl, asset.twitterUrl, asset.marketplaceName, hideNftMarketplaceAction, formattedCollectionUrl]);
 
-  // @ts-expect-error image_url could be null or undefined?
-  const isSVG = isSVGImage(asset.image_url);
-  const isENS = asset.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+  const isSVG = asset.images.mimeType?.includes('image/svg');
+  const isENS = asset.type === 'ens';
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {
@@ -296,7 +287,7 @@ const UniqueTokenExpandedStateHeader = ({
           : []),
         {
           ...AssetActions[AssetActionsEnum.copyTokenID],
-          discoverabilityTitle: asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
+          discoverabilityTitle: asset.tokenId.length > 15 ? `${asset.tokenId.slice(0, 15)}...` : asset.tokenId,
         },
         ...(isSupportedOnRainbowWeb
           ? [
@@ -320,56 +311,45 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [asset.id, asset.chainId, isModificationActionsEnabled, isHiddenAsset, isPhotoDownloadAvailable, isSupportedOnRainbowWeb]);
+  }, [asset.tokenId, asset.chainId, isModificationActionsEnabled, isHiddenAsset, isPhotoDownloadAvailable, isSupportedOnRainbowWeb]);
 
   const handlePressFamilyMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceCollectionUrl) {
-        openInBrowser(asset.marketplaceCollectionUrl);
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
+      if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceUrl) {
+        openInBrowser(asset.marketplaceUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
-        const websiteUrl = asset.external_link || asset.collection.external_url;
+        const websiteUrl = asset.websiteUrl || asset.collectionUrl;
         if (websiteUrl) {
           openInBrowser(websiteUrl);
         }
-      } else if (actionKey === FamilyActionsEnum.twitter) {
-        const twitterUrl = 'https://twitter.com/' + asset.collection.twitter_username;
-        openInBrowser(twitterUrl, false);
-      } else if (actionKey === FamilyActionsEnum.discord && asset.collection.discord_url) {
-        const discordUrl = asset.collection.discord_url;
-        openInBrowser(discordUrl, false);
+      } else if (actionKey === FamilyActionsEnum.twitter && asset.twitterUrl) {
+        openInBrowser(asset.twitterUrl, false);
+      } else if (actionKey === FamilyActionsEnum.discord && asset.discordUrl) {
+        openInBrowser(asset.discordUrl, false);
       }
     },
-    [
-      asset.collection.discord_url,
-      asset.collection.external_url,
-      asset.collection.twitter_username,
-      asset.external_link,
-      asset.marketplaceCollectionUrl,
-    ]
+    [asset.discordUrl, asset.websiteUrl, asset.twitterUrl, asset.marketplaceUrl, asset.collectionUrl]
   );
 
   const handlePressAssetMenuItem = useCallback(
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey } }) => {
+    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer({
-          // @ts-expect-error address could be undefined?
-          contractAddress: asset.asset_contract.address,
-          tokenId: asset.id,
+          contractAddress: asset.contractAddress,
+          tokenId: asset.tokenId,
           chainId: asset.chainId,
         });
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         openInBrowser(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
-        openInBrowser(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
+        openInBrowser(`https://opensea.io/assets/${asset.contractAddress}/${asset.tokenId}`);
       } else if (actionKey === AssetActionsEnum.looksrare) {
-        openInBrowser(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
+        openInBrowser(`https://looksrare.org/collections/${asset.contractAddress}/${asset.tokenId}`);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
-        setClipboard(asset.id);
+        setClipboard(asset.tokenId);
       } else if (actionKey === AssetActionsEnum.download) {
-        if (asset?.image_url) {
-          const fullResUrl = getFullResUrl(asset.image_url);
+        if (asset?.images.highResUrl) {
+          const fullResUrl = getFullResUrl(asset.images.highResUrl);
           fullResUrl && saveToCameraRoll(fullResUrl);
         }
       } else if (actionKey === AssetActionsEnum.hide) {
@@ -406,10 +386,10 @@ const UniqueTokenExpandedStateHeader = ({
   );
 
   const onPressAndroidFamily = useCallback(() => {
-    const hasCollection = !!asset.marketplaceCollectionUrl;
-    const hasWebsite = !!(asset.external_link || asset.collection.external_url);
-    const hasTwitter = !!asset.collection.twitter_username;
-    const hasDiscord = !!asset.collection.discord_url;
+    const hasCollection = !!asset.marketplaceUrl;
+    const hasWebsite = !!(asset.websiteUrl || asset.collectionUrl);
+    const hasTwitter = !!asset.twitterUrl;
+    const hasDiscord = !!asset.discordUrl;
 
     const baseActions = [
       ...(hasCollection ? [lang.t('expanded_state.unique_expanded.view_collection')] : []),
@@ -429,27 +409,18 @@ const UniqueTokenExpandedStateHeader = ({
         title: '',
       },
       idx => {
-        if (idx === collectionIndex && asset.marketplaceCollectionUrl) {
-          openInBrowser(asset.marketplaceCollectionUrl);
+        if (idx === collectionIndex && asset.marketplaceUrl) {
+          openInBrowser(asset.marketplaceUrl);
         } else if (idx === websiteIndex) {
-          openInBrowser(
-            // @ts-expect-error external_link and external_url could be null or undefined?
-            asset.external_link || asset.collection.external_url
-          );
+          openInBrowser(asset.websiteUrl || asset.collectionUrl);
         } else if (idx === twitterIndex) {
-          openInBrowser('https://twitter.com/' + asset.collection.twitter_username, false);
-        } else if (idx === discordIndex && asset.collection.discord_url) {
-          openInBrowser(asset.collection.discord_url, false);
+          openInBrowser(asset.twitterUrl, false);
+        } else if (idx === discordIndex && asset.discordUrl) {
+          openInBrowser(asset.discordUrl, false);
         }
       }
     );
-  }, [
-    asset.collection.discord_url,
-    asset.collection.external_url,
-    asset.collection.twitter_username,
-    asset.external_link,
-    asset.marketplaceCollectionUrl,
-  ]);
+  }, [asset.discordUrl, asset.websiteUrl, asset.twitterUrl, asset.marketplaceUrl, asset.collectionUrl]);
 
   const overflowMenuHitSlop: Space = '15px (Deprecated)';
   const familyNameHitSlop: Space = '19px (Deprecated)';
@@ -462,7 +433,12 @@ const UniqueTokenExpandedStateHeader = ({
     <Stack space="15px (Deprecated)">
       <Columns space="24px">
         <Heading containsEmoji color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
-          {buildUniqueTokenName(asset)}
+          {buildUniqueTokenName({
+            collectionName: asset.collectionName || '',
+            tokenId: asset.tokenId,
+            name: asset.name,
+            uniqueId: asset.uniqueId,
+          })}
         </Heading>
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>
@@ -513,7 +489,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             menuConfig={familyMenuConfig}
-            {...(android ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
+            {...(IS_ANDROID ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}
@@ -521,10 +497,10 @@ const UniqueTokenExpandedStateHeader = ({
             <ButtonPressAnimation scaleTo={0.88}>
               <Inset space={familyNameHitSlop}>
                 <Inline alignVertical="center" space="6px" wrap={false}>
-                  {asset.familyImage ? (
+                  {asset.collectionImageUrl ? (
                     <Bleed vertical="6px">
                       <FamilyImageWrapper>
-                        <FamilyImage size={30} source={{ uri: asset.familyImage }} />
+                        <FamilyImage size={30} source={{ uri: asset.collectionImageUrl }} />
                       </FamilyImageWrapper>
                     </Bleed>
                   ) : null}
@@ -535,7 +511,7 @@ const UniqueTokenExpandedStateHeader = ({
                       }}
                     >
                       <Text color="secondary50 (Deprecated)" numberOfLines={1} size="16px / 22px (Deprecated)" weight="bold">
-                        {asset.familyName}
+                        {asset.collectionName}
                       </Text>
                     </View>
                     <Text color="secondary50 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">

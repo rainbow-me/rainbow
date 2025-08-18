@@ -43,6 +43,13 @@ module.exports = {
     'no-restricted-imports': [
       'warn',
       {
+        paths: [
+          {
+            name: 'react-native',
+            importNames: ['StatusBar'],
+            message: 'Use StatusBarHelper or SystemBars from "react-native-edge-to-edge" instead.',
+          },
+        ],
         patterns: [
           {
             group: ['@react-navigation/core'],
@@ -53,12 +60,14 @@ module.exports = {
     ],
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
+    'no-await-in-loop': 'off',
     'no-nested-ternary': 'off',
+    'react/react-in-jsx-scope': 'off',
     'react-hooks/exhaustive-deps': [
       'warn',
       {
         additionalHooks:
-          '(useDeepCompareEffect|useDeepCompareCallback|useDeepCompareMemo|useDeepCompareImperativeHandle|useDeepCompareLayoutEffect)',
+          '(useDeepCompareEffect|useDeepCompareCallback|useDeepCompareMemo|useDeepCompareImperativeHandle|useDeepCompareLayoutEffect|useChangeEffect)',
       },
     ],
   },

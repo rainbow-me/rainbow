@@ -1,17 +1,36 @@
-import path from 'path';
+import { UniqueId } from '@/__swaps__/types/assets';
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { EthereumAddress, RainbowToken } from '@/entities';
+import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
+import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
+import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
+import { resolveNameOrAddress } from '@/handlers/web3';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { logger, RainbowError } from '@/logger';
+import { queryClient } from '@/react-query';
+import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
+import { favoritesQueryKey } from '@/resources/favorites';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
+import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { getSelectedWallet, getWallets, setSelectedWallet, updateWallets } from '@/state/wallets/walletsStore';
+import { ethereumUtils, profileUtils } from '@/utils';
+import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
 import { captureException } from '@sentry/react-native';
 import { findKey, isEmpty, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
+import path from 'path';
+import FastImage from 'react-native-fast-image';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
-import FastImage from 'react-native-fast-image';
 import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
-import { IMAGE_METADATA, getNativeCurrency } from '../handlers/localstorage/globalSettings';
+import { getNativeCurrency, IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
-import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {
@@ -25,31 +44,7 @@ import {
   signingWalletAddress,
 } from '../utils/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
-import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
-import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
-import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { resolveNameOrAddress } from '@/handlers/web3';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { updateWebDataEnabled } from '@/redux/showcaseTokens';
-import { ethereumUtils, profileUtils } from '@/utils';
-import { review } from '@/storage';
-import { logger, RainbowError } from '@/logger';
-import { queryClient } from '@/react-query';
-import { clearReactQueryCache } from '@/react-query/reactQueryUtils';
-import { favoritesQueryKey } from '@/resources/favorites';
-import { EthereumAddress, RainbowToken } from '@/entities';
-import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
-import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
-import { getAddressAndChainIdFromUniqueId, getUniqueId, getUniqueIdNetwork } from '@/utils/ethereumUtils';
-import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
-import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
-import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
-import { swapsStore } from '@/state/swaps/swapsStore';
+import { DEFAULT_WALLET_NAME, getAllWallets, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
 
 export default async function runMigrations() {
   // get current version
@@ -79,7 +74,7 @@ export default async function runMigrations() {
    * that were created / imported before we launched this feature
    */
   const v1 = async () => {
-    const { selected } = store.getState().wallets;
+    const selected = getSelectedWallet();
 
     if (!selected) {
       // Read from the old wallet data
@@ -109,8 +104,8 @@ export default async function runMigrations() {
         const wallets = { [id]: currentWallet };
 
         logger.debug('[runMigrations]: v1 migration - update wallets and selected wallet');
-        await store.dispatch(walletsUpdate(wallets));
-        await store.dispatch(walletsSetSelected(currentWallet));
+        await updateWallets(wallets);
+        setSelectedWallet(currentWallet);
       }
     }
   };
@@ -123,7 +118,8 @@ export default async function runMigrations() {
    * which are the only wallets allowed to create new accounts under it
    */
   const v2 = async () => {
-    const { wallets, selected } = store.getState().wallets;
+    const wallets = getWallets();
+    const selected = getSelectedWallet();
 
     if (!wallets) {
       logger.debug('[runMigrations]: Complete migration v2 early');
@@ -168,12 +164,12 @@ export default async function runMigrations() {
           primary: true,
         };
         logger.debug('[runMigrations]: v2 migration - update wallets');
-        await store.dispatch(walletsUpdate(updatedWallets));
+        await updateWallets(updatedWallets);
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
-        if (selected!.id === primaryWalletKey) {
+        if (selected?.id === primaryWalletKey) {
           const updatedSelectedWallet = updatedWallets[primaryWalletKey];
-          await store.dispatch(walletsSetSelected(updatedSelectedWallet));
+          await setSelectedWallet(updatedSelectedWallet);
         }
       }
     }
@@ -211,7 +207,8 @@ export default async function runMigrations() {
    * incorrectly by the keychain integrity checks
    */
   const v5 = async () => {
-    const { wallets, selected } = store.getState().wallets;
+    const wallets = getWallets();
+    const selected = getSelectedWallet();
 
     if (!wallets) {
       logger.debug('[runMigrations]: Complete migration v5 early');
@@ -234,14 +231,14 @@ export default async function runMigrations() {
           }
         });
         logger.debug('[runMigrations]: updating all wallets');
-        await store.dispatch(walletsUpdate(updatedWallets));
+        await updateWallets(updatedWallets);
         logger.debug('[runMigrations]: done updating all wallets');
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
         if (selected!.id === incorrectDamagedWalletId) {
           logger.debug('[runMigrations]: need to update the selected wallet');
           const updatedSelectedWallet = updatedWallets[incorrectDamagedWalletId];
-          await store.dispatch(walletsSetSelected(updatedSelectedWallet));
+          await setSelectedWallet(updatedSelectedWallet);
           logger.debug('[runMigrations]: selected wallet updated');
         }
       }
@@ -276,21 +273,22 @@ export default async function runMigrations() {
 
   /* Turning ON web data for all accounts */
   const v7 = async () => {
-    const { wallets } = store.getState().wallets;
-    if (!wallets) return;
-    const walletKeys = Object.keys(wallets);
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for (let i = 0; i < walletKeys.length; i++) {
-      const wallet = wallets[walletKeys[i]];
-      if (wallet.type !== WalletTypes.readOnly) {
-        // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let x = 0; x < (wallet.addresses || []).length; x++) {
-          const { address } = (wallet.addresses || [])[x];
-          logger.debug(`[runMigrations]: setting web profiles for address ${address}`);
-          await store.dispatch(updateWebDataEnabled(true, address));
-        }
-      }
-    }
+    // NOTE: No longer used, as we store in react-query now
+    // const wallets = getWallets();
+    // if (!wallets) return;
+    // const walletKeys = Object.keys(wallets);
+    // // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    // for (let i = 0; i < walletKeys.length; i++) {
+    //   const wallet = wallets[walletKeys[i]];
+    //   if (wallet.type !== WalletTypes.readOnly) {
+    //     // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    //     for (let x = 0; x < (wallet.addresses || []).length; x++) {
+    //       const { address } = (wallet.addresses || [])[x];
+    //       logger.debug(`[runMigrations]: setting web profiles for address ${address}`);
+    //       await store.dispatch(updateWebDataEnabled(true, address));
+    //     }
+    //   }
+    // }
   };
 
   migrations.push(v7);
@@ -312,7 +310,8 @@ export default async function runMigrations() {
     // map from old color index to closest new color's index
     const newColorIndexes = [0, 4, 12, 21, 1, 20, 4, 9, 10];
     try {
-      const { selected, wallets } = store.getState().wallets;
+      const wallets = getWallets();
+      const selected = getSelectedWallet();
       if (!wallets) return;
       const walletKeys = Object.keys(wallets);
       const updatedWallets = { ...wallets };
@@ -333,12 +332,12 @@ export default async function runMigrations() {
         updatedWallets[walletKeys[i]] = newWallet;
       }
       logger.debug('[runMigrations]: update wallets in store to index new colors');
-      await store.dispatch(walletsUpdate(updatedWallets));
+      await updateWallets(updatedWallets);
 
       const selectedWalletId = selected?.id;
       if (selectedWalletId) {
         logger.debug('[runMigrations]: update selected wallet to index new color');
-        await store.dispatch(walletsSetSelected(updatedWallets[selectedWalletId]));
+        await setSelectedWallet(updatedWallets[selectedWalletId]);
       }
 
       // migrate contacts to new color index
@@ -428,7 +427,7 @@ export default async function runMigrations() {
    */
   const v12 = async () => {
     const { network } = store.getState().settings;
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
     const walletKeys = Object.keys(wallets);
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -484,7 +483,7 @@ export default async function runMigrations() {
 
       // Add existing signatures
       // which look like'signature_0x...'
-      const { wallets } = store.getState().wallets;
+      const wallets = getWallets();
       if (Object.keys(wallets!).length > 0) {
         for (const wallet of Object.values(wallets!)) {
           for (const account of (wallet as RainbowWallet).addresses || []) {
@@ -518,7 +517,7 @@ export default async function runMigrations() {
    */
   const v14 = async () => {
     const { network } = store.getState().settings;
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
     for (const wallet of Object.values(wallets)) {
       for (const account of (wallet as RainbowWallet).addresses || []) {
@@ -570,7 +569,7 @@ export default async function runMigrations() {
   Pinned coins: list -> obj
   */
   const v17 = async () => {
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
     for (const wallet of Object.values(wallets)) {
       for (const account of (wallet as RainbowWallet).addresses || []) {
@@ -663,7 +662,7 @@ export default async function runMigrations() {
    * Migrate hidden coins from MMKV to Zustand
    */
   const v21 = async () => {
-    const { wallets } = store.getState().wallets;
+    const wallets = getWallets();
     if (!wallets) return;
 
     for (const wallet of Object.values(wallets)) {
@@ -705,35 +704,10 @@ export default async function runMigrations() {
 
   /**
    *************** Migration v23 ******************
-   * Populate `legacyUserAssets` attribute in `userAssetsStore`
+   * Deleted migration that was used to populate `legacyUserAssets` attribute in `userAssetsStore`
    */
   const v23 = async () => {
-    const state = store.getState();
-    const { wallets } = state.wallets;
-    const { nativeCurrency } = state.settings;
-
-    if (!wallets) return;
-
-    for (const wallet of Object.values(wallets)) {
-      for (const { address } of (wallet as RainbowWallet).addresses || []) {
-        const { connectedToAnvil } = useConnectedToAnvilStore.getState();
-        const queryKey = userAssetsQueryKey({ address, currency: nativeCurrency, testnetMode: connectedToAnvil });
-        const queryData: ParsedAssetsDictByChain | undefined = queryClient.getQueryData(queryKey);
-
-        if (!queryData) continue;
-
-        const userAssets = selectorFilterByUserChains({
-          data: queryData,
-          selector: selectUserAssetsList,
-        });
-        userAssetsStore.getState(address).setUserAssets({
-          address,
-          chainIdsWithErrors: null,
-          state: undefined,
-          userAssets: userAssets as ParsedSearchAsset[],
-        });
-      }
-    }
+    return;
   };
 
   migrations.push(v23);
@@ -788,6 +762,59 @@ export default async function runMigrations() {
   };
 
   migrations.push(v27);
+
+  /**
+   *************** Migration v28 ******************
+   * Fix wallet group names that were set to "My Wallet"
+   * This updates them to "Wallet Group X" where X is the sequential number
+   */
+  const v28 = async () => {
+    const walletsFromKeychain = await getAllWallets();
+    if (!walletsFromKeychain) return;
+
+    const wallets = walletsFromKeychain.wallets;
+    const mnemonicWallets = Object.values(wallets).filter(wallet => wallet.type === WalletTypes.mnemonic);
+
+    if (!mnemonicWallets.length) return;
+    let hasUpdates = false;
+
+    mnemonicWallets.forEach((wallet, index) => {
+      const isDefaultWalletName = wallet.name === DEFAULT_WALLET_NAME;
+      const needsUpdate =
+        isDefaultWalletName || !removeFirstEmojiFromString(wallet.name).trim() || !!wallet.name.match(/^Wallet Group (\d+)$/);
+
+      if (needsUpdate) {
+        const newName = `Wallet Group ${index + 1}`;
+        wallets[wallet.id].name = newName;
+        hasUpdates = true;
+      }
+    });
+
+    if (hasUpdates) await updateWallets(wallets);
+  };
+
+  migrations.push(v28);
+
+  /**
+   *************** Migration v29 ******************
+   * Delete nfts-sort-${address} from MMKV as it is no longer used per address
+   */
+  const v29 = async () => {
+    const wallets = getWallets();
+    if (!wallets) {
+      logger.debug('[runMigrations]: v29 migration - no wallets found');
+      return;
+    }
+
+    for (const wallet of Object.values(wallets)) {
+      for (const { address } of (wallet as RainbowWallet).addresses || []) {
+        mmkv.delete(`nfts-sort-${address}`);
+        logger.debug(`[runMigrations]: v29 migration - deleted nfts-sort-${address}`);
+      }
+    }
+  };
+
+  migrations.push(v29);
 
   logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

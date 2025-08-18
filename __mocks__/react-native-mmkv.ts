@@ -15,7 +15,7 @@ export class MMKV implements NativeMMKV {
   id = 'default';
   storage: Map<string, MMKVValue>;
 
-  constructor({ id }: { id: string }) {
+  constructor({ id }: { id: string } = { id: 'default' }) {
     this.id = id;
 
     // `this.storage` is just a shorthand to the shared global storage, scoped to this instance

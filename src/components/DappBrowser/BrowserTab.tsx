@@ -228,7 +228,7 @@ const FreezableWebViewComponent = ({
   );
 };
 
-const FreezableWebView = memo(React.forwardRef(FreezableWebViewComponent));
+const FreezableWebView = memo(FreezableWebViewComponent);
 
 const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
   const { onScrollWebView, onTouchEnd, onTouchMove, onTouchStart } = useBrowserContext();

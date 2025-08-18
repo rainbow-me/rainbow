@@ -1,5 +1,5 @@
 import { AnimatedProp, Paragraph, SkPaint, SkParagraph, SkTextShadow, Transforms3d } from '@shopify/react-native-skia';
-import React, { ReactNode, useCallback, useContext, useMemo } from 'react';
+import React, { ComponentType, ReactNode, useCallback, useContext, useMemo } from 'react';
 import { isSharedValue, runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { TextAlign } from '@/components/text/types';
 import { AccentColorContext } from '@/design-system/color/AccentColorContext';
@@ -10,7 +10,7 @@ import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { SharedOrDerivedValueText } from '../Text/AnimatedText';
 
-export interface SkiaTextProps {
+export type SkiaTextProps = {
   align?: TextAlign;
   /**
    * Useful for applying fills or effects to the text's background. Simply define a
@@ -30,8 +30,8 @@ export interface SkiaTextProps {
   color?: TextColor | CustomColor;
   colorMode?: ColorMode;
   /**
-   * Useful for applying fills or effects to the text itself. Simply define a
-   * SkPaint object and pass it to the `SkiaText` component.
+   * Useful for applying fills or effects to the text itself. Simply define
+   * a SkPaint object and pass it to the `SkiaText` component.
    * @example
    * ```tsx
    * // At module scope (or otherwise made stable)
@@ -46,10 +46,10 @@ export interface SkiaTextProps {
   letterSpacing?: number;
   lineHeight?: number;
   /**
-   * Can be a worklet function. Receives the raw `paragraph` object, which
-   * contains methods that can be used to obtain detailed text metrics.
+   * Receives the raw `paragraph` object, which contains methods that can
+   * be used to obtain detailed text metrics.
    */
-  onLayout?: (paragraph: SkParagraph) => void;
+  onLayoutWorklet?: (paragraph: SkParagraph) => void;
   shadows?: SkTextShadow[];
   size: TextSize;
   transform?: AnimatedProp<Transforms3d | undefined>;
@@ -57,9 +57,9 @@ export interface SkiaTextProps {
   width: AnimatedProp<number>;
   x: AnimatedProp<number>;
   y: AnimatedProp<number>;
-}
+};
 
-export interface SkiaTextChildProps {
+export type SkiaTextChildProps = {
   backgroundPaint?: SkiaTextProps['backgroundPaint'];
   children: string;
   color?: SkiaTextProps['color'];
@@ -67,9 +67,9 @@ export interface SkiaTextChildProps {
   opacity?: number;
   shadows?: SkTextShadow[];
   weight?: SkiaTextProps['weight'];
-}
+};
 
-export const SkiaTextChild: React.FC<SkiaTextChildProps> = () => null;
+export const SkiaTextChild: ComponentType<SkiaTextChildProps> = () => null;
 
 export const SkiaText = ({
   align = 'left',
@@ -80,7 +80,7 @@ export const SkiaText = ({
   foregroundPaint,
   letterSpacing,
   lineHeight,
-  onLayout,
+  onLayoutWorklet,
   shadows,
   size,
   transform,
@@ -134,7 +134,7 @@ export const SkiaText = ({
             shadows: segShadows,
             weight: segWeight,
             opacity: segOpacity,
-          }: SkiaTextChildProps = child.props;
+          } = child.props as SkiaTextChildProps;
           return {
             color: getSegmentColor(segColor),
             opacity: segOpacity,
@@ -149,32 +149,30 @@ export const SkiaText = ({
     }
 
     // Simple text case - just one segment with the entire text
-    return [
-      {
-        color,
-        text: isSharedValue ? children : childOrChildrenArray.map(child => String(child)).join(''),
-        weight,
-      },
-    ];
+    return {
+      color,
+      text: isSharedValue ? children : childOrChildrenArray.map(child => String(child)).join(''),
+      weight,
+    };
   }, [children, color, getSegmentColor, weight]);
 
   const paragraph = useDerivedValue(() => {
     if (!buildParagraph) return null;
     const paragraph = buildParagraph(segments);
 
-    if (onLayout && paragraph) {
+    if (onLayoutWorklet && paragraph) {
       if (_WORKLET) {
         paragraph.layout(typeof width === 'number' ? width : width.value);
-        onLayout(paragraph);
+        onLayoutWorklet(paragraph);
       } else {
         runOnUI(() => {
           paragraph.layout(typeof width === 'number' ? width : width.value);
-          onLayout(paragraph);
+          onLayoutWorklet(paragraph);
         })();
       }
     }
     return paragraph;
-  }, [buildParagraph, onLayout, segments, width]);
+  }, [buildParagraph, onLayoutWorklet, segments, width]);
 
   return <Paragraph paragraph={paragraph} transform={transform} width={width} x={x} y={y} />;
 };

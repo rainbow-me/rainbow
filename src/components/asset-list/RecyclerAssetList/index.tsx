@@ -13,11 +13,13 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from './ViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@/entities';
-import { useCoinListEdited, useOpenFamilies, useOpenSmallBalances, usePrevious, useRefreshAccountData } from '@/hooks';
+import { useCoinListEdited, usePrevious, useRefreshAccountData } from '@/hooks';
 import styled from '@/styled-thing';
 import { deviceUtils } from '@/utils';
 import * as i18n from '@/languages';
 import { logger } from '@/logger';
+import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
+import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -116,7 +118,7 @@ export function useRecyclerListViewRef(): {
   readonly ref: RecyclerListViewRef | undefined;
   readonly _ref: React.MutableRefObject<RecyclerListViewRef | undefined>;
 } {
-  const ref = useRef<RecyclerListViewRef>();
+  const ref = useRef<RecyclerListViewRef>(undefined);
   const handleRef = React.useCallback(
     (nextRef: RecyclerListViewRef): void => {
       ref.current = nextRef;
@@ -171,9 +173,9 @@ function RecyclerAssetList({
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const { refresh, isRefreshing } = useRefreshAccountData();
   const { isSmallBalancesOpen: openSmallBalances } = useOpenSmallBalances();
-  const { openFamilies: openFamilyTabs } = useOpenFamilies();
+  const openCollections = useOpenCollectionsStore(state => state.openCollections);
   const { ref, handleRef } = useRecyclerListViewRef();
-  const stickyCoinDividerRef = React.useRef<View>() as React.RefObject<View>;
+  const stickyCoinDividerRef = React.useRef<View>(undefined) as React.RefObject<View>;
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(0);
   const { areSmallCollectibles, items, itemsCount, sectionsIndices, stickyComponentsIndices } = useMemo(() => {
     const sectionsIndices: number[] = [];
@@ -189,7 +191,7 @@ function RecyclerAssetList({
       ]);
       if (section.name === 'collectibles') {
         section.data.forEach((item, index) => {
-          if (item.isHeader || openFamilyTabs[item.familyName + (showcase ? '-showcase' : '')]) {
+          if (item.isHeader || openCollections[item.familyName + (showcase ? '-showcase' : '')]) {
             ctx.push({
               familySectionIndex: index,
               item: { ...item, ...section.perData },
@@ -216,7 +218,7 @@ function RecyclerAssetList({
       sectionsIndices,
       stickyComponentsIndices,
     };
-  }, [openFamilyTabs, sections, showcase]);
+  }, [openCollections, sections, showcase]);
 
   // Defines the position of the coinDivider, if it exists.
   const coinDividerIndex = useMemo<number>(() => {
@@ -407,7 +409,7 @@ function RecyclerAssetList({
                 amountOfRows: sections?.[collectiblesIndex]?.data?.[familyIndex]?.tokens?.length ?? 0,
                 isFirst,
                 isHeader,
-                isOpen: openFamilyTabs[sections[collectiblesIndex].data[familyIndex].familyName + (showcase ? '-showcase' : '')],
+                isOpen: openCollections[sections[collectiblesIndex].data[familyIndex].familyName + (showcase ? '-showcase' : '')],
               }),
               index: ViewTypes.UNIQUE_TOKEN_ROW.index,
               isFirst,
@@ -438,7 +440,7 @@ function RecyclerAssetList({
     isCoinListEdited,
     items,
     itemsCount,
-    openFamilyTabs,
+    openCollections,
     openSmallBalances,
     paddingBottom,
     sections,
@@ -471,7 +473,7 @@ function RecyclerAssetList({
   }, [items]);
 
   const lastSections = usePrevious(sections) || sections;
-  const lastOpenFamilyTabs = usePrevious(openFamilyTabs) || openFamilyTabs;
+  const lastOpenCollections = usePrevious(openCollections);
   const lastIsCoinListEdited = usePrevious(isCoinListEdited) || isCoinListEdited;
 
   useEffect(() => {
@@ -543,11 +545,11 @@ function RecyclerAssetList({
     globalDeviceDimensions,
     dataProvider,
     lastIsCoinListEdited,
-    lastOpenFamilyTabs,
+    lastOpenCollections,
     lastSections,
     sections,
     isCoinListEdited,
-    openFamilyTabs,
+    openCollections,
     openSmallBalances,
     paddingBottom,
     showcase,
@@ -601,6 +603,7 @@ function RecyclerAssetList({
           },
         ]}
       >
+        {/* @ts-expect-error - untyped js file */}
         <CoinDivider balancesSum={0} defaultToEditButton={false} extendedState={coinDividerExtendedState} />
       </View>
     </StyledContainer>

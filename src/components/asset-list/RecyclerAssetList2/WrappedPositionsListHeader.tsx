@@ -12,7 +12,7 @@ const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 48;
 
-const PositionListHeader = ({ total, ...props }: { total: string }) => {
+function PositionListHeader({ total, ...props }: { total: string }) {
   const { colors } = useTheme();
   const { isPositionCardsOpen, toggleOpenPositionCards } = useOpenPositionCards();
 
@@ -87,10 +87,10 @@ const PositionListHeader = ({ total, ...props }: { total: string }) => {
       </ButtonPressAnimation>
     </>
   );
-};
+}
 
 PositionListHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
 
 PositionListHeader.height = TokenFamilyHeaderHeight;
 
-export default PositionListHeader;
+export default React.memo(PositionListHeader);

@@ -22,7 +22,6 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { profileUtils, showActionSheetWithOptions } from '@/utils';
-import { IS_ANDROID } from '@/env';
 import { RainbowAccount } from '@/model/wallet';
 import { Contact } from '@/redux/contacts';
 
@@ -34,13 +33,7 @@ type ComponentPropsWithTheme = {
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }: ComponentPropsWithTheme) => ({
-    ...(IS_ANDROID
-      ? padding.object(0, 19)
-      : isTinyPhone
-        ? padding.object(23, 15, 10)
-        : isSmallPhone
-          ? padding.object(11, 19, 15)
-          : padding.object(18, 19, 19)),
+    ...(isTinyPhone ? padding.object(23, 15, 10) : isSmallPhone ? padding.object(11, 19, 15) : padding.object(18, 19, 19)),
     backgroundColor: colors.white,
     overflow: 'hidden',
     width: '100%',
@@ -75,8 +68,6 @@ const defaultContactItem = {
   nickname: '',
 };
 
-type AccountWithContact = RainbowAccount & Contact;
-
 type SendHeaderProps = {
   contacts: ReturnType<typeof useContacts>['contacts'];
   hideDivider: boolean;
@@ -88,7 +79,7 @@ type SendHeaderProps = {
   onPressPaste: (recipient: string) => void;
   onRefocusInput?: () => void;
   recipient: string;
-  recipientFieldRef: React.RefObject<TextInput>;
+  recipientFieldRef: React.RefObject<TextInput | null>;
   removeContact: (address: string) => void;
   showAssetList: boolean;
   userAccounts: RainbowAccount[];

@@ -35,7 +35,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 21,
       marginCorrection: {
-        android: 0.2,
+        android: 0,
         ios: 0,
       },
     },
@@ -57,7 +57,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 27,
       marginCorrection: {
-        android: -0.3,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -68,7 +68,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 30,
       marginCorrection: {
-        android: -0.3,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -79,7 +79,7 @@ export const typeHierarchy = {
       letterSpacing: 0,
       lineHeight: 33,
       marginCorrection: {
-        android: -0.3,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -125,7 +125,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 13,
       marginCorrection: {
-        android: -0.3,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -136,7 +136,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 14,
       marginCorrection: {
-        android: -0.3,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -147,7 +147,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 19,
       marginCorrection: {
-        android: -0.1,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -158,7 +158,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 21,
       marginCorrection: {
-        android: 2.4,
+        android: 0,
         ios: -0.5,
       },
     },
@@ -169,7 +169,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 22,
       marginCorrection: {
-        android: 2.4,
+        android: 0,
         ios: -0.5,
       },
     },
@@ -180,7 +180,7 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 27,
       marginCorrection: {
-        android: 2.4,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -202,8 +202,19 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 27,
       marginCorrection: {
-        android: -0.3,
+        android: 0,
         ios: -0.3,
+      },
+    },
+    '10pt': {
+      // ⚠️ IMPORTANT: When modifying these values,
+      // please read the note at the top of this file.
+      fontSize: 10,
+      letterSpacing: 0.56,
+      lineHeight: 12,
+      marginCorrection: {
+        android: 0.3,
+        ios: 0,
       },
     },
     '11pt': {
@@ -213,7 +224,7 @@ export const typeHierarchy = {
       letterSpacing: 0.56,
       lineHeight: 14,
       marginCorrection: {
-        android: 0.3,
+        android: 0,
         ios: 0,
       },
     },
@@ -224,7 +235,7 @@ export const typeHierarchy = {
       letterSpacing: 0.54,
       lineHeight: 16,
       marginCorrection: {
-        android: 1,
+        android: 0,
         ios: 0,
       },
     },
@@ -235,7 +246,7 @@ export const typeHierarchy = {
       letterSpacing: 0.51,
       lineHeight: 18,
       marginCorrection: {
-        android: 1.3,
+        android: 0,
         ios: 0,
       },
     },
@@ -246,7 +257,7 @@ export const typeHierarchy = {
       letterSpacing: 0.51,
       lineHeight: 13 * (135 / 100),
       marginCorrection: {
-        android: 1.2,
+        android: 0,
         ios: 0,
       },
     },
@@ -257,7 +268,7 @@ export const typeHierarchy = {
       letterSpacing: 0.51,
       lineHeight: 13 * (150 / 100),
       marginCorrection: {
-        android: 2,
+        android: 0,
         ios: 0,
       },
     },
@@ -268,7 +279,7 @@ export const typeHierarchy = {
       letterSpacing: 0.44,
       lineHeight: 20,
       marginCorrection: {
-        android: 0.8,
+        android: 0,
         ios: 0,
       },
     },
@@ -279,7 +290,7 @@ export const typeHierarchy = {
       letterSpacing: 0.44,
       lineHeight: 15 * (135 / 100),
       marginCorrection: {
-        android: 1,
+        android: 0,
         ios: 0,
       },
     },
@@ -290,7 +301,7 @@ export const typeHierarchy = {
       letterSpacing: 0.44,
       lineHeight: 15 * (150 / 100),
       marginCorrection: {
-        android: 2,
+        android: 0,
         ios: 0,
       },
     },
@@ -301,7 +312,7 @@ export const typeHierarchy = {
       letterSpacing: 0.37,
       lineHeight: 22,
       marginCorrection: {
-        android: 0.6,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -312,7 +323,7 @@ export const typeHierarchy = {
       letterSpacing: 0.37,
       lineHeight: 17 * (135 / 100),
       marginCorrection: {
-        android: 1.3,
+        android: 0,
         ios: 0,
       },
     },
@@ -323,7 +334,7 @@ export const typeHierarchy = {
       letterSpacing: 0.37,
       lineHeight: 17 * (150 / 100),
       marginCorrection: {
-        android: 2.6,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -334,7 +345,7 @@ export const typeHierarchy = {
       letterSpacing: 0.36,
       lineHeight: 24,
       marginCorrection: {
-        android: 0.3,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -345,7 +356,7 @@ export const typeHierarchy = {
       letterSpacing: 0.36,
       lineHeight: 20 * (135 / 100),
       marginCorrection: {
-        android: 1.7,
+        android: 0,
         ios: 0,
       },
     },
@@ -356,7 +367,7 @@ export const typeHierarchy = {
       letterSpacing: 0.36,
       lineHeight: 20 * (150 / 100),
       marginCorrection: {
-        android: 3.2,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -367,7 +378,7 @@ export const typeHierarchy = {
       letterSpacing: 0.34,
       lineHeight: 28,
       marginCorrection: {
-        android: 0.6,
+        android: 0,
         ios: -0.3,
       },
     },
@@ -389,7 +400,7 @@ export const typeHierarchy = {
       letterSpacing: 0.37,
       lineHeight: 37,
       marginCorrection: {
-        android: 0.3,
+        android: 0,
         ios: -0.3,
       },
     },
