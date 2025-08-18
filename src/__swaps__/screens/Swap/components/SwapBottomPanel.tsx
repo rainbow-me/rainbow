@@ -4,7 +4,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
@@ -99,7 +99,7 @@ export function SwapBottomPanel() {
   }, [configProgress.value, navigate, SwapNavigation]);
 
   return (
-    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
+    <GestureDetector gesture={swipeToDismissGestureHandler}>
       <Animated.View
         style={[
           styles.swapActionsWrapper,
@@ -196,7 +196,7 @@ export function SwapBottomPanel() {
           </Box>
         </Box>
       </Animated.View>
-    </PanGestureHandler>
+    </GestureDetector>
   );
 }
 

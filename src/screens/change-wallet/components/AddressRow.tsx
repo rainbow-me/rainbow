@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme/ThemeContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import ConditionalWrap from 'conditional-wrap';

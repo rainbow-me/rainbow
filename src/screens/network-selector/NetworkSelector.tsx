@@ -26,7 +26,7 @@ import { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useSt
 import { Pressable, StyleSheet, View, TextInput, ScrollView } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import Animated, {
   DerivedValue,

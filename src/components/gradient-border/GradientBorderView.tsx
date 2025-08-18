@@ -1,8 +1,8 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type GradientBorderViewProps = {
   children: React.ReactNode;

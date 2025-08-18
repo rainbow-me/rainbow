@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';

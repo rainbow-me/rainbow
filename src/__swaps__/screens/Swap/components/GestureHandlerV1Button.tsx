@@ -3,8 +3,9 @@ import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
-import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { AnimatedStyle } from 'react-native-reanimated';
+import { runOnJS } from 'react-native-worklets';
 
 export type GestureHandlerButtonProps = {
   buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
@@ -71,15 +72,15 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
   }: GestureHandlerButtonProps,
   ref: React.LegacyRef<unknown> | undefined
 ) {
-  const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
-    onStart: () => {
+  const pressGesture = Gesture.Tap()
+    .enabled(!disabled)
+    .onBegin(() => {
       if (onPressStartWorklet) onPressStartWorklet();
-    },
-    onActive: () => {
+    })
+    .onStart(() => {
       if (onPressWorklet) onPressWorklet();
       if (onPressJS) runOnJS(onPressJS)();
-    },
-  });
+    });
 
   return (
     <ConditionalWrap
@@ -90,11 +91,11 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
         </ButtonPressAnimation>
       )}
     >
-      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={ref}>
-        <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
+      <GestureDetector gesture={pressGesture}>
+        <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style} ref={ref}>
           {children}
         </Animated.View>
-      </TapGestureHandler>
+      </GestureDetector>
     </ConditionalWrap>
   );
 });

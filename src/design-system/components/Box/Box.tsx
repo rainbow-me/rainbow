@@ -11,7 +11,7 @@ import { Border, BorderProps } from '../Border/Border';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
 import { IS_TEST } from '@/env';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { BackgroundColor } from '@/design-system/color/palettes';
 
 const COMPONENTS_TO_OVERRIDE_IN_TEST_MODE = [LinearGradient];

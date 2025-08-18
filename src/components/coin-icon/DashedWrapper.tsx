@@ -1,6 +1,6 @@
 import React from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Circle } from 'react-native-svg';
 import Svg from '../icons/Svg';
 import { Box } from '@/design-system';
