@@ -467,6 +467,9 @@
         "quote_error": "Kesalahan Kutipan",
         "no_route_found": "Tidak ada rute yang ditemukan",
         "fetching_quote": "Mengambil Kutipan...",
+        "rainbow_eth_rewards": "Rainbow ETH Rewards",
+        "merkl_claimable": "%{dappName} Vault",
+        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "Pilih Jaringan",
         "select_a_token": "Pilih Token",
         "amount_to_claim_on_network": "%{amount} untuk diklaim di %{network}",
@@ -476,6 +479,9 @@
         "claimed": "Diklaim!",
         "claiming_failed": "Klaim Gagal",
         "insufficient_funds": "Dana Tidak Cukup",
+        "hold_to_claim": "Tahan untuk Mengklaim",
+        "creator_lp_fees": "Creator LP Fees",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Klaim %{amount}",
         "done": "Selesai",
         "try_again": "Coba Lagi",
@@ -604,6 +610,7 @@
         "expires_in": "Kadaluarsa dalam %{minutes}m",
         "from_divider": "dari",
         "to_divider": "ke",
+        "token": "Token",
         "view_on": "Tampilkan di %{blockExplorerName}",
         "view_on_etherscan": "Tampilkan di Etherscan",
         "copy_contract_address": "Salin Alamat Kontrak"
@@ -654,9 +661,7 @@
         "small_market_try_smaller_amount": "Pasar kecil — coba jumlah yang lebih kecil",
         "you_are_losing": "Anda kehilangan %{priceImpact}",
         "you_are_losing_prefix": "Anda kehilangan",
-        "no_data": "Nilai Pasar Tidak Diketahui",
-        "label": "Kemungkinan kerugian",
-        "no_data_subtitle": "Jika Anda memutuskan untuk melanjutkan, pastikan Anda puas dengan jumlah yang dikutip"
+        "label": "Kemungkinan kerugian"
       },
       "source": {
         "rainbow": "Otomatis",
@@ -727,6 +732,7 @@
           "circulating_supply": "Pasokan Beredar",
           "max_supply": "Persediaan Maks",
           "fully_diluted_valuation": "Penilaian Sepenuhnya Terdilusi",
+          "created_by": "Created by",
           "market_cap": "Kap Pasar",
           "created": "Dibuat",
           "volume_24_hours": "Volume 24h",
@@ -747,9 +753,34 @@
         "about": {
           "title": "Tentang",
           "what_is": "Apa itu %{assetName}?"
+        },
+        "history": {
+          "tabs": {
+            "all": "Semua",
+            "buys": "Buys",
+            "sells": "Sells"
+          },
+          "more": "Lebih",
+          "less": "Kurang",
+          "bought": "Bought",
+          "sold": "Dijual",
+          "received": "Diterima",
+          "sent": "Dikirim",
+          "unknown": "Tidak Diketahui"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Tutup",
+            "h": "H",
+            "l": "L",
+            "o": "Open",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "Tidak ada"
+        },
         "all_time": "Sepanjang Waktu",
         "date": {
           "months": {
@@ -929,6 +960,8 @@
       "farcaster_title": "Anda telah membuka\nRainbowcast",
       "redacted_description": "Ikon Rainbow eksklusif untuk para penikmat sejati Gdupi.",
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
+      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
+      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "Ambil ikon"
     },
     "explain": {
@@ -2888,6 +2921,7 @@
         "sending_title": "Mengirim",
         "you_own_this_wallet": "Anda memiliki dompet ini",
         "first_time_send": "Pengiriman pertama",
+        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} pengiriman sebelumnya"
       },
       "wallet_connect": {
@@ -3340,10 +3374,78 @@
         "to_claim_on": "untuk diklaim di %{network}",
         "view_coin": "Lihat Koin",
         "you": "Anda"
+      },
+      "errors": {
+        "header": "Error launching token",
+        "api_request_failed": "API request failed",
+        "api_response_invalid": "API response invalid",
+        "contract_interaction_failed": "Contract interaction failed",
+        "gas_estimation_failed": "Gas estimation failed",
+        "insufficient_funds": "Insufficient funds",
+        "submission_details_missing": "Submission details missing",
+        "transaction_rejected": "Transaksi ditolak",
+        "transaction_failed": "Transaction failed",
+        "transaction_simulation_failed": "Transaction simulation failed",
+        "unknown_error": "Unknown error",
+        "wallet_connection_error": "Wallet connection error",
+        "invalid_params": "Invalid parameters",
+        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "Selesai",
     "copy": "Salin",
-    "paste": "Tempel"
+    "paste": "Tempel",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "MCAP"
+    },
+    "king_of_hill": {
+      "title": "Launchpad",
+      "launch": "Launch",
+      "current_king": "CURRENT KING",
+      "last_winner": "Last winner",
+      "no_previous_winner": "No previous winner",
+      "round_ends_in": "Round ends in",
+      "how_it_works": "How it works",
+      "starting_next_round": "Starting next round",
+      "left": "LEFT",
+      "king_of_the_hill": "King of the Hill",
+      "name": "Nama",
+      "explain_sheet": {
+        "next": "Selanjutnya",
+        "got_it": "Mengerti",
+        "steps": {
+          "step_1": {
+            "title": "The race is live",
+            "subtitle_parts": [
+              "The token with the most",
+              " buy volume ",
+              "right now is the current king."
+            ]
+          },
+          "step_2": {
+            "title": "One crown a day",
+            "subtitle_parts": [
+              "At",
+              " midnight (12:00 AM UTC), ",
+              "the leading token is crowned the daily winner."
+            ]
+          },
+          "step_3": {
+            "title": "Win Rewards",
+            "subtitle_parts": [
+              "Buyers of the current King get",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Creators",
+              " earn points ",
+              "when crowned."
+            ]
+          }
+        }
+      }
+    }
   }
 }
