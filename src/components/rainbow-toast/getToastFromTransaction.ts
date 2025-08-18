@@ -1,7 +1,7 @@
 import { type RainbowToast } from '@/components/rainbow-toast/types';
 import { RainbowTransaction } from '@/entities';
 
-export const txIdToToastId = (tx: RainbowTransaction): string => (tx.nonce ? `${tx.nonce}` : tx.hash + (tx.chainId || tx.asset?.chainId));
+export const txIdToToastId = (tx: RainbowTransaction): string => tx.hash + (tx.chainId || tx.asset?.chainId);
 
 export function getToastUpdatedAt(tx: RainbowTransaction): number {
   // pending transactions use the timestamp field, while mined ones use the minedAt field.

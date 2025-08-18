@@ -1,4 +1,4 @@
-import { activityValues } from '@/components/coin-row/FastTransactionCoinRow';
+import { activityValues, useRainbowSuperToken } from '@/components/coin-row/FastTransactionCoinRow';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
@@ -29,8 +29,9 @@ export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
 
 function BaseToastExpandedContent({ toast }: { toast: RainbowToast }) {
   const { transaction } = toast;
+  const rainbowSuperToken = useRainbowSuperToken(transaction);
   const icon = <BaseToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
-  const title = transaction.contract?.name || transaction.description;
+  const title = rainbowSuperToken?.name || transaction.contract?.name || transaction.description;
   const subtitle = getToastTitle(toast);
   const isLoading = transaction.status === TransactionStatus.pending;
   return <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={transaction} />;
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
   mainSection: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    gap: 9,
+    gap: 4,
     flex: 1,
   },
   topRow: {

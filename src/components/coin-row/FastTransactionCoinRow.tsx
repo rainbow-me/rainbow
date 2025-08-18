@@ -23,7 +23,7 @@ import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
+import { checkForSwap } from '@/helpers/checkForPendingSwap';
 import { ChainImage } from '../coin-icon/ChainImage';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 
@@ -84,9 +84,18 @@ const pendingSendTypeValues = (transaction: RainbowTransaction, nativeCurrency: 
   ];
 };
 
+export const useRainbowSuperToken = (transaction: RainbowTransaction) => {
+  return useMemo(() => {
+    if (transaction?.type === 'launch') {
+      return useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
+    }
+    return undefined;
+  }, [transaction.hash, transaction.type]);
+};
+
 export const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeCurrencyKey) => {
   const { changes, direction, type, status } = transaction;
-  if (checkForPendingSwap(transaction)) return swapTypeValues(changes, status);
+  if (checkForSwap(transaction)) return swapTypeValues(changes, status);
   if (checkForPendingSend(transaction)) return pendingSendTypeValues(transaction, nativeCurrency);
   if (['approve', 'revoke'].includes(type)) return approvalTypeValues(transaction);
 
@@ -192,12 +201,7 @@ const BottomRow = React.memo(function BottomRow({
   nativeCurrency: NativeCurrencyKey;
   theme: ThemeContextProps;
 }) {
-  const rainbowSuperToken = useMemo(() => {
-    if (transaction?.type === 'launch') {
-      return useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
-    }
-    return undefined;
-  }, [transaction.hash, transaction.type]);
+  const rainbowSuperToken = useRainbowSuperToken(transaction);
 
   const { type, to, asset } = transaction;
   const separatorSecondary = useForegroundColor('separatorSecondary');

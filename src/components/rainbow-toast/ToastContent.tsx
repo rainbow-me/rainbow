@@ -1,3 +1,4 @@
+import { useRainbowSuperToken } from '@/components/coin-row/FastTransactionCoinRow';
 import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
@@ -138,9 +139,10 @@ function SendToastContent({ toast }: { toast: RainbowToast }) {
 
 function BaseToastContent({ toast }: { toast: RainbowToast }) {
   const { transaction } = toast;
+  const rainbowSuperToken = useRainbowSuperToken(transaction);
   const icon = <BaseToastIcon toast={toast} />;
   const title = getToastTitle(toast);
-  const subtitle = transaction.contract?.name || transaction.description;
+  const subtitle = rainbowSuperToken?.name || transaction.contract?.name || transaction.description;
 
   return (
     <ToastContentDisplay

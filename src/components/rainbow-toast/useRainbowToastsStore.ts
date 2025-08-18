@@ -4,9 +4,6 @@ import type { RainbowTransaction } from '@/entities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useMemo } from 'react';
 
-// dev tool for seeing helpful formatted logs, only really useful for dev as they are large
-const DEBUG_INCOMING = process.env.DEBUG_RAINBOW_TOASTS === '1';
-
 export type ToastState = {
   isShowingTransactionDetails: boolean;
   setIsShowingTransactionDetails: (val: boolean) => void;
@@ -74,19 +71,11 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>(set => ({
           transaction,
         };
         toasts[existingToast.id] = updatedToast;
-
-        if (DEBUG_INCOMING) {
-          console.log('updating toast', JSON.stringify(updatedToast, null, 2));
-        }
       } else {
         const toast = getToastFromTransaction(transaction);
         if (!toast) return state;
 
         toasts[toast.id] = toast;
-
-        if (DEBUG_INCOMING) {
-          console.log('adding toast', JSON.stringify(toast, null, 2));
-        }
       }
 
       return { toasts };
