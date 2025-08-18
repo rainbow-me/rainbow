@@ -140,7 +140,7 @@
         "choose_backup_cloud_description": "قم بنسخ محفظتك احتياطيًا إلى %{cloudPlatform} بأمان حتى تتمكن من استعادتها إذا فقدت جهازك أو حصلت على جهاز جديد.",
         "choose_backup_manual_description": "انشئ نسخة احتياطية لمحفظتك يدويًا بحفظ العبارة السرية في مكان آمن.",
         "enable_cloud_backups_description": "إذا كنت تفضل إنشاء نسخة احتياطية لمحفظتك يدويًا، يمكنك القيام بذلك أدناه.",
-        "latest_backup": "آخر نسخة احتياطية: %{date}",
+        "latest_backup": "آخر نسخ احتياطي: %{date}",
         "back_up_all_wallets_to_cloud": "قم بنسخ جميع المحافظ احتياطيا إلى %{cloudPlatformName}",
         "most_recent_backup": "أحدث نسخة احتياطية",
         "out_of_date": "غير محدث",
@@ -467,9 +467,6 @@
         "quote_error": "خطأ في عرض السعر",
         "no_route_found": "لم يتم العثور على مسار",
         "fetching_quote": "جارٍ جلب العرض...",
-        "rainbow_eth_rewards": "Rainbow ETH Rewards",
-        "merkl_claimable": "%{dappName} Vault",
-        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "حدد شبكة",
         "select_a_token": "حدد رمزًا",
         "amount_to_claim_on_network": "%{amount} للمطالبة على %{network}",
@@ -479,9 +476,6 @@
         "claimed": "تم المطالبة!",
         "claiming_failed": "فشل المطالبة",
         "insufficient_funds": "أموال غير كافية",
-        "hold_to_claim": "اضغط للمطالبة",
-        "creator_lp_fees": "Creator LP Fees",
-        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "مطالبة %{amount}",
         "done": "تم",
         "try_again": "حاول مرة أخرى",
@@ -527,36 +521,36 @@
       "analyze_react_query": "تحليل استعلام React",
       "applied": "تم التطبيق",
       "backups_deleted_successfully": "تم حذف النسخ الاحتياطية بنجاح",
-      "clear_async_storage": "مسح التخزين المتزامن",
+      "clear_async_storage": "مسح التخزين غير المتزامن",
       "clear_pending_txs": "مسح المعاملات المعلقة",
       "clear_image_cache": "مسح ذاكرة التخزين المؤقت للصور",
       "clear_image_metadata_cache": "مسح ذاكرة التخزين المؤقت لبيانات الصور",
       "clear_local_storage": "مسح التخزين المحلي",
-      "clear_mmkv_storage": "مسح التخزين MMKV",
+      "clear_mmkv_storage": "مسح تخزين MMKV",
       "clear_react_query_cache": "مسح ذاكرة استعلام React",
-      "connect_to_anvil": "الاتصال بـ anvil",
+      "connect_to_anvil": "الاتصال ب Anvil",
       "copy_fcm_token": "نسخ رمز FCM",
       "copy_log_lines": "نسخ أسطر السجل",
       "copy_signing_wallet_address": "نسخ عنوان توقيع المحفظة",
-      "disconnect_to_anvil": "افصل عن Anvil",
-      "crash_app_render_error": "تعطيل التطبيق (خطأ في التصيير)",
+      "disconnect_to_anvil": "انفصال عن Anvil",
+      "crash_app_render_error": "تعطل التطبيق (خطأ في العرض)",
       "enable_testnets": "تمكين شبكات الاختبار",
-      "installing_update": "تثبيت التحديث",
-      "navigation_entry_point": "نقطة الدخول للتنقل",
+      "installing_update": "جارٍ تثبيت التحديث",
+      "navigation_entry_point": "نقطة دخول التنقل",
       "no_update": "لا يوجد تحديث",
       "not_applied": "لم يتم التطبيق",
       "notifications_debug": "تصحيح الأخطاء في الإشعارات",
-      "remove_all_backups": "حذف جميع النسخ الاحتياطية",
+      "remove_all_backups": "إزالة كافة النسخ الاحتياطية",
       "keychain": {
         "menu_title": "إعادة تعيين سلسلة المفاتيح",
-        "delete_wallets": "حذف جميع المحافظ",
+        "delete_wallets": "حذف كل المحافظ",
         "alert_title": "كن حذرا!",
         "alert_body": "🚨🚨🚨 \nهذا سيؤدي إلى حذف كل مفاتيح وبيانات محافظك الخاصة نهائيا، يرجى التأكد من أنك قمت بالنسخ الاحتياطي لكل شيء قبل المتابعة!! \n🚨🚨🚨"
       },
       "restart_app": "إعادة تشغيل التطبيق",
       "reset_experimental_config": "إعادة تعيين التكوين التجريبي",
       "status": "الحالة",
-      "sync_codepush": "مزامنة كود الدفع"
+      "sync_codepush": "مز synchrony CodePush"
     },
     "discover": {
       "pulse": {
@@ -610,7 +604,6 @@
         "expires_in": "تنتهي في %{minutes}دقيقة",
         "from_divider": "من",
         "to_divider": "إلى",
-        "token": "Token",
         "view_on": "اعرض على %{blockExplorerName}",
         "view_on_etherscan": "عرض على Etherscan",
         "copy_contract_address": "نسخ عنوان العقد"
@@ -661,7 +654,9 @@
         "small_market_try_smaller_amount": "سوق صغير - حاول مبلغ أصغر",
         "you_are_losing": "أنت تخسر %{priceImpact}",
         "you_are_losing_prefix": "أنت تخسر",
-        "label": "خسارة محتملة"
+        "no_data": "القيمة السوقية غير معروفة",
+        "label": "خسارة محتملة",
+        "no_data_subtitle": "إذا قررت المتابعة، تأكد من أنك راض بالمبلغ المعروض"
       },
       "source": {
         "rainbow": "أوتو",
@@ -732,7 +727,6 @@
           "circulating_supply": "الإمداد الجاري",
           "max_supply": "الحد الأقصى للتوريد",
           "fully_diluted_valuation": "تقييم التشبع الكامل",
-          "created_by": "Created by",
           "market_cap": "القيمة السوقية",
           "created": "تم الإنشاء",
           "volume_24_hours": "الحجم في 24 ساعة",
@@ -753,34 +747,9 @@
         "about": {
           "title": "حول",
           "what_is": "ما هو %{assetName}؟"
-        },
-        "history": {
-          "tabs": {
-            "all": "الكل",
-            "buys": "Buys",
-            "sells": "Sells"
-          },
-          "more": "أكثر",
-          "less": "أقل",
-          "bought": "Bought",
-          "sold": "تم البيع",
-          "received": "تم الاستلام",
-          "sent": "تم الإرسال",
-          "unknown": "غير معروف"
         }
       },
       "chart": {
-        "candlestick": {
-          "candle_field_labels": {
-            "c": "إغلاق",
-            "h": "H",
-            "l": "L",
-            "o": "Open",
-            "t": "",
-            "v": "V"
-          },
-          "no_volume_label": "لا شيء"
-        },
         "all_time": "كل الأوقات",
         "date": {
           "months": {
@@ -799,9 +768,9 @@
           }
         },
         "no_chart_data": "لا توجد بيانات للرسم البياني",
-        "no_price_data": "لا يوجد بيانات عن الأسعار",
+        "no_price_data": "لا توجد بيانات أسعار",
         "past_timespan": "الماضي %{formattedTimespan}",
-        "today": "اليوم",
+        "today": "اليوم الماضي",
         "token_pool": "%{tokenName} بركة"
       },
       "contact_profile": {
@@ -960,8 +929,6 @@
       "farcaster_title": "لقد قمت بفتح\nRainbowcast",
       "redacted_description": "أيقونة قوس قزح حصرية لـ stupi لمحبي Gdupi الحقيقيين.",
       "redacted_title": "لقد فتحت\nقوس قزح المكمم",
-      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
-      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "Snag the icon"
     },
     "explain": {
@@ -1072,7 +1039,7 @@
         "text": "Linea هي سلسلة بلوكشين من الطبقة 2 آمنة ومنخفضة التكلفة ومعادلة لإيثريوم، تم تطويرها بواسطة ConsenSys.\n\nتتيح معاملات أسرع وأرخص بدون التضحية بالأمان واللامركزية، وتهدف إلى جلب مليار مستخدم جديد إلى ويب3.",
         "title": "ما هي Linea؟"
       },
-      "opmainnet": {
+      "optimism": {
         "text": "التفاؤل هو شبكة الطبقة 2 التي تعمل فوق الإيثريوم ، مما يتيح المعاملات الأرخص والأسرع مع الاستفادة من الأمن الأساسي للإيثريوم.\n\nيجمع الكثير من المعاملات معًا في \"التجميع\" قبل إرسالها للعيش بشكل دائم على الإيثريوم.",
         "title": "ما هو التفاؤل؟"
       },
@@ -1665,7 +1632,7 @@
         "invalid_referral_code_alert": "رمز الإحالة غير صحيح. يرجى التحقق من الرمز والمحاولة مرة أخرى.",
         "no_balance_alert": "للتسجيل في النقاط، يجب أن يكون رصيد المحفظة لديك غير صفر.",
         "referral_link_is_ready": "رابط الإحالة الخاص بك جاهز",
-        "referral_link_bonus_text": "قم بتغريد رابط الإحالة الخاص بك واحصل على 250 نقطة إضافية",
+        "referral_link_bonus_text": "غرد رابط إحالتك وستحصل على 10٪ من النقاط التي يكسبها أي شخص تشير إليه",
         "referral_link_bonus_text_extended": "بالإضافة إلى أنك ستربح 10% من النقاط التي يحصل عليها أي شخص تقوم بإحالته",
         "complete_onboarding": "تم",
         "share_to_x": "مشاركة إلى X",
@@ -2921,7 +2888,6 @@
         "sending_title": "إرسال",
         "you_own_this_wallet": "أنت تمتلك هذه المحفظة",
         "first_time_send": "أول مرة ترسل",
-        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} إرسال سابق"
       },
       "wallet_connect": {
@@ -3374,78 +3340,10 @@
         "to_claim_on": "للمطالبة على %{network}",
         "view_coin": "عرض العملة",
         "you": "أنت"
-      },
-      "errors": {
-        "header": "Error launching token",
-        "api_request_failed": "API request failed",
-        "api_response_invalid": "API response invalid",
-        "contract_interaction_failed": "Contract interaction failed",
-        "gas_estimation_failed": "Gas estimation failed",
-        "insufficient_funds": "Insufficient funds",
-        "submission_details_missing": "Submission details missing",
-        "transaction_rejected": "تم رفض المعاملة",
-        "transaction_failed": "Transaction failed",
-        "transaction_simulation_failed": "Transaction simulation failed",
-        "unknown_error": "Unknown error",
-        "wallet_connection_error": "Wallet connection error",
-        "invalid_params": "Invalid parameters",
-        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "تم",
     "copy": "نسخ",
-    "paste": "لصق",
-    "market_data": {
-      "vol": "VOL",
-      "price": "PRICE",
-      "mcap": "رأس المال السوقي"
-    },
-    "king_of_hill": {
-      "title": "Launchpad",
-      "launch": "Launch",
-      "current_king": "CURRENT KING",
-      "last_winner": "Last winner",
-      "no_previous_winner": "No previous winner",
-      "round_ends_in": "Round ends in",
-      "how_it_works": "How it works",
-      "starting_next_round": "Starting next round",
-      "left": "LEFT",
-      "king_of_the_hill": "King of the Hill",
-      "name": "الاسم",
-      "explain_sheet": {
-        "next": "التالي",
-        "got_it": "فهمت",
-        "steps": {
-          "step_1": {
-            "title": "The race is live",
-            "subtitle_parts": [
-              "The token with the most",
-              " buy volume ",
-              "right now is the current king."
-            ]
-          },
-          "step_2": {
-            "title": "One crown a day",
-            "subtitle_parts": [
-              "At",
-              " midnight (12:00 AM UTC), ",
-              "the leading token is crowned the daily winner."
-            ]
-          },
-          "step_3": {
-            "title": "Win Rewards",
-            "subtitle_parts": [
-              "Buyers of the current King get",
-              " 2x points."
-            ],
-            "subtitle_two_parts": [
-              "Creators",
-              " earn points ",
-              "when crowned."
-            ]
-          }
-        }
-      }
-    }
+    "paste": "لصق"
   }
 }
