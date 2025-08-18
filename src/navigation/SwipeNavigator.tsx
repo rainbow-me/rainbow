@@ -62,6 +62,7 @@ import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
+import { MinedTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
 import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
@@ -669,6 +670,7 @@ export function SwipeNavigator() {
 
       <TestnetToast chainId={chainId} />
       <PendingTransactionWatcher />
+      <MinedTransactionWatcher />
     </FlexItem>
   );
 }
