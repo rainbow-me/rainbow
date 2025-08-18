@@ -140,7 +140,7 @@
         "choose_backup_cloud_description": "Respalda de forma segura tu billetera en %{cloudPlatform} para que puedas restaurarla si pierdes tu dispositivo o compras uno nuevo.",
         "choose_backup_manual_description": "Respalda manualmente tu billetera guardando tu frase secreta en un lugar seguro.",
         "enable_cloud_backups_description": "Si prefieres respaldar tus billeteras manualmente, puedes hacerlo a continuación.",
-        "latest_backup": "Último Respaldo: %{date}",
+        "latest_backup": "Última copia de seguridad: %{date}",
         "back_up_all_wallets_to_cloud": "Resguardar todas las billeteras en %{cloudPlatformName}",
         "most_recent_backup": "Respaldo más reciente",
         "out_of_date": "Desactualizado",
@@ -467,9 +467,6 @@
         "quote_error": "Error en la cotización",
         "no_route_found": "No se encontró ruta",
         "fetching_quote": "Buscando cotización...",
-        "rainbow_eth_rewards": "Rainbow ETH Rewards",
-        "merkl_claimable": "%{dappName} Vault",
-        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "Seleccione una red",
         "select_a_token": "Seleccione un token",
         "amount_to_claim_on_network": "%{amount} para reclamar en %{network}",
@@ -479,9 +476,6 @@
         "claimed": "¡Reclamado!",
         "claiming_failed": "Reclamo fallido",
         "insufficient_funds": "Fondos Insuficientes",
-        "hold_to_claim": "Mantener para Reclamar",
-        "creator_lp_fees": "Creator LP Fees",
-        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Reclamar %{amount}",
         "done": "Listo",
         "try_again": "Intenta de Nuevo",
@@ -526,37 +520,37 @@
       "analyze_env_variables": "Analizar Variables del Entorno",
       "analyze_react_query": "Analizar React Query",
       "applied": "APLICADO",
-      "backups_deleted_successfully": "Los respaldos se eliminaron exitosamente",
-      "clear_async_storage": "Borrar almacenamiento asíncrono",
+      "backups_deleted_successfully": "Resguardos Eliminados Exitosamente",
+      "clear_async_storage": "Borrar AsyncStorage",
       "clear_pending_txs": "Borrar transacciones pendientes",
       "clear_image_cache": "Borrar caché de imágenes",
       "clear_image_metadata_cache": "Borrar Cache de Metadatos de Imagen",
-      "clear_local_storage": "Borrar almacenamiento local",
-      "clear_mmkv_storage": "Borrar almacenamiento de MMKV",
+      "clear_local_storage": "Borrar Almacenamiento Local",
+      "clear_mmkv_storage": "Borrar Almacenamiento MMKV",
       "clear_react_query_cache": "Borrar Caché de React Query",
       "connect_to_anvil": "Conectar a Anvil",
       "copy_fcm_token": "Copiar Token FCM",
       "copy_log_lines": "Copiar Líneas de Registro",
       "copy_signing_wallet_address": "Copiar Dirección de Firma de Billetera",
-      "disconnect_to_anvil": "Desconectar de anvil",
-      "crash_app_render_error": "Crash de la aplicación (error de renderización)",
+      "disconnect_to_anvil": "Desconectar de Anvil",
+      "crash_app_render_error": "Fallar App (Error de Renderizado)",
       "enable_testnets": "Habilitar Testnets",
-      "installing_update": "Instalando actualización",
-      "navigation_entry_point": "Punto de entrada de navegación",
-      "no_update": "Sin actualización",
+      "installing_update": "Instalando Actualización",
+      "navigation_entry_point": "Punto de Entrada de Navegación",
+      "no_update": "No hay Actualizaciones",
       "not_applied": "NO APLICADO",
       "notifications_debug": "Depuración de Notificaciones",
-      "remove_all_backups": "Eliminar todas las copias de seguridad",
+      "remove_all_backups": "Eliminar Todas las Copias de Seguridad",
       "keychain": {
         "menu_title": "Reiniciar Cadenas de Claves",
-        "delete_wallets": "Borrar todas las carteras",
+        "delete_wallets": "Eliminar Todas las Billeteras",
         "alert_title": "¡Cuidado!",
         "alert_body": "🚨🚨🚨 \nEsto eliminará permanentemente todas las claves privadas y datos de tus carteras. ¡Asegúrate de tener todo respaldado antes de proceder! \n🚨🚨🚨"
       },
-      "restart_app": "Reiniciar aplicación",
-      "reset_experimental_config": "Restablecer configuración experimental",
+      "restart_app": "Reiniciar Aplicación",
+      "reset_experimental_config": "Reiniciar Configuración Experimental",
       "status": "Estado",
-      "sync_codepush": "Sincronizar Codepush"
+      "sync_codepush": "Sincronizar CodePush"
     },
     "discover": {
       "pulse": {
@@ -610,7 +604,6 @@
         "expires_in": "Caduca en %{minutes}m",
         "from_divider": "desde",
         "to_divider": "a",
-        "token": "Token",
         "view_on": "Ver en %{blockExplorerName}",
         "view_on_etherscan": "Ver en Etherscan",
         "copy_contract_address": "Copiar dirección del contrato"
@@ -661,7 +654,9 @@
         "small_market_try_smaller_amount": "Mercado pequeño — prueba con una cantidad menor",
         "you_are_losing": "Estás perdiendo %{priceImpact}",
         "you_are_losing_prefix": "Estás perdiendo",
-        "label": "Posible pérdida"
+        "no_data": "Valor de Mercado Desconocido",
+        "label": "Posible pérdida",
+        "no_data_subtitle": "Si decides continuar, asegúrate de estar satisfecho con la cantidad indicada."
       },
       "source": {
         "rainbow": "Automático",
@@ -732,7 +727,6 @@
           "circulating_supply": "Suministro en circulación",
           "max_supply": "Suministro Máximo",
           "fully_diluted_valuation": "Valoración totalmente diluida",
-          "created_by": "Created by",
           "market_cap": "Capitalización de mercado",
           "created": "Creado",
           "volume_24_hours": "Volumen de 24h",
@@ -753,34 +747,9 @@
         "about": {
           "title": "Acerca de",
           "what_is": "¿Qué es %{assetName}?"
-        },
-        "history": {
-          "tabs": {
-            "all": "Todos",
-            "buys": "Buys",
-            "sells": "Sells"
-          },
-          "more": "Más",
-          "less": "Menos",
-          "bought": "Bought",
-          "sold": "Vendido",
-          "received": "Recibido",
-          "sent": "Enviado",
-          "unknown": "Desconocido"
         }
       },
       "chart": {
-        "candlestick": {
-          "candle_field_labels": {
-            "c": "Cerrar",
-            "h": "H",
-            "l": "L",
-            "o": "Open",
-            "t": "",
-            "v": "V"
-          },
-          "no_volume_label": "Ninguno"
-        },
         "all_time": "Todo el tiempo",
         "date": {
           "months": {
@@ -799,9 +768,9 @@
           }
         },
         "no_chart_data": "No hay datos del gráfico",
-        "no_price_data": "No hay datos de precio",
+        "no_price_data": "No hay datos de precios",
         "past_timespan": "Pasado %{formattedTimespan}",
-        "today": "Hoy",
+        "today": "Día Pasado",
         "token_pool": "%{tokenName} Pool"
       },
       "contact_profile": {
@@ -960,8 +929,6 @@
       "farcaster_title": "Has desbloqueado\nRainbowcast",
       "redacted_description": "Un ícono de Rainbow exclusivo para los verdaderos fanáticos de Gdupi.",
       "redacted_title": "Has desbloqueado\n Redacted Rainbow",
-      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
-      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "Consigue el ícono"
     },
     "explain": {
@@ -1072,7 +1039,7 @@
         "text": "Linea es una blockchain de Capa 2 segura y de bajo costo, equivalente a Ethereum, desarrollada por ConsenSys.\n\nPermite transacciones más rápidas y asequibles sin comprometer la seguridad y la descentralización, con el objetivo de incorporar a mil millones de usuarios a web3.",
         "title": "¿Qué es Linea?"
       },
-      "opmainnet": {
+      "optimism": {
         "text": "Optimism es una red de Capa 2 que se ejecuta en Ethereum, lo que permite transacciones más baratas y rápidas al tiempo que se beneficia de la seguridad subyacente de Ethereum.\n\nAgrupa muchas transacciones juntas en un \"roll up\" antes de enviarlas para vivir permanentemente en Ethereum.",
         "title": "¿Qué es Optimism?"
       },
@@ -1665,7 +1632,7 @@
         "invalid_referral_code_alert": "Código de referencia inválido. Por favor verifica tu código e inténtalo de nuevo.",
         "no_balance_alert": "Para inscribirte en Puntos, debes tener un saldo de cartera mayor a cero.",
         "referral_link_is_ready": "Tu enlace de referencia está listo",
-        "referral_link_bonus_text": "Tuitea tu enlace de referencia y obtén 250 puntos extra",
+        "referral_link_bonus_text": "Tuitea tu enlace de referencia y ganará el 10% de los puntos obtenidos por cualquier persona que refiera",
         "referral_link_bonus_text_extended": "Además ganarás el 10% de los puntos que obtenga cualquier persona que refieras",
         "complete_onboarding": "Listo",
         "share_to_x": "Compartir en X",
@@ -2921,7 +2888,6 @@
         "sending_title": "Enviando",
         "you_own_this_wallet": "Eres el propietario de esta billetera",
         "first_time_send": "Primera vez enviando",
-        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} envíos anteriores"
       },
       "wallet_connect": {
@@ -3374,78 +3340,10 @@
         "to_claim_on": "para reclamar en %{network}",
         "view_coin": "Ver Moneda",
         "you": "Tú"
-      },
-      "errors": {
-        "header": "Error launching token",
-        "api_request_failed": "API request failed",
-        "api_response_invalid": "API response invalid",
-        "contract_interaction_failed": "Contract interaction failed",
-        "gas_estimation_failed": "Gas estimation failed",
-        "insufficient_funds": "Insufficient funds",
-        "submission_details_missing": "Submission details missing",
-        "transaction_rejected": "Transacción rechazada",
-        "transaction_failed": "Transaction failed",
-        "transaction_simulation_failed": "Transaction simulation failed",
-        "unknown_error": "Unknown error",
-        "wallet_connection_error": "Wallet connection error",
-        "invalid_params": "Invalid parameters",
-        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "Listo",
     "copy": "Copiar",
-    "paste": "Pegar",
-    "market_data": {
-      "vol": "VOL",
-      "price": "PRICE",
-      "mcap": "MCAP"
-    },
-    "king_of_hill": {
-      "title": "Launchpad",
-      "launch": "Launch",
-      "current_king": "CURRENT KING",
-      "last_winner": "Last winner",
-      "no_previous_winner": "No previous winner",
-      "round_ends_in": "Round ends in",
-      "how_it_works": "How it works",
-      "starting_next_round": "Starting next round",
-      "left": "LEFT",
-      "king_of_the_hill": "King of the Hill",
-      "name": "Nombre",
-      "explain_sheet": {
-        "next": "Siguiente",
-        "got_it": "Entendido",
-        "steps": {
-          "step_1": {
-            "title": "The race is live",
-            "subtitle_parts": [
-              "The token with the most",
-              " buy volume ",
-              "right now is the current king."
-            ]
-          },
-          "step_2": {
-            "title": "One crown a day",
-            "subtitle_parts": [
-              "At",
-              " midnight (12:00 AM UTC), ",
-              "the leading token is crowned the daily winner."
-            ]
-          },
-          "step_3": {
-            "title": "Win Rewards",
-            "subtitle_parts": [
-              "Buyers of the current King get",
-              " 2x points."
-            ],
-            "subtitle_two_parts": [
-              "Creators",
-              " earn points ",
-              "when crowned."
-            ]
-          }
-        }
-      }
-    }
+    "paste": "Pegar"
   }
 }
