@@ -140,7 +140,7 @@
         "choose_backup_cloud_description": "Cüzdanınızı güvenli bir şekilde %{cloudPlatform}a yedekleyin, böylece cihazınızı kaybederseniz veya yeni bir cihaz alırsanız geri yükleyebilirsiniz.",
         "choose_backup_manual_description": "Gizli cümlenizi güvenli bir yere kaydederek cüzdanınızı manuel olarak yedekleyin.",
         "enable_cloud_backups_description": "Cüzdanlarınızı manuel olarak yedeklemeyi tercih ediyorsanız, bunu aşağıdan yapabilirsiniz.",
-        "latest_backup": "Son Yedekleme: %{date}",
+        "latest_backup": "En Son Yedekleme: %{date}",
         "back_up_all_wallets_to_cloud": "Tüm Cüzdanları %{cloudPlatformName}a Yedekle",
         "most_recent_backup": "En Son Yedekleme",
         "out_of_date": "Güncel Değil",
@@ -467,9 +467,6 @@
         "quote_error": "Teklif Hatası",
         "no_route_found": "Rota bulunamadı",
         "fetching_quote": "Teklif Alınıyor...",
-        "rainbow_eth_rewards": "Rainbow ETH Rewards",
-        "merkl_claimable": "%{dappName} Vault",
-        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "Bir Ağ Seçin",
         "select_a_token": "Bir Jeton Seçin",
         "amount_to_claim_on_network": "%{network} üzerinde talep için %{amount}",
@@ -479,9 +476,6 @@
         "claimed": "Talep Edildi!",
         "claiming_failed": "Talep Başarısız",
         "insufficient_funds": "Yetersiz Bakiye",
-        "hold_to_claim": "Talep Etmek İçin Basılı Tutun",
-        "creator_lp_fees": "Creator LP Fees",
-        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "%{amount} Talep Et",
         "done": "Tamamlandı",
         "try_again": "Tekrar Deneyin",
@@ -526,37 +520,37 @@
       "analyze_env_variables": "ENV Değişkenlerini Analiz Et",
       "analyze_react_query": "React Sorgusunu Analiz Et",
       "applied": "UYGULANDI",
-      "backups_deleted_successfully": "Yedekler başarılı bir şekilde silindi",
-      "clear_async_storage": "Async depolamayı temizle",
+      "backups_deleted_successfully": "Yedeklemeler Başarıyla Silindi",
+      "clear_async_storage": "AsyncStorage'ı Temizle",
       "clear_pending_txs": "Beklemedeki İşlemleri Temizle",
       "clear_image_cache": "Resim Önbelleğini Temizle",
       "clear_image_metadata_cache": "Resim Metaveri Önbelleğini Temizle",
-      "clear_local_storage": "Yerel depolamayı temizle",
-      "clear_mmkv_storage": "MMKV depolamasını temizle",
+      "clear_local_storage": "Yerel Depolamayı Temizle",
+      "clear_mmkv_storage": "MMKV Depolamayı Temizle",
       "clear_react_query_cache": "React Sorgusu Önbelleğini Temizle",
-      "connect_to_anvil": "Anvil'a bağlan",
+      "connect_to_anvil": "Anvil'e Bağlan",
       "copy_fcm_token": "FCM Jetonunu Kopyala",
       "copy_log_lines": "Günlük Satırlarını Kopyala",
       "copy_signing_wallet_address": "İmza Cüzdanı Adresini Kopyala",
-      "disconnect_to_anvil": "Anvil'tan bağlantıyı kes",
-      "crash_app_render_error": "Uygulamayı çökert (render hatası)",
+      "disconnect_to_anvil": "Anvil'den Bağlantıyı Kes",
+      "crash_app_render_error": "Uygulamayı Çöker (Render Hatası)",
       "enable_testnets": "Testnetleri Etkinleştir",
       "installing_update": "Güncelleme Yükleniyor",
       "navigation_entry_point": "Navigasyon Giriş Noktası",
       "no_update": "Güncelleme Yok",
       "not_applied": "UYGULANMADI",
       "notifications_debug": "Bildirimler Hata Ayıklama",
-      "remove_all_backups": "Tüm yedeklemeleri kaldır",
+      "remove_all_backups": "Tüm Yedekleri Kaldır",
       "keychain": {
         "menu_title": "Anahtar Zincirini Sıfırla",
-        "delete_wallets": "Tüm cüzdanları sil",
+        "delete_wallets": "Tüm Cüzdanları Sil",
         "alert_title": "Dikkat!",
         "alert_body": "🚨🚨🚨 \nBu, tüm cüzdan privat anahtarları ve verilerinizi kalıcı olarak silecektir, lütfen devam etmeden önce her şeyin yedeğini aldığınızdan emin olun!! \n🚨🚨🚨"
       },
-      "restart_app": "Uygulamayı yeniden başlat",
-      "reset_experimental_config": "Deneysel konfigürasyonu sıfırla",
+      "restart_app": "Uygulamayı Yeniden Başlat",
+      "reset_experimental_config": "Deneysel Yapılandırmayı Sıfırla",
       "status": "Durum",
-      "sync_codepush": "Sync kodu itele"
+      "sync_codepush": "CodePush'u Senkronize Et"
     },
     "discover": {
       "pulse": {
@@ -610,7 +604,6 @@
         "expires_in": "%{minutes}m'de sona eriyor",
         "from_divider": "gönderen",
         "to_divider": "kime",
-        "token": "Token",
         "view_on": "%{blockExplorerName}'da Görüntüle",
         "view_on_etherscan": "Etherscan'da Görüntüle",
         "copy_contract_address": "Kontrat Adresini Kopyala"
@@ -661,7 +654,9 @@
         "small_market_try_smaller_amount": "Küçük piyasa — daha küçük bir miktar deneyin",
         "you_are_losing": "%{priceImpact} kaybediyorsun",
         "you_are_losing_prefix": "Kaybediyorsunuz",
-        "label": "Olası kayıp"
+        "no_data": "Piyasa Değeri Bilinmiyor",
+        "label": "Olası kayıp",
+        "no_data_subtitle": "Devam etmeye karar verirseniz, belirtilen miktardan memnun olduğunuzdan emin olun"
       },
       "source": {
         "rainbow": "Oto",
@@ -732,7 +727,6 @@
           "circulating_supply": "Dolaşımdaki Arz",
           "max_supply": "Maksimum Arz",
           "fully_diluted_valuation": "Tam Sular Altında Değer",
-          "created_by": "Created by",
           "market_cap": "Piyasa Değeri",
           "created": "Oluşturuldu",
           "volume_24_hours": "24s hacim",
@@ -753,34 +747,9 @@
         "about": {
           "title": "Hakkında",
           "what_is": "%{assetName} nedir?"
-        },
-        "history": {
-          "tabs": {
-            "all": "Tümü",
-            "buys": "Buys",
-            "sells": "Sells"
-          },
-          "more": "Daha fazla",
-          "less": "Daha az",
-          "bought": "Bought",
-          "sold": "Satıldı",
-          "received": "Alınan",
-          "sent": "Gönderilen",
-          "unknown": "Bilinmeyen"
         }
       },
       "chart": {
-        "candlestick": {
-          "candle_field_labels": {
-            "c": "Kapat",
-            "h": "H",
-            "l": "L",
-            "o": "Open",
-            "t": "",
-            "v": "V"
-          },
-          "no_volume_label": "Hiçbiri"
-        },
         "all_time": "Tüm Zamanlar",
         "date": {
           "months": {
@@ -799,9 +768,9 @@
           }
         },
         "no_chart_data": "Grafik Verisi Yok",
-        "no_price_data": "Fiyat verisi yok",
+        "no_price_data": "Fiyat Verisi Yok",
         "past_timespan": "Geçmiş %{formattedTimespan}",
-        "today": "Bugün",
+        "today": "Geçen Gün",
         "token_pool": "%{tokenName} Havuz"
       },
       "contact_profile": {
@@ -960,8 +929,6 @@
       "farcaster_title": "Kazandınız\nRainbowcast",
       "redacted_description": "Gerçek Gdupi meraklıları için stupi'ye özel bir Rainbow simgesi.",
       "redacted_title": "Redacted Rainbow'un kilidini açtınız",
-      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
-      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "Simgeyi Yakala"
     },
     "explain": {
@@ -1072,7 +1039,7 @@
         "text": "Linea, ConsenSys tarafından geliştirilen güvenli ve düşük maliyetli, Ethereum eşdeğeri Katman 2 blok zinciridir.\n\nGüvenlik ve merkeziyetsizlikten ödün vermeden daha hızlı ve uygun maliyetli işlemler yapılmasını sağlar, bir sonraki milyar kullanıcıyı web3'e getirmeyi hedefler.",
         "title": "Linea nedir?"
       },
-      "opmainnet": {
+      "optimism": {
         "text": "Optimizm, Ethereum'un üzerinde çalışan ve hala Ethereum'un altında yatan güvenlikten faydalanırken daha ucuz ve hızlı işlemleri mümkün kılan bir Katman 2 ağıdır.\n\nBir sürü işlemi, onları kalıcı olarak Ethereum'a göndermeden önce bir \"roll up\" içinde birleştirir.",
         "title": "Optimizm nedir?"
       },
@@ -1665,7 +1632,7 @@
         "invalid_referral_code_alert": "Geçersiz referans kodu. Kodunuzu kontrol edip tekrar deneyin.",
         "no_balance_alert": "Puanlara katılmak için, sıfırdan farklı bir cüzdan bakiyeniz olması gerekir.",
         "referral_link_is_ready": "Referans bağlantınız hazır",
-        "referral_link_bonus_text": "Referans bağlantınızı tweetleyin ve ekstra 250 puan kazanın",
+        "referral_link_bonus_text": "Sevk linkinizi tweetlediğinizde tavsiye ettiğiniz kişilerin kazandığı puanların %10'unu kazanırsınız",
         "referral_link_bonus_text_extended": "Üstelik, referans kodu ile getirdiğiniz herkesin kazandığı puanların %10'unu da kazanacaksınız",
         "complete_onboarding": "Tamamlandı",
         "share_to_x": "X'e paylaş",
@@ -2921,7 +2888,6 @@
         "sending_title": "Gönderiliyor",
         "you_own_this_wallet": "Bu cüzdan sizin",
         "first_time_send": "İlk kez gönderme",
-        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} önceki göndermeler"
       },
       "wallet_connect": {
@@ -3374,78 +3340,10 @@
         "to_claim_on": "%{network}'de talep etmek için",
         "view_coin": "Coin Görüntüleme",
         "you": "Siz"
-      },
-      "errors": {
-        "header": "Error launching token",
-        "api_request_failed": "API request failed",
-        "api_response_invalid": "API response invalid",
-        "contract_interaction_failed": "Contract interaction failed",
-        "gas_estimation_failed": "Gas estimation failed",
-        "insufficient_funds": "Insufficient funds",
-        "submission_details_missing": "Submission details missing",
-        "transaction_rejected": "İşlem reddedildi",
-        "transaction_failed": "Transaction failed",
-        "transaction_simulation_failed": "Transaction simulation failed",
-        "unknown_error": "Unknown error",
-        "wallet_connection_error": "Wallet connection error",
-        "invalid_params": "Invalid parameters",
-        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "Tamamlandı",
     "copy": "Kopyala",
-    "paste": "Yapıştır",
-    "market_data": {
-      "vol": "VOL",
-      "price": "PRICE",
-      "mcap": "MCAP"
-    },
-    "king_of_hill": {
-      "title": "Launchpad",
-      "launch": "Launch",
-      "current_king": "CURRENT KING",
-      "last_winner": "Last winner",
-      "no_previous_winner": "No previous winner",
-      "round_ends_in": "Round ends in",
-      "how_it_works": "How it works",
-      "starting_next_round": "Starting next round",
-      "left": "LEFT",
-      "king_of_the_hill": "King of the Hill",
-      "name": "İsim",
-      "explain_sheet": {
-        "next": "Sonraki",
-        "got_it": "Anladım",
-        "steps": {
-          "step_1": {
-            "title": "The race is live",
-            "subtitle_parts": [
-              "The token with the most",
-              " buy volume ",
-              "right now is the current king."
-            ]
-          },
-          "step_2": {
-            "title": "One crown a day",
-            "subtitle_parts": [
-              "At",
-              " midnight (12:00 AM UTC), ",
-              "the leading token is crowned the daily winner."
-            ]
-          },
-          "step_3": {
-            "title": "Win Rewards",
-            "subtitle_parts": [
-              "Buyers of the current King get",
-              " 2x points."
-            ],
-            "subtitle_two_parts": [
-              "Creators",
-              " earn points ",
-              "when crowned."
-            ]
-          }
-        }
-      }
-    }
+    "paste": "Yapıştır"
   }
 }
