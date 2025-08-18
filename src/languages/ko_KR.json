@@ -467,6 +467,9 @@
         "quote_error": "견적 오류",
         "no_route_found": "경로를 찾을 수 없음",
         "fetching_quote": "견적 가져오는 중...",
+        "rainbow_eth_rewards": "Rainbow ETH Rewards",
+        "merkl_claimable": "%{dappName} Vault",
+        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "네트워크 선택",
         "select_a_token": "토큰 선택",
         "amount_to_claim_on_network": "%{amount}을(를) %{network}에서 청구",
@@ -476,6 +479,9 @@
         "claimed": "청구 완료!",
         "claiming_failed": "청구 실패",
         "insufficient_funds": "자금이 부족합니다",
+        "hold_to_claim": "청구하려면 유지",
+        "creator_lp_fees": "Creator LP Fees",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "%{amount} 청구",
         "done": "완료",
         "try_again": "다시 시도하기",
@@ -604,6 +610,7 @@
         "expires_in": "%{minutes}분 후에 만료됩니다",
         "from_divider": "from",
         "to_divider": "에게",
+        "token": "Token",
         "view_on": "%{blockExplorerName}에서 보기",
         "view_on_etherscan": "Etherscan에서 보기",
         "copy_contract_address": "계약 주소 복사"
@@ -654,9 +661,7 @@
         "small_market_try_smaller_amount": "수요가 작은 시장 — 더 작은 금액을 시도해 보세요",
         "you_are_losing": "당신은 %{priceImpact}를 잃었습니다",
         "you_are_losing_prefix": "손실 중",
-        "no_data": "시장 가치 불명",
-        "label": "가능한 손실",
-        "no_data_subtitle": "계속하기로 결정하시면, 인용된 금액에 만족하는지 확인하세요"
+        "label": "가능한 손실"
       },
       "source": {
         "rainbow": "자동",
@@ -727,6 +732,7 @@
           "circulating_supply": "유통 공급",
           "max_supply": "최대 공급량",
           "fully_diluted_valuation": "완전 희석된 평가",
+          "created_by": "Created by",
           "market_cap": "시가 총액",
           "created": "생성됨",
           "volume_24_hours": "24시간 거래량",
@@ -747,9 +753,34 @@
         "about": {
           "title": "정보",
           "what_is": "%{assetName}에 대해 알고 싶으세요?"
+        },
+        "history": {
+          "tabs": {
+            "all": "모두",
+            "buys": "Buys",
+            "sells": "Sells"
+          },
+          "more": "더 보기",
+          "less": "적게",
+          "bought": "Bought",
+          "sold": "판매한",
+          "received": "받음",
+          "sent": "보냄",
+          "unknown": "미지"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "닫기",
+            "h": "H",
+            "l": "L",
+            "o": "Open",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "없음"
+        },
         "all_time": "모든 시간",
         "date": {
           "months": {
@@ -929,6 +960,8 @@
       "farcaster_title": "잠금 해제\nRainbowcast",
       "redacted_description": "진정한 Gdupi 애호가를 위한 stupi 전용 Rainbow 아이콘입니다.",
       "redacted_title": "잠금 해제 완료\nRedacted Rainbow",
+      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
+      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "아이콘 잡기"
     },
     "explain": {
@@ -2888,6 +2921,7 @@
         "sending_title": "전송중",
         "you_own_this_wallet": "이 지갑은 당신의 것입니다",
         "first_time_send": "처음 보내기",
+        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} 전송 이력"
       },
       "wallet_connect": {
@@ -3340,10 +3374,78 @@
         "to_claim_on": "%{network}에서 청구하기",
         "view_coin": "코인 보기",
         "you": "당신"
+      },
+      "errors": {
+        "header": "Error launching token",
+        "api_request_failed": "API request failed",
+        "api_response_invalid": "API response invalid",
+        "contract_interaction_failed": "Contract interaction failed",
+        "gas_estimation_failed": "Gas estimation failed",
+        "insufficient_funds": "Insufficient funds",
+        "submission_details_missing": "Submission details missing",
+        "transaction_rejected": "거래 거부됨",
+        "transaction_failed": "Transaction failed",
+        "transaction_simulation_failed": "Transaction simulation failed",
+        "unknown_error": "Unknown error",
+        "wallet_connection_error": "Wallet connection error",
+        "invalid_params": "Invalid parameters",
+        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "완료",
     "copy": "복사",
-    "paste": "붙여넣기"
+    "paste": "붙여넣기",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "시가 총액"
+    },
+    "king_of_hill": {
+      "title": "Launchpad",
+      "launch": "Launch",
+      "current_king": "CURRENT KING",
+      "last_winner": "Last winner",
+      "no_previous_winner": "No previous winner",
+      "round_ends_in": "Round ends in",
+      "how_it_works": "How it works",
+      "starting_next_round": "Starting next round",
+      "left": "LEFT",
+      "king_of_the_hill": "King of the Hill",
+      "name": "이름",
+      "explain_sheet": {
+        "next": "다음",
+        "got_it": "알겠습니다",
+        "steps": {
+          "step_1": {
+            "title": "The race is live",
+            "subtitle_parts": [
+              "The token with the most",
+              " buy volume ",
+              "right now is the current king."
+            ]
+          },
+          "step_2": {
+            "title": "One crown a day",
+            "subtitle_parts": [
+              "At",
+              " midnight (12:00 AM UTC), ",
+              "the leading token is crowned the daily winner."
+            ]
+          },
+          "step_3": {
+            "title": "Win Rewards",
+            "subtitle_parts": [
+              "Buyers of the current King get",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Creators",
+              " earn points ",
+              "when crowned."
+            ]
+          }
+        }
+      }
+    }
   }
 }
