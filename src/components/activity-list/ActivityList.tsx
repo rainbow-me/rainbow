@@ -1,7 +1,6 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
-import { FastTransactionCoinRow } from '@/components/coin-row';
+import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
-import { lazyMount } from '@/helpers/lazyMount';
 import { useAccountTransactions } from '@/hooks';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -69,7 +68,7 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 }
 
 type ListItems =
-  | { key: string; type: 'item'; value: TransactionItemForSectionList }
+  | { key: string; type: 'transaction' | 'request'; value: TransactionItemForSectionList }
   | { key: string; type: 'header'; value: TransactionSections }
   | { key: string; type: 'paddingTopForNavBar' };
 
@@ -77,7 +76,12 @@ type ListItems =
 // improves performance and reduces jitter (until move to new architecture)
 const ITEM_HEIGHT = 59;
 
-const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: SharedValue<number>; paddingTopForNavBar?: boolean }) => {
+interface Props {
+  scrollY?: SharedValue<number>;
+  paddingTopForNavBar?: boolean;
+}
+
+export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { sections, nextPage, transactionsCount, remainingItemsLabel, isLoadingTransactions } = useAccountTransactions();
@@ -102,7 +106,7 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
         for (const item of section.data) {
           items.push({
             key: `${accountAddress}${item.chainId}${'requestId' in item ? item.requestId : item.hash}-entry`,
-            type: 'item',
+            type: section.type,
             value: item,
           });
         }
@@ -126,6 +130,10 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
             <ActivityListHeader title={item.value.title} />
           </View>
         );
+      }
+
+      if (item.type === 'request') {
+        return <RequestCoinRow item={item.value} theme={theme} nativeCurrency={nativeCurrency} />;
       }
 
       return (
@@ -196,7 +204,7 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
       })}
     />
   );
-});
+};
 
 const PaddingTopForNavBar = () => {
   return <View style={{ height: 68 }} />;
@@ -209,5 +217,3 @@ const LoadingActivityItem = memo(function LoadingActivityItem() {
     </View>
   );
 });
-
-export default ActivityList;

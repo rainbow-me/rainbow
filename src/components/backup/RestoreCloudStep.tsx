@@ -8,7 +8,6 @@ import { useDimensions } from '@/hooks';
 import * as lang from '@/languages';
 import { logger } from '@/logger';
 import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
-import { KeyboardArea } from 'react-native-keyboard-area';
 
 import { Navigation, useNavigation } from '@/navigation';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
@@ -31,7 +30,6 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { PasswordField } from '../fields';
 import { ImgixImage } from '../images';
 import { Text } from '../text';
-import { maybeAuthenticateWithPIN } from '@/handlers/authentication';
 import { updateWalletsBackedUpState } from '@/state/wallets/updateWalletsBackedUpState';
 
 type ComponentProps = {
@@ -69,10 +67,6 @@ const Masthead = styled(Box).attrs({
   ...padding.object(0, 0, 16),
   gap: 8,
   flexShrink: 0,
-});
-
-const KeyboardSizeView = styled(KeyboardArea)({
-  backgroundColor: ({ theme: { colors } }: ComponentProps) => colors.transparent,
 });
 
 export default function RestoreCloudStep() {
@@ -269,8 +263,6 @@ export default function RestoreCloudStep() {
               </ButtonText>
             </Box>
           )}
-
-          {IS_ANDROID ? <KeyboardSizeView /> : null}
         </Box>
       </Inset>
     </Box>
