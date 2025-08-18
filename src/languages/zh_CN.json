@@ -140,7 +140,7 @@
         "choose_backup_cloud_description": "安全地将您的钱包备份到 %{cloudPlatform}，以便在丢失设备或更换新设备时可以恢复。",
         "choose_backup_manual_description": "通过将您的秘密短语保存在安全位置手动备份您的钱包。",
         "enable_cloud_backups_description": "如果你更喜欢手动备份钱包，你可以在下面进行。",
-        "latest_backup": "上次备份：%{date}",
+        "latest_backup": "最新备份：%{date}",
         "back_up_all_wallets_to_cloud": "将所有钱包备份到 %{cloudPlatformName}",
         "most_recent_backup": "最新备份",
         "out_of_date": "过期",
@@ -467,9 +467,6 @@
         "quote_error": "报价错误",
         "no_route_found": "找不到路由",
         "fetching_quote": "正在获取报价...",
-        "rainbow_eth_rewards": "Rainbow ETH Rewards",
-        "merkl_claimable": "%{dappName} Vault",
-        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "选择一个网络",
         "select_a_token": "选择一个代币",
         "amount_to_claim_on_network": "%{amount} 可在 %{network} 领取",
@@ -479,9 +476,6 @@
         "claimed": "已认领!",
         "claiming_failed": "认领失败",
         "insufficient_funds": "资金不足",
-        "hold_to_claim": "长按领取",
-        "creator_lp_fees": "Creator LP Fees",
-        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "领取 %{amount}",
         "done": "完成",
         "try_again": "再试一次",
@@ -526,24 +520,24 @@
       "analyze_env_variables": "分析环境变量",
       "analyze_react_query": "分析 React Query",
       "applied": "已应用",
-      "backups_deleted_successfully": "备份成功删除",
+      "backups_deleted_successfully": "备份已成功删除",
       "clear_async_storage": "清除异步存储",
       "clear_pending_txs": "清除待处理的交易",
       "clear_image_cache": "清除图片缓存",
       "clear_image_metadata_cache": "清除图片内元数据缓存",
       "clear_local_storage": "清除本地存储",
-      "clear_mmkv_storage": "清除MMKV存储",
+      "clear_mmkv_storage": "清空MMKV存储",
       "clear_react_query_cache": "清除 React Query 缓存",
-      "connect_to_anvil": "连接到anvil",
+      "connect_to_anvil": "连接到 Anvil",
       "copy_fcm_token": "复制 FCM 令牌",
       "copy_log_lines": "复制日志行",
       "copy_signing_wallet_address": "复制签名钱包地址",
-      "disconnect_to_anvil": "断开硬帽连接",
-      "crash_app_render_error": "崩溃应用程序（渲染错误）",
+      "disconnect_to_anvil": "断开与 Anvil 的连接",
+      "crash_app_render_error": "崩溃应用（渲染错误）",
       "enable_testnets": "启用Testnets",
       "installing_update": "正在安装更新",
       "navigation_entry_point": "导航入口点",
-      "no_update": "没有更新",
+      "no_update": "无更新",
       "not_applied": "未应用",
       "notifications_debug": "通知调试",
       "remove_all_backups": "删除所有备份",
@@ -553,10 +547,10 @@
         "alert_title": "小心！",
         "alert_body": "🚨🚨🚨 \n这将永久删除所有的钱包私钥&数据，请确保在继续操作前已经备份了所有数据！ \n🚨🚨🚨"
       },
-      "restart_app": "重启应用",
-      "reset_experimental_config": "重置实验性配置",
+      "restart_app": "重新启动应用",
+      "reset_experimental_config": "重置实验配置",
       "status": "状态",
-      "sync_codepush": "同步代码推送"
+      "sync_codepush": "同步 CodePush"
     },
     "discover": {
       "pulse": {
@@ -610,7 +604,6 @@
         "expires_in": "在 %{minutes}分钟后过期",
         "from_divider": "来自",
         "to_divider": "至",
-        "token": "Token",
         "view_on": "在 %{blockExplorerName}查看",
         "view_on_etherscan": "在 Etherscan 上查看",
         "copy_contract_address": "复制合约地址"
@@ -661,7 +654,9 @@
         "small_market_try_smaller_amount": "市场较小—尝试较小的金额",
         "you_are_losing": "您失去了%{priceImpact}",
         "you_are_losing_prefix": "您正在损失",
-        "label": "可能的损失"
+        "no_data": "市场价值未知",
+        "label": "可能的损失",
+        "no_data_subtitle": "如果您决定继续，请确保您对所引用的金额感到满意"
       },
       "source": {
         "rainbow": "自动",
@@ -732,7 +727,6 @@
           "circulating_supply": "流通供应",
           "max_supply": "最大供给量",
           "fully_diluted_valuation": "全面稀释估值",
-          "created_by": "Created by",
           "market_cap": "市值",
           "created": "创建",
           "volume_24_hours": "24小时交易量",
@@ -753,34 +747,9 @@
         "about": {
           "title": "关于",
           "what_is": "%{assetName} 是什么？"
-        },
-        "history": {
-          "tabs": {
-            "all": "全部",
-            "buys": "Buys",
-            "sells": "Sells"
-          },
-          "more": "更多",
-          "less": "较少",
-          "bought": "Bought",
-          "sold": "已出售",
-          "received": "已收到",
-          "sent": "已发送",
-          "unknown": "未知"
         }
       },
       "chart": {
-        "candlestick": {
-          "candle_field_labels": {
-            "c": "关闭",
-            "h": "H",
-            "l": "L",
-            "o": "Open",
-            "t": "",
-            "v": "V"
-          },
-          "no_volume_label": "无"
-        },
         "all_time": "全时间",
         "date": {
           "months": {
@@ -801,7 +770,7 @@
         "no_chart_data": "无图表数据",
         "no_price_data": "无价格数据",
         "past_timespan": "过去 %{formattedTimespan}",
-        "today": "今天",
+        "today": "过去的一天",
         "token_pool": "%{tokenName} 池"
       },
       "contact_profile": {
@@ -960,8 +929,6 @@
       "farcaster_title": "你已解锁\nRainbowcast",
       "redacted_description": "一个专属的 Rainbow 图标，供真正的 Gdupi 爱好者使用。",
       "redacted_title": "您已解锁\n Redacted Rainbow",
-      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
-      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "解锁图标"
     },
     "explain": {
@@ -1072,7 +1039,7 @@
         "text": "Linea是由ConsenSys开发的安全且低成本的等同于Ethereum的Layer 2区块链。\n\n它能实现更快且更实惠的交易，同时不影响安全性和去中心化，旨在将下一个十亿用户引入web3。",
         "title": "什么是 Linea？"
       },
-      "opmainnet": {
+      "optimism": {
         "text": "Optimism是一个在以太坊之上运行的第二层网络，它能同时利用到以太坊的底层安全性，实现更便宜、更快的交易。\n\n它在发送到以太坊永久存储前将大量交易打包在一个\"滚动更新\"中。",
         "title": "什么是Optimism？"
       },
@@ -1665,7 +1632,7 @@
         "invalid_referral_code_alert": "推荐码无效。请检查您的代码然后再试一次。",
         "no_balance_alert": "要注册消费积分，您的钱包余额必须不为零。",
         "referral_link_is_ready": "您的推荐链接已准备好",
-        "referral_link_bonus_text": "在Twitter上分享您的推荐链接，额外获得250积分",
+        "referral_link_bonus_text": "转发您的推荐链接，您将获得您推荐的任何人所赚取积分的 10%",
         "referral_link_bonus_text_extended": "您将赚取您推荐的每个人所获得积分的10%",
         "complete_onboarding": "完成",
         "share_to_x": "分享至X",
@@ -2921,7 +2888,6 @@
         "sending_title": "发送中",
         "you_own_this_wallet": "您拥有这个钱包",
         "first_time_send": "首次发送",
-        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} 之前的发送"
       },
       "wallet_connect": {
@@ -3374,78 +3340,10 @@
         "to_claim_on": "在 %{network} 上领取",
         "view_coin": "查看代币",
         "you": "你"
-      },
-      "errors": {
-        "header": "Error launching token",
-        "api_request_failed": "API request failed",
-        "api_response_invalid": "API response invalid",
-        "contract_interaction_failed": "Contract interaction failed",
-        "gas_estimation_failed": "Gas estimation failed",
-        "insufficient_funds": "Insufficient funds",
-        "submission_details_missing": "Submission details missing",
-        "transaction_rejected": "交易被拒绝",
-        "transaction_failed": "Transaction failed",
-        "transaction_simulation_failed": "Transaction simulation failed",
-        "unknown_error": "Unknown error",
-        "wallet_connection_error": "Wallet connection error",
-        "invalid_params": "Invalid parameters",
-        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "完成",
     "copy": "复制",
-    "paste": "粘贴",
-    "market_data": {
-      "vol": "VOL",
-      "price": "PRICE",
-      "mcap": "市值"
-    },
-    "king_of_hill": {
-      "title": "Launchpad",
-      "launch": "Launch",
-      "current_king": "CURRENT KING",
-      "last_winner": "Last winner",
-      "no_previous_winner": "No previous winner",
-      "round_ends_in": "Round ends in",
-      "how_it_works": "How it works",
-      "starting_next_round": "Starting next round",
-      "left": "LEFT",
-      "king_of_the_hill": "King of the Hill",
-      "name": "名称",
-      "explain_sheet": {
-        "next": "下一步",
-        "got_it": "我知道了",
-        "steps": {
-          "step_1": {
-            "title": "The race is live",
-            "subtitle_parts": [
-              "The token with the most",
-              " buy volume ",
-              "right now is the current king."
-            ]
-          },
-          "step_2": {
-            "title": "One crown a day",
-            "subtitle_parts": [
-              "At",
-              " midnight (12:00 AM UTC), ",
-              "the leading token is crowned the daily winner."
-            ]
-          },
-          "step_3": {
-            "title": "Win Rewards",
-            "subtitle_parts": [
-              "Buyers of the current King get",
-              " 2x points."
-            ],
-            "subtitle_two_parts": [
-              "Creators",
-              " earn points ",
-              "when crowned."
-            ]
-          }
-        }
-      }
-    }
+    "paste": "粘贴"
   }
 }
