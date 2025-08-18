@@ -1,13 +1,13 @@
-import { activityValues, useRainbowSuperToken } from '@/components/coin-row/FastTransactionCoinRow';
 import { TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { isWideSwapIcon, SwapToastIcon } from '@/components/rainbow-toast/icons/SwapToastIcon';
-import { getToastTitle, getSwapToastNetworkLabel } from '@/components/rainbow-toast/ToastContent';
+import { getSwapToastNetworkLabel, getToastTitle } from '@/components/rainbow-toast/ToastContent';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
 import Spinner from '@/components/Spinner';
 import { Text } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import React, { useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -29,9 +29,9 @@ export function ToastExpandedContent({ toast }: { toast: RainbowToast }) {
 
 function BaseToastExpandedContent({ toast }: { toast: RainbowToast }) {
   const { transaction } = toast;
-  const rainbowSuperToken = useRainbowSuperToken(transaction);
+  const launchToken = useTransactionLaunchToken(transaction);
   const icon = <BaseToastIcon size={EXPANDED_ICON_SIZE} toast={toast} />;
-  const title = rainbowSuperToken?.name || transaction.contract?.name || transaction.description;
+  const title = launchToken?.name || transaction.contract?.name || transaction.description;
   const subtitle = getToastTitle(toast);
   const isLoading = transaction.status === TransactionStatus.pending;
   return <ToastExpandedContentDisplay isLoading={isLoading} icon={icon} label={title} statusLabel={subtitle} transaction={transaction} />;

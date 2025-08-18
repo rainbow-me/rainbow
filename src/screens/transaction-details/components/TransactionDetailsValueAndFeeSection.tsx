@@ -13,9 +13,9 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import ImgixImage from '@/components/images/ImgixImage';
 import { View } from 'react-native';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainId } from '@/state/backendNetworks/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { checkForPendingSwap } from '@/helpers/transactions';
 
 type Props = {
   transaction: RainbowTransaction;

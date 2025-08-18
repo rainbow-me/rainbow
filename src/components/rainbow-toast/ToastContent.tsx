@@ -1,4 +1,3 @@
-import { useRainbowSuperToken } from '@/components/coin-row/FastTransactionCoinRow';
 import { SWAP_ICON_WIDTH, TOAST_ICON_SIZE } from '@/components/rainbow-toast/constants';
 import { BaseToastIcon } from '@/components/rainbow-toast/icons/BaseToastIcon';
 import { SendToastIcon } from '@/components/rainbow-toast/icons/SendToastIcon';
@@ -7,6 +6,7 @@ import { RainbowToast } from '@/components/rainbow-toast/types';
 import { useToastColors } from '@/components/rainbow-toast/useToastColors';
 import { Text } from '@/design-system';
 import { AssetType, TransactionStatus } from '@/entities';
+import { useTransactionLaunchToken } from '@/helpers/transactions';
 import * as lang from '@/languages';
 import React, { memo } from 'react';
 import { Text as RNText, StyleSheet, View } from 'react-native';
@@ -139,10 +139,10 @@ function SendToastContent({ toast }: { toast: RainbowToast }) {
 
 function BaseToastContent({ toast }: { toast: RainbowToast }) {
   const { transaction } = toast;
-  const rainbowSuperToken = useRainbowSuperToken(transaction);
+  const launchToken = useTransactionLaunchToken(transaction);
   const icon = <BaseToastIcon toast={toast} />;
   const title = getToastTitle(toast);
-  const subtitle = rainbowSuperToken?.name || transaction.contract?.name || transaction.description;
+  const subtitle = launchToken?.name || transaction.contract?.name || transaction.description;
 
   return (
     <ToastContentDisplay
