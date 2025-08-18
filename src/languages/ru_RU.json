@@ -140,7 +140,7 @@
         "choose_backup_cloud_description": "Защитите ваш кошелек резервной копией в %{cloudPlatform}, чтобы вы могли восстановить его в случае потери устройства или приобретения нового.",
         "choose_backup_manual_description": "Создайте резервную копию вашего кошелька вручную, сохранив секретную фразу в безопасном месте.",
         "enable_cloud_backups_description": "Если вы предпочитаете создавать резервные копии ваших кошельков вручную, вы можете сделать это ниже.",
-        "latest_backup": "Последняя резервная копия: %{date}",
+        "latest_backup": "Последнее резервное копирование: %{date}",
         "back_up_all_wallets_to_cloud": "Создать резервные копии всех кошельков в %{cloudPlatformName}",
         "most_recent_backup": "Самая недавняя резервная копия",
         "out_of_date": "Просрочено",
@@ -467,9 +467,6 @@
         "quote_error": "Ошибка котировки",
         "no_route_found": "Маршрут не найден",
         "fetching_quote": "Получение котировки...",
-        "rainbow_eth_rewards": "Rainbow ETH Rewards",
-        "merkl_claimable": "%{dappName} Vault",
-        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "Выберите сеть",
         "select_a_token": "Выберите токен",
         "amount_to_claim_on_network": "%{amount} для получения на %{network}",
@@ -479,9 +476,6 @@
         "claimed": "Получено!",
         "claiming_failed": "Получение не удалось",
         "insufficient_funds": "Недостаточно средств",
-        "hold_to_claim": "Удерживайте, чтобы получить",
-        "creator_lp_fees": "Creator LP Fees",
-        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Получить %{amount}",
         "done": "Готово",
         "try_again": "Попробуйте снова",
@@ -527,19 +521,19 @@
       "analyze_react_query": "Анализировать запросы React",
       "applied": "ПРИМЕНЕНО",
       "backups_deleted_successfully": "Резервные копии успешно удалены",
-      "clear_async_storage": "Очистить асинхронное хранилище",
+      "clear_async_storage": "Очистить AsyncStorage",
       "clear_pending_txs": "Очистить ожидающие транзакции",
       "clear_image_cache": "Очистить кэш изображений",
       "clear_image_metadata_cache": "Очистить кэш метаданных изображения",
       "clear_local_storage": "Очистить локальное хранилище",
       "clear_mmkv_storage": "Очистить хранилище MMKV",
       "clear_react_query_cache": "Очистить кэш React Query",
-      "connect_to_anvil": "Подключиться к anvil",
+      "connect_to_anvil": "Подключиться к Anvil",
       "copy_fcm_token": "Копировать FCM-токен",
       "copy_log_lines": "Копировать строки журнала",
       "copy_signing_wallet_address": "Скопировать адрес подписания кошелька",
-      "disconnect_to_anvil": "Отключиться от anvil",
-      "crash_app_render_error": "Падение приложения (ошибка отображения)",
+      "disconnect_to_anvil": "Отключиться от Anvil",
+      "crash_app_render_error": "Сбой приложения (Ошибка рендеринга)",
       "enable_testnets": "Включить тестовые сети",
       "installing_update": "Установка обновления",
       "navigation_entry_point": "Точка входа навигации",
@@ -553,10 +547,10 @@
         "alert_title": "Осторожно!",
         "alert_body": "🚨🚨🚨 \nЭто навсегда удалит все приватные ключи и данные ваших кошельков. Пожалуйста, убедитесь, что у вас есть резервная копия всей информации перед продолжением!! \n🚨🚨🚨"
       },
-      "restart_app": "Перезапустить приложение",
+      "restart_app": "Перезагрузить приложение",
       "reset_experimental_config": "Сбросить экспериментальную конфигурацию",
       "status": "Статус",
-      "sync_codepush": "Синхронизировать кодпуш"
+      "sync_codepush": "Синхронизировать CodePush"
     },
     "discover": {
       "pulse": {
@@ -610,7 +604,6 @@
         "expires_in": "Истекает через %{minutes}мин",
         "from_divider": "отправитель",
         "to_divider": "кому",
-        "token": "Token",
         "view_on": "Посмотреть на %{blockExplorerName}",
         "view_on_etherscan": "Посмотреть на Etherscan",
         "copy_contract_address": "Скопировать адрес контракта"
@@ -661,7 +654,9 @@
         "small_market_try_smaller_amount": "Небольшой рынок — попробуйте меньшую сумму",
         "you_are_losing": "Вы теряете %{priceImpact}",
         "you_are_losing_prefix": "Вы теряете",
-        "label": "Возможная потеря"
+        "no_data": "Рыночная стоимость неизвестна",
+        "label": "Возможная потеря",
+        "no_data_subtitle": "Если вы решите продолжить, убедитесь, что вас устраивает указанное количество"
       },
       "source": {
         "rainbow": "Авто",
@@ -732,7 +727,6 @@
           "circulating_supply": "Циркулирующее предложение",
           "max_supply": "Максимальное предложение",
           "fully_diluted_valuation": "Оценка при полном выпуске",
-          "created_by": "Created by",
           "market_cap": "Рыночная капитализация",
           "created": "Создан",
           "volume_24_hours": "Торговый объем за 24 часа",
@@ -753,34 +747,9 @@
         "about": {
           "title": "О компании",
           "what_is": "Что такое %{assetName}?"
-        },
-        "history": {
-          "tabs": {
-            "all": "Все",
-            "buys": "Buys",
-            "sells": "Sells"
-          },
-          "more": "Больше",
-          "less": "Меньше",
-          "bought": "Bought",
-          "sold": "Проданные",
-          "received": "Получено",
-          "sent": "Отправлено",
-          "unknown": "Неизвестно"
         }
       },
       "chart": {
-        "candlestick": {
-          "candle_field_labels": {
-            "c": "Закрыть",
-            "h": "H",
-            "l": "L",
-            "o": "Open",
-            "t": "",
-            "v": "V"
-          },
-          "no_volume_label": "Нет"
-        },
         "all_time": "За все время",
         "date": {
           "months": {
@@ -801,7 +770,7 @@
         "no_chart_data": "Нет данных графика",
         "no_price_data": "Нет данных о цене",
         "past_timespan": "Прошлое %{formattedTimespan}",
-        "today": "Сегодня",
+        "today": "Прошедший день",
         "token_pool": "%{tokenName} Пул"
       },
       "contact_profile": {
@@ -960,8 +929,6 @@
       "farcaster_title": "Вы разблокировали\nRainbowcast",
       "redacted_description": "Эксклюзивная иконка Rainbow для истинных ценителей Gdupi.",
       "redacted_title": "Вы разблокировали\nСкрытую Rainbow",
-      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
-      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "Разблокировать значок"
     },
     "explain": {
@@ -1072,7 +1039,7 @@
         "text": "Linea — это безопасный, экономичный блокчейн второго уровня, эквивалентный Ethereum, разработанный ConsenSys.\n\nОна позволяет осуществлять транзакции быстрее и дешевле без ущерба для безопасности и децентрализации, с целью привлечь следующий миллиард пользователей к web3.",
         "title": "Что такое Linea?"
       },
-      "opmainnet": {
+      "optimism": {
         "text": "Оптимизм - это сеть уровня 2, работающая поверх Ethereum, которая позволяет совершать более дешевые и быстрые транзакции, сохраняя при этом преимущества базовой безопасности Ethereum.\n\nОна объединяет множество транзакций вместе в виде «рулонов», прежде чем отправить их в Ethereum для постоянного хранения.",
         "title": "Что такое Оптимизм?"
       },
@@ -1665,7 +1632,7 @@
         "invalid_referral_code_alert": "Неверный реферальный код. Пожалуйста, дважды проверьте код и попробуйте ещё раз.",
         "no_balance_alert": "Чтобы зарегистрироваться в Points, у вас должен быть ненулевой баланс кошелька.",
         "referral_link_is_ready": "Ваша реферальная ссылка готова",
-        "referral_link_bonus_text": "Отправьте твит с вашей реферальной ссылкой и получите дополнительно 250 баллов",
+        "referral_link_bonus_text": "Твитните свою реферальную ссылку, и вы получите 10% от очков, заработанных любым привлеченным вами человеком",
         "referral_link_bonus_text_extended": "К тому же вы заработаете 10% баллов, набранных каждым приглашенным вами пользователем",
         "complete_onboarding": "Готово",
         "share_to_x": "Поделиться с X",
@@ -2921,7 +2888,6 @@
         "sending_title": "Отправка",
         "you_own_this_wallet": "Вы владеете этим кошельком",
         "first_time_send": "Первая отправка",
-        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} предыдущих отправок"
       },
       "wallet_connect": {
@@ -3374,78 +3340,10 @@
         "to_claim_on": "чтобы получить на %{network}",
         "view_coin": "Посмотреть монету",
         "you": "Вы"
-      },
-      "errors": {
-        "header": "Error launching token",
-        "api_request_failed": "API request failed",
-        "api_response_invalid": "API response invalid",
-        "contract_interaction_failed": "Contract interaction failed",
-        "gas_estimation_failed": "Gas estimation failed",
-        "insufficient_funds": "Insufficient funds",
-        "submission_details_missing": "Submission details missing",
-        "transaction_rejected": "Транзакция отклонена",
-        "transaction_failed": "Transaction failed",
-        "transaction_simulation_failed": "Transaction simulation failed",
-        "unknown_error": "Unknown error",
-        "wallet_connection_error": "Wallet connection error",
-        "invalid_params": "Invalid parameters",
-        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "Готово",
     "copy": "Копировать",
-    "paste": "Вставить",
-    "market_data": {
-      "vol": "VOL",
-      "price": "PRICE",
-      "mcap": "MCAP"
-    },
-    "king_of_hill": {
-      "title": "Launchpad",
-      "launch": "Launch",
-      "current_king": "CURRENT KING",
-      "last_winner": "Last winner",
-      "no_previous_winner": "No previous winner",
-      "round_ends_in": "Round ends in",
-      "how_it_works": "How it works",
-      "starting_next_round": "Starting next round",
-      "left": "LEFT",
-      "king_of_the_hill": "King of the Hill",
-      "name": "Имя",
-      "explain_sheet": {
-        "next": "Далее",
-        "got_it": "Понятно",
-        "steps": {
-          "step_1": {
-            "title": "The race is live",
-            "subtitle_parts": [
-              "The token with the most",
-              " buy volume ",
-              "right now is the current king."
-            ]
-          },
-          "step_2": {
-            "title": "One crown a day",
-            "subtitle_parts": [
-              "At",
-              " midnight (12:00 AM UTC), ",
-              "the leading token is crowned the daily winner."
-            ]
-          },
-          "step_3": {
-            "title": "Win Rewards",
-            "subtitle_parts": [
-              "Buyers of the current King get",
-              " 2x points."
-            ],
-            "subtitle_two_parts": [
-              "Creators",
-              " earn points ",
-              "when crowned."
-            ]
-          }
-        }
-      }
-    }
+    "paste": "Вставить"
   }
 }
