@@ -467,6 +467,9 @@
         "quote_error": "Erreur de Devis",
         "no_route_found": "Aucun itinéraire trouvé",
         "fetching_quote": "Récupération du devis...",
+        "rainbow_eth_rewards": "Rainbow ETH Rewards",
+        "merkl_claimable": "%{dappName} Vault",
+        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "Sélectionnez un réseau",
         "select_a_token": "Sélectionner un token",
         "amount_to_claim_on_network": "%{amount} à réclamer sur %{network}",
@@ -476,6 +479,9 @@
         "claimed": "Réclamé!",
         "claiming_failed": "Échec de réclamation",
         "insufficient_funds": "Fonds insuffisants",
+        "hold_to_claim": "Tenir pour Réclamer",
+        "creator_lp_fees": "Creator LP Fees",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Réclamer %{amount}",
         "done": "Terminé",
         "try_again": "Réessayer",
@@ -604,6 +610,7 @@
         "expires_in": "Expire dans %{minutes}m",
         "from_divider": "de",
         "to_divider": "à",
+        "token": "Token",
         "view_on": "Voir sur %{blockExplorerName}",
         "view_on_etherscan": "Voir sur Etherscan",
         "copy_contract_address": "Copier l'adresse du contrat"
@@ -654,9 +661,7 @@
         "small_market_try_smaller_amount": "Petit marché — essayez une plus petite quantité",
         "you_are_losing": "Vous perdez %{priceImpact}",
         "you_are_losing_prefix": "Vous perdez",
-        "no_data": "Valeur de marché inconnue",
-        "label": "Perte possible",
-        "no_data_subtitle": "Si vous décidez de continuer, assurez-vous d'être satisfait de la quantité indiquée"
+        "label": "Perte possible"
       },
       "source": {
         "rainbow": "Auto",
@@ -727,6 +732,7 @@
           "circulating_supply": "Offre en circulation",
           "max_supply": "Approvisionnement maximum",
           "fully_diluted_valuation": "Valorisation entièrement diluée",
+          "created_by": "Created by",
           "market_cap": "Capitalisation boursière",
           "created": "Créé",
           "volume_24_hours": "Volume sur 24 heures",
@@ -747,9 +753,34 @@
         "about": {
           "title": "À propos",
           "what_is": "Qu'est-ce que %{assetName}?"
+        },
+        "history": {
+          "tabs": {
+            "all": "Tout",
+            "buys": "Buys",
+            "sells": "Sells"
+          },
+          "more": "Plus",
+          "less": "Moins",
+          "bought": "Bought",
+          "sold": "Vendu",
+          "received": "Reçu",
+          "sent": "Envoyé",
+          "unknown": "Inconnue"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Fermer",
+            "h": "H",
+            "l": "L",
+            "o": "Open",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "Aucun"
+        },
         "all_time": "Tout Temps",
         "date": {
           "months": {
@@ -929,6 +960,8 @@
       "farcaster_title": "Vous avez débloqué\nRainbowcast",
       "redacted_description": "Une icône Rainbow exclusive pour les véritables amateurs de Gdupi.",
       "redacted_title": "Vous avez débloqué\nRedacted Rainbow",
+      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
+      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "Snag the icon :)"
     },
     "explain": {
@@ -2888,6 +2921,7 @@
         "sending_title": "Envoi",
         "you_own_this_wallet": "Vous possédez ce portefeuille",
         "first_time_send": "Premier envoi",
+        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} envois précédents"
       },
       "wallet_connect": {
@@ -3340,10 +3374,78 @@
         "to_claim_on": "à réclamer sur %{network}",
         "view_coin": "Voir Pièce",
         "you": "Vous"
+      },
+      "errors": {
+        "header": "Error launching token",
+        "api_request_failed": "API request failed",
+        "api_response_invalid": "API response invalid",
+        "contract_interaction_failed": "Contract interaction failed",
+        "gas_estimation_failed": "Gas estimation failed",
+        "insufficient_funds": "Insufficient funds",
+        "submission_details_missing": "Submission details missing",
+        "transaction_rejected": "Transaction rejetée",
+        "transaction_failed": "Transaction failed",
+        "transaction_simulation_failed": "Transaction simulation failed",
+        "unknown_error": "Unknown error",
+        "wallet_connection_error": "Wallet connection error",
+        "invalid_params": "Invalid parameters",
+        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "Terminé",
     "copy": "Copier",
-    "paste": "Coller"
+    "paste": "Coller",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "CAPITALISATION"
+    },
+    "king_of_hill": {
+      "title": "Launchpad",
+      "launch": "Launch",
+      "current_king": "CURRENT KING",
+      "last_winner": "Last winner",
+      "no_previous_winner": "No previous winner",
+      "round_ends_in": "Round ends in",
+      "how_it_works": "How it works",
+      "starting_next_round": "Starting next round",
+      "left": "LEFT",
+      "king_of_the_hill": "King of the Hill",
+      "name": "Nom",
+      "explain_sheet": {
+        "next": "Suivant",
+        "got_it": "Compris",
+        "steps": {
+          "step_1": {
+            "title": "The race is live",
+            "subtitle_parts": [
+              "The token with the most",
+              " buy volume ",
+              "right now is the current king."
+            ]
+          },
+          "step_2": {
+            "title": "One crown a day",
+            "subtitle_parts": [
+              "At",
+              " midnight (12:00 AM UTC), ",
+              "the leading token is crowned the daily winner."
+            ]
+          },
+          "step_3": {
+            "title": "Win Rewards",
+            "subtitle_parts": [
+              "Buyers of the current King get",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Creators",
+              " earn points ",
+              "when crowned."
+            ]
+          }
+        }
+      }
+    }
   }
 }
