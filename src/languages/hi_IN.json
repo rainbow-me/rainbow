@@ -467,6 +467,9 @@
         "quote_error": "कोट त्रुटि",
         "no_route_found": "कोई मार्ग नहीं मिला",
         "fetching_quote": "कोट प्राप्त कर रहे हैं...",
+        "rainbow_eth_rewards": "Rainbow ETH Rewards",
+        "merkl_claimable": "%{dappName} Vault",
+        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "एक नेटवर्क चुनें",
         "select_a_token": "एक टोकन का चयन करें",
         "amount_to_claim_on_network": "%{amount} को %{network} पर दावा करने के लिए",
@@ -476,6 +479,9 @@
         "claimed": "दावा किया हुआ!",
         "claiming_failed": "दावा विफल",
         "insufficient_funds": "अपर्याप्त धन",
+        "hold_to_claim": "दावे के लिए दबाए रखें",
+        "creator_lp_fees": "Creator LP Fees",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "दावा %{amount}",
         "done": "हो गया",
         "try_again": "फिर से प्रयास करें",
@@ -604,6 +610,7 @@
         "expires_in": "में समयावधि समाप्त %{minutes}m",
         "from_divider": "से",
         "to_divider": "करने के लिए",
+        "token": "Token",
         "view_on": "देखें %{blockExplorerName}पर",
         "view_on_etherscan": "Etherscan पर देखें",
         "copy_contract_address": "कॉंट्रैक्ट एड्रेस कॉपी करें"
@@ -654,9 +661,7 @@
         "small_market_try_smaller_amount": "छोटा बाजार — एक छोटी राशि आज़माएँ",
         "you_are_losing": "आप %{priceImpact} खो रहे हैं",
         "you_are_losing_prefix": "आप खो रहे हैं",
-        "no_data": "बाजार मूल्य अज्ञात",
-        "label": "संभावित हानि",
-        "no_data_subtitle": "यदि आप जारी रखने का निर्णय लेते हैं, तो सुनिश्चित करें कि आप उद्धृत राशि से संतुष्ट हैं"
+        "label": "संभावित हानि"
       },
       "source": {
         "rainbow": "ऑटो",
@@ -727,6 +732,7 @@
           "circulating_supply": "प्रचलन आपूर्ति",
           "max_supply": "अधिकतम आपूर्ति",
           "fully_diluted_valuation": "पूरी तरह से विलय का मूल्यांकन",
+          "created_by": "Created by",
           "market_cap": "मार्केट कैप",
           "created": "निर्मित",
           "volume_24_hours": "24 घंटे की मात्रा",
@@ -747,9 +753,34 @@
         "about": {
           "title": "के बारे में",
           "what_is": "%{assetName} क्या है?"
+        },
+        "history": {
+          "tabs": {
+            "all": "सभी",
+            "buys": "Buys",
+            "sells": "Sells"
+          },
+          "more": "अधिक",
+          "less": "कम",
+          "bought": "Bought",
+          "sold": "बेच दिया",
+          "received": "प्राप्त किया",
+          "sent": "भेजा",
+          "unknown": "अज्ञात"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "बंद करें",
+            "h": "H",
+            "l": "L",
+            "o": "Open",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "कोई नहीं"
+        },
         "all_time": "सभी समय",
         "date": {
           "months": {
@@ -929,6 +960,8 @@
       "farcaster_title": "आपने अनलॉक कर लिया है\nरेनबो कास्ट",
       "redacted_description": "सच्चे Gdupi एनजॉयर्स के लिए एक अनन्य Rainbow आइकन।",
       "redacted_title": "आपने\nरेडैक्टेड रेनबो को अनलॉक कर दिया",
+      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
+      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "आइकन पकड़ें"
     },
     "explain": {
@@ -2888,6 +2921,7 @@
         "sending_title": "भेज रहा है",
         "you_own_this_wallet": "आपका यह वॉलेट है",
         "first_time_send": "पहली बार भेजें",
+        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} पिछला भेजा गया"
       },
       "wallet_connect": {
@@ -3340,10 +3374,78 @@
         "to_claim_on": "%{network} पर दावा करने के लिए",
         "view_coin": "सिक्का देखें",
         "you": "तुम"
+      },
+      "errors": {
+        "header": "Error launching token",
+        "api_request_failed": "API request failed",
+        "api_response_invalid": "API response invalid",
+        "contract_interaction_failed": "Contract interaction failed",
+        "gas_estimation_failed": "Gas estimation failed",
+        "insufficient_funds": "Insufficient funds",
+        "submission_details_missing": "Submission details missing",
+        "transaction_rejected": "लेनदेन अस्वीकृत",
+        "transaction_failed": "Transaction failed",
+        "transaction_simulation_failed": "Transaction simulation failed",
+        "unknown_error": "Unknown error",
+        "wallet_connection_error": "Wallet connection error",
+        "invalid_params": "Invalid parameters",
+        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "हो गया",
     "copy": "कॉपी",
-    "paste": "चिपकाएं"
+    "paste": "चिपकाएं",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "एमसीएपी"
+    },
+    "king_of_hill": {
+      "title": "Launchpad",
+      "launch": "Launch",
+      "current_king": "CURRENT KING",
+      "last_winner": "Last winner",
+      "no_previous_winner": "No previous winner",
+      "round_ends_in": "Round ends in",
+      "how_it_works": "How it works",
+      "starting_next_round": "Starting next round",
+      "left": "LEFT",
+      "king_of_the_hill": "King of the Hill",
+      "name": "नाम",
+      "explain_sheet": {
+        "next": "अगला",
+        "got_it": "समझ गया",
+        "steps": {
+          "step_1": {
+            "title": "The race is live",
+            "subtitle_parts": [
+              "The token with the most",
+              " buy volume ",
+              "right now is the current king."
+            ]
+          },
+          "step_2": {
+            "title": "One crown a day",
+            "subtitle_parts": [
+              "At",
+              " midnight (12:00 AM UTC), ",
+              "the leading token is crowned the daily winner."
+            ]
+          },
+          "step_3": {
+            "title": "Win Rewards",
+            "subtitle_parts": [
+              "Buyers of the current King get",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Creators",
+              " earn points ",
+              "when crowned."
+            ]
+          }
+        }
+      }
+    }
   }
 }
