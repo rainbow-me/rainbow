@@ -467,6 +467,9 @@
         "quote_error": "見積りエラー",
         "no_route_found": "ルートが見つかりません",
         "fetching_quote": "見積もりを取得中...",
+        "rainbow_eth_rewards": "Rainbow ETH Rewards",
+        "merkl_claimable": "%{dappName} Vault",
+        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "ネットワークを選択",
         "select_a_token": "トークンを選択",
         "amount_to_claim_on_network": "%{amount}を%{network}で請求する",
@@ -476,6 +479,9 @@
         "claimed": "主張済み!",
         "claiming_failed": "主張失敗",
         "insufficient_funds": "資金が不足しています",
+        "hold_to_claim": "主張するまでホールド",
+        "creator_lp_fees": "Creator LP Fees",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "%{amount}を請求",
         "done": "完了",
         "try_again": "再試行",
@@ -604,6 +610,7 @@
         "expires_in": "%{minutes}分後に期限切れになります",
         "from_divider": "送信元",
         "to_divider": "to",
+        "token": "Token",
         "view_on": "%{blockExplorerName}で表示する",
         "view_on_etherscan": "Etherscanで見る",
         "copy_contract_address": "契約アドレスをコピー"
@@ -654,9 +661,7 @@
         "small_market_try_smaller_amount": "小さな市場 — より小さい金額を試してください",
         "you_are_losing": "価格インパクト %{priceImpact}",
         "you_are_losing_prefix": "損失が発生しています",
-        "no_data": "市場価値不明",
-        "label": "可能な損失",
-        "no_data_subtitle": "続行する場合は、提示された金額に満足していることを確認してください。"
+        "label": "可能な損失"
       },
       "source": {
         "rainbow": "自動",
@@ -727,6 +732,7 @@
           "circulating_supply": "流通供給量",
           "max_supply": "最大供給量",
           "fully_diluted_valuation": "完全に希釈された時価総額",
+          "created_by": "Created by",
           "market_cap": "時価総額",
           "created": "作成日",
           "volume_24_hours": "24時間のボリューム",
@@ -747,9 +753,34 @@
         "about": {
           "title": "概要",
           "what_is": "%{assetName}とは何ですか？"
+        },
+        "history": {
+          "tabs": {
+            "all": "全て",
+            "buys": "Buys",
+            "sells": "Sells"
+          },
+          "more": "もっと",
+          "less": "少ない",
+          "bought": "Bought",
+          "sold": "売却済み",
+          "received": "受信済み",
+          "sent": "送信済み",
+          "unknown": "不明"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "閉じる",
+            "h": "H",
+            "l": "L",
+            "o": "Open",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "なし"
+        },
         "all_time": "すべての時間",
         "date": {
           "months": {
@@ -929,6 +960,8 @@
       "farcaster_title": "アンロック\nRainbowcast",
       "redacted_description": "真のGdupi愛好者のための独占的なRainbowアイコン。",
       "redacted_title": "ロック解除されました\nRedacted Rainbow",
+      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
+      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "アイコンをキャッチ"
     },
     "explain": {
@@ -2888,6 +2921,7 @@
         "sending_title": "送信中",
         "you_own_this_wallet": "このウォレットはあなたのものです",
         "first_time_send": "初めての送信",
+        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} 回の前の送信"
       },
       "wallet_connect": {
@@ -3340,10 +3374,78 @@
         "to_claim_on": "%{network}で請求",
         "view_coin": "コインを見る",
         "you": "あなた"
+      },
+      "errors": {
+        "header": "Error launching token",
+        "api_request_failed": "API request failed",
+        "api_response_invalid": "API response invalid",
+        "contract_interaction_failed": "Contract interaction failed",
+        "gas_estimation_failed": "Gas estimation failed",
+        "insufficient_funds": "Insufficient funds",
+        "submission_details_missing": "Submission details missing",
+        "transaction_rejected": "トランザクションが拒否されました",
+        "transaction_failed": "Transaction failed",
+        "transaction_simulation_failed": "Transaction simulation failed",
+        "unknown_error": "Unknown error",
+        "wallet_connection_error": "Wallet connection error",
+        "invalid_params": "Invalid parameters",
+        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "完了",
     "copy": "Copy",
-    "paste": "貼り付け"
+    "paste": "貼り付け",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "時価総額"
+    },
+    "king_of_hill": {
+      "title": "Launchpad",
+      "launch": "Launch",
+      "current_king": "CURRENT KING",
+      "last_winner": "Last winner",
+      "no_previous_winner": "No previous winner",
+      "round_ends_in": "Round ends in",
+      "how_it_works": "How it works",
+      "starting_next_round": "Starting next round",
+      "left": "LEFT",
+      "king_of_the_hill": "King of the Hill",
+      "name": "名前",
+      "explain_sheet": {
+        "next": "次へ",
+        "got_it": "理解しました",
+        "steps": {
+          "step_1": {
+            "title": "The race is live",
+            "subtitle_parts": [
+              "The token with the most",
+              " buy volume ",
+              "right now is the current king."
+            ]
+          },
+          "step_2": {
+            "title": "One crown a day",
+            "subtitle_parts": [
+              "At",
+              " midnight (12:00 AM UTC), ",
+              "the leading token is crowned the daily winner."
+            ]
+          },
+          "step_3": {
+            "title": "Win Rewards",
+            "subtitle_parts": [
+              "Buyers of the current King get",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Creators",
+              " earn points ",
+              "when crowned."
+            ]
+          }
+        }
+      }
+    }
   }
 }
