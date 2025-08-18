@@ -467,6 +467,9 @@
         "quote_error": "报价错误",
         "no_route_found": "找不到路由",
         "fetching_quote": "正在获取报价...",
+        "rainbow_eth_rewards": "Rainbow ETH Rewards",
+        "merkl_claimable": "%{dappName} Vault",
+        "merkl_claimable_description": "%{assetSymbols} Strategy",
         "select_a_network": "选择一个网络",
         "select_a_token": "选择一个代币",
         "amount_to_claim_on_network": "%{amount} 可在 %{network} 领取",
@@ -476,6 +479,9 @@
         "claimed": "已认领!",
         "claiming_failed": "认领失败",
         "insufficient_funds": "资金不足",
+        "hold_to_claim": "长按领取",
+        "creator_lp_fees": "Creator LP Fees",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "领取 %{amount}",
         "done": "完成",
         "try_again": "再试一次",
@@ -604,6 +610,7 @@
         "expires_in": "在 %{minutes}分钟后过期",
         "from_divider": "来自",
         "to_divider": "至",
+        "token": "Token",
         "view_on": "在 %{blockExplorerName}查看",
         "view_on_etherscan": "在 Etherscan 上查看",
         "copy_contract_address": "复制合约地址"
@@ -654,9 +661,7 @@
         "small_market_try_smaller_amount": "市场较小—尝试较小的金额",
         "you_are_losing": "您失去了%{priceImpact}",
         "you_are_losing_prefix": "您正在损失",
-        "no_data": "市场价值未知",
-        "label": "可能的损失",
-        "no_data_subtitle": "如果您决定继续，请确保您对所引用的金额感到满意"
+        "label": "可能的损失"
       },
       "source": {
         "rainbow": "自动",
@@ -727,6 +732,7 @@
           "circulating_supply": "流通供应",
           "max_supply": "最大供给量",
           "fully_diluted_valuation": "全面稀释估值",
+          "created_by": "Created by",
           "market_cap": "市值",
           "created": "创建",
           "volume_24_hours": "24小时交易量",
@@ -747,9 +753,34 @@
         "about": {
           "title": "关于",
           "what_is": "%{assetName} 是什么？"
+        },
+        "history": {
+          "tabs": {
+            "all": "全部",
+            "buys": "Buys",
+            "sells": "Sells"
+          },
+          "more": "更多",
+          "less": "较少",
+          "bought": "Bought",
+          "sold": "已出售",
+          "received": "已收到",
+          "sent": "已发送",
+          "unknown": "未知"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "关闭",
+            "h": "H",
+            "l": "L",
+            "o": "Open",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "无"
+        },
         "all_time": "全时间",
         "date": {
           "months": {
@@ -929,6 +960,8 @@
       "farcaster_title": "你已解锁\nRainbowcast",
       "redacted_description": "一个专属的 Rainbow 图标，供真正的 Gdupi 爱好者使用。",
       "redacted_title": "您已解锁\n Redacted Rainbow",
+      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
+      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "解锁图标"
     },
     "explain": {
@@ -2888,6 +2921,7 @@
         "sending_title": "发送中",
         "you_own_this_wallet": "您拥有这个钱包",
         "first_time_send": "首次发送",
+        "previous_send": "%{number} previous send",
         "previous_sends": "%{number} 之前的发送"
       },
       "wallet_connect": {
@@ -3340,10 +3374,78 @@
         "to_claim_on": "在 %{network} 上领取",
         "view_coin": "查看代币",
         "you": "你"
+      },
+      "errors": {
+        "header": "Error launching token",
+        "api_request_failed": "API request failed",
+        "api_response_invalid": "API response invalid",
+        "contract_interaction_failed": "Contract interaction failed",
+        "gas_estimation_failed": "Gas estimation failed",
+        "insufficient_funds": "Insufficient funds",
+        "submission_details_missing": "Submission details missing",
+        "transaction_rejected": "交易被拒绝",
+        "transaction_failed": "Transaction failed",
+        "transaction_simulation_failed": "Transaction simulation failed",
+        "unknown_error": "Unknown error",
+        "wallet_connection_error": "Wallet connection error",
+        "invalid_params": "Invalid parameters",
+        "missing_required_param": "Missing required parameters"
       }
     },
     "done": "完成",
     "copy": "复制",
-    "paste": "粘贴"
+    "paste": "粘贴",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "市值"
+    },
+    "king_of_hill": {
+      "title": "Launchpad",
+      "launch": "Launch",
+      "current_king": "CURRENT KING",
+      "last_winner": "Last winner",
+      "no_previous_winner": "No previous winner",
+      "round_ends_in": "Round ends in",
+      "how_it_works": "How it works",
+      "starting_next_round": "Starting next round",
+      "left": "LEFT",
+      "king_of_the_hill": "King of the Hill",
+      "name": "名称",
+      "explain_sheet": {
+        "next": "下一步",
+        "got_it": "我知道了",
+        "steps": {
+          "step_1": {
+            "title": "The race is live",
+            "subtitle_parts": [
+              "The token with the most",
+              " buy volume ",
+              "right now is the current king."
+            ]
+          },
+          "step_2": {
+            "title": "One crown a day",
+            "subtitle_parts": [
+              "At",
+              " midnight (12:00 AM UTC), ",
+              "the leading token is crowned the daily winner."
+            ]
+          },
+          "step_3": {
+            "title": "Win Rewards",
+            "subtitle_parts": [
+              "Buyers of the current King get",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Creators",
+              " earn points ",
+              "when crowned."
+            ]
+          }
+        }
+      }
+    }
   }
 }
