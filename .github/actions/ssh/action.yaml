@@ -18,8 +18,8 @@ runs:
           NAME: ${{ inputs.name }}
           SSH_AUTH_SOCK: /tmp/ssh_agent_${{ inputs.name }}.sock
       run: |
-          mkdir -p /home/runner/.ssh
-          echo "$PKEY" > /home/runner/.ssh/$NAME
-          chmod 600 /home/runner/.ssh/$NAME
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add /home/runner/.ssh/$NAME
+          mkdir -p "$HOME/.ssh"
+          echo "$PKEY" > "$HOME/.ssh/$NAME"
+          chmod 600 "$HOME/.ssh/$NAME"
+          ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+          ssh-add "$HOME/.ssh/$NAME"

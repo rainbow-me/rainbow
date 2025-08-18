@@ -1,0 +1,178 @@
+name: iOS e2e tests
+on:
+  pull_request:
+    # prevent running on draft PRs
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+jobs:
+  # iOS build job
+  build-ios:
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: macos-15-xlarge
+    concurrency:
+      group: e2e-ios-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    timeout-minutes: 45
+    outputs:
+      artifact-id: ${{ steps.rnef-remote-build-ios.outputs.artifact-id }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set Xcode version
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+
+      - name: Setup env key
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+
+      - name: Setup scripts key
+        uses: ./.github/actions/ssh/
+        with:
+          name: scripts
+          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+
+      - name: Setup sandbox key
+        uses: ./.github/actions/ssh/
+        with:
+          name: sandbox
+          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+
+      - name: Setup env
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+            git clone git@github.com:rainbow-me/rainbow-env.git
+            mv rainbow-env/dotenv .env
+            rm -rf rainbow-env
+            sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+      - name: Setup scripts
+        env:
+            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+        run: |
+            eval $CI_SCRIPTS
+
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+        run: yarn install && yarn setup
+
+      - name: RNEF Remote Build - iOS simulator
+        id: rnef-remote-build-ios
+        uses: callstackincubator/ios@v2
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          scheme: Rainbow
+          destination: simulator
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration: Release
+          comment-bot: false
+          re-sign: true
+
+  # iOS e2e tests job
+  e2e-ios:
+    needs: build-ios
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: macos-15-xlarge
+    strategy:
+      fail-fast: false
+      matrix:
+        shard-index: [1, 2, 3, 4]
+    concurrency:
+      group: e2e-ios-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
+      cancel-in-progress: false
+    timeout-minutes: 30
+    env:
+      SHARD_TOTAL: 4
+      SHARD_INDEX: ${{ matrix.shard-index }}
+      ARTIFACTS_FOLDER: e2e-artifacts
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup env key
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+
+      - name: Setup env
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+            git clone git@github.com:rainbow-me/rainbow-env.git
+            mv rainbow-env/dotenv .env
+            rm -rf rainbow-env
+
+      - name: Install Maestro
+        run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+      - name: Install Anvil
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Download and Unpack IPA artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build-ios.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          ls -l downloaded-artifacts
+          APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
+          tar -xzf "$APP_ARCHIVE_PATH" -C downloaded-artifacts
+          APP_PATH=$(find downloaded-artifacts -name "*.app" -type d | head -n 1)
+          echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> $GITHUB_ENV
+
+      - uses: futureware-tech/simulator-action@v4
+        id: simulator
+        with:
+          model: 'iPhone 16'
+
+      - name: Ensure Simulator is fully booted
+        run: |
+          echo "Waiting for simulator to be fully booted..."
+          timeout=0
+          while [[ "$(xcrun simctl list | grep "${{ steps.simulator.outputs.udid }}" | grep -o 'Booted')" != "Booted" ]]; do
+            sleep 5
+            timeout=$((timeout+5))
+            echo "Still waiting... ($timeout seconds)"
+            if [ $timeout -ge 120 ]; then
+              echo "Timed out waiting for simulator"
+              exit 1
+            fi
+          done
+          echo "Simulator is ready."
+
+      - name: Run Tests
+        run: ./scripts/e2e-ios-ci.sh
+        env:
+          DEVICE_UDID: ${{ steps.simulator.outputs.udid }}
+
+      - name: Upload artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.shard-index }}
+          path: ${{ env.ARTIFACTS_FOLDER }}
