@@ -45,6 +45,8 @@
 		AA0B1CBB2B00C5E100EAF77D /* SF-Mono-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */; };
 		AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */; };
 		AA0B1CBF2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */; };
+		AA170DB02E4FA5AB00DB8A97 /* baggy@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA170DAF2E4FA5AB00DB8A97 /* baggy@3x.png */; };
+		AA170DB12E4FA5AB00DB8A97 /* baggy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA170DAE2E4FA5AB00DB8A97 /* baggy@2x.png */; };
 		AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */; };
 		AA6228F024272F510078BDAA /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */; };
 		AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
@@ -291,6 +293,8 @@
 		AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Semibold.otf"; path = "../src/assets/fonts/SF-Mono-Semibold.otf"; sourceTree = "<group>"; };
 		AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Bold.otf"; path = "../src/assets/fonts/SF-Mono-Bold.otf"; sourceTree = "<group>"; };
 		AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Black.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Black.otf"; sourceTree = "<group>"; };
+		AA170DAE2E4FA5AB00DB8A97 /* baggy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "baggy@2x.png"; sourceTree = "<group>"; };
+		AA170DAF2E4FA5AB00DB8A97 /* baggy@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "baggy@3x.png"; sourceTree = "<group>"; };
 		AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
 		AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; };
@@ -515,6 +519,8 @@
 				B5CC6D392A7873300037D5A3 /* poolboy@3x.png */,
 				15C3987F2880EDFF006033AC /* og@2x.png */,
 				15C3987D2880EDFF006033AC /* og@3x.png */,
+				AA170DAE2E4FA5AB00DB8A97 /* baggy@2x.png */,
+				AA170DAF2E4FA5AB00DB8A97 /* baggy@3x.png */,
 			);
 			path = AppIcons;
 			sourceTree = "<group>";
@@ -1034,6 +1040,8 @@ Upload Debug Symbols to Sentry */,
 				B54C1D1129358946007560D9 /* golddoge@2x.png in Resources */,
 				B54C1D1229358946007560D9 /* raindoge@3x.png in Resources */,
 				AA0B1CBF2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */,
+				AA170DB02E4FA5AB00DB8A97 /* baggy@3x.png in Resources */,
+				AA170DB12E4FA5AB00DB8A97 /* baggy@2x.png in Resources */,
 				15CF49C12889AFAD005F92C9 /* pixel@2x.png in Resources */,
 				C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */,
 				B5CC6D3A2A7873300037D5A3 /* poolboy@3x.png in Resources */,
