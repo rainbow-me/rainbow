@@ -66,9 +66,9 @@ export async function consolidatedTransactionsQueryFunction({
   queryKey: [{ address, currency, chainIds }],
   pageParam,
 }: QueryFunctionArgs<typeof consolidatedTransactionsQueryKey>): Promise<_QueryResult> {
-  let transactionsFromAddys: RainbowTransaction[] = [];
-  let nextPageFromAddys: string | undefined = pageParam;
-  let cutoffFromAddys: number | undefined;
+  let transactionsFromGoldsky: RainbowTransaction[] = [];
+  let nextPageFromGoldsky: string | undefined = pageParam;
+  let cutoffFromGoldsky: number | undefined;
   try {
     // console.log({
     //   address,
@@ -81,7 +81,7 @@ export async function consolidatedTransactionsQueryFunction({
       params: {
         address,
         // chainIds: chainIds.join(','),
-        chainIds: '1',
+        chainIds: '8453,1,80094',
         currency: currency.toLowerCase(),
         limit: String(10),
         // ...(pageParam ? { pageCursor: pageParam } : {}),
@@ -90,16 +90,16 @@ export async function consolidatedTransactionsQueryFunction({
 
     // console.log(response?.data);
 
-    transactionsFromAddys = await parseConsolidatedTransactions(response?.data, currency);
-    // nextPageFromAddys = response?.data?.meta?.next_page_cursor;
-    // cutoffFromAddys = response?.data?.meta?.cut_off;
+    transactionsFromGoldsky = await parseConsolidatedTransactions(response?.data, currency);
+    // nextPageFromGoldsky = response?.data?.meta?.next_page_cursor;
+    // cutoffFromGoldsky = response?.data?.meta?.cut_off;
   } catch (e) {
     logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from GoldSky', e), {
       message: e,
     });
   }
 
-  let finalTransactions: RainbowTransaction[] = [...transactionsFromAddys];
+  let finalTransactions: RainbowTransaction[] = [...transactionsFromGoldsky];
   if (IS_TEST && chainIds && chainIds.includes(anvilChain.id)) {
     const userAnvilTransactions = e2eAnvilConfirmedTransactions.filter(tx => {
       const fromMatch = tx.from && tx.from.toLowerCase() === address.toLowerCase();
@@ -126,8 +126,8 @@ export async function consolidatedTransactionsQueryFunction({
 
   return {
     transactions: finalTransactions,
-    nextPage: nextPageFromAddys,
-    cutoff: cutoffFromAddys,
+    nextPage: nextPageFromGoldsky,
+    cutoff: cutoffFromGoldsky,
   };
 }
 

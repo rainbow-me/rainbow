@@ -39,10 +39,10 @@ export function parseAsset({ address, asset }: { address: string; asset: Asset }
   return parsedAsset;
 }
 
-export function parseAddressAsset({ assetData }: { assetData: AddysAddressAsset }): ParsedAddressAsset {
+export function parseAddressAsset({ assetData }: { assetData: { asset: Asset; quantity: string } }): ParsedAddressAsset {
   const asset = assetData?.asset;
   const quantity = assetData?.quantity;
-  const address = assetData?.asset?.asset_code;
+  const address = assetData?.asset?.assetCode;
 
   const parsedAsset = parseAsset({
     address,

@@ -530,7 +530,7 @@ export interface Transaction {
 
 export interface Change {
   /** Asset information for this balance change */
-  asset: Asset | undefined;
+  asset: Asset;
   /**
    * Direction of the balance change relative to the address
    *
