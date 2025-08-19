@@ -100,12 +100,13 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
       items.push({ key: 'paddingTopForNavBar', type: 'paddingTopForNavBar' });
     }
 
-    sections.forEach(section => {
+    sections.forEach((section, sectionIndex) => {
       if (section.data.length > 0) {
         items.push({ key: `${accountAddress}${section.title}`, type: 'header', value: section });
         for (const item of section.data) {
+          const key = `${item.chainId}${'requestId' in item ? item.requestId : item.hash}`;
           items.push({
-            key: `${accountAddress}${item.chainId}${'requestId' in item ? item.requestId : item.hash}-entry`,
+            key: `${sectionIndex}-${accountAddress}-${key}-entry`,
             type: section.type,
             value: item,
           });
