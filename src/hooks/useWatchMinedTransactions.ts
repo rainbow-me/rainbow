@@ -13,14 +13,14 @@ import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { convertAmountToRawAmount } from '@/helpers/utilities';
+import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { toUnixTime } from '@/worklets/dates';
+import { setUserAssets } from '@/state/assets/utils';
 
-const ASSET_DETECTION_TIMEOUT = toUnixTime(time.seconds(60));
+const ASSET_DETECTION_TIMEOUT = toUnixTime(time.seconds(30));
 
-async function refetchUserAssets({ address }: { address: string }) {
+async function refetchOtherAssets({ address }: { address: string }) {
   await Promise.all([
-    userAssetsStore.getState().fetch(undefined, { force: true }),
     usePositionsStore.getState().fetch(undefined, { force: true }),
     useClaimablesStore.getState().fetch(undefined, { force: true }),
     invalidateAddressNftsQueries(address),
@@ -32,10 +32,10 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
   const clearMinedTransactions = useMinedTransactionsStore(state => state.clearMinedTransactions);
 
   const watchMinedTransactions = useCallback(
-    async (minedTransactions: MinedTransaction[]) => {
-      if (!minedTransactions.length) return;
+    async (minedTransactions: MinedTransaction[]): Promise<boolean> => {
+      if (!minedTransactions.length) return false;
 
-      const initialUserAssets = userAssetsStore.getState().userAssets ?? {};
+      const initialUserAssets = userAssetsStore.getState().userAssets;
       const now = Math.floor(Date.now() / 1000);
       const transactionsToWatch = minedTransactions.filter(tx => tx.changes?.length || tx.asset);
 
@@ -56,7 +56,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
 
       if (!validTransactions.length) {
         clearMinedTransactions(address);
-        return;
+        return false;
       }
 
       const expectedUniqueIds = new Set<string>();
@@ -94,15 +94,37 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
           return initialAssetQuantity !== newAssetQuantity;
         });
 
-        if (!allExpectedChangesSeen) return;
+        if (!allExpectedChangesSeen) {
+          return true;
+        }
+
+        // Filter out zero balance assets and sort by value
+        const userAssets = Object.values(newAssets)
+          .filter(asset => greaterThan(asset.value, 0))
+          .sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
+
+        // Merge the chain-specific assets with existing assets
+        const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+        userAssetsStore.setState(state =>
+          setUserAssets({
+            address,
+            state,
+            userAssets,
+            positionTokenAddresses,
+            chainIdsToUpdate: transactionChainIds,
+          })
+        );
+
+        await refetchOtherAssets({ address });
 
         analytics.track(event.minedTransactionAssetsResolved, {
           timeToResolve: now * 1000 - oldestMinedTransactionTimestamp,
         });
-        refetchUserAssets({ address });
         clearMinedTransactions(address);
+        return false;
       } catch (e) {
         logger.error(new RainbowError('[watchMinedTransactions]: Polling GetAssetUpdates failed', e));
+        return true;
       }
     },
     [address, nativeCurrency, clearMinedTransactions]

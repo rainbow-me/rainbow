@@ -1,30 +1,45 @@
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useWatchMinedTransactions } from '@/hooks/useWatchMinedTransactions';
-import { usePoll } from '@/hooks/usePoll';
 import { time } from '@/utils/time';
-import { memo, useRef, useCallback } from 'react';
+import { memo, useRef, useCallback, useEffect } from 'react';
 import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
 
 export const MinedTransactionWatcher = memo(function MinedTransactionWatcher() {
   const address = useAccountAddress();
   const { watchMinedTransactions } = useWatchMinedTransactions({ address });
   const isProcessingRef = useRef(false);
+  const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const minedTransactions = useMinedTransactionsStore(state => state.minedTransactions[address] || []);
 
-  const safeWatchMinedTransactions = useCallback(async () => {
+  const processTransactions = useCallback(async () => {
     if (isProcessingRef.current || minedTransactions.length === 0) return;
 
     isProcessingRef.current = true;
     try {
       await watchMinedTransactions(minedTransactions);
     } finally {
-      // This is to satisfy the linter
-      if (isProcessingRef.current === true) {
-        isProcessingRef.current = false;
-      }
+      // eslint-disable-next-line require-atomic-updates
+      isProcessingRef.current = false;
     }
   }, [watchMinedTransactions, minedTransactions]);
 
-  usePoll(safeWatchMinedTransactions, time.seconds(1));
+  useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
+    }
+
+    if (minedTransactions.length > 0) {
+      processTransactions();
+      intervalRef.current = setInterval(processTransactions, time.seconds(1));
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [minedTransactions.length, processTransactions]);
+
   return null;
 });

@@ -2,7 +2,7 @@ import { useMemo, useCallback } from 'react';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
-import { fetchConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
+import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -10,6 +10,7 @@ import { SupportedCurrencyKey } from '@/references';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
+import { queryClient } from '@/react-query';
 
 async function fetchTransaction({
   address,
@@ -53,7 +54,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const watchPendingTransactions = useCallback(async () => {
     if (!pendingTransactions.length) return;
     const now = Math.floor(Date.now() / 1000);
-    const allChainIds = useBackendNetworksStore.getState().getSupportedMainnetChainIds();
 
     const fetchedTransactions = await Promise.all(
       pendingTransactions.map((tx: RainbowTransaction) => fetchTransaction({ address, currency: nativeCurrency, transaction: tx }))
@@ -89,23 +89,19 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
     if (!minedTransactions.length) return;
 
-    await fetchConsolidatedTransactions(
-      {
-        address,
-        currency: nativeCurrency,
-        chainIds: allChainIds,
-      },
-      {
-        staleTime: 0,
-      }
-    );
-
-    // Add newly mined transactions to the store for the watcher to process
-    // Only add transactions that have changes or assets to track
     const transactionsToWatch = minedTransactions.filter(tx => tx.changes?.length || tx.asset);
     if (transactionsToWatch.length > 0) {
       useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: transactionsToWatch });
     }
+
+    await queryClient.refetchQueries({
+      queryKey: consolidatedTransactionsQueryKey({
+        address,
+        currency: nativeCurrency,
+        chainIds: useBackendNetworksStore.getState().getSupportedChainIds(),
+      }),
+      type: 'all',
+    });
   }, [address, nativeCurrency, pendingTransactions]);
 
   return { watchPendingTransactions };
