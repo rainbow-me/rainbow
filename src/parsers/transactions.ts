@@ -7,6 +7,7 @@ import {
   TransactionChanges,
   TransactionStatus,
   TransactionType,
+  Transaction,
 } from '@/entities';
 
 import {
@@ -16,7 +17,7 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 
-import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
+import { Asset, Change, NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 
@@ -50,7 +51,7 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
 };
 
 export const parseTransaction = async (
-  transaction: TransactionApiResponse,
+  transaction: Transaction,
   nativeCurrency: NativeCurrencyKey,
   chainId: ChainId
 ): Promise<RainbowTransaction> => {
@@ -74,10 +75,10 @@ export const parseTransaction = async (
     }
   });
 
-  const type = isValidTransactionType(meta.type) ? meta.type : 'contract_interaction';
+  const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
 
-  const asset: RainbowTransaction['asset'] = meta.asset?.asset_code
-    ? parseAsset({ asset: meta.asset, address: meta.asset.asset_code })
+  const asset: ParsedAsset | undefined = meta?.asset?.assetCode
+    ? parseAsset({ asset: meta.asset, address: meta?.asset.assetCode })
     : getAssetFromChanges(changes, type);
 
   const direction = txn.direction || getDirection(type);
@@ -95,20 +96,20 @@ export const parseTransaction = async (
 
   const fee = getTransactionFee(txn, nativeCurrency, chainId);
 
-  const contract = meta.contract_name && {
-    name: meta.contract_name,
-    iconUrl: meta.contract_icon_url,
+  const contract = meta?.contractName && {
+    name: meta.contractName,
+    iconUrl: meta.contractIconUrl,
   };
 
   // NOTE: For send transactions, the to address should be pulled from the outgoing change directly, not the txn.address_to
-  let to = txn.address_to;
-  if (meta.type === 'send') {
-    to = txn.changes.find(change => change?.direction === 'out')?.address_to ?? txn.address_to;
+  let to = txn.addressTo;
+  if (meta?.type === 'send') {
+    to = txn.changes.find(change => change?.direction === 'out')?.addressTo ?? txn.addressTo;
   }
 
   return {
     chainId,
-    from: txn.address_from,
+    from: txn.addressFrom,
     to,
     title: `${type}.${status}`,
     description,
@@ -122,15 +123,15 @@ export const parseTransaction = async (
     value,
     changes,
     asset,
-    approvalAmount: meta.quantity,
-    minedAt: txn.mined_at,
-    blockNumber: txn.block_number,
-    confirmations: txn.block_confirmations,
+    approvalAmount: meta?.quantity,
+    minedAt: txn.minedAt,
+    blockNumber: txn.blockNumber,
+    confirmations: txn.blockConfirmations,
     contract,
     native,
     fee,
-    explorerUrl: meta.explorer_url,
-    explorerLabel: meta.explorer_label,
+    explorerUrl: meta?.explorerUrl,
+    explorerLabel: meta?.explorerLabel,
   } as RainbowTransaction;
 };
 
@@ -160,11 +161,7 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
 /**
  * Helper for retrieving tx fee sent by zerion, works only for mainnet only
  */
-const getTransactionFee = (
-  txn: TransactionApiResponse,
-  nativeCurrency: NativeCurrencyKey,
-  chainId: ChainId
-): RainbowTransactionFee | undefined => {
+const getTransactionFee = (txn: Transaction, nativeCurrency: NativeCurrencyKey, chainId: ChainId): RainbowTransactionFee | undefined => {
   if (txn.fee === null || txn.fee === undefined) {
     return undefined;
   }
@@ -178,15 +175,15 @@ const getTransactionFee = (
       symbol: chainNativeAsset.symbol,
     }),
     native:
-      nativeCurrency !== 'ETH' && zerionFee?.price > 0
+      nativeCurrency !== 'ETH' && Number(zerionFee?.value) > 0
         ? convertRawAmountToNativeDisplay(zerionFee.value, chainNativeAsset.decimals, zerionFee.price, nativeCurrency)
         : undefined,
   };
 };
 
-export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta: PaginatedTransactionsApiResponse['meta']) => {
+export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta?: Transaction['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
-  return asset?.name || meta.action;
+  return asset?.name || meta?.action;
 };
 
 export const isValidTransactionType = (type: string | undefined): type is TransactionType =>

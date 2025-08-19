@@ -30,11 +30,12 @@ export type TransactionSectionsResult = {
 
 // bad news
 const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt: string }) => {
+  console.log('minedAt', minedAt);
   if (status === TransactionStatus.pending) {
     return i18n.t(i18n.l.transactions.pending_title);
   }
 
-  const ts = parseInt(minedAt, 10) * 1000;
+  const ts = new Date(minedAt).getTime();
 
   if (ts > todayTimestamp) return i18n.t(i18n.l.time.today_caps);
   if (ts > yesterdayTimestamp) return i18n.t(i18n.l.time.yesterday_caps);
