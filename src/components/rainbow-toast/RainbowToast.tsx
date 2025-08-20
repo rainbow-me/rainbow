@@ -2,11 +2,9 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import ShimmerAnimation from '@/components/animations/ShimmerAnimation';
 import { BlurGradient } from '@/components/blur/BlurGradient';
 import {
-  TOAST_DONE_HIDE_TIMEOUT_MS,
   TOAST_GAP_FAR,
   TOAST_GAP_NEAR,
   TOAST_HEIGHT,
-  TOAST_HIDE_TIMEOUT_MS,
   TOAST_ICON_SIZE,
   TOAST_INITIAL_OFFSET_ABOVE,
   TOAST_INITIAL_OFFSET_BELOW,
@@ -241,43 +239,11 @@ const RainbowToastItem = memo(function RainbowToast({ toast, minWidth: minWidthP
     translateY.value = withSpring(translateY.value - 10, springConfig);
   }, [finishRemoveToastCallback, translateY, opacity]);
 
-  // there's a few ways to remove toasts - from a swipe, from it being removed
-  // via pendingTransactions, or if it reaches final state if
-  // pendingTransactions are empty we set removing in state, so handle the final
-  // logic to hide it here
-  const nonSwipeRemove = toast.isRemoving && !toast.removalReason;
   useEffect(() => {
-    if (nonSwipeRemove) {
-      hideToast();
-    }
-  }, [finishRemoveToastCallback, hideToast, nonSwipeRemove, translateY, opacity]);
-
-  // hide toast - we always hide it eventually, just slower if not in a finished state
-  // disable while testing
-  const shouldRemoveToast = toast.transaction.status !== TransactionStatus.pending;
-  useEffect(() => {
-    // if removing already and not from us
-    if (toast.isRemoving && !toast.removalReason) return;
-
-    // if not already removing set timeout to remove
-    if (!toast.isRemoving) {
-      const tm = setTimeout(
-        () => {
-          // sets it into removing state so it wont be cleared on other state updates
-          startRemoveToast(id, 'finish');
-        },
-        shouldRemoveToast ? TOAST_DONE_HIDE_TIMEOUT_MS : TOAST_HIDE_TIMEOUT_MS
-      );
-
-      return () => {
-        clearTimeout(tm);
-      };
-    }
-
     if (toast.removalReason === 'finish') {
       hideToast();
     }
-  }, [hideToast, id, shouldRemoveToast, toast, startRemoveToast]);
+  }, [hideToast, toast.removalReason]);
 
   const panGesture = useMemo(() => {
     const pan = Gesture.Pan()

@@ -6,4 +6,5 @@ export type RainbowToast = {
   transaction: RainbowTransaction;
   isRemoving: boolean;
   removalReason?: 'swipe' | 'finish';
+  timeoutId?: NodeJS.Timeout;
 };

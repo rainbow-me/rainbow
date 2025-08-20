@@ -32,7 +32,10 @@ export default function useAccountTransactions() {
   const transactions: RainbowTransaction[] = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
 
   const allTransactions = useMemo(
-    () => pendingTransactionsMostRecentFirst.concat(transactions),
+    () =>
+      pendingTransactionsMostRecentFirst
+        .filter(pendingTx => !transactions.some(tx => tx.hash === pendingTx.hash && tx.chainId === pendingTx.chainId))
+        .concat(transactions),
     [pendingTransactionsMostRecentFirst, transactions]
   );
 

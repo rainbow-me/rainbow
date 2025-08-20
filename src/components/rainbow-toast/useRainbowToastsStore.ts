@@ -1,8 +1,10 @@
-import { getToastFromTransaction, getToastUpdatedAt, txIdToToastId } from '@/components/rainbow-toast/getToastFromTransaction';
+import { TOAST_CONFIRMED_HIDE_TIMEOUT_MS, TOAST_PENDING_HIDE_TIMEOUT_MS } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
-import type { RainbowTransaction } from '@/entities';
+import { TransactionStatus, type RainbowTransaction } from '@/entities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useMemo } from 'react';
+
+const toToastId = (tx: RainbowTransaction): string => `${tx.nonce ? tx.nonce : tx.hash}-${tx.chainId || tx.asset?.chainId}`;
 
 export type ToastState = {
   isShowingTransactionDetails: boolean;
@@ -17,11 +19,9 @@ export type ToastState = {
   pendingRemoveToastIds: string[];
 };
 
-export const useRainbowToastsStore = createRainbowStore<ToastState>(set => ({
+export const useRainbowToastsStore = createRainbowStore<ToastState>((set, get) => ({
   toasts: {},
-  // an edge case where you open expanded sheet on a confirmed toast before we hide it
-  // we need to keep that toast around until you close expanded toast, then remove it
-  // this tracks pending removes when you open expanded and then is used to remove on close
+  // Tracks toasts that are pending removal while the expanded state is opened.
   pendingRemoveToastIds: [],
   showExpanded: false,
   isShowingTransactionDetails: false,
@@ -34,11 +34,11 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>(set => ({
 
   setShowExpandedToasts: (show: boolean) => {
     set(state => {
-      // were closing the expanded toast drawer, now we can clear completed toasts
+      // We're closing the expanded toast drawer, now we can clear completed toasts.
       if (show === false && state.pendingRemoveToastIds.length) {
         const nextState = { ...state };
         for (const pendingId of state.pendingRemoveToastIds) {
-          Object.assign(nextState, getToastsStateForStartRemove(state, pendingId, 'finish'));
+          Object.assign(nextState, getToastsStateForStartRemove(state, state.toasts[pendingId], 'finish'));
         }
         return {
           ...nextState,
@@ -54,29 +54,39 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>(set => ({
     set(state => {
       const toasts = { ...state.toasts };
 
-      // we can have both pending + confirmed in transactions at the same time
-      // pending store will have it still in there right after it confirms
-      // pendingTransactions order from [oldest => newest] so our loop should update
-      const id = txIdToToastId(transaction);
+      const id = toToastId(transaction);
 
-      const existingToast = state.toasts[id];
-
-      if (existingToast) {
+      let toast = state.toasts[id];
+      if (toast) {
         // if already removing never update
-        if (existingToast.isRemoving) return state;
+        if (toast.isRemoving) return state;
 
-        const updatedToast = {
-          ...existingToast,
-          updatedAt: getToastUpdatedAt(transaction),
+        toast = {
+          ...toast,
+          updatedAt: Date.now(),
           transaction,
         };
-        toasts[existingToast.id] = updatedToast;
       } else {
-        const toast = getToastFromTransaction(transaction);
-        if (!toast) return state;
-
-        toasts[toast.id] = toast;
+        toast = {
+          id: toToastId(transaction),
+          updatedAt: Date.now(),
+          transaction,
+          isRemoving: false,
+        };
       }
+
+      // Handle toast dismiss timer.
+      if (toast.timeoutId != null) {
+        clearTimeout(toast.timeoutId);
+      }
+      toast.timeoutId = setTimeout(
+        () => {
+          get().startRemoveToast(id, 'finish');
+        },
+        toast.transaction.status === TransactionStatus.pending ? TOAST_PENDING_HIDE_TIMEOUT_MS : TOAST_CONFIRMED_HIDE_TIMEOUT_MS
+      );
+
+      toasts[toast.id] = toast;
 
       return { toasts };
     });
@@ -85,6 +95,10 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>(set => ({
   // split into starting to remove and then fully removing so we can animate out
   startRemoveToast: (id, via) => {
     set(state => {
+      const toast = state.toasts[id];
+      if (toast?.timeoutId != null) {
+        clearTimeout(toast.timeoutId);
+      }
       // if we want to clear a completes toast while expanded, wait until expanded sheet closes
       if (via === 'finish' && state.showExpanded) {
         return {
@@ -92,7 +106,7 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>(set => ({
         };
       }
 
-      return getToastsStateForStartRemove(state, id, via);
+      return getToastsStateForStartRemove(state, toast, via);
     });
   },
 
@@ -111,14 +125,14 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>(set => ({
   },
 }));
 
-function getToastsStateForStartRemove(state: ToastState, id: string, via: 'swipe' | 'finish') {
+function getToastsStateForStartRemove(state: ToastState, toast: RainbowToast | undefined, via: 'swipe' | 'finish') {
   const toasts = { ...state.toasts };
 
-  if (toasts[id]) {
-    toasts[id] = { ...toasts[id], isRemoving: true, removalReason: via };
+  if (toast) {
+    toasts[toast.id] = { ...toast, isRemoving: true, removalReason: via };
   }
 
-  return { toasts } satisfies Partial<ToastState>;
+  return { toasts };
 }
 
 export function useRainbowToasts() {
