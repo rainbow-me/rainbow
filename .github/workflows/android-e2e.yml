@@ -8,7 +8,7 @@ on:
       - develop
 jobs:
   build:
-    name: Build
+    name: Test Build
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 30
