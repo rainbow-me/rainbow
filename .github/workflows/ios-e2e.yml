@@ -1,4 +1,4 @@
-name: iOS e2e tests
+name: iOS
 on:
   pull_request:
     # prevent running on draft PRs
@@ -9,7 +9,8 @@ on:
       - develop
 jobs:
   # iOS build job
-  build-ios:
+  build:
+    name: Build
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: macos-15-xlarge
     concurrency:
@@ -93,8 +94,9 @@ jobs:
           re-sign: true
 
   # iOS e2e tests job
-  e2e-ios:
-    needs: build-ios
+  e2e-tests:
+    name: E2E Tests (Shard ${{ matrix.shard-index }})
+    needs: build
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: macos-15-xlarge
     strategy:

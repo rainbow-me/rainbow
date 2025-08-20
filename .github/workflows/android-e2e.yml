@@ -1,4 +1,4 @@
-name: Android e2e tests
+name: Android
 
 on:
   pull_request:
@@ -6,9 +6,9 @@ on:
   push:
     branches:
       - develop
-      - 'e2e-baseline-test'
 jobs:
   build:
+    name: Build
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 30
@@ -111,6 +111,7 @@ jobs:
           comment-bot: false
 
   e2e-tests:
+    name: E2E Tests (Shard ${{ matrix.shard-index }})
     strategy:
       fail-fast: false
       matrix:
@@ -201,6 +202,7 @@ jobs:
           path: ${{ env.ARTIFACTS_FOLDER }}
 
   perf-tests:
+    name: Perf Tests
     if: github.event.pull_request.draft == false
     runs-on: blacksmith-2vcpu-ubuntu-2404
     needs: build
