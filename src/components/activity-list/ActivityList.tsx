@@ -1,7 +1,6 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
-import { lazyMount } from '@/helpers/lazyMount';
 import { useAccountTransactions } from '@/hooks';
 import { Skeleton } from '@/screens/points/components/Skeleton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -21,7 +20,6 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
-import { WalletconnectRequestData } from '@/walletConnect/types';
 
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
@@ -78,7 +76,12 @@ type ListItems =
 // improves performance and reduces jitter (until move to new architecture)
 const ITEM_HEIGHT = 59;
 
-const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: SharedValue<number>; paddingTopForNavBar?: boolean }) => {
+interface Props {
+  scrollY?: SharedValue<number>;
+  paddingTopForNavBar?: boolean;
+}
+
+export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { sections, nextPage, transactionsCount, remainingItemsLabel, isLoadingTransactions } = useAccountTransactions();
@@ -201,7 +204,7 @@ const ActivityList = lazyMount(({ scrollY, paddingTopForNavBar }: { scrollY?: Sh
       })}
     />
   );
-});
+};
 
 const PaddingTopForNavBar = () => {
   return <View style={{ height: 68 }} />;
@@ -214,5 +217,3 @@ const LoadingActivityItem = memo(function LoadingActivityItem() {
     </View>
   );
 });
-
-export default ActivityList;
