@@ -244,6 +244,7 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
         display: convertAmountToNativeDisplayWorklet(price?.value ?? 0, currency),
       },
     },
+    updatedAt: userAsset.updatedAt,
     // These are required in the type, but the new platform endpoint does not return them.
     highLiquidity: false,
     isRainbowCurated: false,
