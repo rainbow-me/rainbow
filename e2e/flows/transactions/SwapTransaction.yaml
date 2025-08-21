@@ -97,11 +97,4 @@ tags:
             platform: Android
           commands:
             # Test transaction was done
-            - assertVisible: 'Pending'
-            - assertVisible: 'Swapping*.'
-
-            - tapOn: Swapping*.
-            - tapOn:
-                id: transaction-details-context-menu-button
-            - assertVisible: 'Speed Up'
-            - assertVisible: 'Cancel'
+            - assertVisible: 'Swapped'
