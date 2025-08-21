@@ -16,6 +16,7 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { toUnixTime } from '@/worklets/dates';
 import { setUserAssets } from '@/state/assets/utils';
+import { staleBalancesStore } from '@/state/staleBalances';
 
 const ASSET_DETECTION_TIMEOUT = toUnixTime(time.seconds(30));
 
@@ -30,6 +31,8 @@ async function refetchOtherAssets({ address }: { address: string }) {
 export const useWatchMinedTransactions = ({ address }: { address: string }) => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const clearMinedTransactions = useMinedTransactionsStore(state => state.clearMinedTransactions);
+  const allStaleBalances = staleBalancesStore(state => state.staleBalances);
+  const staleBalances = allStaleBalances[address];
 
   const watchMinedTransactions = useCallback(
     async (minedTransactions: MinedTransaction[]): Promise<boolean> => {
@@ -74,13 +77,29 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
 
       const oldestMinedTransactionTimestamp = Math.min(...validTransactions.map(tx => tx.minedAt)) * 1000;
       const transactionChainIds = Array.from(new Set(validTransactions.map(tx => tx.chainId)));
+      const chainIdsWithStaleBalances = [];
+      const allStaleBalanceTokenIds = [];
+
+      for (const chainId of transactionChainIds) {
+        const staleBalancesForChain = staleBalances[chainId];
+        if (staleBalancesForChain) {
+          chainIdsWithStaleBalances.push(chainId);
+          for (const staleBalance of Object.values(staleBalancesForChain)) {
+            allStaleBalanceTokenIds.push(staleBalance.address);
+          }
+        }
+      }
+
+      const chainIdsToFetch = Array.from(new Set([...transactionChainIds, ...chainIdsWithStaleBalances]));
+      const forcedTokens = [...expectedUniqueIds, ...allStaleBalanceTokenIds].map(tokenId => tokenId.split('_').join(':'));
 
       try {
         const assetsResponse = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
           params: {
             currency: nativeCurrency,
-            chainIds: transactionChainIds.join(','),
+            chainIds: chainIdsToFetch.join(','),
             address,
+            ...(forcedTokens.length ? { forcedTokens: forcedTokens.join(',') } : {}),
           },
           timeout: time.seconds(20),
         });
@@ -115,19 +134,20 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
           })
         );
 
-        await refetchOtherAssets({ address });
-
         analytics.track(event.minedTransactionAssetsResolved, {
           timeToResolve: now * 1000 - oldestMinedTransactionTimestamp,
         });
+        await refetchOtherAssets({ address });
         clearMinedTransactions(address);
+        staleBalancesStore.getState().clearExpiredData(address);
+
         return false;
       } catch (e) {
         logger.error(new RainbowError('[watchMinedTransactions]: Polling GetAssetUpdates failed', e));
         return true;
       }
     },
-    [address, nativeCurrency, clearMinedTransactions]
+    [address, nativeCurrency, clearMinedTransactions, staleBalances]
   );
 
   return {

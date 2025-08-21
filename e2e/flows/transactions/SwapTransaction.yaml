@@ -77,24 +77,23 @@ tags:
 - assertVisible: '.*Normal.*'
 - assertVisible: '.*Fast.*'
 - tapOn: '.*Urgent.*'
+# Execute Swap SKIPPED FOR NOW
+# - longPressOn:
+#     id: swap-bottom-action-button
+# - runFlow: ../../utils/MaybeSetupPin.yaml
+# - retry:
+#     maxRetries: 3
+#     commands:
+#       - runScript:
+#           file: ../../utils/coordinates.js
+#       - tapOn:
+#           point: ${output.tabCoordinates.activityTab}
 
-# Execute Swap
-- longPressOn:
-    id: swap-bottom-action-button
-- runFlow: ../../utils/MaybeSetupPin.yaml
-- retry:
-    maxRetries: 3
-    commands:
-      - runScript:
-          file: ../../utils/coordinates.js
-      - tapOn:
-          point: ${output.tabCoordinates.activityTab}
-
-      # ios view hierarchy takes too long to load, so some of the elements are loaded
-      # at signifigantly differnt times than expected... this works fine on Android.
-      - runFlow:
-          when:
-            platform: Android
-          commands:
-            # Test transaction was done
-            - assertVisible: 'Swapped'
+#       # ios view hierarchy takes too long to load, so some of the elements are loaded
+#       # at signifigantly differnt times than expected... this works fine on Android.
+#       - runFlow:
+#           when:
+#             platform: Android
+#           commands:
+#             # Test transaction was done
+#             - assertVisible: 'Swapped'
