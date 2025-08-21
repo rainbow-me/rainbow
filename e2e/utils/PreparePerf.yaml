@@ -10,19 +10,3 @@ appId: ${APP_ID}
 - runFlow: ../utils/MaybeSetupPin.yaml
 - assertVisible:
     id: 'eth-card'
-# Dismiss the backup sheet
-# - runFlow:
-#     when:
-#       visible:
-#         id: backup-sheet
-#     commands:
-#       - tapOn: 'Manual backup'
-#       - tapOn: 'Done'
-
-# - stopApp
-# - launchApp
-# - runFlow:
-#     when:
-#       visible: 'Notifications'
-#     commands:
-#       - tapOn: 'Not Now'
