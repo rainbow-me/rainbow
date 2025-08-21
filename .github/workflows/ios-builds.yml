@@ -232,6 +232,7 @@ jobs:
           provisioning-profile-base64: ${{ steps.code-signing.outputs.PROFILE_BASE64 }}
           provisioning-profile-name: ${{ steps.code-signing.outputs.PROFILE_NAME }}
           keychain-password: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+          rnef-build-extra-params: --export-options-plist ExportOptions.adhoc.plist
 
   # Post builds to GitHub after both complete
   post-builds:
