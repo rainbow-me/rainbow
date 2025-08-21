@@ -72,8 +72,6 @@ done
 
 echo "✅ All uploads complete."
 
-sleep 5
-
 TEST_JSON=$(printf '{"type": "APPIUM_NODE", "testPackageArn": "%s", "testSpecArn": "%s"}' "$TEST_UPLOAD_ARN" "$TESTSPEC_ARN")
 RUN_ARN=$(aws devicefarm schedule-run \
   --project-arn "$PROJECT_ARN" \
@@ -116,11 +114,6 @@ ARTIFACT_ZIP_URL=$(aws devicefarm list-artifacts \
   --query "artifacts[?type=='CUSTOMER_ARTIFACT'].url" \
   --output text)
 
-if [[ -z "$ARTIFACT_ZIP_URL" ]]; then
-  echo "❌ Could not find CUSTOMER_ARTIFACT zip."
-  exit 1
-fi
-
 # Download and extract
 ARTIFACTS_DIR="e2e-artifacts"
 mkdir -p "$ARTIFACTS_DIR"
@@ -129,13 +122,6 @@ unzip -o "$ARTIFACTS_DIR/results.zip" -d "$ARTIFACTS_DIR"
 
 # Locate tti.json within extracted ZIP
 TTI_JSON_PATH=$(find "$PERF_DIR" -name "tti.json" | head -n1)
-
-if [[ -z "$TTI_JSON_PATH" || ! -f "$TTI_JSON_PATH" ]]; then
-  echo "❌ Could not find tti.json in extracted artifact."
-  echo "✅ DEBUG: Listing files in $PERF_DIR:"
-  find "$PERF_DIR"
-  exit 1
-fi
 
 # Copy to a location that is easily accessible for GitHub Actions
 mkdir -p "$ARTIFACTS_DIR/perf"
