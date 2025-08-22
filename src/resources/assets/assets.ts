@@ -3,7 +3,7 @@ import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import { ParsedAddressAsset } from '@/entities';
 import { Asset } from '@/entities/transactions';
-import { AddysAddressAsset, AddysAsset, ParsedAsset } from './types';
+import { ParsedAsset } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';

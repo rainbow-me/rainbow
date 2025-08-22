@@ -3,11 +3,10 @@ import {
   RainbowTransaction,
   TransactionDirection,
   PaginatedTransactionsApiResponse,
-  TransactionApiResponse,
   TransactionChanges,
   TransactionStatus,
   TransactionType,
-  Transaction,
+  TransactionApiResponse,
 } from '@/entities';
 
 import {
@@ -51,7 +50,7 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
 };
 
 export const parseTransaction = async (
-  transaction: Transaction,
+  transaction: TransactionApiResponse,
   nativeCurrency: NativeCurrencyKey,
   chainId: ChainId
 ): Promise<RainbowTransaction> => {
@@ -161,7 +160,11 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
 /**
  * Helper for retrieving tx fee sent by zerion, works only for mainnet only
  */
-const getTransactionFee = (txn: Transaction, nativeCurrency: NativeCurrencyKey, chainId: ChainId): RainbowTransactionFee | undefined => {
+const getTransactionFee = (
+  txn: TransactionApiResponse,
+  nativeCurrency: NativeCurrencyKey,
+  chainId: ChainId
+): RainbowTransactionFee | undefined => {
   if (txn.fee === null || txn.fee === undefined) {
     return undefined;
   }
@@ -181,7 +184,7 @@ const getTransactionFee = (txn: Transaction, nativeCurrency: NativeCurrencyKey, 
   };
 };
 
-export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta?: Transaction['meta']) => {
+export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta?: TransactionApiResponse['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
   return asset?.name || meta?.action;
 };

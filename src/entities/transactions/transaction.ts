@@ -6,7 +6,7 @@ import { AddCashCurrencyAsset } from '@/references';
 import { SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
-import { ParsedAsset, AddysAsset } from '@/resources/assets/types';
+import { ParsedAsset } from '@/resources/assets/types';
 import { ChainId, Network } from '@/state/backendNetworks/types';
 import { TransactionResponse } from '@ethersproject/providers';
 
@@ -292,67 +292,67 @@ export interface ExecuteRapResponse extends TransactionResponse {
   errorMessage?: string;
 }
 
-export type TransactionApiResponse = {
-  status: TransactionStatus;
-  id: TxHash;
-  hash: TxHash;
-  network: Network;
-  protocol?: string;
-  direction?: TransactionDirection;
-  address_from?: string;
-  address_to?: string;
-  // nonce will ALWAYS be -2 when the transaction is *not* from the wallet user
-  nonce: number;
-  changes: Array<
-    | {
-        asset: AddysAsset;
-        value: number | null;
-        direction: TransactionDirection;
-        address_from: string;
-        address_to: string;
-        price: number;
-      }
-    | undefined
-  >;
-  fee: {
-    value: number;
-    price: number;
+// export type TransactionApiResponse = {
+//   status: TransactionStatus;
+//   id: TxHash;
+//   hash: TxHash;
+//   network: Network;
+//   protocol?: string;
+//   direction?: TransactionDirection;
+//   address_from?: string;
+//   address_to?: string;
+//   // nonce will ALWAYS be -2 when the transaction is *not* from the wallet user
+//   nonce: number;
+//   changes: Array<
+//     | {
+//         asset: AddysAsset;
+//         value: number | null;
+//         direction: TransactionDirection;
+//         address_from: string;
+//         address_to: string;
+//         price: number;
+//       }
+//     | undefined
+//   >;
+//   fee: {
+//     value: number;
+//     price: number;
 
-    // Fee Details are only available on the tx by hash endpoint
-    // (won't be available on the consolidated txs list)
-    details?: {
-      type: 0 | 2;
-      type_label: 'legacy' | 'eip-1559';
-      gas_price: number;
-      gas_limit: number;
-      gas_used: number;
-      max_fee: number;
-      max_priority_fee: number;
-      base_fee: number;
-      max_base_fee: number;
-      rollup_fee_details: {
-        l1_fee: number;
-        l1_fee_scalar: number;
-        l1_gas_price: number;
-        l1_gas_used: number;
-        l2_fee: number;
-      };
-    };
-  };
-  block_confirmations?: number; // also only available on the tx by hash endpoint
-  meta: {
-    contract_name?: string;
-    contract_icon_url?: string;
-    type?: TransactionType;
-    action?: string;
-    asset?: AddysAsset;
-    quantity?: 'UNLIMITED' | string;
-    explorer_label?: string;
-    explorer_url?: string;
-  };
-  block_number?: number;
-  mined_at?: number;
-};
+//     // Fee Details are only available on the tx by hash endpoint
+//     // (won't be available on the consolidated txs list)
+//     details?: {
+//       type: 0 | 2;
+//       type_label: 'legacy' | 'eip-1559';
+//       gas_price: number;
+//       gas_limit: number;
+//       gas_used: number;
+//       max_fee: number;
+//       max_priority_fee: number;
+//       base_fee: number;
+//       max_base_fee: number;
+//       rollup_fee_details: {
+//         l1_fee: number;
+//         l1_fee_scalar: number;
+//         l1_gas_price: number;
+//         l1_gas_used: number;
+//         l2_fee: number;
+//       };
+//     };
+//   };
+//   block_confirmations?: number; // also only available on the tx by hash endpoint
+//   meta: {
+//     contract_name?: string;
+//     contract_icon_url?: string;
+//     type?: TransactionType;
+//     action?: string;
+//     asset?: AddysAsset;
+//     quantity?: 'UNLIMITED' | string;
+//     explorer_label?: string;
+//     explorer_url?: string;
+//   };
+//   block_number?: number;
+//   mined_at?: number;
+// };
 
 export type PaginatedTransactionsApiResponse = Omit<TransactionApiResponse, 'fee'> & {
   fee: Omit<TransactionApiResponse['fee'], 'details'>;
@@ -396,7 +396,7 @@ export interface ListTransactionsRequest {
 export interface ListTransactionsResponse {
   /** Metadata about the request */
   metadata: ResponseMetadata | undefined;
-  result: Transaction[];
+  result: TransactionApiResponse[];
   /** List of errors encountered during the request */
   errors: string[];
 }
@@ -431,11 +431,11 @@ export interface GetTransactionByHashRequest {
 export interface GetTransactionByHashResponse {
   /** Metadata about the request */
   metadata: ResponseMetadata | undefined;
-  result: Transaction | undefined;
+  result: TransactionApiResponse | undefined;
   /** List of errors encountered during the request */
   errors: string[];
 }
-export interface Transaction {
+export interface TransactionApiResponse {
   /**
    * Unique transaction identifier
    *

@@ -4,7 +4,6 @@ import {
   ListTransactionsResponse,
   NativeCurrencyKey,
   RainbowTransaction,
-  Transaction,
   TransactionApiResponse,
   TransactionsReceivedMessage,
 } from '@/entities';
@@ -151,7 +150,7 @@ async function parseConsolidatedTransactions(
 
   const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
-  const parsedTransactionPromises = data.map((tx: Transaction) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
+  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
   // Filter out undefined values immediately
 
   const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values

@@ -5,6 +5,7 @@ import {
   MinedTransaction,
   RainbowTransaction,
   TransactionType,
+  GetTransactionByHashResponse,
 } from '@/entities';
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -19,7 +20,7 @@ import { Platform } from 'react-native';
 import { IS_TEST } from '@/env';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { getAddysHttpClient } from '@/resources/addys/client';
+import { getPlatformClient } from '@/resources/platform/client';
 
 export const e2eAnvilConfirmedTransactions: RainbowTransaction[] = [];
 
@@ -128,14 +129,18 @@ export const fetchTransaction = async ({
     }
   }
   try {
-    const url = `/${chainId}/${address}/transactions/${hash}`;
-    const { data } = await getAddysHttpClient().get<{ payload: { transaction: TransactionApiResponse } }>(url, {
+    // const url = `/${chainId}/${address}/transactions/${hash}`;
+    const url = `/GetTransactionByHash`;
+    const { data } = await getPlatformClient().get<GetTransactionByHashResponse>(url, {
       params: {
         currency: currency.toLowerCase(),
+        hash,
+        address,
+        chainIds: chainId ? String(chainId) : undefined,
       },
     });
 
-    const tx = data?.payload?.transaction;
+    const tx = data?.result;
     if (!tx || !tx?.status || (tx?.status as string) === '') {
       return null;
     }
