@@ -189,6 +189,7 @@ const getTransactionFee = (
   };
 };
 
+// TODO: Use paginated ?
 export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta?: TransactionApiResponse['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
   return asset?.name || meta?.action;

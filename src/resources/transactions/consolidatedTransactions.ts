@@ -69,12 +69,6 @@ export async function consolidatedTransactionsQueryFunction({
   let nextPageFromGoldsky: string | undefined = pageParam;
   let cutoffFromGoldsky: number | undefined;
   try {
-    // console.log({
-    //   address,
-    //   chainIds: chainIds.join(','),
-    //   currency: currency.toLowerCase(),
-    //   limit: String(10),
-    // });
     const response = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
       params: {
@@ -82,12 +76,11 @@ export async function consolidatedTransactionsQueryFunction({
         // chainIds: chainIds.join(','),
         chainIds: '8453,1,80094',
         currency: currency.toLowerCase(),
+        // TODO: FIX THIS
         limit: String(10),
         // ...(pageParam ? { pageCursor: pageParam } : {}),
       },
     });
-
-    // console.log(response?.data);
 
     transactionsFromGoldsky = await parseConsolidatedTransactions(response?.data, currency);
     // nextPageFromGoldsky = response?.data?.meta?.next_page_cursor;
