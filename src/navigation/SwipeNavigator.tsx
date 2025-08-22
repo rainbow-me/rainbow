@@ -627,6 +627,8 @@ function SwipeNavigatorScreens() {
 
   return (
     <Swipe.Navigator
+      // required to force re-render when showKingOfTheHillTab changes
+      key={`swipe-navigator-${showKingOfTheHillTab ? 'koth' : 'profile'}`}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
       screenOptions={getScreenOptions}

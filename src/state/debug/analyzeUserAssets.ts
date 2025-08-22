@@ -31,8 +31,8 @@ export function analyzeUserAssets() {
     message: userAssetsQueryKey,
   };
 
-  const top10Assets = userAssetsStore.getState().getUserAssets().slice(0, 10);
-  const top10AssetsMessage = top10Assets
+  const topAssets = userAssetsStore.getState().getUserAssets().slice(0, 20);
+  const topAssetsMessage = topAssets
     .map(asset => {
       const updatedAt = asset.updatedAt ? new Date(asset.updatedAt).toLocaleString() : 'N/A';
       const timeAgo = asset.updatedAt ? getRelativeTime(asset.updatedAt) : 'N/A';
@@ -40,12 +40,12 @@ export function analyzeUserAssets() {
     })
     .join('\n');
 
-  const top10AssetsData = {
-    title: 'Top 10 Assets',
-    message: top10AssetsMessage,
+  const topAssetsData = {
+    title: 'Top 20 Assets',
+    message: topAssetsMessage,
   };
 
   showLogSheet({
-    data: [lastFetchedData, queryKeyData, top10AssetsData],
+    data: [lastFetchedData, queryKeyData, topAssetsData],
   });
 }

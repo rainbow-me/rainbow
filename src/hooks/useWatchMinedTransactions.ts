@@ -31,12 +31,11 @@ async function refetchOtherAssets({ address }: { address: string }) {
 export const useWatchMinedTransactions = ({ address }: { address: string }) => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const clearMinedTransactions = useMinedTransactionsStore(state => state.clearMinedTransactions);
-  const allStaleBalances = staleBalancesStore(state => state.staleBalances);
-  const staleBalances = allStaleBalances[address];
+  const staleBalances = staleBalancesStore(state => state.staleBalances[address]);
 
   const watchMinedTransactions = useCallback(
-    async (minedTransactions: MinedTransaction[]): Promise<boolean> => {
-      if (!minedTransactions.length) return false;
+    async (minedTransactions: MinedTransaction[]) => {
+      if (!minedTransactions.length) return;
 
       const initialUserAssets = userAssetsStore.getState().userAssets;
       const now = Math.floor(Date.now() / 1000);
@@ -59,7 +58,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
 
       if (!validTransactions.length) {
         clearMinedTransactions(address);
-        return false;
+        return;
       }
 
       const expectedUniqueIds = new Set<string>();
@@ -114,7 +113,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
         });
 
         if (!allExpectedChangesSeen) {
-          return true;
+          return;
         }
 
         // Filter out zero balance assets and sort by value
@@ -140,11 +139,8 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
         await refetchOtherAssets({ address });
         clearMinedTransactions(address);
         staleBalancesStore.getState().clearExpiredData(address);
-
-        return false;
       } catch (e) {
         logger.error(new RainbowError('[watchMinedTransactions]: Polling GetAssetUpdates failed', e));
-        return true;
       }
     },
     [address, nativeCurrency, clearMinedTransactions, staleBalances]
