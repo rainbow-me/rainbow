@@ -54,7 +54,7 @@ export const parseTransaction = async (
   nativeCurrency: NativeCurrencyKey,
   chainId: ChainId
 ): Promise<RainbowTransaction> => {
-  const { status, hash, meta, nonce, protocol } = transaction;
+  const { status, hash, meta, nonce } = transaction;
 
   const txn = {
     ...transaction,
@@ -62,16 +62,20 @@ export const parseTransaction = async (
   const changes: TransactionChanges = txn.changes.map(change => {
     if (change) {
       return {
-        ...change,
         asset: parseAddressAsset({
           assetData: {
             asset: change.asset,
-            quantity: change.value?.toString() || '0',
+            quantity: change.quantity || '0',
           },
         }),
-        value: change.value || undefined,
+        value: change.quantity ? parseFloat(change.quantity) : undefined,
+        direction: change.direction as TransactionDirection,
+        address_from: change.addressFrom,
+        address_to: change.addressTo,
+        price: parseFloat(change.price || '0'),
       };
     }
+    return undefined;
   });
 
   const type = isValidTransactionType(meta?.type) ? meta.type : 'contract_interaction';
@@ -116,7 +120,8 @@ export const parseTransaction = async (
     network: txn.network,
     status,
     nonce,
-    protocol,
+    // TODO: Fix this don't get from goldsky
+    protocol: undefined,
     type,
     direction,
     value,
