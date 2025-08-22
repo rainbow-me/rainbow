@@ -1,0 +1,414 @@
+import React, { useCallback } from 'react';
+import { StyleSheet, ViewStyle } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  interpolate,
+  interpolateColor,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withDecay,
+  withSpring,
+  SharedValue,
+} from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { clamp, opacityWorklet } from '@/__swaps__/utils/swaps';
+import {
+  SCRUBBER_WIDTH,
+  SLIDER_COLLAPSED_HEIGHT,
+  SLIDER_HEIGHT,
+  SLIDER_WIDTH,
+  THICK_BORDER_WIDTH,
+} from '@/__swaps__/screens/Swap/constants';
+
+const MAX_PERCENTAGE = 0.995;
+const MIN_PERCENTAGE = 0.005;
+
+export interface SliderColors {
+  activeLeft: string;
+  inactiveLeft: string;
+  activeRight: string;
+  inactiveRight: string;
+}
+
+export type SliderVisualState = 'idle' | 'active' | 'processing';
+export type SliderChangeSource = 'gesture' | 'tap' | 'max-button' | 'external';
+
+export interface SliderProps {
+  sliderXPosition: SharedValue<number>;
+  sliderPressProgress: SharedValue<number>;
+  isEnabled?: boolean | SharedValue<boolean>; // Whether slider is interactive
+  colors?: SliderColors | SharedValue<SliderColors>;
+  height?: number;
+  width?: number;
+  snapPoints?: number[];
+  onPercentageChange: (percentage: number, source: SliderChangeSource) => void;
+  onGestureStart?: (state: { position: number; percentage: number }) => void;
+  onGestureEnd?: (state: { position: number; percentage: number; hasChanged: boolean }) => void;
+  onGestureUpdate?: (state: { isAtMax: boolean; exceedsMax: boolean; position: number; percentage: number }) => void;
+  onGestureFinalize?: (state: { hasChanged: boolean }) => void;
+  checkExceedsMax?: () => boolean;
+  onExceedsMax?: () => void;
+  containerStyle?: ViewStyle;
+}
+
+export const Slider: React.FC<SliderProps> = ({
+  sliderXPosition,
+  sliderPressProgress,
+  isEnabled: isEnabledProp = true,
+  colors: colorsProp,
+  height = SLIDER_HEIGHT,
+  width = SLIDER_WIDTH,
+  snapPoints = [0, 0.25, 0.5, 0.75, 1],
+  onPercentageChange,
+  onGestureStart,
+  onGestureEnd,
+  onGestureUpdate,
+  onGestureFinalize,
+  checkExceedsMax,
+  onExceedsMax,
+  containerStyle,
+}) => {
+  const { isDarkMode } = useColorMode();
+
+  const fillSecondary = useForegroundColor('fillSecondary');
+  const separatorSecondary = useForegroundColor('separatorSecondary');
+
+  const overshoot = useSharedValue(0);
+  const gestureCtx = useSharedValue<{ exceedsMax?: boolean; startX: number }>({ startX: 0 });
+
+  const isEnabled = useDerivedValue(() => {
+    if (typeof isEnabledProp === 'boolean') return isEnabledProp;
+    return isEnabledProp.value;
+  });
+
+  const defaultColors = useDerivedValue<SliderColors>(() => ({
+    activeLeft: isDarkMode ? '#00D4FF' : '#0076FF',
+    inactiveLeft: isDarkMode ? opacityWorklet('#00D4FF', 0.9) : opacityWorklet('#0076FF', 0.9),
+    activeRight: fillSecondary,
+    inactiveRight: separatorSecondary,
+  }));
+
+  const colors = useDerivedValue(() => {
+    if (!colorsProp) return defaultColors.value;
+    if ('value' in colorsProp) return colorsProp.value;
+    return colorsProp;
+  });
+
+  const xPercentage = useDerivedValue(() => {
+    return clamp((sliderXPosition.value - SCRUBBER_WIDTH / width) / width, 0, 1);
+  });
+
+  const uiXPercentage = useDerivedValue(() => {
+    return xPercentage.value * (1 - SCRUBBER_WIDTH / width);
+  });
+
+  // Haptic feedback for edges
+  useAnimatedReaction(
+    () => sliderXPosition.value,
+    (current, previous) => {
+      if (previous !== null && current !== previous) {
+        if (current >= width * MAX_PERCENTAGE && previous < width * MAX_PERCENTAGE) {
+          triggerHaptics('impactMedium');
+        }
+        if (current < width * MIN_PERCENTAGE && previous >= width * MIN_PERCENTAGE) {
+          triggerHaptics('impactLight');
+        }
+      }
+    },
+    []
+  );
+
+  const onChangeWrapper = useCallback(
+    (percentage: number, source: SliderChangeSource) => {
+      onPercentageChange(percentage, source);
+    },
+    [onPercentageChange]
+  );
+
+  const tapGesture = Gesture.Tap()
+    .onBegin(() => {
+      'worklet';
+      sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
+      triggerHaptics('soft');
+    })
+    .onStart(() => {
+      'worklet';
+      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
+    });
+
+  const panGesture = Gesture.Pan()
+    .onBegin(() => {
+      'worklet';
+      gestureCtx.value = { exceedsMax: undefined, startX: sliderXPosition.value };
+      sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
+
+      if (!isEnabled.value) return;
+
+      // Check if at max and exceeding
+      if (gestureCtx.value.startX >= width) {
+        const exceedsMax = checkExceedsMax ? checkExceedsMax() : false;
+
+        if (exceedsMax) {
+          gestureCtx.value = { ...gestureCtx.value, exceedsMax: true };
+          sliderXPosition.value = width * 0.999;
+          triggerHaptics('impactMedium');
+          if (onExceedsMax) runOnJS(onExceedsMax)();
+        }
+      }
+
+      if (onGestureStart) {
+        runOnJS(onGestureStart)({
+          position: sliderXPosition.value,
+          percentage: xPercentage.value,
+        });
+      }
+    })
+    .onUpdate(event => {
+      'worklet';
+      if (!isEnabled.value) return;
+
+      const rawX = gestureCtx.value.startX + event.translationX;
+
+      const calculateOvershoot = (distance: number, maxOverscroll: number): number => {
+        if (distance === 0) return 0;
+        const overscrollFraction = Math.min(Math.abs(distance) / maxOverscroll, 1);
+        const resistance = 1 / (overscrollFraction * 9 + 1);
+        return distance * resistance;
+      };
+
+      sliderXPosition.value = clamp(rawX, 0, width);
+
+      // Handle overscroll
+      if (rawX < 0 || rawX > width) {
+        const maxOverscroll = 80;
+        const overshootX = interpolate(
+          rawX,
+          [-maxOverscroll, 0, width, width + maxOverscroll],
+          [-maxOverscroll, 0, 0, maxOverscroll],
+          'clamp'
+        );
+        overshoot.value = calculateOvershoot(overshootX, maxOverscroll);
+      }
+
+      if (onGestureUpdate) {
+        runOnJS(onGestureUpdate)({
+          isAtMax: sliderXPosition.value >= width * MAX_PERCENTAGE,
+          exceedsMax: gestureCtx.value.exceedsMax || false,
+          position: sliderXPosition.value,
+          percentage: xPercentage.value,
+        });
+      }
+    })
+    .onEnd(event => {
+      'worklet';
+      const hasChanged = gestureCtx.value.startX !== sliderXPosition.value;
+
+      const onFinished = () => {
+        overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
+
+        if (isEnabled.value) {
+          if (xPercentage.value >= MAX_PERCENTAGE) {
+            runOnJS(onChangeWrapper)(1, 'gesture');
+            sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
+          } else if (xPercentage.value < MIN_PERCENTAGE) {
+            runOnJS(onChangeWrapper)(0, 'gesture');
+            sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
+          } else if (hasChanged) {
+            runOnJS(onChangeWrapper)(xPercentage.value, 'gesture');
+          }
+        }
+      };
+
+      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
+
+      if (!isEnabled.value) {
+        if (sliderXPosition.value > 0) triggerHaptics('notificationError');
+        overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
+        sliderXPosition.value = withSpring(0, SPRING_CONFIGS.slowSpring);
+        if (onGestureEnd) {
+          runOnJS(onGestureEnd)({
+            position: 0,
+            percentage: 0,
+            hasChanged: false,
+          });
+        }
+        return;
+      }
+
+      if (snapPoints && snapPoints.length > 0) {
+        // Snap point logic
+        const rawX = gestureCtx.value.startX + event.translationX;
+        const needsToSnap =
+          !(
+            (sliderXPosition.value === 0 && event.velocityX < 0) ||
+            (sliderXPosition.value === width && event.velocityX > 0) ||
+            (overshoot.value !== 0 && (rawX <= 0 || rawX >= width))
+          ) && Math.abs(event.velocityX) > 100;
+
+        if (needsToSnap) {
+          const adjustedSnapPoints = snapPoints.map((point: number) => point * width);
+          let nextSnapPoint: number | undefined = undefined;
+
+          if (event.velocityX > 0) {
+            for (let i = 0; i < adjustedSnapPoints.length; i++) {
+              if (adjustedSnapPoints[i] > sliderXPosition.value && adjustedSnapPoints[i] - sliderXPosition.value > width * MIN_PERCENTAGE) {
+                nextSnapPoint = adjustedSnapPoints[i];
+                break;
+              }
+            }
+            nextSnapPoint = nextSnapPoint ?? width;
+          } else {
+            for (let i = adjustedSnapPoints.length - 1; i >= 0; i--) {
+              if (adjustedSnapPoints[i] < sliderXPosition.value && sliderXPosition.value - adjustedSnapPoints[i] > width * MIN_PERCENTAGE) {
+                nextSnapPoint = adjustedSnapPoints[i];
+                break;
+              }
+            }
+            nextSnapPoint = nextSnapPoint ?? 0;
+          }
+
+          overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
+          runOnJS(onChangeWrapper)(nextSnapPoint / width, 'gesture');
+          sliderXPosition.value = withSpring(nextSnapPoint, SPRING_CONFIGS.snappierSpringConfig);
+        } else {
+          onFinished();
+        }
+      } else {
+        // Decay animation without snap points
+        sliderXPosition.value = withDecay(
+          {
+            velocity: Math.abs(event.velocityX) < 100 ? 0 : event.velocityX,
+            velocityFactor: 1,
+            clamp: [0, width],
+            deceleration: 0.9925,
+          },
+          isFinished => {
+            if (isFinished) onFinished();
+          }
+        );
+      }
+
+      if (onGestureEnd) {
+        runOnJS(onGestureEnd)({
+          position: sliderXPosition.value,
+          percentage: xPercentage.value,
+          hasChanged,
+        });
+      }
+    })
+    .onFinalize(() => {
+      'worklet';
+      const hasChanged = gestureCtx.value.startX !== sliderXPosition.value;
+      if (onGestureFinalize) {
+        runOnJS(onGestureFinalize)({ hasChanged });
+      }
+    })
+    .activeOffsetX([0, 0])
+    .activeOffsetY([0, 0]);
+
+  const sliderContainerStyle = useAnimatedStyle(() => {
+    const collapsedPercentage = SLIDER_COLLAPSED_HEIGHT / height;
+    return {
+      height: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [SLIDER_COLLAPSED_HEIGHT, height]),
+      transform: [
+        { translateX: overshoot.value * 0.75 },
+        { scaleX: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [1, 1.025]) + Math.abs(overshoot.value) / width },
+        { scaleY: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [1, 1.025]) - (Math.abs(overshoot.value) / width) * 3 },
+      ],
+    };
+  });
+
+  const leftBarContainerStyle = useAnimatedStyle(() => {
+    const collapsedPercentage = SLIDER_COLLAPSED_HEIGHT / height;
+    return {
+      backgroundColor: withSpring(
+        interpolateColor(sliderPressProgress.value, [collapsedPercentage, 1], [colors.value.inactiveLeft, colors.value.activeLeft]),
+        SPRING_CONFIGS.springConfig
+      ),
+      borderWidth: IS_IOS
+        ? interpolate(
+            xPercentage.value,
+            [0, (THICK_BORDER_WIDTH * 2) / width, (THICK_BORDER_WIDTH * 4) / width, 1],
+            [0, 0, THICK_BORDER_WIDTH, THICK_BORDER_WIDTH],
+            'clamp'
+          )
+        : 0,
+      width: `${uiXPercentage.value * 100}%`,
+    };
+  });
+
+  const rightBarContainerStyle = useAnimatedStyle(() => {
+    return {
+      borderWidth: IS_IOS
+        ? interpolate(
+            xPercentage.value,
+            [0, 1 - (THICK_BORDER_WIDTH * 4) / width, 1 - (THICK_BORDER_WIDTH * 2) / width, 1],
+            [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
+            'clamp'
+          )
+        : 0,
+      backgroundColor: colors.value.inactiveRight,
+      width: `${(1 - uiXPercentage.value - SCRUBBER_WIDTH / width) * 100}%`,
+    };
+  });
+
+  const composedGesture = Gesture.Simultaneous(tapGesture, panGesture);
+
+  return (
+    <GestureDetector gesture={composedGesture}>
+      <Animated.View
+        style={[
+          sliderContainerStyle,
+          containerStyle,
+          {
+            alignItems: 'center',
+            flexDirection: 'row',
+            width,
+          },
+        ]}
+      >
+        {/* Left bar */}
+        <Animated.View style={[styles.sliderBox, { borderColor: separatorSecondary }, leftBarContainerStyle]} />
+        {/* Scrubber */}
+        <Box style={styles.sliderScrubberContainer}>
+          <Box style={[styles.sliderScrubber, { backgroundColor: isDarkMode ? globalColors.white100 : globalColors.grey80 }]} />
+        </Box>
+        {/* Right bar */}
+        <Box
+          as={Animated.View}
+          style={[
+            styles.sliderBox,
+            rightBarContainerStyle,
+            { borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)' },
+          ]}
+        />
+      </Animated.View>
+    </GestureDetector>
+  );
+};
+
+const styles = StyleSheet.create({
+  sliderBox: {
+    borderCurve: 'continuous',
+    borderRadius: 8,
+    height: '100%',
+    overflow: 'hidden',
+  },
+  sliderScrubber: {
+    borderRadius: 4,
+    height: `${250 / 3}%`,
+    width: 4,
+  },
+  sliderScrubberContainer: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    width: SCRUBBER_WIDTH,
+  },
+});

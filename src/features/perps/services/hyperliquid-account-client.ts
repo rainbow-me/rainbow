@@ -1,11 +1,12 @@
 import { divide, greaterThan, multiply } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
-import { PositionSide, PerpAccount, FilledOrder } from '../types';
+import { PerpPositionSide, PerpAccount, FilledOrder } from '../types';
 import { describeFill } from '@/features/perps/utils';
 
+const transport = new hl.HttpTransport();
 export const infoClient: hl.InfoClient = new hl.InfoClient({
-  transport: new hl.HttpTransport(),
+  transport,
 });
 
 export class HyperliquidAccountClient {
@@ -72,7 +73,7 @@ export class HyperliquidAccountClient {
 
       return {
         symbol: position.coin,
-        side: greaterThan(position.szi, 0) ? PositionSide.LONG : PositionSide.SHORT,
+        side: greaterThan(position.szi, 0) ? PerpPositionSide.LONG : PerpPositionSide.SHORT,
         leverage: position.leverage.value,
         liquidationPrice: position.liquidationPx,
         entryPrice: position.entryPx,

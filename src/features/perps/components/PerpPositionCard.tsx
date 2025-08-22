@@ -1,0 +1,120 @@
+import React, { memo, useMemo } from 'react';
+import { Box, Separator, Stack, Text } from '@/design-system';
+import { PerpsPosition } from '@/features/perps/types';
+import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
+import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import { abs } from '@/helpers/utilities';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+
+type PerpPositionCardProps = {
+  position: PerpsPosition;
+};
+
+export const PerpPositionCard = memo(function PerpPositionCard({ position }: PerpPositionCardProps) {
+  // TODO (kane): real token color, blocked by backend
+  const tokenColor = opacityWorklet('#677483', 0.08);
+  const isNegativePnl = position.unrealizedPnl.includes('-');
+
+  const formattedValues = useMemo(() => {
+    return {
+      entryPrice: formatAssetPrice({
+        value: position.entryPrice,
+        currency: 'USD',
+      }),
+      liquidationPrice: position.liquidationPrice
+        ? formatAssetPrice({
+            value: position.liquidationPrice,
+            currency: 'USD',
+          })
+        : 'N/A',
+      unrealizedPnl: formatAssetPrice({
+        value: abs(position.unrealizedPnl),
+        prefix: position.unrealizedPnl.includes('-') ? '-' : '+',
+        currency: 'USD',
+      }),
+      positionValue: formatAssetPrice({
+        value: position.value,
+        currency: 'USD',
+      }),
+    };
+  }, [position]);
+
+  const { entryPrice, liquidationPrice, unrealizedPnl, positionValue } = formattedValues;
+
+  return (
+    <Box
+      width={'full'}
+      backgroundColor={tokenColor}
+      borderRadius={32}
+      padding={'16px'}
+      borderWidth={2}
+      borderColor={{ custom: tokenColor }}
+    >
+      <Box gap={12}>
+        <Box flexDirection="row" alignItems="center" gap={12}>
+          <HyperliquidTokenIcon symbol={position.symbol} style={{ width: 40, height: 40, borderRadius: 20 }} />
+          <Box gap={8} style={{ flex: 1 }}>
+            <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+              <Box flexDirection="row" alignItems="center" gap={4}>
+                <Text size="17pt" weight="bold" color="label">
+                  {`${position.symbol}`}
+                </Text>
+                <Text size="13pt" weight="bold" color="labelTertiary">
+                  {'􀯻'}
+                </Text>
+              </Box>
+              <Text size="17pt" weight="bold" color="label">
+                {positionValue}
+              </Text>
+            </Box>
+            <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+              <Box flexDirection="row" alignItems="center" gap={5}>
+                <LeverageBadge leverage={position.leverage} />
+                <PositionSideBadge side={position.side} />
+              </Box>
+              <Text size="15pt" weight="bold" color={isNegativePnl ? 'red' : 'green'}>
+                {unrealizedPnl}
+              </Text>
+            </Box>
+          </Box>
+        </Box>
+        <Separator color="separatorTertiary" direction="horizontal" />
+        <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+          <Stack alignHorizontal="left" space={'10px'}>
+            <Text size="11pt" weight="bold" color="labelQuaternary">
+              {'ENTRY'}
+            </Text>
+            <Text size="15pt" weight="bold" color="labelSecondary">
+              {entryPrice}
+            </Text>
+          </Stack>
+          <Stack alignHorizontal="center" space={'10px'}>
+            <Text size="11pt" weight="bold" color="labelQuaternary">
+              {'MARK PRICE'}
+            </Text>
+            <LiveTokenText
+              tokenId={`${position.symbol}:hl`}
+              selector={token => formatAssetPrice({ value: token.price, currency: 'USD' })}
+              // TODO (kane): don't have a good way to get this, is this solution fine?
+              initialValue={'Loading...'}
+              size="15pt"
+              weight="bold"
+              color="label"
+            />
+          </Stack>
+          <Stack alignHorizontal="right" space={'10px'}>
+            <Text size="11pt" weight="bold" color="labelQuaternary">
+              {'LIQ. PRICE'}
+            </Text>
+            <Text size="15pt" weight="bold" color="labelSecondary">
+              {liquidationPrice}
+            </Text>
+          </Stack>
+        </Box>
+      </Box>
+    </Box>
+  );
+});

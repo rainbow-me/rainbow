@@ -1,28 +1,32 @@
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { Address } from 'viem';
-import { PositionSide, Position, FilledOrder } from '../types';
-import { getHyperliquidAccountClient, getHyperliquidExchangeClient } from '../services';
+import { PerpPositionSide, PerpsPosition, FilledOrder } from '../types';
+import { getHyperliquidAccountClient } from '../services';
 import { RainbowError } from '@/logger';
-import { add } from '@/helpers/utilities';
+import { add, divide } from '@/helpers/utilities';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type HyperliquidAccountStoreState = {
-  positions: Position[];
+  positions: PerpsPosition[];
   filledOrders: FilledOrder[];
   balance: string;
+  // TODO: better as unseen
   seenFilledOrders: Set<string>;
 };
 
 type HyperliquidAccountStoreActions = {
   deposit: ({ asset, amount }: { asset: string; amount: string }) => Promise<void>;
   withdraw: ({ asset, amount }: { asset: string; amount: string }) => Promise<void>;
-  createIsolatedMarginPosition: ({ asset, side, leverage }: { asset: string; side: PositionSide; leverage: number }) => Promise<void>;
+  createIsolatedMarginPosition: ({ asset, side, leverage }: { asset: string; side: PerpPositionSide; leverage: number }) => Promise<void>;
   checkIfHyperliquidAccountExists: () => Promise<boolean>;
   markFilledOrdersAsSeen: (orderIds: number[]) => void;
   // derivative state
-  getTotalUnrealizedPnl: () => string;
-  getTotalPositionsValue: () => string;
+  getTotalPositionsInfo: () => {
+    value: string;
+    unrealizedPnl: string;
+    unrealizedPnlPercent: string;
+  };
 };
 
 type HyperliquidAccountStore = HyperliquidAccountStoreState & HyperliquidAccountStoreActions;
@@ -32,7 +36,7 @@ type HyperliquidAccountParams = {
 };
 
 type FetchHyperliquidAccountResponse = {
-  positions: Position[];
+  positions: PerpsPosition[];
   filledOrders: FilledOrder[];
   balance: string;
 };
@@ -41,9 +45,11 @@ async function fetchHyperliquidAccount({ address }: HyperliquidAccountParams): P
   if (!address) throw new RainbowError('[HyperliquidAccountStore] Address is required');
 
   const accountClient = getHyperliquidAccountClient(address);
-  const [account, filledOrders] = await Promise.all([accountClient.getPerpAccount(), accountClient.getFilledOrders()]);
 
+  // TODO (kane): userFillsByTime for past 1 month is better, some users might have thousands
+  const [account, filledOrders] = await Promise.all([accountClient.getPerpAccount(), accountClient.getFilledOrders()]);
   return {
+    // TODO (kane): better as a record
     positions: account.positions,
     filledOrders,
     balance: account.balance,
@@ -66,7 +72,7 @@ export const useHyperliquidAccountStore = createQueryStore<
     },
     cacheTime: time.days(1),
     params: {
-      address: $ => $(userAssetsStoreManager).address,
+      address: $ => $(useWalletsStore).accountAddress,
     },
     staleTime: time.minutes(1),
   },
@@ -78,14 +84,12 @@ export const useHyperliquidAccountStore = createQueryStore<
     deposit: async ({ asset, amount }) => {},
     withdraw: async ({ asset, amount }) => {},
     createIsolatedMarginPosition: async ({ asset, side, leverage }) => {
-      // TODO: how to get the address from the params?
       // const exchangeClient = await getHyperliquidExchangeClient();
     },
     checkIfHyperliquidAccountExists: async () => {
-      // TODO: this is one way to get it, and it in theory should be the same as the address in the params, but doesn't feel right
-      const address = userAssetsStoreManager.getState().address;
-      if (!address) throw new RainbowError('[HyperliquidAccountStore] Address is required');
-
+      // This is fine
+      // save to state, address -> exists and don't check if true
+      const address = useWalletsStore.getState().accountAddress;
       const accountClient = await getHyperliquidAccountClient(address);
       return await accountClient.hasAccount();
     },
@@ -97,10 +101,29 @@ export const useHyperliquidAccountStore = createQueryStore<
         return add(acc, position.unrealizedPnl);
       }, '0');
     },
-    getTotalPositionsValue: () => {
-      return get().positions.reduce((acc, position) => {
-        return add(acc, position.value);
-      }, '0');
+    getTotalPositionsInfo: () => {
+      const { positions } = get();
+      let totalPositionsValue = '0';
+      let totalPositionsPnl = '0';
+
+      positions.forEach(position => {
+        totalPositionsValue = add(totalPositionsValue, position.value);
+        totalPositionsPnl = add(totalPositionsPnl, position.unrealizedPnl);
+      });
+
+      return {
+        value: totalPositionsValue,
+        unrealizedPnl: totalPositionsPnl,
+        unrealizedPnlPercent: totalPositionsValue === '0' ? '0' : divide(totalPositionsPnl, totalPositionsValue),
+      };
     },
   })
 );
+
+// const useCachedUserAssetsStore = createDerivedStore<UserAssetsStoreType>(
+//   $ => {
+//     const address = $(useWalletsStore).accountAddress;
+//     return createUserAssetsStore(address);
+//   },
+//   { fastMode: true }
+// );

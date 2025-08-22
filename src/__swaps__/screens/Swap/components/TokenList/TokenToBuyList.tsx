@@ -211,7 +211,7 @@ export const TokenToBuyList = () => {
 
   return (
     <Box style={styles.list} testID={'token-to-buy-list'}>
-      <ChainSelection animatedRef={animatedRef} output />
+      <ChainSelection selectedChainId={undefined} animatedRef={animatedRef} output />
       <Animated.FlatList
         ListEmptyComponent={<ListEmpty output />}
         ListFooterComponent={listFooter}

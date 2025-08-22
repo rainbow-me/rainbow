@@ -3,7 +3,7 @@ import * as hl from '@nktkas/hyperliquid';
 import { OrderParams } from '@nktkas/hyperliquid/script/src/types/mod';
 import { Address, Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS } from '../constants';
-import { PositionSide, OrderType } from '../types';
+import { PerpPositionSide, OrderType } from '../types';
 import { hyperliquidMarketsClient } from './hyperliquid-markets-client';
 import { HyperliquidAccountClient } from './hyperliquid-account-client';
 import { getOppositePositionSide } from '../utils';
@@ -28,12 +28,7 @@ export class HyperliquidExchangeClient {
 
   async deposit(amount: string) {}
 
-  async withdraw(amount: string) {
-    await this.exchangeClient.withdraw3({
-      amount,
-      destination: this.userAddress,
-    });
-  }
+  async withdraw(amount: string) {}
 
   async createOrder({
     assetId,
@@ -49,7 +44,7 @@ export class HyperliquidExchangeClient {
   }: {
     assetId: number;
     assetSymbol: string;
-    side: PositionSide;
+    side: PerpPositionSide;
     usdAmount?: string;
     size?: string;
     slippageBips?: number;
@@ -77,7 +72,7 @@ export class HyperliquidExchangeClient {
       const slippageMultiplier = 1 + slippage;
 
       orderPrice =
-        side === PositionSide.LONG
+        side === PerpPositionSide.LONG
           ? (parseFloat(midPrice) * slippageMultiplier).toFixed(8)
           : (parseFloat(midPrice) / slippageMultiplier).toFixed(8);
     }
@@ -96,7 +91,7 @@ export class HyperliquidExchangeClient {
 
     return {
       a: assetId,
-      b: side === PositionSide.LONG,
+      b: side === PerpPositionSide.LONG,
       p: orderPrice,
       s: orderSize,
       r: reduceOnly ?? false,
@@ -118,7 +113,7 @@ export class HyperliquidExchangeClient {
     type,
   }: {
     assetId: number;
-    side: PositionSide;
+    side: PerpPositionSide;
     size: string;
     triggerPrice: string;
     orderPrice: string;
@@ -127,7 +122,7 @@ export class HyperliquidExchangeClient {
   }): OrderParams {
     return {
       a: assetId,
-      b: side !== PositionSide.LONG,
+      b: side !== PerpPositionSide.LONG,
       p: orderPrice,
       s: size,
       r: true,
@@ -158,7 +153,7 @@ export class HyperliquidExchangeClient {
     takeProfitPrice,
   }: {
     symbol: string;
-    side: PositionSide;
+    side: PerpPositionSide;
     usdAmount: string;
     leverage: number;
     orderType: OrderType;

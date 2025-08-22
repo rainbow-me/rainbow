@@ -81,6 +81,21 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 60,
     width: deviceUtils.dimensions.width,
   },
+  [CellType.PERPS_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.PERPS_SPACE_BEFORE]: { height: 10 },
+  [CellType.PERPS_SPACE_AFTER]: { height: 3 },
+  [CellType.PERPS_BALANCE]: {
+    height: 80,
+    width: deviceUtils.dimensions.width,
+  },
+  [CellType.PERPS_POSITION]: {
+    height: 65,
+    width: deviceUtils.dimensions.width,
+  },
+  [CellType.PERPS_NO_POSITIONS]: {
+    height: 50,
+    width: deviceUtils.dimensions.width,
+  },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
   [CellType.EMPTY_REMOTE_CARD_CAROUSEL]: { height: 0 },
 };

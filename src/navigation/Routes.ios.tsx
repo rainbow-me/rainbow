@@ -77,6 +77,7 @@ import {
   tokenLauncherConfig,
   kingOfTheHillExplainSheetConfig,
   activitySheetConfig,
+  perpsAccountStackConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -119,6 +120,13 @@ import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
+import { PerpsAccountScreen } from '@/features/perps/screens/perps-account-screen/PerpsAccountScreen';
+import { PerpsNavigatorFooter } from '@/features/perps/components/PerpsNavigatorFooter';
+import { PerpsNewPositionSearchScreen, PerpsSearchScreen } from '@/features/perps/screens/PerpsSearchScreen';
+import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
+import { PerpsDepositScreen } from '@/features/perps/screens/PerpsDepositScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -129,6 +137,27 @@ function SendFlowNavigator() {
       <Stack.Screen component={ModalScreen} name={Routes.MODAL_SCREEN} options={overlayExpandedPreset} />
       <Stack.Screen component={SendSheet} name={Routes.SEND_SHEET} options={sheetPreset} />
     </Stack.Navigator>
+  );
+}
+
+function PerpsAccountNavigator() {
+  return (
+    <KeyboardProvider>
+      <PerpsAccentColorContextProvider>
+        <NativeStack.Navigator {...stackNavigationConfig} initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}>
+          <NativeStack.Screen component={PerpsSearchScreen} name={Routes.PERPS_SEARCH_SCREEN} options={{ customStack: true }} />
+          <NativeStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} options={{ customStack: true }} />
+          <NativeStack.Screen
+            component={PerpsNewPositionSearchScreen}
+            name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN}
+            options={{ customStack: true }}
+          />
+          <NativeStack.Screen component={PerpsNewPositionScreen} name={Routes.PERPS_NEW_POSITION_SCREEN} options={{ customStack: true }} />
+          <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} />
+        </NativeStack.Navigator>
+        <PerpsNavigatorFooter />
+      </PerpsAccentColorContextProvider>
+    </KeyboardProvider>
   );
 }
 
@@ -292,6 +321,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />
       <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
       <NativeStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} {...tokenLauncherConfig} />
+      <NativeStack.Screen component={PerpsAccountNavigator} name={Routes.PERPS_ACCOUNT_NAVIGATOR} {...perpsAccountStackConfig} />
       <NativeStack.Screen
         component={KingOfTheHillExplainSheet}
         name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}

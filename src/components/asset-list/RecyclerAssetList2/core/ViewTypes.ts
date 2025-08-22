@@ -4,6 +4,7 @@ import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { RainbowPosition } from '@/resources/defi/types';
+import { PerpsPosition as PerpsPosition } from '@/features/perps/types';
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
@@ -41,6 +42,13 @@ export enum CellType {
   CLAIMABLES_HEADER = 'CLAIMABLES_HEADER',
   CLAIMABLE = 'CLAIMABLE',
   CLAIMABLES_SPACE_AFTER = 'CLAIMABLES_SPACE_AFTER',
+
+  PERPS_SPACE_BEFORE = 'PERPS_SPACE_BEFORE',
+  PERPS_HEADER = 'PERPS_HEADER',
+  PERPS_BALANCE = 'PERPS_BALANCE',
+  PERPS_POSITION = 'PERPS_POSITION',
+  PERPS_NO_POSITIONS = 'PERPS_NO_POSITIONS',
+  PERPS_SPACE_AFTER = 'PERPS_SPACE_AFTER',
 
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
@@ -110,6 +118,23 @@ export type ClaimablesHeaderExtraData = {
   total: string;
 };
 
+export type PerpsBalanceExtraData = {
+  type: CellType.PERPS_BALANCE;
+  balance: string;
+};
+export type PerpsPositionExtraData = {
+  type: CellType.PERPS_POSITION;
+  position: PerpsPosition;
+  index: number;
+};
+export type PerpsNoPositionsExtraData = {
+  type: CellType.PERPS_NO_POSITIONS;
+};
+export type PerpsHeaderExtraData = {
+  type: CellType.PERPS_HEADER;
+  total: string;
+};
+
 export type LegacyNFTFamilyExtraData = {
   type: CellType.LEGACY_FAMILY_HEADER;
   name: string;
@@ -149,6 +174,10 @@ export type CellExtraData =
   | PositionHeaderExtraData
   | ClaimableExtraData
   | ClaimablesHeaderExtraData
+  | PerpsBalanceExtraData
+  | PerpsPositionExtraData
+  | PerpsNoPositionsExtraData
+  | PerpsHeaderExtraData
   | ProfileActionButtonsRowExtraData;
 
 export type CellTypes = BaseCellType | (CellExtraData & BaseCellType);

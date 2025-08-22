@@ -19,6 +19,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
 import { isDataComplete } from '@/state/nfts/utils';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -78,6 +79,24 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
+  const perpsPositions = useHyperliquidAccountStore(state => state.positions);
+  const perpsBalance = useHyperliquidAccountStore(state => state.balance);
+  // TODO (kane): fix
+  const getTotalPositionsValue = useHyperliquidAccountStore(state => state.getTotalPositionsInfo);
+
+  const perpsData = useMemo(() => {
+    const hasBalance = perpsBalance && perpsBalance !== '0';
+    const hasPositions = perpsPositions && perpsPositions.length > 0;
+
+    if (!hasBalance && !hasPositions) return null;
+
+    return {
+      positions: perpsPositions,
+      balance: perpsBalance,
+      getTotalPositionsValue,
+    };
+  }, [perpsPositions, perpsBalance, getTotalPositionsValue]);
+
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
 
@@ -131,6 +150,7 @@ export default function useWalletSectionsData({
       experimentalConfig,
       positions,
       claimables,
+      perpsData,
       remoteCards,
       hasMoreCollections,
       isShowcaseDataMigrated,
@@ -168,6 +188,7 @@ export default function useWalletSectionsData({
     experimentalConfig,
     positions,
     claimables,
+    perpsData,
     remoteCards,
     hasMoreCollections,
     isShowcaseDataMigrated,

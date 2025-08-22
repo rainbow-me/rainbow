@@ -11,6 +11,7 @@ import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { Collection, CollectionId } from '@/state/nfts/types';
+import { PerpsPosition as PerpsPosition } from '@/features/perps/types';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -63,6 +64,7 @@ export type WalletSectionsState = {
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
+  perpsData: { positions: PerpsPosition[]; balance: string; getTotalPositionsValue: () => string } | null;
   remoteCards: string[];
   hasMoreCollections: boolean;
   isShowcaseDataMigrated: boolean;
@@ -84,6 +86,7 @@ const collectionsSelector = (state: WalletSectionsState) => state.collections;
 const isFetchingNftsSelector = (state: WalletSectionsState) => state.isFetchingNfts;
 const positionsSelector = (state: WalletSectionsState) => state.positions;
 const claimablesSelector = (state: WalletSectionsState) => state.claimables;
+const perpsDataSelector = (state: WalletSectionsState) => state.perpsData;
 const remoteCardsSelector = (state: WalletSectionsState) => state.remoteCards;
 const hasMoreCollectionsSelector = (state: WalletSectionsState) => state.hasMoreCollections;
 const isShowcaseDataMigratedSelector = (state: WalletSectionsState) => state.isShowcaseDataMigrated;
@@ -117,15 +120,17 @@ const buildBriefWalletSections = (
   balanceSectionData: BalanceSectionData,
   uniqueTokenFamiliesSection: CellTypes[],
   claimables: ClaimablesStore | null,
-  positions: RainbowPositions | null
+  positions: RainbowPositions | null,
+  perpsData: { positions: PerpsPosition[]; balance: string; getTotalPositionsValue: () => string } | null
 ): BriefWalletSectionsResult => {
   const { isEmpty, balanceSection, isLoadingUserAssets } = balanceSectionData;
 
   const positionsSection = withPositionsSection(positions, isLoadingUserAssets);
   const claimablesSection = withClaimablesSection(claimables, isLoadingUserAssets);
+  const perpsSection = withPerpsSection(perpsData, isLoadingUserAssets);
 
   return {
-    briefSectionsData: [...balanceSection, ...claimablesSection, ...positionsSection, ...uniqueTokenFamiliesSection],
+    briefSectionsData: [...balanceSection, ...perpsSection, ...claimablesSection, ...positionsSection, ...uniqueTokenFamiliesSection],
     isEmpty,
   };
 };
@@ -182,6 +187,66 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
       uid: 'claimables-spacer-after',
     },
     ...claimableSectionItems,
+  ];
+};
+
+const withPerpsSection = (
+  perpsData: { positions: PerpsPosition[]; balance: string; getTotalPositionsValue: () => string } | null,
+  isLoadingUserAssets: boolean
+): CellTypes[] => {
+  if (isLoadingUserAssets || !perpsData) return [];
+
+  const hasBalance = perpsData.balance && perpsData.balance !== '0';
+  const hasPositions = perpsData.positions && perpsData.positions.length > 0;
+
+  if (!hasBalance && !hasPositions) return [];
+
+  const perpsSectionItems: CellTypes[] = [];
+
+  // Add balance card first if there's a balance
+  if (hasBalance) {
+    perpsSectionItems.push({
+      type: CellType.PERPS_BALANCE,
+      balance: perpsData.balance,
+      uid: 'perps-balance',
+    });
+  }
+
+  // Add positions or "no positions" message
+  if (hasPositions) {
+    perpsData.positions.forEach((position, index) => {
+      perpsSectionItems.push({
+        type: CellType.PERPS_POSITION,
+        position,
+        uid: `perps-position-${position.symbol}-${index}`,
+        index,
+      });
+    });
+  } else if (hasBalance) {
+    // Show "No open positions" when user has balance but no positions
+    perpsSectionItems.push({
+      type: CellType.PERPS_NO_POSITIONS,
+      uid: 'perps-no-positions',
+    });
+  }
+
+  const totalValue = perpsData.getTotalPositionsValue();
+
+  return [
+    {
+      type: CellType.PERPS_SPACE_BEFORE,
+      uid: 'perps-spacer-before',
+    },
+    {
+      type: CellType.PERPS_HEADER,
+      uid: 'perps-header',
+      total: totalValue,
+    },
+    ...perpsSectionItems,
+    {
+      type: CellType.PERPS_SPACE_AFTER,
+      uid: 'perps-spacer-after',
+    },
   ];
 };
 
@@ -345,6 +410,6 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [briefBalanceSectionSelector, briefUniqueTokenDataSelector, claimablesSelector, positionsSelector],
+  [briefBalanceSectionSelector, briefUniqueTokenDataSelector, claimablesSelector, positionsSelector, perpsDataSelector],
   buildBriefWalletSections
 );

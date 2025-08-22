@@ -110,7 +110,69 @@ export function useSearchCurrencyLists() {
     return filtered.length ? filtered : undefined;
   }, [isContractSearch, keys, popularAssets, query]);
 
+  // Hardcode USDC for Hyperliquid chain
+  const hyperliquidUSDC = useMemo(() => {
+    if (toChainId !== 1337) return null;
+
+    const usdcAsset: SearchAsset = {
+      address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as AddressOrEth,
+      chainId: 1337,
+      colors: {
+        primary: '#2775CA',
+        fallback: '#FFFFFF',
+      },
+      decimals: 8,
+      icon_url:
+        'https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png',
+      isNativeAsset: false,
+      isRainbowCurated: true,
+      isVerified: true,
+      mainnetAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as AddressOrEth,
+      name: 'USD Coin',
+      networks: {
+        [ChainId.mainnet]: {
+          address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as Address,
+          decimals: 8,
+        },
+        1337: {
+          address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address,
+          decimals: 8,
+        },
+      },
+      market: {
+        market_cap: {
+          value: 100000000000, // $100B market cap
+        },
+        volume_24h: 10000000000, // $10B volume
+        circulating_supply: 100000000000,
+      },
+      symbol: 'USDC',
+      uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, 1337),
+      highLiquidity: true,
+    };
+
+    // If there's a search query, filter USDC
+    if (query && query.length > 0) {
+      const symbolMatch = usdcAsset.symbol.toLowerCase().includes(query);
+      const nameMatch = usdcAsset.name.toLowerCase().includes(query);
+      const addressMatch = isContractSearch && isLowerCaseMatch(usdcAsset.address, query);
+
+      if (symbolMatch || nameMatch || addressMatch) {
+        return usdcAsset;
+      }
+      return null;
+    }
+
+    return usdcAsset;
+  }, [toChainId, query, isContractSearch]);
+
   const data = useDeepCompareMemo(() => {
+    // Inject Hyperliquid USDC into the verified assets
+    let modifiedVerifiedAssets = verifiedAssets?.results;
+    if (hyperliquidUSDC && toChainId === 1337) {
+      modifiedVerifiedAssets = [hyperliquidUSDC, ...(verifiedAssets?.results || [])];
+    }
+
     return {
       isLoading: false,
       results: buildListSectionsData({
@@ -120,7 +182,7 @@ export function useSearchCurrencyLists() {
           popularAssets: popularAssetsForChain,
           recentSwaps: recentsForChain,
           unverifiedAssets: unverifiedAssets,
-          verifiedAssets: verifiedAssets?.results,
+          verifiedAssets: modifiedVerifiedAssets,
         },
         favoritesList,
         filteredBridgeAssetAddress: filteredBridgeAsset?.address,
@@ -129,8 +191,10 @@ export function useSearchCurrencyLists() {
   }, [
     favoritesList,
     filteredBridgeAsset,
+    hyperliquidUSDC,
     popularAssetsForChain,
     recentsForChain,
+    toChainId,
     unverifiedAssets,
     verifiedAssets?.crosschainResults,
     verifiedAssets?.results,

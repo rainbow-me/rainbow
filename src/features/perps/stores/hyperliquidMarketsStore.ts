@@ -1,14 +1,14 @@
-import { MarketSortOrder, Market } from '@/features/perps/types';
+import { MarketSortOrder, PerpMarket } from '@/features/perps/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { hyperliquidMarketsClient } from '@/features/perps/services/hyperliquid-markets-client';
 import { time } from '@/utils/time';
 
 type HyperliquidMarketsQueryData = {
-  markets: Record<string, Market>;
+  markets: Record<string, PerpMarket>;
 };
 
 type HyperliquidMarketsStoreState = {
-  markets: Record<string, Market>;
+  markets: Record<string, PerpMarket>;
   sortOrder: MarketSortOrder;
   searchQuery: string;
 };
@@ -16,7 +16,9 @@ type HyperliquidMarketsStoreState = {
 type HyperliquidMarketsStoreActions = {
   setSortOrder: (sortOrder: MarketSortOrder) => void;
   setSearchQuery: (searchQuery: string) => void;
-  getSearchResults: () => Market[];
+  getSearchResults: () => PerpMarket[];
+  getMarkets: () => Record<string, PerpMarket>;
+  getSortedMarkets: () => PerpMarket[];
 };
 
 type HyperliquidMarketsStore = HyperliquidMarketsStoreState & HyperliquidMarketsStoreActions;
@@ -25,15 +27,13 @@ async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsQueryData> {
   const allMarketsInfo = await hyperliquidMarketsClient.getAllMarketsInfo();
 
   return {
-    markets: allMarketsInfo.reduce(
-      (acc, asset) => {
-        if (asset) {
-          acc[asset.symbol] = asset;
-        }
-        return acc;
-      },
-      {} as Record<string, Market>
-    ),
+    // TODO: Partial saves us from typescript not knowing a string doesn't necessarily exist in the record
+    markets: allMarketsInfo.reduce<Record<string, PerpMarket>>((acc, asset) => {
+      if (asset) {
+        acc[asset.symbol] = asset;
+      }
+      return acc;
+    }, {}),
   };
 }
 
@@ -51,17 +51,14 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsQue
 
     setSortOrder: (sortOrder: MarketSortOrder) => set({ sortOrder }),
     setSearchQuery: (searchQuery: string) => set({ searchQuery }),
-    getSearchResults: () => {
-      const { markets, searchQuery, sortOrder } = get();
+    getMarkets: () => {
+      const { markets } = get();
+      return markets;
+    },
+    getSortedMarkets: () => {
+      const { markets, sortOrder } = get();
       const marketsList = Object.values(markets);
-
-      let filtered = marketsList;
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        filtered = marketsList.filter(market => market.symbol.toLowerCase().includes(query));
-      }
-
-      return filtered.sort((a, b) => {
+      return marketsList.sort((a, b) => {
         switch (sortOrder) {
           case MarketSortOrder.VOLUME:
             return Number(b.volume['24h']) - Number(a.volume['24h']);
@@ -75,6 +72,19 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsQue
             return 0;
         }
       });
+    },
+    getSearchResults: () => {
+      const { searchQuery } = get();
+      const marketsList = get().getSortedMarkets();
+
+      let filteredMarketsList = marketsList;
+
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filteredMarketsList = marketsList.filter(market => market.symbol.toLowerCase().includes(query));
+      }
+
+      return filteredMarketsList;
     },
   })
 );

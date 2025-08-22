@@ -1,7 +1,7 @@
 import c from 'chroma-js';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { AnimatedRef, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { AnimatedRef, SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import * as i18n from '@/languages';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -21,26 +21,45 @@ import { GestureHandlerButton } from '../GestureHandlerButton';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 
 type ChainSelectionProps = {
-  allText?: string;
   animatedRef: AnimatedRef<Animated.FlatList<string>> | AnimatedRef<Animated.FlatList<TokenToBuyListItem>>;
   output: boolean;
+  onNavigateToNetworkSelector?: () => void;
+  onChainSelected: (chainId: ChainId | undefined) => void;
+  selectedChainId: SharedValue<UserAssetFilter>;
 };
 
-export const ChainSelection = memo(function ChainSelection({ allText, animatedRef, output }: ChainSelectionProps) {
+const allText = i18n.t(i18n.l.exchange.all_networks);
+
+export const ChainSelection = memo(function ChainSelection({
+  animatedRef,
+  output,
+  onNavigateToNetworkSelector,
+  onChainSelected,
+  selectedChainId,
+}: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
-  const { inputSearchRef, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
+  const swapSupportedChainIds = useBackendNetworksStore(state => state.getSwapSupportedChainIds());
 
   // chains sorted by balance on output, chains without balance hidden on input
   const balanceSortedChainList = useUserAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
 
-  const [initialFilter] = useState(() => {
-    const filter = useUserAssetsStore.getState().filter;
-    return filter === 'all' ? undefined : filter;
-  });
-  const inputListFilter = useSharedValue<UserAssetFilter | undefined>(initialFilter);
+  // For output, use all swap-supported chains instead of just chains with balance
+  const chainList = useMemo(() => {
+    if (output) {
+      // Include all swap-supported chains for output selection
+      return swapSupportedChainIds;
+    }
+    return balanceSortedChainList;
+  }, [output, swapSupportedChainIds, balanceSortedChainList]);
+
+  // const [initialFilter] = useState(() => {
+  //   const filter = useUserAssetsStore.getState().filter;
+  //   return filter === 'all' ? undefined : filter;
+  // });
+  // const inputListFilter = useSharedValue<UserAssetFilter | undefined>(initialFilter);
 
   const accentColor = useMemo(() => {
     if (c.contrast(accountColor, isDarkMode ? '#191A1C' : globalColors.white100) < (isDarkMode ? 2.125 : 1.5)) {
@@ -52,46 +71,41 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
   }, [accountColor, isDarkMode]);
 
   const chainName = useDerivedValue(() => {
-    return output
-      ? chainLabels[selectedOutputChainId.value]
-      : !inputListFilter.value || inputListFilter.value === 'all'
-        ? allText
-        : chainLabels[inputListFilter.value];
+    if (!selectedChainId) return '';
+    if (selectedChainId.value === 'all') return allText;
+    return chainLabels[selectedChainId.value];
+    // return output
+    //   ? chainLabels[selectedChainId.value]
+    //   : !inputListFilter.value || inputListFilter.value === 'all'
+    //     ? allText
+    //     : chainLabels[inputListFilter.value];
   });
 
   const handleSelectChain = useCallback(
     (chainId: ChainId | undefined) => {
       animatedRef.current?.scrollToOffset({ animated: true, offset: 0 });
-
-      if (output && chainId) {
-        setSelectedOutputChainId(chainId);
-      } else {
-        inputListFilter.value = chainId;
-        userAssetsStore.setState({ filter: chainId === undefined ? 'all' : chainId });
-      }
-
-      analytics.track(analytics.event.swapsChangedChainId, {
-        inputAsset: swapsStore.getState().inputAsset,
-        type: output ? 'output' : 'input',
-        chainId,
-      });
+      // if (!output) {
+      //   inputListFilter.value = chainId;
+      // }
+      onChainSelected(chainId);
     },
-    [animatedRef, inputListFilter, output, setSelectedOutputChainId]
+    [animatedRef, onChainSelected]
   );
 
   const navigateToNetworkSelector = useCallback(() => {
-    if (output) outputSearchRef.current?.blur();
-    else inputSearchRef.current?.blur();
+    onNavigateToNetworkSelector?.();
 
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
-      allowedNetworks: balanceSortedChainList,
+      allowedNetworks: chainList,
       canEdit: false,
       canSelectAllNetworks: !output,
       goBackOnSelect: true,
-      selected: output ? selectedOutputChainId : inputListFilter,
+      // @ts-ignore: TODO (kane)
+      selected: selectedChainId,
+      // selected: selectedChainId,
       setSelected: handleSelectChain,
     });
-  }, [balanceSortedChainList, handleSelectChain, inputListFilter, inputSearchRef, output, outputSearchRef, selectedOutputChainId]);
+  }, [chainList, handleSelectChain, onNavigateToNetworkSelector, output, selectedChainId]);
 
   return (
     <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">
@@ -137,7 +151,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, animatedRe
 
         <GestureHandlerButton onPressJS={navigateToNetworkSelector} testID={`chain-selection-${output ? 'output' : 'input'}`}>
           <Box paddingVertical="6px" paddingLeft="16px" flexDirection="row" alignItems="center" justifyContent="center" gap={6}>
-            <ChainButtonIcon output={output} />
+            {/* <ChainButtonIcon output={output} /> */}
             <AnimatedText color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
               {chainName}
             </AnimatedText>

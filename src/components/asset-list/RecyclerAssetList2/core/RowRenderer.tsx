@@ -18,6 +18,9 @@ import {
   NFTFamilyExtraData,
   PositionExtraData,
   PositionHeaderExtraData,
+  PerpsBalanceExtraData,
+  PerpsPositionExtraData,
+  PerpsHeaderExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
@@ -41,6 +44,10 @@ import { ClaimablesListHeader } from '../ClaimablesListHeader';
 import { Claimable } from '../Claimable';
 import LegacyWrappedNFT from '../LegacyWrappedNFT';
 import LegacyWrappedTokenFamilyHeader from '../LegacyWrappedTokenFamilyHeader';
+import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
+import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
+import { PerpsNoPositions } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsNoPositions';
+import { PerpsAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsAvailableBalance';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -61,6 +68,8 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.POSITIONS_SPACE_BEFORE:
     case CellType.CLAIMABLES_SPACE_AFTER:
     case CellType.CLAIMABLES_SPACE_BEFORE:
+    case CellType.PERPS_SPACE_AFTER:
+    case CellType.PERPS_SPACE_BEFORE:
     case CellType.EMPTY_REMOTE_CARD_CAROUSEL:
       return null;
     case CellType.COIN_DIVIDER:
@@ -206,7 +215,21 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
 
       return <Claimable claimable={claimable} />;
     }
-
+    case CellType.PERPS_HEADER: {
+      const { total } = data as PerpsHeaderExtraData;
+      return <PerpsHeader total={total} />;
+    }
+    case CellType.PERPS_BALANCE: {
+      const { balance } = data as PerpsBalanceExtraData;
+      return <PerpsAvailableBalance balance={balance} />;
+    }
+    case CellType.PERPS_POSITION: {
+      const { position, index } = data as PerpsPositionExtraData;
+      return <PerpsPositionRow position={position} />;
+    }
+    case CellType.PERPS_NO_POSITIONS: {
+      return <PerpsNoPositions />;
+    }
     case CellType.LOADING_ASSETS:
       return <AssetListItemSkeleton />;
     default:

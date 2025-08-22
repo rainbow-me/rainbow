@@ -115,6 +115,12 @@ const Routes = {
   CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
   TOKEN_LAUNCHER_SCREEN: 'TokenLauncherScreen',
   KING_OF_THE_HILL_EXPLAIN_SHEET: 'KingOfTheHillExplainSheet',
+  PERPS_ACCOUNT_NAVIGATOR: 'PerpsAccountNavigator',
+  PERPS_ACCOUNT_SCREEN: 'PerpsAccountScreen',
+  PERPS_SEARCH_SCREEN: 'PerpsSearchScreen',
+  PERPS_NEW_POSITION_SEARCH_SCREEN: 'PerpsNewPositionSearchScreen',
+  PERPS_NEW_POSITION_SCREEN: 'PerpsNewPositionScreen',
+  PERPS_DEPOSIT_SCREEN: 'PerpsDepositScreen',
 } as const;
 
 export const NATIVE_ROUTES = [

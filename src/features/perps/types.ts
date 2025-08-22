@@ -8,7 +8,7 @@ export type Order = {
   price: string;
 };
 
-export type Market = {
+export type PerpMarket = {
   id: number;
   symbol: string;
   price: string;
@@ -40,9 +40,9 @@ export type FilledOrder = {
 };
 
 // TODO: we need IDs for positions. We can attach an cloid, but we still need to handle displaying positions not created in rainbow.
-export type Position = {
+export type PerpsPosition = {
   symbol: string;
-  side: PositionSide;
+  side: PerpPositionSide;
   leverage: number;
   liquidationPrice: string | null;
   entryPrice: string;
@@ -54,16 +54,12 @@ export type Position = {
   stopLoss: Order | null;
 };
 
-export type AccountStats = {
-  pnl: string;
-};
-
 export type PerpAccount = {
   balance: string;
-  positions: Position[];
+  positions: PerpsPosition[];
 };
 
-export enum PositionSide {
+export enum PerpPositionSide {
   LONG = 'LONG',
   SHORT = 'SHORT',
 }

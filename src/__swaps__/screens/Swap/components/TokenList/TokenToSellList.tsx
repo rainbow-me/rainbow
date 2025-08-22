@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Insets, InteractionManager, StyleSheet } from 'react-native';
-import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedRef, useAnimatedStyle, useDerivedValue, useSharedValue, SharedValue } from 'react-native-reanimated';
 import { analytics } from '@/analytics';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import * as i18n from '@/languages';
@@ -8,14 +8,14 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
-import { shallowEqual } from '@/worklets/comparisons';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
@@ -38,29 +38,26 @@ const isInitialInputAssetNull = () => {
   return !swapsStore.getState().inputAsset;
 };
 
-export const TokenToSellList = () => {
-  const [skipDelayedMount] = useState(() => isInitialInputAssetNull());
-  const shouldMount = useDelayedMount({ skipDelayedMount });
+export interface TokenToSellListProps {
+  onSelectToken?: (token: ParsedSearchAsset | null) => void;
+  onSelectChain: (chainId: ChainId | undefined) => void;
+  inputProgress?: SharedValue<number>;
+  selectedChainId?: SharedValue<UserAssetFilter>;
+  onNavigateToNetworkSelector?: () => void;
+}
 
-  return shouldMount ? <TokenToSellListComponent /> : null;
-};
-
-const MemoizedCoinRow = memo(CoinRow);
-
-const TokenToSellListComponent = () => {
-  const { inputProgress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
-
-  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
-  const userAssets = useUserAssetsStore(state => state.userAssets);
-
-  const searchResultsMap = useMemo(() => {
-    const assets = new Map<UniqueId, ParsedSearchAsset>();
-    for (let i = 0; i < userAssetIds.length; i++) {
-      const asset = userAssets.get(userAssetIds[i]);
-      if (asset) assets.set(asset.uniqueId, asset);
-    }
-    return assets;
-  }, [userAssetIds, userAssets]);
+// Legacy component that uses context - for backward compatibility
+const SwapTokenToSellList = () => {
+  const {
+    selectedOutputChainId,
+    inputProgress,
+    outputSearchRef,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    isQuoteStale,
+    setAsset,
+  } = useSwapContext();
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset | null) => {
@@ -81,7 +78,6 @@ const TokenToSellListComponent = () => {
       const inputSearchQuery = userAssetsStore.getState().inputSearchQuery.trim();
       setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {
-          // track what search query the user had prior to selecting an asset
           if (inputSearchQuery.length) {
             analytics.track(analytics.event.swapsSearchedForToken, {
               query: inputSearchQuery,
@@ -92,6 +88,70 @@ const TokenToSellListComponent = () => {
       }, 200);
     },
     [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
+  );
+
+  return (
+    <TokenToSellListCore
+      onSelectToken={handleSelectToken}
+      onSelectChain={chainId => {
+        analytics.track(analytics.event.swapsChangedChainId, {
+          inputAsset: swapsStore.getState().inputAsset,
+          type: 'input',
+          chainId,
+        });
+      }}
+      inputProgress={inputProgress}
+      selectedChainId={selectedChainId}
+      onNavigateToNetworkSelector={() => outputSearchRef.current?.blur()}
+    />
+  );
+};
+
+export const TokenToSellList = (props?: TokenToSellListProps) => {
+  const [skipDelayedMount] = useState(() => (props ? false : isInitialInputAssetNull()));
+  const shouldMount = useDelayedMount({ skipDelayedMount });
+
+  if (!shouldMount) return null;
+
+  // Use legacy component if no props provided (backward compatibility)
+  if (!props) {
+    return <SwapTokenToSellList />;
+  }
+
+  return <TokenToSellListCore {...props} />;
+};
+
+const MemoizedCoinRow = memo(CoinRow);
+
+const TokenToSellListCore = ({
+  onSelectToken,
+  onSelectChain,
+  inputProgress: inputProgressProp,
+  selectedChainId,
+  onNavigateToNetworkSelector,
+}: TokenToSellListProps) => {
+  // Provide a default value if inputProgress is not provided
+  const defaultInputProgress = useSharedValue(0);
+  const inputProgress = inputProgressProp || defaultInputProgress;
+
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
+  const userAssets = useUserAssetsStore(state => state.userAssets);
+
+  const searchResultsMap = useMemo(() => {
+    const assets = new Map<UniqueId, ParsedSearchAsset>();
+    for (let i = 0; i < userAssetIds.length; i++) {
+      const asset = userAssets.get(userAssetIds[i]);
+      if (asset) assets.set(asset.uniqueId, asset);
+    }
+    return assets;
+  }, [userAssetIds, userAssets]);
+
+  const handleSelectToken = useCallback(
+    (token: ParsedSearchAsset | null) => {
+      if (!token || !onSelectToken) return;
+      onSelectToken(token);
+    },
+    [onSelectToken]
   );
 
   const animatedListPadding = useAnimatedStyle(() => {
@@ -120,7 +180,16 @@ const TokenToSellListComponent = () => {
 
   return (
     <>
-      <ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} animatedRef={animatedRef} output={false} />
+      <ChainSelection
+        selectedChainId={selectedChainId}
+        onNavigateToNetworkSelector={onNavigateToNetworkSelector}
+        animatedRef={animatedRef}
+        output={false}
+        onChainSelected={chainId => {
+          userAssetsStore.setState({ filter: chainId === undefined ? 'all' : chainId });
+          onSelectChain(chainId);
+        }}
+      />
       <Animated.FlatList
         ListEmptyComponent={<ListEmpty />}
         ListFooterComponent={listFooter}

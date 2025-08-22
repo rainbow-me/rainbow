@@ -668,6 +668,19 @@ export const kingOfTheHillExplainSheetConfig = {
   }),
 };
 
+export const perpsAccountStackConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 'device',
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const stackNavigationConfig = {
   headerMode: 'none',
   keyboardHandlingEnabled: ios,

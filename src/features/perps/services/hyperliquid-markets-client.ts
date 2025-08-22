@@ -2,25 +2,25 @@ import { divide, multiply, subtract } from '@/helpers/utilities';
 import { infoClient } from './hyperliquid-account-client';
 import { RainbowError } from '@/logger';
 import { convertHyperliquidPerpAssetIdToSpotAssetId } from '@/features/perps/utils';
-import { Market } from '@/features/perps/types';
+import { PerpMarket } from '@/features/perps/types';
 
 export class HyperliquidMarketsClient {
-  async getAllMarketsInfo(): Promise<Market[]> {
-    const response = await infoClient.metaAndAssetCtxs();
-    const assetsBasicInfo = response[0].universe;
-    const assetsPricingInfo = response[1];
+  async getAllMarketsInfo(): Promise<PerpMarket[]> {
+    const [meta, assetCtxs] = await infoClient.metaAndAssetCtxs();
+    const assetsBasicInfo = meta.universe;
+    const assetsPricingInfo = assetCtxs;
 
     return assetsBasicInfo
       .map((asset, index) => {
         const assetId = index;
         const assetPricingInfo = assetsPricingInfo[index];
-        if (!assetPricingInfo) {
+        if (!assetPricingInfo || asset.isDelisted) {
           return null;
         }
 
-        if (asset.isDelisted) return null;
-
-        const currentPrice = assetPricingInfo.midPx ?? assetPricingInfo.markPx;
+        // TODO (kane): What are the default margin tiers, how are we supposed to handle the liq. calc?
+        const marginTiers = meta.marginTables.find(mt => mt[0] === asset.marginTableId)?.[1] ?? null;
+        const currentPrice = assetPricingInfo.markPx;
         const previousDayPrice = assetPricingInfo.prevDayPx;
 
         const priceChange24h = divide(subtract(currentPrice, previousDayPrice), multiply(previousDayPrice, 100));
@@ -37,6 +37,7 @@ export class HyperliquidMarketsClient {
           },
           symbol: asset.name,
           maxLeverage: asset.maxLeverage,
+          marginTiers,
         };
       })
       .filter(Boolean);

@@ -9,7 +9,7 @@ import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorkl
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
-const HYPERLIQUID_TOKEN_PREFIX = 'hl:';
+const HYPERLIQUID_TOKEN_SUFFIX = ':hl';
 
 function convertLegacyTokenIdToTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split('_');
@@ -27,19 +27,19 @@ function convertTokenIdToLegacyTokenId(tokenId: string): string {
  * @returns true if the token is a Hyperliquid asset
  */
 export function isHyperliquidToken(tokenId: string): boolean {
-  return tokenId.startsWith(HYPERLIQUID_TOKEN_PREFIX);
+  return tokenId.endsWith(HYPERLIQUID_TOKEN_SUFFIX);
 }
 
 /**
  * Parses a Hyperliquid token ID to extract the symbol
- * @param tokenId Hyperliquid token ID (e.g., "hl:ETH")
+ * @param tokenId Hyperliquid token ID (e.g., "ETH:hl")
  * @returns The symbol or null if not a valid Hyperliquid token ID
  */
 export function parseHyperliquidTokenId(tokenId: string): { symbol: string } | null {
   if (!isHyperliquidToken(tokenId)) {
     return null;
   }
-  const symbol = tokenId.slice(HYPERLIQUID_TOKEN_PREFIX.length);
+  const symbol = tokenId.slice(0, -HYPERLIQUID_TOKEN_SUFFIX.length);
   return { symbol };
 }
 
