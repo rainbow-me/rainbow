@@ -1,6 +1,5 @@
 import {
   NativeCurrencyKey,
-  TransactionApiResponse,
   TransactionStatus,
   MinedTransaction,
   RainbowTransaction,
@@ -129,14 +128,12 @@ export const fetchTransaction = async ({
     }
   }
   try {
-    // const url = `/${chainId}/${address}/transactions/${hash}`;
-    const url = `/GetTransactionByHash`;
-    const { data } = await getPlatformClient().get<GetTransactionByHashResponse>(url, {
+    const { data } = await getPlatformClient().get<GetTransactionByHashResponse>('/GetTransactionByHash', {
       params: {
         currency: currency.toLowerCase(),
         hash,
         address,
-        chainIds: chainId ? String(chainId) : undefined,
+        chainIds: String(chainId),
       },
     });
 
