@@ -7,7 +7,7 @@ import { getInputAsset } from '@/__swaps__/screens/Swap/navigateToSwaps';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { addCommasToNumber, clamp, parseAssetAndExtend, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ContactAvatar from '@/components/contacts/ContactAvatar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
@@ -35,8 +35,16 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { CrosschainQuote, QuoteError, getCrosschainQuote } from '@rainbow-me/swaps';
-import React, { memo, useCallback, useEffect } from 'react';
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import React, { memo, useCallback } from 'react';
+import Animated, {
+  SharedValue,
+  interpolate,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
 
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -49,7 +57,7 @@ const enum NavigationSteps {
   SHOW_SETTINGS = 5,
 }
 
-type InputMethod = 'slider' | 'inputAmount' | 'inputNativeValue';
+type InputMethod = 'inputAmount' | 'inputNativeValue';
 
 // Deposit Input Component
 const DepositInputSection = ({
@@ -86,16 +94,16 @@ const DepositInputSection = ({
 
   const primaryFormattedInput = useDerivedValue(() => {
     if (inputMethod.value === 'inputAmount') {
-      return formattedInputNativeValue.value;
+      return formattedInputAmount.value;
     }
-    return formattedInputAmount.value;
+    return formattedInputNativeValue.value;
   });
 
   const secondaryFormattedInput = useDerivedValue(() => {
     if (inputMethod.value === 'inputAmount') {
-      return formattedInputAmount.value;
+      return formattedInputNativeValue.value;
     }
-    return formattedInputNativeValue.value;
+    return formattedInputAmount.value;
   });
 
   const receiveFormattedInput = useDerivedValue(() => {
@@ -162,7 +170,7 @@ const DepositInputSection = ({
         <Box alignItems="center" justifyContent="center" flexGrow={1}>
           <Box gap={16}>
             <GestureHandlerButton disableHaptics disableScale onPressStartWorklet={onPressInput}>
-              <AnimatedText size="44pt" weight="heavy" color="label">
+              <AnimatedText size="44pt" weight="heavy" color="label" tabularNumbers>
                 {primaryFormattedInput}
               </AnimatedText>
             </GestureHandlerButton>
@@ -175,7 +183,7 @@ const DepositInputSection = ({
               }}
             >
               <Box gap={6} flexDirection="row" alignItems="center" justifyContent="center">
-                <AnimatedText size="17pt" weight="bold" color="labelTertiary">
+                <AnimatedText size="17pt" weight="bold" color="labelTertiary" tabularNumbers>
                   {secondaryFormattedInput}
                 </AnimatedText>
                 <TextIcon color="labelSecondary" size="13pt" weight="bold">
@@ -191,7 +199,7 @@ const DepositInputSection = ({
           <Text size="15pt" weight="bold" color="labelQuaternary">
             Receive{' '}
           </Text>
-          <AnimatedText size="15pt" weight="bold" color="labelTertiary">
+          <AnimatedText size="15pt" weight="bold" color="labelTertiary" tabularNumbers>
             {receiveFormattedInput}
           </AnimatedText>
         </Box>
@@ -224,20 +232,14 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
 
   // State for input values
-  const inputMethod = useSharedValue<'slider' | 'inputAmount' | 'inputNativeValue'>('inputNativeValue');
-  const sliderPercentage = useSharedValue(0.25); // Default to 25%
-  const activeFieldId = useSharedValue<string>('inputNativeValue');
+  const inputMethod = useSharedValue<InputMethod>('inputNativeValue');
+  const sliderXPosition = useSharedValue(SLIDER_WIDTH * 0.25); // Default to 25% of slider width
   const isFetching = useSharedValue(false);
   const quote = useSharedValue<CrosschainQuote | QuoteError | null>(null);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
   const highestValueNativeAsset = useUserAssetsStore(state => state.getHighestValueNativeAsset());
-  const selectedAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(getInputAsset(null));
-
-  useEffect(() => {
-    if (selectedAsset.value || !highestValueNativeAsset) return;
-    selectedAsset.value = parseAssetAndExtend({ asset: highestValueNativeAsset });
-  }, [highestValueNativeAsset, selectedAsset]);
+  const selectedAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(getInputAsset(highestValueNativeAsset));
 
   const fields = useSharedValue<Record<string, NumberPadField>>({
     inputAmount: {
@@ -288,14 +290,14 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           },
         }));
 
-        // inputMethod.value = 'inputAmount';
+        inputMethod.value = 'inputAmount';
 
         // Update slider position
         const balanceAmount = asset.balance?.amount || '0';
         const maxAmount = typeof balanceAmount === 'string' ? Number(balanceAmount) : balanceAmount;
         if (maxAmount > 0) {
           const percentage = Number(divWorklet(amount, maxAmount));
-          sliderPercentage.value = clamp(percentage, 0, 1);
+          sliderXPosition.value = withSpring(clamp(percentage * SLIDER_WIDTH, 0, SLIDER_WIDTH), SPRING_CONFIGS.snappySpringConfig);
         }
       } else if (fieldId === 'inputNativeValue') {
         const nativeValue = Number(newValue);
@@ -305,25 +307,72 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           ...current,
           inputAmount: {
             ...current.inputAmount,
-            value: toFixedWorklet(amount, 6),
+            value: toFixedWorklet(amount, asset.decimals),
           },
         }));
 
-        // inputMethod.value = 'inputNativeValue';
+        inputMethod.value = 'inputNativeValue';
 
         // Update slider position
         const balanceAmount = asset.balance?.amount || '0';
         const maxAmount = typeof balanceAmount === 'string' ? Number(balanceAmount) : balanceAmount;
         if (maxAmount > 0) {
           const percentage = Number(divWorklet(amount, maxAmount));
-          sliderPercentage.value = clamp(percentage, 0, 1);
+          sliderXPosition.value = withSpring(clamp(percentage * SLIDER_WIDTH, 0, SLIDER_WIDTH), SPRING_CONFIGS.snappySpringConfig);
         }
       }
     },
-    [fields, inputMethod, selectedAsset, sliderPercentage]
+    [fields, inputMethod, selectedAsset, sliderXPosition]
   );
 
-  const handlePercentageChange = useCallback(() => {}, []);
+  const handlePercentageChange = useCallback(
+    (percentage: number) => {
+      'worklet';
+      const asset = selectedAsset.value;
+      if (!asset) return;
+
+      const maxAmount = Number(asset.balance?.amount || '0');
+      const nativePrice = asset.price?.value || 0;
+
+      if (maxAmount > 0) {
+        // Calculate new amount based on percentage
+        const newAmount = mulWorklet(percentage, maxAmount);
+        const newNativeValue = mulWorklet(newAmount, nativePrice);
+
+        // Update both input fields
+        fields.modify(current => ({
+          ...current,
+          inputAmount: {
+            ...current.inputAmount,
+            value: toFixedWorklet(newAmount, asset.decimals),
+          },
+          inputNativeValue: {
+            ...current.inputNativeValue,
+            value: toFixedWorklet(newNativeValue, 2),
+          },
+        }));
+      }
+    },
+    [fields, selectedAsset]
+  );
+
+  const handleGestureUpdate = useCallback(
+    ({ percentage }: { percentage: number }) => {
+      'worklet';
+
+      handlePercentageChange(percentage);
+    },
+    [handlePercentageChange]
+  );
+
+  // Derive if slider is enabled (has balance)
+  const isSliderEnabled = useDerivedValue(() => {
+    const asset = selectedAsset.value;
+    if (!asset) return false;
+    const balanceAmount = asset.balance?.amount || '0';
+    const maxAmount = typeof balanceAmount === 'string' ? Number(balanceAmount) : balanceAmount;
+    return maxAmount > 0;
+  });
 
   // Fetch quote
   const fetchQuote = useCallback(async () => {
@@ -386,47 +435,91 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           formattedInputNativeValue={formattedInputNativeValue}
           onPressInput={() => {
             'worklet';
-            activeFieldId.value = 'inputAmount';
+            // TODO: ??
+            // activeFieldId.value = 'inputAmount';
           }}
           changeInputMethod={newInputMethod => {
             'worklet';
             inputMethod.value = newInputMethod;
-            activeFieldId.value =
-              newInputMethod === 'inputAmount' || newInputMethod === 'inputNativeValue' ? newInputMethod : 'inputNativeValue';
           }}
           inputMethod={inputMethod}
           onSelectAsset={asset => {
             if (!asset) return;
             const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance: true });
             selectedAsset.value = extendedAsset;
+
+            // Set values to 25% of new asset's balance
+            const balanceAmount = extendedAsset?.balance?.amount || '0';
+            const maxAmount = typeof balanceAmount === 'string' ? Number(balanceAmount) : balanceAmount;
+            const nativePrice = extendedAsset?.price?.value || 0;
+
+            if (maxAmount > 0) {
+              const initialAmount = maxAmount * 0.25;
+              const initialNativeValue = initialAmount * nativePrice;
+
+              fields.value = {
+                inputAmount: {
+                  id: 'inputAmount',
+                  value: initialAmount.toFixed(6),
+                  maxDecimals: asset.decimals,
+                  allowDecimals: true,
+                },
+                inputNativeValue: {
+                  id: 'inputNativeValue',
+                  value: initialNativeValue.toFixed(2),
+                  maxDecimals: 2,
+                  allowDecimals: true,
+                },
+              };
+
+              // Update slider position to 25%
+              sliderXPosition.value = SLIDER_WIDTH * 0.25;
+            } else {
+              // Reset to 0 if no balance
+              fields.value = {
+                inputAmount: {
+                  id: 'inputAmount',
+                  value: '0',
+                  maxDecimals: asset.decimals,
+                  allowDecimals: true,
+                },
+                inputNativeValue: {
+                  id: 'inputNativeValue',
+                  value: '0',
+                  maxDecimals: 2,
+                  allowDecimals: true,
+                },
+              };
+              sliderXPosition.value = 0;
+            }
           }}
         />
       </Box>
       <SliderWithLabels
-        sliderXPosition={sliderPercentage}
+        sliderXPosition={sliderXPosition}
         sliderPressProgress={sliderPressProgress}
+        isEnabled={isSliderEnabled}
         width={SLIDER_WIDTH}
         containerStyle={{ height: SLIDER_WITH_LABELS_HEIGHT, marginHorizontal: 20, justifyContent: 'center' }}
-        onPercentageChange={handlePercentageChange}
+        onPercentageChangeWorklet={handlePercentageChange}
+        onGestureUpdateWorklet={handleGestureUpdate}
+        showMaxButton={true}
+        showPercentage={true}
         // TODO: INTL
-        labels={{ title: 'Depositing' }}
+        labels={{ title: 'Depositing', maxButtonText: 'Max', disabledText: NO_BALANCE_LABEL }}
         icon={<AnimatedSwapCoinIcon asset={selectedAsset} size={16} showBadge={false} />}
       />
       <NumberPad
-        activeFieldId={activeFieldId}
+        activeFieldId={inputMethod as SharedValue<string>}
         fields={fields}
         formattedValues={formattedValues}
         onValueChange={handleNumberPadChange}
-        onFieldChange={fieldId => {
-          'worklet';
-          activeFieldId.value = fieldId as string;
-        }}
         stripFormatting={stripNonDecimalNumbers}
       />
       <Box width="full" paddingHorizontal="20px" paddingTop="16px" height={{ custom: FOOTER_HEIGHT }}>
         <ButtonPressAnimation onPress={fetchQuote} scaleTo={0.97}>
           <Box alignItems="center" backgroundColor="accent" borderRadius={99} height="56px" justifyContent="center" width="full">
-            <AnimatedText color="label" size="20pt" weight="heavy">
+            <AnimatedText color="label" size="20pt" weight="heavy" tabularNumbers>
               {depositButtonText}
             </AnimatedText>
           </Box>

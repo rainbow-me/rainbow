@@ -42,10 +42,10 @@ export interface SliderProps {
   height?: number;
   width?: number;
   snapPoints?: number[];
-  onPercentageChange: (percentage: number, source: SliderChangeSource) => void;
+  onPercentageChangeWorklet: (percentage: number, source: SliderChangeSource) => void;
   onGestureStart?: (state: { position: number; percentage: number }) => void;
   onGestureEnd?: (state: { position: number; percentage: number; hasChanged: boolean }) => void;
-  onGestureUpdate?: (state: { isAtMax: boolean; exceedsMax: boolean; position: number; percentage: number }) => void;
+  onGestureUpdateWorklet?: (state: { isAtMax: boolean; exceedsMax: boolean; position: number; percentage: number }) => void;
   onGestureFinalize?: (state: { hasChanged: boolean }) => void;
   checkExceedsMax?: () => boolean;
   onExceedsMax?: () => void;
@@ -60,10 +60,10 @@ export const Slider: React.FC<SliderProps> = ({
   height = SLIDER_HEIGHT,
   width = SLIDER_WIDTH,
   snapPoints = [0, 0.25, 0.5, 0.75, 1],
-  onPercentageChange,
+  onPercentageChangeWorklet,
   onGestureStart,
   onGestureEnd,
-  onGestureUpdate,
+  onGestureUpdateWorklet,
   onGestureFinalize,
   checkExceedsMax,
   onExceedsMax,
@@ -117,13 +117,6 @@ export const Slider: React.FC<SliderProps> = ({
       }
     },
     []
-  );
-
-  const onChangeWrapper = useCallback(
-    (percentage: number, source: SliderChangeSource) => {
-      onPercentageChange(percentage, source);
-    },
-    [onPercentageChange]
   );
 
   const tapGesture = Gesture.Tap()
@@ -191,14 +184,12 @@ export const Slider: React.FC<SliderProps> = ({
         overshoot.value = calculateOvershoot(overshootX, maxOverscroll);
       }
 
-      if (onGestureUpdate) {
-        runOnJS(onGestureUpdate)({
-          isAtMax: sliderXPosition.value >= width * MAX_PERCENTAGE,
-          exceedsMax: gestureCtx.value.exceedsMax || false,
-          position: sliderXPosition.value,
-          percentage: xPercentage.value,
-        });
-      }
+      onGestureUpdateWorklet?.({
+        isAtMax: sliderXPosition.value >= width * MAX_PERCENTAGE,
+        exceedsMax: gestureCtx.value.exceedsMax || false,
+        position: sliderXPosition.value,
+        percentage: xPercentage.value,
+      });
     })
     .onEnd(event => {
       'worklet';
@@ -209,13 +200,13 @@ export const Slider: React.FC<SliderProps> = ({
 
         if (isEnabled.value) {
           if (xPercentage.value >= MAX_PERCENTAGE) {
-            runOnJS(onChangeWrapper)(1, 'gesture');
+            onPercentageChangeWorklet(1, 'gesture');
             sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
           } else if (xPercentage.value < MIN_PERCENTAGE) {
-            runOnJS(onChangeWrapper)(0, 'gesture');
+            onPercentageChangeWorklet(0, 'gesture');
             sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
           } else if (hasChanged) {
-            runOnJS(onChangeWrapper)(xPercentage.value, 'gesture');
+            onPercentageChangeWorklet(xPercentage.value, 'gesture');
           }
         }
       };
@@ -269,7 +260,7 @@ export const Slider: React.FC<SliderProps> = ({
           }
 
           overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
-          runOnJS(onChangeWrapper)(nextSnapPoint / width, 'gesture');
+          onPercentageChangeWorklet(nextSnapPoint / width, 'gesture');
           sliderXPosition.value = withSpring(nextSnapPoint, SPRING_CONFIGS.snappierSpringConfig);
         } else {
           onFinished();

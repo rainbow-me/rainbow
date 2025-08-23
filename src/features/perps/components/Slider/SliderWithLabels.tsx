@@ -4,7 +4,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
 import { SCRUBBER_WIDTH } from '@/features/perps/constants';
-import React, { useCallback, useRef } from 'react';
+import React, { useRef } from 'react';
 import { View } from 'react-native';
 import Animated, {
   SharedValue,
@@ -16,7 +16,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Slider, SliderChangeSource, SliderProps, SliderVisualState } from './Slider';
+import { Slider, SliderProps, SliderVisualState } from './Slider';
 
 export interface SliderLabels {
   title?: string | SharedValue<string>;
@@ -44,10 +44,10 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   height,
   width,
   snapPoints,
-  onPercentageChange,
+  onPercentageChangeWorklet,
   onGestureStart,
   onGestureEnd,
-  onGestureUpdate,
+  onGestureUpdateWorklet,
   onGestureFinalize,
   checkExceedsMax,
   onExceedsMax,
@@ -138,7 +138,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
     if (onMaxPress) {
       runOnJS(onMaxPress)();
     }
-    runOnJS(onPercentageChange)(1, 'max-button');
+    onPercentageChangeWorklet(1, 'max-button');
   };
 
   return (
@@ -155,7 +155,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
                   </AnimatedText>
                 )}
                 {showPercentage && (
-                  <AnimatedText color="labelSecondary" size="15pt" style={percentageTextStyle} weight="heavy">
+                  <AnimatedText color="labelSecondary" size="15pt" style={percentageTextStyle} weight="heavy" tabularNumbers>
                     {percentageText}
                   </AnimatedText>
                 )}
@@ -180,10 +180,10 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
           height={height}
           width={width}
           snapPoints={snapPoints}
-          onPercentageChange={onPercentageChange}
+          onPercentageChangeWorklet={onPercentageChangeWorklet}
           onGestureStart={onGestureStart}
           onGestureEnd={onGestureEnd}
-          onGestureUpdate={onGestureUpdate}
+          onGestureUpdateWorklet={onGestureUpdateWorklet}
           onGestureFinalize={onGestureFinalize}
           checkExceedsMax={checkExceedsMax}
           onExceedsMax={onExceedsMax}

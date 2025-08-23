@@ -17,7 +17,6 @@ export type NumberPadProps = {
   formattedValues?: SharedValue<Record<string, string>>;
   onBeforeChange?: (fieldId: string, currentValue: string, newValue: string) => ValidationResult;
   onValueChange?: (fieldId: string, newValue: string | number) => void;
-  onFieldChange?: (fieldId: string) => void;
   onStaleStateChange?: (isStale: boolean) => void;
   shouldMarkStale?: (fieldId: string, oldValue: string, newValue: string) => boolean;
   onIntervalStop?: () => void;
@@ -32,7 +31,6 @@ export const NumberPad = ({
   formattedValues,
   onBeforeChange,
   onValueChange,
-  onFieldChange,
   onStaleStateChange,
   shouldMarkStale,
   onIntervalStop,
@@ -40,7 +38,6 @@ export const NumberPad = ({
   height = CUSTOM_KEYBOARD_HEIGHT,
   stripFormatting = (value: string) => value.replace(/[^0-9.-]/g, ''),
 }: NumberPadProps) => {
-  const { isDarkMode } = useColorMode();
   const longPressTimer = useSharedValue(0);
   const isStale = useSharedValue(false);
 
