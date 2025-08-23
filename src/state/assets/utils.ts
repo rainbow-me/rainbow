@@ -386,7 +386,7 @@ export function calculateHiddenAssetsBalance({
 }
 
 function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {
-  return assets.filter(asset => greaterThan(asset.value, 0));
+  return assets.filter(asset => greaterThan(asset.quantity, 0));
 }
 
 // ============ Search Utils =================================================== //

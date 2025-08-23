@@ -31,7 +31,7 @@ export function analyzeUserAssets() {
     message: userAssetsQueryKey,
   };
 
-  const topAssets = userAssetsStore.getState().getUserAssets().slice(0, 20);
+  const topAssets = userAssetsStore.getState().getUserAssets();
   const topAssetsMessage = topAssets
     .map(asset => {
       const updatedAt = asset.updatedAt ? new Date(asset.updatedAt).toLocaleString() : 'N/A';
@@ -41,7 +41,7 @@ export function analyzeUserAssets() {
     .join('\n');
 
   const topAssetsData = {
-    title: 'Top 20 Assets',
+    title: `Total Assets: ${topAssets.length}`,
     message: topAssetsMessage,
   };
 
