@@ -35,64 +35,66 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
 
   const watchMinedTransactions = useCallback(
     async (minedTransactions: MinedTransaction[]) => {
-      if (!minedTransactions.length) return;
+      try {
+        if (!minedTransactions.length) return;
 
-      const initialUserAssets = userAssetsStore.getState().userAssets;
-      const now = Math.floor(Date.now() / 1000);
-      const transactionsToWatch = minedTransactions.filter(tx => tx.changes?.length || tx.asset);
+        const initialUserAssets = userAssetsStore.getState().userAssets;
+        const now = Math.floor(Date.now() / 1000);
+        const transactionsToWatch = minedTransactions.filter(tx => tx.changes?.length || tx.asset);
 
-      const validTransactions = transactionsToWatch.filter(tx => {
-        const timestamp = tx.timestamp ? Math.round(tx.timestamp / 1000) : tx.minedAt;
-        const isTimedOut = now - timestamp >= ASSET_DETECTION_TIMEOUT;
-        if (isTimedOut) {
-          analytics.track(event.minedTransactionAssetsTimedOut, {
-            chainId: tx.chainId,
-            type: tx.type,
-          });
-          logger.warn('[watchMinedTransactions]: Timed out waiting for asset updates for transaction', {
-            txHash: tx.hash,
-          });
+        const validTransactions = transactionsToWatch.filter(tx => {
+          const timestamp = tx.timestamp ? Math.round(tx.timestamp / 1000) : tx.minedAt;
+          const isTimedOut = now - timestamp >= ASSET_DETECTION_TIMEOUT;
+          if (isTimedOut) {
+            analytics.track(event.minedTransactionAssetsTimedOut, {
+              chainId: tx.chainId,
+              type: tx.type,
+            });
+            logger.warn('[watchMinedTransactions]: Timed out waiting for asset updates for transaction', {
+              txHash: tx.hash,
+            });
+          }
+          return !isTimedOut;
+        });
+
+        if (!validTransactions.length) {
+          clearMinedTransactions(address);
+          return;
         }
-        return !isTimedOut;
-      });
 
-      if (!validTransactions.length) {
-        clearMinedTransactions(address);
-        return;
-      }
+        const expectedUniqueIds = new Set<string>();
+        validTransactions.forEach(tx => {
+          if (tx.changes?.length) {
+            tx.changes.forEach(change => {
+              if (change?.asset) {
+                expectedUniqueIds.add(getUniqueId(change.asset.address, change.asset.chainId));
+              }
+            });
+          } else if (tx.asset) {
+            expectedUniqueIds.add(getUniqueId(tx.asset.address, tx.asset.chainId));
+          }
+        });
 
-      const expectedUniqueIds = new Set<string>();
-      validTransactions.forEach(tx => {
-        if (tx.changes?.length) {
-          tx.changes.forEach(change => {
-            if (change?.asset) {
-              expectedUniqueIds.add(getUniqueId(change.asset.address, change.asset.chainId));
+        const oldestMinedTransactionTimestamp = Math.min(...validTransactions.map(tx => tx.minedAt)) * 1000;
+        const transactionChainIds = Array.from(new Set(validTransactions.map(tx => tx.chainId)));
+        const chainIdsWithStaleBalances = [];
+        const allStaleBalanceTokenIds = [];
+
+        if (staleBalances) {
+          for (const chainId of transactionChainIds) {
+            const staleBalancesForChain = staleBalances[chainId];
+            if (staleBalancesForChain) {
+              chainIdsWithStaleBalances.push(chainId);
+              for (const staleBalance of Object.values(staleBalancesForChain)) {
+                allStaleBalanceTokenIds.push(staleBalance.address);
+              }
             }
-          });
-        } else if (tx.asset) {
-          expectedUniqueIds.add(getUniqueId(tx.asset.address, tx.asset.chainId));
-        }
-      });
-
-      const oldestMinedTransactionTimestamp = Math.min(...validTransactions.map(tx => tx.minedAt)) * 1000;
-      const transactionChainIds = Array.from(new Set(validTransactions.map(tx => tx.chainId)));
-      const chainIdsWithStaleBalances = [];
-      const allStaleBalanceTokenIds = [];
-
-      for (const chainId of transactionChainIds) {
-        const staleBalancesForChain = staleBalances[chainId];
-        if (staleBalancesForChain) {
-          chainIdsWithStaleBalances.push(chainId);
-          for (const staleBalance of Object.values(staleBalancesForChain)) {
-            allStaleBalanceTokenIds.push(staleBalance.address);
           }
         }
-      }
 
-      const chainIdsToFetch = Array.from(new Set([...transactionChainIds, ...chainIdsWithStaleBalances]));
-      const forcedTokens = [...expectedUniqueIds, ...allStaleBalanceTokenIds].map(tokenId => tokenId.split('_').join(':'));
+        const chainIdsToFetch = Array.from(new Set([...transactionChainIds, ...chainIdsWithStaleBalances]));
+        const forcedTokens = [...expectedUniqueIds, ...allStaleBalanceTokenIds].map(tokenId => tokenId.split('_').join(':'));
 
-      try {
         const assetsResponse = await getPlatformClient().get<GetAssetsResponse>('/assets/GetAssetUpdates', {
           params: {
             currency: nativeCurrency,
