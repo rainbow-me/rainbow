@@ -1,4 +1,4 @@
-import { safeAreaInsetValues } from '@/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 
 export const DEFAULT_SLIPPAGE_BIPS = 50;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -30,3 +30,9 @@ export const PERPS_COLORS = {
 
 export const UP_ARROW = '􀄨';
 export const DOWN_ARROW = '􀄩';
+
+export const SLIDER_HEIGHT = 16;
+export const SLIDER_COLLAPSED_HEIGHT = 10;
+export const SLIDER_WIDTH = deviceUtils.dimensions.width - 40;
+export const INITIAL_SLIDER_POSITION = 0.5;
+export const SCRUBBER_WIDTH = 16;

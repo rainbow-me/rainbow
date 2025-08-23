@@ -1,67 +1,55 @@
-import React, { memo, useCallback, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, { SharedValue, interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { AnimatedText, Box, Column, Columns, Separator, Stack, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { ChainId, CrosschainQuote, getCrosschainQuote, QuoteError } from '@rainbow-me/swaps';
-import { HYPERCORE_PSEUDO_CHAIN_ID, HYPERLIQUID_USDC_ADDRESS } from '@/features/perps/constants';
-import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
+import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
+import { INPUT_INNER_WIDTH, INPUT_PADDING } from '@/__swaps__/screens/Swap/constants';
+import { getInputAsset } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { addCommasToNumber, clamp, parseAssetAndExtend, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { ButtonPressAnimation } from '@/components/animations';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ContactAvatar from '@/components/contacts/ContactAvatar';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
-import { ButtonPressAnimation } from '@/components/animations';
-import { Navigation } from '@/navigation';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import Routes from '@/navigation/Routes';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import ContactAvatar from '@/components/contacts/ContactAvatar';
-import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
-import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { AnimatedText, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { parseAssetAndExtend, addCommasToNumber, clamp, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { SheetHandle } from '@/features/perps/components/SheetHandle';
+import { SliderWithLabels } from '@/features/perps/components/Slider';
+import {
+  HYPERCORE_PSEUDO_CHAIN_ID,
+  HYPERLIQUID_USDC_ADDRESS,
+  SLIDER_COLLAPSED_HEIGHT,
+  SLIDER_HEIGHT,
+  SLIDER_WIDTH,
+} from '@/features/perps/constants';
+import { PerpsInputContainer } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsInputContainer';
+import { PerpsTokenList } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsTokenList';
 import * as i18n from '@/languages';
-import ImgixImage from '@/components/images/ImgixImage';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { IS_IOS } from '@/env';
-import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
-import { TokenToSellListProps } from '@/__swaps__/screens/Swap/components/TokenList/TokenToSellList';
-import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
-import { getInputAsset } from '@/__swaps__/screens/Swap/navigateToSwaps';
-import { Slider } from '@/features/perps/components/Slider';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/Routes';
+import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ChainId } from '@/state/backendNetworks/types';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { CrosschainQuote, QuoteError, getCrosschainQuote } from '@rainbow-me/swaps';
+import React, { memo, useCallback, useEffect } from 'react';
+import Animated, { SharedValue, interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
 
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
 
+const enum NavigationSteps {
+  INPUT_ELEMENT_FOCUSED = 0,
+  TOKEN_LIST_FOCUSED = 1,
+  SHOW_GAS = 3,
+  SHOW_REVIEW = 4,
+  SHOW_SETTINGS = 5,
+}
+
 type InputMethod = 'slider' | 'inputAmount' | 'inputNativeValue';
-
-// Simple Coin Icon Component
-const DepositCoinIcon = ({ asset, size = 36 }: { asset: SharedValue<ExtendedAnimatedAssetWithColors | null>; size?: number }) => {
-  const assetValue = useDerivedValue(() => asset.value);
-
-  return (
-    <Box width={{ custom: size }} height={{ custom: size }} style={{ position: 'relative' }}>
-      {assetValue.value?.icon_url && (
-        <>
-          <ImgixImage
-            source={{ uri: assetValue.value.icon_url }}
-            size={size}
-            style={{ width: size, height: size, borderRadius: size / 2 }}
-          />
-          {assetValue.value.chainId && assetValue.value.chainId !== 1 && (
-            <Box position="absolute" bottom={{ custom: -4 }} right={{ custom: -4 }}>
-              <ChainImage chainId={assetValue.value.chainId} size={16} />
-            </Box>
-          )}
-        </>
-      )}
-    </Box>
-  );
-};
 
 // Deposit Input Component
 const DepositInputSection = ({
@@ -82,9 +70,8 @@ const DepositInputSection = ({
   onSelectAsset?: (asset: ParsedSearchAsset | null) => void;
 }) => {
   const { isDarkMode } = useColorMode();
-  const inputProgress = useSharedValue(0);
-  const outputProgress = useSharedValue(0);
-  const selectedOutputChainId = useSharedValue<ChainId | undefined>(undefined);
+  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const selectedInputChainId = useSharedValue<ChainId | undefined>(undefined);
 
   const balanceLabel = useDerivedValue(() => {
     const assetValue = asset.value;
@@ -111,6 +98,11 @@ const DepositInputSection = ({
     return formattedInputNativeValue.value;
   });
 
+  const receiveFormattedInput = useDerivedValue(() => {
+    // TODO: Get real value here
+    return '~' + formattedInputNativeValue.value + ' USDC';
+  });
+
   const inputTokenListStyle = useAnimatedStyle(() => {
     return {
       opacity: withTiming(interpolate(inputProgress.value, [0, 1], [0, 1], 'clamp'), TIMING_CONFIGS.fadeConfig),
@@ -126,75 +118,83 @@ const DepositInputSection = ({
   });
 
   return (
-    <SwapInput asset={asset} bottomInput={false} otherInputProgress={outputProgress} progress={inputProgress}>
-      <Box testID={'swap-asset-input'} as={Animated.View} style={inputStyle}>
-        <Stack space="16px">
-          <Columns alignHorizontal="justify" alignVertical="center">
-            <Column width="content">
-              <Box paddingRight="10px">
-                <DepositCoinIcon asset={asset} size={36} />
-              </Box>
-            </Column>
-            <Column width="content">
-              <Stack space="8px">
-                <AnimatedText
-                  selector={() => {
-                    'worklet';
-                    return asset.value?.name;
-                  }}
-                  size="17pt"
-                  weight="bold"
-                  color="label"
-                >
-                  {asset}
-                </AnimatedText>
-                <BalanceBadge label={balanceLabel} />
-              </Stack>
-            </Column>
-            <Column>
-              <SwapActionButton
-                asset={asset}
-                disableShadow={isDarkMode}
-                hugContent
-                label={assetSymbol}
-                onPressWorklet={() => {
-                  'worklet';
-                  // pause quote fetching
-                  inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
-                }}
-                rightIcon={'􀆏'}
-                small
-              />
-            </Column>
-          </Columns>
-          <Separator direction="horizontal" color="separatorSecondary" />
-          <Box alignItems="center" justifyContent="center" height={{ custom: 117 }}>
-            <Box gap={16}>
-              <GestureHandlerButton disableHaptics disableScale onPressStartWorklet={onPressInput}>
-                <AnimatedText size="44pt" weight="heavy" color="label">
-                  {primaryFormattedInput}
-                </AnimatedText>
-              </GestureHandlerButton>
-              <GestureHandlerButton
-                disableHaptics
-                disableScale
-                onPressWorklet={() => {
-                  'worklet';
-                  changeInputMethod(inputMethod.value === 'inputAmount' ? 'inputNativeValue' : 'inputAmount');
-                }}
-              >
-                <Box gap={6} flexDirection="row" alignItems="center" justifyContent="center">
-                  <AnimatedText size="17pt" weight="bold" color="labelTertiary">
-                    {secondaryFormattedInput}
-                  </AnimatedText>
-                  <TextIcon color="labelSecondary" size="13pt" weight="bold">
-                    {'􀄬'}
-                  </TextIcon>
-                </Box>
-              </GestureHandlerButton>
+    <PerpsInputContainer asset={asset} progress={inputProgress}>
+      <Box testID={'swap-asset-input'} as={Animated.View} style={inputStyle} flexGrow={1} gap={20}>
+        <Columns alignHorizontal="justify" alignVertical="center">
+          <Column width="content">
+            <Box paddingRight="10px">
+              <AnimatedSwapCoinIcon asset={asset} size={40} />
             </Box>
+          </Column>
+          <Column>
+            <Stack space="12px" alignHorizontal="left">
+              <AnimatedText
+                selector={() => {
+                  'worklet';
+                  return asset.value?.name;
+                }}
+                size="17pt"
+                weight="bold"
+                color="label"
+              >
+                {asset}
+              </AnimatedText>
+              <BalanceBadge label={balanceLabel} />
+            </Stack>
+          </Column>
+          <Column width="content">
+            <SwapActionButton
+              asset={asset}
+              disableShadow={isDarkMode}
+              hugContent
+              label={assetSymbol}
+              onPressWorklet={() => {
+                'worklet';
+                inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+              }}
+              rightIcon={'􀆏'}
+              style={{ marginLeft: 20 }}
+              small
+            />
+          </Column>
+        </Columns>
+        <Separator direction="horizontal" color="separatorSecondary" />
+        <Box alignItems="center" justifyContent="center" flexGrow={1}>
+          <Box gap={16}>
+            <GestureHandlerButton disableHaptics disableScale onPressStartWorklet={onPressInput}>
+              <AnimatedText size="44pt" weight="heavy" color="label">
+                {primaryFormattedInput}
+              </AnimatedText>
+            </GestureHandlerButton>
+            <GestureHandlerButton
+              disableHaptics
+              disableScale
+              onPressWorklet={() => {
+                'worklet';
+                changeInputMethod(inputMethod.value === 'inputAmount' ? 'inputNativeValue' : 'inputAmount');
+              }}
+            >
+              <Box gap={6} flexDirection="row" alignItems="center" justifyContent="center">
+                <AnimatedText size="17pt" weight="bold" color="labelTertiary">
+                  {secondaryFormattedInput}
+                </AnimatedText>
+                <TextIcon color="labelSecondary" size="13pt" weight="bold">
+                  {'􀄬'}
+                </TextIcon>
+              </Box>
+            </GestureHandlerButton>
           </Box>
-        </Stack>
+        </Box>
+        <Separator direction="horizontal" color="separatorSecondary" />
+        <Box flexDirection="row" alignItems="center" justifyContent="center">
+          {/* TODO: ICON + INTL */}
+          <Text size="15pt" weight="bold" color="labelQuaternary">
+            Receive{' '}
+          </Text>
+          <AnimatedText size="15pt" weight="bold" color="labelTertiary">
+            {receiveFormattedInput}
+          </AnimatedText>
+        </Box>
       </Box>
       <Box
         as={Animated.View}
@@ -204,36 +204,22 @@ const DepositInputSection = ({
         style={inputTokenListStyle}
         width={{ custom: INPUT_INNER_WIDTH }}
       >
-        <TokenList
-          handleExitSearchWorklet={() => {
-            'worklet';
+        <PerpsTokenList
+          onSelectChain={chainId => {
+            selectedInputChainId.value = chainId;
+          }}
+          onSelectToken={token => {
             inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+            onSelectAsset?.(token);
           }}
-          handleFocusSearchWorklet={() => {
-            'worklet';
-            inputProgress.value = NavigationSteps.SEARCH_FOCUSED;
-          }}
-          output={false}
-          disableSearch={true}
-          tokenToSellListProps={{
-            onSelectChain: chainId => {
-              selectedOutputChainId.value = chainId;
-            },
-            onSelectToken: token => {
-              inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-              onSelectAsset?.(token);
-            },
-            inputProgress,
-            selectedOutputChainId,
-          }}
+          inputProgress={inputProgress}
         />
       </Box>
-    </SwapInput>
+    </PerpsInputContainer>
   );
 };
 
 export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
-  const isDarkMode = useColorMode();
   const accountAddress = userAssetsStoreManager(state => state.address);
   const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
 
@@ -243,6 +229,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   const activeFieldId = useSharedValue<string>('inputNativeValue');
   const isFetching = useSharedValue(false);
   const quote = useSharedValue<CrosschainQuote | QuoteError | null>(null);
+  const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
   const highestValueNativeAsset = useUserAssetsStore(state => state.getHighestValueNativeAsset());
   const selectedAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(getInputAsset(null));
@@ -336,6 +323,8 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     [fields, inputMethod, selectedAsset, sliderPercentage]
   );
 
+  const handlePercentageChange = useCallback(() => {}, []);
+
   // Fetch quote
   const fetchQuote = useCallback(async () => {
     const amount = fields.value.inputAmount?.value;
@@ -362,15 +351,6 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     }
   }, [accountAddress, fields, isFetching, quote, selectedAsset]);
 
-  const outputAmount = useDerivedValue(() => {
-    const q = quote.value;
-    if (q && 'buyAmount' in q) {
-      const amount = divWorklet(Number(q.buyAmount), 1e6); // USDC has 6 decimals
-      return toFixedWorklet(amount, 2);
-    }
-    return '0';
-  });
-
   const formattedValues = useDerivedValue(() => {
     return {
       inputAmount: formattedInputAmount.value,
@@ -384,14 +364,8 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   });
 
   return (
-    <Box
-      as={Page}
-      flex={1}
-      height="full"
-      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
-      testID="perps-deposit-screen"
-      width="full"
-    >
+    <Box as={Page} flex={1} height="full" testID="perps-deposit-screen" width="full">
+      <SheetHandle extraPaddingTop={6} />
       <Navbar
         hasStatusBarInset
         leftComponent={
@@ -405,14 +379,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
         }
         title={'Deposit'}
       />
-
-      <Box paddingHorizontal="20px" paddingTop="12px">
-        <AnimatedText align="center" size="15pt" color="labelQuaternary" weight="semibold">
-          {useDerivedValue(() => `Receive ${outputAmount.value} USDC`)}
-        </AnimatedText>
-      </Box>
-
-      <Box paddingTop="24px" alignItems="center">
+      <Box alignItems="center" paddingTop="20px">
         <DepositInputSection
           asset={selectedAsset}
           formattedInputAmount={formattedInputAmount}
@@ -435,33 +402,28 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           }}
         />
       </Box>
-
-      <Stack space="16px">
-        <NumberPad
-          activeFieldId={activeFieldId}
-          fields={fields}
-          formattedValues={formattedValues}
-          onValueChange={handleNumberPadChange}
-          onFieldChange={fieldId => {
-            'worklet';
-            activeFieldId.value = fieldId as string;
-          }}
-          stripFormatting={stripNonDecimalNumbers}
-        />
-        {/* <Slider
-          sliderXPosition={sliderPercentage}
-          sliderPressProgress={sliderPressProgress}
-          isEnabled={isEnabled}
-          colors={colors}
-          onPercentageChange={handlePercentageChange}
-          onGestureUpdate={handleGestureUpdate}
-          snapPoints={[0, 0.25, 0.5, 0.75, 1]}
-          width={SLIDER_WIDTH}
-          height={SLIDER_HEIGHT}
-        /> */}
-      </Stack>
-
-      <Box position="absolute" bottom={{ custom: 40 }} width="full" paddingHorizontal="20px">
+      <SliderWithLabels
+        sliderXPosition={sliderPercentage}
+        sliderPressProgress={sliderPressProgress}
+        width={SLIDER_WIDTH}
+        containerStyle={{ height: SLIDER_WITH_LABELS_HEIGHT, marginHorizontal: 20, justifyContent: 'center' }}
+        onPercentageChange={handlePercentageChange}
+        // TODO: INTL
+        labels={{ title: 'Depositing' }}
+        icon={<AnimatedSwapCoinIcon asset={selectedAsset} size={16} showBadge={false} />}
+      />
+      <NumberPad
+        activeFieldId={activeFieldId}
+        fields={fields}
+        formattedValues={formattedValues}
+        onValueChange={handleNumberPadChange}
+        onFieldChange={fieldId => {
+          'worklet';
+          activeFieldId.value = fieldId as string;
+        }}
+        stripFormatting={stripNonDecimalNumbers}
+      />
+      <Box width="full" paddingHorizontal="20px" paddingTop="16px" height={{ custom: FOOTER_HEIGHT }}>
         <ButtonPressAnimation onPress={fetchQuote} scaleTo={0.97}>
           <Box alignItems="center" backgroundColor="accent" borderRadius={99} height="56px" justifyContent="center" width="full">
             <AnimatedText color="label" size="20pt" weight="heavy">
@@ -472,20 +434,4 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
       </Box>
     </Box>
   );
-});
-
-const styles = StyleSheet.create({
-  staticInputContainerStyles: {
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 9,
-  },
-  staticInputStyles: {
-    borderCurve: 'continuous',
-    borderRadius: 30,
-    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
-    overflow: 'hidden',
-    padding: INPUT_PADDING,
-    width: BASE_INPUT_WIDTH,
-  },
 });

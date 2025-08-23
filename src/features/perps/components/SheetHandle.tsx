@@ -7,14 +7,18 @@ import { IS_ANDROID } from '@/env';
 const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 
-export const SheetHandle = () => {
+export interface SheetHandleProps {
+  extraPaddingTop?: number;
+}
+
+export const SheetHandle = ({ extraPaddingTop = IS_ANDROID ? 24 : 12 }: SheetHandleProps) => {
   const { isDarkMode } = useColorMode();
   const screenBackgroundColor = useBackgroundColor('surfacePrimary');
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
     <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-      <Box background={'surfacePrimary'} height={safeAreaInsets.top + (IS_ANDROID ? 24 : 12)} width="full">
+      <Box background={'surfacePrimary'} height={safeAreaInsets.top + extraPaddingTop} width="full">
         <Box
           height={{ custom: 5 }}
           width={{ custom: 36 }}

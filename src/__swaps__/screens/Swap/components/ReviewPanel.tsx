@@ -322,7 +322,7 @@ export function ReviewPanel() {
 
             <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
               <View style={sx.chainBadgeContainer}>
-                <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
+                <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
               </View>
               <AnimatedText
                 align="right"
@@ -383,7 +383,7 @@ export function ReviewPanel() {
               <Stack space="10px">
                 <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
                   <View style={sx.chainBadgeContainer}>
-                    <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
+                    <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
                   </View>
                   <UnmountOnAnimatedReaction
                     isMountedWorklet={() => {

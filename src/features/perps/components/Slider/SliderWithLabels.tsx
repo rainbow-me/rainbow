@@ -1,3 +1,9 @@
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
+import { SCRUBBER_WIDTH } from '@/features/perps/constants';
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -10,12 +16,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
-import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { Slider, SliderProps, SliderChangeSource, SliderVisualState } from './Slider';
+import { Slider, SliderChangeSource, SliderProps, SliderVisualState } from './Slider';
 
 export interface SliderLabels {
   title?: string | SharedValue<string>;
@@ -43,7 +44,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   height,
   width,
   snapPoints,
-  onPercentageChange: onPercentageChangeProp,
+  onPercentageChange,
   onGestureStart,
   onGestureEnd,
   onGestureUpdate,
@@ -85,9 +86,8 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
 
   // Calculate percentage from slider position
   const xPercentage = useDerivedValue(() => {
-    const sliderWidth = width || 287; // Default SLIDER_WIDTH
-    const scrubberWidth = 12; // SCRUBBER_WIDTH
-    return Math.max(0, Math.min(1, (sliderXPosition.value - scrubberWidth / sliderWidth) / sliderWidth));
+    const sliderWidth = width ?? 0;
+    return Math.max(0, Math.min(1, (sliderXPosition.value - SCRUBBER_WIDTH / sliderWidth) / sliderWidth));
   });
 
   // Format percentage text
@@ -130,14 +130,6 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   });
 
   const titleLabelStyle = useAnimatedStyle(() => ({ marginRight: isEnabled.value ? 3 : 0 }));
-
-  // Wrap onPercentageChange to handle max button press
-  const onPercentageChange = useCallback(
-    (percentage: number, source: SliderChangeSource) => {
-      onPercentageChangeProp(percentage, source);
-    },
-    [onPercentageChangeProp]
-  );
 
   const handleMaxPress = () => {
     'worklet';

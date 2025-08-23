@@ -101,6 +101,7 @@ import { NetworkSelector } from '@/screens/network-selector/NetworkSelector';
 import { KingOfTheHillExplainSheet } from '@/screens/king-of-the-hill/KingOfTheHillExplainSheet';
 import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
+import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -253,6 +254,7 @@ function BSNavigator() {
       <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      <BSStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
       <BSStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} />
