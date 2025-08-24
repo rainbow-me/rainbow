@@ -1,58 +1,36 @@
+import { EstimatedSwapGasFee } from '@/__swaps__/screens/Swap/components/EstimatedSwapGasFee';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { GasSettings, useCustomGasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { setSelectedGasSpeed, useSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { weiToGwei } from '@/parsers';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
-import { add, formatNumber } from '@/helpers/utilities';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { IS_ANDROID } from '@/env';
+import { add, formatNumber } from '@/helpers/utilities';
 import * as i18n from '@/languages';
+import { weiToGwei } from '@/parsers';
+import { ChainId } from '@/state/backendNetworks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
-import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH } from '../constants';
-import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
-import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
-import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { GestureHandlerButton } from './GestureHandlerButton';
-import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { ChainId } from '@/state/backendNetworks/types';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 
 const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
 
-function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
-  const { configProgress } = useSwapContext();
-  return (
-    <UnmountOnAnimatedReaction
-      isMountedWorklet={() => {
-        'worklet';
-        // unmount when custom gas or review panels are above it
-        return !(configProgress.value === NavigationSteps.SHOW_GAS || configProgress.value === NavigationSteps.SHOW_REVIEW);
-      }}
-      placeholder={placeholder}
-    >
-      {children}
-    </UnmountOnAnimatedReaction>
-  );
-}
-
 function EstimatedGasFee() {
-  const { isFetching } = useSwapContext();
+  const isFetching = useSharedValue(false);
   return (
     <Inline alignVertical="center" space="4px">
       <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={18}>
         􀵟
       </TextIcon>
-      <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" isFetching={isFetching} />}>
-        <EstimatedSwapGasFee isFetching={isFetching} />
-      </UnmountWhenGasButtonIsNotInScreen>
+      <EstimatedSwapGasFee isFetching={isFetching} />
     </Inline>
   );
 }
@@ -107,8 +85,6 @@ function keys<const T extends string>(obj: Record<T, unknown> | undefined) {
 }
 
 const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; children: ReactNode }) => {
-  const { SwapNavigation } = useSwapContext();
-
   const preferredNetwork = swapsStore(s => s.preferredNetwork);
   const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
   const { data: metereologySuggestions, isLoading } = useMeteorologySuggestions({ chainId });
@@ -126,12 +102,12 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
         // if we already have custom gas settings saved, we can safely set the selected speed as custom
         if (customGasSettings) setSelectedGasSpeed(chainId, GasSpeed.CUSTOM);
 
-        runOnUI(SwapNavigation.handleShowGas)({ backToReview });
+        // runOnUI(SwapNavigation.handleShowGas)({ backToReview });
       } else {
         setSelectedGasSpeed(chainId, selectedGasSpeed);
       }
     },
-    [SwapNavigation.handleShowGas, backToReview, chainId, customGasSettings]
+    [chainId, customGasSettings]
   );
 
   const handlePressMenuItem = useCallback(
@@ -199,39 +175,13 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   );
 };
 
-export function ReviewGasButton() {
-  const { isDarkMode } = useColorMode();
-  const { SwapNavigation, internalSelectedOutputAsset } = useSwapContext();
-
-  const borderColor = useForegroundColor('separatorSecondary');
-
-  const handleShowCustomGas = () => {
-    'worklet';
-    SwapNavigation.handleShowGas({ backToReview: true });
-  };
-
-  const animatedBorderColor = useAnimatedStyle(() => {
-    return {
-      borderColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode),
-    };
-  });
-
+export function PerpsGasButton() {
   return (
-    <Inline alignVertical="center" space="8px" wrap={false}>
-      <GasMenu backToReview>
-        <Animated.View style={[styles.reviewGasButtonPill, animatedBorderColor]}>
-          <SelectedGas isPill />
-        </Animated.View>
-      </GasMenu>
-
-      <GestureHandlerButton onPressStartWorklet={handleShowCustomGas}>
-        <Box style={[styles.customGasButtonPill, { borderColor }]}>
-          <Text align="center" color="label" size="15pt" weight="heavy">
-            􀌆
-          </Text>
-        </Box>
-      </GestureHandlerButton>
-    </Inline>
+    <GasMenu backToReview>
+      <Animated.View style={[styles.reviewGasButtonPill]}>
+        <SelectedGas isPill />
+      </Animated.View>
+    </GasMenu>
   );
 }
 

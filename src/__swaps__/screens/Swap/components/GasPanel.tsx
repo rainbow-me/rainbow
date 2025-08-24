@@ -351,6 +351,7 @@ const stateToGasSettings = (s: GasPanelState | undefined): GasSettings | undefin
 function MaxTransactionFee() {
   const { isDarkMode } = useColorMode();
 
+  const { isFetching } = useSwapContext();
   const gasPanelState = useGasPanelState();
   const gasSettings = useMemo(() => stateToGasSettings(gasPanelState), [gasPanelState]);
 
@@ -363,7 +364,14 @@ function MaxTransactionFee() {
       <Inline horizontalSpace="6px">
         <UnmountWhenGasPanelIsClosed
           placeholder={
-            <EstimatedSwapGasFeeSlot align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text="--" />
+            <EstimatedSwapGasFeeSlot
+              align="right"
+              color={isDarkMode ? 'labelSecondary' : 'label'}
+              size="15pt"
+              weight="heavy"
+              text="--"
+              isFetching={isFetching}
+            />
           }
         >
           <EstimatedSwapGasFee
@@ -372,6 +380,7 @@ function MaxTransactionFee() {
             color={isDarkMode ? 'labelSecondary' : 'label'}
             size="15pt"
             weight="heavy"
+            isFetching={isFetching}
           />
         </UnmountWhenGasPanelIsClosed>
       </Inline>

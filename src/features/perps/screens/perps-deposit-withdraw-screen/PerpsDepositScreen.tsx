@@ -46,6 +46,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
+import { PerpsGasButton } from '@/features/perps/components/PerpsGasButton';
 
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
 
@@ -449,14 +450,17 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
         onValueChange={handleNumberPadChange}
         stripFormatting={stripNonDecimalNumbers}
       />
-      <Box width="full" paddingHorizontal="20px" paddingTop="16px" height={{ custom: FOOTER_HEIGHT }}>
-        <ButtonPressAnimation onPress={fetchQuote} scaleTo={0.97}>
-          <Box alignItems="center" backgroundColor="accent" borderRadius={99} height="56px" justifyContent="center" width="full">
-            <AnimatedText color="label" size="20pt" weight="heavy" tabularNumbers>
-              {depositButtonText}
-            </AnimatedText>
-          </Box>
-        </ButtonPressAnimation>
+      <Box width="full" paddingHorizontal="20px" paddingTop="16px" height={{ custom: FOOTER_HEIGHT }} flexDirection="row" gap={20}>
+        <PerpsGasButton />
+        <Box flexGrow={1}>
+          <ButtonPressAnimation onPress={fetchQuote} scaleTo={0.97}>
+            <Box alignItems="center" backgroundColor="accent" borderRadius={99} height="56px" justifyContent="center" width="full">
+              <Text color="label" size="20pt" weight="heavy" tabularNumbers>
+                Hold to Deposit
+              </Text>
+            </Box>
+          </ButtonPressAnimation>
+        </Box>
       </Box>
     </Box>
   );

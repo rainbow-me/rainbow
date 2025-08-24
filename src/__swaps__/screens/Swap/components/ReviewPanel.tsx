@@ -25,7 +25,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import React, { useCallback } from 'react';
+import React, { use, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   runOnJS,
@@ -109,7 +109,8 @@ const RainbowFee = () => {
 };
 
 function EstimatedGasFee() {
-  return <EstimatedSwapGasFee align="left" color="label" size="15pt" weight="heavy" />;
+  const { isFetching } = useSwapContext();
+  return <EstimatedSwapGasFee align="left" color="label" size="15pt" weight="heavy" isFetching={isFetching} />;
 }
 
 function EstimatedArrivalTime() {
@@ -245,7 +246,7 @@ export const SlippageRow = () => {
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
-  const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
+  const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote, isFetching } = useSwapContext();
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
   const labelTertiary = useForegroundColor('labelTertiary');
@@ -393,7 +394,14 @@ export function ReviewPanel() {
                     }}
                     placeholder={
                       <Inline horizontalSpace="4px">
-                        <EstimatedSwapGasFeeSlot text="Loading…" align="left" color="label" size="15pt" weight="heavy" />
+                        <EstimatedSwapGasFeeSlot
+                          text="Loading…"
+                          align="left"
+                          color="label"
+                          size="15pt"
+                          weight="heavy"
+                          isFetching={isFetching}
+                        />
                         {null}
                       </Inline>
                     }
