@@ -34,6 +34,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import FastImage from 'react-native-fast-image';
+import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -265,6 +266,12 @@ const DevSection = () => {
               onPress={() => analyzeReactQueryStore()}
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_react_query')} />}
+            />
+            <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}
+              onPress={() => analyzeUserAssets()}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_user_assets_query')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
