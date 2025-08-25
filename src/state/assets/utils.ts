@@ -101,25 +101,37 @@ export function setUserAssets({
   state,
   userAssets,
   positionTokenAddresses,
+  chainIdsToUpdate,
 }: {
   address: Address | string;
   state: UserAssetsState;
   userAssets: UserAsset[] | null;
   positionTokenAddresses: Set<string>;
+  chainIdsToUpdate?: ChainId[];
 }): UserAssetsState {
   if (!userAssets || address !== state.address) return state;
 
   const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
   const unsortedChainBalances = new Map<ChainId, number>();
-  const newUserAssetsMap = new Map<UniqueId, ParsedSearchAsset>();
-  const allIds: UniqueId[] = [];
+  let newUserAssetsMap: Map<UniqueId, ParsedSearchAsset> = new Map();
 
   // Check if this asset's address matches any position pool_address
   const filteredUserAssets = userAssets.filter(asset => {
     return !positionTokenAddresses.has(asset.asset.address.toLowerCase());
   });
 
-  const allAssets: ParsedSearchAsset[] = filteredUserAssets.map(asset => transformUserAssetToParsedSearchAsset(asset));
+  const newAssets: ParsedSearchAsset[] = filteredUserAssets.map(asset => transformUserAssetToParsedSearchAsset(asset));
+  let allAssets: ParsedSearchAsset[];
+
+  // If we're only updating specific chains, merge with existing assets
+  if (chainIdsToUpdate) {
+    const chainIdsSet = new Set(chainIdsToUpdate);
+    allAssets = Array.from(state.userAssets.values()).filter(asset => !chainIdsSet.has(asset.chainId));
+    allAssets.push(...newAssets);
+  } else {
+    allAssets = newAssets;
+  }
+  const allIds: UniqueId[] = [];
 
   // Sort all assets by chain balance first, then by individual asset value
   allAssets.sort((a, b) => {
@@ -129,7 +141,8 @@ export function setUserAssets({
     return (Number(b.native.balance.amount) ?? 0) - (Number(a.native.balance.amount) ?? 0);
   });
 
-  // Process sorted assets in a single pass
+  // Process sorted assets in a single pass - build the map in sorted order
+  newUserAssetsMap = new Map<UniqueId, ParsedSearchAsset>();
   for (const asset of allAssets) {
     newUserAssetsMap.set(asset.uniqueId, asset);
     allIds.push(asset.uniqueId);
@@ -155,7 +168,7 @@ export function setUserAssets({
   idsByChain.set('all', allIds);
 
   const smallBalanceThreshold = supportedNativeCurrencies[userAssetsStoreManager.getState().currency].userAssetsSmallThreshold;
-  const filteredAllIdsArray = allIds.filter(id => {
+  const filteredAllIdsArray = allIds.filter((id: UniqueId) => {
     const asset = newUserAssetsMap.get(id);
     return asset && Number(asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
   });
@@ -231,6 +244,7 @@ function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSear
         display: convertAmountToNativeDisplayWorklet(price?.value ?? 0, currency),
       },
     },
+    updatedAt: userAsset.updatedAt,
     // These are required in the type, but the new platform endpoint does not return them.
     highLiquidity: false,
     isRainbowCurated: false,
@@ -372,7 +386,7 @@ export function calculateHiddenAssetsBalance({
 }
 
 function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {
-  return assets.filter(asset => greaterThan(asset.value, 0));
+  return assets.filter(asset => greaterThan(asset.quantity, 0));
 }
 
 // ============ Search Utils =================================================== //

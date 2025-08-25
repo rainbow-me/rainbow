@@ -307,6 +307,11 @@ export const event = {
   // refresh account data
   refreshAccountData: 'refresh_account_data',
 
+  // pending transactions
+  pendingTransactionResolved: 'pending_transaction.resolved',
+  minedTransactionAssetsResolved: 'mined_transaction.assets_resolved',
+  minedTransactionAssetsTimedOut: 'mined_transaction.assets_timed_out',
+
   // charts
   chartTypeChanged: 'Changed Chart Type',
   candleResolutionChanged: 'Changed Candle Resolution',
@@ -1095,6 +1100,18 @@ export type EventProperties = {
   };
   [event.refreshAccountData]: {
     duration: number;
+  };
+  [event.pendingTransactionResolved]: {
+    chainId: number;
+    type: string;
+    timeToResolve?: number;
+  };
+  [event.minedTransactionAssetsResolved]: {
+    timeToResolve?: number;
+  };
+  [event.minedTransactionAssetsTimedOut]: {
+    chainId: number;
+    type: string;
   };
   [event.chartTypeChanged]: {
     chartType: ChartType;
