@@ -4,7 +4,7 @@ import { RainbowError, logger } from '@/logger';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { getPlatformClient } from '@/resources/platform/client';
-import { GetAssetsResponse } from '@/state/assets/types';
+import { GetAssetsResponse, UserAsset } from '@/state/assets/types';
 import { time } from '@/utils/time';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { usePositionsStore } from '@/state/positions/positions';
@@ -17,6 +17,7 @@ import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { toUnixTime } from '@/worklets/dates';
 import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 
 const ASSET_DETECTION_TIMEOUT = toUnixTime(time.seconds(30));
 
@@ -28,9 +29,39 @@ async function refetchOtherAssets({ address }: { address: string }) {
   ]);
 }
 
+function updateUserAssets({ address, newAssets, chainIds }: { address: string; newAssets: Record<string, UserAsset>; chainIds: number[] }) {
+  const userAssets = filterZeroBalanceAssets(Object.values(newAssets)).sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
+  const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+
+  userAssetsStore.setState(state =>
+    setUserAssets({
+      address,
+      state,
+      userAssets,
+      positionTokenAddresses,
+      chainIdsToUpdate: chainIds,
+    })
+  );
+}
+
+function didUserAssetBalanceChange({
+  legacyTokenId,
+  initialUserAssets,
+  newAssets,
+}: {
+  legacyTokenId: string;
+  initialUserAssets: Map<string, ParsedSearchAsset>;
+  newAssets: Record<string, UserAsset>;
+}) {
+  const initialAsset = initialUserAssets.get(legacyTokenId);
+  const tokenId = legacyTokenId.split('_').join(':');
+  const newAssetQuantity = newAssets[tokenId]?.quantity;
+  const initialAssetQuantity = convertAmountToRawAmount(initialAsset?.balance.amount ?? '0', initialAsset?.decimals ?? 18);
+  return initialAssetQuantity !== newAssetQuantity;
+}
+
 export const useWatchMinedTransactions = ({ address }: { address: string }) => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const clearMinedTransactions = useMinedTransactionsStore(state => state.clearMinedTransactions);
   const staleBalances = staleBalancesStore(state => state.staleBalances[address]);
 
   const watchMinedTransactions = useCallback(
@@ -57,7 +88,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
         });
 
         if (!validTransactions.length) {
-          clearMinedTransactions(address);
+          useMinedTransactionsStore.getState().clearMinedTransactions(address);
           await refetchOtherAssets({ address });
           return;
         }
@@ -105,45 +136,38 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
           timeout: time.seconds(20),
         });
 
+        let someExpectedChangesSeen = false;
         const newAssets = assetsResponse.data.result ?? {};
         const allExpectedChangesSeen = [...expectedUniqueIds].every(legacyTokenId => {
-          const initialAsset = initialUserAssets.get(legacyTokenId);
-          const tokenId = legacyTokenId.split('_').join(':');
-          const newAssetQuantity = newAssets[tokenId]?.quantity;
-          const initialAssetQuantity = convertAmountToRawAmount(initialAsset?.balance.amount ?? '0', initialAsset?.decimals ?? 18);
-          return initialAssetQuantity !== newAssetQuantity;
+          const didChange = didUserAssetBalanceChange({ legacyTokenId, initialUserAssets, newAssets });
+          if (didChange) {
+            someExpectedChangesSeen = true;
+          }
+          return didChange;
         });
+
+        // If we saw any expected changes, update the user assets still in the event that we ran into a race condition with the normal asset fetch interval
+        // This is a bit of a hack, as this function will continue being called until it times out, but we will be using a different endpoint in the future
+        // So this is fine for now
+        if (someExpectedChangesSeen) {
+          updateUserAssets({ address, newAssets, chainIds: transactionChainIds });
+        }
 
         if (!allExpectedChangesSeen) {
           return;
         }
 
-        // Filter out zero balance assets and sort by value
-        const userAssets = filterZeroBalanceAssets(Object.values(newAssets)).sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
-
-        // Merge the chain-specific assets with existing assets
-        const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
-        userAssetsStore.setState(state =>
-          setUserAssets({
-            address,
-            state,
-            userAssets,
-            positionTokenAddresses,
-            chainIdsToUpdate: transactionChainIds,
-          })
-        );
-
+        useMinedTransactionsStore.getState().clearMinedTransactions(address);
+        staleBalancesStore.getState().clearExpiredData(address);
         analytics.track(event.minedTransactionAssetsResolved, {
           timeToResolve: now * 1000 - oldestMinedTransactionTimestamp,
         });
         await refetchOtherAssets({ address });
-        clearMinedTransactions(address);
-        staleBalancesStore.getState().clearExpiredData(address);
       } catch (e) {
         logger.error(new RainbowError('[watchMinedTransactions]: Polling GetAssetUpdates failed', e));
       }
     },
-    [address, nativeCurrency, clearMinedTransactions, staleBalances]
+    [address, nativeCurrency, staleBalances]
   );
 
   return {
