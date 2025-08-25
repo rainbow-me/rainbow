@@ -13,9 +13,9 @@ import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
+import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { toUnixTime } from '@/worklets/dates';
-import { setUserAssets } from '@/state/assets/utils';
+import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
 import { staleBalancesStore } from '@/state/staleBalances';
 
 const ASSET_DETECTION_TIMEOUT = toUnixTime(time.seconds(30));
@@ -58,6 +58,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
 
         if (!validTransactions.length) {
           clearMinedTransactions(address);
+          await refetchOtherAssets({ address });
           return;
         }
 
@@ -118,9 +119,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
         }
 
         // Filter out zero balance assets and sort by value
-        const userAssets = Object.values(newAssets)
-          .filter(asset => greaterThan(asset.value, 0))
-          .sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
+        const userAssets = filterZeroBalanceAssets(Object.values(newAssets)).sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
 
         // Merge the chain-specific assets with existing assets
         const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
