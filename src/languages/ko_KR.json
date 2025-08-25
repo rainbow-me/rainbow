@@ -140,7 +140,7 @@
         "choose_backup_cloud_description": "기기를 분실하거나 새 기기를 사용할 경우 복원할 수 있도록 %{cloudPlatform}에 안전하게 지갑을 백업하세요.",
         "choose_backup_manual_description": "암호를 안전한 곳에 보관하여 지갑을 수동으로 백업하세요.",
         "enable_cloud_backups_description": "지갑을 수동으로 백업하려면 아래에서 진행할 수 있습니다.",
-        "latest_backup": "마지막 백업: %{date}",
+        "latest_backup": "최신 백업: %{date}",
         "back_up_all_wallets_to_cloud": "모든 지갑을 %{cloudPlatformName}에 백업",
         "most_recent_backup": "가장 최근 백업",
         "out_of_date": "구버전",
@@ -467,6 +467,9 @@
         "quote_error": "견적 오류",
         "no_route_found": "경로를 찾을 수 없음",
         "fetching_quote": "견적 가져오는 중...",
+        "rainbow_eth_rewards": "Rainbow ETH 리워드",
+        "merkl_claimable": "%{dappName} 볼트",
+        "merkl_claimable_description": "%{assetSymbols} 전략",
         "select_a_network": "네트워크 선택",
         "select_a_token": "토큰 선택",
         "amount_to_claim_on_network": "%{amount}을(를) %{network}에서 청구",
@@ -476,6 +479,9 @@
         "claimed": "청구 완료!",
         "claiming_failed": "청구 실패",
         "insufficient_funds": "자금이 부족합니다",
+        "hold_to_claim": "청구하려면 유지",
+        "creator_lp_fees": "크리에이터 LP 수수료",
+        "rainbow_token_launcher": "Rainbow 토큰 런처",
         "claim_amount": "%{amount} 청구",
         "done": "완료",
         "try_again": "다시 시도하기",
@@ -519,24 +525,25 @@
       "alert": "알림",
       "analyze_env_variables": "환경 변수 분석",
       "analyze_react_query": "React 쿼리 분석",
+      "analyze_user_assets_query": "사용자 자산 쿼리 분석",
       "applied": "적용됨",
-      "backups_deleted_successfully": "백업이 성공적으로 삭제되었습니다",
-      "clear_async_storage": "비동기 저장소 지우기",
+      "backups_deleted_successfully": "백업이 성공적으로 삭제됨",
+      "clear_async_storage": "AsyncStorage 지우기",
       "clear_pending_txs": "보류 중인 거래 청소",
       "clear_image_cache": "이미지 캐시 지우기",
       "clear_image_metadata_cache": "이미지 메타데이터 캐시 지우기",
       "clear_local_storage": "로컬 저장소 지우기",
-      "clear_mmkv_storage": "MMKV 저장소 지우기",
+      "clear_mmkv_storage": "MMKV 스토리지 지우기",
       "clear_react_query_cache": "React 쿼리 캐시 지우기",
-      "connect_to_anvil": "하드햇에 연결",
+      "connect_to_anvil": "Anvil에 연결",
       "copy_fcm_token": "FCM 토큰 복사",
       "copy_log_lines": "로그 라인 복사",
       "copy_signing_wallet_address": "서명 지갑 주소 복사",
-      "disconnect_to_anvil": "anvil 연결 해제",
-      "crash_app_render_error": "애플리케이션 종료 (렌더링 오류)",
+      "disconnect_to_anvil": "Anvil 연결 해제",
+      "crash_app_render_error": "앱 충돌(렌더링 오류)",
       "enable_testnets": "테스트넷 활성화",
       "installing_update": "업데이트 설치 중",
-      "navigation_entry_point": "탐색 진입점",
+      "navigation_entry_point": "네비게이션 시작점",
       "no_update": "업데이트 없음",
       "not_applied": "적용되지 않음",
       "notifications_debug": "알림 디버그",
@@ -548,9 +555,9 @@
         "alert_body": "🚨🚨🚨 \n이렇게 하면 지갑의 모든 프라이빗 키와 데이터가 영구적으로 삭제됩니다. 진행하기 전에 모든 것이 백업되었는지 확인하십시오!! \n🚨🚨🚨"
       },
       "restart_app": "앱 재시작",
-      "reset_experimental_config": "실험적 구성 재설정",
+      "reset_experimental_config": "실험 설정 재설정",
       "status": "상태",
-      "sync_codepush": "코드푸시 동기화"
+      "sync_codepush": "CodePush 동기화"
     },
     "discover": {
       "pulse": {
@@ -604,6 +611,7 @@
         "expires_in": "%{minutes}분 후에 만료됩니다",
         "from_divider": "from",
         "to_divider": "에게",
+        "token": "토큰",
         "view_on": "%{blockExplorerName}에서 보기",
         "view_on_etherscan": "Etherscan에서 보기",
         "copy_contract_address": "계약 주소 복사"
@@ -654,9 +662,7 @@
         "small_market_try_smaller_amount": "수요가 작은 시장 — 더 작은 금액을 시도해 보세요",
         "you_are_losing": "당신은 %{priceImpact}를 잃었습니다",
         "you_are_losing_prefix": "손실 중",
-        "no_data": "시장 가치 불명",
-        "label": "가능한 손실",
-        "no_data_subtitle": "계속하기로 결정하시면, 인용된 금액에 만족하는지 확인하세요"
+        "label": "가능한 손실"
       },
       "source": {
         "rainbow": "자동",
@@ -727,6 +733,7 @@
           "circulating_supply": "유통 공급",
           "max_supply": "최대 공급량",
           "fully_diluted_valuation": "완전 희석된 평가",
+          "created_by": "제작자",
           "market_cap": "시가 총액",
           "created": "생성됨",
           "volume_24_hours": "24시간 거래량",
@@ -747,9 +754,34 @@
         "about": {
           "title": "정보",
           "what_is": "%{assetName}에 대해 알고 싶으세요?"
+        },
+        "history": {
+          "tabs": {
+            "all": "모두",
+            "buys": "구매",
+            "sells": "판매"
+          },
+          "more": "더 보기",
+          "less": "적게",
+          "bought": "구매함",
+          "sold": "판매한",
+          "received": "받음",
+          "sent": "보냄",
+          "unknown": "미지"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "닫기",
+            "h": "H",
+            "l": "L",
+            "o": "열기",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "없음"
+        },
         "all_time": "모든 시간",
         "date": {
           "months": {
@@ -768,9 +800,9 @@
           }
         },
         "no_chart_data": "차트 데이터 없음",
-        "no_price_data": "가격 정보 없음",
+        "no_price_data": "가격 데이터 없음",
         "past_timespan": "과거 %{formattedTimespan}",
-        "today": "오늘",
+        "today": "지난날",
         "token_pool": "%{tokenName} 풀(Pool)"
       },
       "contact_profile": {
@@ -929,6 +961,8 @@
       "farcaster_title": "잠금 해제\nRainbowcast",
       "redacted_description": "진정한 Gdupi 애호가를 위한 stupi 전용 Rainbow 아이콘입니다.",
       "redacted_title": "잠금 해제 완료\nRedacted Rainbow",
+      "baggy_description": "거리에서 체인까지, 이 작은 가방은 당신이 필요로 하는 Rainbow의 느낌을 담고 있습니다. 색상을 느끼고, 차이를 느껴보세요.",
+      "baggy_title": "잠금 해제\nRainbow Baggy",
       "button": "아이콘 잡기"
     },
     "explain": {
@@ -1242,7 +1276,7 @@
         "link_text": "WalletConnect를 사용하여 연결하기",
         "link_text_mobile": "WalletConnect",
         "link_title": "WalletConnect 사용",
-        "link_title_mobile": "WalletConnect와 연결"
+        "link_title_mobile": "WalletConnect를 통해 연결하기"
       },
       "reassurance": {
         "access_link": "당신의 자금에 대한 접근 권한이 없습니다",
@@ -1447,7 +1481,7 @@
         "ABC": "가나다",
         "abc": "가나다",
         "MOST_RECENT": "최근",
-        "most_recent": "최신순",
+        "most_recent": "최근",
         "FLOOR_PRICE": "최저 가격",
         "floor_price": "최저 가격",
         "order": {
@@ -1632,7 +1666,7 @@
         "invalid_referral_code_alert": "유효하지 않은 추천 코드입니다. 코드를 다시 확인하고 다시 시도해 주세요.",
         "no_balance_alert": "포인트에 등록하려면 지갑 잔액이 0이 아니어야 합니다.",
         "referral_link_is_ready": "당신의 추천 링크가 준비되었습니다",
-        "referral_link_bonus_text": "당신의 추천 링크를 트윗하여 추가적인 250 포인트를 얻으세요",
+        "referral_link_bonus_text": "추천 링크를 트윗하면 추천받은 분들이 얻는 포인트의 10%를 받을 수 있습니다",
         "referral_link_bonus_text_extended": "더하여 당신이 추천한 사람들이 얻은 포인트의 10%를 벌 수 있습니다",
         "complete_onboarding": "완료",
         "share_to_x": "X에 공유하기",
@@ -2008,7 +2042,7 @@
       "percentage_apy": "%{percentage}% APY",
       "with_digital_dollars_line_1": "디지털 달러인 Dai로 저축하는 것",
       "with_digital_dollars_line_2": "당신에게 이전보다 더 많은 수익을 가져다줍니다",
-      "withdraw": "인출",
+      "withdraw": "철수",
       "zero_currency": "$0.00"
     },
     "send_feedback": {
@@ -2181,7 +2215,7 @@
         "receive": "받기",
         "swap": "교환",
         "get_symbol_with": "%{symbol} 받기",
-        "withdraw": "인출",
+        "withdraw": "철수",
         "withdraw_symbol": "%{symbol}출금"
       },
       "unknown": "미지",
@@ -2526,7 +2560,7 @@
         "notifications": {
           "action_title": "알림 설정",
           "alert_title": "이 지갑에 대한 설정이 없습니다",
-          "alert_message": "이 지갑에 대한 설정이 없습니다.\n앱을 재시작하거나 나중에 다시 시도해주세요."
+          "alert_message": "이 지갑에 대해 설정이 없습니다.\n애플리케이션을 재시작하거나 나중에 다시 시도해 주세요."
         },
         "pair_hardware_wallet": "레저 나노 X 연결",
         "paste": "붙여넣기",
@@ -2888,6 +2922,7 @@
         "sending_title": "전송중",
         "you_own_this_wallet": "이 지갑은 당신의 것입니다",
         "first_time_send": "처음 보내기",
+        "previous_send": "%{number} 전송 이력",
         "previous_sends": "%{number} 전송 이력"
       },
       "wallet_connect": {
@@ -3340,10 +3375,78 @@
         "to_claim_on": "%{network}에서 청구하기",
         "view_coin": "코인 보기",
         "you": "당신"
+      },
+      "errors": {
+        "header": "토큰 실행 오류",
+        "api_request_failed": "API 요청 실패",
+        "api_response_invalid": "API 응답이 유효하지 않음",
+        "contract_interaction_failed": "계약 상호작용 실패",
+        "gas_estimation_failed": "가스 예측 실패",
+        "insufficient_funds": "자금이 부족합니다",
+        "submission_details_missing": "제출 세부 정보 누락",
+        "transaction_rejected": "거래 거부됨",
+        "transaction_failed": "거래 실패",
+        "transaction_simulation_failed": "거래 시뮬레이션 실패",
+        "unknown_error": "알 수 없는 오류",
+        "wallet_connection_error": "지갑 연결 오류",
+        "invalid_params": "잘못된 매개변수",
+        "missing_required_param": "필수 매개변수가 누락되었습니다"
       }
     },
     "done": "완료",
     "copy": "복사",
-    "paste": "붙여넣기"
+    "paste": "붙여넣기",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "시가 총액"
+    },
+    "king_of_hill": {
+      "title": "런칭패드",
+      "launch": "런칭",
+      "current_king": "현재 왕",
+      "last_winner": "마지막 우승자",
+      "no_previous_winner": "이전 우승자 없음",
+      "round_ends_in": "라운드 종료까지 남은 시간",
+      "how_it_works": "작동 방식",
+      "starting_next_round": "다음 라운드 시작 중",
+      "left": "남음",
+      "king_of_the_hill": "그 산의 왕",
+      "name": "이름",
+      "explain_sheet": {
+        "next": "다음",
+        "got_it": "알겠습니다",
+        "steps": {
+          "step_1": {
+            "title": "경주가 시작되었습니다",
+            "subtitle_parts": [
+              "가장 많은",
+              " 구매량 ",
+              "높은 토큰이 현재 왕입니다."
+            ]
+          },
+          "step_2": {
+            "title": "하루 한 왕관",
+            "subtitle_parts": [
+              "자정(UTC 12:00에), ",
+              " 자정 (오전 12:00 UTC), ",
+              "선두 토큰이 일일 우승자로 선정됩니다."
+            ]
+          },
+          "step_3": {
+            "title": "보상 획득",
+            "subtitle_parts": [
+              "현재 왕의 구매자는",
+              " 2배 포인트를 받습니다."
+            ],
+            "subtitle_two_parts": [
+              "창작자",
+              "는 포인트를 획득합니다 ",
+              "왕관을 받을 때."
+            ]
+          }
+        }
+      }
+    }
   }
 }
