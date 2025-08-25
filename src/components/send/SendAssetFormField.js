@@ -76,6 +76,7 @@ const SendAssetFormField = (
       isTinyPhone={isTinyPhone}
       onPress={() => !android && ref?.current.focus()}
       width={width}
+      accessible={false}
     >
       <GradientBackground
         colorForAsset={colorForAsset || colors.dark}

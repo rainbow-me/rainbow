@@ -4,6 +4,7 @@ import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { SupportedCurrencyKey } from '@/references';
@@ -90,6 +91,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     if (!minedTransactions.length) return;
 
     useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: minedTransactions });
+    minedTransactions.forEach(tx => useRainbowToastsStore.getState().handleTransaction(tx));
 
     await queryClient.refetchQueries({
       queryKey: consolidatedTransactionsQueryKey({
