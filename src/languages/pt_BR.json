@@ -140,7 +140,7 @@
         "choose_backup_cloud_description": "Faça backup da sua carteira de forma segura para %{cloudPlatform}, para que você possa restaurá-la se perder seu dispositivo ou adquirir um novo.",
         "choose_backup_manual_description": "Faça o backup da sua carteira manualmente, salvando sua frase secreta em um local seguro.",
         "enable_cloud_backups_description": "Se você preferir fazer o backup das suas carteiras manualmente, pode fazê-lo abaixo.",
-        "latest_backup": "Último Backup: %{date}",
+        "latest_backup": "Último backup: %{date}",
         "back_up_all_wallets_to_cloud": "Fazer Backup de Todas as Carteiras para %{cloudPlatformName}",
         "most_recent_backup": "Backup Mais Recente",
         "out_of_date": "Desatualizado",
@@ -467,6 +467,9 @@
         "quote_error": "Erro na Cotação",
         "no_route_found": "Nenhuma Rota Encontrada",
         "fetching_quote": "Buscando Cotação...",
+        "rainbow_eth_rewards": "Recompensas ETH Rainbow",
+        "merkl_claimable": "%{dappName} Cofre",
+        "merkl_claimable_description": "Estratégia %{assetSymbols}",
         "select_a_network": "Selecione uma Rede",
         "select_a_token": "Selecione um Token",
         "amount_to_claim_on_network": "%{amount} para reivindicar na %{network}",
@@ -476,6 +479,9 @@
         "claimed": "Reivindicado!",
         "claiming_failed": "Reivindicação falhou",
         "insufficient_funds": "Fundos insuficientes",
+        "hold_to_claim": "Pressione para Solicitar",
+        "creator_lp_fees": "Taxas do Criador LP",
+        "rainbow_token_launcher": "Lançador de Token Rainbow",
         "claim_amount": "Reivindicar %{amount}",
         "done": "Concluído",
         "try_again": "Tente Novamente",
@@ -519,9 +525,10 @@
       "alert": "Alerta",
       "analyze_env_variables": "Analisar Variáveis de Ambiente",
       "analyze_react_query": "Analisar Consulta React",
+      "analyze_user_assets_query": "Analisar Consulta de Ativos do Usuário",
       "applied": "APLICADO",
       "backups_deleted_successfully": "Backups excluídos com sucesso",
-      "clear_async_storage": "Limpar armazenamento assíncrono",
+      "clear_async_storage": "Limpar AsyncStorage",
       "clear_pending_txs": "Limpar transações pendentes",
       "clear_image_cache": "Limpar cache de imagens",
       "clear_image_metadata_cache": "Limpar Cache de Metadados da Imagem",
@@ -532,25 +539,25 @@
       "copy_fcm_token": "Copiar Token FCM",
       "copy_log_lines": "Copiar Linhas de Log",
       "copy_signing_wallet_address": "Copiar Endereço da Carteira de Assinatura",
-      "disconnect_to_anvil": "Desconectar do anvil",
-      "crash_app_render_error": "Crash no app (erro de renderização)",
+      "disconnect_to_anvil": "Desconectar do Anvil",
+      "crash_app_render_error": "App de Falha (Erro de Renderização)",
       "enable_testnets": "Ativar Testnets",
-      "installing_update": "Instalando atualização",
+      "installing_update": "Instalando Atualização",
       "navigation_entry_point": "Ponto de Entrada de Navegação",
-      "no_update": "Sem atualização",
+      "no_update": "Sem Atualização",
       "not_applied": "NÃO APLICADO",
       "notifications_debug": "Depuração de Notificações",
-      "remove_all_backups": "Remover todos os backups",
+      "remove_all_backups": "Remover Todos os Backups",
       "keychain": {
         "menu_title": "Redefinir Keychain",
-        "delete_wallets": "Excluir todas as carteiras",
+        "delete_wallets": "Excluir Todas as Carteiras",
         "alert_title": "Cuidado!",
         "alert_body": "🚨🚨🚨 \nIsso deletará permanentemente todas as chaves privadas e dados da sua carteira, por favor, certifique-se de ter feito backup de tudo antes de prosseguir!! \n🚨🚨🚨"
       },
-      "restart_app": "Reiniciar app",
-      "reset_experimental_config": "Redefinir configuração experimental",
+      "restart_app": "Reiniciar App",
+      "reset_experimental_config": "Redefinir Configuração Experimental",
       "status": "Status",
-      "sync_codepush": "Sincronizar codepush"
+      "sync_codepush": "Sincronizar CodePush"
     },
     "discover": {
       "pulse": {
@@ -604,6 +611,7 @@
         "expires_in": "Expira em %{minutes}m",
         "from_divider": "de",
         "to_divider": "para",
+        "token": "Token",
         "view_on": "Visualizar em %{blockExplorerName}",
         "view_on_etherscan": "Visualizar no Etherscan",
         "copy_contract_address": "Copiar Endereço do Contrato"
@@ -654,9 +662,7 @@
         "small_market_try_smaller_amount": "Pequeno mercado — tente um valor menor",
         "you_are_losing": "Você está perdendo %{priceImpact}",
         "you_are_losing_prefix": "Você está perdendo",
-        "no_data": "Valor de mercado desconhecido",
-        "label": "Possível perda",
-        "no_data_subtitle": "Se decidir continuar, certifique-se de que está satisfeito com o valor cotado"
+        "label": "Possível perda"
       },
       "source": {
         "rainbow": "Automático",
@@ -727,6 +733,7 @@
           "circulating_supply": "Oferta Circulante",
           "max_supply": "Fornecimento Máximo",
           "fully_diluted_valuation": "Valorização Totalmente Diluída",
+          "created_by": "Criado por",
           "market_cap": "Valor de Mercado",
           "created": "Criado",
           "volume_24_hours": "Volume 24h",
@@ -747,9 +754,34 @@
         "about": {
           "title": "Sobre",
           "what_is": "O que é %{assetName}?"
+        },
+        "history": {
+          "tabs": {
+            "all": "Todos",
+            "buys": "Compras",
+            "sells": "Vendas"
+          },
+          "more": "Mais",
+          "less": "Menos",
+          "bought": "Comprado",
+          "sold": "Vendido",
+          "received": "Recebido",
+          "sent": "Enviado",
+          "unknown": "Desconhecido"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Fechar",
+            "h": "H",
+            "l": "L",
+            "o": "Abrir",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "Nenhum"
+        },
         "all_time": "Todo o Tempo",
         "date": {
           "months": {
@@ -768,9 +800,9 @@
           }
         },
         "no_chart_data": "Nenhum Dado de Gráfico",
-        "no_price_data": "Sem dados de preço",
+        "no_price_data": "Nenhum Dado de Preço",
         "past_timespan": "Passado %{formattedTimespan}",
-        "today": "Hoje",
+        "today": "Dia Passado",
         "token_pool": "Piscina %{tokenName}"
       },
       "contact_profile": {
@@ -929,6 +961,8 @@
       "farcaster_title": "Você desbloqueou\nRainbowcast",
       "redacted_description": "Um ícone Rainbow exclusivo para os verdadeiros apreciadores de Gdupi.",
       "redacted_title": "Você desbloqueou o\n Redacted Rainbow",
+      "baggy_description": "Das ruas para a cadeia, esta pequena bolsa contém sua dose portátil de vibes do Rainbow. Sinta as cores e experimente a diferença.",
+      "baggy_title": "Você desbloqueou\n Rainbow Baggy",
       "button": "Desbloqueie o ícone"
     },
     "explain": {
@@ -1447,7 +1481,7 @@
         "ABC": "Abc",
         "abc": "Abc",
         "MOST_RECENT": "Recente",
-        "most_recent": "Mais Recente",
+        "most_recent": "Recente",
         "FLOOR_PRICE": "Preço do Piso",
         "floor_price": "Preço do Piso",
         "order": {
@@ -1632,7 +1666,7 @@
         "invalid_referral_code_alert": "Código de indicação inválido. Por favor, verifique seu código e tente novamente.",
         "no_balance_alert": "Para participar do Programa de Pontos, você deve possuir saldo positivo na carteira.",
         "referral_link_is_ready": "Seu link de indicação está pronto",
-        "referral_link_bonus_text": "Tweet seu link de indicação e ganhe 250 pontos extras",
+        "referral_link_bonus_text": "Tweet seu link de referência e ganhe 10% dos pontos ganhos por qualquer pessoa que você indicar",
         "referral_link_bonus_text_extended": "Além disso, você ganhará 10% dos pontos obtidos por qualquer pessoa que você indicar",
         "complete_onboarding": "Concluído",
         "share_to_x": "Compartilhe no X",
@@ -2888,6 +2922,7 @@
         "sending_title": "Enviando",
         "you_own_this_wallet": "Você é o proprietário desta carteira",
         "first_time_send": "Primeiro envio",
+        "previous_send": "%{number} envio anterior",
         "previous_sends": "%{number} envios anteriores"
       },
       "wallet_connect": {
@@ -3340,10 +3375,78 @@
         "to_claim_on": "para solicitar na %{network}",
         "view_coin": "Ver Moeda",
         "you": "Você"
+      },
+      "errors": {
+        "header": "Erro ao lançar o token",
+        "api_request_failed": "Solicitação de API falhou",
+        "api_response_invalid": "Resposta de API inválida",
+        "contract_interaction_failed": "Interação de contrato falhou",
+        "gas_estimation_failed": "Falha na estimativa de gás",
+        "insufficient_funds": "Fundos insuficientes",
+        "submission_details_missing": "Detalhes da submissão faltando",
+        "transaction_rejected": "Transação rejeitada",
+        "transaction_failed": "Falha na transação",
+        "transaction_simulation_failed": "Simulação de transação falhou",
+        "unknown_error": "Erro Desconhecido",
+        "wallet_connection_error": "Erro de conexão da carteira",
+        "invalid_params": "Parâmetros inválidos",
+        "missing_required_param": "Parâmetros obrigatórios ausentes"
       }
     },
     "done": "Concluído",
     "copy": "Copiar",
-    "paste": "Colar"
+    "paste": "Colar",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PREÇO",
+      "mcap": "MCAP"
+    },
+    "king_of_hill": {
+      "title": "Plataforma de Lançamento",
+      "launch": "Lançar",
+      "current_king": "REI ATUAL",
+      "last_winner": "Último vencedor",
+      "no_previous_winner": "Nenhum vencedor anterior",
+      "round_ends_in": "A rodada termina em",
+      "how_it_works": "Como funciona",
+      "starting_next_round": "Iniciando a próxima rodada",
+      "left": "RESTANTE",
+      "king_of_the_hill": "Rei da Colina",
+      "name": "Nome",
+      "explain_sheet": {
+        "next": "Avançar",
+        "got_it": "Entendi",
+        "steps": {
+          "step_1": {
+            "title": "A corrida está ao vivo",
+            "subtitle_parts": [
+              "O token com o maior",
+              " volume de compra ",
+              "neste momento é o rei atual."
+            ]
+          },
+          "step_2": {
+            "title": "Uma coroa por dia",
+            "subtitle_parts": [
+              "Às",
+              " meia-noite (0:00 UTC), ",
+              "o token líder é coroado o vencedor diário."
+            ]
+          },
+          "step_3": {
+            "title": "Vencer Recompensas",
+            "subtitle_parts": [
+              "Compradores do Rei atual ganham",
+              " 2x pontos."
+            ],
+            "subtitle_two_parts": [
+              "Criadores",
+              " ganham pontos ",
+              "quando são coroados."
+            ]
+          }
+        }
+      }
+    }
   }
 }
