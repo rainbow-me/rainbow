@@ -1,0 +1,280 @@
+name: iOS Builds
+on:
+  pull_request:
+      types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  # Build iOS simulator app
+  build-simulator:
+    name: Simulator
+    runs-on: macos-15-xlarge
+    timeout-minutes: 30
+    if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
+    concurrency:
+      group: ${{ github.workflow }}-simulator-${{ github.ref }}
+      cancel-in-progress: true
+    outputs:
+      artifact-id: ${{ steps.rnef-build-simulator.outputs.artifact-id }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set Xcode version
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+
+      - name: Setup env key
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+
+      - name: Setup scripts key
+        uses: ./.github/actions/ssh/
+        with:
+          name: scripts
+          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+
+      - name: Setup sandbox key
+        uses: ./.github/actions/ssh/
+        with:
+          name: sandbox
+          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+
+      - name: Setup env
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+
+      - name: Setup scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+        run: |
+          eval $CI_SCRIPTS
+
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+        run: yarn install && yarn setup
+
+      - name: RNEF Build - iOS simulator
+        id: rnef-build-simulator
+        uses: callstackincubator/ios@v2
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          scheme: Rainbow
+          destination: simulator
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration: Release
+          comment-bot: false
+          re-sign: true
+
+  # Build iOS device app
+  build-device:
+    name: Device
+    runs-on: macos-15-xlarge
+    timeout-minutes: 30
+    if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
+    concurrency:
+      group: ${{ github.workflow }}-device-${{ github.ref }}
+      cancel-in-progress: true
+    outputs:
+      artifact-id: ${{ steps.rnef-build-device.outputs.artifact-id }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set Xcode version
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
+
+      - name: Setup env key
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+
+      - name: Setup scripts key
+        uses: ./.github/actions/ssh/
+        with:
+          name: scripts
+          key: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+
+      - name: Setup sandbox key
+        uses: ./.github/actions/ssh/
+        with:
+          name: sandbox
+          key: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+
+      - name: Setup code signing key
+        uses: ./.github/actions/ssh/
+        with:
+          name: codesigning
+          key: ${{ secrets.DEPLOY_PKEY_CODE_SIGNING_REPO }}
+
+      - name: Setup env
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+
+      - name: Setup scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+        run: |
+          eval $CI_SCRIPTS
+
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+        run: yarn install && yarn setup
+
+      - name: Install Ruby dependencies
+        run: bundle install
+
+      - name: Setup code signing with match
+        env:
+          FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_codesigning.sock
+        run: |
+          cd ios
+          bundle exec fastlane match adhoc --app_identifier me.rainbow,me.rainbow.PriceWidget,me.rainbow.SelectTokenIntent,me.rainbow.ImageNotification,me.rainbow.OpenInRainbow,me.rainbow.ShareWithRainbow --git_url git@github.com:rainbow-me/rainbow-code-signing.git --readonly
+
+      - name: Export certificates and provisioning profiles for RNEF
+        id: code-signing
+        run: |
+          # Export certificate + private key (identity) to a PKCS#12 file
+          KEYCHAIN="$HOME/Library/Keychains/login.keychain-db"
+          P12_OUT="/tmp/cert.p12"
+
+          # Export all identities in the keychain as a single PKCS#12 (works fine for CI)
+          # Note: -t must be 'identities' for pkcs12 with private keys.
+          security export -k "$KEYCHAIN" -t identities -f pkcs12 -P "${{ secrets.APPLE_BUILD_CERTIFICATE_PASSWORD }}" -o "$P12_OUT"
+
+          # Base64 encode for the action input
+          base64 -i "$P12_OUT" > /tmp/cert_b64.txt
+          echo "CERT_BASE64=$(cat /tmp/cert_b64.txt)" >> $GITHUB_OUTPUT
+
+          # Find and export the provisioning profile
+          PP_PATH=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "me.rainbow" {} \; | grep -v PriceWidget | grep -v Intent | grep -v Notification | grep -v OpenIn | grep -v ShareWith | head -1)
+          if [ -z "$PP_PATH" ]; then
+            echo "Main provisioning profile not found, listing available profiles..."
+            find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec basename {} \;
+            exit 1
+          fi
+
+          base64 -i "$PP_PATH" > /tmp/pp_b64.txt
+          echo "PROFILE_BASE64=$(cat /tmp/pp_b64.txt)" >> $GITHUB_OUTPUT
+
+          PP_NAME=$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)
+          echo "PROFILE_NAME=$PP_NAME" >> $GITHUB_OUTPUT
+
+          PP_UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
+          echo "PROFILE_UUID=$PP_UUID" >> $GITHUB_OUTPUT
+
+      - name: Update provisioning profiles to AdHoc
+        run: |
+          sed -i '' 's/match AppStore/match AdHoc/g' ios/Rainbow.xcodeproj/project.pbxproj
+
+      - name: RNEF Build - iOS device
+        id: rnef-build-device
+        uses: callstackincubator/ios@v2
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          scheme: Rainbow
+          destination: device
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration: Release
+          comment-bot: false
+          re-sign: true
+          certificate-base64: ${{ steps.code-signing.outputs.CERT_BASE64 }}
+          certificate-password: ${{ secrets.APPLE_BUILD_CERTIFICATE_PASSWORD }}
+          provisioning-profile-base64: ${{ steps.code-signing.outputs.PROFILE_BASE64 }}
+          provisioning-profile-name: ${{ steps.code-signing.outputs.PROFILE_NAME }}
+          keychain-password: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+          rnef-build-extra-params: --export-options-plist ExportOptions.adhoc.plist
+
+  # Post builds to GitHub after both complete
+  post-builds:
+    name: Post Builds
+    needs: [build-simulator, build-device]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && needs.build-simulator.result == 'success' && needs.build-device.result == 'success'
+    steps:
+      - name: Download simulator artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o simulator-artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build-simulator.outputs.artifact-id }}/zip"
+          unzip simulator-artifact.zip -d simulator-artifacts
+          APP_ARCHIVE_PATH=$(find simulator-artifacts -name "*.tar.gz" -print -quit)
+          tar -xzf "$APP_ARCHIVE_PATH" -C simulator-artifacts
+          APP_PATH=$(find simulator-artifacts -name "*.app" -type d | head -n 1)
+          cd "$APP_PATH" && zip -r "${{ github.workspace }}/simulator-app.zip" .
+
+      - name: Download device artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o device-artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build-device.outputs.artifact-id }}/zip"
+          unzip device-artifact.zip -d device-artifacts
+          IPA_PATH=$(find device-artifacts -name "*.ipa" | head -n 1)
+          cp "$IPA_PATH" ./device-app.ipa
+
+      - name: Upload builds to AWS S3
+        env:
+          AWS_BUCKET: rainbow-app-team-production
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: |
+          aws s3 cp "simulator-app.zip" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
+          aws s3 cp "device-app.ipa" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
+
+      - name: Post comment to PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: |
+          COMMENT="Launch in [simulator](http://localhost:29070/install/http?url=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app.zip&platform=ios&destination=simulator) or [device](http://localhost:29070/install/http?url=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.ipa&platform=ios&destination=device) for ${COMMIT_HASH}"
+          curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+          -d "{\"body\":\"$COMMENT\"}" \
+          "${{ github.event.pull_request.comments_url }}"
