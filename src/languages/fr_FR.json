@@ -467,6 +467,9 @@
         "quote_error": "Erreur de Devis",
         "no_route_found": "Aucun itinéraire trouvé",
         "fetching_quote": "Récupération du devis...",
+        "rainbow_eth_rewards": "Récompenses Rainbow ETH",
+        "merkl_claimable": "Coffre %{dappName}",
+        "merkl_claimable_description": "Stratégie %{assetSymbols}",
         "select_a_network": "Sélectionnez un réseau",
         "select_a_token": "Sélectionner un token",
         "amount_to_claim_on_network": "%{amount} à réclamer sur %{network}",
@@ -476,6 +479,9 @@
         "claimed": "Réclamé!",
         "claiming_failed": "Échec de réclamation",
         "insufficient_funds": "Fonds insuffisants",
+        "hold_to_claim": "Tenir pour Réclamer",
+        "creator_lp_fees": "Frais LP du Créateur",
+        "rainbow_token_launcher": "Lanceur de Jetons Rainbow",
         "claim_amount": "Réclamer %{amount}",
         "done": "Terminé",
         "try_again": "Réessayer",
@@ -519,38 +525,39 @@
       "alert": "Alerte",
       "analyze_env_variables": "Analyser les Variables ENV",
       "analyze_react_query": "Analyser la Requête React",
+      "analyze_user_assets_query": "Analyser la Requête d'Actifs Utilisateur",
       "applied": "APPLIQUÉ",
       "backups_deleted_successfully": "Sauvegardes supprimées avec succès",
-      "clear_async_storage": "Effacer le stockage asynchrone",
+      "clear_async_storage": "Effacer AsyncStorage",
       "clear_pending_txs": "Effacer les transactions en attente",
       "clear_image_cache": "Effacer le cache d'image",
       "clear_image_metadata_cache": "Effacer le cache des métadonnées d'image",
-      "clear_local_storage": "Effacer le stockage local",
-      "clear_mmkv_storage": "Effacer le stockage MMKV",
+      "clear_local_storage": "Effacer le Stockage Local",
+      "clear_mmkv_storage": "Effacer MMKV Storage",
       "clear_react_query_cache": "Effacer le Cache de Requête React",
-      "connect_to_anvil": "Se connecter à anvil",
+      "connect_to_anvil": "Connecter à Anvil",
       "copy_fcm_token": "Copier le Jeton FCM",
       "copy_log_lines": "Copier les Lignes de Log",
       "copy_signing_wallet_address": "Copier l'Adresse du Portefeuille de Signature",
-      "disconnect_to_anvil": "Déconnecter de anvil",
-      "crash_app_render_error": "Crash app (render error) :)",
+      "disconnect_to_anvil": "Se Déconnecter d'Anvil",
+      "crash_app_render_error": "Appli en Crash (Erreur de Rendu)",
       "enable_testnets": "Activer Testnets",
-      "installing_update": "Installation de la mise à jour",
-      "navigation_entry_point": "Point d'entrée de navigation",
-      "no_update": "Pas de mise à jour",
+      "installing_update": "Installation de la Mise à jour",
+      "navigation_entry_point": "Point d'Entrée de Navigation",
+      "no_update": "Pas de Mise à jour",
       "not_applied": "NON APPLIQUÉ",
       "notifications_debug": "Débogage des notifications",
-      "remove_all_backups": "Supprimer toutes les sauvegardes",
+      "remove_all_backups": "Supprimer toutes les Sauvegardes",
       "keychain": {
         "menu_title": "Réinitialiser le trousseau",
-        "delete_wallets": "Supprimer tous les portefeuilles",
+        "delete_wallets": "Supprimer tous les Portefeuilles",
         "alert_title": "Attention !",
         "alert_body": "🚨🚨🚨 \nCeci supprimera définitivement toutes vos clés privées de portefeuille et données, assurez-vous d'avoir tout sauvegardé avant de continuer !! \n🚨🚨🚨"
       },
-      "restart_app": "Redémarrer l'application",
-      "reset_experimental_config": "Reset experimental config :)",
+      "restart_app": "Redémarrer l'Appli",
+      "reset_experimental_config": "Réinitialiser la Conf Expérimentale",
       "status": "Statut",
-      "sync_codepush": "Synchroniser codepush"
+      "sync_codepush": "Synchroniser CodePush"
     },
     "discover": {
       "pulse": {
@@ -604,6 +611,7 @@
         "expires_in": "Expire dans %{minutes}m",
         "from_divider": "de",
         "to_divider": "à",
+        "token": "Jeton",
         "view_on": "Voir sur %{blockExplorerName}",
         "view_on_etherscan": "Voir sur Etherscan",
         "copy_contract_address": "Copier l'adresse du contrat"
@@ -647,16 +655,14 @@
         },
         "unknown_price": {
           "title": "Valeur de marché inconnue",
-          "description": "Si vous décidez de continuer, assurez-vous d'être satisfait de la quantité indiquée."
+          "description": "Si vous décidez de continuer, assurez-vous d'être satisfait des montants indiqués."
         },
         "losing_prefix": "Perdant",
         "small_market": "Petit marché",
         "small_market_try_smaller_amount": "Petit marché — essayez une plus petite quantité",
         "you_are_losing": "Vous perdez %{priceImpact}",
         "you_are_losing_prefix": "Vous perdez",
-        "no_data": "Valeur de marché inconnue",
-        "label": "Perte possible",
-        "no_data_subtitle": "Si vous décidez de continuer, assurez-vous d'être satisfait de la quantité indiquée"
+        "label": "Perte possible"
       },
       "source": {
         "rainbow": "Auto",
@@ -666,7 +672,7 @@
       "settings": "Paramètres",
       "use_defaults": "Utiliser les valeurs par défaut",
       "done": "Terminé",
-      "losing": "Perdre",
+      "losing": "Perdant",
       "high": "Haute",
       "slippage_tolerance": "Glissement maximal",
       "source_picker": "Itinéraire des swaps via",
@@ -727,6 +733,7 @@
           "circulating_supply": "Offre en circulation",
           "max_supply": "Approvisionnement maximum",
           "fully_diluted_valuation": "Valorisation entièrement diluée",
+          "created_by": "Créé par",
           "market_cap": "Capitalisation boursière",
           "created": "Créé",
           "volume_24_hours": "Volume sur 24 heures",
@@ -747,9 +754,34 @@
         "about": {
           "title": "À propos",
           "what_is": "Qu'est-ce que %{assetName}?"
+        },
+        "history": {
+          "tabs": {
+            "all": "Tout",
+            "buys": "Achats",
+            "sells": "Ventes"
+          },
+          "more": "Plus",
+          "less": "Moins",
+          "bought": "Acheté",
+          "sold": "Vendu",
+          "received": "Reçu",
+          "sent": "Envoyé",
+          "unknown": "Inconnue"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Fermer",
+            "h": "H",
+            "l": "L",
+            "o": "Ouvrir",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "Aucun"
+        },
         "all_time": "Tout Temps",
         "date": {
           "months": {
@@ -768,9 +800,9 @@
           }
         },
         "no_chart_data": "Pas de Données de Graphiques",
-        "no_price_data": "Pas de données de prix",
+        "no_price_data": "Pas de Données de Prix",
         "past_timespan": "Passé %{formattedTimespan}",
-        "today": "Aujourd'hui :)",
+        "today": "Jour précédent",
         "token_pool": "%{tokenName} Piscine"
       },
       "contact_profile": {
@@ -794,7 +826,7 @@
       "swap": {
         "swap": "Échanger",
         "bridge": "Pont",
-        "losing": "Perdre",
+        "losing": "Perdant",
         "on": "Sur",
         "off": "Arrêt",
         "price_impact": "Price impact :)",
@@ -847,7 +879,7 @@
       "token_index": {
         "get_token": "Obtenir %{assetSymbol}",
         "makeup_of_token": "Composition de 1 %{assetSymbol}",
-        "underlying_tokens": "Jetons sous-jacents"
+        "underlying_tokens": "Tokens sous-jacents"
       },
       "unique": {
         "save": {
@@ -871,7 +903,7 @@
         "expires_in": "Expire dans",
         "expires_on": "Expire le",
         "floor_price": "Prix minimal",
-        "for_sale": "À vendre",
+        "for_sale": "A vendre",
         "in_showcase": "En vitrine",
         "last_sale_price": "Dernier prix de vente",
         "manager": "Gestionnaire",
@@ -929,6 +961,8 @@
       "farcaster_title": "Vous avez débloqué\nRainbowcast",
       "redacted_description": "Une icône Rainbow exclusive pour les véritables amateurs de Gdupi.",
       "redacted_title": "Vous avez débloqué\nRedacted Rainbow",
+      "baggy_description": "De la rue à la chaîne, ce petit sac contient votre dose portable de vibes Rainbow. Goûtez les couleurs et ressentez la différence.",
+      "baggy_title": "Vous avez débloqué\nRainbow Baggy",
       "button": "Snag the icon :)"
     },
     "explain": {
@@ -973,11 +1007,11 @@
       },
       "failed_wc_invalid_methods": {
         "text": "L'application dapp a demandé des méthodes de signature de portefeuille (RPC) qui ne sont pas prises en charge par Rainbow.",
-        "title": "Échec de la connexion"
+        "title": "Connexion échouée"
       },
       "failed_wc_invalid_chains": {
         "text": "L'application dapp a demandé des réseaux qui ne sont pas pris en charge par Rainbow.",
-        "title": "Échec de la connexion"
+        "title": "Connexion échouée"
       },
       "failed_wc_invalid_chain": {
         "text": "Le réseau spécifié dans cette demande n'est pas pris en charge par Rainbow.",
@@ -1122,7 +1156,7 @@
         "title": "Routage des Échanges",
         "still_curious": {
           "fragment1": "Encore curieux? ",
-          "fragment2": "Lire plus",
+          "fragment2": "En savoir plus",
           "fragment3": " à propos de notre approche pour le routage des échanges."
         }
       },
@@ -1130,8 +1164,8 @@
         "text": "Le glissement se produit lorsque le prix d'un swap change pendant le temps entre la soumission de votre transaction et sa confirmation. \n\nDéfinir une tolérance de glissement plus élevée augmente la probabilité que votre swap soit réussi, mais peut vous amener à obtenir un prix plus mauvais.",
         "title": "Glissement",
         "still_curious": {
-          "fragment1": "Toujours curieux? ",
-          "fragment2": "Lire plus",
+          "fragment1": "Encore curieux? ",
+          "fragment2": "En savoir plus",
           "fragment3": " à propos du glissement et comment il affecte les swaps."
         }
       },
@@ -1183,7 +1217,7 @@
       "network_fee": "Frais de réseau estimés",
       "current_base_fee": "Frais de base actuels",
       "max_base_fee": "Frais de base max",
-      "miner_tip": "Pourboire du mineur",
+      "miner_tip": "Pourboire aux mineurs",
       "gas_price": "Prix du gaz",
       "max_transaction_fee": "Frais de transaction max",
       "warning_separator": "·",
@@ -1272,7 +1306,7 @@
       "input_text": "Entrée",
       "password": "Mot de passe",
       "password_placeholder": "••••••••••",
-      "private_key": "Clé Privée",
+      "private_key": "Clé privée",
       "recipient_address": "Adresse du destinataire"
     },
     "list": {
@@ -1337,7 +1371,7 @@
         "x_past_hour": "%{numMints} dernière heure"
       },
       "filter": {
-        "all": "Tous",
+        "all": "Tout",
         "free": "Gratuit",
         "paid": "Payé"
       }
@@ -1447,7 +1481,7 @@
         "ABC": "Abc",
         "abc": "Abc",
         "MOST_RECENT": "Récent",
-        "most_recent": "Le plus récent",
+        "most_recent": "Récent",
         "FLOOR_PRICE": "Prix Plancher",
         "floor_price": "Prix Plancher",
         "order": {
@@ -1564,7 +1598,7 @@
         "thursday": "Jeu",
         "friday": "Ven",
         "saturday": "Sam",
-        "today": "Aujourd'hui :)",
+        "today": "Aujourd'hui",
         "error": "Oups !\nVeuillez tirer pour rafraîchir.",
         "points": "points",
         "points_capitalized": "Points",
@@ -1632,7 +1666,7 @@
         "invalid_referral_code_alert": "Code de parrainage invalide. Veuillez vérifier votre code et réessayer.",
         "no_balance_alert": "Pour vous inscrire aux Points, vous devez avoir un solde de portefeuille non nul.",
         "referral_link_is_ready": "Votre lien de parrainage est prêt",
-        "referral_link_bonus_text": "Tweetez votre lien de parrainage et obtenez 250 points supplémentaires",
+        "referral_link_bonus_text": "Tweetez votre lien de parrainage et vous gagnerez 10 % des points gagnés par toute personne que vous parrainez",
         "referral_link_bonus_text_extended": "De plus, vous gagnerez 10% des points gagnés par chaque personne que vous parrainez",
         "complete_onboarding": "Terminé",
         "share_to_x": "Partager sur X",
@@ -1715,7 +1749,7 @@
         "choose_nft": "Choisir un NFT",
         "content": "Contenu",
         "content_placeholder": "Ajoutez un hash de contenu",
-        "discord": "Discord :)",
+        "discord": "Discord",
         "doge": "Dogecoin :)",
         "email": "Email",
         "invalid_email": "Email invalide",
@@ -2073,7 +2107,7 @@
         "swapped": "Échangé",
         "approvals": "Approuvé",
         "other": "Contracts & More :)",
-        "all": "Tous",
+        "all": "Tout",
         "off": "Arrêt",
         "plus_n_more": "+ %{n} de plus",
         "no_permissions": "Il semble que vos permissions de notifications sont désactivées. Veuillez les activer dans les paramètres pour recevoir des notifications de Rainbow.",
@@ -2375,7 +2409,7 @@
     "transaction_details": {
       "from": "De",
       "to": "À",
-      "value": "Value :)",
+      "value": "Valeur",
       "hash": "Tx Hash",
       "you": "Vous",
       "network_fee": "Frais de réseau",
@@ -2538,7 +2572,7 @@
         "to": "À",
         "unhide": "Afficher",
         "unpin": "Détacher",
-        "value": "Value :)",
+        "value": "Valeur",
         "view_on": "Voir sur %{blockExplorerName}"
       },
       "add_cash": {
@@ -2888,6 +2922,7 @@
         "sending_title": "Envoi",
         "you_own_this_wallet": "Vous possédez ce portefeuille",
         "first_time_send": "Premier envoi",
+        "previous_send": "%{number} envoi précédent",
         "previous_sends": "%{number} envois précédents"
       },
       "wallet_connect": {
@@ -2944,7 +2979,7 @@
         "transaction_sent": "Transaction envoyée !"
       },
       "unknown_application": "Application inconnue :)",
-      "connection_failed": "Échec de la connexion",
+      "connection_failed": "Connexion échouée",
       "failed_to_connect_to": "Échec de la connexion à %{appName}",
       "go_back": "retourner",
       "requesting_network": "Demande du réseau %{num}",
@@ -2971,11 +3006,11 @@
       },
       "errors": {
         "go_back": "retourner",
-        "generic_title": "Échec de la connexion",
+        "generic_title": "Connexion échouée",
         "generic_error": "Quelque chose a mal tourné. Veuillez réessayer ou contacter notre équipe de support.",
         "pairing_timeout": "Cette session a expiré avant qu'une connexion ne puisse être établie. Cela est généralement dû à une erreur réseau. S'il vous plaît, réessayez.",
         "pairing_unsupported_methods": "La dapp a demandé des méthodes RPC de portefeuille qui ne sont pas prises en charge par Rainbow.",
-        "pairing_unsupported_networks": "Le dapp a demandé des réseau(x) non pris en charge par Rainbow.",
+        "pairing_unsupported_networks": "L'application dapp a demandé des réseaux qui ne sont pas pris en charge par Rainbow.",
         "read_only_wallet_on_signing_method": "Il semble que vous utilisiez un portefeuille en lecture seule, ce qui n'est pas autorisé pour cette demande.",
         "namespaces_invalid": "Il y a eu un problème avec les espaces de nom demandés par l'application. Veuillez réessayer ou contacter les équipes de support de Rainbow et/ou de l'application.",
         "request_invalid": "La demande contenait des paramètres non valides. Veuillez réessayer ou contacter les équipes d'assistance de Rainbow et/ou de dapp.",
@@ -3060,7 +3095,7 @@
           "minutes_ago": "il y a des minutes",
           "hour_ago": "il y a une heure",
           "hours_ago": "il y a des heures",
-          "today": "Aujourd'hui :)",
+          "today": "Aujourd'hui",
           "day_ago": "il y a un jour",
           "days_ago": "il y a quelques jours",
           "week_ago": "il y a une semaine",
@@ -3340,10 +3375,78 @@
         "to_claim_on": "à réclamer sur %{network}",
         "view_coin": "Voir Pièce",
         "you": "Vous"
+      },
+      "errors": {
+        "header": "Erreur lors du lancement du jeton",
+        "api_request_failed": "Échec de la demande API",
+        "api_response_invalid": "Réponse API invalide",
+        "contract_interaction_failed": "Échec de l'interaction du contrat",
+        "gas_estimation_failed": "Échec de l'estimation de gaz",
+        "insufficient_funds": "Fonds insuffisants",
+        "submission_details_missing": "Détails de soumission manquants",
+        "transaction_rejected": "Transaction rejetée",
+        "transaction_failed": "Transaction échouée",
+        "transaction_simulation_failed": "Échec de la simulation de transaction",
+        "unknown_error": "Erreur inconnue",
+        "wallet_connection_error": "Erreur de connexion du portefeuille",
+        "invalid_params": "Paramètres invalides",
+        "missing_required_param": "Paramètres requis manquants"
       }
     },
     "done": "Terminé",
     "copy": "Copier",
-    "paste": "Coller"
+    "paste": "Coller",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRIX",
+      "mcap": "CAPITALISATION"
+    },
+    "king_of_hill": {
+      "title": "Plateforme de lancement",
+      "launch": "Lancer",
+      "current_king": "ROI ACTUEL",
+      "last_winner": "Dernier gagnant",
+      "no_previous_winner": "Aucun gagnant précédent",
+      "round_ends_in": "La manche se termine dans",
+      "how_it_works": "Comment ça marche",
+      "starting_next_round": "Début de la prochaine manche",
+      "left": "RESTE",
+      "king_of_the_hill": "Le roi de la colline",
+      "name": "Nom",
+      "explain_sheet": {
+        "next": "Suivant",
+        "got_it": "Compris",
+        "steps": {
+          "step_1": {
+            "title": "La course est en direct",
+            "subtitle_parts": [
+              "Le jeton avec le plus",
+              " de volume d'achat ",
+              "en ce moment est le roi actuel."
+            ]
+          },
+          "step_2": {
+            "title": "Une couronne par jour",
+            "subtitle_parts": [
+              "À",
+              " minuit (12:00 AM UTC), ",
+              "le jeton en tête est couronné gagnant du jour."
+            ]
+          },
+          "step_3": {
+            "title": "Gagner des récompenses",
+            "subtitle_parts": [
+              "Les acheteurs du roi actuel obtiennent",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Créateurs",
+              " gagnent des points ",
+              "lorsqu'ils sont couronnés."
+            ]
+          }
+        }
+      }
+    }
   }
 }
