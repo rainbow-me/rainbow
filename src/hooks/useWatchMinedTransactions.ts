@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { MinedTransaction } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -11,7 +10,7 @@ import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
-import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransactions';
+import { useMinedTransactionsStore, MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
 import { toUnixTime } from '@/worklets/dates';
@@ -19,7 +18,7 @@ import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 
-const ASSET_DETECTION_TIMEOUT = toUnixTime(time.seconds(30));
+const ASSET_DETECTION_TIMEOUT = time.seconds(30);
 
 async function refetchOtherAssets({ address }: { address: string }) {
   await Promise.all([
@@ -65,27 +64,30 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
   const staleBalances = staleBalancesStore(state => state.staleBalances[address]);
 
   const watchMinedTransactions = useCallback(
-    async (minedTransactions: MinedTransaction[]) => {
+    async (minedTransactionsWithPolling: MinedTransactionWithPolling[]) => {
       try {
-        if (!minedTransactions.length) return;
+        if (!minedTransactionsWithPolling.length) return;
 
         const initialUserAssets = userAssetsStore.getState().userAssets;
-        const now = Math.floor(Date.now() / 1000);
+        const now = Date.now();
 
-        const validTransactions = minedTransactions.filter(tx => {
-          const timestamp = tx.timestamp ? Math.round(tx.timestamp / 1000) : tx.minedAt;
-          const isTimedOut = now - timestamp >= ASSET_DETECTION_TIMEOUT;
-          if (isTimedOut) {
-            analytics.track(event.minedTransactionAssetsTimedOut, {
-              chainId: tx.chainId,
-              type: tx.type,
-            });
-            logger.warn('[watchMinedTransactions]: Timed out waiting for asset updates for transaction', {
-              txHash: tx.hash,
-            });
-          }
-          return !isTimedOut;
-        });
+        const validTransactions = minedTransactionsWithPolling
+          .filter(item => {
+            const pollingDuration = now - item.pollingStartedAt;
+            const isTimedOut = pollingDuration >= ASSET_DETECTION_TIMEOUT;
+            if (isTimedOut) {
+              analytics.track(event.minedTransactionAssetsTimedOut, {
+                chainId: item.transaction.chainId,
+                type: item.transaction.type,
+              });
+              logger.warn('[watchMinedTransactions]: Timed out waiting for asset updates for transaction', {
+                txHash: item.transaction.hash,
+                pollingDuration,
+              });
+            }
+            return !isTimedOut;
+          })
+          .map(item => item.transaction);
 
         if (!validTransactions.length) {
           useMinedTransactionsStore.getState().clearMinedTransactions(address);
@@ -160,7 +162,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
         useMinedTransactionsStore.getState().clearMinedTransactions(address);
         staleBalancesStore.getState().clearExpiredData(address);
         analytics.track(event.minedTransactionAssetsResolved, {
-          timeToResolve: now * 1000 - oldestMinedTransactionTimestamp,
+          timeToResolve: now - oldestMinedTransactionTimestamp,
         });
         await refetchOtherAssets({ address });
       } catch (e) {
