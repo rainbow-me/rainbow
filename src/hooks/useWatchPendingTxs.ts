@@ -89,10 +89,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
     if (!minedTransactions.length) return;
 
-    const transactionsToWatch = minedTransactions.filter(tx => tx.changes?.length || tx.asset);
-    if (transactionsToWatch.length > 0) {
-      useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: transactionsToWatch });
-    }
+    useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: minedTransactions });
 
     await queryClient.refetchQueries({
       queryKey: consolidatedTransactionsQueryKey({

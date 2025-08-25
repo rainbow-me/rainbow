@@ -40,9 +40,8 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
 
         const initialUserAssets = userAssetsStore.getState().userAssets;
         const now = Math.floor(Date.now() / 1000);
-        const transactionsToWatch = minedTransactions.filter(tx => tx.changes?.length || tx.asset);
 
-        const validTransactions = transactionsToWatch.filter(tx => {
+        const validTransactions = minedTransactions.filter(tx => {
           const timestamp = tx.timestamp ? Math.round(tx.timestamp / 1000) : tx.minedAt;
           const isTimedOut = now - timestamp >= ASSET_DETECTION_TIMEOUT;
           if (isTimedOut) {
@@ -86,7 +85,7 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
             if (staleBalancesForChain) {
               chainIdsWithStaleBalances.push(chainId);
               for (const staleBalance of Object.values(staleBalancesForChain)) {
-                allStaleBalanceTokenIds.push(staleBalance.address);
+                allStaleBalanceTokenIds.push(`${staleBalance.address}_${chainId}`);
               }
             }
           }
