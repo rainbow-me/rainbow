@@ -140,7 +140,7 @@
         "choose_backup_cloud_description": "Respalda de forma segura tu billetera en %{cloudPlatform} para que puedas restaurarla si pierdes tu dispositivo o compras uno nuevo.",
         "choose_backup_manual_description": "Respalda manualmente tu billetera guardando tu frase secreta en un lugar seguro.",
         "enable_cloud_backups_description": "Si prefieres respaldar tus billeteras manualmente, puedes hacerlo a continuación.",
-        "latest_backup": "Último Respaldo: %{date}",
+        "latest_backup": "Última copia de seguridad: %{date}",
         "back_up_all_wallets_to_cloud": "Resguardar todas las billeteras en %{cloudPlatformName}",
         "most_recent_backup": "Respaldo más reciente",
         "out_of_date": "Desactualizado",
@@ -467,6 +467,9 @@
         "quote_error": "Error en la cotización",
         "no_route_found": "No se encontró ruta",
         "fetching_quote": "Buscando cotización...",
+        "rainbow_eth_rewards": "Recompensas de Rainbow ETH",
+        "merkl_claimable": "Bóveda de %{dappName}",
+        "merkl_claimable_description": "Estrategia de %{assetSymbols}",
         "select_a_network": "Seleccione una red",
         "select_a_token": "Seleccione un token",
         "amount_to_claim_on_network": "%{amount} para reclamar en %{network}",
@@ -476,6 +479,9 @@
         "claimed": "¡Reclamado!",
         "claiming_failed": "Reclamo fallido",
         "insufficient_funds": "Fondos Insuficientes",
+        "hold_to_claim": "Mantener para Reclamar",
+        "creator_lp_fees": "Cuota del Creador LP",
+        "rainbow_token_launcher": "Lanzador de Token de Rainbow",
         "claim_amount": "Reclamar %{amount}",
         "done": "Listo",
         "try_again": "Intenta de Nuevo",
@@ -519,38 +525,39 @@
       "alert": "Alerta",
       "analyze_env_variables": "Analizar Variables del Entorno",
       "analyze_react_query": "Analizar React Query",
+      "analyze_user_assets_query": "Analizar Consulta de Activos del Usuario",
       "applied": "APLICADO",
-      "backups_deleted_successfully": "Los respaldos se eliminaron exitosamente",
-      "clear_async_storage": "Borrar almacenamiento asíncrono",
+      "backups_deleted_successfully": "Resguardos Eliminados Exitosamente",
+      "clear_async_storage": "Borrar AsyncStorage",
       "clear_pending_txs": "Borrar transacciones pendientes",
       "clear_image_cache": "Borrar caché de imágenes",
       "clear_image_metadata_cache": "Borrar Cache de Metadatos de Imagen",
-      "clear_local_storage": "Borrar almacenamiento local",
-      "clear_mmkv_storage": "Borrar almacenamiento de MMKV",
+      "clear_local_storage": "Borrar Almacenamiento Local",
+      "clear_mmkv_storage": "Borrar Almacenamiento MMKV",
       "clear_react_query_cache": "Borrar Caché de React Query",
       "connect_to_anvil": "Conectar a Anvil",
       "copy_fcm_token": "Copiar Token FCM",
       "copy_log_lines": "Copiar Líneas de Registro",
       "copy_signing_wallet_address": "Copiar Dirección de Firma de Billetera",
-      "disconnect_to_anvil": "Desconectar de anvil",
-      "crash_app_render_error": "Crash de la aplicación (error de renderización)",
+      "disconnect_to_anvil": "Desconectar de Anvil",
+      "crash_app_render_error": "Fallar App (Error de Renderizado)",
       "enable_testnets": "Habilitar Testnets",
-      "installing_update": "Instalando actualización",
-      "navigation_entry_point": "Punto de entrada de navegación",
-      "no_update": "Sin actualización",
+      "installing_update": "Instalando Actualización",
+      "navigation_entry_point": "Punto de Entrada de Navegación",
+      "no_update": "No hay Actualizaciones",
       "not_applied": "NO APLICADO",
       "notifications_debug": "Depuración de Notificaciones",
-      "remove_all_backups": "Eliminar todas las copias de seguridad",
+      "remove_all_backups": "Eliminar Todas las Copias de Seguridad",
       "keychain": {
         "menu_title": "Reiniciar Cadenas de Claves",
-        "delete_wallets": "Borrar todas las carteras",
+        "delete_wallets": "Eliminar Todas las Billeteras",
         "alert_title": "¡Cuidado!",
         "alert_body": "🚨🚨🚨 \nEsto eliminará permanentemente todas las claves privadas y datos de tus carteras. ¡Asegúrate de tener todo respaldado antes de proceder! \n🚨🚨🚨"
       },
-      "restart_app": "Reiniciar aplicación",
-      "reset_experimental_config": "Restablecer configuración experimental",
+      "restart_app": "Reiniciar Aplicación",
+      "reset_experimental_config": "Reiniciar Configuración Experimental",
       "status": "Estado",
-      "sync_codepush": "Sincronizar Codepush"
+      "sync_codepush": "Sincronizar CodePush"
     },
     "discover": {
       "pulse": {
@@ -604,6 +611,7 @@
         "expires_in": "Caduca en %{minutes}m",
         "from_divider": "desde",
         "to_divider": "a",
+        "token": "Token",
         "view_on": "Ver en %{blockExplorerName}",
         "view_on_etherscan": "Ver en Etherscan",
         "copy_contract_address": "Copiar dirección del contrato"
@@ -647,16 +655,14 @@
         },
         "unknown_price": {
           "title": "Valor de Mercado Desconocido",
-          "description": "Si decides continuar, asegúrate de estar satisfecho con la cantidad indicada."
+          "description": "Si decides continuar, asegúrate de estar satisfecho con los montos cotizados."
         },
         "losing_prefix": "Perdiendo",
         "small_market": "Mercado pequeño",
         "small_market_try_smaller_amount": "Mercado pequeño — prueba con una cantidad menor",
         "you_are_losing": "Estás perdiendo %{priceImpact}",
         "you_are_losing_prefix": "Estás perdiendo",
-        "no_data": "Valor de Mercado Desconocido",
-        "label": "Posible pérdida",
-        "no_data_subtitle": "Si decides continuar, asegúrate de estar satisfecho con la cantidad indicada."
+        "label": "Posible pérdida"
       },
       "source": {
         "rainbow": "Automático",
@@ -727,6 +733,7 @@
           "circulating_supply": "Suministro en circulación",
           "max_supply": "Suministro Máximo",
           "fully_diluted_valuation": "Valoración totalmente diluida",
+          "created_by": "Creado por",
           "market_cap": "Capitalización de mercado",
           "created": "Creado",
           "volume_24_hours": "Volumen de 24h",
@@ -747,9 +754,34 @@
         "about": {
           "title": "Acerca de",
           "what_is": "¿Qué es %{assetName}?"
+        },
+        "history": {
+          "tabs": {
+            "all": "Todos",
+            "buys": "Compras",
+            "sells": "Ventas"
+          },
+          "more": "Más",
+          "less": "Menos",
+          "bought": "Comprado",
+          "sold": "Vendido",
+          "received": "Recibido",
+          "sent": "Enviado",
+          "unknown": "Desconocido"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Cerrar",
+            "h": "A",
+            "l": "B",
+            "o": "Abrir",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "Ninguno"
+        },
         "all_time": "Todo el tiempo",
         "date": {
           "months": {
@@ -768,9 +800,9 @@
           }
         },
         "no_chart_data": "No hay datos del gráfico",
-        "no_price_data": "No hay datos de precio",
+        "no_price_data": "No hay datos de precios",
         "past_timespan": "Pasado %{formattedTimespan}",
-        "today": "Hoy",
+        "today": "Día Pasado",
         "token_pool": "%{tokenName} Pool"
       },
       "contact_profile": {
@@ -929,6 +961,8 @@
       "farcaster_title": "Has desbloqueado\nRainbowcast",
       "redacted_description": "Un ícono de Rainbow exclusivo para los verdaderos fanáticos de Gdupi.",
       "redacted_title": "Has desbloqueado\n Redacted Rainbow",
+      "baggy_description": "Desde las calles hasta la cadena, esta pequeña bolsa lleva tu dosis portátil de vibras de Rainbow. Saborea los colores y siente la diferencia.",
+      "baggy_title": "Has desbloqueado\nRainbow Baggy",
       "button": "Consigue el ícono"
     },
     "explain": {
@@ -1447,7 +1481,7 @@
         "ABC": "Abc",
         "abc": "Abc",
         "MOST_RECENT": "Reciente",
-        "most_recent": "Más Reciente",
+        "most_recent": "Reciente",
         "FLOOR_PRICE": "Precio Base",
         "floor_price": "Precio Base",
         "order": {
@@ -1632,7 +1666,7 @@
         "invalid_referral_code_alert": "Código de referencia inválido. Por favor verifica tu código e inténtalo de nuevo.",
         "no_balance_alert": "Para inscribirte en Puntos, debes tener un saldo de cartera mayor a cero.",
         "referral_link_is_ready": "Tu enlace de referencia está listo",
-        "referral_link_bonus_text": "Tuitea tu enlace de referencia y obtén 250 puntos extra",
+        "referral_link_bonus_text": "Tuitea tu enlace de referencia y ganará el 10% de los puntos obtenidos por cualquier persona que refiera",
         "referral_link_bonus_text_extended": "Además ganarás el 10% de los puntos que obtenga cualquier persona que refieras",
         "complete_onboarding": "Listo",
         "share_to_x": "Compartir en X",
@@ -2888,6 +2922,7 @@
         "sending_title": "Enviando",
         "you_own_this_wallet": "Eres el propietario de esta billetera",
         "first_time_send": "Primera vez enviando",
+        "previous_send": "%{number} envío anterior",
         "previous_sends": "%{number} envíos anteriores"
       },
       "wallet_connect": {
@@ -3340,10 +3375,78 @@
         "to_claim_on": "para reclamar en %{network}",
         "view_coin": "Ver Moneda",
         "you": "Tú"
+      },
+      "errors": {
+        "header": "Error al lanzar el token",
+        "api_request_failed": "Fallo en la solicitud de API",
+        "api_response_invalid": "Respuesta de API inválida",
+        "contract_interaction_failed": "Fallo en la interacción del contrato",
+        "gas_estimation_failed": "Fallo en la estimación de gas",
+        "insufficient_funds": "Fondos insuficientes",
+        "submission_details_missing": "Detalles de la presentación faltantes",
+        "transaction_rejected": "Transacción rechazada",
+        "transaction_failed": "Fallo en la transacción",
+        "transaction_simulation_failed": "Fallo en la simulación de la transacción",
+        "unknown_error": "Error Desconocido",
+        "wallet_connection_error": "Error de conexión de la billetera",
+        "invalid_params": "Parámetros inválidos",
+        "missing_required_param": "Faltan parámetros requeridos"
       }
     },
     "done": "Listo",
     "copy": "Copiar",
-    "paste": "Pegar"
+    "paste": "Pegar",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRECIO",
+      "mcap": "MCAP"
+    },
+    "king_of_hill": {
+      "title": "Plataforma de lanzamiento",
+      "launch": "Lanzar",
+      "current_king": "REY ACTUAL",
+      "last_winner": "Último ganador",
+      "no_previous_winner": "Sin ganador anterior",
+      "round_ends_in": "La ronda termina en",
+      "how_it_works": "Cómo funciona",
+      "starting_next_round": "Iniciando la próxima ronda",
+      "left": "IZQUIERDA",
+      "king_of_the_hill": "Rey de la colina",
+      "name": "Nombre",
+      "explain_sheet": {
+        "next": "Siguiente",
+        "got_it": "Entendido",
+        "steps": {
+          "step_1": {
+            "title": "La carrera está en vivo",
+            "subtitle_parts": [
+              "El token con más",
+              " volumen de compra",
+              "ahora mismo es el rey actual."
+            ]
+          },
+          "step_2": {
+            "title": "Una corona al día",
+            "subtitle_parts": [
+              "A la",
+              " medianoche (12:00 AM UTC), ",
+              "el token líder es coronado ganador diario."
+            ]
+          },
+          "step_3": {
+            "title": "Gana Recompensas",
+            "subtitle_parts": [
+              "Compradores del Rey actual obtienen",
+              " 2x puntos."
+            ],
+            "subtitle_two_parts": [
+              "Creadores",
+              " ganan puntos ",
+              "cuando son coronados."
+            ]
+          }
+        }
+      }
+    }
   }
 }
