@@ -149,6 +149,6 @@ export type GetAssetsResponse = {
     success: boolean;
     chainIdsWithErrors?: ChainId[];
   };
-  result: Record<string, UserAsset>;
+  result?: Record<string, UserAsset>;
   errors: { chainId: ChainId; error: string }[];
 };

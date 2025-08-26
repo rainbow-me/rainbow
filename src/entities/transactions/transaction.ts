@@ -19,42 +19,14 @@ export enum TransactionDirection {
 }
 
 export enum TransactionStatus {
-  approved = 'approved',
-  approving = 'approving',
-  bridging = 'bridging',
-  bridged = 'bridged',
-  cancelled = 'cancelled',
-  cancelling = 'cancelling',
   confirmed = 'confirmed',
-  contract_interaction = 'contract interaction',
-  deposited = 'deposited',
-  depositing = 'depositing',
-  dropped = 'dropped',
   failed = 'failed',
-  minted = 'minted',
-  minting = 'minting',
   pending = 'pending',
-  purchased = 'purchased',
-  purchasing = 'purchasing',
-  received = 'received',
-  receiving = 'receiving',
-  self = 'self',
-  selling = 'selling',
-  sold = 'sold',
-  sending = 'sending',
-  sent = 'sent',
-  speeding_up = 'speeding up',
-  swapped = 'swapped',
-  swapping = 'swapping',
-  unknown = 'unknown status',
-  withdrawing = 'withdrawing',
-  withdrew = 'withdrew',
-  launching = 'launching',
-  launched = 'launched',
 }
 
 export interface RainbowTransaction {
   address?: string;
+  amount?: string;
   asset?:
     | (ParsedAsset &
         (
@@ -257,8 +229,8 @@ export type PendingTransaction = RainbowTransaction & {
   status: TransactionStatus.pending;
 };
 
-export const TransactionType = {
-  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'] as readonly string[],
+export const TransactionTypeMap = {
+  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
   withChanges: [
     'sale',
     'bridge',
@@ -280,11 +252,11 @@ export const TransactionType = {
     'unstake',
     'purchase',
     'launch',
-  ] as readonly string[],
+  ],
 } as const;
 
-export type TransactionWithChangesType = (typeof TransactionType.withChanges)[number];
-export type TransactionWithoutChangesType = (typeof TransactionType.withoutChanges)[number];
+export type TransactionWithChangesType = (typeof TransactionTypeMap.withChanges)[number];
+export type TransactionWithoutChangesType = (typeof TransactionTypeMap.withoutChanges)[number];
 
 export type TransactionType = TransactionWithChangesType | TransactionWithoutChangesType;
 

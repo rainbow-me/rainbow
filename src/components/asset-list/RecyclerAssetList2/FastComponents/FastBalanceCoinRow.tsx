@@ -126,7 +126,8 @@ const MemoizedBalanceCoinRow = React.memo(
                 <LiveTokenText
                   selector={tokenBalanceSelector}
                   tokenId={uniqueId}
-                  initialValueLastUpdated={priceUpdatedAt}
+                  // Because we need to this update if the balance changes regardless of if the price is newer, we set this to 0
+                  initialValueLastUpdated={0}
                   initialValue={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
                   autoSubscriptionEnabled={false}
                   color={{ custom: theme.colors.dark }}

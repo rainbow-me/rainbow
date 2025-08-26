@@ -1,5 +1,5 @@
 import { ImgixImage } from '@/components/images';
-import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
+import { defaultConfig, getExperimentalFlag, LOG_PUSH } from '@/config';
 import { IS_DEV } from '@/env';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { RainbowContext } from '@/helpers/RainbowContext';
@@ -34,6 +34,7 @@ import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import FastImage from 'react-native-fast-image';
+import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -267,6 +268,12 @@ const DevSection = () => {
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_react_query')} />}
             />
             <MenuItem
+              leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}
+              onPress={() => analyzeUserAssets()}
+              size={52}
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_user_assets_query')} />}
+            />
+            <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
               onPress={() => clearReactQueryCache()}
               size={52}
@@ -319,6 +326,7 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.reset_experimental_config')} />}
             />
+
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="👷" isEmoji />}
               onPress={connectToAnvil}
@@ -375,7 +383,7 @@ const DevSection = () => {
               size={52}
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_fcm_token')} />}
             />
-            {getExperimetalFlag(LOG_PUSH) && (
+            {getExperimentalFlag(LOG_PUSH) && (
               <MenuItem
                 leftComponent={<MenuItem.TextIcon icon="📋" isEmoji />}
                 onPress={async () => {

@@ -40,6 +40,7 @@ import { AbsolutePortalRoot } from './components/AbsolutePortal';
 import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
+import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -127,6 +128,7 @@ function Root() {
                       <SharedValuesProvider>
                         <ErrorBoundary>
                           <App />
+                          <RainbowToastDisplay />
                         </ErrorBoundary>
                       </SharedValuesProvider>
                     </RainbowContextWrapper>

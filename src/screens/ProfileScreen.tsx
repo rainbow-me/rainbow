@@ -10,6 +10,8 @@ import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { DelayedMount } from '@/components/utilities/DelayedMount';
+import { time } from '@/utils/time';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -35,7 +37,9 @@ export default function ProfileScreen() {
         }
       />
 
-      <ActivityList />
+      <DelayedMount delay="idle" maxWait={time.ms(300)}>
+        <ActivityList />
+      </DelayedMount>
     </ProfileScreenPage>
   );
 }
