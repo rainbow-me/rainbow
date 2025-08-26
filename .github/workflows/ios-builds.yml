@@ -78,7 +78,7 @@ jobs:
 
       - name: Rock Build - iOS simulator
         id: rock-build-simulator
-        uses: callstackincubator/ios@v2
+        uses: callstackincubator/ios@v3
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
@@ -217,7 +217,7 @@ jobs:
 
       - name: Rock Build - iOS device
         id: rock-build-device
-        uses: callstackincubator/ios@v2
+        uses: callstackincubator/ios@v3
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
