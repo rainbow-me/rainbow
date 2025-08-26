@@ -19,5 +19,7 @@ tags:
     id: wallet-screen
 - assertVisible:
     id: copy-address-button
-- assertVisible:
-    id: eth-card
+- extendedWaitUntil:
+    visible:
+      text: .*\$[\d,]+\.\d{2}.*
+    timeout: 30000
