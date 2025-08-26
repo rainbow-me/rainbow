@@ -1,12 +1,6 @@
 import { abbreviateNumber, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import {
-  DEFAULT_CHAIN_ID,
-  DEFAULT_MAX_AIRDROP_RECIPIENTS,
-  DEFAULT_TOTAL_SUPPLY,
-  MAX_TOTAL_SUPPLY,
-  TARGET_MARKET_CAP_IN_USD,
-} from '../constants';
+import { DEFAULT_CHAIN_ID, DEFAULT_MAX_AIRDROP_RECIPIENTS, DEFAULT_TOTAL_SUPPLY, MAX_TOTAL_SUPPLY } from '../constants';
 import { makeMutable, runOnUI, SharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import chroma from 'chroma-js';
@@ -28,7 +22,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
 import { TokenLauncherSDK } from '@/hooks/useTokenLauncher';
-import { LaunchTokenResponse, TokenLauncherSDKError, TokenLauncherErrorCode } from '@rainbow-me/token-launcher';
+import { LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-launcher';
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
@@ -333,15 +327,13 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     };
   },
   tokenomics: () => {
-    const { chainNativeAssetUsdPrice, validAirdropRecipients, totalSupply, extraBuyAmount } = get();
+    const { chainNativeAssetUsdPrice, totalSupply, extraBuyAmount } = get();
     if (!chainNativeAssetUsdPrice || totalSupply > MAX_TOTAL_SUPPLY) return;
 
     return calculateTokenomics({
-      targetMarketCapUsd: TARGET_MARKET_CAP_IN_USD,
       totalSupply,
       // TODO: name change
       ethPriceUsd: chainNativeAssetUsdPrice,
-      hasAirdrop: validAirdropRecipients().length > 0,
       // TODO: name change
       amountInEth: extraBuyAmount,
     });

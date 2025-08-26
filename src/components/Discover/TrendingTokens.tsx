@@ -1,7 +1,6 @@
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { globalColors, IconContainer, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
 import { useForegroundColor } from '@/design-system/color/useForegroundColor';
-import RainbowTokenFilter from '@/assets/RainbowTokenFilter.png';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { analytics } from '@/analytics';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -18,7 +17,7 @@ import { FarcasterUser, TrendingToken, useTrendingTokens } from '@/resources/tre
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ReactNode, useCallback, useEffect, useMemo } from 'react';
-import { FlatList, View, Image } from 'react-native';
+import { FlatList, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
@@ -27,9 +26,8 @@ import { ImgixImage } from '../images';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { getColorWorklet, getMixedColor, opacity } from '@/__swaps__/utils/swaps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { IS_IOS, IS_TEST } from '@/env';
+import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { RAINBOW_TRENDING_TOKENS_LIST, useExperimentalFlag } from '@/config';
 import { shallowEqual } from '@/worklets/comparisons';
 import { NativeCurrencyKey } from '@/entities/nativeCurrencyTypes';
 import { LiveTokenText } from '../live-token-text/LiveTokenText';
@@ -124,7 +122,7 @@ function FilterButton({
 
 function useTrendingTokensData() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const remoteConfig = useRemoteConfig();
+  const { trending_tokens_limit: limit } = useRemoteConfig('trending_tokens_limit');
 
   const { chainId, category, timeframe, sort } = useTrendingTokensStore(
     state => ({
@@ -144,7 +142,7 @@ function useTrendingTokensData() {
     timeframe,
     sortBy: sort,
     sortDirection: SortDirection.Desc,
-    limit: remoteConfig.trending_tokens_limit,
+    limit,
     walletAddress: walletAddress,
     currency: nativeCurrency,
   });
@@ -352,11 +350,6 @@ function TrendingTokenLoadingRow() {
       </Skeleton>
     </View>
   );
-}
-
-function getPriceChangeColor(priceChange: number) {
-  if (priceChange === 0) return 'labelTertiary';
-  return priceChange > 0 ? 'green' : 'red';
 }
 
 const TOKEN_LIST_INSET = 20 * 2;
@@ -612,7 +605,7 @@ function NetworkFilter({ selectedChainId }: { selectedChainId: SharedValue<Chain
       setSelected,
       allowedNetworks: category === 'Rainbow' ? tokenLauncherNetworks : undefined,
     });
-  }, [selectedChainId, setSelected, category, tokenLauncherNetworks]);
+  }, [category, chainId, selectedChainId, setSelected, tokenLauncherNetworks]);
 
   return (
     <FilterButton
@@ -736,16 +729,12 @@ function TrendingTokenData() {
 }
 
 function RainbowFeatureFlagListener() {
-  const { rainbow_trending_tokens_list_enabled } = useRemoteConfig();
-  const rainbowTrendingTokensListEnabled =
-    (useExperimentalFlag(RAINBOW_TRENDING_TOKENS_LIST) || rainbow_trending_tokens_list_enabled) && !IS_TEST;
-
   // If the rainbow list was selected and the flag is disabled, set the category to the "Trending" category
   useEffect(() => {
-    if (!rainbowTrendingTokensListEnabled) {
+    if (useTrendingTokensStore.getState().category === 'Rainbow') {
       useTrendingTokensStore.getState().setCategory(categories[0]);
     }
-  }, [rainbowTrendingTokensListEnabled]);
+  }, []);
 
   return null;
 }
@@ -753,11 +742,8 @@ function RainbowFeatureFlagListener() {
 const padding = 20;
 
 export function TrendingTokens() {
-  const { rainbow_trending_tokens_list_enabled } = useRemoteConfig();
   const { isDarkMode } = useColorMode();
   const selectedChainId = useSharedValue<ChainId | undefined>(undefined);
-  const rainbowTrendingTokensListEnabled =
-    (useExperimentalFlag(RAINBOW_TRENDING_TOKENS_LIST) || rainbow_trending_tokens_list_enabled) && !IS_TEST;
 
   return (
     <View style={{ gap: 28 }}>
@@ -776,16 +762,6 @@ export function TrendingTokens() {
             highlightedBackgroundColor={'#E6A39E'}
             selectedChainId={selectedChainId}
           />
-          {rainbowTrendingTokensListEnabled && (
-            <CategoryFilterButton
-              category={categories[1]}
-              label={i18n.t(t.filters.categories.RAINBOW)}
-              icon={<Image source={RainbowTokenFilter} width={16} height={16} />}
-              iconColor={'#40CA61'}
-              highlightedBackgroundColor={'#C4C4DD'}
-              selectedChainId={selectedChainId}
-            />
-          )}
           <CategoryFilterButton
             category={categories[2]}
             label={i18n.t(t.filters.categories.NEW)}

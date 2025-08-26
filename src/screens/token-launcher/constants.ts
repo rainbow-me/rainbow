@@ -27,8 +27,9 @@ export const MAX_NAME_BYTES = 32;
 export const DEFAULT_MAX_AIRDROP_RECIPIENTS = 20_000;
 
 export const DEFAULT_CHAIN_ID = base.id;
-export const DEFAULT_TOTAL_SUPPLY = 1_000_000_000;
+export const DEFAULT_TOTAL_SUPPLY = 100_000_000_000;
 export const TARGET_MARKET_CAP_IN_USD = 35_000;
+export const TARGET_MARKET_CAP_IN_ETH = 10;
 
 // Will be supported at a later time
 // 2^256 - 1 (max uint256)

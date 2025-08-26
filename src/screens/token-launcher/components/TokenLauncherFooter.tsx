@@ -215,7 +215,6 @@ function TokenPreview() {
   const symbol = useTokenLauncherStore(state => state.symbol);
   const imageUri = useTokenLauncherStore(state => state.imageUri);
   const chainId = useTokenLauncherStore(state => state.chainId);
-  const tokenPrice = useTokenLauncherStore(state => state.tokenPrice());
   const tokenMarketCap = useTokenLauncherStore(state => state.tokenMarketCap());
   const symbolLabel = symbol === '' ? i18n.t(i18n.l.token_launcher.placeholders.ticker) : `$${symbol}`;
 
@@ -239,20 +238,9 @@ function TokenPreview() {
           </Box>
         )}
         <Box gap={10}>
-          <Box gap={8}>
-            <Text
-              color={symbol ? 'labelSecondary' : 'labelQuaternary'}
-              numberOfLines={1}
-              size="11pt"
-              style={{ maxWidth: 125 }}
-              weight="heavy"
-            >
-              {symbolLabel}
-            </Text>
-            <Text numberOfLines={1} color={symbol ? 'labelSecondary' : 'labelTertiary'} size="15pt" weight="bold">
-              {tokenPrice}
-            </Text>
-          </Box>
+          <Text numberOfLines={1} color={symbol ? 'labelSecondary' : 'labelQuaternary'} size="15pt" weight="bold">
+            {symbolLabel}
+          </Text>
           <Box flexDirection="row" alignItems="center" gap={4}>
             <Text color="labelQuaternary" size="11pt" weight="bold">
               {i18n.t(i18n.l.token_launcher.titles.mcap)}
