@@ -182,11 +182,11 @@ android {
         def pass = System.getenv('RAINBOW_KEY_ANDROID_PASSWORD') ?: getPassword("rainbow","rainbow-android-key")
 
         release {
-            if (project.hasProperty('ROCK_UPLOAD_STORE_FILE')) {
-                storeFile file(ROCK_UPLOAD_STORE_FILE)
-                storePassword ROCK_UPLOAD_STORE_PASSWORD
-                keyAlias ROCK_UPLOAD_KEY_ALIAS
-                keyPassword ROCK_UPLOAD_KEY_PASSWORD
+            if (project.hasProperty('RNEF_UPLOAD_STORE_FILE')) {
+                storeFile file(RNEF_UPLOAD_STORE_FILE)
+                storePassword RNEF_UPLOAD_STORE_PASSWORD
+                keyAlias RNEF_UPLOAD_KEY_ALIAS
+                keyPassword RNEF_UPLOAD_KEY_PASSWORD
             } else {
                 storeFile file('../keystores/rainbow-key.keystore')
                 storePassword pass
