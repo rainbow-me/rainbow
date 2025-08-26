@@ -24,19 +24,13 @@ import Animated, {
 import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT } from './constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const useContainerStyles = ({
-  asset,
-  progress,
-}: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  progress: SharedValue<number>;
-}) => {
+const useContainerStyles = ({ asset, progress }: { asset: ExtendedAnimatedAssetWithColors | null; progress: SharedValue<number> }) => {
   const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
 
   const bgColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.08)
+      ? opacityWorklet(getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode), 0.08)
       : opacityWorklet(globalColors.white100, 0.8);
   });
 
@@ -47,24 +41,22 @@ const useContainerStyles = ({
   const strokeColor = useDerivedValue(() => {
     return isDarkMode
       ? opacityWorklet(
-          getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) === ETH_COLOR_DARK
+          getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode) === ETH_COLOR_DARK
             ? ETH_COLOR_DARK_ACCENT
-            : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode),
+            : getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode),
           0.06
         )
       : globalColors.white100;
   });
 
   const expandedStrokeColor = useDerivedValue(() => {
-    return isDarkMode
-      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), 0.1)
-      : globalColors.white100;
+    return isDarkMode ? opacityWorklet(getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode), 0.1) : globalColors.white100;
   });
 
   const containerStyle = useAnimatedStyle(() => {
     return {
       opacity: withTiming(1, TIMING_CONFIGS.fadeConfig),
-      shadowColor: isDarkMode ? 'transparent' : getColorValueForThemeWorklet(asset.value?.mixedShadowColor, isDarkMode),
+      shadowColor: isDarkMode ? 'transparent' : getColorValueForThemeWorklet(asset?.mixedShadowColor, isDarkMode),
     };
   });
 
@@ -95,7 +87,7 @@ export const PerpsInputContainer = ({
   children,
   progress,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  asset: ExtendedAnimatedAssetWithColors | null;
   children?: ReactNode;
   progress: SharedValue<number>;
 }) => {

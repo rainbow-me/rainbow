@@ -19,7 +19,7 @@ export function InputValueCaret({
   disabled,
   value,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  asset: ExtendedAnimatedAssetWithColors | null;
   disabled?: SharedValue<boolean>;
   value: SharedValue<string>;
 }) {
@@ -59,7 +59,7 @@ export function InputValueCaret({
 
   const assetCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode),
+      backgroundColor: getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode),
     };
   });
 
