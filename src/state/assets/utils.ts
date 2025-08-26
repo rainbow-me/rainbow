@@ -385,7 +385,7 @@ export function calculateHiddenAssetsBalance({
   return balance;
 }
 
-function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {
+export function filterZeroBalanceAssets(assets: UserAsset[]): UserAsset[] {
   return assets.filter(asset => greaterThan(asset.quantity, 0));
 }
 

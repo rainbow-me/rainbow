@@ -7,10 +7,10 @@ import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransa
 export const MinedTransactionWatcher = memo(function MinedTransactionWatcher() {
   const address = useAccountAddress();
   const { watchMinedTransactions } = useWatchMinedTransactions({ address });
-  const minedTransactions = useMinedTransactionsStore(state => state.minedTransactions[address] || []);
+  const minedTransactionsWithPolling = useMinedTransactionsStore(state => state.minedTransactions[address] || []);
 
   useTransactionWatcher({
-    transactions: minedTransactions,
+    transactions: minedTransactionsWithPolling,
     watchFunction: watchMinedTransactions,
   });
 
