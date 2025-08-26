@@ -15,7 +15,7 @@ jobs:
       group: ${{ github.workflow }}-simulator-${{ github.ref }}
       cancel-in-progress: true
     outputs:
-      artifact-id: ${{ steps.rnef-build-simulator.outputs.artifact-id }}
+      artifact-id: ${{ steps.rock-build-simulator.outputs.artifact-id }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -76,8 +76,8 @@ jobs:
             SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: yarn install && yarn setup
 
-      - name: RNEF Build - iOS simulator
-        id: rnef-build-simulator
+      - name: Rock Build - iOS simulator
+        id: rock-build-simulator
         uses: callstackincubator/ios@v2
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -99,7 +99,7 @@ jobs:
       group: ${{ github.workflow }}-device-${{ github.ref }}
       cancel-in-progress: true
     outputs:
-      artifact-id: ${{ steps.rnef-build-device.outputs.artifact-id }}
+      artifact-id: ${{ steps.rock-build-device.outputs.artifact-id }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -179,7 +179,7 @@ jobs:
           cd ios
           bundle exec fastlane match adhoc --app_identifier me.rainbow,me.rainbow.PriceWidget,me.rainbow.SelectTokenIntent,me.rainbow.ImageNotification,me.rainbow.OpenInRainbow,me.rainbow.ShareWithRainbow --git_url git@github.com:rainbow-me/rainbow-code-signing.git --readonly
 
-      - name: Export certificates and provisioning profiles for RNEF
+      - name: Export certificates and provisioning profiles for Rock
         id: code-signing
         run: |
           # Export certificate + private key (identity) to a PKCS#12 file
@@ -215,8 +215,8 @@ jobs:
         run: |
           sed -i '' 's/match AppStore/match AdHoc/g' ios/Rainbow.xcodeproj/project.pbxproj
 
-      - name: RNEF Build - iOS device
-        id: rnef-build-device
+      - name: Rock Build - iOS device
+        id: rock-build-device
         uses: callstackincubator/ios@v2
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -232,7 +232,7 @@ jobs:
           provisioning-profile-base64: ${{ steps.code-signing.outputs.PROFILE_BASE64 }}
           provisioning-profile-name: ${{ steps.code-signing.outputs.PROFILE_NAME }}
           keychain-password: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
-          rnef-build-extra-params: --export-options-plist ExportOptions.adhoc.plist
+          rock-build-extra-params: --export-options-plist ExportOptions.adhoc.plist
 
   # Post builds to GitHub after both complete
   post-builds:
