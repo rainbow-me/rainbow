@@ -54,7 +54,6 @@ export function calculateTokenomics({
     const initialPoolTokens = lpSupply;
 
     // Using the constant-product formula to simulate the swap:
-    // tokensOut = initialPoolTokens - (initialPoolEth * initialPoolTokens) / (initialPoolEth + amountInAfterFee)
     const tokensOut = initialPoolTokens - (initialPoolEth * initialPoolTokens) / (initialPoolEth + amountInAfterFee);
 
     // Update the pool's reserves after the swap:
