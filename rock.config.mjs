@@ -1,12 +1,13 @@
 /* eslint-disable import/no-default-export */
 
-import { platformIOS } from '@rnef/platform-ios';
-import { platformAndroid } from '@rnef/platform-android';
-import { pluginMetro } from '@rnef/plugin-metro';
+// @ts-check
+import { platformIOS } from '@rock-js/platform-ios';
+import { platformAndroid } from '@rock-js/platform-android';
+import { pluginMetro } from '@rock-js/plugin-metro';
 
 const assets = ['./src/assets/fonts'];
 
-/** @type {import('@rnef/cli').Config} */
+/** @type {import('rock').Config} */
 export default {
   bundler: pluginMetro(),
   platforms: {

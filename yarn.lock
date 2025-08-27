@@ -6054,13 +6054,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/debugger-frontend@npm:0.80.2":
-  version: 0.80.2
-  resolution: "@react-native/debugger-frontend@npm:0.80.2"
-  checksum: 10c0/1912fa438b89dfb5a89daf020b2ce1dfa45c21ad4d0de1b605bb1602e28fefd49b8c064d1ed9d3302c2eef6eaa7b20ae2ebf60fa4907bc19bf21324b0889b1e1
-  languageName: node
-  linkType: hard
-
 "@react-native/dev-middleware@npm:0.74.85":
   version: 0.74.85
   resolution: "@react-native/dev-middleware@npm:0.74.85"
@@ -6098,25 +6091,6 @@ __metadata:
     serve-static: "npm:^1.16.2"
     ws: "npm:^6.2.3"
   checksum: 10c0/85a2fe06e74d2fd486c55cde268a96dc24fda6a8d7be2181d15dfe9d6065f352b7a17693456138923b0dcf1362ce0bf61e34a127686204269b8ccbbe15ea34d2
-  languageName: node
-  linkType: hard
-
-"@react-native/dev-middleware@npm:^0.80.1":
-  version: 0.80.2
-  resolution: "@react-native/dev-middleware@npm:0.80.2"
-  dependencies:
-    "@isaacs/ttlcache": "npm:^1.4.1"
-    "@react-native/debugger-frontend": "npm:0.80.2"
-    chrome-launcher: "npm:^0.15.2"
-    chromium-edge-launcher: "npm:^0.2.0"
-    connect: "npm:^3.6.5"
-    debug: "npm:^4.4.0"
-    invariant: "npm:^2.2.4"
-    nullthrows: "npm:^1.1.1"
-    open: "npm:^7.0.3"
-    serve-static: "npm:^1.16.2"
-    ws: "npm:^6.2.3"
-  checksum: 10c0/6fcd7be1e75b5732af9d5371029988e4bd18a78fcd6ffbd4b3f0f4c283f1c024f11592be007661f3d3b9ad529203c0e5683f5a745433100324e6e76eadd2e77f
   languageName: node
   linkType: hard
 
@@ -6352,84 +6326,80 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rnef/cli@npm:0.8.11":
-  version: 0.8.11
-  resolution: "@rnef/cli@npm:0.8.11"
+"@rnx-kit/chromium-edge-launcher@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@rnx-kit/chromium-edge-launcher@npm:1.0.0"
   dependencies:
-    "@react-native-community/cli-config": "npm:^19.1.0"
-    "@rnef/config": "npm:^0.8.11"
-    "@rnef/tools": "npm:^0.8.11"
-    adm-zip: "npm:^0.5.16"
-    commander: "npm:^12.1.0"
-    tar: "npm:^7.4.3"
-    tslib: "npm:^2.3.0"
-  bin:
-    rnef: dist/src/bin.js
-  checksum: 10c0/7c0666f26c0b648aae41335eb658443e20fe018a3f3d68c778e9a587be7f0fbec77e37fc84fed8373780e124e87bed661832f6ac01af2948fa02d477ffa10b97
+    "@types/node": "npm:^18.0.0"
+    escape-string-regexp: "npm:^4.0.0"
+    is-wsl: "npm:^2.2.0"
+    lighthouse-logger: "npm:^1.0.0"
+    mkdirp: "npm:^1.0.4"
+    rimraf: "npm:^3.0.2"
+  checksum: 10c0/21182379a914ad244b556e794eb6bc6dc63a099cbd2f3eb315a13bd431dc6f24ca096ffb465ad76465144d02969f538a93ef7ef1b2280135174fdae4db5206b3
   languageName: node
   linkType: hard
 
-"@rnef/config@npm:^0.8.11":
-  version: 0.8.11
-  resolution: "@rnef/config@npm:0.8.11"
+"@rock-js/config@npm:^0.9.2":
+  version: 0.9.2
+  resolution: "@rock-js/config@npm:0.9.2"
   dependencies:
     "@babel/code-frame": "npm:^7.26.2"
-    "@rnef/provider-github": "npm:^0.8.11"
-    "@rnef/tools": "npm:^0.8.11"
+    "@rock-js/provider-github": "npm:^0.9.2"
+    "@rock-js/tools": "npm:^0.9.2"
     joi: "npm:^17.13.3"
     tslib: "npm:^2.3.0"
-  checksum: 10c0/edab0f96a8c4afd23387e7469ae384ce9f6d789d0c827e9d3d28b379e1f992c622dad47a9332f4007e4b7b48d74a563d0c8c53cd0aaee9ae1e44f1d10036ca4e
+  checksum: 10c0/ecf04c4d8f9542e0f824af722cc62415f720c9c8cc42530096f55cf2e13cc4e766ca5b32ef9c9ed7ce139eb5f7417d6b606daba2d336a1cca597883aae15c9e1
   languageName: node
   linkType: hard
 
-"@rnef/platform-android@npm:0.8.11":
-  version: 0.8.11
-  resolution: "@rnef/platform-android@npm:0.8.11"
+"@rock-js/platform-android@npm:0.9.2":
+  version: 0.9.2
+  resolution: "@rock-js/platform-android@npm:0.9.2"
   dependencies:
     "@react-native-community/cli-config-android": "npm:^19.1.0"
-    "@rnef/tools": "npm:^0.8.11"
+    "@rock-js/tools": "npm:^0.9.2"
     adm-zip: "npm:^0.5.16"
     tslib: "npm:^2.3.0"
-  checksum: 10c0/b5d897f6bff7ef51604840187d068e2af11c07442efdf4ca12b93834789789cd055122a995b78a5ef2107380efe4424520d0e9d75e62d29393730bf41f1955fd
+  checksum: 10c0/fd25d41d69bccab8e5fe8f7967498367c3c92e7b027fa84dcb1794874bceace824d07fb7541f27b46a0768b18c03eb6b2dd79396916848188c750da2067a50d8
   languageName: node
   linkType: hard
 
-"@rnef/platform-apple-helpers@npm:^0.8.11":
-  version: 0.8.11
-  resolution: "@rnef/platform-apple-helpers@npm:0.8.11"
+"@rock-js/platform-apple-helpers@npm:^0.9.2":
+  version: 0.9.2
+  resolution: "@rock-js/platform-apple-helpers@npm:0.9.2"
   dependencies:
     "@react-native-community/cli-config": "npm:^19.1.0"
     "@react-native-community/cli-config-apple": "npm:^19.1.0"
-    "@rnef/tools": "npm:^0.8.11"
+    "@rock-js/tools": "npm:^0.9.2"
     "@types/adm-zip": "npm:^0.5.7"
     adm-zip: "npm:^0.5.16"
     fast-glob: "npm:^3.3.2"
     fast-xml-parser: "npm:^4.5.0"
     tslib: "npm:^2.3.0"
-  checksum: 10c0/3df348bc3ab4acdeed443e6636b1dbab6b1ec1dc0e1fde21a43db5f8db117bab6a96d190a9a4a6c077fc9baf29823cdbe9629b999707a2d978c71b5a982a9e6f
+  checksum: 10c0/2249885f93ebdc12d9a92333465f75581330c395e225442e865c4e461a7d1752ed484d33b074b655eaa9e7ab35bd886b0309ea6cf024073df4e4bdae671ebbee
   languageName: node
   linkType: hard
 
-"@rnef/platform-ios@npm:0.8.11":
-  version: 0.8.11
-  resolution: "@rnef/platform-ios@npm:0.8.11"
+"@rock-js/platform-ios@npm:0.9.2":
+  version: 0.9.2
+  resolution: "@rock-js/platform-ios@npm:0.9.2"
   dependencies:
     "@react-native-community/cli-config-apple": "npm:^19.1.0"
     "@react-native-community/cli-types": "npm:^19.1.0"
-    "@rnef/platform-apple-helpers": "npm:^0.8.11"
-    "@rnef/tools": "npm:^0.8.11"
+    "@rock-js/platform-apple-helpers": "npm:^0.9.2"
+    "@rock-js/tools": "npm:^0.9.2"
     tslib: "npm:^2.3.0"
-  checksum: 10c0/ee1c6fc69274d22749538e3d9c58b86c0bf90095d9da9bc8b2c9da3fb0fc1eeb96cc57607a454c8f82575f71cf3712d18f301c28a83043a1a0c7ab5d4612e40d
+  checksum: 10c0/aae80fd087baccc9ed458252f2111087713cd770b633cec1770ffee5c058457e98fcef0a1b303d3532413dc4024c47a8ebbe762226f805115cf245ea1e033e10
   languageName: node
   linkType: hard
 
-"@rnef/plugin-metro@npm:0.8.11":
-  version: 0.8.11
-  resolution: "@rnef/plugin-metro@npm:0.8.11"
+"@rock-js/plugin-metro@npm:0.9.2":
+  version: 0.9.2
+  resolution: "@rock-js/plugin-metro@npm:0.9.2"
   dependencies:
     "@react-native-community/cli-server-api": "npm:^19.1.0"
-    "@react-native/dev-middleware": "npm:^0.80.1"
-    "@rnef/tools": "npm:^0.8.11"
+    "@rock-js/tools": "npm:^0.9.2"
     metro: "npm:^0.82.2"
     metro-config: "npm:^0.82.2"
     metro-core: "npm:^0.82.2"
@@ -6437,24 +6407,24 @@ __metadata:
     tslib: "npm:^2.3.0"
   peerDependencies:
     "@react-native/community-cli-plugin": "*"
-  checksum: 10c0/682c253bd07d91b1bf3e02dc745cf0c173b29ce697e30724147316dcce7b32e0e6ec113898447ba189265a5c079b6cfe81c33c96ff16330f42f6d63d001c9bfe
+  checksum: 10c0/960ea3795b8bdebd447867d9abcdf31303c2d2d4fe4d6d133fedd65a2c5af0a67f3ed8036722e4c10f22b7a73f1c5966b8aeba314f127e519a793c65adb465a9
   languageName: node
   linkType: hard
 
-"@rnef/provider-github@npm:^0.8.11":
-  version: 0.8.11
-  resolution: "@rnef/provider-github@npm:0.8.11"
+"@rock-js/provider-github@npm:^0.9.2":
+  version: 0.9.2
+  resolution: "@rock-js/provider-github@npm:0.9.2"
   dependencies:
-    "@rnef/tools": "npm:^0.8.11"
+    "@rock-js/tools": "npm:^0.9.2"
     ts-regex-builder: "npm:^1.8.2"
     tslib: "npm:^2.3.0"
-  checksum: 10c0/e944a33ccaaca464276ce65fd113fe42af823813c4af3c967e8d96599f498e0541d2a85ffb999caf6d9adb5b36dd506e81e92dc258cee603cc96a9397163f44f
+  checksum: 10c0/10670da64322531604ef41ff0692c0f738a633a6b7bc2f4293a21999544f21ae9f0ae934c49ec49f1fcb0c29fbdff847f62d56584c3150f542dc9737a8f4f41f
   languageName: node
   linkType: hard
 
-"@rnef/tools@npm:^0.8.11":
-  version: 0.8.11
-  resolution: "@rnef/tools@npm:0.8.11"
+"@rock-js/tools@npm:^0.9.2":
+  version: 0.9.2
+  resolution: "@rock-js/tools@npm:0.9.2"
   dependencies:
     "@clack/prompts": "npm:^0.11.0"
     "@expo/fingerprint": "npm:^0.11.6"
@@ -6468,21 +6438,7 @@ __metadata:
     string-argv: "npm:^0.3.2"
     tar: "npm:^7.4.3"
     tslib: "npm:^2.3.0"
-  checksum: 10c0/2f5985daf8f4859df1e779d14506bd0e066bcb0251a7f62a19683cce363250fdb720ba086e556bbd192cbf84ab5182232f4a38cbb2538e26a5615531bf9a5df6
-  languageName: node
-  linkType: hard
-
-"@rnx-kit/chromium-edge-launcher@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@rnx-kit/chromium-edge-launcher@npm:1.0.0"
-  dependencies:
-    "@types/node": "npm:^18.0.0"
-    escape-string-regexp: "npm:^4.0.0"
-    is-wsl: "npm:^2.2.0"
-    lighthouse-logger: "npm:^1.0.0"
-    mkdirp: "npm:^1.0.4"
-    rimraf: "npm:^3.0.2"
-  checksum: 10c0/21182379a914ad244b556e794eb6bc6dc63a099cbd2f3eb315a13bd431dc6f24ca096ffb465ad76465144d02969f538a93ef7ef1b2280135174fdae4db5206b3
+  checksum: 10c0/4dafcefe07632927033fe78c3055c42fb90c8595335e1d0eda02c22a78ce22e70a8b904d1c61f417dc11f6524df61c78058159536ff1cfa0347144b743f36274
   languageName: node
   linkType: hard
 
@@ -9055,10 +9011,9 @@ __metadata:
     "@react-navigation/stack": "npm:6.3.29"
     "@reown/walletkit": "npm:1.1.2"
     "@reservoir0x/reservoir-sdk": "npm:2.3.0"
-    "@rnef/cli": "npm:0.8.11"
-    "@rnef/platform-android": "npm:0.8.11"
-    "@rnef/platform-ios": "npm:0.8.11"
-    "@rnef/plugin-metro": "npm:0.8.11"
+    "@rock-js/platform-android": "npm:0.9.2"
+    "@rock-js/platform-ios": "npm:0.9.2"
+    "@rock-js/plugin-metro": "npm:0.9.2"
     "@rudderstack/rudder-sdk-react-native": "npm:2.0.0"
     "@sentry/react-native": "npm:6.15.1"
     "@shopify/flash-list": "npm:1.8.2"
@@ -9266,6 +9221,7 @@ __metadata:
     resolve: "npm:1.22.8"
     rn-fetch-blob: "npm:0.12.0"
     rn-nodeify: "npm:10.2.0"
+    rock: "npm:0.9.2"
     schedule: "npm:0.5.0"
     smitter: "npm:1.1.1"
     sonner-native: "npm:0.16.0"
@@ -24541,6 +24497,23 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   bin:
     rn-nodeify: ./cmd.js
   checksum: 10c0/153d4a3cd372100fc9113382dd6728c20a7ad378c5a42b611aeb8d934b564df57fe08c531eb88254fb86631342ea8bcbb1470b8ef0e8b5e7092bf5fa5e7dd93c
+  languageName: node
+  linkType: hard
+
+"rock@npm:0.9.2":
+  version: 0.9.2
+  resolution: "rock@npm:0.9.2"
+  dependencies:
+    "@react-native-community/cli-config": "npm:^19.1.0"
+    "@rock-js/config": "npm:^0.9.2"
+    "@rock-js/tools": "npm:^0.9.2"
+    adm-zip: "npm:^0.5.16"
+    commander: "npm:^12.1.0"
+    tar: "npm:^7.4.3"
+    tslib: "npm:^2.3.0"
+  bin:
+    rock: dist/src/bin.js
+  checksum: 10c0/0c0cbef9d501e09f31c196e239690d199990b9b6d5bfa1052125688a8220bc9106181a4ca707d8f6336468b06b8758c5902b35a3c060810093d10bd8998dcb1a
   languageName: node
   linkType: hard
 

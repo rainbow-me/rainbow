@@ -15,7 +15,7 @@ jobs:
       group: e2e-android-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     outputs:
-      artifact-id: ${{ steps.rnef-remote-build-android.outputs.artifact-id }}
+      artifact-id: ${{ steps.rock-remote-build-android.outputs.artifact-id }}
 
     steps:
       - name: Checkout repo
@@ -84,9 +84,9 @@ jobs:
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
 
-      - name: RNEF Remote Build - Android
-        id: rnef-remote-build-android
-        uses: callstackincubator/android@v2
+      - name: Rock Remote Build - Android
+        id: rock-remote-build-android
+        uses: callstackincubator/android@v3
         env:
           # This is a debug keystore for now.
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -106,7 +106,7 @@ jobs:
           re-sign: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           validate-gradle-wrapper: false
-          rnef-build-extra-params: '--extra-params="--no-daemon --build-cache --no-scan"'
+          rock-build-extra-params: '--extra-params="--no-daemon --build-cache --no-scan"'
           comment-bot: false
 
   android-e2e-tests:

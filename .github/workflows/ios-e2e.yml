@@ -17,7 +17,7 @@ jobs:
       cancel-in-progress: true
     timeout-minutes: 45
     outputs:
-      artifact-id: ${{ steps.rnef-remote-build-ios.outputs.artifact-id }}
+      artifact-id: ${{ steps.rock-remote-build-ios.outputs.artifact-id }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -79,9 +79,9 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: yarn install && yarn setup
 
-      - name: RNEF Remote Build - iOS simulator
-        id: rnef-remote-build-ios
-        uses: callstackincubator/ios@v2
+      - name: Rock Remote Build - iOS simulator
+        id: rock-remote-build-ios
+        uses: callstackincubator/ios@v3
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
