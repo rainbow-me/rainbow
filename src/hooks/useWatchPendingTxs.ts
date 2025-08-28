@@ -56,7 +56,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
       // This abort signal will be called if new transactions are received. In that
       // case we need to cancel this fetch since it will now be stale.
-      let canceled = false;
+      let canceled = signal.aborted;
       signal.addEventListener('abort', () => {
         canceled = true;
       });
