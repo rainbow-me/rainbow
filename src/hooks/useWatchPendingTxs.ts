@@ -49,59 +49,70 @@ async function fetchTransaction({
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
-  const pendingTransactionsByAddress = usePendingTransactionsStore(state => state.pendingTransactions);
-  const pendingTransactions = useMemo(() => pendingTransactionsByAddress[address] || [], [address, pendingTransactionsByAddress]);
 
-  const watchPendingTransactions = useCallback(async () => {
-    if (!pendingTransactions.length) return;
-    const now = Math.floor(Date.now() / 1000);
+  const watchPendingTransactions = useCallback(
+    async (pendingTransactions: RainbowTransaction[], signal: AbortSignal) => {
+      if (!pendingTransactions.length) return;
 
-    const fetchedTransactions = await Promise.all(
-      pendingTransactions.map((tx: RainbowTransaction) => fetchTransaction({ address, currency: nativeCurrency, transaction: tx }))
-    );
+      // This abort signal will be called if new transactions are received. In that
+      // case we need to cancel this fetch since it will now be stale.
+      let canceled = false;
+      signal.addEventListener('abort', () => {
+        canceled = true;
+      });
 
-    const { newPendingTransactions, minedTransactions } = fetchedTransactions.reduce<{
-      newPendingTransactions: RainbowTransaction[];
-      minedTransactions: MinedTransaction[];
-    }>(
-      (acc, tx) => {
-        if (tx.status === TransactionStatus.pending) {
-          acc.newPendingTransactions.push(tx);
-        } else {
-          acc.minedTransactions.push(tx as MinedTransaction);
-          analytics.track(event.pendingTransactionResolved, {
-            chainId: tx.chainId,
-            type: tx.type,
-            timeToResolve: tx.minedAt ? (now - tx.minedAt) * 1000 : undefined,
-          });
+      const now = Math.floor(Date.now() / 1000);
+
+      const fetchedTransactions = await Promise.all(
+        pendingTransactions.map((tx: RainbowTransaction) => fetchTransaction({ address, currency: nativeCurrency, transaction: tx }))
+      );
+
+      if (canceled) return;
+
+      const { newPendingTransactions, minedTransactions } = fetchedTransactions.reduce<{
+        newPendingTransactions: RainbowTransaction[];
+        minedTransactions: MinedTransaction[];
+      }>(
+        (acc, tx) => {
+          if (tx.status === TransactionStatus.pending) {
+            acc.newPendingTransactions.push(tx);
+          } else {
+            acc.minedTransactions.push(tx as MinedTransaction);
+            analytics.track(event.pendingTransactionResolved, {
+              chainId: tx.chainId,
+              type: tx.type,
+              timeToResolve: tx.minedAt ? (now - tx.minedAt) * 1000 : undefined,
+            });
+          }
+          return acc;
+        },
+        {
+          newPendingTransactions: [],
+          minedTransactions: [],
         }
-        return acc;
-      },
-      {
-        newPendingTransactions: [],
-        minedTransactions: [],
-      }
-    );
+      );
 
-    usePendingTransactionsStore.getState().setPendingTransactions({
-      address,
-      pendingTransactions: newPendingTransactions,
-    });
-
-    if (!minedTransactions.length) return;
-
-    useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: minedTransactions });
-    minedTransactions.forEach(tx => useRainbowToastsStore.getState().handleTransaction(tx));
-
-    await queryClient.refetchQueries({
-      queryKey: consolidatedTransactionsQueryKey({
+      usePendingTransactionsStore.getState().setPendingTransactions({
         address,
-        currency: nativeCurrency,
-        chainIds: useBackendNetworksStore.getState().getSupportedChainIds(),
-      }),
-      type: 'all',
-    });
-  }, [address, nativeCurrency, pendingTransactions]);
+        pendingTransactions: newPendingTransactions,
+      });
+
+      if (!minedTransactions.length) return;
+
+      useMinedTransactionsStore.getState().addMinedTransactions({ address, transactions: minedTransactions });
+      minedTransactions.forEach(tx => useRainbowToastsStore.getState().handleTransaction(tx));
+
+      await queryClient.refetchQueries({
+        queryKey: consolidatedTransactionsQueryKey({
+          address,
+          currency: nativeCurrency,
+          chainIds: useBackendNetworksStore.getState().getSupportedChainIds(),
+        }),
+        type: 'all',
+      });
+    },
+    [address, nativeCurrency]
+  );
 
   return { watchPendingTransactions };
 };

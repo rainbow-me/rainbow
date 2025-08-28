@@ -68,7 +68,7 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>((set, get) =
         };
       } else {
         toast = {
-          id: toToastId(transaction),
+          id,
           updatedAt: Date.now(),
           transaction,
           isRemoving: false,
