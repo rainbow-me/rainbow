@@ -27,7 +27,6 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
       return orderedPendingTransactions;
     },
     addPendingTransaction: ({ address, pendingTransaction }) => {
-      console.log('addPendingTransaction', { address, hash: pendingTransaction.hash, nonce: pendingTransaction.nonce });
       const { pendingTransactions: currentPendingTransactions } = get();
       const addressPendingTransactions = currentPendingTransactions[address] || [];
       const updatedPendingTransactions = [
@@ -42,10 +41,6 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
       const orderedPendingTransactions = updatedPendingTransactions.sort((a, b) => {
         return (a.nonce || 0) - (b.nonce || 0);
       });
-      console.log(
-        'orderedPendingTransactions',
-        orderedPendingTransactions.map(tx => ({ hash: tx.hash, nonce: tx.nonce }))
-      );
       set({
         pendingTransactions: {
           ...currentPendingTransactions,
