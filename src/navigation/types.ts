@@ -637,4 +637,7 @@ export type PerpsStackParamList = {
   [Routes.PERPS_NEW_POSITION_SCREEN]: {
     market: PerpMarket;
   };
+  [Routes.PERPS_EXPANDED_STATE_SCREEN]: {
+    market: PerpMarket;
+  };
 } & UntypedRoutes;

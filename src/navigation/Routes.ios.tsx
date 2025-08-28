@@ -127,6 +127,7 @@ import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsA
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
 import { PerpsDepositScreen } from '@/features/perps/screens/PerpsDepositScreen';
+import { PerpsExpandedStateScreen } from '@/features/perps/screens/perps-expanded-state-screen/PerpsExpandedStateScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -147,6 +148,11 @@ function PerpsAccountNavigator() {
         <NativeStack.Navigator {...stackNavigationConfig} initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}>
           <NativeStack.Screen component={PerpsSearchScreen} name={Routes.PERPS_SEARCH_SCREEN} options={{ customStack: true }} />
           <NativeStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} options={{ customStack: true }} />
+          <NativeStack.Screen
+            component={PerpsExpandedStateScreen}
+            name={Routes.PERPS_EXPANDED_STATE_SCREEN}
+            options={{ customStack: true }}
+          />
           <NativeStack.Screen
             component={PerpsNewPositionSearchScreen}
             name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN}

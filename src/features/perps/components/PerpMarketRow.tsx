@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
@@ -7,6 +7,9 @@ import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { formatPriceChange } from '@/features/perps/utils';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { Pressable } from 'react-native';
 
 type PerpMarketRowProps = {
   market: PerpMarket;
@@ -30,57 +33,65 @@ export const PerpMarketRow = function PerpMarketRow({ market }: PerpMarketRowPro
     },
   });
 
+  const onRowPress = useCallback(() => {
+    Navigation.handleAction(Routes.PERPS_EXPANDED_STATE_SCREEN, {
+      market,
+    });
+  }, [market]);
+
   return (
-    <Box width="full" flexDirection="row" alignItems="center" gap={12}>
-      <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 40, height: 40 }} />
-      <Box style={{ flex: 1 }} gap={8}>
-        <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-          <Text size="17pt" weight="bold" color="label">
-            {market.symbol}
-          </Text>
-          <AnimatedText size="17pt" weight="bold" color="label">
-            {livePrice}
-          </AnimatedText>
-        </Box>
-        <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-          <Box flexDirection="row" alignItems="center" gap={4}>
-            <Box flexDirection="row" alignItems="center" gap={4}>
-              <Text size="11pt" weight="bold" color="labelQuaternary">
-                {'UP TO'}
-              </Text>
-              <LeverageBadge leverage={market.maxLeverage} />
-            </Box>
-            <Box width={1} height={10} background="fillQuaternary" borderRadius={1} />
-            <Box flexDirection="row" alignItems="center" gap={4}>
-              <Text size="11pt" weight="bold" color="labelQuaternary">
-                {'VOL'}
-              </Text>
-              <Text size="11pt" weight="heavy" color="labelTertiary">
-                {volume}
-              </Text>
-            </Box>
+    <Pressable onPress={onRowPress}>
+      <Box width="full" flexDirection="row" alignItems="center" gap={12}>
+        <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 40, height: 40 }} />
+        <Box style={{ flex: 1 }} gap={8}>
+          <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+            <Text size="17pt" weight="bold" color="label">
+              {market.symbol}
+            </Text>
+            <AnimatedText size="17pt" weight="bold" color="label">
+              {livePrice}
+            </AnimatedText>
           </Box>
-          <LiveTokenText
-            selector={state => {
-              return formatPriceChange(state.change.change24hPct);
-            }}
-            tokenId={`${market.symbol}:hl`}
-            initialValueLastUpdated={0}
-            initialValue={formatPriceChange(market.priceChange['24h'])}
-            autoSubscriptionEnabled={false}
-            usePriceChangeColor
-            priceChangeChangeColors={{
-              positive: green,
-              negative: red,
-              neutral: labelTertiary,
-            }}
-            color={'label'}
-            size="11pt"
-            weight="heavy"
-            align="right"
-          />
+          <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+            <Box flexDirection="row" alignItems="center" gap={4}>
+              <Box flexDirection="row" alignItems="center" gap={4}>
+                <Text size="11pt" weight="bold" color="labelQuaternary">
+                  {'UP TO'}
+                </Text>
+                <LeverageBadge leverage={market.maxLeverage} />
+              </Box>
+              <Box width={1} height={10} background="fillQuaternary" borderRadius={1} />
+              <Box flexDirection="row" alignItems="center" gap={4}>
+                <Text size="11pt" weight="bold" color="labelQuaternary">
+                  {'VOL'}
+                </Text>
+                <Text size="11pt" weight="heavy" color="labelTertiary">
+                  {volume}
+                </Text>
+              </Box>
+            </Box>
+            <LiveTokenText
+              selector={state => {
+                return formatPriceChange(state.change.change24hPct);
+              }}
+              tokenId={`${market.symbol}:hl`}
+              initialValueLastUpdated={0}
+              initialValue={formatPriceChange(market.priceChange['24h'])}
+              autoSubscriptionEnabled={false}
+              usePriceChangeColor
+              priceChangeChangeColors={{
+                positive: green,
+                negative: red,
+                neutral: labelTertiary,
+              }}
+              color={'label'}
+              size="11pt"
+              weight="heavy"
+              align="right"
+            />
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </Pressable>
   );
 };
