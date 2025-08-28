@@ -1,6 +1,6 @@
-import { TOAST_CONFIRMED_HIDE_TIMEOUT_MS, TOAST_PENDING_HIDE_TIMEOUT_MS } from '@/components/rainbow-toast/constants';
+import { TOAST_HIDE_TIMEOUT_MS } from '@/components/rainbow-toast/constants';
 import type { RainbowToast } from '@/components/rainbow-toast/types';
-import { TransactionStatus, type RainbowTransaction } from '@/entities';
+import { type RainbowTransaction } from '@/entities';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useMemo } from 'react';
 
@@ -38,10 +38,11 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>((set, get) =
       if (show === false && state.pendingRemoveToastIds.length) {
         const nextState = { ...state };
         for (const pendingId of state.pendingRemoveToastIds) {
-          Object.assign(nextState, getToastsStateForStartRemove(state, state.toasts[pendingId], 'finish'));
+          Object.assign(nextState, getToastsStateForStartRemove(nextState, nextState.toasts[pendingId], 'finish'));
         }
         return {
           ...nextState,
+          pendingRemoveToastIds: [],
           showExpanded: false,
         };
       }
@@ -68,7 +69,7 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>((set, get) =
         };
       } else {
         toast = {
-          id: toToastId(transaction),
+          id,
           updatedAt: Date.now(),
           transaction,
           isRemoving: false,
@@ -79,12 +80,9 @@ export const useRainbowToastsStore = createRainbowStore<ToastState>((set, get) =
       if (toast.timeoutId != null) {
         clearTimeout(toast.timeoutId);
       }
-      toast.timeoutId = setTimeout(
-        () => {
-          get().startRemoveToast(id, 'finish');
-        },
-        toast.transaction.status === TransactionStatus.pending ? TOAST_PENDING_HIDE_TIMEOUT_MS : TOAST_CONFIRMED_HIDE_TIMEOUT_MS
-      );
+      toast.timeoutId = setTimeout(() => {
+        get().startRemoveToast(id, 'finish');
+      }, TOAST_HIDE_TIMEOUT_MS);
 
       toasts[toast.id] = toast;
 
