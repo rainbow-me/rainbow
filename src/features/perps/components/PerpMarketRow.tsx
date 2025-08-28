@@ -34,7 +34,8 @@ export const PerpMarketRow = function PerpMarketRow({ market }: PerpMarketRowPro
   });
 
   const onRowPress = useCallback(() => {
-    Navigation.handleAction(Routes.PERPS_EXPANDED_STATE_SCREEN, {
+    // @ts-expect-error TODO (kane): Fix
+    Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, {
       market,
     });
   }, [market]);
