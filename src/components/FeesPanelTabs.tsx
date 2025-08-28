@@ -39,7 +39,9 @@ const TabPill = ({ speed, isSelected, handleOnPressTabPill, color, testID }: Tab
       testID={testID}
       paddingHorizontal="5px (Deprecated)"
     >
-      <AccentColorProvider color={isSelected ? color || colors.appleBlue : colors.alpha(color || colors.appleBlue, 0.06)}>
+      <AccentColorProvider
+        color={isSelected ? colors.alpha(color || colors.appleBlue, isDarkMode ? 0.2 : 1) : colors.alpha(color || colors.appleBlue, 0.06)}
+      >
         <Box
           background="accent"
           height="30px"
