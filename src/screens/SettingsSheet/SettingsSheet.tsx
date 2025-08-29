@@ -1,6 +1,8 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
@@ -22,6 +24,7 @@ const Stack = createStackNavigator();
 export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { colors } = useTheme();
+  const language = useSelector((state: AppState) => state.settings.language);
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
     navigate(section);
@@ -53,6 +56,7 @@ export function SettingsSheet() {
             >
               {() => (
                 <SettingsSection
+                  key={language}
                   onCloseModal={goBack}
                   onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon.key)}
                   onPressBackup={sectionOnPressFactory(SettingsPages.backup.key)}
