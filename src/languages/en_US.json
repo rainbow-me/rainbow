@@ -47,6 +47,7 @@
       "unknown_token": "Unknown Token"
     },
     "activity_list": {
+      "title": "Activity",
       "empty_state": {
         "default_label": "No transactions yet",
         "recycler_label": "No transactions yet",
@@ -755,6 +756,7 @@
           "what_is": "What is %{assetName}?"
         },
         "history": {
+          "title": "History",
           "tabs": {
             "all": "All",
             "buys": "Buys",
@@ -2010,6 +2012,9 @@
       "rewards": "Rewards",
       "pools": "Pools"
     },
+    "profile": {
+      "title": "Activity"
+    },
     "savings": {
       "deposit": "Deposit",
       "deposit_from_wallet": "Deposit from Wallet",
@@ -3206,7 +3211,8 @@
       "show_less": "Show Less",
       "more": "More",
       "show_more": "More Networks",
-      "all_networks": "All Networks"
+      "all_networks": "All Networks",
+      "search": "Search"
     },
     "token_launcher": {
       "airdrop": {
