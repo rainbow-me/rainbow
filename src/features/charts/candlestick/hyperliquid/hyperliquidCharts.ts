@@ -7,11 +7,16 @@ import { Bar, CandlestickResponse } from '../types';
 import { getResolutionMinutes } from '../utils';
 
 export type HyperliquidChartParams = {
+  /**
+   * The number of candles to fetch. Maximum 500.
+   */
   barCount?: number;
   candleResolution: CandleResolution;
   startTimestamp?: number;
   token: HyperliquidSymbol;
 };
+
+const MAX_HYPERLIQUID_CANDLES = 500;
 
 /**
  * Fetches candlestick data from Hyperliquid API and returns it in Bar format.
@@ -20,8 +25,9 @@ export async function fetchHyperliquidChart(
   params: HyperliquidChartParams,
   abortController: AbortController | null
 ): Promise<NonNullable<CandlestickResponse>> {
-  const { candleResolution, barCount: requestedCandles = INITIAL_BAR_COUNT, startTimestamp, token: symbol } = params;
+  const { candleResolution, barCount: barCountParam = INITIAL_BAR_COUNT, startTimestamp, token: symbol } = params;
 
+  const requestedCandles = Math.min(barCountParam, MAX_HYPERLIQUID_CANDLES);
   const interval = toHyperliquidInterval(candleResolution);
   const resolutionMinutes = getResolutionMinutes(candleResolution);
   const resolutionMs = time.minutes(resolutionMinutes);
