@@ -35,6 +35,20 @@
             "request": "launch",
             "name": "Gradle invalidate",
             "preLaunchTask": "run invalidate"
+        },
+        {
+            "type": "radon-ide",
+            "request": "launch",
+            "name": "Radon IDE panel",
+            "ios": {
+                "configuration": "Debug",
+                "scheme": "Rainbow",
+                "launchArguments": ["-IDEPreferLogStreaming", "YES"]
+            },
+            "preview": {
+                "waitForAppLaunch": false
+            },
+            "isExpo": false
         }
     ]
 }
