@@ -21,7 +21,6 @@ import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
 import store from '@/redux/store';
 import { MainThemeProvider } from '@/theme/ThemeContext';
-import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { analytics } from '@/analytics';
@@ -125,12 +124,10 @@ function Root() {
                 <MainThemeProvider>
                   <GestureHandlerRootView style={sx.container}>
                     <RainbowContextWrapper>
-                      <SharedValuesProvider>
-                        <ErrorBoundary>
-                          <App />
-                          <RainbowToastDisplay />
-                        </ErrorBoundary>
-                      </SharedValuesProvider>
+                      <ErrorBoundary>
+                        <App />
+                        <RainbowToastDisplay />
+                      </ErrorBoundary>
                     </RainbowContextWrapper>
                   </GestureHandlerRootView>
                 </MainThemeProvider>
