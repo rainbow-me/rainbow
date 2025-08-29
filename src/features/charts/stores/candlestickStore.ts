@@ -1,6 +1,7 @@
 import qs from 'qs';
 import { NativeCurrencyKey } from '@/entities';
 import { IS_DEV } from '@/env';
+import { fetchHyperliquidChart, HyperliquidChartParams } from '@/features/charts/candlestick/hyperliquid/hyperliquidCharts';
 import { ChartsState, useChartsStore } from '@/features/charts/stores/chartsStore';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
@@ -8,9 +9,17 @@ import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore, getQueryKey } from '@/state/internal/createQueryStore';
 import { CacheEntry, SetDataParams } from '@/state/internal/queryStore/types';
 import { time } from '@/utils';
-import { Bar, CandlestickChartMetadata, CandlestickChartResponse, GetCandlestickChartRequest, Price } from '../candlestick/types';
+import {
+  Bar,
+  CandlestickChartMetadata,
+  CandlestickEndpointResponse,
+  CandlestickResponse,
+  GetCandlestickChartRequest,
+  Price,
+} from '../candlestick/types';
 import { areCandlesEqual, getResolutionMinutes, transformApiResponseToBars } from '../candlestick/utils';
-import { CandleResolution, ChartType, Token } from '../types';
+import { INITIAL_BAR_COUNT } from '../constants';
+import { CandleResolution, ChartType, HyperliquidSymbol, Token } from '../types';
 
 // ============ Constants ====================================================== //
 
@@ -19,17 +28,9 @@ const CANDLESTICK_ENDPOINT = '/tokens/charts/GetCandleChart';
 const ERROR_NO_DATA_FOUND = 'token data not found';
 const ERROR_UNSUPPORTED_CHAIN = 'unsupported chain id';
 
-const INITIAL_BAR_COUNT = 200;
 const MAX_CANDLES_PER_REQUEST = 1500;
 
 // ============ Core Types ===================================================== //
-
-export type CandlestickResponse = {
-  candleResolution: CandleResolution;
-  candles: Bar[];
-  hasPreviousCandles: boolean;
-  lastFetchedCurrentPriceAt: number | undefined;
-} | null;
 
 type BaseParams = Pick<CandlestickParams, 'candleResolution' | 'token'> & Partial<Pick<CandlestickParams, 'currency'>>;
 type TokenId = string;
@@ -75,7 +76,7 @@ export const useCandlestickStore = createQueryStore<CandlestickResponse, Candles
 
       const { getData, prices } = get();
       const existingData = getData();
-      const tokenId = typeof token === 'string' ? token : getTokenId(token);
+      const tokenId = getTokenId(token);
       const price = prices[tokenId];
       if (!price || !existingData) return price;
 
@@ -99,7 +100,11 @@ async function fetchCandlestickData(params: CandlestickParams, abortController: 
   if (!requestUrl) return null;
 
   try {
-    const response = await getPlatformClient().get<CandlestickChartResponse>(requestUrl, {
+    if (isHyperliquidChart(params)) {
+      return await fetchHyperliquidChart(buildHyperliquidParams(params), abortController);
+    }
+
+    const response = await getPlatformClient().get<CandlestickEndpointResponse>(requestUrl, {
       abortController,
     });
 
@@ -247,7 +252,7 @@ function parseResponseMetadata(metadata: CandlestickChartMetadata, params: Candl
   const includesCurrentPrice = !params.startTimestamp;
   return {
     candleResolution: params.candleResolution,
-    hasPreviousCandles: requestedCount === returnedCount,
+    hasPreviousCandles: requestedCount >= returnedCount,
     lastFetchedCurrentPriceAt: includesCurrentPrice ? new Date(metadata.responseTime).getTime() : undefined,
   };
 }
@@ -255,18 +260,18 @@ function parseResponseMetadata(metadata: CandlestickChartMetadata, params: Candl
 function buildCandlestickRequest(params: CandlestickParams): string | null {
   if (!params.token) return null;
 
-  const { barCount: barCountParam, candleResolution, currency, startTimestamp, token } = params;
-  const barCount = barCountParam ?? INITIAL_BAR_COUNT;
+  const { barCount, candleResolution, currency, startTimestamp, token } = params;
+  const requestedBarCount = barCount ?? INITIAL_BAR_COUNT;
 
   const existingData = useCandlestickStore.getState().getData(params) ?? null;
   const isPrepending = startTimestamp !== undefined;
   const resolutionMinutes = getResolutionMinutes(candleResolution);
 
   const candlesToRequest = isPrepending
-    ? Math.min(barCount, MAX_CANDLES_PER_REQUEST)
+    ? Math.min(requestedBarCount, MAX_CANDLES_PER_REQUEST)
     : determineCandlesToRequest({
         existingData,
-        requestedBarCount: barCount,
+        requestedBarCount,
         resolutionMinutes,
       });
 
@@ -279,6 +284,30 @@ function buildCandlestickRequest(params: CandlestickParams): string | null {
   };
 
   return `${CANDLESTICK_ENDPOINT}?${qs.stringify(queryParams)}`;
+}
+
+function buildHyperliquidParams(params: HyperliquidChartParams & Pick<CandlestickParams, 'currency'>): HyperliquidChartParams {
+  const { barCount, candleResolution, startTimestamp, token } = params;
+  const requestedBarCount = barCount ?? INITIAL_BAR_COUNT;
+
+  const existingData = useCandlestickStore.getState().getData(params) ?? null;
+  const isPrepending = startTimestamp !== undefined;
+  const resolutionMinutes = getResolutionMinutes(candleResolution);
+
+  const candlesToRequest = isPrepending
+    ? Math.min(requestedBarCount, MAX_CANDLES_PER_REQUEST)
+    : determineCandlesToRequest({
+        existingData,
+        requestedBarCount,
+        resolutionMinutes,
+      });
+
+  return {
+    barCount: candlesToRequest,
+    candleResolution,
+    startTimestamp,
+    token,
+  };
 }
 
 /**
@@ -390,8 +419,9 @@ function mergeOrReturnCached({
 /**
  * Returns a unique identifier for a token in the format `address:chainId`.
  */
-function getTokenId({ address, chainId }: Token): string {
-  return `${address}:${chainId}`;
+function getTokenId(token: Token): string {
+  if (typeof token === 'string') return token;
+  return `${token.address}:${token.chainId}`;
 }
 
 /**
@@ -461,6 +491,13 @@ function firstIndexAtOrAfterTimestamp(candles: readonly Bar[], timestamp: number
     else right = middle;
   }
   return left;
+}
+
+/**
+ * Determines if a chart request is for a Hyperliquid chart.
+ */
+function isHyperliquidChart(params: CandlestickParams): params is CandlestickParams & { token: HyperliquidSymbol } {
+  return typeof params.token === 'string';
 }
 
 /**
