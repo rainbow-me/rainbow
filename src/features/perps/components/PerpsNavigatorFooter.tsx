@@ -1,23 +1,14 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
-import { Box, Text, TextIcon, TextShadow, useForegroundColor } from '@/design-system';
+import { Box, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
-import { Portal } from '@/react-native-cool-modals/Portal';
-import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { HYPERLIQUID_COLORS, PERPS_COLORS } from '@/features/perps/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import Animated, {
-  dispatchCommand,
-  runOnUI,
-  useAnimatedProps,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, useAnimatedRef } from 'react-native-reanimated';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { Navigation } from '@/navigation';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -25,6 +16,7 @@ import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useNavigation } from '@react-navigation/native';
 
 const BUTTON_HEIGHT = 48;
 
@@ -140,12 +132,13 @@ const PerpsSearchScreenFooter = () => {
 
 const PerpsAccountScreenFooter = () => {
   const label = useForegroundColor('label');
+  const navigation = useNavigation();
 
   return (
     <Box>
       <ButtonPressAnimation
         onPress={() => {
-          Navigation.handleAction(Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
+          navigation.navigate(Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
         }}
       >
         <Box
@@ -246,7 +239,14 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           backgroundColor: PERPS_COLORS.surfacePrimary,
         }}
       >
-        <Box paddingHorizontal={'20px'} paddingVertical={'20px'}>
+        <Box
+          as={Animated.View}
+          entering={FadeIn.duration(150)}
+          exiting={FadeOut.duration(100)}
+          key={activeRoute}
+          paddingHorizontal={'20px'}
+          paddingVertical={'20px'}
+        >
           {activeRoute === Routes.PERPS_SEARCH_SCREEN && <PerpsSearchScreenFooter />}
           {activeRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN && <PerpsSearchScreenFooter />}
           {activeRoute === Routes.PERPS_ACCOUNT_SCREEN && <PerpsAccountScreenFooter />}
