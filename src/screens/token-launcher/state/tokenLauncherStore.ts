@@ -35,6 +35,10 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ParsedAsset } from '@/resources/assets/types';
 import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
+
+// TODO: Remove this — temporary option for testing
+const REQUIRE_TOKEN_LOGO = false;
+
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
@@ -293,7 +297,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
     const symbolValidation = validateSymbolWorklet(symbol);
     const supplyValidation = validateTotalSupplyWorklet(totalSupply);
 
-    return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && imageUrl !== '';
+    return !nameValidation?.error && !symbolValidation?.error && !supplyValidation?.error && (!REQUIRE_TOKEN_LOGO || imageUrl !== '');
   },
   canContinueToReview: () => {
     const {
