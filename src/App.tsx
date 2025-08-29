@@ -1,6 +1,8 @@
 import '@/languages';
 import * as Sentry from '@sentry/react-native';
 import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Provider as ReduxProvider, useSelector } from 'react-redux';
+import lang from 'i18n-js';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
@@ -9,7 +11,6 @@ import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import { Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
 import { OfflineToast } from '@/components/toasts';
@@ -19,7 +20,7 @@ import { Playground } from '@/design-system/playground/Playground';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
-import store from '@/redux/store';
+import store, { AppState } from '@/redux/store';
 import { MainThemeProvider } from '@/theme/ThemeContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
@@ -57,6 +58,13 @@ const sx = StyleSheet.create({
 
 function AppComponent() {
   const { initialRoute } = useApplicationSetup();
+  const language = useSelector((state: AppState) => state.settings.language);
+
+  // Update i18n locale when language changes
+  useEffect(() => {
+    lang.locale = language;
+  }, [language]);
+
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
   }, []);
