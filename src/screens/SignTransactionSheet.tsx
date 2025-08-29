@@ -104,8 +104,14 @@ export const SignTransactionSheet = () => {
   const addressToUse = specifiedAddress ?? accountAddress;
 
   const provider = getProvider({ chainId });
-  const nativeAsset =
-    ethereumUtils.getNetworkNativeAsset({ chainId }) ?? useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+
+  // Native asset for dapp browser wallet selection vs global wallet
+  const nativeAsset = useMemo(() => {
+    return (
+      ethereumUtils.getNetworkNativeAsset({ chainId, address: addressToUse }) ??
+      useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]
+    );
+  }, [chainId, addressToUse]);
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
