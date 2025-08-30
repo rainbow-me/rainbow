@@ -58,6 +58,7 @@ import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { QuantityButton } from './components/QuantityButton';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -129,10 +130,11 @@ const MintSheet = () => {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.MINT_SHEET>>();
   const { collection: mintCollection, pricePerMint } = params;
   const chainId = mintCollection.chainId;
+  const rainbowToastsEnabled = useRainbowToastEnabled();
   const accountAddress = useAccountAddress();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const isHardwareWallet = useIsHardwareWallet();
@@ -459,7 +461,11 @@ const MintSheet = () => {
                   quantity,
                   priceInEth: mintPriceAmount,
                 });
-                navigate(Routes.PROFILE_SCREEN);
+                if (rainbowToastsEnabled) {
+                  goBack();
+                } else {
+                  navigate(Routes.PROFILE_SCREEN);
+                }
                 setMintStatus('minted');
               }
             });
@@ -491,6 +497,8 @@ const MintSheet = () => {
     mintPriceAmount,
     navigate,
     quantity,
+    rainbowToastsEnabled,
+    goBack,
   ]);
 
   const buttonLabel = useMemo(() => {

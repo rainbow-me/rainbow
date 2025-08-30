@@ -91,8 +91,6 @@ target 'Rainbow' do
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
   pod 'TOCropViewController', '~> 2.7.4'
 
-  use_native_modules!
-
   post_install do |installer|
     react_native_post_install(
       installer,

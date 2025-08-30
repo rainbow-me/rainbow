@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
+import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetType, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -50,6 +51,8 @@ import { interactionsCountQueryKey } from '@/resources/addys/interactions';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
@@ -73,8 +76,6 @@ import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 
@@ -650,6 +651,8 @@ export default function SendSheet() {
     ]
   );
 
+  const rainbowToastsEnabled = useRainbowToastEnabled();
+
   const submitTransaction = useCallback(
     async (args?: OnSubmitProps) => {
       if (Number(amountDetails.assetAmount) <= 0) {
@@ -669,9 +672,14 @@ export default function SendSheet() {
       const goBackAndNavigate = () => {
         goBack();
         navigate(Routes.WALLET_SCREEN);
-        InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.PROFILE_SCREEN);
-        });
+
+        // with toasts: just show the toast
+        // without toasts: navigate user to the activity list
+        if (!rainbowToastsEnabled) {
+          InteractionManager.runAfterInteractions(() => {
+            navigate(Routes.PROFILE_SCREEN);
+          });
+        }
       };
 
       if (submitSuccessful) {
@@ -689,7 +697,19 @@ export default function SendSheet() {
         })();
       }
     },
-    [accountAddress, amountDetails, goBack, isENS, isHardwareWallet, isUniqueAsset, navigate, onSubmit, recipient, selected]
+    [
+      accountAddress,
+      amountDetails,
+      goBack,
+      isENS,
+      isHardwareWallet,
+      isUniqueAsset,
+      navigate,
+      onSubmit,
+      rainbowToastsEnabled,
+      recipient,
+      selected,
+    ]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {

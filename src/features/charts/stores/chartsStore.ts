@@ -101,5 +101,6 @@ export function useChartType(): ChartType {
 function areTokensEqual(previousToken: Token | null, newToken: Token | null): boolean {
   if (!previousToken && !newToken) return true;
   if (!previousToken || !newToken) return false;
+  if (typeof previousToken === 'string' || typeof newToken === 'string') return previousToken === newToken;
   return previousToken.address === newToken.address && previousToken.chainId === newToken.chainId;
 }

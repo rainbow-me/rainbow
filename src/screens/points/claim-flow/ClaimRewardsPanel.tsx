@@ -51,6 +51,8 @@ const isClaimError = (claimStatus: ClaimStatus) => {
   return claimStatus === 'error' || Object.values(PointsErrorType).includes(claimStatus as PointsErrorType);
 };
 
+const PANEL_BOTTOM_OFFSET = Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30);
+
 export const ClaimRewardsPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
 
@@ -61,7 +63,7 @@ export const ClaimRewardsPanel = () => {
 
   return (
     <>
-      <Box style={[controlPanelStyles.panelContainer, { bottom: Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30) }]}>
+      <Box style={[controlPanelStyles.panelContainer, { bottom: PANEL_BOTTOM_OFFSET }]}>
         <SmoothPager
           enableSwipeToGoBack={claimStatus === 'idle' || isClaimError(claimStatus)}
           initialPage={PAGES.CHOOSE_CLAIM_NETWORK}
@@ -449,17 +451,10 @@ const ClaimingRewards = ({
         goBack={goBack}
         showBackButton={claimStatus === 'idle' || isClaimError(claimStatus)}
       />
-      <Box
-        alignItems="center"
-        flexDirection="row"
-        gap={8}
-        height={{ custom: CLAIMING_STEP_HEIGHT }}
-        justifyContent="center"
-        style={{ zIndex: -1 }}
-      >
+      <Box height={{ custom: CLAIMING_STEP_HEIGHT }} style={{ zIndex: -1 }}>
         <NanoXDeviceAnimation
           CenterComponent={
-            <Box alignItems="center" height={{ custom: CLAIMING_STEP_HEIGHT - 24 }} justifyContent="space-around">
+            <Box height={{ custom: CLAIMING_STEP_HEIGHT }}>
               <Box
                 alignItems="center"
                 as={Animated.View}
@@ -511,44 +506,39 @@ const ClaimingRewards = ({
                 )}
               </Box>
               <Animated.View style={claimButtonStyle}>
-                <ButtonPressAnimation
-                  onPress={() => {
-                    if (isReadOnlyWallet) {
-                      watchingAlert();
-                    } else {
-                      if (claimStatus === 'idle' || isClaimError(claimStatus)) {
-                        // Almost impossible to reach here since gas prices load immediately
-                        // but in that case I'm disabling the action temporarily to prevent
-                        // any issues that might arise from the gas prices not being loaded
-                        if (!meteorologyData) return;
-
-                        setClaimStatus('claiming');
-                        claimRewards();
-                      } else if (claimStatus === 'success' || claimStatus === 'bridge-error') {
-                        closeClaimPanel();
-                      }
-                    }
-                  }}
-                  scaleTo={0.925}
+                <Box
                   style={{
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                    bottom: bottomInset + 24,
-                    left: 0,
-                    height: 80,
-                    justifyContent: 'center',
-                    paddingVertical: 12,
-                    pointerEvents: 'box-only',
-                    width: DEVICE_WIDTH - 28 * 2,
+                    bottom: PANEL_BOTTOM_OFFSET + 12,
                   }}
                 >
-                  <RewardsActionButton
-                    borderRadius={22}
-                    color={claimStatus === 'success' ? green : highContrastAccentColor}
-                    label={buttonLabel}
-                    width={DEVICE_WIDTH - 28 * 2}
-                  />
-                </ButtonPressAnimation>
+                  <ButtonPressAnimation
+                    onPress={() => {
+                      if (isReadOnlyWallet) {
+                        watchingAlert();
+                      } else {
+                        if (claimStatus === 'idle' || isClaimError(claimStatus)) {
+                          // Almost impossible to reach here since gas prices load immediately
+                          // but in that case I'm disabling the action temporarily to prevent
+                          // any issues that might arise from the gas prices not being loaded
+                          if (!meteorologyData) return;
+
+                          setClaimStatus('claiming');
+                          claimRewards();
+                        } else if (claimStatus === 'success' || claimStatus === 'bridge-error') {
+                          closeClaimPanel();
+                        }
+                      }
+                    }}
+                    scaleTo={0.925}
+                  >
+                    <RewardsActionButton
+                      borderRadius={22}
+                      color={claimStatus === 'success' ? green : highContrastAccentColor}
+                      label={buttonLabel}
+                      width={DEVICE_WIDTH - 28 * 2}
+                    />
+                  </ButtonPressAnimation>
+                </Box>
               </Animated.View>
             </Box>
           }

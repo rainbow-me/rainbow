@@ -44,12 +44,7 @@ import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/us
 import { NativeCurrencyKey } from '@/entities';
 import { IS_DEV, IS_IOS } from '@/env';
 import { areCandlesEqual } from '@/features/charts/candlestick/utils';
-import {
-  CandlestickResponse,
-  candlestickActions,
-  fetchHistoricalCandles,
-  useCandlestickStore,
-} from '@/features/charts/stores/candlestickStore';
+import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { useWorkletClass } from '@/hooks/reanimated/useWorkletClass';
@@ -69,21 +64,20 @@ import { time } from '@/utils/time';
 import { DampingMassStiffnessConfig, normalizeSpringConfig } from '@/worklets/animations';
 import { createBlankPicture } from '@/worklets/skia';
 import { NoChartData } from '../../components/NoChartData';
+import { HyperliquidSymbol, Token } from '../../types';
 import { Animator } from '../classes/Animator';
 import { EmaIndicator, IndicatorBuilder, IndicatorKey } from '../classes/IndicatorBuilder';
 import { TimeFormatter } from '../classes/TimeFormatter';
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../constants';
-import { Bar } from '../types';
+import { Bar, CandlestickResponse } from '../types';
 import { ActiveCandleCard } from './ActiveCandleCard';
 
 export type PartialCandlestickConfig = DeepPartial<
   Omit<CandlestickConfig, 'chart'> & { chart: Omit<CandlestickConfig['chart'], 'backgroundColor'> }
 >;
 
-export type CandlestickChartProps = {
+export type CandlestickChartProps = TokenProps & {
   accentColor: string;
-  address: string;
-  chainId: ChainId;
   backgroundColor: string;
   candles?: Bar[];
   chartHeight?: number;
@@ -92,6 +86,18 @@ export type CandlestickChartProps = {
   isChartGestureActive: SharedValue<boolean>;
   showChartControls?: boolean;
 };
+
+type TokenProps =
+  | {
+      address: string;
+      chainId: ChainId;
+      symbol?: undefined;
+    }
+  | {
+      address?: undefined;
+      chainId?: undefined;
+      symbol: HyperliquidSymbol;
+    };
 
 type CandlestickConfig = {
   activeCandleCard: {
@@ -1598,32 +1604,31 @@ enum ChartStatus {
 }
 
 function useCandlestickChart({
-  address,
   backgroundColor,
-  chainId,
   chartHeight,
   chartWidth,
   isChartGestureActive,
   isDarkMode,
   isLoadingHistoricalCandles,
   providedConfig,
+  providedToken,
 }: {
-  address: string;
   backgroundColor: string;
-  chainId: ChainId;
   chartHeight: number;
   chartWidth: number;
   isChartGestureActive: SharedValue<boolean>;
   isDarkMode: boolean;
   isLoadingHistoricalCandles: SharedValue<boolean>;
   providedConfig: CandlestickChartProps['config'];
+  providedToken: Token;
 }) {
-  const { candles, config, hasPreviousCandles, initialPicture, isFetchingInitialData, nativeCurrency } = useStableValue(() =>
+  const { candles, config, hasPreviousCandles, initialPicture, isFetchingInitialData, nativeCurrency, token } = useStableValue(() =>
     buildChartConfig({
       backgroundColor,
       chartHeight,
       chartWidth,
       providedConfig,
+      token: providedToken,
     })
   );
 
@@ -1663,7 +1668,7 @@ function useCandlestickChart({
 
       fetchPromise.current = fetchHistoricalCandles({
         candleResolution: useChartsStore.getState().candleResolution,
-        token: { address, chainId },
+        token,
       })
         .then(data => {
           if (!fetchPromise.current) return;
@@ -1673,7 +1678,7 @@ function useCandlestickChart({
           isLoadingHistoricalCandles.value = false;
         });
     },
-    [address, chainId, isLoadingHistoricalCandles]
+    [isLoadingHistoricalCandles, token]
   );
 
   const chartManager = useWorkletClass(() => {
@@ -1847,8 +1852,9 @@ export const CandlestickChart = memo(function CandlestickChart({
   chartHeight: providedChartHeight = 480,
   chartWidth = DEVICE_WIDTH,
   config: providedConfig,
-  showChartControls = false,
   isChartGestureActive,
+  showChartControls = false,
+  symbol,
 }: CandlestickChartProps) {
   const { isDarkMode } = useColorMode();
   const showDataMonitor = useExperimentalFlag(CANDLESTICK_DATA_MONITOR) && IS_DEV;
@@ -1860,15 +1866,14 @@ export const CandlestickChart = memo(function CandlestickChart({
 
   const { activeCandle, chartManager, chartStatus, chartXOffset, config, fetchAdditionalCandles, isChartLoading, pictures } =
     useCandlestickChart({
-      address,
       backgroundColor,
-      chainId,
       chartHeight,
       chartWidth,
       isChartGestureActive,
       isDarkMode,
       isLoadingHistoricalCandles,
       providedConfig,
+      providedToken: symbol ?? { address, chainId },
     });
 
   const showLeftFade = useDerivedValue(() => !_WORKLET || chartManager.value?.toAdjustedOffset?.(chartXOffset.value) !== 0);
@@ -2141,11 +2146,13 @@ function buildChartConfig({
   chartHeight,
   chartWidth,
   providedConfig,
+  token,
 }: {
   backgroundColor: string;
   chartHeight: number;
   chartWidth: number;
   providedConfig: CandlestickChartProps['config'];
+  token: Token;
 }): {
   candles: Bar[];
   config: CandlestickConfig;
@@ -2153,6 +2160,7 @@ function buildChartConfig({
   initialPicture: SkPicture;
   isFetchingInitialData: boolean;
   nativeCurrency: { currency: NativeCurrencyKey; decimals: number };
+  token: Token;
 } {
   const { candles, hasPreviousCandles, isFetchingInitialData, nativeCurrency } = prepareCandlestickData();
 
@@ -2167,6 +2175,7 @@ function buildChartConfig({
     initialPicture: createBlankPicture(chartWidth, chartHeight),
     isFetchingInitialData,
     nativeCurrency,
+    token,
   };
 }
 

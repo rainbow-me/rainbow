@@ -1,6 +1,11 @@
 import qs from 'qs';
 import { NativeCurrencyKey } from '@/entities';
 import { IS_DEV } from '@/env';
+import {
+  HyperliquidChartParams,
+  MAX_HYPERLIQUID_CANDLES_PER_REQUEST,
+  fetchHyperliquidChart,
+} from '@/features/charts/candlestick/hyperliquid/hyperliquidCharts';
 import { ChartsState, chartsActions, useChartsStore } from '@/features/charts/stores/chartsStore';
 import { ensureError } from '@/logger';
 import { getPlatformClient } from '@/resources/platform/client';
@@ -11,18 +16,19 @@ import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { CacheEntry, SetDataParams } from '@/state/internal/queryStore/types';
 import { Exact } from '@/types/objects';
 import { time } from '@/utils';
-import { Bar, CandlestickChartMetadata, CandlestickChartResponse, GetCandlestickChartRequest, Price } from '../candlestick/types';
+import {
+  Bar,
+  CandlestickChartMetadata,
+  CandlestickEndpointResponse,
+  CandlestickResponse,
+  GetCandlestickChartRequest,
+  Price,
+} from '../candlestick/types';
 import { areCandlesEqual, getResolutionMinutes, transformApiResponseToBars } from '../candlestick/utils';
-import { CandleResolution, ChartType, Token } from '../types';
+import { INITIAL_BAR_COUNT } from '../constants';
+import { CandleResolution, ChartType, HyperliquidSymbol, Token } from '../types';
 
 // ============ Core Types ===================================================== //
-
-export type CandlestickResponse = {
-  candleResolution: CandleResolution;
-  candles: Bar[];
-  hasPreviousCandles: boolean;
-  lastFetchedCurrentPriceAt: number | undefined;
-} | null;
 
 type BaseParams = Pick<CandlestickParams, 'candleResolution' | 'token'> & Partial<Pick<CandlestickParams, 'currency'>>;
 type TokenId = string;
@@ -35,7 +41,6 @@ const CANDLESTICK_ENDPOINT = '/tokens/charts/GetCandleChart';
 const ERROR_NO_DATA_FOUND = 'token data not found';
 const ERROR_UNSUPPORTED_CHAIN = 'unsupported chain id';
 
-const INITIAL_BAR_COUNT = 200;
 const MAX_CANDLES_PER_REQUEST = 1500;
 
 // ============ Candlestick Store ============================================== //
@@ -78,7 +83,7 @@ export const useCandlestickStore = createQueryStore<CandlestickResponse, Candles
 
       const { getData, prices } = get();
       const existingData = getData();
-      const tokenId = typeof token === 'string' ? token : getTokenId(token);
+      const tokenId = getTokenId(token);
       const price = prices[tokenId];
       if (!price || !existingData) return price;
 
@@ -106,7 +111,11 @@ async function fetchCandlestickData(params: CandlestickParams, abortController: 
   if (!requestUrl) return null;
 
   try {
-    const response = await getPlatformClient().get<CandlestickChartResponse>(requestUrl, {
+    if (isHyperliquidChart(params)) {
+      return await fetchHyperliquidChart(buildHyperliquidParams(params), abortController);
+    }
+
+    const response = await getPlatformClient().get<CandlestickEndpointResponse>(requestUrl, {
       abortController,
     });
 
@@ -140,7 +149,7 @@ async function fetchCandlestickData(params: CandlestickParams, abortController: 
  */
 export function prefetchCandlestickData(asset: Token | ExpandedSheetParamAsset): void {
   const { candleResolution, chartType } = useChartsStore.getState();
-  const token = { address: asset.address, chainId: asset.chainId };
+  const token = typeof asset === 'string' ? asset : { address: asset.address, chainId: asset.chainId };
   chartsActions.setToken(token);
   if (chartType === ChartType.Line) return;
   candlestickActions.fetch(buildBaseParams({ candleResolution, token }));
@@ -266,7 +275,7 @@ function parseResponseMetadata(metadata: CandlestickChartMetadata, params: Candl
   const includesCurrentPrice = params.startTimestamp === undefined;
   return {
     candleResolution: params.candleResolution,
-    hasPreviousCandles: requestedCount === returnedCount,
+    hasPreviousCandles: requestedCount >= returnedCount,
     lastFetchedCurrentPriceAt: includesCurrentPrice ? new Date(metadata.responseTime).getTime() : undefined,
   };
 }
@@ -274,8 +283,8 @@ function parseResponseMetadata(metadata: CandlestickChartMetadata, params: Candl
 function buildCandlestickRequest(params: CandlestickParams): string | null {
   if (!params.token) return null;
 
-  const { barCount: barCountParam, candleResolution, currency, startTimestamp, token } = params;
-  const barCount = barCountParam ?? INITIAL_BAR_COUNT;
+  const { barCount, candleResolution, currency, startTimestamp, token } = params;
+  const requestedBarCount = barCount ?? INITIAL_BAR_COUNT;
 
   const existingData = candlestickActions.getData(params) ?? null;
   const isPrepending = startTimestamp !== undefined;
@@ -283,10 +292,10 @@ function buildCandlestickRequest(params: CandlestickParams): string | null {
 
   const candlesToRequest = Math.min(
     isPrepending
-      ? barCount
+      ? requestedBarCount
       : determineCandlesToRequest({
           existingData,
-          requestedBarCount: barCount,
+          requestedBarCount,
           resolutionMinutes,
         }),
     MAX_CANDLES_PER_REQUEST
@@ -301,6 +310,33 @@ function buildCandlestickRequest(params: CandlestickParams): string | null {
   };
 
   return `${CANDLESTICK_ENDPOINT}?${qs.stringify(queryParams)}`;
+}
+
+function buildHyperliquidParams(params: HyperliquidChartParams & Pick<CandlestickParams, 'currency'>): HyperliquidChartParams {
+  const { barCount, candleResolution, startTimestamp, token } = params;
+  const requestedBarCount = barCount ?? INITIAL_BAR_COUNT;
+
+  const existingData = useCandlestickStore.getState().getData(params) ?? null;
+  const isPrepending = startTimestamp !== undefined;
+  const resolutionMinutes = getResolutionMinutes(candleResolution);
+
+  const candlesToRequest = Math.min(
+    isPrepending
+      ? requestedBarCount
+      : determineCandlesToRequest({
+          existingData,
+          requestedBarCount,
+          resolutionMinutes,
+        }),
+    MAX_HYPERLIQUID_CANDLES_PER_REQUEST
+  );
+
+  return {
+    barCount: candlesToRequest,
+    candleResolution,
+    startTimestamp,
+    token,
+  };
 }
 
 /**
@@ -412,8 +448,9 @@ function mergeOrReturnCached({
 /**
  * Returns a unique identifier for a token in the format `address:chainId`.
  */
-function getTokenId({ address, chainId }: Token): string {
-  return `${address}:${chainId}`;
+function getTokenId(token: Token): string {
+  if (typeof token === 'string') return token;
+  return `${token.address}:${token.chainId}`;
 }
 
 /**
@@ -483,6 +520,13 @@ function firstIndexAtOrAfterTimestamp(candles: readonly Bar[], timestamp: number
     else right = middle;
   }
   return left;
+}
+
+/**
+ * Determines if a chart request is for a Hyperliquid chart.
+ */
+function isHyperliquidChart(params: CandlestickParams): params is CandlestickParams & { token: HyperliquidSymbol } {
+  return typeof params.token === 'string';
 }
 
 /**
