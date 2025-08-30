@@ -1,7 +1,5 @@
 import { caretConfig } from '@/__swaps__/screens/Swap/constants';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { Box, useColorMode } from '@/design-system';
+import { Box } from '@/design-system';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
@@ -15,16 +13,14 @@ import Animated, {
 } from 'react-native-reanimated';
 
 export function InputValueCaret({
-  asset,
   disabled,
   value,
+  color,
 }: {
-  asset: ExtendedAnimatedAssetWithColors | null;
   disabled?: SharedValue<boolean>;
   value: SharedValue<string>;
+  color: string;
 }) {
-  const { isDarkMode } = useColorMode();
-
   const shouldShow = useDerivedValue(() => {
     return !disabled?.value;
   });
@@ -59,7 +55,7 @@ export function InputValueCaret({
 
   const assetCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode),
+      backgroundColor: color,
     };
   });
 

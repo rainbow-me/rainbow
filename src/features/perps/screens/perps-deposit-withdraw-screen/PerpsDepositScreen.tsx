@@ -2,10 +2,22 @@ import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { INPUT_INNER_WIDTH, INPUT_PADDING, USDC_ASSET } from '@/__swaps__/screens/Swap/constants';
+import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '@/__swaps__/screens/Swap/hooks/useSwapEstimatedGasLimit';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedAsset, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { addCommasToNumber, clamp, opacity, parseAssetAndExtend, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
+import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
+import {
+  addCommasToNumber,
+  clamp,
+  getColorValueForThemeWorklet,
+  opacity,
+  parseAssetAndExtend,
+  stripNonDecimalNumbers,
+} from '@/__swaps__/utils/swaps';
+import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
+import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -16,9 +28,11 @@ import { Navbar } from '@/components/navbar/Navbar';
 import { RainbowImage } from '@/components/RainbowImage';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { AnimatedText, Box, Column, Columns, Separator, Stack, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
+import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
 import {
@@ -30,18 +44,28 @@ import {
 } from '@/features/perps/constants';
 import { PerpsInputContainer } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsInputContainer';
 import { PerpsTokenList } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsTokenList';
-import { convertRawAmountToDecimalFormat } from '@/helpers/utilities';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { getProvider } from '@/handlers/web3';
+import { convertAmountToRawAmount, convertRawAmountToDecimalFormat, handleSignificantDecimalsWorklet } from '@/helpers/utilities';
+import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
+import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
-import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { walletExecuteRap } from '@/raps/execute';
+import { RapSwapActionParameters } from '@/raps/references';
+import { divWorklet, sumWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { GasButton } from '@/screens/token-launcher/components/gas/GasButton';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
+import { getNextNonce } from '@/state/nonces';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { CrosschainQuote, getCrosschainQuote, QuoteError } from '@rainbow-me/swaps';
 import React, { memo, useCallback, useMemo, useState } from 'react';
+import { Alert } from 'react-native';
 import Animated, {
   interpolate,
   runOnJS,
@@ -53,8 +77,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
 import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
+import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 
 const AssetCoinIcon = ({
   asset,
@@ -158,9 +184,6 @@ const DepositInputSection = ({
     ).toFixed(2)} ${USDC_ASSET.symbol}`;
   }, [quote]);
 
-  const skeletonColor = useBackgroundColor('fillQuaternary');
-  const shimmerColor = opacity(useBackgroundColor('fillSecondary'), 0.1);
-
   return (
     <PerpsInputContainer asset={asset} progress={inputProgress}>
       <Box testID={'swap-asset-input'} as={Animated.View} style={inputStyle} flexGrow={1} gap={20}>
@@ -200,7 +223,7 @@ const DepositInputSection = ({
             <AnimatedText size="44pt" weight="heavy" color="label" tabularNumbers numberOfLines={1} ellipsizeMode="middle">
               {primaryFormattedInput}
             </AnimatedText>
-            <InputValueCaret asset={asset} value={primaryFormattedInput} />
+            <InputValueCaret color={getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode)} value={primaryFormattedInput} />
           </Box>
           <GestureHandlerButton
             disableHaptics
@@ -236,11 +259,7 @@ const DepositInputSection = ({
             Receive{' '}
           </Text>
           {formattedOutputAmount == null ? (
-            <Box as={Animated.View} height={{ custom: 15 }} width={{ custom: 90 }}>
-              <Skeleton skeletonColor={skeletonColor} shimmerColor={shimmerColor}>
-                <FakeText height={15} width={90} />
-              </Skeleton>
-            </Box>
+            <PerpsTextSkeleton width={90} height={15} />
           ) : (
             <Text size="15pt" weight="bold" color="labelTertiary" tabularNumbers>
               {formattedOutputAmount}
@@ -274,11 +293,11 @@ const DepositInputSection = ({
 export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   const accountAddress = userAssetsStoreManager(state => state.address);
   const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
+  const { nativeCurrency } = useAccountSettings();
 
   // State for input values
   const inputMethod = useSharedValue<InputMethod>('inputNativeValue');
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * 0.25); // Default to 25% of slider width
-  const formattedOutputAmount = useSharedValue<string | null>(null);
   const [quote, setQuote] = useState<CrosschainQuote | QuoteError | null>(null);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
@@ -289,27 +308,32 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   const [gasSpeed, setGasSpeed] = useState(GasSpeed.FAST);
   // TODO: Is this ok?
   const gasLimit = useSwapEstimatedGasLimit({ quote, assetToSell: selectedAsset, chainId: ChainId.mainnet });
+  const { data: gasSuggestions } = useMeteorologySuggestions({
+    chainId: selectedAsset?.chainId ?? ChainId.mainnet,
+    enabled: true,
+  });
+  const [loading, setLoading] = useState(false);
 
   const fieldsValueForAsset = (asset: ExtendedAnimatedAssetWithColors | null, percentage: number): Record<string, NumberPadField> => {
     'worklet';
-
-    const maxAmount = Number(asset?.balance?.amount || '0');
-    const nativePrice = asset?.price?.value || 0;
     const decimals = asset?.decimals || 18;
 
-    const amount = maxAmount * percentage;
-    const nativeValue = amount * nativePrice;
+    const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
+      selectedInputAsset: asset,
+      percentageToSwap: percentage,
+      sliderXPosition: percentage * SLIDER_WIDTH,
+    });
 
     return {
       inputAmount: {
         id: 'inputAmount',
-        value: amount,
+        value: inputAmount,
         maxDecimals: decimals,
         allowDecimals: true,
       },
       inputNativeValue: {
         id: 'inputNativeValue',
-        value: toFixedWorklet(nativeValue, 2),
+        value: toFixedWorklet(inputNativeValue, 2),
         maxDecimals: 2,
         allowDecimals: true,
       },
@@ -317,6 +341,13 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   };
 
   const fields = useSharedValue<Record<string, NumberPadField>>(fieldsValueForAsset(initialAsset, 0.25));
+
+  const sliderColors = {
+    activeLeft: 'rgba(100, 117, 133, 0.90)',
+    inactiveLeft: 'rgba(100, 117, 133, 0.90)',
+    activeRight: 'rgba(244, 248, 255, 0.06)',
+    inactiveRight: 'rgba(244, 248, 255, 0.06)',
+  };
 
   // Formatted values
   const formattedInputAmount = useDerivedValue(() => {
@@ -360,7 +391,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           ...current,
           inputAmount: {
             ...current.inputAmount,
-            value: amount,
+            value: handleSignificantDecimalsWorklet(amount, asset.decimals),
           },
         }));
       }
@@ -397,23 +428,22 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     if (!amount || amount === '0' || !selectedAsset) return;
     setQuote(null);
     try {
-      const amountInWei = mulWorklet(Number(amount), 1e18).toString();
       const quoteResult = await getCrosschainQuote({
         chainId: selectedAsset.chainId,
         toChainId: HYPERCORE_PSEUDO_CHAIN_ID,
         sellTokenAddress: selectedAsset.address,
         buyTokenAddress: HYPERLIQUID_USDC_ADDRESS,
-        sellAmount: amountInWei,
+        sellAmount: convertAmountToRawAmount(amount, selectedAsset.decimals),
         fromAddress: accountAddress || '',
         slippage: 1,
-        currency: 'USD',
+        currency: nativeCurrency,
       });
       setQuote(quoteResult);
     } catch (error) {
       setQuote(null);
       console.error('Quote fetch error:', error);
     }
-  }, [accountAddress, fields.value.inputAmount?.value, selectedAsset]);
+  }, [accountAddress, fields.value.inputAmount?.value, nativeCurrency, selectedAsset]);
 
   const fetchQuoteDebounced = useDebouncedCallback(fetchQuote, 200, { leading: false, trailing: true });
 
@@ -423,6 +453,118 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
       runOnJS(fetchQuoteDebounced)();
     }
   );
+
+  const handleSwap = useCallback(async () => {
+    if (quote == null || 'error' in quote || selectedAsset == null || loading || !gasSuggestions) return;
+
+    setLoading(true);
+
+    const type = 'crosschainSwap' as const;
+    const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
+      sellAmount: quote.sellAmount?.toString(),
+      buyAmount: quote.buyAmount?.toString(),
+      chainId: selectedAsset.chainId,
+      assetToSell: selectedAsset,
+      // TODO: Check if this works.
+      assetToBuy: USDC_ASSET as unknown as ParsedAsset,
+      quote,
+    };
+
+    try {
+      // const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
+      // NotificationManager?.postNotification('rapInProgress');
+
+      const provider = getProvider({ chainId: selectedAsset.chainId });
+
+      const wallet = await performanceTracking.getState().executeFn({
+        fn: loadWallet,
+        screen: Screens.PERPS_DEPOSIT,
+        operation: TimeToSignOperation.KeychainRead,
+      })({
+        address: quote.from,
+        showErrorIfNotLoaded: false,
+        provider,
+        timeTracking: {
+          screen: Screens.PERPS_DEPOSIT,
+          operation: TimeToSignOperation.Authentication,
+        },
+      });
+      const isHardwareWallet = wallet instanceof LedgerSigner;
+
+      if (!wallet) {
+        triggerHaptics('notificationError');
+        // showWalletErrorAlert();
+        return;
+      }
+
+      const gasFeeParamsBySpeed = getGasSettingsBySpeed(selectedAsset.chainId);
+      let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+
+      const selectedGas = gasSuggestions[gasSpeed as keyof typeof gasSuggestions];
+
+      if (selectedGas.isEIP1559) {
+        gasParams = {
+          maxFeePerGas: sumWorklet(selectedGas.maxBaseFee, selectedGas.maxPriorityFee),
+          maxPriorityFeePerGas: selectedGas.maxPriorityFee,
+        };
+      } else {
+        gasParams = { gasPrice: selectedGas.gasPrice };
+      }
+
+      const nonce = await getNextNonce({ address: quote.from, chainId: selectedAsset.chainId });
+
+      const { errorMessage } = await performanceTracking.getState().executeFn({
+        fn: walletExecuteRap,
+        screen: Screens.PERPS_DEPOSIT,
+        operation: TimeToSignOperation.SignTransaction,
+      })(wallet, type, {
+        ...parameters,
+        nonce,
+        chainId: selectedAsset.chainId,
+        gasParams,
+        gasFeeParamsBySpeed,
+      });
+
+      if (errorMessage) {
+        trackSwapEvent(analytics.event.swapsFailed, {
+          errorMessage,
+          isHardwareWallet,
+          parameters,
+          type,
+        });
+
+        if (errorMessage !== 'handled') {
+          logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
+          const extractedError = errorMessage.split('[')[0];
+          Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
+          return;
+        }
+      }
+
+      // NotificationManager?.postNotification('rapCompleted');
+      performanceTracking.getState().executeFn({
+        fn: () => {
+          Navigation.goBack();
+        },
+        screen: Screens.PERPS_DEPOSIT,
+        operation: TimeToSignOperation.SheetDismissal,
+        endOfOperation: true,
+      })();
+
+      trackSwapEvent(analytics.event.swapsSubmitted, {
+        isHardwareWallet,
+        parameters,
+        type,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Generic error while trying to swap';
+      logger.error(new RainbowError(`[getNonceAndPerformSwap]: ${message}`), {
+        data: { error, parameters, type },
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [gasSpeed, gasSuggestions, loading, quote, selectedAsset]);
 
   const handleSelectAsset = useCallback(
     (asset: ParsedSearchAsset | null) => {
@@ -485,6 +627,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
         // TODO: INTL
         labels={{ title: 'Depositing', maxButtonText: 'Max', disabledText: NO_BALANCE_LABEL }}
         icon={<AssetCoinIcon asset={selectedAsset} size={16} showBadge={false} />}
+        colors={sliderColors}
       />
       <NumberPad
         activeFieldId={inputMethod as SharedValue<string>}
@@ -498,13 +641,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           <GasButton gasSpeed={gasSpeed} chainId={ChainId.mainnet} onSelectGasSpeed={setGasSpeed} gasLimit={gasLimit} />
         </Box>
         <Box flexGrow={1}>
-          <ButtonPressAnimation onPress={fetchQuote} scaleTo={0.97}>
-            <Box alignItems="center" backgroundColor="accent" borderRadius={99} height="56px" justifyContent="center" width="full">
-              <Text color="label" size="20pt" weight="heavy" tabularNumbers>
-                Hold to Deposit
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
+          <PerpsSwapButton label={loading ? 'Depositing...' : 'Hold to Deposit'} onLongPress={handleSwap} disabled={loading} />
         </Box>
       </Box>
     </Box>

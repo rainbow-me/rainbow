@@ -67,11 +67,6 @@ function WalletScreen() {
   const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
   const route = useRoute();
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    navigation.navigate(Routes.PERPS_DEPOSIT_SCREEN);
-  }, [navigation]);
 
   const {
     isWalletEthZero,

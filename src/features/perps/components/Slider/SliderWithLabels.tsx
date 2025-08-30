@@ -135,6 +135,8 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
     'worklet';
     if (!isEnabled.value) return;
 
+    sliderXPosition.value = withSpring(width ?? 0, SPRING_CONFIGS.snappySpringConfig);
+
     if (onMaxPress) {
       runOnJS(onMaxPress)();
     }
