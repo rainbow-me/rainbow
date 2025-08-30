@@ -1,4 +1,9 @@
-import { CandleResolution, LineChartTimePeriod, LineChartTimespan } from '@/features/charts/types';
+import { CandleResolution, HyperliquidInterval, LineChartTimePeriod, LineChartTimespan } from '@/features/charts/types';
+
+/**
+ * Initial number of candles to fetch for candlestick charts.
+ */
+export const INITIAL_BAR_COUNT = 200;
 
 export const CANDLE_RESOLUTIONS: Record<CandleResolution, { index: number; label: string; resolution: CandleResolution }> = {
   [CandleResolution.M1]: { index: 0, label: '1M', resolution: CandleResolution.M1 },
@@ -26,4 +31,15 @@ export const LINE_CHART_TIME_PERIODS: Record<
     timespan: LineChartTimespan.Month,
   },
   [LineChartTimePeriod.Y1]: { index: 4, label: '1Y', suffix: 'Year', timePeriod: LineChartTimePeriod.Y1, timespan: LineChartTimespan.Year },
+};
+
+export const CANDLE_RESOLUTION_TO_HYPERLIQUID_INTERVAL: Record<CandleResolution, HyperliquidInterval> = {
+  [CandleResolution.M1]: '1m',
+  [CandleResolution.M5]: '5m',
+  [CandleResolution.M15]: '15m',
+  [CandleResolution.H1]: '1h',
+  [CandleResolution.H4]: '4h',
+  [CandleResolution.H12]: '12h',
+  [CandleResolution.D1]: '1d',
+  [CandleResolution.D7]: '1w',
 };
