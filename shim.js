@@ -157,7 +157,7 @@ if (!description.writable) {
   });
 }
 
-// Polyfills for nktkas/hyperliquid
+// Polyfills for @nktkas/hyperliquid
 if (!globalThis.EventTarget || !globalThis.Event) {
   globalThis.EventTarget = EventTarget;
   globalThis.Event = Event;

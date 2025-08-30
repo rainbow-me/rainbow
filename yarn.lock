@@ -4521,14 +4521,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nktkas/hyperliquid@npm:0.24.0":
-  version: 0.24.0
-  resolution: "@nktkas/hyperliquid@npm:0.24.0"
+"@nktkas/hyperliquid@npm:0.24.3":
+  version: 0.24.3
+  resolution: "@nktkas/hyperliquid@npm:0.24.3"
   dependencies:
     "@msgpack/msgpack": "npm:^3.1.2"
     "@noble/hashes": "npm:^1.8.0"
     "@noble/secp256k1": "npm:^2.3.0"
-  checksum: 10c0/976952d408f54d98edc49fbf74a1f1535575661c66a9a88111c2d795bf63ff79fa73869e4b34f5f750699fbf336bf6ae706fa34120fd85e6b24fa9d58b451eb0
+  checksum: 10c0/ba77d36e3143c3e538952d063eb71c2837b4e3d41fc2df37ab4af21b0e405401316157707e3e226b08b5449ef77c0eb629da5e31ce3e20b2d9712cfd2cbe1fd6
   languageName: node
   linkType: hard
 
@@ -9017,7 +9017,7 @@ __metadata:
     "@ledgerhq/react-native-hw-transport-ble": "npm:6.33.4"
     "@legendapp/list": "npm:1.1.4"
     "@metamask/eth-sig-util": "npm:7.0.2"
-    "@nktkas/hyperliquid": "npm:0.24.0"
+    "@nktkas/hyperliquid": "npm:0.24.3"
     "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.1.2"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
