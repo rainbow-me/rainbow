@@ -208,7 +208,7 @@ export async function fetchCandlestickPrice<T extends Token>({
 }: {
   candleResolution: CandleResolution;
   currency?: NativeCurrencyKey;
-  token: Exact<T, Token>;
+  token: Exact<T, Exclude<Token, HyperliquidSymbol>>;
 }): Promise<Price | null> {
   const response = await useCandlestickStore
     .getState()
