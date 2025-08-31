@@ -16,7 +16,7 @@ export type HyperliquidChartParams = {
   token: HyperliquidSymbol;
 };
 
-const MAX_HYPERLIQUID_CANDLES = 500;
+export const MAX_HYPERLIQUID_CANDLES_PER_REQUEST = 500;
 
 /**
  * Fetches candlestick data from Hyperliquid API and returns it in Bar format.
@@ -27,7 +27,7 @@ export async function fetchHyperliquidChart(
 ): Promise<NonNullable<CandlestickResponse>> {
   const { candleResolution, barCount: barCountParam = INITIAL_BAR_COUNT, startTimestamp, token: symbol } = params;
 
-  const requestedCandles = Math.min(barCountParam, MAX_HYPERLIQUID_CANDLES);
+  const requestedCandles = Math.min(barCountParam, MAX_HYPERLIQUID_CANDLES_PER_REQUEST);
   const interval = toHyperliquidInterval(candleResolution);
   const resolutionMinutes = getResolutionMinutes(candleResolution);
   const resolutionMs = time.minutes(resolutionMinutes);

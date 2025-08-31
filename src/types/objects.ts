@@ -41,11 +41,7 @@ export type EmptyObject = Record<string, never>;
  * setToken({ address: '0x123', chainId: 1, foo: 'bar' });
  * ```
  */
-export type Exact<O extends object, Shape extends object> = O extends Shape
-  ? Exclude<keyof O, keyof Shape> extends never
-    ? O
-    : never
-  : never;
+export type Exact<O, Shape> = O extends object ? (O extends Shape ? (Exclude<keyof O, keyof Shape> extends never ? O : never) : never) : O;
 
 /**
  * Extracts the keys of object `O` that are **optional**.

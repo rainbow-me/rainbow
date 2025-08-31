@@ -173,7 +173,7 @@ export async function fetchHistoricalCandles<T extends Token>({
 }: {
   candleResolution: CandleResolution;
   candlesToFetch?: number;
-  token: Exact<T, Token>;
+  token: Exact<T, Exclude<Token, HyperliquidSymbol>>;
 }): Promise<CandlestickResponse> {
   const { fetch: fetchCandles, getData } = candlestickActions;
 

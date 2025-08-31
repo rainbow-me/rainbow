@@ -3,7 +3,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { Exact } from '@/types/objects';
-import { CandleResolution, ChartType, LineChartTimePeriod, Token } from '../types';
+import { CandleResolution, ChartType, HyperliquidSymbol, LineChartTimePeriod, Token } from '../types';
 
 // ============ Charts Store =================================================== //
 
@@ -21,7 +21,7 @@ export type ChartsState = {
   setCandleResolution: (candleResolution: CandleResolution) => void;
   setChartType: (chartType: ChartType) => void;
   setLineChartTimePeriod: (lineChartTimePeriod: LineChartTimePeriod) => void;
-  setToken: <T extends Token>(token: Exact<T, Token>) => void;
+  setToken: <T extends Token>(token: Exact<T, Exclude<Token, HyperliquidSymbol>>) => void;
   toggleChartType: () => ChartType;
 };
 
