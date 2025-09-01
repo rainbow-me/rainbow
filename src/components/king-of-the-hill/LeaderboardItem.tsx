@@ -84,21 +84,26 @@ export const LeaderboardItem = memo(function LeaderboardItem({
       <View style={styles.itemContainer}>
         {/* icon */}
         <View style={styles.iconColumn}>
-          {iconUrl && (
-            <View style={styles.tokenIconShadow}>
-              <View style={styles.tokenIconContainer}>
-                {iconUrl ? (
-                  <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />
-                ) : (
-                  <RainbowCoinIcon chainId={token.chainId} symbol={token.symbol} showBadge={false} />
-                )}
-                {(ranking === 2 || ranking === 3) && <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />}
-              </View>
-              <View style={styles.chainImageContainer}>
-                <ChainImage chainId={token.chainId} size={16} position="absolute" />
-              </View>
+          <View style={styles.tokenIconShadow}>
+            <View style={styles.tokenIconContainer}>
+              {iconUrl ? (
+                <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />
+              ) : (
+                <RainbowCoinIcon
+                  color={token.colors?.primary || token.colors?.fallback || undefined}
+                  chainId={token.chainId}
+                  symbol={token.symbol}
+                  showBadge={false}
+                />
+              )}
+              {iconUrl && (ranking === 2 || ranking === 3) && (
+                <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />
+              )}
             </View>
-          )}
+            <View style={styles.chainImageContainer}>
+              <ChainImage chainId={token.chainId} size={16} position="absolute" />
+            </View>
+          </View>
         </View>
 
         <View style={styles.contentColumn}>
