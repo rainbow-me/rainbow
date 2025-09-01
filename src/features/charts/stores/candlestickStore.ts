@@ -257,7 +257,6 @@ function setCandlestickData({
     }
 
     return {
-      ...state,
       prices: updatedPrices,
       queryCache: {
         ...state.queryCache,
