@@ -1,5 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Inline, Text, useColorMode } from '@/design-system';
 import { Token } from '@/graphql/__generated__/metadata';
@@ -86,7 +87,11 @@ export const LeaderboardItem = memo(function LeaderboardItem({
           {iconUrl && (
             <View style={styles.tokenIconShadow}>
               <View style={styles.tokenIconContainer}>
-                <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />
+                {iconUrl ? (
+                  <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />
+                ) : (
+                  <RainbowCoinIcon chainId={token.chainId} symbol={token.symbol} showBadge={false} />
+                )}
                 {(ranking === 2 || ranking === 3) && <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />}
               </View>
               <View style={styles.chainImageContainer}>
