@@ -37,6 +37,7 @@ export const PerpsAccountScreen = function PerpsAccountScreen() {
         hideHandle
         showsVerticalScrollIndicator={false}
         additionalTopPadding={false}
+        borderRadius={0}
         scrollIndicatorInsets={{
           bottom: safeAreaInsets.bottom,
           top: safeAreaInsets.top + 32,
