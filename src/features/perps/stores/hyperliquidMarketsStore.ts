@@ -2,6 +2,7 @@ import { MarketSortOrder, PerpMarket } from '@/features/perps/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { hyperliquidMarketsClient } from '@/features/perps/services/hyperliquid-markets-client';
 import { time } from '@/utils/time';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 type HyperliquidMarketsQueryData = {
   markets: Record<string, PerpMarket>;
@@ -18,6 +19,7 @@ type HyperliquidMarketsStoreActions = {
   setSearchQuery: (searchQuery: string) => void;
   getSearchResults: () => PerpMarket[];
   getMarkets: () => Record<string, PerpMarket>;
+  getMarket: (symbol: string) => PerpMarket | undefined;
   getSortedMarkets: () => PerpMarket[];
 };
 
@@ -55,6 +57,10 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsQue
       const { markets } = get();
       return markets;
     },
+    getMarket: (symbol: string) => {
+      const { markets } = get();
+      return markets[symbol];
+    },
     getSortedMarkets: () => {
       const { markets, sortOrder } = get();
       const marketsList = Object.values(markets);
@@ -88,3 +94,5 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsQue
     },
   })
 );
+
+export const hyperliquidMarketStoreActions = createStoreActions(useHyperliquidMarketsStore);

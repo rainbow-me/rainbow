@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { Box, Text } from '@/design-system';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
@@ -6,9 +6,22 @@ import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { useNavigation } from '@react-navigation/native';
+import { PerpMarket } from '@/features/perps/types';
 
-export const MarketsSection = function MarketsSection() {
+export const MarketsSection = memo(function MarketsSection() {
+  const navigation = useNavigation();
   const markets = useHyperliquidMarketsStore(state => state.getSortedMarkets());
+
+  const onPressMarket = useCallback(
+    (market: PerpMarket) => {
+      navigation.navigate(Routes.PERPS_ACCOUNT_NAVIGATOR, {
+        screen: Routes.PERPS_DETAIL_SCREEN,
+        params: { market },
+      });
+    },
+    [navigation]
+  );
 
   return (
     <Box>
@@ -45,9 +58,9 @@ export const MarketsSection = function MarketsSection() {
       </Box>
       <Box gap={20} paddingTop={'16px'}>
         {markets.slice(0, 10).map(market => (
-          <PerpMarketRow key={market.symbol} market={market} />
+          <PerpMarketRow key={market.symbol} market={market} onPress={onPressMarket} />
         ))}
       </Box>
     </Box>
   );
-};
+});

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
@@ -6,23 +6,22 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { Pressable } from 'react-native';
 import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
+import { ButtonPressAnimation } from '@/components/animations';
 
 type PerpMarketRowProps = {
   market: PerpMarket;
+  onPress?: (market: PerpMarket) => void;
 };
 
-export const PerpMarketRow = function PerpMarketRow({ market }: PerpMarketRowProps) {
+export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMarketRowProps) {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
   const labelTertiary = useForegroundColor('labelTertiary');
 
   // TODO (kane): does this need to be live?
   const volume = useMemo(() => {
-    return abbreviateNumberWorklet(parseFloat(market.volume['24h']), 1);
+    return abbreviateNumberWorklet(Number(market.volume['24h']), 1);
   }, [market.volume]);
 
   const livePrice = useLiveTokenSharedValue({
@@ -33,15 +32,8 @@ export const PerpMarketRow = function PerpMarketRow({ market }: PerpMarketRowPro
     },
   });
 
-  const onRowPress = useCallback(() => {
-    // @ts-expect-error TODO (kane): Fix
-    Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, {
-      market,
-    });
-  }, [market]);
-
   return (
-    <Pressable onPress={onRowPress}>
+    <ButtonPressAnimation onPress={() => onPress?.(market)} disabled={!onPress} scaleTo={0.98}>
       <Box width="full" flexDirection="row" alignItems="center" gap={12}>
         <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 40, height: 40 }} />
         <Box style={{ flex: 1 }} gap={8}>
@@ -93,6 +85,6 @@ export const PerpMarketRow = function PerpMarketRow({ market }: PerpMarketRowPro
           </Box>
         </Box>
       </Box>
-    </Pressable>
+    </ButtonPressAnimation>
   );
 };

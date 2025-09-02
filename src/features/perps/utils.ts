@@ -146,9 +146,5 @@ export function calculateIsolatedLiquidationPrice({
 
 export function navigateToNewPositionScreen(market: PerpMarket) {
   useHlNewPositionStore.getState().setMarket(market);
-  Navigation.handleAction(Routes.PERPS_ACCOUNT_NAVIGATOR);
-  // TESTING
-  // setTimeout(() => {
-  //   Navigation.handleAction(Routes.PERPS_NEW_POSITION_SCREEN);
-  // }, 100);
+  Navigation.handleAction(Routes.PERPS_NEW_POSITION_SCREEN);
 }

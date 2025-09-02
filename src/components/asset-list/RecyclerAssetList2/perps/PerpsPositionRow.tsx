@@ -10,17 +10,22 @@ import { abs } from '@/helpers/utilities';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { navigateToNewPositionScreen } from '@/features/perps/utils';
+import Routes from '@/navigation/routesNames';
+import { hyperliquidMarketStoreActions } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '@/navigation/types';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
 };
 
 export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: PerpsPositionRowProps) {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const isPositivePnl = !position.unrealizedPnl.includes('-');
   const pnlColor = isPositivePnl ? 'green' : 'red';
+
   const formattedValues = useMemo(() => {
     return {
       value: formatAssetPrice({ value: position.value, currency: 'USD' }),
@@ -28,16 +33,16 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
       unrealizedPnl: formatAssetPrice({ value: abs(position.unrealizedPnl), decimalPlaces: 2, currency: 'USD' }),
     };
   }, [position]);
-  // TESTING
-  const markets = useHyperliquidMarketsStore(state => state.getSortedMarkets());
 
   return (
     <ButtonPressAnimation
       onPress={() => {
-        // TESTING: should actually go to the market details screen
-        const market = markets.find(market => market.symbol === position.symbol);
+        const market = hyperliquidMarketStoreActions.getMarket(position.symbol);
         if (market) {
-          navigateToNewPositionScreen(market);
+          navigation.navigate(Routes.PERPS_ACCOUNT_NAVIGATOR, {
+            screen: Routes.PERPS_DETAIL_SCREEN,
+            params: { market },
+          });
         }
       }}
     >

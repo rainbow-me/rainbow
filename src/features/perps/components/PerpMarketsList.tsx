@@ -5,7 +5,6 @@ import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { PerpMarket } from '@/features/perps/types';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
-import { ButtonPressAnimation } from '@/components/animations';
 
 type PerpMarketsListProps = {
   onPressMarket?: (market: PerpMarket) => void;
@@ -17,9 +16,7 @@ export const PerpMarketsList = memo(function PerpMarketsList({ onPressMarket }: 
   const renderItem = useCallback(({ item }: { item: PerpMarket }) => {
     return (
       <Box paddingBottom={'24px'}>
-        <ButtonPressAnimation disabled={!onPressMarket} onPress={() => onPressMarket?.(item)}>
-          <PerpMarketRow market={item} />
-        </ButtonPressAnimation>
+        <PerpMarketRow market={item} onPress={onPressMarket} />
       </Box>
     );
   }, []);
