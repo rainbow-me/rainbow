@@ -29,9 +29,6 @@ export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
 export const PerpsNewPositionSearchScreen = memo(function PerpsNewPositionSearchScreen() {
   return (
     <Box background={'surfacePrimary'} style={{ flex: 1 }}>
-      <Box justifyContent={'center'} alignItems={'center'}>
-        <PerpsNavbar />
-      </Box>
       <Box paddingTop={'20px'}>
         <Separator color={'separatorTertiary'} direction="horizontal" />
       </Box>
@@ -40,7 +37,6 @@ export const PerpsNewPositionSearchScreen = memo(function PerpsNewPositionSearch
           navigateToNewPositionScreen(market);
         }}
       />
-      <SheetHandle />
     </Box>
   );
 });
