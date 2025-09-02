@@ -144,3 +144,4 @@ e2e-artifacts/
 anvil.log
 
 .rnef/
+.rock/

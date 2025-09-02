@@ -8,25 +8,19 @@
 
 2. Build and run the app in release mode: `yarn ios --mode Release`. It is also possible to run it in development mode to make debugging easier, but will diverge from what is ran on CI.
 
-3. Run `./scripts/e2e-ios.sh` to run the full test suite. It is also possible to run a specific test by using the `--flow <path_to_file>` flag. For example to only run the import wallet test use `./scripts/e2e-ios.sh --flow ./e2e/auth/ImportWallet.yaml`.
+3. Run `./scripts/e2e-run.sh` to run the full test suite. It is also possible to run a specific test by using the `--flow <path_to_file>` flag. For example to only run the import wallet test use `./scripts/e2e-run.sh --flow ./e2e/flows/auth/ImportWallet.yaml`.
 
 #### Android
 
 1. Set `IS_TESTING=true` in your `.env` file.
 
-2. Build and run the app in release mode: `yarn android --extra-params "-PisE2E=true" --mode Release`. It is also possible to run it in development mode to make debugging easier, but will diverge from what is ran on CI.
+2. Build and run the app in release mode: `yarn android --mode Release`. It is also possible to run it in development mode to make debugging easier, but will diverge from what is ran on CI.
 
-3. Run `./scripts/e2e-android.sh` to run the full test suite. It is also possible to run a specific test by using the `--flow <path_to_file>` flag. For example to only run the import wallet test use `./scripts/e2e-android.sh --flow ./e2e/auth/ImportWallet.yaml`.
+3. Run `./scripts/e2e-run.sh` to run the full test suite. It is also possible to run a specific test by using the `--flow <path_to_file>` flag. For example to only run the import wallet test use `./scripts/e2e-run.sh --flow ./e2e/flows/auth/ImportWallet.yaml`.
 
 ### Debug CI failures
 
 Logs of the test run are saved in Github Actions artifacts. To access them go to the summary of the run (`https://github.com/rainbow-me/rainbow/actions/runs/<run_id>`) and scroll to the Artifacts section. There you can download the logs in the artifacts archive.
-
-#### Android
-
-The APK used to run the tests is also saved in the Artifacts section.
-
-To get more debug output in CI, set `DEBUG=true` in `.github/workflows/android-e2e.yml`. This will also record logcat logs and a video of the test runs. Unfortunately the video is limited to 3 minutes, so it might not always be useful. Note that we've seen logcat cause adb to crash when running on CI so if this happens try disabling it (`scripts/e2e-android-ci.sh`).
 
 ### E2E test commands
 

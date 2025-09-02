@@ -1,8 +1,10 @@
+import { CandleSnapshotRequest } from '@nktkas/hyperliquid/script/src/types/mod';
 import { ChainId } from '@/state/backendNetworks/types';
 
 // ============ Types ========================================================== //
 
-export type Token = { address: string; chainId: ChainId };
+export type HyperliquidSymbol = string;
+export type Token = { address: string; chainId: ChainId } | HyperliquidSymbol;
 
 // ============ Enums ========================================================== //
 
@@ -37,3 +39,7 @@ export enum LineChartTimespan {
   Month = 'month',
   Year = 'year',
 }
+
+// ============ Hyperliquid ==================================================== //
+
+export type HyperliquidInterval = CandleSnapshotRequest['req']['interval'];

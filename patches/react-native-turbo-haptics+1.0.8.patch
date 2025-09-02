@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-turbo-haptics/android/build.gradle b/node_modules/react-native-turbo-haptics/android/build.gradle
+index 7eee0b5..ebfb3f3 100644
+--- a/node_modules/react-native-turbo-haptics/android/build.gradle
++++ b/node_modules/react-native-turbo-haptics/android/build.gradle
+@@ -35,6 +35,7 @@ android {
+         externalNativeBuild {
+             cmake {
+                 cppFlags "-std=c++17"
++                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+             }
+         }
+     }
