@@ -6,7 +6,7 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
-import { formatPriceChange } from '@/features/perps/utils';
+import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 
 type PerpMarketRowProps = {
   market: PerpMarket;
@@ -23,7 +23,7 @@ export const PerpMarketRow = function PerpMarketRow({ market }: PerpMarketRowPro
   }, [market.volume]);
 
   const livePrice = useLiveTokenSharedValue({
-    tokenId: `${market.symbol}:hl`,
+    tokenId: getHyperliquidTokenId(market.symbol),
     initialValue: formatAssetPrice({ value: market.price, currency: 'USD' }),
     selector: state => {
       return formatAssetPrice({ value: state.price, currency: 'USD' });
@@ -64,7 +64,7 @@ export const PerpMarketRow = function PerpMarketRow({ market }: PerpMarketRowPro
             selector={state => {
               return formatPriceChange(state.change.change24hPct);
             }}
-            tokenId={`${market.symbol}:hl`}
+            tokenId={getHyperliquidTokenId(market.symbol)}
             initialValueLastUpdated={0}
             initialValue={formatPriceChange(market.priceChange['24h'])}
             autoSubscriptionEnabled={false}

@@ -62,7 +62,7 @@ export interface HoldToActivateButtonProps {
   processingLabel: string;
   onLongPress: () => void;
   showBiometryIcon: boolean;
-  testID: string;
+  testID?: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   progressColor?: string;

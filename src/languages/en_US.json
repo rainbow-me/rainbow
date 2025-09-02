@@ -526,6 +526,7 @@
       "alert": "Alert",
       "analyze_env_variables": "Analyze ENV Variables",
       "analyze_react_query": "Analyze React Query",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "APPLIED",
       "backups_deleted_successfully": "Backups Deleted Successfully",
       "clear_async_storage": "Clear AsyncStorage",
@@ -961,6 +962,8 @@
       "farcaster_title": "You've unlocked\nRainbowcast",
       "redacted_description": "A stupi-exclusive Rainbow icon for the true Gdupi enjoyers.",
       "redacted_title": "You've unlocked\n Redacted Rainbow",
+      "baggy_description": "From the streets to the chain, this little bag holds your portable dose of Rainbow vibes. Taste the colors, and feel the difference.",
+      "baggy_title": "You've unlocked\n Rainbow Baggy",
       "button": "Snag the icon"
     },
     "explain": {

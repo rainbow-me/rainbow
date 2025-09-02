@@ -4,8 +4,7 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
-import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
+import { navigateToNewPositionScreen } from '@/features/perps/utils';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   const markets = useHyperliquidMarketsStore(state => state.getSearchResults());
@@ -35,8 +34,7 @@ export const PerpsNewPositionSearchScreen = memo(function PerpsNewPositionSearch
       </Box>
       <PerpMarketsList
         onPressMarket={market => {
-          // @ts-expect-error TODO (kane): Fix
-          Navigation.handleAction(Routes.PERPS_NEW_POSITION_SCREEN, { market });
+          navigateToNewPositionScreen(market);
         }}
       />
     </Box>

@@ -12,19 +12,14 @@ import Animated, {
   withDecay,
   withSpring,
   SharedValue,
+  clamp,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { clamp, opacityWorklet } from '@/__swaps__/utils/swaps';
-import {
-  SCRUBBER_WIDTH,
-  SLIDER_COLLAPSED_HEIGHT,
-  SLIDER_HEIGHT,
-  SLIDER_WIDTH,
-  THICK_BORDER_WIDTH,
-} from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { SCRUBBER_WIDTH, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 const MAX_PERCENTAGE = 0.995;
 const MIN_PERCENTAGE = 0.005;
@@ -41,37 +36,27 @@ export type SliderChangeSource = 'gesture' | 'tap' | 'max-button' | 'external';
 
 export interface SliderProps {
   sliderXPosition: SharedValue<number>;
-  sliderPressProgress: SharedValue<number>;
-  isEnabled?: boolean | SharedValue<boolean>; // Whether slider is interactive
+  isEnabled?: boolean | SharedValue<boolean>;
   colors?: SliderColors | SharedValue<SliderColors>;
   height?: number;
+  expandedHeight?: number;
   width?: number;
   snapPoints?: number[];
-  onPercentageChange: (percentage: number, source: SliderChangeSource) => void;
-  onGestureStart?: (state: { position: number; percentage: number }) => void;
-  onGestureEnd?: (state: { position: number; percentage: number; hasChanged: boolean }) => void;
-  onGestureUpdate?: (state: { isAtMax: boolean; exceedsMax: boolean; position: number; percentage: number }) => void;
-  onGestureFinalize?: (state: { hasChanged: boolean }) => void;
-  checkExceedsMax?: () => boolean;
-  onExceedsMax?: () => void;
+  onPercentageChange?: (percentage: number, source: SliderChangeSource) => void;
+  onPercentageUpdate?: (percentage: number) => void;
   containerStyle?: ViewStyle;
 }
 
 export const Slider: React.FC<SliderProps> = ({
   sliderXPosition,
-  sliderPressProgress,
   isEnabled: isEnabledProp = true,
   colors: colorsProp,
-  height = SLIDER_HEIGHT,
-  width = SLIDER_WIDTH,
+  height = 10,
+  expandedHeight = 16,
+  width = 300,
   snapPoints = [0, 0.25, 0.5, 0.75, 1],
   onPercentageChange,
-  onGestureStart,
-  onGestureEnd,
-  onGestureUpdate,
-  onGestureFinalize,
-  checkExceedsMax,
-  onExceedsMax,
+  onPercentageUpdate,
   containerStyle,
 }) => {
   const { isDarkMode } = useColorMode();
@@ -79,8 +64,9 @@ export const Slider: React.FC<SliderProps> = ({
   const fillSecondary = useForegroundColor('fillSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
+  const sliderPressProgress = useSharedValue(height / expandedHeight);
   const overshoot = useSharedValue(0);
-  const gestureCtx = useSharedValue<{ exceedsMax?: boolean; startX: number }>({ startX: 0 });
+  const gestureCtx = useSharedValue<{ startX: number }>({ startX: 0 });
 
   const isEnabled = useDerivedValue(() => {
     if (typeof isEnabledProp === 'boolean') return isEnabledProp;
@@ -126,7 +112,7 @@ export const Slider: React.FC<SliderProps> = ({
 
   const onChangeWrapper = useCallback(
     (percentage: number, source: SliderChangeSource) => {
-      onPercentageChange(percentage, source);
+      onPercentageChange?.(percentage, source);
     },
     [onPercentageChange]
   );
@@ -139,35 +125,14 @@ export const Slider: React.FC<SliderProps> = ({
     })
     .onStart(() => {
       'worklet';
-      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
+      sliderPressProgress.value = withSpring(height / expandedHeight, SPRING_CONFIGS.sliderConfig);
     });
 
   const panGesture = Gesture.Pan()
     .onBegin(() => {
       'worklet';
-      gestureCtx.value = { exceedsMax: undefined, startX: sliderXPosition.value };
+      gestureCtx.value = { startX: sliderXPosition.value };
       sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
-
-      if (!isEnabled.value) return;
-
-      // Check if at max and exceeding
-      if (gestureCtx.value.startX >= width) {
-        const exceedsMax = checkExceedsMax ? checkExceedsMax() : false;
-
-        if (exceedsMax) {
-          gestureCtx.value = { ...gestureCtx.value, exceedsMax: true };
-          sliderXPosition.value = width * 0.999;
-          triggerHaptics('impactMedium');
-          if (onExceedsMax) runOnJS(onExceedsMax)();
-        }
-      }
-
-      if (onGestureStart) {
-        runOnJS(onGestureStart)({
-          position: sliderXPosition.value,
-          percentage: xPercentage.value,
-        });
-      }
     })
     .onUpdate(event => {
       'worklet';
@@ -196,14 +161,10 @@ export const Slider: React.FC<SliderProps> = ({
         overshoot.value = calculateOvershoot(overshootX, maxOverscroll);
       }
 
-      if (onGestureUpdate) {
-        runOnJS(onGestureUpdate)({
-          isAtMax: sliderXPosition.value >= width * MAX_PERCENTAGE,
-          exceedsMax: gestureCtx.value.exceedsMax || false,
-          position: sliderXPosition.value,
-          percentage: xPercentage.value,
-        });
-      }
+      const isAtMax = sliderXPosition.value >= width * MAX_PERCENTAGE;
+      const isAtMin = sliderXPosition.value <= width * MIN_PERCENTAGE;
+
+      onPercentageUpdate?.(isAtMax ? 1 : isAtMin ? 0 : xPercentage.value);
     })
     .onEnd(event => {
       'worklet';
@@ -225,19 +186,12 @@ export const Slider: React.FC<SliderProps> = ({
         }
       };
 
-      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
+      sliderPressProgress.value = withSpring(height / expandedHeight, SPRING_CONFIGS.sliderConfig);
 
       if (!isEnabled.value) {
         if (sliderXPosition.value > 0) triggerHaptics('notificationError');
         overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
         sliderXPosition.value = withSpring(0, SPRING_CONFIGS.slowSpring);
-        if (onGestureEnd) {
-          runOnJS(onGestureEnd)({
-            position: 0,
-            percentage: 0,
-            hasChanged: false,
-          });
-        }
         return;
       }
 
@@ -293,29 +247,14 @@ export const Slider: React.FC<SliderProps> = ({
           }
         );
       }
-
-      if (onGestureEnd) {
-        runOnJS(onGestureEnd)({
-          position: sliderXPosition.value,
-          percentage: xPercentage.value,
-          hasChanged,
-        });
-      }
-    })
-    .onFinalize(() => {
-      'worklet';
-      const hasChanged = gestureCtx.value.startX !== sliderXPosition.value;
-      if (onGestureFinalize) {
-        runOnJS(onGestureFinalize)({ hasChanged });
-      }
     })
     .activeOffsetX([0, 0])
     .activeOffsetY([0, 0]);
 
   const sliderContainerStyle = useAnimatedStyle(() => {
-    const collapsedPercentage = SLIDER_COLLAPSED_HEIGHT / height;
+    const collapsedPercentage = height / expandedHeight;
     return {
-      height: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [SLIDER_COLLAPSED_HEIGHT, height]),
+      height: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [height, expandedHeight]),
       transform: [
         { translateX: overshoot.value * 0.75 },
         { scaleX: interpolate(sliderPressProgress.value, [collapsedPercentage, 1], [1, 1.025]) + Math.abs(overshoot.value) / width },
@@ -325,7 +264,7 @@ export const Slider: React.FC<SliderProps> = ({
   });
 
   const leftBarContainerStyle = useAnimatedStyle(() => {
-    const collapsedPercentage = SLIDER_COLLAPSED_HEIGHT / height;
+    const collapsedPercentage = height / expandedHeight;
     return {
       backgroundColor: withSpring(
         interpolateColor(sliderPressProgress.value, [collapsedPercentage, 1], [colors.value.inactiveLeft, colors.value.activeLeft]),

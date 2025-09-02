@@ -1,6 +1,7 @@
-import { ChainId } from '@/state/backendNetworks/types';
 import { NativeCurrencyKey } from '@/entities';
+import { CandleResolution, ChartType } from '@/features/charts/types';
 import { Language } from '@/languages';
+import { ChainId } from '@/state/backendNetworks/types';
 
 // have to put this here or redux gets important and tests break
 type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';
@@ -36,6 +37,10 @@ export interface UserProperties {
   pinnedCoins?: string[];
   hiddenCOins?: string[];
   appIcon?: string;
+
+  // charts
+  chartType?: ChartType;
+  candleResolution?: CandleResolution;
 
   // most used networks at the time the user first opens the network switcher
   mostUsedNetworks?: ChainId[];

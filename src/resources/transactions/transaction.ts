@@ -163,7 +163,7 @@ export const transactionFetchQuery = async ({
   chainId: ChainId;
   hash: string;
   originalType?: TransactionType;
-}) => queryClient.fetchQuery(transactionQueryKey({ address, currency, chainId, hash, originalType }), fetchTransaction);
+}) => queryClient.fetchQuery(transactionQueryKey({ address, currency, chainId, hash, originalType }), fetchTransaction, { staleTime: 0 });
 
 export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs) {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);

@@ -1,15 +1,97 @@
-import { divide } from '@/helpers/utilities';
+import { divide, multiply } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { OrderParams } from '@nktkas/hyperliquid/script/src/types/mod';
 import { Address, Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS } from '../constants';
-import { PerpPositionSide, OrderType } from '../types';
+import { PerpPositionSide, OrderType, TriggerOrderType } from '../types';
 import { hyperliquidMarketsClient } from './hyperliquid-markets-client';
 import { HyperliquidAccountClient } from './hyperliquid-account-client';
 import { getOppositePositionSide } from '../utils';
 import { RainbowError } from '@/logger';
 import { Wallet } from '@ethersproject/wallet';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { toFixedWorklet } from '@/safe-math/SafeMath';
+
+function createTriggerOrder({
+  assetId,
+  side,
+  size,
+  triggerPrice,
+  orderPrice,
+  isMarket,
+  type,
+}: {
+  assetId: number;
+  side: PerpPositionSide;
+  size: string;
+  triggerPrice: string;
+  orderPrice: string;
+  isMarket: boolean;
+  type: TriggerOrderType;
+}): OrderParams {
+  return {
+    a: assetId,
+    b: side !== PerpPositionSide.LONG,
+    p: orderPrice,
+    s: size,
+    r: true,
+    t: {
+      trigger: {
+        isMarket,
+        triggerPx: triggerPrice,
+        tpsl: type,
+      },
+    },
+  };
+}
+
+function createOrder({
+  assetId,
+  side,
+  size,
+  assetPrice,
+  slippageBips = DEFAULT_SLIPPAGE_BIPS,
+  limitPrice,
+  orderType,
+  reduceOnly,
+  clientOrderId,
+}: {
+  assetId: number;
+  side: PerpPositionSide;
+  size: string;
+  assetPrice: string;
+  slippageBips?: number;
+  limitPrice?: string;
+  orderType: OrderType;
+  reduceOnly?: boolean;
+  clientOrderId?: Hex;
+}): OrderParams {
+  let orderPrice = limitPrice;
+  if (orderType === OrderType.MARKET && !orderPrice) {
+    const slippage = slippageBips / 10_000;
+    const slippageMultiplier = 1 + slippage;
+
+    orderPrice =
+      side === PerpPositionSide.LONG
+        ? (parseFloat(assetPrice) * slippageMultiplier).toFixed(8)
+        : (parseFloat(assetPrice) / slippageMultiplier).toFixed(8);
+  }
+
+  if (!orderPrice) {
+    throw new RainbowError('[HyperliquidExchangeClient] Order price is required', { orderType });
+  }
+
+  return {
+    a: assetId,
+    b: side === PerpPositionSide.LONG,
+    p: orderPrice,
+    // asset denominated size
+    s: size,
+    r: reduceOnly ?? false,
+    t: orderType === OrderType.MARKET ? { limit: { tif: 'Ioc' } } : { limit: { tif: 'Gtc' } },
+    c: clientOrderId,
+  };
+}
 
 export class HyperliquidExchangeClient {
   private exchangeClient: hl.ExchangeClient;
@@ -30,119 +112,15 @@ export class HyperliquidExchangeClient {
 
   async withdraw(amount: string) {}
 
-  async createOrder({
-    assetId,
-    assetSymbol,
-    side,
-    usdAmount,
-    size,
-    slippageBips = DEFAULT_SLIPPAGE_BIPS,
-    limitPrice,
-    orderType,
-    reduceOnly,
-    clientOrderId,
-  }: {
-    assetId: number;
-    assetSymbol: string;
-    side: PerpPositionSide;
-    usdAmount?: string;
-    size?: string;
-    slippageBips?: number;
-    limitPrice?: string;
-    orderType: OrderType;
-    reduceOnly?: boolean;
-    clientOrderId?: Hex;
-  }): Promise<OrderParams> {
-    if (!usdAmount && !size) {
-      throw new RainbowError('[HyperliquidExchangeClient] Either usdAmount or size must be provided');
-    }
-    if (usdAmount && size) {
-      throw new RainbowError('[HyperliquidExchangeClient] Cannot provide both usdAmount and size');
-    }
-
-    const [midPrice] = await hyperliquidMarketsClient.getAssetPricesBySymbol([assetSymbol]);
-
-    if (!midPrice) {
-      throw new RainbowError('[HyperliquidExchangeClient] Unable to get market price', { assetSymbol });
-    }
-
-    let orderPrice = limitPrice;
-    if (orderType === OrderType.MARKET && !orderPrice) {
-      const slippage = slippageBips / 10_000;
-      const slippageMultiplier = 1 + slippage;
-
-      orderPrice =
-        side === PerpPositionSide.LONG
-          ? (parseFloat(midPrice) * slippageMultiplier).toFixed(8)
-          : (parseFloat(midPrice) / slippageMultiplier).toFixed(8);
-    }
-
-    if (!orderPrice) {
-      throw new RainbowError('[HyperliquidExchangeClient] Order price is required', { orderType });
-    }
-
-    let orderSize: string;
-    if (size) {
-      orderSize = size;
-    } else {
-      const priceToUse = orderPrice || midPrice;
-      orderSize = divide(usdAmount as string, priceToUse);
-    }
-
-    return {
-      a: assetId,
-      b: side === PerpPositionSide.LONG,
-      p: orderPrice,
-      s: orderSize,
-      r: reduceOnly ?? false,
-      t: orderType === OrderType.MARKET ? { limit: { tif: 'Ioc' } } : { limit: { tif: 'Gtc' } },
-      c: clientOrderId,
-    };
-  }
-
-  /**
-   * Create a trigger order (stop loss or take profit)
-   */
-  private createTriggerOrder({
-    assetId,
-    side,
-    size,
-    triggerPrice,
-    orderPrice,
-    isMarket,
-    type,
-  }: {
-    assetId: number;
-    side: PerpPositionSide;
-    size: string;
-    triggerPrice: string;
-    orderPrice: string;
-    isMarket: boolean;
-    type: 'tp' | 'sl';
-  }): OrderParams {
-    return {
-      a: assetId,
-      b: side !== PerpPositionSide.LONG,
-      p: orderPrice,
-      s: size,
-      r: true,
-      t: {
-        trigger: {
-          isMarket,
-          triggerPx: triggerPrice,
-          tpsl: type,
-        },
-      },
-    };
-  }
-
   /**
    * Open a new isolated margin position
    */
   async openIsolatedMarginPosition({
     symbol,
     side,
-    usdAmount,
+    marginAmount,
+    decimals,
+    assetPrice,
     leverage,
     slippageBips = DEFAULT_SLIPPAGE_BIPS,
     orderType,
@@ -154,8 +132,10 @@ export class HyperliquidExchangeClient {
   }: {
     symbol: string;
     side: PerpPositionSide;
-    usdAmount: string;
+    marginAmount: string;
+    assetPrice: string;
     leverage: number;
+    decimals: number;
     orderType: OrderType;
     limitPrice?: string;
     slippageBips?: number;
@@ -164,22 +144,28 @@ export class HyperliquidExchangeClient {
     stopLossPrice?: string;
     takeProfitPrice?: string;
   }): Promise<hl.OrderSuccessResponse> {
+    // TODO (kane): we should cache this / fetch it on page load
     const assetId = await hyperliquidMarketsClient.getAssetId(symbol);
 
+    // TODO: technically we should not call this if the leverage is already set to the desired value
     await this.exchangeClient.updateLeverage({
       asset: assetId,
       isCross: false,
       leverage,
     });
 
-    const mainOrder = await this.createOrder({
+    // Calculate position size from margin amount, leverage, and asset price
+    const positionValue = multiply(marginAmount, leverage);
+    const positionSize = toFixedWorklet(divide(positionValue, assetPrice), decimals);
+
+    const mainOrder = createOrder({
       assetId,
-      assetSymbol: symbol,
       side,
-      usdAmount,
+      size: positionSize,
+      assetPrice,
       slippageBips,
       orderType,
-      limitPrice,
+      limitPrice: limitPrice ?? assetPrice,
       reduceOnly,
       clientOrderId,
     });
@@ -187,27 +173,27 @@ export class HyperliquidExchangeClient {
     const orders: OrderParams[] = [mainOrder];
 
     if (stopLossPrice) {
-      const stopLossOrder = this.createTriggerOrder({
+      const stopLossOrder = createTriggerOrder({
         assetId,
         side,
         size: mainOrder.s,
         triggerPrice: stopLossPrice,
         orderPrice: stopLossPrice,
         isMarket: true,
-        type: 'sl',
+        type: TriggerOrderType.STOP_LOSS,
       });
       orders.push(stopLossOrder);
     }
 
     if (takeProfitPrice) {
-      const takeProfitOrder = this.createTriggerOrder({
+      const takeProfitOrder = createTriggerOrder({
         assetId,
         side,
         size: mainOrder.s,
         triggerPrice: takeProfitPrice,
         orderPrice: takeProfitPrice,
         isMarket: false,
-        type: 'tp',
+        type: TriggerOrderType.TAKE_PROFIT,
       });
       orders.push(takeProfitOrder);
     }
@@ -217,7 +203,8 @@ export class HyperliquidExchangeClient {
     return await this.exchangeClient.order({
       orders,
       grouping,
-      builder: RAINBOW_BUILDER_SETTINGS,
+      // TODO: blocked, account needs to be created
+      // builder: RAINBOW_BUILDER_SETTINGS,
     });
   }
 
@@ -227,10 +214,12 @@ export class HyperliquidExchangeClient {
    */
   async closeIsolatedMarginPosition({
     symbol,
+    assetPrice,
     slippageBips = DEFAULT_SLIPPAGE_BIPS,
     clientOrderId,
   }: {
     symbol: string;
+    assetPrice: string;
     slippageBips?: number;
     clientOrderId?: Hex;
   }): Promise<void> {
@@ -279,11 +268,11 @@ export class HyperliquidExchangeClient {
 
     const positionSize = Math.abs(parseFloat(assetPosition.position.szi)).toString();
 
-    const closeOrder = await this.createOrder({
+    const closeOrder = createOrder({
       assetId,
-      assetSymbol: symbol,
       side: getOppositePositionSide(position.side),
       size: positionSize,
+      assetPrice,
       slippageBips,
       orderType: OrderType.MARKET,
       reduceOnly: true,

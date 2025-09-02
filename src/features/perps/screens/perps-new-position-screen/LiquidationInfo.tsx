@@ -1,0 +1,77 @@
+import { memo, useMemo } from 'react';
+import { Box, Text } from '@/design-system';
+import { PerpMarket } from '@/features/perps/types';
+import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { calculateIsolatedLiquidationPrice, getHyperliquidTokenId } from '@/features/perps/utils';
+import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+
+export const LiquidationInfo = memo(function LiquidationInfo({ market }: { market: PerpMarket }) {
+  const leverage = useHlNewPositionStore(state => state.leverage);
+  const amount = useHlNewPositionStore(state => state.amount);
+  const side = useHlNewPositionStore(state => state.positionSide);
+  // TODO (kane): need to select for mid price not mark price
+  const markPrice = useLiveTokenValue({
+    tokenId: getHyperliquidTokenId(market.symbol),
+    initialValue: market.price,
+    selector: state => state.price,
+  });
+
+  const maxLeverage = useMemo(() => {
+    if (!market.marginTiers || market.marginTiers.length === 0) return 1;
+    const positionValue = Number(amount) * Number(markPrice);
+    const applicableTier = market.marginTiers.find(tier => positionValue >= Number(tier.lowerBound));
+    return applicableTier?.maxLeverage || market.marginTiers[0]?.maxLeverage || leverage;
+  }, [market.marginTiers, amount, markPrice, leverage]);
+
+  const estimatedLiquidationPrice = useMemo(() => {
+    if (!leverage || !amount || !maxLeverage) return null;
+    return calculateIsolatedLiquidationPrice({
+      entryPrice: Number(markPrice),
+      positionSize: Number(amount),
+      positionSide: side,
+      leverage,
+      maxLeverage,
+    });
+  }, [markPrice, amount, side, leverage, maxLeverage]);
+
+  const liquidationDistanceFromCurrentPrice = useMemo(() => {
+    if (!estimatedLiquidationPrice || !markPrice) return '-';
+    return ((Number(markPrice) - Number(estimatedLiquidationPrice)) / Number(markPrice)) * 100;
+  }, [estimatedLiquidationPrice, markPrice]);
+
+  const liquidationDistanceFromCurrentPriceDisplay = useMemo(() => {
+    if (liquidationDistanceFromCurrentPrice === '-') return '-';
+    return `${liquidationDistanceFromCurrentPrice > 0 ? '-' : '+'}${Math.abs(liquidationDistanceFromCurrentPrice).toFixed(2)}%`;
+  }, [liquidationDistanceFromCurrentPrice]);
+
+  const liquidationDistanceFromCurrentPriceColor = useMemo(() => {
+    if (liquidationDistanceFromCurrentPrice === '-') return 'labelQuaternary';
+    return liquidationDistanceFromCurrentPrice > 0 ? 'red' : 'green';
+  }, [liquidationDistanceFromCurrentPrice]);
+
+  return (
+    <Box gap={12}>
+      <Box flexDirection="row" alignItems="center" gap={6}>
+        <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 16, height: 16 }} />
+        <Box flexDirection="row" alignItems="center" gap={4}>
+          <Text size="15pt" weight="bold" color={'labelQuaternary'}>
+            {'Liquidated at'}
+          </Text>
+          <Text size="15pt" weight="heavy" color={'labelSecondary'}>
+            {estimatedLiquidationPrice ? formatAssetPrice({ value: estimatedLiquidationPrice, currency: 'USD' }) : '-'}
+          </Text>
+        </Box>
+      </Box>
+      <Box flexDirection="row" alignItems="center" gap={4}>
+        <Text size="15pt" weight="bold" color={liquidationDistanceFromCurrentPriceColor}>
+          {liquidationDistanceFromCurrentPriceDisplay}
+        </Text>
+        <Text size="15pt" weight="bold" color={'labelSecondary'}>
+          {'from current price'}
+        </Text>
+      </Box>
+    </Box>
+  );
+});

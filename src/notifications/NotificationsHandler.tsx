@@ -1,3 +1,4 @@
+import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import walletTypes from '@/helpers/walletTypes';
 import { usePrevious } from '@/hooks';
 import { logger } from '@/logger';
@@ -39,6 +40,7 @@ import { ThunkDispatch } from 'redux-thunk';
 type Callback = () => void;
 
 export const NotificationsHandler = () => {
+  const rainbowToastsEnabled = useRainbowToastEnabled();
   const wallets = useWallets();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>(undefined);
@@ -55,6 +57,12 @@ export const NotificationsHandler = () => {
 
   const onForegroundRemoteNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
     const type = remoteMessage?.data?.type;
+
+    if (rainbowToastsEnabled && type === NotificationTypes.transaction) {
+      // avoid showing transaction notifications, handled by RainbowToast
+      return;
+    }
+
     if (type !== NotificationTypes.walletConnect && remoteMessage?.notification !== undefined) {
       handleShowingForegroundNotification(remoteMessage as FixedRemoteMessage);
     }
