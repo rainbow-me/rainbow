@@ -1,11 +1,13 @@
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { Address } from 'viem';
-import { PerpPositionSide, PerpsPosition, FilledOrder } from '../types';
-import { getHyperliquidAccountClient } from '../services';
+import { PerpPositionSide, PerpsPosition, FilledOrder, OrderType } from '../types';
+import { getHyperliquidAccountClient, getHyperliquidExchangeClient } from '../services';
 import { RainbowError } from '@/logger';
 import { add, divide } from '@/helpers/utilities';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { OrderResponse } from '@nktkas/hyperliquid';
 
 type HyperliquidAccountStoreState = {
   positions: PerpsPosition[];
@@ -18,7 +20,21 @@ type HyperliquidAccountStoreState = {
 type HyperliquidAccountStoreActions = {
   deposit: ({ asset, amount }: { asset: string; amount: string }) => Promise<void>;
   withdraw: ({ asset, amount }: { asset: string; amount: string }) => Promise<void>;
-  createIsolatedMarginPosition: ({ asset, side, leverage }: { asset: string; side: PerpPositionSide; leverage: number }) => Promise<void>;
+  createIsolatedMarginPosition: ({
+    symbol,
+    side,
+    leverage,
+    amount,
+    assetPrice,
+    decimals,
+  }: {
+    symbol: string;
+    side: PerpPositionSide;
+    leverage: number;
+    amount: string;
+    assetPrice: string;
+    decimals: number;
+  }) => Promise<OrderResponse>;
   checkIfHyperliquidAccountExists: () => Promise<boolean>;
   markFilledOrdersAsSeen: (orderIds: number[]) => void;
   // derivative state
@@ -83,8 +99,18 @@ export const useHyperliquidAccountStore = createQueryStore<
     seenFilledOrders: new Set<string>(),
     deposit: async ({ asset, amount }) => {},
     withdraw: async ({ asset, amount }) => {},
-    createIsolatedMarginPosition: async ({ asset, side, leverage }) => {
-      // const exchangeClient = await getHyperliquidExchangeClient();
+    createIsolatedMarginPosition: async ({ symbol, side, leverage, amount, assetPrice, decimals }) => {
+      const address = useWalletsStore.getState().accountAddress;
+      const exchangeClient = await getHyperliquidExchangeClient(address);
+      return await exchangeClient.openIsolatedMarginPosition({
+        symbol,
+        side,
+        marginAmount: amount,
+        assetPrice,
+        leverage,
+        decimals,
+        orderType: OrderType.MARKET,
+      });
     },
     checkIfHyperliquidAccountExists: async () => {
       // This is fine
@@ -119,6 +145,8 @@ export const useHyperliquidAccountStore = createQueryStore<
     },
   })
 );
+
+export const hyperliquidAccountStoreActions = createStoreActions(useHyperliquidAccountStore);
 
 // const useCachedUserAssetsStore = createDerivedStore<UserAssetsStoreType>(
 //   $ => {

@@ -12,6 +12,7 @@ export type PerpMarket = {
   id: number;
   symbol: string;
   price: string;
+  midPrice: string | null;
   priceChange: {
     '1h': string;
     '24h': string;
@@ -20,6 +21,9 @@ export type PerpMarket = {
     '24h': string;
   };
   maxLeverage: number;
+  marginTiers?: hl.MarginTier[];
+  decimals: number;
+  fundingRate: string;
 };
 
 export type FilledOrder = {
@@ -74,4 +78,9 @@ export enum MarketSortOrder {
   PRICE = 'price',
   CHANGE = 'change',
   SYMBOL = 'symbol',
+}
+
+export enum TriggerOrderType {
+  STOP_LOSS = 'sl',
+  TAKE_PROFIT = 'tp',
 }

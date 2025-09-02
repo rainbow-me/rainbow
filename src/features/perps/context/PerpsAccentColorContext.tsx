@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { HYPERLIQUID_GREEN } from '@/features/perps/constants';
+import { HYPERLIQUID_GREEN, PERPS_COLORS } from '@/features/perps/constants';
 
 const theme = {
   dark: {
@@ -25,6 +25,7 @@ type PerpsAccentColors = {
   opacity3: string;
   opacity2: string;
   opacity1: string;
+  surfacePrimary: string;
 };
 
 type PerpsAccentColorContextType = {
@@ -64,6 +65,7 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
       opacity3: opacityWorklet(primary, 0.03),
       opacity2: opacityWorklet(primary, 0.02),
       opacity1: opacityWorklet(primary, 0.01),
+      surfacePrimary: PERPS_COLORS.surfacePrimary,
     };
   }, [isDarkMode]);
 

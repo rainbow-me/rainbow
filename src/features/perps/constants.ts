@@ -1,4 +1,5 @@
 import { safeAreaInsetValues } from '@/utils';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const DEFAULT_SLIPPAGE_BIPS = 50;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -26,7 +27,16 @@ export const HYPERLIQUID_COLORS = {
 
 export const PERPS_COLORS = {
   surfacePrimary: '#171E20',
+  shortRed: '#C4362D',
+  longGreen: '#23D246',
 };
 
 export const UP_ARROW = '􀄨';
 export const DOWN_ARROW = '􀄩';
+
+export const SLIDER_HEIGHT = 10;
+export const SLIDER_EXPANDED_HEIGHT = 14;
+export const SLIDER_WIDTH = DEVICE_WIDTH - 80;
+
+export const DEFAULT_MAINTENANCE_MARGIN_RATE = 0.006;
+export const DEFAULT_INITIAL_AMOUNT = 0.5;

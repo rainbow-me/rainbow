@@ -19,7 +19,7 @@ export class HyperliquidMarketsClient {
         }
 
         // TODO (kane): What are the default margin tiers, how are we supposed to handle the liq. calc?
-        const marginTiers = meta.marginTables.find(mt => mt[0] === asset.marginTableId)?.[1] ?? null;
+        const marginTable = meta.marginTables.find(mt => mt[0] === asset.marginTableId)?.[1] ?? null;
         const currentPrice = assetPricingInfo.markPx;
         const previousDayPrice = assetPricingInfo.prevDayPx;
 
@@ -28,6 +28,9 @@ export class HyperliquidMarketsClient {
         return {
           id: assetId,
           price: currentPrice,
+          // TODO (kane): if the mid price is undefined, should we not return this market?
+          // what conditions is the mid price undefined? why is that possible? Can we just use the mark price in this case?
+          midPrice: assetPricingInfo.midPx,
           priceChange: {
             '1h': '',
             '24h': priceChange24h,
@@ -37,7 +40,9 @@ export class HyperliquidMarketsClient {
           },
           symbol: asset.name,
           maxLeverage: asset.maxLeverage,
-          marginTiers,
+          marginTiers: marginTable?.marginTiers,
+          decimals: asset.szDecimals,
+          fundingRate: assetPricingInfo.funding,
         };
       })
       .filter(Boolean);

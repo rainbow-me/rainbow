@@ -127,6 +127,7 @@ import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsA
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
 import { PerpsDepositScreen } from '@/features/perps/screens/PerpsDepositScreen';
+import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -144,15 +145,11 @@ function PerpsAccountNavigator() {
   return (
     <KeyboardProvider>
       <PerpsAccentColorContextProvider>
-        <NativeStack.Navigator {...stackNavigationConfig} initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}>
-          <NativeStack.Screen component={PerpsSearchScreen} name={Routes.PERPS_SEARCH_SCREEN} options={{ customStack: true }} />
-          <NativeStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} options={{ customStack: true }} />
-          <NativeStack.Screen
-            component={PerpsNewPositionSearchScreen}
-            name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN}
-            options={{ customStack: true }}
-          />
-          <NativeStack.Screen component={PerpsNewPositionScreen} name={Routes.PERPS_NEW_POSITION_SCREEN} options={{ customStack: true }} />
+        <NativeStack.Navigator {...expandedAssetSheetV2Config} initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}>
+          <NativeStack.Screen component={PerpsSearchScreen} name={Routes.PERPS_SEARCH_SCREEN} />
+          <NativeStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} />
+          <NativeStack.Screen component={PerpsNewPositionSearchScreen} name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN} />
+          <NativeStack.Screen component={PerpsNewPositionScreen} name={Routes.PERPS_NEW_POSITION_SCREEN} />
           <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} />
         </NativeStack.Navigator>
         <PerpsNavigatorFooter />
@@ -322,6 +319,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
       <NativeStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} {...tokenLauncherConfig} />
       <NativeStack.Screen component={PerpsAccountNavigator} name={Routes.PERPS_ACCOUNT_NAVIGATOR} {...perpsAccountStackConfig} />
+      <NativeStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={KingOfTheHillExplainSheet}
         name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}

@@ -9,18 +9,16 @@ import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abs } from '@/helpers/utilities';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { navigateToNewPositionScreen } from '@/features/perps/utils';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
 };
 
 export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: PerpsPositionRowProps) {
-  const navigation = useNavigation();
   const isPositivePnl = !position.unrealizedPnl.includes('-');
   const pnlColor = isPositivePnl ? 'green' : 'red';
   const formattedValues = useMemo(() => {
@@ -37,11 +35,10 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
     <ButtonPressAnimation
       onPress={() => {
         // TESTING: should actually go to the market details screen
-        // @ts-expect-error TODO (kane): TESTING
-        navigation.navigate(Routes.PERPS_ACCOUNT_NAVIGATOR, {
-          screen: Routes.PERPS_NEW_POSITION_SCREEN,
-          params: { market: markets.find(market => market.symbol === position.symbol) },
-        });
+        const market = markets.find(market => market.symbol === position.symbol);
+        if (market) {
+          navigateToNewPositionScreen(market);
+        }
       }}
     >
       <Box paddingHorizontal={'20px'}>

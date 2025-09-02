@@ -36,7 +36,6 @@ export interface SliderWithLabelsProps extends SliderProps {
 
 export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   sliderXPosition,
-  sliderPressProgress,
   isEnabled: isEnabledProp = true,
   visualState: visualStateProp = 'idle',
   colors,
@@ -46,7 +45,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   onPercentageChange: onPercentageChangeProp,
   onGestureStart,
   onGestureEnd,
-  onGestureUpdate,
+  onPercentageUpdate,
   onGestureFinalize,
   checkExceedsMax,
   onExceedsMax,
@@ -134,7 +133,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   // Wrap onPercentageChange to handle max button press
   const onPercentageChange = useCallback(
     (percentage: number, source: SliderChangeSource) => {
-      onPercentageChangeProp(percentage, source);
+      onPercentageChangeProp?.(percentage, source);
     },
     [onPercentageChangeProp]
   );
@@ -182,16 +181,16 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
         </View>
         <Slider
           sliderXPosition={sliderXPosition}
-          sliderPressProgress={sliderPressProgress}
           isEnabled={isEnabledProp}
           colors={colors}
           height={height}
+          expandedHeight={height}
           width={width}
           snapPoints={snapPoints}
           onPercentageChange={onPercentageChange}
+          onPercentageUpdate={onPercentageUpdate}
           onGestureStart={onGestureStart}
           onGestureEnd={onGestureEnd}
-          onGestureUpdate={onGestureUpdate}
           onGestureFinalize={onGestureFinalize}
           checkExceedsMax={checkExceedsMax}
           onExceedsMax={onExceedsMax}
