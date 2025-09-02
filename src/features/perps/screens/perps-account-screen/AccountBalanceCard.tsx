@@ -39,7 +39,11 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
           </Stack>
         </Box>
         <Box flexDirection="row" gap={10}>
-          <ButtonPressAnimation onPress={() => {}}>
+          <ButtonPressAnimation
+            onPress={() => {
+              Navigation.handleAction(Routes.PERPS_WITHDRAWAL_SCREEN);
+            }}
+          >
             <Box
               justifyContent="center"
               alignItems="center"

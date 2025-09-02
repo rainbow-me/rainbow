@@ -1,12 +1,10 @@
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, Columns, useColorMode } from '@/design-system';
 import React from 'react';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Bleed, Box, Columns, Separator, useColorMode } from '@/design-system';
-import { NumberPadKey, NumberPadField } from './NumberPadKey';
+import { NumberPadField, NumberPadKey } from './NumberPadKey';
 
-const CUSTOM_KEYBOARD_HEIGHT = 276;
-const LIGHT_SEPARATOR_COLOR = 'rgba(60, 60, 67, 0.36)';
-const SEPARATOR_COLOR = 'rgba(84, 84, 88, 0.65)';
+export const CUSTOM_KEYBOARD_HEIGHT = 202;
 
 export type ValidationResult = {
   isValid: boolean;
@@ -19,7 +17,6 @@ export type NumberPadProps = {
   formattedValues?: SharedValue<Record<string, string>>;
   onBeforeChange?: (fieldId: string, currentValue: string, newValue: string) => ValidationResult;
   onValueChange?: (fieldId: string, newValue: string | number) => void;
-  onFieldChange?: (fieldId: string) => void;
   onStaleStateChange?: (isStale: boolean) => void;
   shouldMarkStale?: (fieldId: string, oldValue: string, newValue: string) => boolean;
   onIntervalStop?: () => void;
@@ -34,7 +31,6 @@ export const NumberPad = ({
   formattedValues,
   onBeforeChange,
   onValueChange,
-  onFieldChange,
   onStaleStateChange,
   shouldMarkStale,
   onIntervalStop,
@@ -42,7 +38,6 @@ export const NumberPad = ({
   height = CUSTOM_KEYBOARD_HEIGHT,
   stripFormatting = (value: string) => value.replace(/[^0-9.-]/g, ''),
 }: NumberPadProps) => {
-  const { isDarkMode } = useColorMode();
   const longPressTimer = useSharedValue(0);
   const isStale = useSharedValue(false);
 
@@ -194,14 +189,6 @@ export const NumberPad = ({
   return (
     <Box as={Animated.View} style={containerStyle} height={{ custom: height }} paddingHorizontal="6px" width="full">
       <Box style={{ gap: 6 }} width="full">
-        <Bleed horizontal="6px">
-          <Separator
-            color={{
-              custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
-            }}
-            thickness={1}
-          />
-        </Bleed>
         <Columns space="6px">
           <NumberPadKey char={1} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />
           <NumberPadKey char={2} onPressWorklet={addNumber} fields={fields} activeFieldId={activeFieldId} />

@@ -126,7 +126,6 @@ import { PerpsNewPositionSearchScreen, PerpsSearchScreen } from '@/features/perp
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
-import { PerpsDepositScreen } from '@/features/perps/screens/PerpsDepositScreen';
 import { PerpsDetailScreen } from '@/features/perps/screens/PerpDetailScreen';
 import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
 import { useBackgroundColor, Box } from '@/design-system';
@@ -134,6 +133,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SheetHandle } from '@/components/sheet';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
+import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen';
+import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -166,7 +167,6 @@ function PerpsAccountNavigator() {
             <PerpsStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} />
             <PerpsStack.Screen component={PerpsNewPositionSearchScreen} name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN} />
             <PerpsStack.Screen component={PerpsNewPositionScreen} name={Routes.PERPS_NEW_POSITION_SCREEN} />
-            <PerpsStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} />
             <PerpsStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
           </PerpsStack.Navigator>
 
@@ -332,6 +332,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
       <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
+      <NativeStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} {...swapConfig} />
+      <NativeStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...swapConfig} />
       <NativeStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} {...expandedAssetSheetV2Config} />
       <NativeStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} {...airdropsSheetConfig} />
       <NativeStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} {...claimAirdropSheetConfig} />

@@ -54,7 +54,6 @@ import { useBrowserStore } from '@/state/browser/browserStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import ProfileScreen from '../screens/ProfileScreen';
 import DiscoverScreen from '@/screens/DiscoverScreen';
-import { PerpsDepositScreen } from '@/features/perps/screens/PerpsDepositScreen';
 import { discoverScrollToTopFnRef, discoverOpenSearchFnRef } from '@/components/Discover/DiscoverScreenContext';
 import { MainListProvider, useMainList } from './MainListContext';
 import Routes, { Route } from './routesNames';
@@ -637,11 +636,7 @@ function SwipeNavigatorScreens() {
       tabBarPosition="bottom"
     >
       <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.WALLET_SCREEN] }} />
-      <Swipe.Screen
-        component={PerpsDepositScreen}
-        name={Routes.DISCOVER_SCREEN}
-        options={{ title: TAB_BAR_ICONS[Routes.DISCOVER_SCREEN] }}
-      />
+      <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ title: TAB_BAR_ICONS[Routes.DISCOVER_SCREEN] }} />
       {showDappBrowserTab && (
         <Swipe.Screen component={DappBrowser} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
       )}

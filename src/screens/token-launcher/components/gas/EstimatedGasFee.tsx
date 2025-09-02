@@ -6,7 +6,7 @@ import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
 import { ChainId } from '@/state/backendNetworks/types';
 
-type EstimatedGasFeeProps = { chainId: ChainId; gasSettings?: GasSettings; gasLimit: string } & Partial<
+type EstimatedGasFeeProps = { chainId: ChainId; gasSettings?: GasSettings; gasLimit: string | undefined } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>
 >;
 

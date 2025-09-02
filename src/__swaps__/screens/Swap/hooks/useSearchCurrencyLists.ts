@@ -22,6 +22,7 @@ import { RecentSwap } from '@/__swaps__/types/swap';
 import { isLowerCaseMatch, filterList, time } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { usePopularTokensStore } from '../resources/search/discovery';
+import { USDC_ASSET } from '@/__swaps__/screens/Swap/constants';
 
 const ANALYTICS_LOG_THROTTLE_MS = time.seconds(5);
 const MAX_POPULAR_RESULTS = 3;
@@ -114,56 +115,19 @@ export function useSearchCurrencyLists() {
   const hyperliquidUSDC = useMemo(() => {
     if (toChainId !== 1337) return null;
 
-    const usdcAsset: SearchAsset = {
-      address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as AddressOrEth,
-      chainId: 1337,
-      colors: {
-        primary: '#2775CA',
-        fallback: '#FFFFFF',
-      },
-      decimals: 8,
-      icon_url:
-        'https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png',
-      isNativeAsset: false,
-      isRainbowCurated: true,
-      isVerified: true,
-      mainnetAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as AddressOrEth,
-      name: 'USD Coin',
-      networks: {
-        [ChainId.mainnet]: {
-          address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as Address,
-          decimals: 8,
-        },
-        1337: {
-          address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address,
-          decimals: 8,
-        },
-      },
-      market: {
-        market_cap: {
-          value: 100000000000, // $100B market cap
-        },
-        volume_24h: 10000000000, // $10B volume
-        circulating_supply: 100000000000,
-      },
-      symbol: 'USDC',
-      uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, 1337),
-      highLiquidity: true,
-    };
-
     // If there's a search query, filter USDC
     if (query && query.length > 0) {
-      const symbolMatch = usdcAsset.symbol.toLowerCase().includes(query);
-      const nameMatch = usdcAsset.name.toLowerCase().includes(query);
-      const addressMatch = isContractSearch && isLowerCaseMatch(usdcAsset.address, query);
+      const symbolMatch = USDC_ASSET.symbol.toLowerCase().includes(query);
+      const nameMatch = USDC_ASSET.name.toLowerCase().includes(query);
+      const addressMatch = isContractSearch && isLowerCaseMatch(USDC_ASSET.address, query);
 
       if (symbolMatch || nameMatch || addressMatch) {
-        return usdcAsset;
+        return USDC_ASSET;
       }
       return null;
     }
 
-    return usdcAsset;
+    return USDC_ASSET;
   }, [toChainId, query, isContractSearch]);
 
   const data = useDeepCompareMemo(() => {

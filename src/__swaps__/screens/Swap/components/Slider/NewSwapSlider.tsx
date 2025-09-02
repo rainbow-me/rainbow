@@ -150,7 +150,7 @@ export const GenericSwapSlider = ({ dualColor, height, snapPoints, width }: Gene
       onMaxPress={handleMaxPress}
       showMaxButton={true}
       maxButtonColor={maxButtonColor}
-      icon={<AnimatedSwapCoinIcon showBadge={false} assetType={'input'} size={16} />}
+      icon={<AnimatedSwapCoinIcon showBadge={false} asset={internalSelectedInputAsset} size={16} />}
       containerStyle={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}
       onGestureStart={handleGestureStart}
       onGestureEnd={handleGestureEnd}

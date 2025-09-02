@@ -10,7 +10,7 @@ import { ChainId } from '@/state/backendNetworks/types';
 type GasButtonProps = {
   gasSpeed: GasSpeed;
   chainId: ChainId;
-  gasLimit: string;
+  gasLimit: string | undefined;
   onSelectGasSpeed: (gasSpeed: GasSpeed) => void;
 };
 
