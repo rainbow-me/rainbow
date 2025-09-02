@@ -1,23 +1,14 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Text, TextIcon, TextShadow, useForegroundColor } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
-import { Portal } from '@/react-native-cool-modals/Portal';
-import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { HYPERLIQUID_COLORS, PERPS_COLORS } from '@/features/perps/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import Animated, {
-  dispatchCommand,
-  runOnUI,
-  useAnimatedProps,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, useAnimatedRef } from 'react-native-reanimated';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { Navigation } from '@/navigation';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -25,6 +16,13 @@ import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useNavigation } from '@react-navigation/native';
+import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { PerpPositionSide } from '@/features/perps/types';
+import { hyperliquidAccountStoreActions } from '@/features/perps/stores/hyperliquidAccountStore';
+import { logger, RainbowError } from '@/logger';
+import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 
 const BUTTON_HEIGHT = 48;
 
@@ -140,12 +138,13 @@ const PerpsSearchScreenFooter = () => {
 
 const PerpsAccountScreenFooter = () => {
   const label = useForegroundColor('label');
+  const navigation = useNavigation();
 
   return (
     <Box>
       <ButtonPressAnimation
         onPress={() => {
-          Navigation.handleAction(Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
+          navigation.navigate(Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
         }}
       >
         <Box
@@ -172,20 +171,85 @@ const PerpsAccountScreenFooter = () => {
   );
 };
 
-const PerpsNewPositionScreenFooter = () => {
-  const green = useForegroundColor('green');
-  const red = '#C4362D';
+const PerpsDetailScreenFooter = () => {
+  const label = useForegroundColor('label');
 
-  const positionSide = 'long';
+  return (
+    <Box>
+      <ButtonPressAnimation
+        onPress={() => {
+          // TODO: Add nav
+        }}
+      >
+        <Box
+          borderRadius={24}
+          height={48}
+          justifyContent={'center'}
+          alignItems={'center'}
+          borderWidth={2}
+          borderColor={{ custom: opacityWorklet(label, 0.16) }}
+        >
+          <LinearGradient
+            colors={HYPERLIQUID_COLORS.gradient}
+            style={StyleSheet.absoluteFillObject}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          />
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
+          <Text size="20pt" weight={'black'} color={{ custom: '#000000' }}>
+            Close Position
+          </Text>
+        </Box>
+      </ButtonPressAnimation>
+    </Box>
+  );
+};
+
+const PerpsNewPositionScreenFooter = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const green = PERPS_COLORS.longGreen;
+  const red = PERPS_COLORS.shortRed;
+
+  const positionSide = useHlNewPositionStore(state => state.positionSide);
 
   const button = useMemo(() => {
     return {
-      textColor: positionSide === 'long' ? '#000000' : '#FFFFFF',
-      backgroundColor: positionSide === 'long' ? green : red,
+      textColor: positionSide === PerpPositionSide.LONG ? '#000000' : '#FFFFFF',
+      backgroundColor: positionSide === PerpPositionSide.LONG ? green : red,
       borderColor: 'rgba(255, 255, 255, 0.12)',
-      text: positionSide === 'long' ? 'Hold to Long' : 'Hold to Short',
+      text: positionSide === PerpPositionSide.LONG ? 'Hold to Long' : 'Hold to Short',
     };
   }, [positionSide, green, red]);
+
+  const submitNewPosition = useCallback(async () => {
+    const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
+    if (!market || !leverage) return;
+    setIsSubmitting(true);
+    try {
+      const result = await hyperliquidAccountStoreActions.createIsolatedMarginPosition({
+        symbol: market.symbol,
+        side: positionSide,
+        leverage: leverage,
+        amount,
+        assetPrice: market.price,
+        decimals: market.decimals,
+      });
+
+      // TODO (kane): how do we want to handle partially filled orders?
+      const allOrdersFilled = result.response.data.statuses.every(status => {
+        return 'filled' in status;
+      });
+
+      if (allOrdersFilled) {
+        hlNewPositionStoreActions.reset();
+        hyperliquidAccountStoreActions.fetch(undefined, { force: true });
+        Navigation.handleAction(Routes.PERPS_ACCOUNT_SCREEN);
+      }
+    } catch (e) {
+      logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
+    }
+    setIsSubmitting(false);
+  }, []);
 
   return (
     <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
@@ -198,21 +262,23 @@ const PerpsNewPositionScreenFooter = () => {
         textColor={button.textColor}
       />
 
-      <Box
-        height={BUTTON_HEIGHT}
-        borderRadius={24}
-        backgroundColor={button.backgroundColor}
-        borderColor={{ custom: button.borderColor }}
-        borderWidth={2}
-        style={{ flex: 1 }}
-        alignItems={'center'}
-        justifyContent={'center'}
-        flexDirection={'row'}
-        paddingHorizontal={'16px'}
-      >
-        <Text size="20pt" weight="black" color={{ custom: button.textColor }}>
-          {button.text}
-        </Text>
+      <Box style={{ flex: 1 }}>
+        <HoldToActivateButton
+          backgroundColor={button.backgroundColor}
+          disabledBackgroundColor={button.borderColor}
+          isProcessing={isSubmitting}
+          showBiometryIcon={true}
+          processingLabel={'Submitting...'}
+          label={button.text}
+          onLongPress={submitNewPosition}
+          height={48}
+          textStyle={{
+            color: button.textColor,
+            fontSize: 20,
+            fontWeight: '900',
+          }}
+          progressColor={button.textColor}
+        />
       </Box>
     </Box>
   );
@@ -231,6 +297,7 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
     <KeyboardStickyView
       // TODO (kane): idk why this 6 is required
       offset={{ opened: safeAreaInsets.bottom + 6 - 20 }}
+      enabled={activeRoute !== Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET}
     >
       <Box
         position="absolute"
@@ -239,18 +306,32 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
         right="0px"
         width="full"
         height={110}
+        shadow={'24px'}
         style={{
+          shadowOffset: {
+            width: 0,
+            height: -8,
+          },
           borderTopWidth: 2,
           borderTopColor: accentColors.opacity6,
           paddingBottom: safeAreaInsets.bottom,
           backgroundColor: PERPS_COLORS.surfacePrimary,
         }}
       >
-        <Box paddingHorizontal={'20px'} paddingVertical={'20px'}>
+        <Box
+          as={Animated.View}
+          entering={FadeIn.duration(150)}
+          exiting={FadeOut.duration(100)}
+          key={activeRoute}
+          paddingHorizontal={'20px'}
+          paddingVertical={'20px'}
+        >
           {activeRoute === Routes.PERPS_SEARCH_SCREEN && <PerpsSearchScreenFooter />}
           {activeRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN && <PerpsSearchScreenFooter />}
           {activeRoute === Routes.PERPS_ACCOUNT_SCREEN && <PerpsAccountScreenFooter />}
+          {activeRoute === Routes.PERPS_DETAIL_SCREEN && <PerpsDetailScreenFooter />}
           {activeRoute === Routes.PERPS_NEW_POSITION_SCREEN && <PerpsNewPositionScreenFooter />}
+          {activeRoute === Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET && <PerpsNewPositionScreenFooter />}
         </Box>
       </Box>
     </KeyboardStickyView>

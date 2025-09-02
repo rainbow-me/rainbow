@@ -4,6 +4,7 @@ import create from 'zustand';
 import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { nonceStore } from '../nonces';
 import { ChainId } from '@/state/backendNetworks/types';
+import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
@@ -46,6 +47,8 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
           [address]: orderedPendingTransactions,
         },
       });
+
+      useRainbowToastsStore.getState().handleTransaction(pendingTransaction);
     },
     setPendingTransactions: ({ address, pendingTransactions }) => {
       const { pendingTransactions: currentPendingTransactions } = get();

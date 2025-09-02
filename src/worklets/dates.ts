@@ -122,7 +122,8 @@ export function formatTimestamp(
   return `${timeString} ${dateString}`;
 }
 
-export function toUnixTime(date: string): number {
+export function toUnixTime(date: string | number | Date): number {
   'worklet';
-  return new Date(date).getTime() / 1000;
+  if (typeof date === 'number') return Math.floor(date / 1000);
+  return Math.floor(new Date(date).getTime() / 1000);
 }

@@ -1,0 +1,109 @@
+appId: ${APP_ID}
+tags:
+  - wallet
+  - parallel
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    arguments:
+      isE2ETest: true
+- runFlow: ../../utils/Prepare.yaml
+- runFlow: ../../utils/ImportWalletWithKey.yaml
+
+# Send ETH to test wallet
+- tapOn:
+    id: fund-test-wallet-button
+
+# Connect to Anvil (test network)
+- tapOn:
+    id: dev-button-anvil
+
+# Open send sheet
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: 'balance-coin-row-Ethereum'
+
+- retry:
+    maxRetries: 3
+    commands:
+      - swipe:
+          from:
+            id: wallet-screen
+          direction: UP
+      - assertVisible: '.*Rainbow Pooly.*'
+
+- retry:
+    maxRetries: 3
+    commands:
+      - swipe:
+          from:
+            id: wallet-screen
+          direction: UP
+      - tapOn: '.*Rainbow Pooly.*'
+
+- retry:
+    maxRetries: 3
+    commands:
+      - swipe:
+          from:
+            id: wallet-screen
+          direction: UP
+      - tapOn:
+          id: 'wrapped-nft-Rainbow Pooly 104'
+
+# we need to wait for the sheet to be done before clicking on the send else Maestro will click on the image
+- waitForAnimationToEnd:
+    timeout: 2000
+
+- retry:
+    maxRetries: 3
+    commands:
+      - assertVisible:
+          id: 'send-action-button'
+- tapOn:
+    id: 'send-action-button'
+
+# Test ENS address input
+- inputText: 'rainbowwallet.eth'
+- assertVisible: '.*Review'
+- tapOn: '.*Review'
+
+- assertVisible: 'Sending'
+- assertVisible: 'Rainbow Pooly 104'
+- assertVisible: 'to'
+- assertVisible: 'rainbowwallet.eth'
+
+# iOS is 'Hold to Send' button is stuck on 'Loading...'
+# atm for some reason. Need to investigate. Unblocking e2e for now.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - longPressOn: 'Hold to Send'
+      - runFlow: ../../utils/MaybeSetupPin.yaml
+
+      # Check toast data
+      - assertVisible:
+          text: 'Sending'
+          childOf:
+            id: toast-.*
+      - assertVisible:
+          text: 'Rainbow Pooly 104'
+          childOf:
+            id: toast-.*
+      # Open toast
+      - tapOn:
+          id: toast-.*
+      - assertVisible: 'Sending'
+      - assertVisible: 'Rainbow Pooly'
+      - tapOn:
+          id: toast-expanded-.*
+      # Check transaction sheet
+      - assertVisible: 'Sending'
+      - assertVisible: '.*Tx Hash.*'
+      - assertVisible: 'View on Etherscan'
+      - swipe:
+          direction: DOWN

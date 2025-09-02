@@ -1,7 +1,7 @@
 import { USDC_ASSET } from '@/__swaps__/screens/Swap/constants';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { addCommasToNumber, clamp, parseAssetAndExtend, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber, clamp, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -14,12 +14,11 @@ import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
+import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
-import { HYPERLIQUID_COLORS, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
+import { HYPERLIQUID_COLORS, SLIDER_WIDTH } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { handleSignificantDecimalsWorklet } from '@/helpers/utilities';
-import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
@@ -28,11 +27,10 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import React, { memo, useCallback, useEffect, useState } from 'react';
+import { View } from 'react-native';
 import Animated, { SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
-import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
-import { View } from 'react-native';
 
 const AssetCoinIcon = ({
   asset,
@@ -95,7 +93,6 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   // State for input values
   const inputMethod = useSharedValue<InputMethod>('inputAmount');
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * 0.25); // Default to 25% of slider width
-  const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
   const [selectedAsset, setSelectedAsset] = useState<ExtendedAnimatedAssetWithColors | null>(USDC_ASSET as ExtendedAnimatedAssetWithColors);
   const [gasSpeed, setGasSpeed] = useState(GasSpeed.FAST);
@@ -165,7 +162,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   );
 
   const handleGestureUpdate = useCallback(
-    ({ percentage }: { percentage: number }) => {
+    (percentage: number) => {
       'worklet';
 
       handlePercentageChange(percentage);
@@ -214,11 +211,10 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
       </Box>
       <SliderWithLabels
         sliderXPosition={sliderXPosition}
-        sliderPressProgress={sliderPressProgress}
         width={SLIDER_WIDTH}
         containerStyle={{ height: SLIDER_WITH_LABELS_HEIGHT, marginHorizontal: 20, justifyContent: 'center' }}
-        onPercentageChangeWorklet={handlePercentageChange}
-        onGestureUpdateWorklet={handleGestureUpdate}
+        onPercentageChange={handlePercentageChange}
+        onPercentageUpdate={handleGestureUpdate}
         showMaxButton={true}
         showPercentage={true}
         // TODO: INTL

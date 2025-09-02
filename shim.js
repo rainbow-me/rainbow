@@ -157,7 +157,7 @@ if (!description.writable) {
   });
 }
 
-// polyfills for nktkas/hyperliquid
+// Polyfills for @nktkas/hyperliquid
 if (!globalThis.EventTarget || !globalThis.Event) {
   globalThis.EventTarget = EventTarget;
   globalThis.Event = Event;
@@ -165,10 +165,34 @@ if (!globalThis.EventTarget || !globalThis.Event) {
 
 if (!globalThis.CustomEvent) {
   globalThis.CustomEvent = function (type, params) {
+    // eslint-disable-next-line no-param-reassign
     params = params || {};
     const event = new Event(type, params);
     event.detail = params.detail || null;
     return event;
+  };
+}
+
+if (!AbortSignal.any) {
+  AbortSignal.any = function (signals) {
+    const controller = new AbortController();
+
+    for (const signal of signals) {
+      if (signal.aborted) {
+        controller.abort(signal.reason);
+        return controller.signal;
+      }
+
+      signal.addEventListener(
+        'abort',
+        () => {
+          controller.abort(signal.reason);
+        },
+        { once: true, signal: controller.signal }
+      );
+    }
+
+    return controller.signal;
   };
 }
 

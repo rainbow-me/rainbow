@@ -19,9 +19,8 @@ env:
       - tapOn: 'Open'
 - assertVisible:
     id: wallet-screen
-# Wait for the wallet screen to load.
+# Wait for wallet to fully load by checking amount
 - extendedWaitUntil:
     visible:
-      id: eth-card
-    # the test fail quite often if the timeout is too low
+      text: .*\$[\d,]+\.\d{2}.*
     timeout: 30000

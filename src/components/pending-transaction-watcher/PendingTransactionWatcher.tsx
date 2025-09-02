@@ -1,12 +1,18 @@
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useWatchPendingTransactions } from '@/hooks/useWatchPendingTxs';
-import { usePoll } from '@/hooks/usePoll';
-import { time } from '@/utils/time';
+import { useTransactionWatcher } from '@/hooks/useTransactionWatcher';
 import { memo } from 'react';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 export const PendingTransactionWatcher = memo(function PendingTransactionWatcher() {
   const address = useAccountAddress();
   const { watchPendingTransactions } = useWatchPendingTransactions({ address });
-  usePoll(watchPendingTransactions, time.seconds(5));
+  const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[address] || []);
+
+  useTransactionWatcher({
+    transactions: pendingTransactions,
+    watchFunction: watchPendingTransactions,
+  });
+
   return null;
 });

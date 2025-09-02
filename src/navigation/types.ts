@@ -36,7 +36,7 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { ScrollView } from 'react-native';
-import { PerpMarket } from '@/features/perps/types';
+import { PerpMarket, TriggerOrderType } from '@/features/perps/types';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -631,10 +631,17 @@ export type RootStackParamList = {
     event: PoapEvent;
   };
   [Routes.MODAL_SCREEN]: ModalParams;
+  [Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET]: {
+    triggerOrderType: TriggerOrderType;
+    market: PerpMarket;
+  };
 } & UntypedRoutes;
 
 export type PerpsStackParamList = {
   [Routes.PERPS_NEW_POSITION_SCREEN]: {
+    market: PerpMarket;
+  };
+  [Routes.PERPS_DETAIL_SCREEN]: {
     market: PerpMarket;
   };
 } & UntypedRoutes;

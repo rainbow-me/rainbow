@@ -57,6 +57,7 @@ export interface ParsedAsset {
     isBridgeable: boolean;
     networks: { [id in ChainId]?: { bridgeable: boolean } };
   };
+  updatedAt?: string;
 }
 
 export interface ParsedUserAsset extends ParsedAsset {

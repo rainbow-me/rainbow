@@ -64,7 +64,11 @@ export type WalletSectionsState = {
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
-  perpsData: { positions: PerpsPosition[]; balance: string; getTotalPositionsValue: () => string } | null;
+  perpsData: {
+    positions: PerpsPosition[];
+    balance: string;
+    getTotalPositionsValue: () => string;
+  } | null;
   remoteCards: string[];
   hasMoreCollections: boolean;
   isShowcaseDataMigrated: boolean;

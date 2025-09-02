@@ -57,6 +57,7 @@ import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks
 import { openInBrowser } from '@/utils/openInBrowser';
 import { RootStackParamList } from '@/navigation/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -88,10 +89,11 @@ function Row({ symbol, label, value }: { symbol: string; label: string; value: R
 
 export function NFTSingleOfferSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.NFT_SINGLE_OFFER_SHEET>>();
-  const { navigate, setParams } = useNavigation<typeof Routes.NFT_SINGLE_OFFER_SHEET>();
+  const { navigate, goBack, setParams } = useNavigation<typeof Routes.NFT_SINGLE_OFFER_SHEET>();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
+  const rainbowToastsEnabled = useRainbowToastEnabled();
   const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas({ enableTracking: true });
 
@@ -407,7 +409,11 @@ export function NFTSingleOfferSheet() {
         ...analyticsEventObject,
       });
 
-      navigate(Routes.PROFILE_SCREEN);
+      if (rainbowToastsEnabled) {
+        goBack();
+      } else {
+        navigate(Routes.PROFILE_SCREEN);
+      }
     } catch (e) {
       logger.error(
         new RainbowError(
@@ -430,7 +436,7 @@ export function NFTSingleOfferSheet() {
     } finally {
       setIsAccepting(false);
     }
-  }, [offer, rainbowFeeDecimal, accountAddress, offerChainId, feeParam, navigate, nft]);
+  }, [offer, rainbowFeeDecimal, accountAddress, offerChainId, feeParam, rainbowToastsEnabled, nft, goBack, navigate]);
 
   let buttonLabel = '';
   if (!isAccepting) {

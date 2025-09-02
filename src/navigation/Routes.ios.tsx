@@ -126,6 +126,13 @@ import { PerpsNewPositionSearchScreen, PerpsSearchScreen } from '@/features/perp
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
+import { PerpsDetailScreen } from '@/features/perps/screens/PerpDetailScreen';
+import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
+import { useBackgroundColor, Box } from '@/design-system';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SheetHandle } from '@/components/sheet';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
 import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen';
 import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
 
@@ -141,21 +148,30 @@ function SendFlowNavigator() {
   );
 }
 
+const PerpsStack = createMaterialTopTabNavigator();
+
 function PerpsAccountNavigator() {
+  const insets = useSafeAreaInsets();
+  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
   return (
     <KeyboardProvider>
       <PerpsAccentColorContextProvider>
-        <NativeStack.Navigator {...stackNavigationConfig} initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}>
-          <NativeStack.Screen component={PerpsSearchScreen} name={Routes.PERPS_SEARCH_SCREEN} options={{ customStack: true }} />
-          <NativeStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} options={{ customStack: true }} />
-          <NativeStack.Screen
-            component={PerpsNewPositionSearchScreen}
-            name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN}
-            options={{ customStack: true }}
-          />
-          <NativeStack.Screen component={PerpsNewPositionScreen} name={Routes.PERPS_NEW_POSITION_SCREEN} options={{ customStack: true }} />
-        </NativeStack.Navigator>
-        <PerpsNavigatorFooter />
+        <Box style={{ flex: 1 }} backgroundColor={screenBackgroundColor}>
+          <Box position="absolute" style={{ top: insets.top, alignSelf: 'center' }} backgroundColor={screenBackgroundColor} zIndex={10}>
+            <SheetHandle />
+          </Box>
+          <PerpsNavbar />
+
+          <PerpsStack.Navigator screenOptions={{ lazy: true }} tabBar={() => null} initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}>
+            <PerpsStack.Screen component={PerpsSearchScreen} name={Routes.PERPS_SEARCH_SCREEN} />
+            <PerpsStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} />
+            <PerpsStack.Screen component={PerpsNewPositionSearchScreen} name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN} />
+            <PerpsStack.Screen component={PerpsNewPositionScreen} name={Routes.PERPS_NEW_POSITION_SCREEN} />
+            <PerpsStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
+          </PerpsStack.Navigator>
+
+          <PerpsNavigatorFooter />
+        </Box>
       </PerpsAccentColorContextProvider>
     </KeyboardProvider>
   );
@@ -324,6 +340,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={LogSheet} name={Routes.LOG_SHEET} {...panelConfig} />
       <NativeStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} {...tokenLauncherConfig} />
       <NativeStack.Screen component={PerpsAccountNavigator} name={Routes.PERPS_ACCOUNT_NAVIGATOR} {...perpsAccountStackConfig} />
+      <NativeStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} {...panelConfig} />
       <NativeStack.Screen
         component={KingOfTheHillExplainSheet}
         name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}

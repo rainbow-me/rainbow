@@ -1,10 +1,4 @@
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
-import { SCRUBBER_WIDTH } from '@/features/perps/constants';
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import Animated, {
   SharedValue,
@@ -16,7 +10,12 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Slider, SliderProps, SliderVisualState } from './Slider';
+import { AnimatedText, Bleed, Column, Columns, Inline, useColorMode, useForegroundColor } from '@/design-system';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
+import { Slider, SliderProps, SliderChangeSource, SliderVisualState } from './Slider';
 
 export interface SliderLabels {
   title?: string | SharedValue<string>;
@@ -37,20 +36,14 @@ export interface SliderWithLabelsProps extends SliderProps {
 
 export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   sliderXPosition,
-  sliderPressProgress,
   isEnabled: isEnabledProp = true,
   visualState: visualStateProp = 'idle',
   colors,
   height,
   width,
   snapPoints,
-  onPercentageChangeWorklet,
-  onGestureStart,
-  onGestureEnd,
-  onGestureUpdateWorklet,
-  onGestureFinalize,
-  checkExceedsMax,
-  onExceedsMax,
+  onPercentageChange: onPercentageChangeProp,
+  onPercentageUpdate,
   containerStyle,
   labels = {},
   showPercentage = true,
@@ -86,8 +79,9 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
 
   // Calculate percentage from slider position
   const xPercentage = useDerivedValue(() => {
-    const sliderWidth = width ?? 0;
-    return Math.max(0, Math.min(1, (sliderXPosition.value - SCRUBBER_WIDTH / sliderWidth) / sliderWidth));
+    const sliderWidth = width || 287; // Default SLIDER_WIDTH
+    const scrubberWidth = 12; // SCRUBBER_WIDTH
+    return Math.max(0, Math.min(1, (sliderXPosition.value - scrubberWidth / sliderWidth) / sliderWidth));
   });
 
   // Format percentage text
@@ -131,16 +125,22 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
 
   const titleLabelStyle = useAnimatedStyle(() => ({ marginRight: isEnabled.value ? 3 : 0 }));
 
+  // Wrap onPercentageChange to handle max button press
+  const onPercentageChange = useCallback(
+    (percentage: number, source: SliderChangeSource) => {
+      onPercentageChangeProp?.(percentage, source);
+    },
+    [onPercentageChangeProp]
+  );
+
   const handleMaxPress = () => {
     'worklet';
     if (!isEnabled.value) return;
 
-    sliderXPosition.value = withSpring(width ?? 0, SPRING_CONFIGS.snappySpringConfig);
-
     if (onMaxPress) {
       runOnJS(onMaxPress)();
     }
-    onPercentageChangeWorklet(1, 'max-button');
+    runOnJS(onPercentageChange)(1, 'max-button');
   };
 
   return (
@@ -157,7 +157,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
                   </AnimatedText>
                 )}
                 {showPercentage && (
-                  <AnimatedText color="labelSecondary" size="15pt" style={percentageTextStyle} weight="heavy" tabularNumbers>
+                  <AnimatedText color="labelSecondary" size="15pt" style={percentageTextStyle} weight="heavy">
                     {percentageText}
                   </AnimatedText>
                 )}
@@ -176,19 +176,14 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
         </View>
         <Slider
           sliderXPosition={sliderXPosition}
-          sliderPressProgress={sliderPressProgress}
           isEnabled={isEnabledProp}
           colors={colors}
           height={height}
+          expandedHeight={height}
           width={width}
           snapPoints={snapPoints}
-          onPercentageChangeWorklet={onPercentageChangeWorklet}
-          onGestureStart={onGestureStart}
-          onGestureEnd={onGestureEnd}
-          onGestureUpdateWorklet={onGestureUpdateWorklet}
-          onGestureFinalize={onGestureFinalize}
-          checkExceedsMax={checkExceedsMax}
-          onExceedsMax={onExceedsMax}
+          onPercentageChange={onPercentageChange}
+          onPercentageUpdate={onPercentageUpdate}
         />
       </Animated.View>
     </Animated.View>

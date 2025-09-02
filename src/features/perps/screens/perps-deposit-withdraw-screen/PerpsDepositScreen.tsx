@@ -12,7 +12,6 @@ import {
   addCommasToNumber,
   clamp,
   getColorValueForThemeWorklet,
-  opacity,
   parseAssetAndExtend,
   stripNonDecimalNumbers,
 } from '@/__swaps__/utils/swaps';
@@ -26,22 +25,16 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
 import { RainbowImage } from '@/components/RainbowImage';
-import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
-import { AnimatedText, Box, Column, Columns, Separator, Stack, Text, TextIcon, useBackgroundColor, useColorMode } from '@/design-system';
+import { AnimatedText, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
+import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
-import {
-  HYPERCORE_PSEUDO_CHAIN_ID,
-  HYPERLIQUID_USDC_ADDRESS,
-  SLIDER_COLLAPSED_HEIGHT,
-  SLIDER_HEIGHT,
-  SLIDER_WIDTH,
-} from '@/features/perps/constants';
+import { HYPERCORE_PSEUDO_CHAIN_ID, HYPERLIQUID_USDC_ADDRESS } from '@/features/perps/constants';
 import { PerpsInputContainer } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsInputContainer';
 import { PerpsTokenList } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsTokenList';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
@@ -79,8 +72,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
-import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
-import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
+import { FOOTER_HEIGHT, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from './constants';
 
 const AssetCoinIcon = ({
   asset,
@@ -299,7 +291,6 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   const inputMethod = useSharedValue<InputMethod>('inputNativeValue');
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * 0.25); // Default to 25% of slider width
   const [quote, setQuote] = useState<CrosschainQuote | QuoteError | null>(null);
-  const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
   const highestValueNativeAsset = useUserAssetsStore(state => state.getHighestValueNativeAsset());
 
@@ -414,7 +405,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   );
 
   const handleGestureUpdate = useCallback(
-    ({ percentage }: { percentage: number }) => {
+    (percentage: number) => {
       'worklet';
 
       handlePercentageChange(percentage);
@@ -617,11 +608,10 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
       </Box>
       <SliderWithLabels
         sliderXPosition={sliderXPosition}
-        sliderPressProgress={sliderPressProgress}
         width={SLIDER_WIDTH}
         containerStyle={{ height: SLIDER_WITH_LABELS_HEIGHT, marginHorizontal: 20, justifyContent: 'center' }}
-        onPercentageChangeWorklet={handlePercentageChange}
-        onGestureUpdateWorklet={handleGestureUpdate}
+        onPercentageChange={handlePercentageChange}
+        onPercentageUpdate={handleGestureUpdate}
         showMaxButton={true}
         showPercentage={true}
         // TODO: INTL

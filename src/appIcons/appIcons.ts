@@ -14,6 +14,7 @@ import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import AppIconRedacted from '@/assets/appIconRedacted.png';
+import AppIconBaggy from '@/assets/appIconBaggy.png';
 import { TokenGateCheckerNetwork, TokenInfo } from '@/featuresToUnlock/tokenGatedUtils';
 import { Network } from '@/state/backendNetworks/types';
 
@@ -61,6 +62,9 @@ const FARCASTER_NFT_ADDRESS: EthereumAddress = '0x76843c8f8a369d29c719141a065ff5
 // redacted app icon unlocking NFTs
 const REDACTED_NFT_ADDRESS: EthereumAddress = '0x8C3f001A893f3B561dBCaa80f075ecc7A5B92690';
 
+// baggy app icon unlocking NFTs
+const BAGGY_NFT_ADDRESS: EthereumAddress = '0x6FaC772b0d65E475CE22288c066a1B4ea06c4223';
+
 export interface AppIcon {
   accentColor: string;
   displayName: string;
@@ -85,7 +89,8 @@ export type UnlockableAppIconKey =
   | 'poolboy'
   | 'adworld'
   | 'farcaster'
-  | 'redacted';
+  | 'redacted'
+  | 'baggy';
 
 export type AppIconKey = FreeAppIconKey | UnlockableAppIconKey;
 
@@ -183,6 +188,12 @@ export const unlockableAppIcons: Record<UnlockableAppIconKey, UnlockableAppIcon>
     displayName: 'Redacted Rainbow',
     image: AppIconRedacted,
     unlockingNFTs: { [Network.base]: [REDACTED_NFT_ADDRESS] },
+  },
+  baggy: {
+    accentColor: '#37C4F5',
+    displayName: 'Rainbow Baggy',
+    image: AppIconBaggy,
+    unlockingNFTs: { [Network.base]: [BAGGY_NFT_ADDRESS] },
   },
 
   // This is an example of how to add a new test app icon with an ERC-1155 NFT
