@@ -33,9 +33,9 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import * as lang from '@/languages';
-import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
+import { checkForPendingSwap } from '@/helpers/transactions';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 

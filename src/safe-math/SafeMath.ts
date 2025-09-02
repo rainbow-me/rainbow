@@ -492,3 +492,22 @@ export function maxWorklet(numA: string | number, numB: string | number) {
   'worklet';
   return greaterThanOrEqualToWorklet(numA, numB) ? numA : numB;
 }
+
+// Calculates the percentage difference between two values.
+export function getPercentageDifferenceWorklet(oldValue: string | number, newValue: string | number): string {
+  'worklet';
+  const oldValueStr = toStringWorklet(oldValue);
+  const newValueStr = toStringWorklet(newValue);
+
+  if (!isNumberStringWorklet(oldValueStr) || !isNumberStringWorklet(newValueStr)) {
+    throw new Error('Arguments must be a numeric string or number');
+  }
+
+  if (isZeroWorklet(oldValueStr)) {
+    return '0';
+  }
+
+  const difference = subWorklet(newValueStr, oldValueStr);
+  const ratio = divWorklet(difference, oldValueStr);
+  return mulWorklet(ratio, 100);
+}

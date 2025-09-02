@@ -1,15 +1,22 @@
 import React, { memo } from 'react';
-import { Box, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { Box, Separator, Stack, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { PerpsStackParamList } from '@/navigation/types';
-import Routes from '@/navigation/routesNames';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatPriceChange } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
-import { SizeInputCard } from '@/features/perps/screens/perps-new-position-screen/SizeInputCard';
+import { AmountInputCard } from './AmountInputCard';
+import { LeverageInputCard } from './LeverageInputCard';
+import { PositionSideSelector } from './PositionSideSelector';
+import { DetailsSection } from './DetailsSection';
+import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
+import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
+import { ScrollView } from 'react-native';
+import { FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
+import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 type MarketInfoSectionProps = {
   market: PerpMarket;
@@ -64,32 +71,54 @@ function MarketInfoSection({ market }: MarketInfoSectionProps) {
   );
 }
 
-function DetailsSection() {
-  return (
-    <Box>
-      <Text size="20pt" weight="heavy" color={'label'}>
-        {'Details'}
-      </Text>
-    </Box>
-  );
-}
-
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
-  const {
-    params: { market },
-  } = useRoute<RouteProp<PerpsStackParamList, typeof Routes.PERPS_NEW_POSITION_SCREEN>>();
+  const market = useHlNewPositionStore(state => state.market);
+  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
+
+  if (!market) return null;
 
   return (
     <Box background={'surfacePrimary'} paddingHorizontal={'20px'} style={{ flex: 1 }}>
       <PerpsNavbar />
-      <Box paddingTop={'20px'}>
-        <Separator color={'separatorTertiary'} direction="horizontal" />
+      <Box style={{ overflow: 'visible', paddingBottom: 24 }}>
+        <PositionSideSelector />
       </Box>
-      <Stack space={'24px'} separator={<Separator color={'separatorTertiary'} direction="horizontal" />}>
-        <MarketInfoSection market={market} />
-        <SizeInputCard />
-        <DetailsSection />
-      </Stack>
+      <Box style={{ flex: 1, position: 'relative' }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentInset={{ bottom: FOOTER_HEIGHT_WITH_SAFE_AREA }}>
+          <Box paddingTop={'24px'}>
+            <Stack space={'24px'} separator={<Separator color={'separatorTertiary'} direction="horizontal" />}>
+              <MarketInfoSection market={market} />
+              <Box gap={17}>
+                <Box gap={24}>
+                  <AmountInputCard />
+                  <LeverageInputCard market={market} />
+                </Box>
+                <Box paddingHorizontal={'8px'}>
+                  <LiquidationInfo market={market} />
+                </Box>
+              </Box>
+              <TriggerOrdersSection />
+              <DetailsSection market={market} />
+            </Stack>
+          </Box>
+        </ScrollView>
+        <EasingGradient
+          endColor={screenBackgroundColor}
+          startColor={screenBackgroundColor}
+          endOpacity={0}
+          startOpacity={1}
+          style={{
+            height: 32,
+            width: DEVICE_WIDTH,
+            pointerEvents: 'none',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+          }}
+        />
+      </Box>
     </Box>
   );
 });

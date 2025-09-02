@@ -122,6 +122,7 @@ const Routes = {
   PERPS_NEW_POSITION_SCREEN: 'PerpsNewPositionScreen',
   PERPS_DEPOSIT_SCREEN: 'PerpsDepositScreen',
   PERPS_DETAIL_SCREEN: 'PerpsDetailScreen',
+  CREATE_TRIGGER_ORDER_BOTTOM_SHEET: 'CreateTriggerOrderBottomSheet',
 } as const;
 
 export const NATIVE_ROUTES = [

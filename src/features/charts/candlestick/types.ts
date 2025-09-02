@@ -19,13 +19,20 @@ export type Bar = {
   l: number;
   /** Open price */
   o: number;
-  /** Timestamp */
+  /** Timestamp in seconds */
   t: number;
   /** Volume */
   v: number;
 };
 
-// ============ API Types ====================================================== //
+export type CandlestickResponse = {
+  candleResolution: CandleResolution;
+  candles: Bar[];
+  hasPreviousCandles: boolean;
+  lastFetchedCurrentPriceAt: number | undefined;
+} | null;
+
+// ============ Enums ========================================================== //
 
 /**
  * The candle resolutions supported by the API but not currently used in the app.
@@ -35,17 +42,11 @@ enum DisabledCandleResolution {
   UNSPECIFIED = 'RESOLUTION_UNSPECIFIED',
 }
 
-export type GetCandlestickChartRequest = {
-  /** Pricing currency code (e.g., `'usd'`) */
-  currency: string;
-  /** Number of candles to request */
-  requested_candles: number;
-  /** Candle resolution */
-  resolution: CandleResolution | DisabledCandleResolution;
-  /** Inclusive start of the time window, as epoch-seconds */
-  start_time?: number;
-  /** Token identifier in the form `'address:chainId'` (e.g., `'0x123…:1'`) */
-  token_id: string;
+// ============ API Types ====================================================== //
+
+export type CandlestickEndpointResponse = {
+  metadata: CandlestickChartMetadata;
+  result: CandlestickChartResult;
 };
 
 export type CandlestickChartMetadata = {
@@ -71,7 +72,20 @@ export type CandlestickChartMetadata = {
   tokenId: string;
 };
 
-export type CandlestickChartPayload = {
+export type GetCandlestickChartRequest = {
+  /** Pricing currency code (e.g., `'usd'`) */
+  currency: string;
+  /** Number of candles to request */
+  requested_candles: number;
+  /** Candle resolution */
+  resolution: CandleResolution | DisabledCandleResolution;
+  /** Inclusive start of the time window, as epoch-seconds */
+  start_time?: number;
+  /** Token identifier in the form `'address:chainId'` (e.g., `'0x123…:1'`) */
+  token_id: string;
+};
+
+type CandlestickChartPayload = {
   /** Close prices as decimal strings */
   c: string[];
   /** High prices as decimal strings */
@@ -86,7 +100,7 @@ export type CandlestickChartPayload = {
   v: string[];
 };
 
-export type CandlestickChartSummary = {
+type CandlestickChartSummary = {
   /** First candle price */
   first: string;
   /** Last candle price */
@@ -97,14 +111,9 @@ export type CandlestickChartSummary = {
   min: string;
 };
 
-export type CandlestickChartResult = {
+type CandlestickChartResult = {
   /** Chart details */
   payload: CandlestickChartPayload;
   /** Chart summary over close prices values */
   summary: CandlestickChartSummary;
-};
-
-export type CandlestickChartResponse = {
-  metadata: CandlestickChartMetadata;
-  result: CandlestickChartResult;
 };
