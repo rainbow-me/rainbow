@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -19,7 +19,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
 import { isDataComplete } from '@/state/nfts/utils';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -81,8 +81,10 @@ export default function useWalletSectionsData({
 
   const perpsPositions = useHyperliquidAccountStore(state => state.positions);
   const perpsBalance = useHyperliquidAccountStore(state => state.balance);
-  // TODO (kane): fix
-  const getTotalPositionsValue = useHyperliquidAccountStore(state => state.getTotalPositionsInfo);
+
+  const getTotalPerpPositionsValue = useCallback(() => {
+    return hyperliquidAccountStoreActions.getTotalPositionsInfo().value;
+  }, []);
 
   const perpsData = useMemo(() => {
     const hasBalance = perpsBalance && perpsBalance !== '0';
@@ -93,9 +95,9 @@ export default function useWalletSectionsData({
     return {
       positions: perpsPositions,
       balance: perpsBalance,
-      getTotalPositionsValue,
+      getTotalPositionsValue: getTotalPerpPositionsValue,
     };
-  }, [perpsPositions, perpsBalance, getTotalPositionsValue]);
+  }, [perpsPositions, perpsBalance, getTotalPerpPositionsValue]);
 
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);

@@ -43,12 +43,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   width,
   snapPoints,
   onPercentageChange: onPercentageChangeProp,
-  onGestureStart,
-  onGestureEnd,
   onPercentageUpdate,
-  onGestureFinalize,
-  checkExceedsMax,
-  onExceedsMax,
   containerStyle,
   labels = {},
   showPercentage = true,
@@ -189,11 +184,6 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
           snapPoints={snapPoints}
           onPercentageChange={onPercentageChange}
           onPercentageUpdate={onPercentageUpdate}
-          onGestureStart={onGestureStart}
-          onGestureEnd={onGestureEnd}
-          onGestureFinalize={onGestureFinalize}
-          checkExceedsMax={checkExceedsMax}
-          onExceedsMax={onExceedsMax}
         />
       </Animated.View>
     </Animated.View>
