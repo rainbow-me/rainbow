@@ -43,6 +43,7 @@ type HyperliquidAccountStoreActions = {
     unrealizedPnl: string;
     unrealizedPnlPercent: string;
   };
+  getPosition: (symbol: string) => PerpsPosition | undefined;
 };
 
 type HyperliquidAccountStore = HyperliquidAccountStoreState & HyperliquidAccountStoreActions;
@@ -99,6 +100,7 @@ export const useHyperliquidAccountStore = createQueryStore<
     seenFilledOrders: new Set<string>(),
     deposit: async ({ asset, amount }) => {},
     withdraw: async ({ asset, amount }) => {},
+    getPosition: symbol => get().positions.find(p => p.symbol === symbol),
     createIsolatedMarginPosition: async ({ symbol, side, leverage, amount, assetPrice, decimals }) => {
       const address = useWalletsStore.getState().accountAddress;
       const exchangeClient = await getHyperliquidExchangeClient(address);

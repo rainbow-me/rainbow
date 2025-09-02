@@ -127,6 +127,7 @@ import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsA
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
 import { PerpsDepositScreen } from '@/features/perps/screens/PerpsDepositScreen';
+import { PerpsDetailScreen } from '@/features/perps/screens/PerpDetailScreen';
 import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
 import { useBackgroundColor, Box } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -166,6 +167,7 @@ function PerpsAccountNavigator() {
             <PerpsStack.Screen component={PerpsNewPositionSearchScreen} name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN} />
             <PerpsStack.Screen component={PerpsNewPositionScreen} name={Routes.PERPS_NEW_POSITION_SCREEN} />
             <PerpsStack.Screen component={PerpsDepositScreen} name={Routes.PERPS_DEPOSIT_SCREEN} />
+            <PerpsStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
           </PerpsStack.Navigator>
 
           <PerpsNavigatorFooter />

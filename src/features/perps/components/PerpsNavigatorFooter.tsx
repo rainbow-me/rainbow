@@ -171,6 +171,40 @@ const PerpsAccountScreenFooter = () => {
   );
 };
 
+const PerpsDetailScreenFooter = () => {
+  const label = useForegroundColor('label');
+
+  return (
+    <Box>
+      <ButtonPressAnimation
+        onPress={() => {
+          // TODO: Add nav
+        }}
+      >
+        <Box
+          borderRadius={24}
+          height={48}
+          justifyContent={'center'}
+          alignItems={'center'}
+          borderWidth={2}
+          borderColor={{ custom: opacityWorklet(label, 0.16) }}
+        >
+          <LinearGradient
+            colors={HYPERLIQUID_COLORS.gradient}
+            style={StyleSheet.absoluteFillObject}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          />
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
+          <Text size="20pt" weight={'black'} color={{ custom: '#000000' }}>
+            Close Position
+          </Text>
+        </Box>
+      </ButtonPressAnimation>
+    </Box>
+  );
+};
+
 const PerpsNewPositionScreenFooter = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const green = PERPS_COLORS.longGreen;
@@ -295,6 +329,7 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           {activeRoute === Routes.PERPS_SEARCH_SCREEN && <PerpsSearchScreenFooter />}
           {activeRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN && <PerpsSearchScreenFooter />}
           {activeRoute === Routes.PERPS_ACCOUNT_SCREEN && <PerpsAccountScreenFooter />}
+          {activeRoute === Routes.PERPS_DETAIL_SCREEN && <PerpsDetailScreenFooter />}
           {activeRoute === Routes.PERPS_NEW_POSITION_SCREEN && <PerpsNewPositionScreenFooter />}
           {activeRoute === Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET && <PerpsNewPositionScreenFooter />}
         </Box>
