@@ -110,7 +110,12 @@ export class HyperliquidExchangeClient {
 
   async deposit(amount: string) {}
 
-  async withdraw(amount: string) {}
+  async withdraw(amount: string) {
+    await this.exchangeClient.withdraw3({
+      destination: this.userAddress,
+      amount,
+    });
+  }
 
   /**
    * Open a new isolated margin position

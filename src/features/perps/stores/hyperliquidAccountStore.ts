@@ -18,8 +18,7 @@ type HyperliquidAccountStoreState = {
 };
 
 type HyperliquidAccountStoreActions = {
-  deposit: ({ asset, amount }: { asset: string; amount: string }) => Promise<void>;
-  withdraw: ({ asset, amount }: { asset: string; amount: string }) => Promise<void>;
+  withdraw: (amount: string) => Promise<void>;
   createIsolatedMarginPosition: ({
     symbol,
     side,
@@ -98,8 +97,11 @@ export const useHyperliquidAccountStore = createQueryStore<
     filledOrders: [],
     balance: '0',
     seenFilledOrders: new Set<string>(),
-    deposit: async ({ asset, amount }) => {},
-    withdraw: async ({ asset, amount }) => {},
+    withdraw: async (amount: string) => {
+      const address = useWalletsStore.getState().accountAddress;
+      const exchangeClient = await getHyperliquidExchangeClient(address);
+      await exchangeClient.withdraw(amount);
+    },
     getPosition: symbol => get().positions.find(p => p.symbol === symbol),
     createIsolatedMarginPosition: async ({ symbol, side, leverage, amount, assetPrice, decimals }) => {
       const address = useWalletsStore.getState().accountAddress;
