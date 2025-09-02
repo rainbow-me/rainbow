@@ -56,7 +56,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ flashEnabled, isAc
               audio={false}
               video={false}
               photo={false}
-              onError={() => requestPermission}
+              onError={requestPermission}
             />
           </Box>
           <Rows>
