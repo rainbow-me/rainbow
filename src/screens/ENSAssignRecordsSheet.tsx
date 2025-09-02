@@ -37,8 +37,11 @@ import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
+import { IS_ANDROID } from '@/env';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { safeAreaInsetValues } from '@/utils';
 
-const BottomActionHeight = ios ? 281 : 250;
+const BottomActionHeight = 250 + safeAreaInsetValues.bottom;
 const BottomActionHeightSmall = 215;
 const ExtraBottomPadding = 55;
 
@@ -210,6 +213,7 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
+  const insets = useSafeAreaInsets();
   const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
   const {
     disabled,
@@ -297,7 +301,7 @@ export function ENSAssignRecordsBottomActions({
         testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
-          <Box paddingBottom="19px (Deprecated)" style={{ height: bottomActionHeight }}>
+          <Box paddingBottom={{ custom: insets.bottom }} style={{ height: bottomActionHeight }}>
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
@@ -312,7 +316,7 @@ export function ENSAssignRecordsBottomActions({
               </Row>
               <Row height="content">
                 <SheetActionButtonRow
-                  {...(android
+                  {...(IS_ANDROID
                     ? {
                         ignorePaddingBottom: true,
                         paddingBottom: 8,
