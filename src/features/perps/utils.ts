@@ -5,7 +5,8 @@ import Routes from '@/navigation/routesNames';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import * as hl from '@nktkas/hyperliquid';
 
-export function getHyperliquidTokenId(symbol: string): string {
+export function getHyperliquidTokenId(symbol?: string): string {
+  if (!symbol) return '';
   return `${symbol}:hl`;
 }
 

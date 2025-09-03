@@ -1,39 +1,32 @@
-import React, { memo } from 'react';
-import { AnimatedText, Box, Text, TextShadow, useForegroundColor } from '@/design-system';
+import React, { memo, useEffect } from 'react';
+import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { PerpsStackParamList } from '@/navigation/types';
+import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { formatPriceChange } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
-import { SHEET_FOOTER_HEIGHT } from '@/screens/expandedAssetSheet/components/SheetFooter';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { colors } from '@/styles';
-import { SheetHandle } from '@/components/sheet';
+import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { abs, greaterThan, isEqual } from '@/helpers/utilities';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { Page } from '@/components/layout';
+import { useChartsStore } from '@/features/charts/stores/chartsStore';
+import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { ScrollView } from 'react-native';
+import { PerpsNavigatorFooter } from '@/features/perps/components/PerpsNavigatorFooter';
+import { Chart } from '@/components/value-chart/Chart';
+import { get } from 'lodash';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({ market }: { market: PerpMarket }) {
-  const green = useForegroundColor('green');
-  const red = useForegroundColor('red');
-  const labelTertiary = useForegroundColor('labelTertiary');
-
-  const livePrice = useLiveTokenSharedValue({
-    tokenId: `${market.symbol}:hl`,
-    initialValue: formatAssetPrice({ value: market.price, currency: 'USD' }),
-    selector: state => {
-      return formatAssetPrice({ value: state.price, currency: 'USD' });
-    },
-  });
-
   return (
     <Box gap={20}>
       <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 44, height: 44 }} />
+
       <Box flexDirection="row" alignItems="center" gap={8}>
         <TextShadow blur={12} shadowOpacity={0.24}>
           <Text size="22pt" weight="heavy" color="labelTertiary" testID={`chart-header-${market.symbol}`}>
@@ -72,7 +65,7 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({ market }:
           </Text>
         </Box>
       </Box>
-      <Box gap={20}>
+      {/* <Box gap={20}>
         <AnimatedText size="34pt" weight="heavy" color="label" testID={`chart-header-${market.symbol}-price`}>
           {livePrice}
         </AnimatedText>
@@ -112,18 +105,35 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({ market }:
             </Text>
           </Box>
         </Box>
-      </Box>
+      </Box> */}
     </Box>
   );
 });
 
-export const ChartSection = memo(function ChartSection() {
+export const ChartSection = memo(function ChartSection({ market }: { market: PerpMarket }) {
+  const { setToken } = useChartsStore();
+  const colors = usePerpsAccentColorContext();
+  const tokenId = getHyperliquidTokenId(market.symbol);
+
+  useEffect(() => {
+    setToken(tokenId);
+  }, [tokenId, setToken]);
+
   return (
-    <Box height={300}>
-      <Text size="15pt" color="labelQuaternary" weight="heavy">
-        CHART SECTION PLACEHOLDER
-      </Text>
-    </Box>
+    <Chart
+      accentColors={{
+        ...colors.accentColors,
+        textOnAccent: colors.accentColors.opacity100,
+        background: colors.accentColors.surfacePrimary,
+        border: colors.accentColors.surfacePrimary,
+        color: colors.accentColors.opacity100,
+        borderSecondary: colors.accentColors.surfacePrimary,
+        surface: colors.accentColors.surfacePrimary,
+        surfaceSecondary: colors.accentColors.surfacePrimary,
+      }}
+      backgroundColor={colors.accentColors.surfacePrimary}
+      hyperliquidSymbol={market.symbol}
+    />
   );
 });
 
@@ -148,7 +158,7 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
 
   return (
     <Box
-      backgroundColor="#151E20"
+      backgroundColor="#192928"
       borderRadius={28}
       borderWidth={2}
       borderColor={{ custom: opacityWorklet('#3ECFAD', 0.06) }}
@@ -195,26 +205,39 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
   );
 });
 
-export const PerpsDetailScreen = memo(function PerpsDetailScreen() {
-  const {
-    params: { market },
-  } = useRoute<RouteProp<PerpsStackParamList, typeof Routes.PERPS_DETAIL_SCREEN>>();
-  const safeAreaInsets = useSafeAreaInsets();
+const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket }) {
+  const colors = usePerpsAccentColorContext();
 
   return (
-    <>
-      <Box background={'surfacePrimary'} paddingHorizontal={'20px'} style={{ flex: 1 }}>
-        <Box height="full" width="full" paddingTop={{ custom: 96 }} paddingBottom={{ custom: SHEET_FOOTER_HEIGHT + safeAreaInsets.bottom }}>
-          <Box gap={32}>
-            <Box gap={20}>
+    <Box as={Page} backgroundColor={colors.accentColors.surfacePrimary} flex={1} height="full" testID="perps-details-screen" width="full">
+      <SheetHandle withoutGradient extraPaddingTop={6} backgroundColor={colors.accentColors.surfaceSecondary} />
+      <Box height="full" width="full" paddingTop={{ custom: 96 }}>
+        <Box as={ScrollView} gap={32}>
+          <Box gap={20}>
+            {/* the chart dont take padding that's why we add it here */}
+            <Box paddingHorizontal="24px">
               <NameAndPriceSection market={market} />
-              <ChartSection />
+            </Box>
+            <ChartSection market={market} />
+            <Box paddingHorizontal="24px">
               <PositionValueSection market={market} />
             </Box>
           </Box>
         </Box>
       </Box>
-      <SheetHandle />
-    </>
+    </Box>
   );
 });
+
+export const PerpsDetailScreen = () => {
+  const {
+    params: { market },
+  } = useRoute<RouteProp<RootStackParamList, typeof Routes.PERPS_DETAIL_SCREEN>>();
+
+  return (
+    <PerpsAccentColorContextProvider>
+      <Screen market={market} />
+      {/* <PerpsNavigatorFooter /> */}
+    </PerpsAccentColorContextProvider>
+  );
+};

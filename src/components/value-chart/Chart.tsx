@@ -28,6 +28,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { LineChart } from './LineChart';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
 
 const BASE_CHART_HEIGHT = 292;
 const LINE_CHART_HEIGHT = BASE_CHART_HEIGHT - 6;
@@ -35,21 +36,20 @@ const LINE_CHART_HEIGHT = BASE_CHART_HEIGHT - 6;
 const CHART_BOTTOM_PADDING = 32;
 const CHART_TOP_PADDING = 20;
 
-type ChartProps = {
-  asset: ExpandedSheetAsset;
+type ChartProps = ({ asset: ExpandedSheetAsset; hyperliquidSymbol?: never } | { asset?: never; hyperliquidSymbol: string }) & {
   backgroundColor: string;
   accentColors: AssetAccentColors;
 };
 
-export const Chart = memo(function Chart({ asset, backgroundColor, accentColors }: ChartProps) {
+export const Chart = memo(function Chart({ asset, backgroundColor, accentColors, hyperliquidSymbol }: ChartProps) {
   const { width: screenWidth } = useWindowDimensions();
   const candlestickConfig = useCandlestickConfig(accentColors);
   const chartType = useChartType();
   const enableCandlestickListeners = chartType === ChartType.Candlestick;
 
   const chartGestureUnixTimestamp = useSharedValue<number>(0);
-  const chartGesturePrice = useSharedValue<number | undefined>(asset.price.value ?? undefined);
-  const chartGesturePriceRelativeChange = useSharedValue<number | undefined>(asset.price.relativeChange24h ?? undefined);
+  const chartGesturePrice = useSharedValue<number | undefined>(asset?.price.value ?? undefined);
+  const chartGesturePriceRelativeChange = useSharedValue<number | undefined>(asset?.price.relativeChange24h ?? undefined);
   const isChartGestureActive = useSharedValue(false);
   const lineChartTimePeriod = useStoreSharedValue(useChartsStore, state => state.lineChartTimePeriod);
   const selectedTimespan = useChartsStore(state => state.lineChartTimePeriod);
@@ -75,31 +75,35 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
     [selectedTimespan]
   );
 
+  const hyperliquidTokenId = getHyperliquidTokenId(hyperliquidSymbol);
+
+  console.log('hyperliquidTokenId', hyperliquidTokenId);
+
   const liveTokenPercentageChange = useLiveTokenSharedValue({
-    tokenId: asset.uniqueId,
-    initialValue: asset.price.relativeChange24h?.toString() ?? '0',
+    tokenId: hyperliquidTokenId ?? asset?.uniqueId,
+    initialValue: asset?.price.relativeChange24h?.toString() ?? '0',
     selector: liveTokenPercentageChangeSelector,
   });
 
   const liveTokenPrice = useLiveTokenSharedValue({
-    tokenId: asset.uniqueId,
-    initialValue: asset.price.value?.toString() ?? '0',
+    tokenId: hyperliquidTokenId ?? asset?.uniqueId,
+    initialValue: asset?.price.value?.toString() ?? '0',
     selector: state => state.price,
   });
 
   const price = useDerivedValue(() => {
     if (chartType === ChartType.Candlestick) {
-      return currentCandlestickPrice.value?.price ?? liveTokenPrice.value ?? asset.price.value ?? undefined;
+      return currentCandlestickPrice.value?.price ?? liveTokenPrice.value ?? asset?.price.value ?? undefined;
     }
 
     if (isChartGestureActive.value) return chartGesturePrice.value;
 
-    return liveTokenPrice.value ?? asset.price.value ?? undefined;
+    return liveTokenPrice.value ?? asset?.price.value ?? undefined;
   });
 
   const priceRelativeChange = useDerivedValue(() => {
     if (chartType === ChartType.Candlestick) {
-      return currentCandlestickPrice.value?.percentChange ?? liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
+      return currentCandlestickPrice.value?.percentChange ?? liveTokenPercentageChange.value ?? asset?.price.relativeChange24h ?? undefined;
     }
 
     if (isChartGestureActive.value) return chartGesturePriceRelativeChange.value;
@@ -110,13 +114,34 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
       case LineChartTimePeriod.Y1:
         return chartGesturePriceRelativeChange.value;
       default:
-        return liveTokenPercentageChange.value ?? asset.price.relativeChange24h ?? undefined;
+        return liveTokenPercentageChange.value ?? asset?.price.relativeChange24h ?? undefined;
     }
   });
 
   useCleanup(() => {
     chartsActions.resetChartsState();
   });
+
+  const ChartComponent = (() => {
+    const commonProps = {
+      accentColor: accentColors.color,
+      backgroundColor,
+      chartHeight: BASE_CHART_HEIGHT,
+      chartWidth: screenWidth,
+      config: candlestickConfig,
+      isChartGestureActive,
+    };
+
+    if (hyperliquidSymbol) {
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      return <CandlestickChart {...commonProps} symbol={hyperliquidTokenId} />;
+    }
+    if (asset) {
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      return <CandlestickChart {...commonProps} address={asset.address} chainId={asset.chainId} />;
+    }
+    return null;
+  })();
 
   return (
     <Box gap={28}>
@@ -131,7 +156,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
       />
 
       <Box gap={20}>
-        {chartType === ChartType.Line ? (
+        {chartType === ChartType.Line && !hyperliquidSymbol ? (
           <Box
             alignItems="center"
             height={LINE_CHART_HEIGHT}
@@ -152,16 +177,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors 
             />
           </Box>
         ) : (
-          <CandlestickChart
-            accentColor={accentColors.color}
-            address={asset.address}
-            backgroundColor={backgroundColor}
-            chainId={asset.chainId}
-            chartHeight={BASE_CHART_HEIGHT}
-            chartWidth={screenWidth}
-            config={candlestickConfig}
-            isChartGestureActive={isChartGestureActive}
-          />
+          ChartComponent
         )}
 
         <TimeframeSelector backgroundColor={backgroundColor} color={accentColors.color} />
