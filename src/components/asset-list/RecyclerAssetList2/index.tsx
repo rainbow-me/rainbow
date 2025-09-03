@@ -25,23 +25,7 @@ import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingO
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
-const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
-  {
-    actionKey: Routes.SETTINGS_SHEET,
-    actionTitle: lang.t(lang.l.settings.label),
-    icon: { iconType: 'SYSTEM', iconValue: 'gear' },
-  },
-  {
-    actionKey: Routes.RECEIVE_MODAL,
-    actionTitle: lang.t(lang.l.button.my_qr_code),
-    icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-  },
-  {
-    actionKey: Routes.CONNECTED_DAPPS,
-    actionTitle: lang.t(lang.l.wallet.connected_apps),
-    icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-  },
-];
+// menu items are language-dependent; build them at render time
 
 export interface RecyclerAssetList2Props {
   accentColor?: string;
@@ -124,6 +108,27 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
   const insets = useSafeAreaInsets();
   const showKingOfTheHillTab = useShowKingOfTheHill();
   const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
+  const menuItems = useMemo(
+    () =>
+      [
+        {
+          actionKey: Routes.SETTINGS_SHEET,
+          actionTitle: lang.t(lang.l.settings.label),
+          icon: { iconType: 'SYSTEM', iconValue: 'gear' },
+        },
+        {
+          actionKey: Routes.RECEIVE_MODAL,
+          actionTitle: lang.t(lang.l.button.my_qr_code),
+          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+        },
+        {
+          actionKey: Routes.CONNECTED_DAPPS,
+          actionTitle: lang.t(lang.l.wallet.connected_apps),
+          icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+        },
+      ] as MenuItem<(typeof Routes)[keyof typeof Routes]>[],
+    [lang.locale]
+  );
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
 
