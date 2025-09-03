@@ -34,7 +34,6 @@ import { promiseUtils } from '@/utils';
 import { AddressZero } from '@ethersproject/constants';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
-import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -109,19 +108,19 @@ export function getDefaultCheckboxes({
         ensProfile?.isOwner && {
           checked: false,
           id: 'clear-records',
-          label: lang.t('wallet.transaction.checkboxes.clear_profile_information'),
+          label: i18n.t(i18n.l.wallet.transaction.checkboxes.clear_profile_information),
         },
       !doesNamePointToRecipient(ensProfile, toAddress) &&
         ensProfile?.isOwner && {
           checked: false,
           id: 'set-address',
-          label: lang.t('wallet.transaction.checkboxes.point_name_to_recipient'),
+          label: i18n.t(i18n.l.wallet.transaction.checkboxes.point_name_to_recipient),
         },
       isRegistrant(ensProfile) &&
         ensProfile?.data?.owner?.address?.toLowerCase() !== toAddress.toLowerCase() && {
           checked: false,
           id: 'transfer-control',
-          label: lang.t('wallet.transaction.checkboxes.transfer_control'),
+          label: i18n.t(i18n.l.wallet.transaction.checkboxes.transfer_control),
         },
     ].filter(Boolean) as Checkbox[];
   }
@@ -129,7 +128,7 @@ export function getDefaultCheckboxes({
     {
       checked: false,
       id: 'has-wallet-that-supports',
-      label: lang.t('wallet.transaction.checkboxes.has_a_wallet_that_supports', {
+      label: i18n.t(i18n.l.wallet.transaction.checkboxes.has_a_wallet_that_supports, {
         networkName: useBackendNetworksStore.getState().getChainsLabel()[chainId],
       }),
     },
@@ -469,7 +468,7 @@ export const SendConfirmationSheet = () => {
       {IS_IOS && <TouchableBackdrop onPress={goBack} />}
 
       <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
-        <SheetTitle>{lang.t('wallet.transaction.sending_title')}</SheetTitle>
+        <SheetTitle>{i18n.t(i18n.l.wallet.transaction.sending_title)}</SheetTitle>
         <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
@@ -526,7 +525,7 @@ export const SendConfirmationSheet = () => {
                   size="large"
                   weight="heavy"
                 >
-                  {lang.t('account.tx_to_lowercase')}
+                  {i18n.t(i18n.l.account.tx_to_lowercase)}
                 </OldText>
               </Pill>
 
@@ -628,7 +627,7 @@ export const SendConfirmationSheet = () => {
                         </Box>
                       }
                     >
-                      {lang.t('wallet.transaction.ens_configuration_options')}
+                      {i18n.t(i18n.l.wallet.transaction.ens_configuration_options)}
                     </Callout>
                   </ButtonPressAnimation>
                 )}

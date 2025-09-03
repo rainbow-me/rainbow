@@ -12,7 +12,7 @@ import { padding, position } from '@/styles';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { useRoute } from '@react-navigation/native';
 import { captureMessage } from '@sentry/react-native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
@@ -215,7 +215,7 @@ const AddFundsInterstitial = ({ network }) => {
     <Container isSmallPhone={isSmallPhone}>
       {network === Network.mainnet ? (
         <Fragment>
-          <Title>{ios ? lang.t('add_funds.to_get_started_ios') : lang.t('add_funds.to_get_started_android')}</Title>
+          <Title>{ios ? i18n.t(i18n.l.add_funds.to_get_started_ios) : i18n.t(i18n.l.add_funds.to_get_started_android)}</Title>
           <Row justify="space-between" marginVertical={30}>
             <AmountButton amount={100} backgroundColor={colors.swapPurple} color={colors.neonSkyblue} onPress={handlePressAmount} />
             <AmountButton amount={200} backgroundColor={colors.swapPurple} color={colors.neonSkyblue} onPress={handlePressAmount} />
@@ -225,34 +225,34 @@ const AddFundsInterstitial = ({ network }) => {
             <InterstitialButton onPress={handlePressAmount} radiusAndroid={23}>
               <InterstitialButtonContent>
                 <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.6)} lineHeight="loose" size="large" weight="bold">
-                  {`􀍡 ${lang.t('wallet.add_cash.interstitial.other_amount')}`}
+                  {`􀍡 ${i18n.t(i18n.l.wallet.add_cash.interstitial.other_amount)}`}
                 </Text>
               </InterstitialButtonContent>
             </InterstitialButton>
           </InterstitialButtonRow>
           {!isSmallPhone && <InterstitialDivider />}
-          <Subtitle isSmallPhone={isSmallPhone}>{lang.t('add_funds.eth.or_send_eth')}</Subtitle>
+          <Subtitle isSmallPhone={isSmallPhone}>{i18n.t(i18n.l.add_funds.eth.or_send_eth)}</Subtitle>
 
-          <Paragraph>{lang.t('add_funds.eth.send_from_another_source')}</Paragraph>
+          <Paragraph>{i18n.t(i18n.l.add_funds.eth.send_from_another_source)}</Paragraph>
         </Fragment>
       ) : (
         <Fragment>
           <Title>
-            {lang.t('add_funds.test_eth.request_test_eth', {
+            {i18n.t(i18n.l.add_funds.test_eth.request_test_eth, {
               testnetName: networkInfo[network]?.name,
             })}
           </Title>
           <Row marginTop={30}>
             <InterstitialButton onPress={addFundsToAccountAddress}>
               <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.6)} lineHeight="loose" size="large" weight="bold">
-                􀎬 {lang.t('add_funds.test_eth.add_from_faucet')}
+                􀎬 {i18n.t(i18n.l.add_funds.test_eth.add_from_faucet)}
               </Text>
             </InterstitialButton>
           </Row>
           {!isSmallPhone && <InterstitialDivider />}
-          <Subtitle isSmallPhone={isSmallPhone}>{lang.t('add_funds.test_eth.or_send_test_eth')}</Subtitle>
+          <Subtitle isSmallPhone={isSmallPhone}>{i18n.t(i18n.l.add_funds.test_eth.or_send_test_eth)}</Subtitle>
           <Paragraph>
-            {lang.t('add_funds.test_eth.send_test_eth_from_another_source', {
+            {i18n.t(i18n.l.add_funds.test_eth.send_test_eth_from_another_source, {
               testnetName: networkInfo[network]?.name,
             })}
           </Paragraph>
@@ -262,7 +262,7 @@ const AddFundsInterstitial = ({ network }) => {
         <CopyAddressButtonContent>
           <Icon color={colors.appleBlue} marginTop={0.5} name="copy" size={19} />
           <Text align="center" color={colors.appleBlue} lineHeight="loose" size="large" weight="bold">
-            {lang.t('wallet.settings.copy_address')}
+            {i18n.t(i18n.l.wallet.settings.copy_address)}
           </Text>
         </CopyAddressButtonContent>
       </CopyAddressButton>

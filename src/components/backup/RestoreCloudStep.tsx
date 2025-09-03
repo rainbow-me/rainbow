@@ -5,7 +5,7 @@ import { isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/ha
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { WalletLoadingStates } from '@/helpers/walletLoadingStates';
 import { useDimensions } from '@/hooks';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { logger } from '@/logger';
 import { getLocalBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveLocalBackupPassword } from '@/model/backup';
 
@@ -172,15 +172,15 @@ export default function RestoreCloudStep() {
             setIncorrectPassword(true);
             break;
           case RestoreCloudBackupResultStates.incorrectPinCode:
-            Alert.alert(lang.t('back_up.restore_cloud.incorrect_pin_code'));
+            Alert.alert(i18n.t(i18n.l.back_up.restore_cloud.incorrect_pin_code));
             break;
           default:
-            Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
+            Alert.alert(i18n.t(i18n.l.back_up.restore_cloud.error_while_restoring));
             break;
         }
       }
     } catch (e) {
-      Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
+      Alert.alert(i18n.t(i18n.l.back_up.restore_cloud.error_while_restoring));
     } finally {
       walletLoadingStore.setState({
         loadingState: null,
@@ -210,8 +210,8 @@ export default function RestoreCloudStep() {
               size={72}
             />
             <Stack space="4px">
-              <Title>{lang.t(lang.l.back_up.cloud.password.enter_backup_password)}</Title>
-              <DescriptionText>{lang.t(lang.l.back_up.cloud.password.to_restore_from_backup)}</DescriptionText>
+              <Title>{i18n.t(i18n.l.back_up.cloud.password.enter_backup_password)}</Title>
+              <DescriptionText>{i18n.t(i18n.l.back_up.cloud.password.to_restore_from_backup)}</DescriptionText>
             </Stack>
           </Masthead>
           <Box gap={12}>
@@ -222,7 +222,7 @@ export default function RestoreCloudStep() {
               onChange={onPasswordChange}
               onSubmitEditing={onPasswordSubmit}
               password={password}
-              placeholder={lang.t('back_up.restore_cloud.backup_password_placeholder')}
+              placeholder={i18n.t(i18n.l.back_up.restore_cloud.backup_password_placeholder)}
               ref={passwordRef}
               returnKeyType="next"
             />
@@ -238,8 +238,8 @@ export default function RestoreCloudStep() {
               type={RainbowButtonTypes.backup}
               label={
                 loadingState
-                  ? `${lang.t(lang.l.back_up.cloud.restoration_in_progress)}`
-                  : `􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
+                  ? `${i18n.t(i18n.l.back_up.cloud.restoration_in_progress)}`
+                  : `􀎽 ${i18n.t(i18n.l.back_up.cloud.restore_from_platform, {
                       cloudPlatformName: cloudPlatform,
                     })}`
               }
@@ -257,7 +257,7 @@ export default function RestoreCloudStep() {
               width="full"
             >
               <ButtonText>
-                {`􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
+                {`􀎽 ${i18n.t(i18n.l.back_up.cloud.restore_from_platform, {
                   cloudPlatformName: cloudPlatform,
                 })}`}
               </ButtonText>

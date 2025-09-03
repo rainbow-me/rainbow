@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import RainbowLogo from '../assets/rainbows/light.png';
@@ -83,12 +83,12 @@ const PinAuthenticationScreen = () => {
         if (stillBanned) {
           const timeLeftMS = timelock - now;
           const timeAmountSeconds = timeLeftMS / 1000;
-          const unit = timeAmountSeconds > 60 ? lang.t('time.minutes.long.plural') : lang.t('time.seconds.long.plural');
+          const unit = timeAmountSeconds > 60 ? i18n.t(i18n.l.time.minutes.long.plural) : i18n.t(i18n.l.time.seconds.long.plural);
           const timeAmount = timeAmountSeconds > 60 ? Math.ceil(timeAmountSeconds / 60) : Math.ceil(timeAmountSeconds);
 
           Alert.alert(
-            lang.t('wallet.pin_authentication.still_blocked'),
-            lang.t('wallet.pin_authentication.you_still_need_to_wait', {
+            i18n.t(i18n.l.wallet.pin_authentication.still_blocked),
+            i18n.t(i18n.l.wallet.pin_authentication.you_still_need_to_wait, {
               timeAmount: timeAmount,
               unitName: unit,
             })
@@ -109,8 +109,8 @@ const PinAuthenticationScreen = () => {
   useEffect(() => {
     if (attemptsLeft === 0) {
       Alert.alert(
-        lang.t('wallet.pin_authentication.too_many_tries'),
-        lang.t('wallet.pin_authentication.you_need_to_wait_minutes_plural', {
+        i18n.t(i18n.l.wallet.pin_authentication.too_many_tries),
+        i18n.t(i18n.l.wallet.pin_authentication.you_need_to_wait_minutes_plural, {
           minutesCount: TIMELOCK_INTERVAL_MINUTES,
         })
       );
@@ -213,10 +213,10 @@ const PinAuthenticationScreen = () => {
           <Logo />
           <SheetTitle>
             {actionType === 'authentication'
-              ? lang.t('wallet.pin_authentication.type_your_pin')
+              ? i18n.t(i18n.l.wallet.pin_authentication.type_your_pin)
               : actionType === 'creation'
-                ? lang.t('wallet.pin_authentication.choose_your_pin')
-                : lang.t('wallet.pin_authentication.confirm_your_pin')}
+                ? i18n.t(i18n.l.wallet.pin_authentication.choose_your_pin)
+                : i18n.t(i18n.l.wallet.pin_authentication.confirm_your_pin)}
           </SheetTitle>
           <PinValue translateX={errorAnimation} value={value} />
         </ColumnWithMargins>

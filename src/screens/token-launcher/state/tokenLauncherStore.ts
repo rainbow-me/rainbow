@@ -23,7 +23,7 @@ import {
   validateSymbolWorklet,
   validateTotalSupplyWorklet,
 } from '../helpers/inputValidators';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { Wallet } from '@ethersproject/wallet';
 import { parseUnits } from '@ethersproject/units';
 import { TransactionOptions } from '@rainbow-me/swaps';
@@ -695,7 +695,7 @@ export const useTokenLauncherStore = createRainbowStore<TokenLauncherStore>((set
         const { header, body } = tokenLaunchErrorToErrorMessage(error as TokenLauncherSDKError);
         Alert.alert(header, body);
       } else {
-        Alert.alert(lang.t('token_launcher.errors.header'), lang.t('token_launcher.errors.unknown_error'));
+        Alert.alert(i18n.t(i18n.l.token_launcher.errors.header), i18n.t(i18n.l.token_launcher.errors.unknown_error));
       }
 
       analytics.track(analytics.event.tokenLauncherCreationFailed, {

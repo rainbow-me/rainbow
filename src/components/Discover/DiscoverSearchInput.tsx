@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
@@ -111,7 +111,7 @@ const DiscoverSearchInput = ({
   onFocus,
   onBlur,
   testID,
-  placeholderText = lang.t('button.exchange_search_placeholder'),
+  placeholderText = i18n.t(i18n.l.button.exchange_search_placeholder),
   clearTextOnFocus = true,
   currentChainId,
 }: DiscoverSearchInputProps) => {
@@ -141,7 +141,7 @@ const DiscoverSearchInput = ({
 
   const placeholder = useMemo(() => {
     if (!currentChainId) return placeholderText;
-    return lang.t('button.exchange_search_placeholder_network', {
+    return i18n.t(i18n.l.button.exchange_search_placeholder_network, {
       network: useBackendNetworksStore.getState().getChainsName()[currentChainId],
     });
   }, [currentChainId, placeholderText]);

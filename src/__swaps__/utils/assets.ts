@@ -107,7 +107,7 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
         priceData: asset?.price,
       }),
     },
-    name: asset.name || i18n.t('tokens_tab.unknown_token'),
+    name: asset.name || i18n.t(i18n.l.tokens_tab.unknown_token),
     price: asset.price,
     symbol: asset.symbol,
     type: asset.type,

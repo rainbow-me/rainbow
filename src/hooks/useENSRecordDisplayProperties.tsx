@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { upperFirst } from 'lodash';
 import React, { PropsWithChildren, useCallback, useMemo } from 'react';
 import URL from 'url-parse';
@@ -130,7 +130,7 @@ export default function useENSRecordDisplayProperties({
       allowEdit && type === 'record' && Object.values(ENS_RECORDS).includes(recordKey as ENS_RECORDS)
         ? {
             actionKey: 'edit',
-            actionTitle: lang.t('expanded_state.unique_expanded.edit'),
+            actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.edit),
             icon: {
               iconType: 'SYSTEM',
               iconValue: 'square.and.pencil',
@@ -140,7 +140,7 @@ export default function useENSRecordDisplayProperties({
       url
         ? {
             actionKey: 'open-url',
-            actionTitle: lang.t('expanded_state.unique_expanded.view_on_platform', { platform: isUrlValue ? 'Web' : label }),
+            actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_on_platform, { platform: isUrlValue ? 'Web' : label }),
             discoverabilityTitle: displayUrl,
             icon: {
               iconType: 'SYSTEM',
@@ -150,7 +150,7 @@ export default function useENSRecordDisplayProperties({
         : undefined,
       {
         actionKey: 'copy',
-        actionTitle: lang.t('expanded_state.unique_expanded.copy'),
+        actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.copy),
         discoverabilityTitle: displayUrl || recordValue,
         icon: {
           iconType: 'SYSTEM',
