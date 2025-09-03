@@ -15,12 +15,10 @@ import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { Page } from '@/components/layout';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
+import { ChartType } from '@/features/charts/types';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { ScrollView } from 'react-native';
-import { PerpsNavigatorFooter } from '@/features/perps/components/PerpsNavigatorFooter';
 import { Chart } from '@/components/value-chart/Chart';
-import { get } from 'lodash';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({ market }: { market: PerpMarket }) {
   return (
@@ -111,13 +109,13 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({ market }:
 });
 
 export const ChartSection = memo(function ChartSection({ market }: { market: PerpMarket }) {
-  const { setToken } = useChartsStore();
+  const { setToken, setChartType } = useChartsStore();
   const colors = usePerpsAccentColorContext();
-  const tokenId = getHyperliquidTokenId(market.symbol);
 
   useEffect(() => {
-    setToken(tokenId);
-  }, [tokenId, setToken]);
+    setToken(market.symbol);
+    setChartType(ChartType.Candlestick);
+  }, [setToken, setChartType, market.symbol]);
 
   return (
     <Chart
@@ -133,6 +131,7 @@ export const ChartSection = memo(function ChartSection({ market }: { market: Per
       }}
       backgroundColor={colors.accentColors.surfacePrimary}
       hyperliquidSymbol={market.symbol}
+      hideChartTypeToggle
     />
   );
 });
@@ -237,7 +236,6 @@ export const PerpsDetailScreen = () => {
   return (
     <PerpsAccentColorContextProvider>
       <Screen market={market} />
-      {/* <PerpsNavigatorFooter /> */}
     </PerpsAccentColorContextProvider>
   );
 };

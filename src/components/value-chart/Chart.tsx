@@ -39,9 +39,10 @@ const CHART_TOP_PADDING = 20;
 type ChartProps = ({ asset: ExpandedSheetAsset; hyperliquidSymbol?: never } | { asset?: never; hyperliquidSymbol: string }) & {
   backgroundColor: string;
   accentColors: AssetAccentColors;
+  hideChartTypeToggle?: boolean;
 };
 
-export const Chart = memo(function Chart({ asset, backgroundColor, accentColors, hyperliquidSymbol }: ChartProps) {
+export const Chart = memo(function Chart({ asset, backgroundColor, accentColors, hyperliquidSymbol, hideChartTypeToggle }: ChartProps) {
   const { width: screenWidth } = useWindowDimensions();
   const candlestickConfig = useCandlestickConfig(accentColors);
   const chartType = useChartType();
@@ -76,8 +77,6 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
   );
 
   const hyperliquidTokenId = getHyperliquidTokenId(hyperliquidSymbol);
-
-  console.log('hyperliquidTokenId', hyperliquidTokenId);
 
   const liveTokenPercentageChange = useLiveTokenSharedValue({
     tokenId: hyperliquidTokenId ?? asset?.uniqueId,
@@ -122,7 +121,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
     chartsActions.resetChartsState();
   });
 
-  const ChartComponent = (() => {
+  const ChartComponent = useMemo(() => {
     const commonProps = {
       accentColor: accentColors.color,
       backgroundColor,
@@ -134,14 +133,14 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
 
     if (hyperliquidSymbol) {
       // eslint-disable-next-line react/jsx-props-no-spreading
-      return <CandlestickChart {...commonProps} symbol={hyperliquidTokenId} />;
+      return <CandlestickChart {...commonProps} symbol={hyperliquidSymbol} />;
     }
     if (asset) {
       // eslint-disable-next-line react/jsx-props-no-spreading
       return <CandlestickChart {...commonProps} address={asset.address} chainId={asset.chainId} />;
     }
     return null;
-  })();
+  }, [hyperliquidSymbol, asset, accentColors.color, backgroundColor, screenWidth, candlestickConfig, isChartGestureActive]);
 
   return (
     <Box gap={28}>
@@ -180,7 +179,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
           ChartComponent
         )}
 
-        <TimeframeSelector backgroundColor={backgroundColor} color={accentColors.color} />
+        <TimeframeSelector backgroundColor={backgroundColor} color={accentColors.color} hideChartTypeToggle={hideChartTypeToggle} />
       </Box>
 
       {!IS_DEV && <ChartsTelemetry />}
