@@ -7,7 +7,7 @@ import { Box, Cover, Text } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { UniqueAsset } from '@/entities';
 import { IS_ANDROID } from '@/env';
-import { useAccountAccentColor, usePendingTransactions, useWalletSectionsData } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, usePendingTransactions, useWalletSectionsData } from '@/hooks';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as lang from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -24,24 +24,6 @@ import { ProfileNameRow } from './profile-header/ProfileNameRow';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
-
-const menuItems: MenuItem<(typeof Routes)[keyof typeof Routes]>[] = [
-  {
-    actionKey: Routes.SETTINGS_SHEET,
-    actionTitle: lang.t(lang.l.settings.label),
-    icon: { iconType: 'SYSTEM', iconValue: 'gear' },
-  },
-  {
-    actionKey: Routes.RECEIVE_MODAL,
-    actionTitle: lang.t(lang.l.button.my_qr_code),
-    icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-  },
-  {
-    actionKey: Routes.CONNECTED_DAPPS,
-    actionTitle: lang.t(lang.l.wallet.connected_apps),
-    icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-  },
-];
 
 export interface RecyclerAssetList2Props {
   accentColor?: string;
@@ -121,9 +103,32 @@ function handleNavigateToActivity(): void {
 
 const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
+  const { language } = useAccountSettings();
   const insets = useSafeAreaInsets();
   const showKingOfTheHillTab = useShowKingOfTheHill();
   const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
+
+  const menuItems = useMemo(
+    () =>
+      [
+        {
+          actionKey: Routes.SETTINGS_SHEET,
+          actionTitle: lang.t(lang.l.settings.label),
+          icon: { iconType: 'SYSTEM', iconValue: 'gear' },
+        },
+        {
+          actionKey: Routes.RECEIVE_MODAL,
+          actionTitle: lang.t(lang.l.button.my_qr_code),
+          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+        },
+        {
+          actionKey: Routes.CONNECTED_DAPPS,
+          actionTitle: lang.t(lang.l.wallet.connected_apps),
+          icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+        },
+      ] as MenuItem<(typeof Routes)[keyof typeof Routes]>[],
+    [language]
+  );
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
 
