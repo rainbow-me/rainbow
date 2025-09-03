@@ -27,7 +27,7 @@ export default function DiscoverSearch() {
   const accountAddress = useAccountAddress();
   const safeAreaInsets = useSafeAreaInsets();
 
-  const { cancelSearch, searchInputRef, sectionListRef } = useDiscoverScreenContext();
+  const { cancelSearch, sectionListRef } = useDiscoverScreenContext();
   const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
   const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
     return {
