@@ -213,11 +213,12 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   rankingBadge: {
-    paddingHorizontal: 3,
-    paddingVertical: 4,
-    borderRadius: 5.5,
-    borderCurve: 'continuous',
     alignItems: 'center',
+    borderCurve: 'continuous',
+    borderRadius: 6,
+    height: 16,
+    justifyContent: 'center',
+    paddingHorizontal: 3.5,
   },
   chainImageContainer: {
     position: 'absolute',
