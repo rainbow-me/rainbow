@@ -26,7 +26,6 @@ import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
 import { openInBrowser } from '@/utils/openInBrowser';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { capitalize } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
@@ -47,12 +46,6 @@ interface SettingsSectionProps {
   onPressPrivacy: () => void;
   onPressNotifications: () => void;
 }
-
-const androidActions = [
-  lang.t('settings.theme_section.system'),
-  lang.t('settings.theme_section.light'),
-  lang.t('settings.theme_section.dark'),
-];
 
 const SettingsSection = ({
   onCloseModal,
@@ -130,8 +123,11 @@ const SettingsSection = ({
       ] as MenuActionConfig[],
       menuTitle: '',
     };
-  }, [colorScheme]);
+  }, [colorScheme, language]);
 
+  const androidActions = useMemo(() => {
+    return [lang.t('settings.theme_section.system'), lang.t('settings.theme_section.light'), lang.t('settings.theme_section.dark')];
+  }, [language]);
   const onPressThemeAndroidActions = useCallback(() => {
     showActionSheetWithOptions(
       {
@@ -148,7 +144,7 @@ const SettingsSection = ({
         }
       }
     );
-  }, [setTheme]);
+  }, [setTheme, androidActions]);
 
   const handleSelectTheme = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
@@ -213,11 +209,14 @@ const SettingsSection = ({
           onPressMenuItem={handleSelectTheme}
           useActionSheetFallback={false}
           testID={`choose-theme-section-${isDarkMode ? 'dark' : 'light'}`}
+          key={`theme-menu-${language}`}
         >
           <MenuItem
             hasChevron
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
-            rightComponent={<MenuItem.Selection>{colorScheme ? capitalize(colorScheme) : ''}</MenuItem.Selection>}
+            rightComponent={
+              <MenuItem.Selection>{colorScheme ? lang.t(lang.l.settings.theme_section[colorScheme]) : ''}</MenuItem.Selection>
+            }
             size={60}
             titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.theme)} />}
           />
