@@ -1,7 +1,7 @@
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { Address } from 'viem';
-import { PerpPositionSide, PerpsPosition, FilledOrder, OrderType } from '../types';
+import { PerpPositionSide, PerpsPosition, OrderType } from '../types';
 import { getHyperliquidAccountClient, getHyperliquidExchangeClient } from '../services';
 import { RainbowError } from '@/logger';
 import { add, divide } from '@/helpers/utilities';
@@ -11,10 +11,7 @@ import { OrderResponse } from '@nktkas/hyperliquid';
 
 type HyperliquidAccountStoreState = {
   positions: Record<string, PerpsPosition>;
-  filledOrders: FilledOrder[];
   balance: string;
-  // TODO: better as unseen
-  seenFilledOrders: Set<string>;
 };
 
 type HyperliquidAccountStoreActions = {
@@ -35,7 +32,6 @@ type HyperliquidAccountStoreActions = {
     decimals: number;
   }) => Promise<OrderResponse>;
   checkIfHyperliquidAccountExists: () => Promise<boolean>;
-  markFilledOrdersAsSeen: (orderIds: number[]) => void;
   // derivative state
   getTotalPositionsInfo: () => {
     value: string;
@@ -53,7 +49,6 @@ type HyperliquidAccountParams = {
 
 type FetchHyperliquidAccountResponse = {
   positions: Record<string, PerpsPosition>;
-  filledOrders: FilledOrder[];
   balance: string;
 };
 
@@ -62,12 +57,10 @@ async function fetchHyperliquidAccount({ address }: HyperliquidAccountParams): P
 
   const accountClient = getHyperliquidAccountClient(address);
 
-  // TODO (kane): userFillsByTime for past 1 month is better, some users might have thousands
-  // might want to split the orders into a separate query store?
-  const [account, filledOrders] = await Promise.all([accountClient.getPerpAccount(), accountClient.getFilledOrders()]);
+  const account = await accountClient.getPerpAccount();
+
   return {
     positions: account.positions,
-    filledOrders,
     balance: account.balance,
   };
 }
@@ -82,7 +75,6 @@ export const useHyperliquidAccountStore = createQueryStore<
     setData: ({ data, set }) => {
       set({
         positions: data.positions,
-        filledOrders: data.filledOrders,
         balance: data.balance,
       });
     },
@@ -94,9 +86,7 @@ export const useHyperliquidAccountStore = createQueryStore<
   },
   (set, get) => ({
     positions: {},
-    filledOrders: [],
     balance: '0',
-    seenFilledOrders: new Set<string>(),
     withdraw: async (amount: string) => {
       const address = useWalletsStore.getState().accountAddress;
       const exchangeClient = await getHyperliquidExchangeClient(address);
@@ -122,9 +112,6 @@ export const useHyperliquidAccountStore = createQueryStore<
       const address = useWalletsStore.getState().accountAddress;
       const accountClient = await getHyperliquidAccountClient(address);
       return await accountClient.hasAccount();
-    },
-    markFilledOrdersAsSeen: orderIds => {
-      orderIds.forEach(id => get().seenFilledOrders.add(id.toString()));
     },
     getTotalUnrealizedPnl: () => {
       const positions = Object.values(get().positions);

@@ -4,7 +4,6 @@ import { OrderParams } from '@nktkas/hyperliquid/script/src/types/mod';
 import { Address, Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS } from '../constants';
 import { PerpPositionSide, OrderType, TriggerOrderType } from '../types';
-import { hyperliquidMarketsClient } from './hyperliquid-markets-client';
 import { HyperliquidAccountClient } from './hyperliquid-account-client';
 import { getOppositePositionSide } from '../utils';
 import { RainbowError } from '@/logger';
@@ -205,7 +204,7 @@ export class HyperliquidExchangeClient {
     return await this.exchangeClient.order({
       orders,
       grouping,
-      // TODO: blocked, account needs to be created
+      // TODO (kane): blocked, account needs to be created
       // builder: RAINBOW_BUILDER_SETTINGS,
     });
   }
@@ -215,11 +214,13 @@ export class HyperliquidExchangeClient {
    * This will close the position and cancel any related stop loss and take profit orders
    */
   async closeIsolatedMarginPosition({
+    assetId,
     symbol,
     assetPrice,
     slippageBips = DEFAULT_SLIPPAGE_BIPS,
     clientOrderId,
   }: {
+    assetId: number;
     symbol: string;
     assetPrice: string;
     slippageBips?: number;
@@ -231,8 +232,6 @@ export class HyperliquidExchangeClient {
     if (!position) {
       throw new RainbowError('[HyperliquidExchangeClient] No open position found', { symbol });
     }
-
-    const assetId = await hyperliquidMarketsClient.getAssetId(symbol);
     const orderIdsToCancel: { a: number; o: number }[] = [];
 
     if (position.stopLoss?.orders) {

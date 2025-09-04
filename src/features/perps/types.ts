@@ -2,7 +2,9 @@ import * as hl from '@nktkas/hyperliquid';
 
 export type FrontendOrder = hl.FrontendOrder;
 
-// TODO: this is a bad name / type, we need to figure out how we want to handle multiple tp/sl orders on the same position
+export type OrderSide = 'buy' | 'sell';
+
+// TODO (kane): this is a bad name / type, we need to figure out how we want to handle multiple tp/sl orders on the same position
 export type Order = {
   orders: FrontendOrder[];
   price: string;
@@ -30,7 +32,7 @@ export type FilledOrder = {
   timestamp: Date;
   symbol: string;
   description: string;
-  side: 'Buy' | 'Sell';
+  side: OrderSide;
   size: string;
   price: string;
   value: string;
@@ -43,7 +45,6 @@ export type FilledOrder = {
   liquidationType?: 'market' | 'backstop';
 };
 
-// TODO: we need IDs for positions. We can attach an cloid, but we still need to handle displaying positions not created in rainbow.
 export type PerpsPosition = {
   symbol: string;
   side: PerpPositionSide;
@@ -84,3 +85,27 @@ export enum TriggerOrderType {
   STOP_LOSS = 'sl',
   TAKE_PROFIT = 'tp',
 }
+
+// This type is an extension of the `hl.Fill` type, but with additional information added from the corresponding `hl.FrontendOrder`
+export type HlTrade = {
+  id: number;
+  clientId?: string;
+  description: string;
+  symbol: string;
+  side: OrderSide;
+  price: string;
+  size: string;
+  fillStartSize: string;
+  orderStartSize: string;
+  pnl: string;
+  fee: string;
+  orderId: number;
+  tradeId: number;
+  txHash: string;
+  liquidation?: hl.Fill['liquidation'];
+  executedAt: Date;
+  direction: string;
+  orderType: string;
+  triggerOrderType?: TriggerOrderType;
+  triggerOrderPrice?: string;
+};

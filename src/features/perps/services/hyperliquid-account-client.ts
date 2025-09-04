@@ -1,8 +1,7 @@
-import { divide, greaterThan, multiply } from '@/helpers/utilities';
+import { divide, greaterThan } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
-import { PerpPositionSide, PerpAccount, FilledOrder, PerpsPosition } from '../types';
-import { describeFill } from '@/features/perps/utils';
+import { PerpPositionSide, PerpAccount, PerpsPosition, TriggerOrderType } from '../types';
 
 const transport = new hl.HttpTransport();
 export const infoClient: hl.InfoClient = new hl.InfoClient({
@@ -49,10 +48,14 @@ export class HyperliquidAccountClient {
       const tpslOrders = openOrders.filter(order => order.coin === position.coin && order.isPositionTpsl === true);
 
       const takeProfitOrders = tpslOrders.filter(
-        order => order.triggerCondition === 'tp' || order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit'
+        order =>
+          order.triggerCondition === TriggerOrderType.TAKE_PROFIT ||
+          order.orderType === 'Take Profit Market' ||
+          order.orderType === 'Take Profit Limit'
       );
       const stopLossOrders = tpslOrders.filter(
-        order => order.triggerCondition === 'sl' || order.orderType === 'Stop Market' || order.orderType === 'Stop Limit'
+        order =>
+          order.triggerCondition === TriggerOrderType.STOP_LOSS || order.orderType === 'Stop Market' || order.orderType === 'Stop Limit'
       );
 
       // TODO (kane): it's possible to have multiple tp/sl orders, need to figure out how we want to handle this in the UI
@@ -103,35 +106,15 @@ export class HyperliquidAccountClient {
     return check.userExists;
   }
 
-  async getFilledOrders(): Promise<FilledOrder[]> {
-    const fills = await infoClient.userFills({
+  async getHistoricalOrders(): Promise<hl.OrderStatus<hl.FrontendOrder>[]> {
+    return await infoClient.historicalOrders({
       user: this.userAddress,
     });
+  }
 
-    fills.sort((a, b) => b.time - a.time);
-
-    const userOrders: FilledOrder[] = fills.map(fill => {
-      const value = multiply(fill.px, fill.sz);
-      const description = describeFill(fill);
-
-      return {
-        timestamp: new Date(fill.time),
-        symbol: fill.coin,
-        description,
-        side: fill.side === 'B' ? 'Buy' : 'Sell',
-        size: fill.sz,
-        price: fill.px,
-        value,
-        pnl: fill.closedPnl,
-        fee: fill.fee,
-        orderId: fill.oid,
-        tradeId: fill.tid,
-        txHash: fill.hash,
-        isLiquidation: !!fill.liquidation,
-        liquidationType: fill.liquidation?.method,
-      };
+  async getFilledOrders(): Promise<hl.Fill[]> {
+    return await infoClient.userFills({
+      user: this.userAddress,
     });
-
-    return userOrders;
   }
 }
