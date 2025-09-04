@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Box, Separator, Stack, Text } from '@/design-system';
 import { PerpsPosition } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
@@ -8,13 +8,15 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abs } from '@/helpers/utilities';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;
 };
 
 export const PerpPositionCard = memo(function PerpPositionCard({ position }: PerpPositionCardProps) {
-  // TODO (kane): real token color, blocked by backend
+  // TODO BLOCKED (kane): real token color, blocked by backend
   const tokenColor = opacityWorklet('#677483', 0.08);
   const isNegativePnl = position.unrealizedPnl.includes('-');
 
@@ -41,6 +43,10 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
       }),
     };
   }, [position]);
+
+  const livePriceSelector = useCallback((state: TokenData) => {
+    return formatAssetPrice({ value: state.price, currency: 'USD' });
+  }, []);
 
   const { entryPrice, liquidationPrice, unrealizedPnl, positionValue } = formattedValues;
 
@@ -96,10 +102,9 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
               {'MARK PRICE'}
             </Text>
             <LiveTokenText
-              tokenId={`${position.symbol}:hl`}
-              selector={token => formatAssetPrice({ value: token.price, currency: 'USD' })}
-              // TODO (kane): don't have a good way to get this, is this solution fine?
-              initialValue={'Loading...'}
+              tokenId={getHyperliquidTokenId(position.symbol)}
+              selector={livePriceSelector}
+              initialValue={'-'}
               size="15pt"
               weight="bold"
               color="label"

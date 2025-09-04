@@ -1,13 +1,14 @@
-import React, { useMemo } from 'react';
-import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
+import React, { useCallback, useMemo } from 'react';
+import { Box, Text, useForegroundColor } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
-import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import { ButtonPressAnimation } from '@/components/animations';
+import { TokenData } from '@/state/liveTokens/liveTokensStore';
 
 type PerpMarketRowProps = {
   market: PerpMarket;
@@ -18,19 +19,19 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
   const labelTertiary = useForegroundColor('labelTertiary');
+  const tokenId = getHyperliquidTokenId(market.symbol);
 
-  // TODO (kane): does this need to be live?
   const volume = useMemo(() => {
     return abbreviateNumberWorklet(Number(market.volume['24h']), 1);
   }, [market.volume]);
 
-  const livePrice = useLiveTokenSharedValue({
-    tokenId: getHyperliquidTokenId(market.symbol),
-    initialValue: formatAssetPrice({ value: market.price, currency: 'USD' }),
-    selector: state => {
-      return formatAssetPrice({ value: state.price, currency: 'USD' });
-    },
-  });
+  const livePriceSelector = useCallback((state: TokenData) => {
+    return formatAssetPrice({ value: state.price, currency: 'USD' });
+  }, []);
+
+  const livePriceChangeSelector = useCallback((state: TokenData) => {
+    return formatPriceChange(state.change.change24hPct);
+  }, []);
 
   return (
     <ButtonPressAnimation onPress={() => onPress?.(market)} disabled={!onPress} scaleTo={0.98}>
@@ -41,9 +42,16 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
             <Text size="17pt" weight="bold" color="label">
               {market.symbol}
             </Text>
-            <AnimatedText size="17pt" weight="bold" color="label">
-              {livePrice}
-            </AnimatedText>
+            <LiveTokenText
+              selector={livePriceSelector}
+              tokenId={tokenId}
+              initialValueLastUpdated={0}
+              initialValue={formatAssetPrice({ value: market.price, currency: 'USD' })}
+              autoSubscriptionEnabled={false}
+              color={'label'}
+              size="17pt"
+              weight="bold"
+            />
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Box flexDirection="row" alignItems="center" gap={4}>
@@ -64,10 +72,8 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
               </Box>
             </Box>
             <LiveTokenText
-              selector={state => {
-                return formatPriceChange(state.change.change24hPct);
-              }}
-              tokenId={`${market.symbol}:hl`}
+              selector={livePriceChangeSelector}
+              tokenId={tokenId}
               initialValueLastUpdated={0}
               initialValue={formatPriceChange(market.priceChange['24h'])}
               autoSubscriptionEnabled={false}

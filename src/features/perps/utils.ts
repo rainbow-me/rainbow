@@ -1,4 +1,5 @@
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { hyperliquidMarketStoreActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -147,4 +148,15 @@ export function calculateIsolatedLiquidationPrice({
 export function navigateToNewPositionScreen(market: PerpMarket) {
   useHlNewPositionStore.getState().setMarket(market);
   Navigation.handleAction(Routes.PERPS_NEW_POSITION_SCREEN);
+}
+
+export function navigateToPerpDetailScreen(symbol: string) {
+  const market = hyperliquidMarketStoreActions.getMarket(symbol);
+  if (market) {
+    Navigation.handleAction(Routes.PERPS_ACCOUNT_NAVIGATOR, {
+      screen: Routes.PERPS_DETAIL_SCREEN,
+      // handleAction's implementation does not have proper nested stack param type checking
+      params: { market },
+    });
+  }
 }

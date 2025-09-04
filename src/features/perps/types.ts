@@ -60,7 +60,7 @@ export type PerpsPosition = {
 
 export type PerpAccount = {
   balance: string;
-  positions: PerpsPosition[];
+  positions: Record<string, PerpsPosition>;
 };
 
 export enum PerpPositionSide {

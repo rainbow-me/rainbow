@@ -1,22 +1,14 @@
 import { TokenData, PriceReliabilityStatus } from './liveTokensStore';
 import { PerpMarket } from '@/features/perps/types';
 
-const DEFAULT_LIQUIDITY_CAP = '1000000000'; // $1B default cap for Hyperliquid assets
-
-/**
- * Converts a Hyperliquid asset symbol to a token ID
- * @param symbol The Hyperliquid asset symbol (e.g., "ETH", "BTC")
- * @returns The token ID in format "hl:SYMBOL"
- */
-export function hyperliquidSymbolToTokenId(symbol: string): string {
-  return `${symbol}:hl`;
-}
+// Arbitrary value, only set for type compatibility
+const DEFAULT_LIQUIDITY_CAP = '1000000000';
 
 export function transformHyperliquidMarketToTokenData(market: PerpMarket, updateTime: string = new Date().toISOString()): TokenData {
   return {
     price: market.price,
     change: {
-      // TODO (kane): Some of these timespans are possible to retrieve from hyperliquid, but require multiple candlestick snapshot calls and are not likely needed in the UI
+      // These other timespans are possible to retrieve from the API, but require deriving from candlestick data and is currently not needed in the UI
       change5mPct: '0',
       change1hPct: market.priceChange['1h'] || '0',
       change4hPct: '0',
@@ -24,7 +16,7 @@ export function transformHyperliquidMarketToTokenData(market: PerpMarket, update
       change24hPct: market.priceChange['24h'] || '0',
     },
     marketData: {
-      // TODO (kane): this is actually available on another endpoint
+      // This is available through the `tokenDetails` method, but we do not currently need to display this information
       circulatingMarketCap: '0',
     },
     reliability: {
