@@ -195,7 +195,11 @@ const SettingsSection = ({
           hasRightArrow
           leftComponent={<MenuItem.ImageIcon source={isDarkMode ? CurrencyIconDark : CurrencyIcon} />}
           onPress={onPressCurrency}
-          rightComponent={<MenuItem.Selection>{nativeCurrency || ''}</MenuItem.Selection>}
+          rightComponent={
+            <MenuItem.Selection>
+              {lang.t(lang.l.settings.currency[nativeCurrency as Exclude<keyof typeof lang.l.settings.currency, 'title'>].code)}
+            </MenuItem.Selection>
+          }
           size={60}
           testID="currency-section"
           titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.currency.title)} />}

@@ -2062,20 +2062,62 @@
       "backup_google_account": "Google Account",
       "currency": {
         "title": "Currency",
-        "ETH": "Ethereum",
-        "USD": "United States Dollar",
-        "EUR": "Euro",
-        "GBP": "British Pound",
-        "AUD": "Australian Dollar",
-        "CNY": "Chinese Yuan",
-        "KRW": "South Korean Won",
-        "JPY": "Japanese Yen",
-        "RUB": "Russian Ruble",
-        "INR": "Indian Rupee",
-        "TRY": "Turkish Lira",
-        "CAD": "Canadian Dollar",
-        "NZD": "New Zealand Dollar",
-        "ZAR": "South African Rand"
+        "ETH": {
+          "label": "Ethereum",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "App Icon",
       "developer": "Developer Settings",
