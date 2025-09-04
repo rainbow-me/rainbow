@@ -1,4 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
@@ -67,6 +69,7 @@ function WalletScreen() {
   const accountAddress = useAccountAddress();
   const insets = useSafeAreaInsets();
   const route = useRoute();
+  const language = useSelector((state: AppState) => state.settings.language);
 
   const {
     isWalletEthZero,
@@ -127,7 +130,7 @@ function WalletScreen() {
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
-      <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
+      <Box key={language} as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
         <AssetList
           accentColor={highContrastAccentColor}
           disableRefreshControl={disableRefreshControl}
