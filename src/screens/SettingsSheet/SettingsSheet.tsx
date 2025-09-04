@@ -1,8 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
@@ -18,13 +16,14 @@ import { settingsOptions } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import Routes from '@/navigation/routesNames';
+import { useAccountSettings } from '@/hooks';
 
 const Stack = createStackNavigator();
 
 export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { colors } = useTheme();
-  const language = useSelector((state: AppState) => state.settings.language);
+  const { language } = useAccountSettings();
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
     navigate(section);

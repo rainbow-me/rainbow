@@ -4,7 +4,6 @@ import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
-import { pickBy } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 
 const languageListItems = Object.keys(supportedLanguages)
