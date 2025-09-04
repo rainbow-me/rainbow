@@ -121,7 +121,7 @@ export class HyperliquidExchangeClient {
    * Open a new isolated margin position
    */
   async openIsolatedMarginPosition({
-    symbol,
+    assetId,
     side,
     marginAmount,
     decimals,
@@ -135,7 +135,7 @@ export class HyperliquidExchangeClient {
     stopLossPrice,
     takeProfitPrice,
   }: {
-    symbol: string;
+    assetId: number;
     side: PerpPositionSide;
     marginAmount: string;
     assetPrice: string;
@@ -149,10 +149,7 @@ export class HyperliquidExchangeClient {
     stopLossPrice?: string;
     takeProfitPrice?: string;
   }): Promise<hl.OrderSuccessResponse> {
-    // TODO (kane): we should cache this / fetch it on page load
-    const assetId = await hyperliquidMarketsClient.getAssetId(symbol);
-
-    // TODO: technically we should not call this if the leverage is already set to the desired value
+    // TODO (kane): technically we should not call this if the leverage is already set to the desired value
     await this.exchangeClient.updateLeverage({
       asset: assetId,
       isCross: false,
@@ -229,7 +226,7 @@ export class HyperliquidExchangeClient {
     clientOrderId?: Hex;
   }): Promise<void> {
     const account = await this.accountClient.getPerpAccount();
-    const position = account.positions.find(p => p.symbol === symbol);
+    const position = account.positions[symbol];
 
     if (!position) {
       throw new RainbowError('[HyperliquidExchangeClient] No open position found', { symbol });

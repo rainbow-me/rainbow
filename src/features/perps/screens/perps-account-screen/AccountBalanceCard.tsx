@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Box, Stack, Text, TextShadow } from '@/design-system';
+import { Box, Stack, Text, TextShadow, useColorMode } from '@/design-system';
 import { HYPERLIQUID_GREEN, PERPS_COLORS } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -9,12 +9,15 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { View } from 'react-native';
+import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
+  const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const balance = useHyperliquidAccountStore(state => state.balance);
-  // TODO (kane): use neweset currency formatting
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
+  const isBalanceZero = balance === '0';
 
   return (
     <Box
@@ -31,58 +34,67 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
             <Text color="labelSecondary" size="11pt" weight="heavy">
               {'AVAILABLE BALANCE'}
             </Text>
-            <TextShadow color={HYPERLIQUID_GREEN} blur={8} shadowOpacity={0.24}>
-              <Text color={{ custom: HYPERLIQUID_GREEN }} size="17pt" weight="heavy">
-                {formattedBalance}
-              </Text>
-            </TextShadow>
-          </Stack>
-        </Box>
-        <Box flexDirection="row" gap={10}>
-          <ButtonPressAnimation
-            onPress={() => {
-              Navigation.handleAction(Routes.PERPS_WITHDRAWAL_SCREEN);
-            }}
-          >
-            <Box
-              justifyContent="center"
-              alignItems="center"
-              backgroundColor={accentColors.opacity8}
-              height={40}
-              width={52}
-              borderRadius={24}
-              borderWidth={2}
-              borderColor={{ custom: accentColors.opacity6 }}
-            >
-              <TextShadow color={accentColors.opacity100} blur={6} shadowOpacity={0.24}>
-                <Text color={{ custom: accentColors.opacity100 }} size="20pt" weight="black">
-                  {'􀅽'}
+            <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
+              <TextShadow color={HYPERLIQUID_GREEN} blur={8} shadowOpacity={0.24}>
+                <Text color={{ custom: HYPERLIQUID_GREEN }} size="17pt" weight="heavy">
+                  {formattedBalance}
                 </Text>
               </TextShadow>
-            </Box>
-          </ButtonPressAnimation>
-          <ButtonPressAnimation
-            onPress={() => {
-              Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
-            }}
-          >
-            <Box
-              justifyContent="center"
-              alignItems="center"
-              // TODO (kane):
-              backgroundColor={'#72FFD9'}
-              height={40}
-              width={52}
+            </View>
+          </Stack>
+        </Box>
+        {!isBalanceZero && (
+          <Box flexDirection="row" gap={10}>
+            <ButtonPressAnimation
+              onPress={() => {
+                Navigation.handleAction(Routes.PERPS_WITHDRAWAL_SCREEN);
+              }}
+            >
+              <Box
+                justifyContent="center"
+                alignItems="center"
+                backgroundColor={accentColors.opacity8}
+                height={40}
+                width={52}
+                borderRadius={24}
+                borderWidth={2}
+                borderColor={{ custom: accentColors.opacity6 }}
+              >
+                <TextShadow color={accentColors.opacity100} blur={6} shadowOpacity={0.24}>
+                  <Text color={{ custom: accentColors.opacity100 }} size="20pt" weight="black">
+                    {'􀅽'}
+                  </Text>
+                </TextShadow>
+              </Box>
+            </ButtonPressAnimation>
+            <HyperliquidButton
+              onPress={() => {
+                Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+              }}
+              paddingHorizontal={'16px'}
+              paddingVertical={'12px'}
               borderRadius={24}
-              borderWidth={2}
-              borderColor={{ custom: opacityWorklet('#FFFFFF', 0.16) }}
             >
               <Text color={{ custom: '#000000' }} size="20pt" weight="black">
                 {'􀅼'}
               </Text>
-            </Box>
-          </ButtonPressAnimation>
-        </Box>
+            </HyperliquidButton>
+          </Box>
+        )}
+        {isBalanceZero && (
+          <HyperliquidButton
+            onPress={() => {
+              Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+            }}
+            paddingHorizontal={'16px'}
+            paddingVertical={'12px'}
+            borderRadius={24}
+          >
+            <Text color={isDarkMode ? 'black' : 'white'} size="20pt" weight="black">
+              {'Deposit'}
+            </Text>
+          </HyperliquidButton>
+        )}
       </Box>
     </Box>
   );

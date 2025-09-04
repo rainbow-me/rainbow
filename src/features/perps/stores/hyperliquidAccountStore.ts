@@ -10,7 +10,7 @@ import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { OrderResponse } from '@nktkas/hyperliquid';
 
 type HyperliquidAccountStoreState = {
-  positions: PerpsPosition[];
+  positions: Record<string, PerpsPosition>;
   filledOrders: FilledOrder[];
   balance: string;
   // TODO: better as unseen
@@ -20,14 +20,14 @@ type HyperliquidAccountStoreState = {
 type HyperliquidAccountStoreActions = {
   withdraw: (amount: string) => Promise<void>;
   createIsolatedMarginPosition: ({
-    symbol,
+    assetId,
     side,
     leverage,
     amount,
     assetPrice,
     decimals,
   }: {
-    symbol: string;
+    assetId: number;
     side: PerpPositionSide;
     leverage: number;
     amount: string;
@@ -52,7 +52,7 @@ type HyperliquidAccountParams = {
 };
 
 type FetchHyperliquidAccountResponse = {
-  positions: PerpsPosition[];
+  positions: Record<string, PerpsPosition>;
   filledOrders: FilledOrder[];
   balance: string;
 };
@@ -63,9 +63,9 @@ async function fetchHyperliquidAccount({ address }: HyperliquidAccountParams): P
   const accountClient = getHyperliquidAccountClient(address);
 
   // TODO (kane): userFillsByTime for past 1 month is better, some users might have thousands
+  // might want to split the orders into a separate query store?
   const [account, filledOrders] = await Promise.all([accountClient.getPerpAccount(), accountClient.getFilledOrders()]);
   return {
-    // TODO (kane): better as a record
     positions: account.positions,
     filledOrders,
     balance: account.balance,
@@ -93,7 +93,7 @@ export const useHyperliquidAccountStore = createQueryStore<
     staleTime: time.minutes(1),
   },
   (set, get) => ({
-    positions: [],
+    positions: {},
     filledOrders: [],
     balance: '0',
     seenFilledOrders: new Set<string>(),
@@ -102,12 +102,12 @@ export const useHyperliquidAccountStore = createQueryStore<
       const exchangeClient = await getHyperliquidExchangeClient(address);
       await exchangeClient.withdraw(amount);
     },
-    getPosition: symbol => get().positions.find(p => p.symbol === symbol),
-    createIsolatedMarginPosition: async ({ symbol, side, leverage, amount, assetPrice, decimals }) => {
+    getPosition: symbol => get().positions[symbol],
+    createIsolatedMarginPosition: async ({ assetId, side, leverage, amount, assetPrice, decimals }) => {
       const address = useWalletsStore.getState().accountAddress;
       const exchangeClient = await getHyperliquidExchangeClient(address);
       return await exchangeClient.openIsolatedMarginPosition({
-        symbol,
+        assetId,
         side,
         marginAmount: amount,
         assetPrice,
@@ -127,12 +127,13 @@ export const useHyperliquidAccountStore = createQueryStore<
       orderIds.forEach(id => get().seenFilledOrders.add(id.toString()));
     },
     getTotalUnrealizedPnl: () => {
-      return get().positions.reduce((acc, position) => {
+      const positions = Object.values(get().positions);
+      return positions.reduce((acc, position) => {
         return add(acc, position.unrealizedPnl);
       }, '0');
     },
     getTotalPositionsInfo: () => {
-      const { positions } = get();
+      const positions = Object.values(get().positions);
       let totalPositionsValue = '0';
       let totalPositionsPnl = '0';
 

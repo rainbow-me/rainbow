@@ -7,7 +7,7 @@ type HyperliquidTokenIconProps = Omit<RainbowImageProps, 'source'> & {
 };
 
 export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ symbol, ...props }: HyperliquidTokenIconProps) {
-  // TODO (kane): testing
+  // BLOCKED (kane): blocked by backend
   return <Box width={40} height={40} borderRadius={20} background="accent" style={props.style} />;
 
   // return (

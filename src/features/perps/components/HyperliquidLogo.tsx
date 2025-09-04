@@ -15,11 +15,7 @@ export const HyperliquidLogo = ({ size = 20 }: { size?: number }) => {
       justifyContent="center"
       alignItems="center"
     >
-      <RainbowImage
-        source={hyperliquidLogo}
-        // TODO (kane): tint color not working
-        style={{ width: size - 6, height: size - 6, tintColor: HYPERLIQUID_COLORS.mintGreen }}
-      />
+      <RainbowImage source={hyperliquidLogo} style={{ width: size - 6, height: size - 6 }} tintColor={HYPERLIQUID_COLORS.mintGreen} />
     </Box>
   );
 };

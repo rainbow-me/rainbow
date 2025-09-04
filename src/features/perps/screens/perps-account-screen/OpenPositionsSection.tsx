@@ -6,6 +6,8 @@ import { abs, greaterThan, isEqual } from '@/helpers/utilities';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { UP_ARROW, DOWN_ARROW } from '@/features/perps/constants';
+import { ButtonPressAnimation } from '@/components/animations';
+import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 
 function NoPositions() {
   return (
@@ -19,6 +21,7 @@ function NoPositions() {
 
 export const OpenPositionsSection = function OpenPositionsSection() {
   const positions = useHyperliquidAccountStore(state => state.positions);
+  const positionsArray = Object.values(positions);
   const { value, unrealizedPnl, unrealizedPnlPercent } = useHyperliquidAccountStore(state => state.getTotalPositionsInfo());
   const isPositivePnl = greaterThan(unrealizedPnl, 0);
   const isNeutralPnl = isEqual(unrealizedPnl, 0);
@@ -73,9 +76,17 @@ export const OpenPositionsSection = function OpenPositionsSection() {
           </Box>
         </Box>
         <Box gap={20}>
-          {positions.length === 0 && <NoPositions />}
-          {positions.map(position => (
-            <PerpPositionCard key={position.symbol} position={position} />
+          {positionsArray.length === 0 && <NoPositions />}
+          {positionsArray.map(position => (
+            <ButtonPressAnimation
+              key={position.symbol}
+              onPress={() => {
+                navigateToPerpDetailScreen(position.symbol);
+              }}
+              scaleTo={0.98}
+            >
+              <PerpPositionCard position={position} />
+            </ButtonPressAnimation>
           ))}
         </Box>
       </Stack>

@@ -88,12 +88,13 @@ export default function useWalletSectionsData({
 
   const perpsData = useMemo(() => {
     const hasBalance = perpsBalance && perpsBalance !== '0';
-    const hasPositions = perpsPositions && perpsPositions.length > 0;
+    const positionsArray = Object.values(perpsPositions);
+    const hasPositions = positionsArray.length > 0;
 
     if (!hasBalance && !hasPositions) return null;
 
     return {
-      positions: perpsPositions,
+      positions: positionsArray,
       balance: perpsBalance,
       getTotalPositionsValue: getTotalPerpPositionsValue,
     };

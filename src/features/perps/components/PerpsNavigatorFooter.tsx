@@ -14,15 +14,15 @@ import { Navigation } from '@/navigation';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { hyperliquidMarketStoreActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useNavigation } from '@react-navigation/native';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountStoreActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
+import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 
 const BUTTON_HEIGHT = 48;
 
@@ -57,6 +57,7 @@ function BackButton({ onPress, backgroundColor, borderColor, textColor }: BackBu
 const PerpsSearchScreenFooter = () => {
   const { accentColors } = usePerpsAccentColorContext();
   const inputRef = useAnimatedRef<TextInput>();
+  // TODO (kane): do we need this?
   // const isFocused = useSharedValue<boolean>(false);
 
   // const onPressSearchWorklet = useCallback(() => {
@@ -83,7 +84,7 @@ const PerpsSearchScreenFooter = () => {
 
   useEffect(() => {
     return () => {
-      useHyperliquidMarketsStore.getState().setSearchQuery('');
+      hyperliquidMarketStoreActions.setSearchQuery('');
     };
   }, []);
 
@@ -137,37 +138,21 @@ const PerpsSearchScreenFooter = () => {
 };
 
 const PerpsAccountScreenFooter = () => {
-  const label = useForegroundColor('label');
-  const navigation = useNavigation();
-
   return (
-    <Box>
-      <ButtonPressAnimation
-        onPress={() => {
-          navigation.navigate(Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
-        }}
-      >
-        <Box
-          borderRadius={24}
-          height={48}
-          justifyContent={'center'}
-          alignItems={'center'}
-          borderWidth={2}
-          borderColor={{ custom: opacityWorklet(label, 0.16) }}
-        >
-          <LinearGradient
-            colors={HYPERLIQUID_COLORS.gradient}
-            style={StyleSheet.absoluteFillObject}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-          />
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
-          <Text size="20pt" weight={'black'} color={{ custom: '#000000' }}>
-            {'New Position'}
-          </Text>
-        </Box>
-      </ButtonPressAnimation>
-    </Box>
+    <HyperliquidButton
+      onPress={() => {
+        Navigation.handleAction(Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
+      }}
+      paddingVertical={'12px'}
+      borderRadius={24}
+      height={48}
+      justifyContent={'center'}
+      alignItems={'center'}
+    >
+      <Text size="20pt" weight={'black'} color={{ custom: '#000000' }}>
+        {'New Position'}
+      </Text>
+    </HyperliquidButton>
   );
 };
 
@@ -227,7 +212,7 @@ const PerpsNewPositionScreenFooter = () => {
     setIsSubmitting(true);
     try {
       const result = await hyperliquidAccountStoreActions.createIsolatedMarginPosition({
-        symbol: market.symbol,
+        assetId: market.id,
         side: positionSide,
         leverage: leverage,
         amount,
@@ -235,7 +220,7 @@ const PerpsNewPositionScreenFooter = () => {
         decimals: market.decimals,
       });
 
-      // TODO (kane): how do we want to handle partially filled orders?
+      // TODO (kane): how do we want to handle partially filled orders? Is this possible with a market order?
       const allOrdersFilled = result.response.data.statuses.every(status => {
         return 'filled' in status;
       });

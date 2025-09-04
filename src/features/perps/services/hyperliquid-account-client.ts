@@ -1,7 +1,7 @@
 import { divide, greaterThan, multiply } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
-import { PerpPositionSide, PerpAccount, FilledOrder } from '../types';
+import { PerpPositionSide, PerpAccount, FilledOrder, PerpsPosition } from '../types';
 import { describeFill } from '@/features/perps/utils';
 
 const transport = new hl.HttpTransport();
@@ -43,7 +43,9 @@ export class HyperliquidAccountClient {
       infoClient.frontendOpenOrders({ user: this.userAddress }),
     ]);
 
-    const positions = perpState.assetPositions.map(({ position }) => {
+    const positions: Record<string, PerpsPosition> = {};
+
+    perpState.assetPositions.forEach(({ position }) => {
       const tpslOrders = openOrders.filter(order => order.coin === position.coin && order.isPositionTpsl === true);
 
       const takeProfitOrders = tpslOrders.filter(
@@ -53,11 +55,11 @@ export class HyperliquidAccountClient {
         order => order.triggerCondition === 'sl' || order.orderType === 'Stop Market' || order.orderType === 'Stop Limit'
       );
 
-      // TODO: it's possible to have multiple tp/sl orders, need to figure out how we want to handle this in the UI
+      // TODO (kane): it's possible to have multiple tp/sl orders, need to figure out how we want to handle this in the UI
       const takeProfit =
         takeProfitOrders.length > 0
           ? {
-              // TODO: transform needed fields into our own type
+              // TODO (kane): transform needed fields into our own type
               orders: takeProfitOrders,
               price: takeProfitOrders[0].triggerPx,
             }
@@ -71,7 +73,7 @@ export class HyperliquidAccountClient {
             }
           : null;
 
-      return {
+      positions[position.coin] = {
         symbol: position.coin,
         side: greaterThan(position.szi, 0) ? PerpPositionSide.LONG : PerpPositionSide.SHORT,
         leverage: position.leverage.value,
@@ -79,6 +81,7 @@ export class HyperliquidAccountClient {
         entryPrice: position.entryPx,
         value: position.positionValue,
         unrealizedPnl: position.unrealizedPnl,
+        // TODO (kane): this calculation is not correct
         unrealizedPnlPercent: divide(position.unrealizedPnl, position.positionValue),
         funding: position.cumFunding.allTime,
         takeProfit,
