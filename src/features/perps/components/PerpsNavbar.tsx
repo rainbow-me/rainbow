@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
-import { Box, Text, useBackgroundColor } from '@/design-system';
+import { Box, Text } from '@/design-system';
 import { AccountImage } from '@/components/AccountImage';
 import { Navbar } from '@/components/navbar/Navbar';
 import { HyperliquidLogo } from '@/features/perps/components/HyperliquidLogo';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const PerpsNavbar = function PerpsNavbar() {
+  const safeAreaInsets = useSafeAreaInsets();
   const { activeRoute } = useNavigationStore();
-  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
 
   const title = useMemo(() => {
     switch (activeRoute) {
@@ -25,7 +26,7 @@ export const PerpsNavbar = function PerpsNavbar() {
   }, [activeRoute]);
 
   return (
-    <Box paddingTop={{ custom: 72 }} width="full" paddingHorizontal="20px" backgroundColor={screenBackgroundColor}>
+    <Box marginTop={{ custom: safeAreaInsets.top + 5 }} width="full">
       <Navbar
         leftComponent={<AccountImage />}
         titleComponent={

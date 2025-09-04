@@ -162,7 +162,11 @@ function PerpsAccountNavigator() {
           </Box>
           <PerpsNavbar />
 
-          <PerpsStack.Navigator screenOptions={{ lazy: true }} tabBar={() => null} initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}>
+          <PerpsStack.Navigator
+            screenOptions={{ lazy: true, swipeEnabled: false }}
+            tabBar={() => null}
+            initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}
+          >
             <PerpsStack.Screen component={PerpsSearchScreen} name={Routes.PERPS_SEARCH_SCREEN} />
             <PerpsStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} />
             <PerpsStack.Screen component={PerpsNewPositionSearchScreen} name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN} />
