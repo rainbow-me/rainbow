@@ -1,4 +1,4 @@
-name: iOS e2e tests
+name: iOS
 on:
   pull_request:
     # prevent running on draft PRs
@@ -9,7 +9,8 @@ on:
       - develop
 jobs:
   # iOS build job
-  build-ios:
+  build:
+    name: Test Build
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: macos-15-xlarge
     concurrency:
@@ -93,8 +94,9 @@ jobs:
           re-sign: true
 
   # iOS e2e tests job
-  e2e-ios:
-    needs: build-ios
+  e2e-tests:
+    name: E2E Tests (Shard ${{ matrix.shard-index }})
+    needs: build
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: macos-15-xlarge
     strategy:
@@ -137,7 +139,7 @@ jobs:
 
       - name: Download and Unpack IPA artifact
         run: |
-          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build-ios.outputs.artifact-id }}/zip"
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
           unzip artifact.zip -d downloaded-artifacts
           ls -l downloaded-artifacts
           APP_ARCHIVE_PATH=$(find downloaded-artifacts -name "*.tar.gz" -print -quit)
