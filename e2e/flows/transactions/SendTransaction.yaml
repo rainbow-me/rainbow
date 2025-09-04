@@ -89,6 +89,15 @@ tags:
           id: toast-.*
       - waitForAnimationToEnd:
           timeout: 2000
+      # Check expanded toast data
+      - assertVisible:
+          text: 'Sending'
+          childOf:
+            id: toast-expanded-.*
+      - assertVisible:
+          text: '0.01 ETH'
+          childOf:
+            id: toast-expanded-.*
       - tapOn:
           id: toast-expanded-.*
       # Check transaction sheet
