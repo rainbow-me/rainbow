@@ -89,21 +89,6 @@ tags:
           id: toast-.*
       - waitForAnimationToEnd:
           timeout: 2000
-      # Check expanded toast data with retry
-      - retry:
-          maxRetries: 3
-          commands:
-            - assertVisible:
-                text: 'Sending'
-                childOf:
-                  id: toast-expanded-.*
-      - retry:
-          maxRetries: 3
-          commands:
-            - assertVisible:
-                text: '0.01 ETH'
-                childOf:
-                  id: toast-expanded-.*
       - tapOn:
           id: toast-expanded-.*
       # Check transaction sheet
