@@ -29,13 +29,6 @@ const Content = () => {
   const { scrollViewRef, onTapSearch } = useDiscoverScreenContext();
   const isSearching = useDiscoverSearchQueryStore(state => state.isSearching);
   const scrollY = useSharedValue(0);
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (isFocused) {
-      useDiscoverSearchQueryStore.setState({ isSearching: false });
-    }
-  }, [isFocused]);
 
   const onChangeWallet = React.useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET);
