@@ -47,7 +47,7 @@ function NewWalletGroup({ numWalletGroups }: { numWalletGroups: number }) {
           await createWallet({ name });
           await loadWallets();
           await initializeWallet();
-          navigate(Routes.WALLET_SCREEN, {}, true);
+          navigate(Routes.WALLET_SCREEN);
         } catch (error) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', error));
         } finally {
