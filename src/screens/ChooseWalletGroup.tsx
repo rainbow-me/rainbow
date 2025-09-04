@@ -150,7 +150,7 @@ function WalletGroup({ wallet }: { wallet: RainbowWallet }) {
             color,
             name,
           });
-          navigate(Routes.WALLET_SCREEN, {}, true);
+          navigate(Routes.WALLET_SCREEN);
         } catch (e) {
           logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account', e));
           if (getIsDamagedWallet()) {
