@@ -1,8 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import lang from 'i18n-js';
-import React, { useCallback, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
 import { BackgroundProvider } from '@/design-system';
@@ -18,13 +16,14 @@ import { settingsOptions } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import Routes from '@/navigation/routesNames';
+import { useLanguage } from '@/languages/LanguageContext';
 
 const Stack = createStackNavigator();
 
 export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { colors } = useTheme();
-  const language = useSelector((state: AppState) => state.settings.language);
+  const { language, persistLanguage } = useLanguage();
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
     navigate(section);
@@ -32,10 +31,15 @@ export function SettingsSheet() {
 
   const renderHeaderRight = useCallback(
     () => <ModalHeaderButton label={lang.t('settings.done')} onPress={goBack} side="right" />,
-    [goBack]
+    [goBack, persistLanguage]
   );
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
+
+  // Persist language when component unmounts to force app re-render
+  useEffect(() => {
+    return () => persistLanguage();
+  }, [persistLanguage]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -46,6 +50,7 @@ export function SettingsSheet() {
               ...memoSettingsOptions,
               headerRight: renderHeaderRight,
             }}
+            key={language}
           >
             <Stack.Screen
               name={Routes.SETTINGS_SECTION}
@@ -56,7 +61,6 @@ export function SettingsSheet() {
             >
               {() => (
                 <SettingsSection
-                  key={language}
                   onCloseModal={goBack}
                   onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon.key)}
                   onPressBackup={sectionOnPressFactory(SettingsPages.backup.key)}

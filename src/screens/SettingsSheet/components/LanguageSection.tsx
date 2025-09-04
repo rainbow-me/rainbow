@@ -1,11 +1,10 @@
 import React, { useCallback } from 'react';
-import { resources, supportedLanguages } from '../../../languages';
+import { Language, resources, supportedLanguages } from '../../../languages';
+import { useLanguage } from '../../../languages/LanguageContext';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
-import { pickBy } from '@/helpers/utilities';
-import { useAccountSettings } from '@/hooks';
 
 const languageListItems = Object.keys(supportedLanguages)
   .filter(code => resources[code as keyof typeof resources]?.translation?.wallet) // Only show languages that have 'wallet' translations available.
@@ -15,14 +14,14 @@ const languageListItems = Object.keys(supportedLanguages)
   }));
 
 const LanguageSection = () => {
-  const { language, settingsChangeLanguage } = useAccountSettings();
+  const { language, setLanguage } = useLanguage();
 
   const onSelectLanguage = useCallback(
     (language: string) => {
-      settingsChangeLanguage(language);
+      setLanguage(language as Language);
       analytics.track(analytics.event.changedLanguage, { language });
     },
-    [settingsChangeLanguage]
+    [setLanguage]
   );
 
   return (

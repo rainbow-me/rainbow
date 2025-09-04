@@ -1,8 +1,7 @@
 import '@/languages';
 import * as Sentry from '@sentry/react-native';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Provider as ReduxProvider, useSelector } from 'react-redux';
-import lang from 'i18n-js';
+import { Provider as ReduxProvider } from 'react-redux';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
@@ -20,8 +19,9 @@ import { Playground } from '@/design-system/playground/Playground';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
 import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
-import store, { AppState } from '@/redux/store';
+import store from '@/redux/store';
 import { MainThemeProvider } from '@/theme/ThemeContext';
+import { LanguageProvider } from '@/languages/LanguageContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { analytics } from '@/analytics';
@@ -59,12 +59,6 @@ const sx = StyleSheet.create({
 
 function AppComponent() {
   const { initialRoute } = useApplicationSetup();
-  const language = useSelector((state: AppState) => state.settings.language);
-
-  // Update i18n locale when language changes
-  useEffect(() => {
-    lang.locale = language;
-  }, [language]);
 
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
@@ -131,14 +125,16 @@ function Root() {
             <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
               <SafeAreaProvider initialMetrics={initialWindowMetrics}>
                 <MainThemeProvider>
-                  <GestureHandlerRootView style={sx.container}>
-                    <RainbowContextWrapper>
-                      <ErrorBoundary>
-                        <App />
-                        <RainbowToastDisplay />
-                      </ErrorBoundary>
-                    </RainbowContextWrapper>
-                  </GestureHandlerRootView>
+                  <LanguageProvider>
+                    <GestureHandlerRootView style={sx.container}>
+                      <RainbowContextWrapper>
+                        <ErrorBoundary>
+                          <App />
+                          <RainbowToastDisplay />
+                        </ErrorBoundary>
+                      </RainbowContextWrapper>
+                    </GestureHandlerRootView>
+                  </LanguageProvider>
                 </MainThemeProvider>
               </SafeAreaProvider>
             </MobileWalletProtocolProvider>
