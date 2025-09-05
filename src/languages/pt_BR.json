@@ -467,7 +467,7 @@
         "quote_error": "Erro na Cotação",
         "no_route_found": "Nenhuma Rota Encontrada",
         "fetching_quote": "Buscando Cotação...",
-        "rainbow_eth_rewards": "Recompensas ETH Rainbow",
+        "rainbow_eth_rewards": "Recompensas Rainbow ETH",
         "merkl_claimable": "%{dappName} Cofre",
         "merkl_claimable_description": "Estratégia %{assetSymbols}",
         "select_a_network": "Selecione uma Rede",
@@ -481,7 +481,7 @@
         "insufficient_funds": "Fundos insuficientes",
         "hold_to_claim": "Pressione para Solicitar",
         "creator_lp_fees": "Taxas do Criador LP",
-        "rainbow_token_launcher": "Lançador de Token Rainbow",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Reivindicar %{amount}",
         "done": "Concluído",
         "try_again": "Tente Novamente",
@@ -525,7 +525,7 @@
       "alert": "Alerta",
       "analyze_env_variables": "Analisar Variáveis de Ambiente",
       "analyze_react_query": "Analisar Consulta React",
-      "analyze_user_assets_query": "Analisar Consulta de Ativos do Usuário",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "APLICADO",
       "backups_deleted_successfully": "Backups excluídos com sucesso",
       "clear_async_storage": "Limpar AsyncStorage",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "Negociação em"
       },
       "search": {
-        "profiles": "Perfis",
         "search_ethereum": "Pesquisar em todo o Ethereum",
         "search_ethereum_short": "Pesquisar Ethereum",
         "search": "Pesquisar",
@@ -960,17 +959,17 @@
       "farcaster_description": "Nosso ícone de aplicativo mais chato, inspirado no minimalismo enfadonho do Warpcast.",
       "farcaster_title": "Você desbloqueou\nRainbowcast",
       "redacted_description": "Um ícone Rainbow exclusivo para os verdadeiros apreciadores de Gdupi.",
-      "redacted_title": "Você desbloqueou o\n Redacted Rainbow",
-      "baggy_description": "Das ruas para a cadeia, esta pequena bolsa contém sua dose portátil de vibes do Rainbow. Sinta as cores e experimente a diferença.",
-      "baggy_title": "Você desbloqueou\n Rainbow Baggy",
+      "redacted_title": "Você desbloqueou o\nRedacted Rainbow",
+      "baggy_description": "Das ruas para a cadeia, esta pequena bolsa guarda sua dose portátil de vibrações Rainbow. Sinta as cores e perceba a diferença.",
+      "baggy_title": "Você desbloqueou Rainbow Baggy",
       "button": "Desbloqueie o ícone"
     },
     "explain": {
       "output_disabled": {
-        "text": "Por %{fromNetwork}, o Arco-Íris não pode preparar trocas com base na quantidade de %{outputToken} que você gostaria de receber. \n\n Tente inserir a quantidade de %{inputToken} que você gostaria de trocar.",
+        "text": "Por %{fromNetwork}, o Rainbow não pode preparar trocas com base na quantidade de %{outputToken} que você gostaria de receber. \n\n Tente inserir a quantidade de %{inputToken} que você gostaria de trocar.",
         "title": "Insira %{inputToken} em vez disso",
         "title_crosschain": "Insira %{fromNetwork} %{inputToken} em vez disso",
-        "text_crosschain": "O Arco-Íris não pode preparar trocas com base na quantidade de %{outputToken} que você gostaria de receber. \n\n Tente inserir a quantidade de %{inputToken} que você gostaria de trocar.",
+        "text_crosschain": "O Rainbow não pode preparar trocas com base na quantidade de %{outputToken} que você gostaria de receber. \n\n Tente inserir a quantidade de %{inputToken} que você gostaria de trocar.",
         "text_bridge": "O Rainbow não pode preparar uma ponte com base na quantidade de %{outputToken} que você gostaria de receber no destino %{toNetwork} . \n\n Tente informar a quantidade de %{fromNetwork} %{inputToken} que você gostaria de transferir através da ponte.",
         "title_empty": "Escolha um Token"
       },
@@ -1127,7 +1126,7 @@
         "title": "Liquidez Insuficiente"
       },
       "fee_on_transfer": {
-        "fragment1": "Esta troca falhará no Arco-Íris porque o %{tokenName} contrato adiciona taxas extras.  \n\n Leia ",
+        "fragment1": "Esta troca falhará no Rainbow porque o %{tokenName} contrato adiciona taxas extras.  \n\n Leia ",
         "fragment2": "nosso guia",
         "fragment3": " para obter ajuda para trocar este token!",
         "title": "Taxa na Transferência de Token"
@@ -1481,7 +1480,7 @@
         "ABC": "Abc",
         "abc": "Abc",
         "MOST_RECENT": "Recente",
-        "most_recent": "Recente",
+        "most_recent": "Mais Recente",
         "FLOOR_PRICE": "Preço do Piso",
         "floor_price": "Preço do Piso",
         "order": {
@@ -2171,7 +2170,7 @@
         "quote_error": "Erro na Cotação"
       },
       "aggregators": {
-        "rainbow": "Arco-íris"
+        "rainbow": "Rainbow"
       },
       "bridging": "Conectando",
       "swapping": "Trocando",
@@ -2940,7 +2939,7 @@
         "no_thanks": "Não, obrigado",
         "message": "Gostaria de copiar manualmente nosso endereço de email de suporte para a sua área de transferência?",
         "title": "Erro ao abrir o cliente de e-mail",
-        "subject": "Suporte Arco-Íris"
+        "subject": "Suporte Rainbow"
       },
       "wallet_alert": {
         "message_support": "Mensagem de Suporte",
@@ -3178,7 +3177,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Tendências",
-          "RAINBOW": "Arco-íris",
+          "RAINBOW": "Rainbow",
           "NEW": "Novo",
           "FARCASTER": "Farcaster"
         },
@@ -3247,7 +3246,7 @@
             "description": "Garante negociação suave e liquidez"
           },
           "rainbow_share": {
-            "title": "Sobre o Arco-íris",
+            "title": "Sobre o Rainbow",
             "description": "Distribuições Futuras para a Comunidade"
           }
         }
