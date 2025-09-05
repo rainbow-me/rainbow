@@ -180,7 +180,7 @@
       "confirm_password": {
         "add_to_cloud_platform": "Tambahkan ke %{cloudPlatformName} Cadangan",
         "backup_password_placeholder": "Kata Sandi Backup",
-        "confirm_backup": "Konfirmasi Backup",
+        "confirm_backup": "Konfirmasi Cadangan",
         "enter_backup_description": "Untuk menambahkan dompet ini ke cadangan %{cloudPlatformName} Anda, masukkan kata sandi cadangan yang ada",
         "enter_backup_password": "Masukkan kata sandi cadangan"
       },
@@ -219,7 +219,7 @@
       },
       "restore_cloud": {
         "backup_password_placeholder": "Kata Sandi Backup",
-        "confirm_backup": "Konfirmasi Backup",
+        "confirm_backup": "Konfirmasi Cadangan",
         "enter_backup_password": "Masukkan kata sandi cadangan",
         "enter_backup_password_description": "Untuk memulihkan dompet Anda, masukkan sandi cadangan yang Anda buat",
         "error_while_restoring": "Kesalahan saat memulihkan cadangan",
@@ -481,7 +481,7 @@
         "insufficient_funds": "Dana Tidak Cukup",
         "hold_to_claim": "Tahan untuk Mengklaim",
         "creator_lp_fees": "Biaya LP Pembuat",
-        "rainbow_token_launcher": "Peluncur Token Rainbow",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Klaim %{amount}",
         "done": "Selesai",
         "try_again": "Coba Lagi",
@@ -525,7 +525,7 @@
       "alert": "Peringatan",
       "analyze_env_variables": "Analisis Variabel ENV",
       "analyze_react_query": "Analisis React Query",
-      "analyze_user_assets_query": "Analisis Kuery Aset Pengguna",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "DITERAPKAN",
       "backups_deleted_successfully": "Backup Dihapus dengan Sukses",
       "clear_async_storage": "Bersihkan AsyncStorage",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "Trading di"
       },
       "search": {
-        "profiles": "Profil",
         "search_ethereum": "Cari semua Ethereum",
         "search_ethereum_short": "Cari Ethereum",
         "search": "Cari",
@@ -961,7 +960,7 @@
       "farcaster_title": "Anda telah membuka\nRainbowcast",
       "redacted_description": "Ikon Rainbow eksklusif untuk para penikmat sejati Gdupi.",
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
-      "baggy_description": "Dari jalanan ke rantai, tas kecil ini menyimpan dosis portabel dari suasana Rainbow. Rasakan warna dan rasakan perbedaannya.",
+      "baggy_description": "Dari jalanan hingga rantai, tas kecil ini memegang dosis portabel suasana Rainbow Anda. Rasakan warnanya, dan rasakan bedanya.",
       "baggy_title": "Anda telah membuka\n Rainbow Baggy",
       "button": "Ambil ikon"
     },
@@ -1410,7 +1409,7 @@
             "no_thanks": "Tidak, terima kasih"
           },
           "description": "Jangan hilangkan dompet Anda! Simpan salinan terenkripsi ke %{cloudPlatformName}.",
-          "title": "Apakah Anda ingin mencadangkan?"
+          "title": "Apakah Anda ingin membuat cadangan?"
         }
       },
       "confirm_tx": "Konfirmasi transaksi dari %{walletName}",
@@ -1481,7 +1480,7 @@
         "ABC": "Abjad",
         "abc": "Abjad",
         "MOST_RECENT": "Baru-baru ini",
-        "most_recent": "Baru-baru ini",
+        "most_recent": "Terbaru",
         "FLOOR_PRICE": "Harga Dasar",
         "floor_price": "Harga Dasar",
         "order": {
@@ -1560,7 +1559,7 @@
       "claim": {
         "title": "Klaim poin Anda",
         "title_rewards_line_1": "Selamat datang di",
-        "title_rewards_line_2": "Rainbow Rewards",
+        "title_rewards_line_2": "Dapatkan Hadiah ETH",
         "subtitle": "Poin telah ada. Cari tahu berapa banyak yang telah Anda dapatkan.",
         "subtitle_rewards": "Dapatkan hadiah karena menggunakan Rainbow. Lakukan aktivitas onchain, dapatkan poin, dan dapatkan ETH.",
         "get_started": "Mulai",
@@ -2171,7 +2170,7 @@
         "quote_error": "Kesalahan Kutipan"
       },
       "aggregators": {
-        "rainbow": "Rainbow"
+        "rainbow": "Biaya Rainbow"
       },
       "bridging": "Membuat Jembatan",
       "swapping": "Menukar",
@@ -3012,7 +3011,7 @@
         "pairing_unsupported_methods": "Beranda meminta metode RPC dompet yang tidak didukung oleh Rainbow.",
         "pairing_unsupported_networks": "Dapp meminta jaringan yang tidak didukung oleh Rainbow.",
         "read_only_wallet_on_signing_method": "Sepertinya Anda menggunakan dompet hanya untuk membaca, yang tidak diizinkan untuk permintaan ini.",
-        "namespaces_invalid": "Ada masalah dengan namespace yang diminta oleh dapp. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau dapp.",
+        "namespaces_invalid": "Terdapat masalah dengan namespace yang diminta oleh dapp. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau dapp.",
         "request_invalid": "Permintaan berisi parameter yang tidak valid. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau beranda.",
         "eth_sign": "Rainbow tidak mendukung eth_sign lama karena pertimbangan keamanan.  \n Silakan Hubungi tim dukungan Rainbow dan/atau dapp jika Anda memiliki pertanyaan.",
         "request_unsupported_network": "Jaringan yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
@@ -3178,7 +3177,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Tren",
-          "RAINBOW": "Rainbow",
+          "RAINBOW": "Biaya Rainbow",
           "NEW": "Baru",
           "FARCASTER": "Farcaster"
         },
