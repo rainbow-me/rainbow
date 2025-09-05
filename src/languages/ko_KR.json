@@ -467,7 +467,7 @@
         "quote_error": "견적 오류",
         "no_route_found": "경로를 찾을 수 없음",
         "fetching_quote": "견적 가져오는 중...",
-        "rainbow_eth_rewards": "Rainbow ETH 리워드",
+        "rainbow_eth_rewards": "레인보우 ETH 리워드",
         "merkl_claimable": "%{dappName} 볼트",
         "merkl_claimable_description": "%{assetSymbols} 전략",
         "select_a_network": "네트워크 선택",
@@ -481,7 +481,7 @@
         "insufficient_funds": "자금이 부족합니다",
         "hold_to_claim": "청구하려면 유지",
         "creator_lp_fees": "크리에이터 LP 수수료",
-        "rainbow_token_launcher": "Rainbow 토큰 런처",
+        "rainbow_token_launcher": "레인보우 토큰 런처",
         "claim_amount": "%{amount} 청구",
         "done": "완료",
         "try_again": "다시 시도하기",
@@ -525,7 +525,7 @@
       "alert": "알림",
       "analyze_env_variables": "환경 변수 분석",
       "analyze_react_query": "React 쿼리 분석",
-      "analyze_user_assets_query": "사용자 자산 쿼리 분석",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "적용됨",
       "backups_deleted_successfully": "백업이 성공적으로 삭제됨",
       "clear_async_storage": "AsyncStorage 지우기",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "거래 중"
       },
       "search": {
-        "profiles": "프로필들",
         "search_ethereum": "이더리움 전체 검색",
         "search_ethereum_short": "이더리움 검색",
         "search": "검색",
@@ -961,8 +960,8 @@
       "farcaster_title": "잠금 해제\nRainbowcast",
       "redacted_description": "진정한 Gdupi 애호가를 위한 stupi 전용 Rainbow 아이콘입니다.",
       "redacted_title": "잠금 해제 완료\nRedacted Rainbow",
-      "baggy_description": "거리에서 체인까지, 이 작은 가방은 당신이 필요로 하는 Rainbow의 느낌을 담고 있습니다. 색상을 느끼고, 차이를 느껴보세요.",
-      "baggy_title": "잠금 해제\nRainbow Baggy",
+      "baggy_description": "스트릿에서 체인으로, 이 작은 가방은 레인보우의 분위기를 휴대할 수 있도록 합니다. 색깔을 맛보고 차이를 느껴보세요.",
+      "baggy_title": "잠금 해제\n Rainbow Baggy",
       "button": "아이콘 잡기"
     },
     "explain": {
@@ -1276,7 +1275,7 @@
         "link_text": "WalletConnect를 사용하여 연결하기",
         "link_text_mobile": "WalletConnect",
         "link_title": "WalletConnect 사용",
-        "link_title_mobile": "WalletConnect를 통해 연결하기"
+        "link_title_mobile": "WalletConnect와 연결"
       },
       "reassurance": {
         "access_link": "당신의 자금에 대한 접근 권한이 없습니다",
@@ -1481,7 +1480,7 @@
         "ABC": "가나다",
         "abc": "가나다",
         "MOST_RECENT": "최근",
-        "most_recent": "최근",
+        "most_recent": "최신순",
         "FLOOR_PRICE": "최저 가격",
         "floor_price": "최저 가격",
         "order": {
@@ -1919,7 +1918,7 @@
         "description": "모든 NFT 마켓 플레이스에서 제공되는 상품을 확인하세요."
       },
       "info_row_2": {
-        "title": "Rainbow의 제안을 수락하세요",
+        "title": "DApp에서 요청한 네임스페이스에 문제가 있습니다. 다시 시도하거나 Rainbow 및 DApp 지원 팀에 문의하십시오.",
         "description": "1탭으로 제안을 수락하고 선택한 토큰으로 교환하세요."
       },
       "info_row_3": {
@@ -2042,7 +2041,7 @@
       "percentage_apy": "%{percentage}% APY",
       "with_digital_dollars_line_1": "디지털 달러인 Dai로 저축하는 것",
       "with_digital_dollars_line_2": "당신에게 이전보다 더 많은 수익을 가져다줍니다",
-      "withdraw": "철수",
+      "withdraw": "인출",
       "zero_currency": "$0.00"
     },
     "send_feedback": {
@@ -2215,7 +2214,7 @@
         "receive": "받기",
         "swap": "교환",
         "get_symbol_with": "%{symbol} 받기",
-        "withdraw": "철수",
+        "withdraw": "인출",
         "withdraw_symbol": "%{symbol}출금"
       },
       "unknown": "미지",
@@ -2560,7 +2559,7 @@
         "notifications": {
           "action_title": "알림 설정",
           "alert_title": "이 지갑에 대한 설정이 없습니다",
-          "alert_message": "이 지갑에 대해 설정이 없습니다.\n애플리케이션을 재시작하거나 나중에 다시 시도해 주세요."
+          "alert_message": "이 지갑에 대한 설정이 없습니다.\n앱을 재시작하거나 나중에 다시 시도해주세요."
         },
         "pair_hardware_wallet": "레저 나노 X 연결",
         "paste": "붙여넣기",
@@ -3012,9 +3011,9 @@
         "pairing_unsupported_methods": "Dapp이 Rainbow에서 지원하지 않는 지갑 RPC 방법을 요청했습니다.",
         "pairing_unsupported_networks": "해당 dapp은 Rainbow에서 지원하지 않는 네트워크를 요청했습니다.",
         "read_only_wallet_on_signing_method": "읽기 전용 지갑을 사용중인 것 같습니다. 이 요청에 대해서는 허용되지 않습니다.",
-        "namespaces_invalid": "DApp에서 요청한 네임스페이스에 문제가 있습니다. 다시 시도하거나 Rainbow 및 DApp 지원 팀에 문의하십시오.",
+        "namespaces_invalid": "보안 문제로 인해 Rainbow는 eth_sign을 지원하지 않습니다.  \n 질문이 있으면 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
         "request_invalid": "요청에 잘못된 매개변수가 포함되어 있습니다. 다시 시도하거나 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
-        "eth_sign": "보안 문제로 인해 Rainbow는 이전 버전의 eth_sign을 지원하지 않습니다.  \n 궁금한 점이 있으면 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
+        "eth_sign": "보안 문제로 인해 Rainbow는 이전 버전의 eth_sign을 지원하지 않습니다.\n질문이 있으면 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
         "request_unsupported_network": "이 요청에서 지정한 네트워크는 Rainbow에서 지원하지 않습니다.",
         "request_unsupported_methods": "이 요청에 명시된 RPC 방법은 Rainbow에서 지원하지 않습니다.",
         "no_accounts_found": "승인된 네임스페이스에서 계정을 찾을 수 없습니다."
