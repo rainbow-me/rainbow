@@ -220,7 +220,7 @@
       "restore_cloud": {
         "backup_password_placeholder": "Yedekleme Şifresi",
         "confirm_backup": "Yedeği Onayla",
-        "enter_backup_password": "Yedek şifresini gir",
+        "enter_backup_password": "Yedekleme şifresini girin",
         "enter_backup_password_description": "Cüzdanınızı geri yüklemek için oluşturduğunuz yedekleme şifresini girin",
         "error_while_restoring": "Yedekleme geri yüklenirken hata",
         "incorrect_pin_code": "Yanlış PIN kodu",
@@ -525,7 +525,7 @@
       "alert": "Uyarı",
       "analyze_env_variables": "ENV Değişkenlerini Analiz Et",
       "analyze_react_query": "React Sorgusunu Analiz Et",
-      "analyze_user_assets_query": "Kullanıcı Varlıklarını Analiz Etme Sorgusu",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "UYGULANDI",
       "backups_deleted_successfully": "Yedeklemeler Başarıyla Silindi",
       "clear_async_storage": "AsyncStorage'ı Temizle",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "Burada Alınıp Satılıyor"
       },
       "search": {
-        "profiles": "Profller",
         "search_ethereum": "Ethereum'un hepsini ara",
         "search_ethereum_short": "Ethereum'u ara",
         "search": "Ara",
@@ -672,7 +671,7 @@
       "settings": "Ayarlar",
       "use_defaults": "Öntanımlıları Kullan",
       "done": "Tamamlandı",
-      "losing": "Kaybetme",
+      "losing": "Kaybediyorum",
       "high": "Yüksek",
       "slippage_tolerance": "Maks Kayma",
       "source_picker": "Takasları Yoluyla Yönlendir",
@@ -826,7 +825,7 @@
       "swap": {
         "swap": "Değiştir",
         "bridge": "Köprü",
-        "losing": "Kaybetme",
+        "losing": "Kaybediyorum",
         "on": "Açık",
         "off": "Kapalı",
         "price_impact": "Fiyat etkisi",
@@ -967,7 +966,7 @@
     },
     "explain": {
       "output_disabled": {
-        "text": "%{fromNetwork}için, Gökkuşağı %{outputToken} almak istediğiniz miktar üzerinden swapları hazırlayamaz. \n\n Bunun yerine swap etmek istediğiniz %{inputToken} miktarını girmeyi deneyin.",
+        "text": "%{fromNetwork} için, Rainbow %{outputToken} almak istediğiniz miktar üzerinden swapları hazırlayamaz. \n\n Bunun yerine swap etmek istediğiniz %{inputToken} miktarını girmeyi deneyin.",
         "title": "%{inputToken} Yerine girin",
         "title_crosschain": "%{fromNetwork} %{inputToken} yerine girin",
         "text_crosschain": "Rainbow, istediğiniz %{outputToken} miktarına dayalı takaslar hazırlayamaz. \n\n Bunun yerine takas etmek istediğiniz %{inputToken} miktarını girin.",
@@ -1164,7 +1163,7 @@
         "text": "Kayma, işleminizi göndermeniz ve onaylanması arasındaki süre boyunca bir swapın fiyatının değişmesi durumunda meydana gelir. \n\nDaha yüksek bir kayma toleransı ayarlama, swapınızın başarılı olma olasılığını artırır, ancak daha kötü bir fiyat almanıza neden olabilir.",
         "title": "Kayma",
         "still_curious": {
-          "fragment1": "Hala merak mı ediyorsunuz? ",
+          "fragment1": "Hâlâ merak mı ediyorsun? ",
           "fragment2": "Daha fazla oku",
           "fragment3": " kayma hakkında ve nasıl etkilediği swaps hakkında."
         }
@@ -1294,8 +1293,8 @@
     "image_picker": {
       "cancel": "İptal",
       "confirm": "Kütüphane erişimini etkinleştir",
-      "message": "Bu, Rainbow'un kütüphanenizden fotoğraflarınızı kullanmasına izin verir",
-      "title": "Rainbow, fotoğraflarınıza erişmek istiyor"
+      "message": "Bu, Rainbow'un kütüphanenizden fotoğraflarınızı kullanmasına izin verir.",
+      "title": "Rainbow, fotoğraflarınıza erişmek istiyor."
     },
     "input": {
       "asset_amount": "Miktar",
@@ -1390,7 +1389,7 @@
         "default": {
           "button": {
             "cloud": "Cüzdanınızı yedekleyin",
-            "cloud_platform": "%{cloudPlatformName}'ya yedekle",
+            "cloud_platform": "%{cloudPlatformName}'a yedekleyin",
             "manual": "Manuel olarak yedekle"
           },
           "description": "Cüzdanınızı kaybetmeyin! Şifrelenmiş bir kopyasını %{cloudPlatformName}'e kaydedin",
@@ -1406,7 +1405,7 @@
         },
         "imported": {
           "button": {
-            "back_up": "%{cloudPlatformName}'ya yedekle",
+            "back_up": "Yedekle %{cloudPlatformName}",
             "no_thanks": "Hayır, teşekkür ederim"
           },
           "description": "Cüzdanınızı kaybetmeyin! Şifrelenmiş bir kopyasını %{cloudPlatformName}'e kaydedin.",
@@ -1481,7 +1480,7 @@
         "ABC": "Abc",
         "abc": "Abc",
         "MOST_RECENT": "Son",
-        "most_recent": "Son",
+        "most_recent": "En Yeni",
         "FLOOR_PRICE": "Taban Fiyatı",
         "floor_price": "Taban Fiyatı",
         "order": {
@@ -1972,7 +1971,7 @@
       "rewards_claimed": "Haftalık Ödüller Talep Edildi",
       "refreshes_next_week": "Gelecek hafta yenilenir",
       "all_rewards_claimed": "Bu hafta tüm ödüller talep edildi",
-      "rainbow_users_claimed": "Rainbow kullanıcıları %{amount}talep etti",
+      "rainbow_users_claimed": "Rainbow kullanıcıları %{amount} talep etti",
       "refreshes_in_with_days": "%{days} gün %{hours} saat içinde yenilenir",
       "refreshes_in_without_days": "%{hours} saat içinde yenilenir",
       "percent": "%{percent}% ödül",
@@ -2021,7 +2020,7 @@
       "pools": "Havuzlar"
     },
     "savings": {
-      "deposit": "Depozit",
+      "deposit": "Mevduat",
       "deposit_from_wallet": "Cüzdandan Mevduat Yapın",
       "earned_lifetime_interest": "Kazandı %{lifetimeAccruedInterest}",
       "earnings": {
@@ -2042,7 +2041,7 @@
       "percentage_apy": "%{percentage}% APY",
       "with_digital_dollars_line_1": "Dai gibi dijital dolarlarla tasarruf etmek",
       "with_digital_dollars_line_2": "sizlere daha çok kazandırır",
-      "withdraw": "Çekme",
+      "withdraw": "Çek",
       "zero_currency": "$0.00"
     },
     "send_feedback": {
@@ -2211,11 +2210,11 @@
       "modal_types": {
         "bridge": "Köprü",
         "confirm": "Onayla",
-        "deposit": "Depozit",
+        "deposit": "Mevduat",
         "receive": "Al",
         "swap": "Değiştir",
         "get_symbol_with": "%{symbol} elde etmek için",
-        "withdraw": "Çekme",
+        "withdraw": "Çek",
         "withdraw_symbol": "%{symbol}çek"
       },
       "unknown": "Bilinmeyen",
@@ -2560,7 +2559,7 @@
         "notifications": {
           "action_title": "Bildirim Ayarları",
           "alert_title": "Bu cüzdan için ayar yok",
-          "alert_message": "Bu cüzdan için ayar yok.\nLütfen uygulamayı yeniden başlatmayı veya daha sonra tekrar denemeyi deneyin."
+          "alert_message": "Bu cüzdan için ayar yok.\nLütfen uygulamayı yeniden başlatmayı deneyin veya daha sonra tekrar deneyin."
         },
         "pair_hardware_wallet": "Bir Ledger Nano X eşleştir",
         "paste": "Yapıştır",
@@ -2659,7 +2658,7 @@
         "create_new_wallet_description": "Bu Gizli İfade ile yeni bir cüzdan oluşturun",
         "backed_up": "Yedeklendi",
         "backed_up_manually": "Manuel olarak yedeklendi",
-        "imported": "İçe Aktarıldı",
+        "imported": "İçeri Aktarıldı",
         "cloud_backup_title": "Bulut Yedekleme",
         "not_backed_up": "Yedeklenmemiş",
         "not_backed_up_to_cloud_message": "Bu %{backupType} son yedeğinizde değil. Cihazınızı kaybederseniz veya yeni bir tane alırsanız geri yükleyebilmeniz için şimdi %{cloudPlatform}'a yedekleyin.",
@@ -2739,7 +2738,7 @@
       "error_displaying_address": "Adres gösterme hatası",
       "feedback": {
         "cancel": "Hayır, teşekkür ederim",
-        "choice": "Geri bildirim e-posta adresimizi elle kopyalamak ister misiniz?",
+        "choice": "Geri bildirim e-posta adresimizi manuel olarak panonuza kopyalamak ister misiniz?",
         "copy_email_address": "E-posta adresini kopyala",
         "email_subject": "📱 Rainbow Beta Geribildirim",
         "error": "E-posta istemcisi başlatılırken hata",
