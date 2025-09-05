@@ -7,6 +7,7 @@ import { NoResults } from '@/components/list';
 import ExchangeAssetList, { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { Box } from '@/design-system';
 import { NoResultsType } from '@/components/list/NoResults';
+import type { SearchAsset } from '@/__swaps__/types/search';
 
 const CurrencySelectModalHeaderHeight = 59;
 const SearchHeight = 40;
@@ -20,7 +21,7 @@ interface CurrencySelectionListProps {
     showBalance: boolean;
     showFavoriteButton: boolean;
   };
-  listItems: { data: EnrichedExchangeAsset[]; title: string }[];
+  listItems: { data: (EnrichedExchangeAsset | SearchAsset)[]; title: string }[];
   loading: boolean;
   onL2?: boolean;
   query: string;
@@ -56,7 +57,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<SectionList, CurrencySelec
           <ExchangeAssetList
             footerSpacer={footerSpacer}
             itemProps={itemProps}
-            items={listItems}
+            items={listItems as unknown as { data: EnrichedExchangeAsset[]; title: string }[]}
             keyboardDismissMode={keyboardDismissMode}
             query={query}
             ref={ref}
