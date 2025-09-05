@@ -220,7 +220,7 @@
       "restore_cloud": {
         "backup_password_placeholder": "كلمة مرور النسخ الاحتياطي",
         "confirm_backup": "تأكيد النسخ الاحتياطي",
-        "enter_backup_password": "أدخل كلمة المرور الاحتياطية",
+        "enter_backup_password": "أدخل كلمة مرور النسخ الاحتياطي",
         "enter_backup_password_description": "لإستعادة محفظتك، أدخل كلمة المرور الاحتياطية التي أنشأتها",
         "error_while_restoring": "خطأ أثناء استعادة النسخ الاحتياطية",
         "incorrect_pin_code": "رمز PIN غير صحيح",
@@ -467,7 +467,7 @@
         "quote_error": "خطأ في عرض السعر",
         "no_route_found": "لم يتم العثور على مسار",
         "fetching_quote": "جارٍ جلب العرض...",
-        "rainbow_eth_rewards": "مكافآت Rainbow على ETH",
+        "rainbow_eth_rewards": "مكافآت Rainbow ETH",
         "merkl_claimable": "خزنة %{dappName}",
         "merkl_claimable_description": "استراتيجية %{assetSymbols}",
         "select_a_network": "حدد شبكة",
@@ -481,7 +481,7 @@
         "insufficient_funds": "أموال غير كافية",
         "hold_to_claim": "اضغط للمطالبة",
         "creator_lp_fees": "رسوم LP الخاصة بالمنشئ",
-        "rainbow_token_launcher": "أداة إطلاق الرموز من Rainbow",
+        "rainbow_token_launcher": "إطلاق رمز Rainbow",
         "claim_amount": "مطالبة %{amount}",
         "done": "تم",
         "try_again": "حاول مرة أخرى",
@@ -525,7 +525,7 @@
       "alert": "تنبيه",
       "analyze_env_variables": "تحليل متغيرات البيئة",
       "analyze_react_query": "تحليل استعلام React",
-      "analyze_user_assets_query": "تحليل استعلام أصول المستخدم",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "تم التطبيق",
       "backups_deleted_successfully": "تم حذف النسخ الاحتياطية بنجاح",
       "clear_async_storage": "مسح التخزين غير المتزامن",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "جار التداول في"
       },
       "search": {
-        "profiles": "الملفات الشخصية",
         "search_ethereum": "بحث في كل Ethereum",
         "search_ethereum_short": "بحث Ethereum",
         "search": "بحث",
@@ -835,7 +834,7 @@
         "swapping_via": "التبديل عبر",
         "unicorn_one": "ذلك الواحد الوحيد",
         "uniswap_v2": "يونيسواب v2",
-        "view_on": "اعرض على %{blockExplorerName}",
+        "view_on": "عرض على %{blockExplorerName}",
         "network_switcher": "التبديل على شبكة %{network}",
         "settling_time": "الوقت المقدر للتسوية",
         "swap_max_alert": {
@@ -854,7 +853,7 @@
         "exchange_rate": "سعر الصرف",
         "rainbow_fee": "رسم Rainbow المدرج",
         "refuel": "رموز الشبكة الإضافية",
-        "review": "مراجعة",
+        "review": "تقييم",
         "show_details": "المزيد من التفاصيل",
         "hide_details": "إخفاء التفاصيل",
         "price_impact": "الفرق في القيمة",
@@ -899,7 +898,7 @@
         "copy_token_id": "نسخ رقم الرمز",
         "description": "الوصف",
         "discord": "ديسكورد",
-        "edit": "تعديل",
+        "edit": "تحرير",
         "expires_in": "ينتهي في",
         "expires_on": "ينتهي على",
         "floor_price": "سعر الطابق",
@@ -926,7 +925,7 @@
         "view_all_with_property": "عرض الكل بالخاصية",
         "view_collection": "عرض المجموعة",
         "view_on_marketplace": "عرض على السوق...",
-        "view_on_block_explorer": "اعرض على %{blockExplorerName}",
+        "view_on_block_explorer": "عرض على %{blockExplorerName}",
         "view_on_marketplace_name": "عرض على %{marketplaceName}",
         "view_on_platform": "عرض على %{platform}",
         "view_on_web": "عرض على الويب",
@@ -961,8 +960,8 @@
       "farcaster_title": "لقد قمت بفتح\nRainbowcast",
       "redacted_description": "أيقونة قوس قزح حصرية لـ stupi لمحبي Gdupi الحقيقيين.",
       "redacted_title": "لقد فتحت\nقوس قزح المكمم",
-      "baggy_description": "من الشوارع إلى السلسلة، تحمل هذه الحقيبة الصغيرة جرعتك المحمولة من أجواء Rainbow. تذوّق الألوان واشعر بالاختلاف.",
-      "baggy_title": "لقد قمت بفتح\n Rainbow Baggy",
+      "baggy_description": "من الشوارع إلى السلسلة، هذه الحقيبة الصغيرة تحمل جرعة قوس قزح المحمولة الخاصة بك. تذوق الألوان، واشعر بالفرق.",
+      "baggy_title": "لقد قمت بفتح\nRainbow Baggy",
       "button": "Snag the icon"
     },
     "explain": {
@@ -1216,7 +1215,7 @@
       "unable_to_determine_selected_gas": "غير قادر على تحديد سعر الغاز المحدد",
       "network_fee": "رسوم الشبكة المقدرة",
       "current_base_fee": "الرسوم الأساسية الحالية",
-      "max_base_fee": "الرسوم الأساسية القصوى",
+      "max_base_fee": "أقصى رسوم أساسية",
       "miner_tip": "تلميح المعدن",
       "gas_price": "سعر الغاز",
       "max_transaction_fee": "الحد الأقصى لرسوم المعاملة",
@@ -1481,7 +1480,7 @@
         "ABC": "أبج",
         "abc": "أبج",
         "MOST_RECENT": "الأخير",
-        "most_recent": "الأخير",
+        "most_recent": "الأحدث",
         "FLOOR_PRICE": "سعر الأرضية",
         "floor_price": "سعر الأرضية",
         "order": {
@@ -2559,8 +2558,8 @@
         "input": "إدخال العملية",
         "notifications": {
           "action_title": "إعدادات الإشعار",
-          "alert_title": "لا توجد إعدادات لهذه المحفظة",
-          "alert_message": "لا توجد إعدادات لهذه المحفظة.\nالرجاء محاولة إعادة تشغيل التطبيق أو المحاولة مرة أخرى في وقت لاحق."
+          "alert_title": "لا توجد إعدادات لهذا المحفظة",
+          "alert_message": "لا توجد أي إعدادات لهذه المحفظة.\nيرجى إعادة تشغيل التطبيق أو المحاولة مرة أخرى فيما بعد."
         },
         "pair_hardware_wallet": "ربط ليدجر نانو X",
         "paste": "لصق",
@@ -2573,7 +2572,7 @@
         "unhide": "الغاء الاخفاء",
         "unpin": "إلغاء التثبيت",
         "value": "القيمة",
-        "view_on": "اعرض على %{blockExplorerName}"
+        "view_on": "عرض على %{blockExplorerName}"
       },
       "add_cash": {
         "card_notice": "يعمل مع معظم بطاقات الخصم",
@@ -2915,7 +2914,7 @@
         "complete_check": "أكمل الفحص",
         "ens_configuration_options": "خيارات تكوين ENS",
         "confirm": "تأكيد العملية",
-        "max": "الحد الأقصى",
+        "max": "أقصى",
         "placeholder_title": "عنصر نائب",
         "request": "طلب العملية",
         "send": "إرسال العملية",
