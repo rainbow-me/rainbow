@@ -26,6 +26,7 @@ const Container = styled(Row).attrs(({ side }) => ({
   paddingLeft: 28,
   paddingRight: 28,
   zIndex: 2,
+  width: 120,
 }));
 
 const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
