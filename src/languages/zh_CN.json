@@ -467,7 +467,7 @@
         "quote_error": "报价错误",
         "no_route_found": "找不到路由",
         "fetching_quote": "正在获取报价...",
-        "rainbow_eth_rewards": "彩虹ETH奖励",
+        "rainbow_eth_rewards": "彩虹 ETH 奖励",
         "merkl_claimable": "%{dappName} 金库",
         "merkl_claimable_description": "%{assetSymbols} 策略",
         "select_a_network": "选择一个网络",
@@ -481,7 +481,7 @@
         "insufficient_funds": "资金不足",
         "hold_to_claim": "长按领取",
         "creator_lp_fees": "创作者LP费用",
-        "rainbow_token_launcher": "Rainbow 代币启动器",
+        "rainbow_token_launcher": "Rainbow 代币发行",
         "claim_amount": "领取 %{amount}",
         "done": "完成",
         "try_again": "再试一次",
@@ -525,7 +525,7 @@
       "alert": "警报",
       "analyze_env_variables": "分析环境变量",
       "analyze_react_query": "分析 React Query",
-      "analyze_user_assets_query": "分析用户资产查询",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "已应用",
       "backups_deleted_successfully": "备份已成功删除",
       "clear_async_storage": "清除异步存储",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "交易于"
       },
       "search": {
-        "profiles": "个人资料",
         "search_ethereum": "搜索所有以太坊",
         "search_ethereum_short": "搜索以太坊",
         "search": "搜索",
@@ -961,8 +960,8 @@
       "farcaster_title": "你已解锁\nRainbowcast",
       "redacted_description": "一个专属的 Rainbow 图标，供真正的 Gdupi 爱好者使用。",
       "redacted_title": "您已解锁\n Redacted Rainbow",
-      "baggy_description": "从街头到链上，这个小包为你准备了一剂便携的彩虹氛围。品尝色彩，感受不同。",
-      "baggy_title": "你已解锁\nRainbow Baggy",
+      "baggy_description": "从街头到链，这个小袋子承载了你的便携彩虹氛围。品尝颜色，感受不同。",
+      "baggy_title": "您已解锁\n Rainbow Baggy",
       "button": "解锁图标"
     },
     "explain": {
@@ -1481,7 +1480,7 @@
         "ABC": "字母顺序",
         "abc": "字母顺序",
         "MOST_RECENT": "最近",
-        "most_recent": "最近",
+        "most_recent": "最新的",
         "FLOOR_PRICE": "底价",
         "floor_price": "底价",
         "order": {
