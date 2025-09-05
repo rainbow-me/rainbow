@@ -481,7 +481,7 @@
         "insufficient_funds": "अपर्याप्त धन",
         "hold_to_claim": "दावे के लिए दबाए रखें",
         "creator_lp_fees": "निर्माता LP फीस",
-        "rainbow_token_launcher": "रेनबो टोकन लांचर",
+        "rainbow_token_launcher": "रेनबो टोकन लॉन्चर",
         "claim_amount": "दावा %{amount}",
         "done": "हो गया",
         "try_again": "फिर से प्रयास करें",
@@ -525,7 +525,7 @@
       "alert": "अलर्ट",
       "analyze_env_variables": "ENV वेरिएबल्स का विश्लेषण करें",
       "analyze_react_query": "React Query का विश्लेषण करें",
-      "analyze_user_assets_query": "उपयोगकर्ता संपत्ति क्वेरी का विश्लेषण करें",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "लागू किया गया",
       "backups_deleted_successfully": "बैकअप सफलतापूर्वक हटा दिए गए",
       "clear_async_storage": "AsyncStorage साफ़ करें",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "व्यापार कर रहा है"
       },
       "search": {
-        "profiles": "प्रोफ़ाइल",
         "search_ethereum": "इथेरियम की सभी खोजें",
         "search_ethereum_short": "इथेरियम खोजें",
         "search": "खोज",
@@ -961,8 +960,8 @@
       "farcaster_title": "आपने अनलॉक कर लिया है\nरेनबो कास्ट",
       "redacted_description": "सच्चे Gdupi एनजॉयर्स के लिए एक अनन्य Rainbow आइकन।",
       "redacted_title": "आपने\nरेडैक्टेड रेनबो को अनलॉक कर दिया",
-      "baggy_description": "सड़कों से चेन तक, यह छोटा बैग आपके पोर्टेबल रेनबो वाइब्स की खुराक धारण करता है। रंग का स्वाद लें, और अंतर महसूस करें।",
-      "baggy_title": "आपने अनलॉक कर लिया है\nरेनबो बैगी",
+      "baggy_description": "सड़कों से लेकर चेन तक, यह छोटा बैग आपकी पोर्टेबल रेनबो वाइब्स की खुराक को पकड़े हुए है। रंगों का स्वाद लें, और अंतर महसूस करें।",
+      "baggy_title": "आपने अनलॉक कर लिया है\n रेनबो बैगी",
       "button": "आइकन पकड़ें"
     },
     "explain": {
@@ -970,7 +969,7 @@
         "text": "%{fromNetwork}के लिए, इंद्रधनुष वह राशि तैयार नहीं कर सकता %{outputToken} आपको प्राप्त करने के लिए आधारित स्वैप। \n\n आपको स्वैप करने के लिए %{inputToken} राशि दर्ज करने की कोशिश करें.",
         "title": "%{inputToken} बजाय दर्ज करें",
         "title_crosschain": "%{fromNetwork} %{inputToken} के बजाय दर्ज करें",
-        "text_crosschain": "Rainbow आपको प्राप्त करने की इच्छा रखने वाली %{outputToken} राशि के आधार पर swaps तैयार नहीं कर सकता। \n\n बजाय आप %{inputToken} राशि दर्ज करने की कोशिश करें जिसे आप swap करना चाहते हैं।",
+        "text_crosschain": "रेनबो आपको प्राप्त करने की इच्छा रखने वाली %{outputToken} राशि के आधार पर swaps तैयार नहीं कर सकता। \n\n बजाय आप %{inputToken} राशि दर्ज करने की कोशिश करें जिसे आप swap करना चाहते हैं।",
         "text_bridge": "Rainbow आपको प्राप्त करने की इच्छा रखने वाली %{outputToken} राशि के आधार पर एक bridge तैयार नहीं कर सकता %{toNetwork} गंतव्य पर। \n\n बजाय आप %{fromNetwork} %{inputToken} राशि दर्ज करने की कोशिश करें जिसे आप bridge करना चाहते हैं।",
         "title_empty": "एक टोकन चुनें"
       },
@@ -1481,7 +1480,7 @@
         "ABC": "एबीसी",
         "abc": "एबीसी",
         "MOST_RECENT": "हाल का",
-        "most_recent": "हाल का",
+        "most_recent": "सबसे हालिया",
         "FLOOR_PRICE": "मंजिल मूल्य",
         "floor_price": "मंजिल मूल्य",
         "order": {
@@ -1972,7 +1971,7 @@
       "rewards_claimed": "साप्ताहिक पुरस्कारों का दावा किया",
       "refreshes_next_week": "अगले सप्ताह ताजगी करता है",
       "all_rewards_claimed": "सभी पुरस्कार इस सप्ताह का दावा किया गया है",
-      "rainbow_users_claimed": "रेनबो उपयोगकर्ताओं ने %{amount}का दावा किया",
+      "rainbow_users_claimed": "रेनबो उपयोगकर्ताओं ने %{amount} का दावा किया",
       "refreshes_in_with_days": "%{days} दिनों में ताजगी होती है %{hours} घंटे",
       "refreshes_in_without_days": "ताजगी होती है %{hours} घंटे",
       "percent": "%{percent}% पुरस्कार",
@@ -2559,8 +2558,8 @@
         "input": "लेन-देन इनपुट",
         "notifications": {
           "action_title": "सूचना सेटिंग्स",
-          "alert_title": "इस वॉलेट के लिए कोई सेटिंग्स नहीं",
-          "alert_message": "इस बटुए के लिए कोई सेटिंग्स नहीं हैं।\nकृपया ऐप को पुनः आरंभ करने का प्रयास करें या फिर बाद में पुनः प्रयास करें।"
+          "alert_title": "इस वॉलेट के लिए कोई सेटिंग्स नहीं हैं",
+          "alert_message": "इस वॉलेट के लिए कोई सेटिंग्स नहीं हैं।\nकृपया ऐप को पुनः आरंभ करने का प्रयास करें या बाद में पुनः प्रयास करें।"
         },
         "pair_hardware_wallet": "एक लेजर नैनो एक्स जोड़ें",
         "paste": "चिपकाएं",
