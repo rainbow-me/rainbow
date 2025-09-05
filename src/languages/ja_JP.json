@@ -481,7 +481,7 @@
         "insufficient_funds": "資金が不足しています",
         "hold_to_claim": "主張するまでホールド",
         "creator_lp_fees": "クリエイターLP手数料",
-        "rainbow_token_launcher": "Rainbow トークンランチャー",
+        "rainbow_token_launcher": "レインボートークンローンチャー",
         "claim_amount": "%{amount}を請求",
         "done": "完了",
         "try_again": "再試行",
@@ -525,7 +525,7 @@
       "alert": "アラート",
       "analyze_env_variables": "環境変数を解析",
       "analyze_react_query": "React Queryを解析",
-      "analyze_user_assets_query": "ユーザー資産クエリを解析する",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "適用済み",
       "backups_deleted_successfully": "バックアップは正常に削除されました",
       "clear_async_storage": "AsyncStorageをクリア",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "取引中の"
       },
       "search": {
-        "profiles": "プロフィール",
         "search_ethereum": "Ethereum全体を検索",
         "search_ethereum_short": "Ethereumを検索",
         "search": "検索する",
@@ -961,8 +960,8 @@
       "farcaster_title": "アンロック\nRainbowcast",
       "redacted_description": "真のGdupi愛好者のための独占的なRainbowアイコン。",
       "redacted_title": "ロック解除されました\nRedacted Rainbow",
-      "baggy_description": "ストリートからチェーンへ、この小さなバッグはRainbowの雰囲気をどこでも持ち運ぶことができます。色を味わい、違いを感じてください。",
-      "baggy_title": "アンロック\nRainbow Baggy",
+      "baggy_description": "街からチェーンまで、この小さなバッグはあなたのポータブルなRainbowのエッセンスを持ち運びます。色を味わい、違いを感じてください。",
+      "baggy_title": "アンロック\n Rainbow Baggy",
       "button": "アイコンをキャッチ"
     },
     "explain": {
@@ -1481,7 +1480,7 @@
         "ABC": "Abc",
         "abc": "Abc",
         "MOST_RECENT": "最近の",
-        "most_recent": "最近の",
+        "most_recent": "最新順",
         "FLOOR_PRICE": "フロア価格",
         "floor_price": "フロア価格",
         "order": {
@@ -2088,7 +2087,7 @@
       "feedback_and_reports": "Feedback & Bug Reports",
       "feedback_and_support": "Feedback and Support",
       "follow_us_on_twitter": "Follow us on Twitter",
-      "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
+      "hey_friend_message": "👋️ Hey friend! Rainbowをダウンロードするべきです。これは私のお気に入りのイーサリアムウォレットです 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "設定",
       "language": "Language",
       "learn": "Learn about Ethereum",
