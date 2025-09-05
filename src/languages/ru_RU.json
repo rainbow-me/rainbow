@@ -467,7 +467,7 @@
         "quote_error": "Ошибка котировки",
         "no_route_found": "Маршрут не найден",
         "fetching_quote": "Получение котировки...",
-        "rainbow_eth_rewards": "Награды Rainbow ETH",
+        "rainbow_eth_rewards": "Зарабатывайте ETH награды",
         "merkl_claimable": "Хранилище %{dappName}",
         "merkl_claimable_description": "Стратегия %{assetSymbols}",
         "select_a_network": "Выберите сеть",
@@ -481,7 +481,7 @@
         "insufficient_funds": "Недостаточно средств",
         "hold_to_claim": "Удерживайте, чтобы получить",
         "creator_lp_fees": "Создательские LP сборы",
-        "rainbow_token_launcher": "Запуск Токенов Rainbow",
+        "rainbow_token_launcher": "Запуск токена Rainbow",
         "claim_amount": "Получить %{amount}",
         "done": "Готово",
         "try_again": "Попробуйте снова",
@@ -525,7 +525,7 @@
       "alert": "Внимание",
       "analyze_env_variables": "Анализировать переменные ENV",
       "analyze_react_query": "Анализировать запросы React",
-      "analyze_user_assets_query": "Анализировать запросы активов пользователя",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "ПРИМЕНЕНО",
       "backups_deleted_successfully": "Резервные копии успешно удалены",
       "clear_async_storage": "Очистить AsyncStorage",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "Торговля на"
       },
       "search": {
-        "profiles": "Профили",
         "search_ethereum": "Искать все Ethereum",
         "search_ethereum_short": "Искать Ethereum",
         "search": "Поиск",
@@ -961,17 +960,17 @@
       "farcaster_title": "Вы разблокировали\nRainbowcast",
       "redacted_description": "Эксклюзивная иконка Rainbow для истинных ценителей Gdupi.",
       "redacted_title": "Вы разблокировали\nСкрытую Rainbow",
-      "baggy_description": "От улиц до цепи, этот маленький мешочек хранит вашу портативную дозу Rainbow настроения. Почувствуйте цвета и ощутите разницу.",
+      "baggy_description": "От улиц до цепи, эта маленькая сумочка хранит вашу переносную дозу атмосфер Rainbow. Почувствуйте цвета — и разницу.",
       "baggy_title": "Вы разблокировали\nRainbow Baggy",
       "button": "Разблокировать значок"
     },
     "explain": {
       "output_disabled": {
-        "text": "Для %{fromNetwork}Радуга не может подготовить обмены на основе количества %{outputToken} , которое вы хотели бы получить. \n\n Попробуйте вместо этого ввести количество %{inputToken} , которое вы хотите обменять.",
+        "text": "Для %{fromNetwork}Радуга не может подготовить обмены на основе количества %{outputToken}, которое вы хотели бы получить. \n\n Попробуйте вместо этого ввести количество %{inputToken}, которое вы хотите обменять.",
         "title": "Введите %{inputToken} Вместо этого",
         "title_crosschain": "Введите %{fromNetwork} %{inputToken} Вместо этого",
-        "text_crosschain": "Радуга не может подготовить свопы на основе количества %{outputToken} , которое вы хотели бы получить. \n\n Попробуйте вместо этого ввести количество %{inputToken} , которое вы хотели бы обменять.",
-        "text_bridge": "Радуга не может подготовить мост на основе количества %{outputToken} , которое вы хотели бы получить в месте назначения %{toNetwork} . \n\n Попробуйте вместо этого указать количество %{fromNetwork} %{inputToken} , которое вы хотели бы осуществить переход.",
+        "text_crosschain": "Радуга не может подготовить свопы на основе количества %{outputToken}, которое вы хотели бы получить. \n\n Попробуйте вместо этого ввести количество %{inputToken}, которое вы хотели бы обменять.",
+        "text_bridge": "Радуга не может подготовить мост на основе количества %{outputToken}, которое вы хотели бы получить в месте назначения %{toNetwork}. \n\n Попробуйте вместо этого указать количество %{fromNetwork} %{inputToken}, которое вы хотели бы осуществить переход.",
         "title_empty": "Выберите токен"
       },
       "available_networks": {
@@ -1481,7 +1480,7 @@
         "ABC": "АБВ",
         "abc": "АБВ",
         "MOST_RECENT": "Последние",
-        "most_recent": "Последние",
+        "most_recent": "Самые последние",
         "FLOOR_PRICE": "Начальная цена",
         "floor_price": "Начальная цена",
         "order": {
@@ -1560,9 +1559,9 @@
       "claim": {
         "title": "Заберите свои баллы",
         "title_rewards_line_1": "Добро пожаловать",
-        "title_rewards_line_2": "Rainbow Rewards",
+        "title_rewards_line_2": "Получите награды за использование Rainbow. Выполняйте действия onchain, получайте баллы, зарабатывайте ETH.",
         "subtitle": "Баллы у вас. Узнайте, сколько вам начислено.",
-        "subtitle_rewards": "Получите награды за использование Rainbow. Выполняйте действия onchain, получайте баллы, зарабатывайте ETH.",
+        "subtitle_rewards": "Пользователи Rainbow заработали",
         "get_started": "Начать",
         "use_referral_code": "Используйте реферальный код"
       },
@@ -1627,7 +1626,7 @@
         "my_earnings": "Мои заработки",
         "claimed_earnings": "Полученные заработки",
         "current_value": "Текущая стоимость",
-        "rainbow_users_have_earned": "Пользователи Rainbow заработали",
+        "rainbow_users_have_earned": "Каждую неделю лучшие зарабатыватели баллов получат часть дохода Rainbow в сети. Собирайте баллы, обменяя или проводя транзакции в Rainbow, используя dapps или приглашая друзей.",
         "earn_eth_rewards": "Зарабатывайте ETH награды",
         "rewards_explainer": "Каждую неделю лучшие зарабатыватели баллов получат часть дохода Rainbow в сети. Собирайте баллы, обменяя или проводя транзакции в Rainbow, используя dapps или приглашая друзей.",
         "my_points": "Мои баллы",
