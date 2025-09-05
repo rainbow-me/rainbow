@@ -22,7 +22,7 @@
       "tab_interactions_tooltip": "Interactions de contrat intelligent",
       "tab_investments": "Piscines",
       "tab_savings": "Économies",
-      "tab_showcase": "Vitrine",
+      "tab_showcase": "Showcase",
       "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_rewards": "Récompenses",
@@ -392,7 +392,7 @@
           },
           "crypto_and_wallets": {
             "title": "Crypto et Portefeuilles",
-            "description": "À un niveau vraiment simple, un portefeuille n'est qu'une clé cryptographique personnelle et unique (comme illustré ci-dessous). Les applications de portefeuille comme Rainbow sont des interfaces utilisateur qui vous permettent de créer, de stocker et de gérer des clés cryptographiques sans avoir besoin de compétences ou de connaissances techniques. :)"
+            "description": "À un niveau vraiment simple, un portefeuille n'est qu'une clé cryptographique personnelle et unique (comme illustré ci-dessous). Les applications de portefeuille comme Rainbow sont des interfaces utilisateur qui vous permettent de créer, de stocker et de gérer des clés cryptographiques sans avoir besoin de compétences ou de connaissances techniques."
           },
           "protect_wallet": {
             "title": "Protégez votre portefeuille",
@@ -467,7 +467,7 @@
         "quote_error": "Erreur de Devis",
         "no_route_found": "Aucun itinéraire trouvé",
         "fetching_quote": "Récupération du devis...",
-        "rainbow_eth_rewards": "Récompenses Rainbow ETH",
+        "rainbow_eth_rewards": "Récompenses ETH de Rainbow",
         "merkl_claimable": "Coffre %{dappName}",
         "merkl_claimable_description": "Stratégie %{assetSymbols}",
         "select_a_network": "Sélectionnez un réseau",
@@ -481,7 +481,7 @@
         "insufficient_funds": "Fonds insuffisants",
         "hold_to_claim": "Tenir pour Réclamer",
         "creator_lp_fees": "Frais LP du Créateur",
-        "rainbow_token_launcher": "Lanceur de Jetons Rainbow",
+        "rainbow_token_launcher": "Lanceur de Token Rainbow",
         "claim_amount": "Réclamer %{amount}",
         "done": "Terminé",
         "try_again": "Réessayer",
@@ -525,7 +525,7 @@
       "alert": "Alerte",
       "analyze_env_variables": "Analyser les Variables ENV",
       "analyze_react_query": "Analyser la Requête React",
-      "analyze_user_assets_query": "Analyser la Requête d'Actifs Utilisateur",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "APPLIQUÉ",
       "backups_deleted_successfully": "Sauvegardes supprimées avec succès",
       "clear_async_storage": "Effacer AsyncStorage",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "Commerce à"
       },
       "search": {
-        "profiles": "Profils",
         "search_ethereum": "Recherchez tout sur Ethereum",
         "search_ethereum_short": "Recherche Ethereum",
         "search": "Recherche",
@@ -672,7 +671,7 @@
       "settings": "Paramètres",
       "use_defaults": "Utiliser les valeurs par défaut",
       "done": "Terminé",
-      "losing": "Perdant",
+      "losing": "Perdre",
       "high": "Haute",
       "slippage_tolerance": "Glissement maximal",
       "source_picker": "Itinéraire des swaps via",
@@ -826,7 +825,7 @@
       "swap": {
         "swap": "Échanger",
         "bridge": "Pont",
-        "losing": "Perdant",
+        "losing": "Perdre",
         "on": "Sur",
         "off": "Arrêt",
         "price_impact": "Price impact :)",
@@ -879,7 +878,7 @@
       "token_index": {
         "get_token": "Obtenir %{assetSymbol}",
         "makeup_of_token": "Composition de 1 %{assetSymbol}",
-        "underlying_tokens": "Tokens sous-jacents"
+        "underlying_tokens": "Jetons sous-jacents"
       },
       "unique": {
         "save": {
@@ -903,7 +902,7 @@
         "expires_in": "Expire dans",
         "expires_on": "Expire le",
         "floor_price": "Prix minimal",
-        "for_sale": "A vendre",
+        "for_sale": "À vendre",
         "in_showcase": "En vitrine",
         "last_sale_price": "Dernier prix de vente",
         "manager": "Gestionnaire",
@@ -951,7 +950,7 @@
       "raindoge_title": "Vous avez débloqué\nRainbow 􀆄 The Doge NFT",
       "pooly_description": "Une icône Rainbow Pooly en édition spéciale pour les supporters de la liberté.",
       "pooly_title": "Vous avez débloqué une\nRainbow Pooly",
-      "zorb_description": "Une icône spéciale Rainbow Zorb :\n100% de ce que vous aimez, plus rapide et plus efficace.",
+      "zorb_description": "Une icône spéciale Rainbow Zorb :\n100 % de ce que vous aimez, plus rapide et plus efficace.",
       "zorb_title": "Vous avez débloqué\nRainbow Zorb Energy!",
       "poolboy_description": "Une icône spéciale Rainbow x Poolsuite pour l'été onchain.",
       "poolboy_title": "Vous avez débloqué le\nRainbow Poolboy!",
@@ -961,7 +960,7 @@
       "farcaster_title": "Vous avez débloqué\nRainbowcast",
       "redacted_description": "Une icône Rainbow exclusive pour les véritables amateurs de Gdupi.",
       "redacted_title": "Vous avez débloqué\nRedacted Rainbow",
-      "baggy_description": "De la rue à la chaîne, ce petit sac contient votre dose portable de vibes Rainbow. Goûtez les couleurs et ressentez la différence.",
+      "baggy_description": "De la rue à la chaîne, ce petit sac contient votre dose portable de vibrations Rainbow. Goûtez les couleurs et ressentez la différence.",
       "baggy_title": "Vous avez débloqué\nRainbow Baggy",
       "button": "Snag the icon :)"
     },
@@ -1007,11 +1006,11 @@
       },
       "failed_wc_invalid_methods": {
         "text": "L'application dapp a demandé des méthodes de signature de portefeuille (RPC) qui ne sont pas prises en charge par Rainbow.",
-        "title": "Connexion échouée"
+        "title": "Échec de la connexion"
       },
       "failed_wc_invalid_chains": {
-        "text": "L'application dapp a demandé des réseaux qui ne sont pas pris en charge par Rainbow.",
-        "title": "Connexion échouée"
+        "text": "Le dapp a demandé des réseau(x) non pris en charge par Rainbow.",
+        "title": "Échec de la connexion"
       },
       "failed_wc_invalid_chain": {
         "text": "Le réseau spécifié dans cette demande n'est pas pris en charge par Rainbow.",
@@ -1156,7 +1155,7 @@
         "title": "Routage des Échanges",
         "still_curious": {
           "fragment1": "Encore curieux? ",
-          "fragment2": "En savoir plus",
+          "fragment2": "Lire plus",
           "fragment3": " à propos de notre approche pour le routage des échanges."
         }
       },
@@ -1164,8 +1163,8 @@
         "text": "Le glissement se produit lorsque le prix d'un swap change pendant le temps entre la soumission de votre transaction et sa confirmation. \n\nDéfinir une tolérance de glissement plus élevée augmente la probabilité que votre swap soit réussi, mais peut vous amener à obtenir un prix plus mauvais.",
         "title": "Glissement",
         "still_curious": {
-          "fragment1": "Encore curieux? ",
-          "fragment2": "En savoir plus",
+          "fragment1": "Toujours curieux? ",
+          "fragment2": "Lire plus",
           "fragment3": " à propos du glissement et comment il affecte les swaps."
         }
       },
@@ -1217,7 +1216,7 @@
       "network_fee": "Frais de réseau estimés",
       "current_base_fee": "Frais de base actuels",
       "max_base_fee": "Frais de base max",
-      "miner_tip": "Pourboire aux mineurs",
+      "miner_tip": "Pourboire du mineur",
       "gas_price": "Prix du gaz",
       "max_transaction_fee": "Frais de transaction max",
       "warning_separator": "·",
@@ -1306,7 +1305,7 @@
       "input_text": "Entrée",
       "password": "Mot de passe",
       "password_placeholder": "••••••••••",
-      "private_key": "Clé privée",
+      "private_key": "Clé Privée",
       "recipient_address": "Adresse du destinataire"
     },
     "list": {
@@ -1371,7 +1370,7 @@
         "x_past_hour": "%{numMints} dernière heure"
       },
       "filter": {
-        "all": "Tout",
+        "all": "Tous",
         "free": "Gratuit",
         "paid": "Payé"
       }
@@ -1481,7 +1480,7 @@
         "ABC": "Abc",
         "abc": "Abc",
         "MOST_RECENT": "Récent",
-        "most_recent": "Récent",
+        "most_recent": "Le plus récent",
         "FLOOR_PRICE": "Prix Plancher",
         "floor_price": "Prix Plancher",
         "order": {
@@ -1560,7 +1559,7 @@
       "claim": {
         "title": "Réclamez vos points",
         "title_rewards_line_1": "Bienvenue chez",
-        "title_rewards_line_2": "Rainbow Rewards",
+        "title_rewards_line_2": "Récompenses Rainbow",
         "subtitle": "Les points sont là. Découvrez combien vous en avez reçu.",
         "subtitle_rewards": "Soyez récompensé pour utiliser Rainbow. Faites des actions onchain, gagnez des points, gagnez de l'ETH.",
         "get_started": "Commencer",
@@ -1598,7 +1597,7 @@
         "thursday": "Jeu",
         "friday": "Ven",
         "saturday": "Sam",
-        "today": "Aujourd'hui",
+        "today": "Aujourd'hui :)",
         "error": "Oups !\nVeuillez tirer pour rafraîchir.",
         "points": "points",
         "points_capitalized": "Points",
@@ -1749,7 +1748,7 @@
         "choose_nft": "Choisir un NFT",
         "content": "Contenu",
         "content_placeholder": "Ajoutez un hash de contenu",
-        "discord": "Discord",
+        "discord": "Discord :)",
         "doge": "Dogecoin :)",
         "email": "Email",
         "invalid_email": "Email invalide",
@@ -2107,7 +2106,7 @@
         "swapped": "Échangé",
         "approvals": "Approuvé",
         "other": "Contracts & More :)",
-        "all": "Tout",
+        "all": "Tous",
         "off": "Arrêt",
         "plus_n_more": "+ %{n} de plus",
         "no_permissions": "Il semble que vos permissions de notifications sont désactivées. Veuillez les activer dans les paramètres pour recevoir des notifications de Rainbow.",
@@ -2409,7 +2408,7 @@
     "transaction_details": {
       "from": "De",
       "to": "À",
-      "value": "Valeur",
+      "value": "Value :)",
       "hash": "Tx Hash",
       "you": "Vous",
       "network_fee": "Frais de réseau",
@@ -2572,7 +2571,7 @@
         "to": "À",
         "unhide": "Afficher",
         "unpin": "Détacher",
-        "value": "Valeur",
+        "value": "Value :)",
         "view_on": "Voir sur %{blockExplorerName}"
       },
       "add_cash": {
@@ -2734,7 +2733,7 @@
         "you_need_to_authenticate_with_your_pin": "Vous devez vous authentifier avec votre PIN pour accéder à vos secrets de portefeuille",
         "share_application_state": "Partager le dump de l'état de l'application",
         "wallet_details_title": "Détails du portefeuille",
-        "wallet_details_description": "Voici les détails de tous les portefeuilles ajoutés à Rainbow. :)"
+        "wallet_details_description": "Voici les détails de tous les portefeuilles ajoutés à Rainbow. :"
       },
       "error_displaying_address": "Erreur d'affichage de l'adresse",
       "feedback": {
@@ -2979,7 +2978,7 @@
         "transaction_sent": "Transaction envoyée !"
       },
       "unknown_application": "Application inconnue :)",
-      "connection_failed": "Connexion échouée",
+      "connection_failed": "Échec de la connexion",
       "failed_to_connect_to": "Échec de la connexion à %{appName}",
       "go_back": "retourner",
       "requesting_network": "Demande du réseau %{num}",
@@ -3006,11 +3005,11 @@
       },
       "errors": {
         "go_back": "retourner",
-        "generic_title": "Connexion échouée",
+        "generic_title": "Échec de la connexion",
         "generic_error": "Quelque chose a mal tourné. Veuillez réessayer ou contacter notre équipe de support.",
         "pairing_timeout": "Cette session a expiré avant qu'une connexion ne puisse être établie. Cela est généralement dû à une erreur réseau. S'il vous plaît, réessayez.",
         "pairing_unsupported_methods": "La dapp a demandé des méthodes RPC de portefeuille qui ne sont pas prises en charge par Rainbow.",
-        "pairing_unsupported_networks": "L'application dapp a demandé des réseaux qui ne sont pas pris en charge par Rainbow.",
+        "pairing_unsupported_networks": "Le dapp a demandé des réseau(x) non pris en charge par Rainbow.",
         "read_only_wallet_on_signing_method": "Il semble que vous utilisiez un portefeuille en lecture seule, ce qui n'est pas autorisé pour cette demande.",
         "namespaces_invalid": "Il y a eu un problème avec les espaces de nom demandés par l'application. Veuillez réessayer ou contacter les équipes de support de Rainbow et/ou de l'application.",
         "request_invalid": "La demande contenait des paramètres non valides. Veuillez réessayer ou contacter les équipes d'assistance de Rainbow et/ou de dapp.",
@@ -3095,7 +3094,7 @@
           "minutes_ago": "il y a des minutes",
           "hour_ago": "il y a une heure",
           "hours_ago": "il y a des heures",
-          "today": "Aujourd'hui",
+          "today": "Aujourd'hui :)",
           "day_ago": "il y a un jour",
           "days_ago": "il y a quelques jours",
           "week_ago": "il y a une semaine",
