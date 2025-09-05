@@ -246,7 +246,7 @@
         "never_share": "Nunca compartas tu %{typeName} ni lo ingreses en aplicaciones o sitios web.",
         "access": "Cualquier persona con tu %{typeName} puede acceder a toda tu billetera.",
         "hide": "Asegúrate de que nadie pueda ver tu pantalla al ver tu %{typeName}.",
-        "support": "Rainbow Support nunca te pedirá tu %{typeName}.",
+        "support": "El soporte de Rainbow nunca te pedirá tu %{typeName}.",
         "button": "􀎽 Mostrar %{typeName}"
       }
     },
@@ -383,7 +383,7 @@
         "learn": "Aprender",
         "cards": {
           "get_started": {
-            "title": "Comienza con Rainbow",
+            "title": "Comience con Rainbow",
             "description": "¡Bienvenido a Rainbow! Estamos muy contentos de que estés aquí. Hemos creado esta guía para ayudarte con los conceptos básicos de Rainbow y comenzar tu nuevo viaje en Web3 y Ethereum."
           },
           "backups": {
@@ -435,7 +435,7 @@
       },
       "ledger": {
         "title": "Asociar una billetera de hardware",
-        "body": "Conecta tu Ledger Nano X a Rainbow a través de Bluetooth."
+        "body": "Conecte su Ledger Nano X a Rainbow a través de Bluetooth."
       },
       "receive": {
         "receive_assets": "Recibir activos",
@@ -467,7 +467,7 @@
         "quote_error": "Error en la cotización",
         "no_route_found": "No se encontró ruta",
         "fetching_quote": "Buscando cotización...",
-        "rainbow_eth_rewards": "Recompensas de Rainbow ETH",
+        "rainbow_eth_rewards": "Recompensas ETH de Rainbow",
         "merkl_claimable": "Bóveda de %{dappName}",
         "merkl_claimable_description": "Estrategia de %{assetSymbols}",
         "select_a_network": "Seleccione una red",
@@ -481,7 +481,7 @@
         "insufficient_funds": "Fondos Insuficientes",
         "hold_to_claim": "Mantener para Reclamar",
         "creator_lp_fees": "Cuota del Creador LP",
-        "rainbow_token_launcher": "Lanzador de Token de Rainbow",
+        "rainbow_token_launcher": "Lanzador de Tokens de Rainbow",
         "claim_amount": "Reclamar %{amount}",
         "done": "Listo",
         "try_again": "Intenta de Nuevo",
@@ -525,7 +525,7 @@
       "alert": "Alerta",
       "analyze_env_variables": "Analizar Variables del Entorno",
       "analyze_react_query": "Analizar React Query",
-      "analyze_user_assets_query": "Analizar Consulta de Activos del Usuario",
+      "analyze_user_assets_query": "Analyze User Assets Query",
       "applied": "APLICADO",
       "backups_deleted_successfully": "Resguardos Eliminados Exitosamente",
       "clear_async_storage": "Borrar AsyncStorage",
@@ -566,7 +566,6 @@
         "trading_at_prefix": "Comercio en"
       },
       "search": {
-        "profiles": "Perfiles",
         "search_ethereum": "Buscar todo en Ethereum",
         "search_ethereum_short": "Buscar Ethereum",
         "search": "Buscar",
@@ -602,7 +601,7 @@
     },
     "error_boundary": {
       "error_boundary_oops": "¡Ups!",
-      "restart_rainbow": "Reiniciar Rainbow",
+      "restart_rainbow": "Reinicie Rainbow",
       "something_went_wrong": "Algo salió mal.",
       "wallets_are_safe": "No te preocupes, tus billeteras están seguras. Sólo reinicia la aplicación para continuar con tus negocios."
     },
@@ -852,7 +851,7 @@
       "swap_details": {
         "reward": "Recompensa",
         "exchange_rate": "Tipo de cambio",
-        "rainbow_fee": "Tarifa del arco iris incluida",
+        "rainbow_fee": "Tarifa de Rainbow incluida",
         "refuel": "Tokens adicionales de red",
         "review": "Revisar",
         "show_details": "Más detalles",
@@ -959,19 +958,19 @@
       "adworld_title": "¡Bienvenido al Mundo Rainbow!",
       "farcaster_description": "Nuestro ícono de aplicación más aburrido de todos los tiempos, inspirado en el minimalismo insípido de Warpcast.",
       "farcaster_title": "Has desbloqueado\nRainbowcast",
-      "redacted_description": "Un ícono de Rainbow exclusivo para los verdaderos fanáticos de Gdupi.",
+      "redacted_description": "Un ícono exclusivo de Rainbow para los verdaderos fanáticos de Gdupi.",
       "redacted_title": "Has desbloqueado\n Redacted Rainbow",
-      "baggy_description": "Desde las calles hasta la cadena, esta pequeña bolsa lleva tu dosis portátil de vibras de Rainbow. Saborea los colores y siente la diferencia.",
-      "baggy_title": "Has desbloqueado\nRainbow Baggy",
+      "baggy_description": "Desde las calles hasta la cadena, este pequeño bolso sostiene tu dosis portátil de vibraciones Rainbow. Saborea los colores, y siente la diferencia.",
+      "baggy_title": "Has desbloqueado\n Rainbow Baggy",
       "button": "Consigue el ícono"
     },
     "explain": {
       "output_disabled": {
-        "text": "Para %{fromNetwork}, Rainbow no puede preparar intercambios basados en la cantidad de %{outputToken} que te gustaría recibir. \n\n Intenta ingresar la cantidad de %{inputToken} que te gustaría intercambiar en su lugar.",
+        "text": "Para %{fromNetwork}, Rainbow no puede preparar intercambios basados en la cantidad de %{outputToken} que deseas recibir. \n\n Intenta ingresar la cantidad de %{inputToken} que te gustaría intercambiar.",
         "title": "Ingresa %{inputToken} En Su Lugar",
         "title_crosschain": "Ingresa %{fromNetwork} %{inputToken} En Su Lugar",
-        "text_crosschain": "Rainbow no puede preparar intercambios basados en la cantidad de %{outputToken} que te gustaría recibir. \n\n Intenta ingresar la cantidad de %{inputToken} que te gustaría intercambiar en su lugar.",
-        "text_bridge": "El Rainbow no puede preparar un puente con base en la cantidad de %{outputToken} que te gustaría recibir en el destino %{toNetwork} . \n\n Intenta ingresar la cantidad de %{fromNetwork} %{inputToken} que te gustaría bridgear en su lugar.",
+        "text_crosschain": "Rainbow no puede preparar intercambios basados en la cantidad de %{outputToken} que deseas recibir. \n\n Intenta ingresar la cantidad de %{inputToken} que te gustaría intercambiar.",
+        "text_bridge": "Rainbow no puede preparar un puente basado en la cantidad de %{outputToken} que deseas recibir en el destino %{toNetwork}. \n\n Intenta ingresar la cantidad de %{inputToken} de %{fromNetwork} que te gustaría transferir en su lugar.",
         "title_empty": "Elige un Token"
       },
       "available_networks": {
@@ -1006,11 +1005,11 @@
         "title": "Error de conexión"
       },
       "failed_wc_invalid_methods": {
-        "text": "La dApp solicitó métodos de firma de billetera (RPC) no compatibles con Rainbow.",
+        "text": "La dapp solicitó métodos de firma (RPC) que no son compatibles con Rainbow.",
         "title": "Error de conexión"
       },
       "failed_wc_invalid_chains": {
-        "text": "La dApp solicitó redes no compatibles con Rainbow.",
+        "text": "La dapp solicitó redes que no son compatibles con Rainbow.",
         "title": "Error de conexión"
       },
       "failed_wc_invalid_chain": {
@@ -1108,7 +1107,7 @@
         "title": "Tokens verificados"
       },
       "unverified": {
-        "fragment1": "El arcoíris emite tantos tokens como sea posible, pero cualquiera puede crear un token o afirmar representar un proyecto con un contrato falso. \n\n Por favor revise el ",
+        "fragment1": "Rainbow muestra tantos tokens como sea posible, pero cualquiera puede crear un token o afirmar representar un proyecto con un contrato falso. \n\n Por favor revisa el ",
         "fragment2": "contrato del token",
         "fragment3": " y siempre investigue para asegurarse de interactuar con tokens en los que confía.",
         "title": "%{symbol} no está verificado",
@@ -1149,10 +1148,10 @@
         "text": "Ir al puente de Hop 􀮶"
       },
       "rainbow_fee": {
-        "text": "Rainbow cobra una tarifa de %{feePercentage} por intercambios. Es parte de lo que nos permite brindarte la mejor experiencia de Ethereum posible."
+        "text": "Rainbow cobra una tarifa de %{feePercentage} en los intercambios. Es parte de lo que nos permite ofrecerte la mejor experiencia de Ethereum posible."
       },
       "swap_routing": {
-        "text": "Por defecto, Rainbow elige la ruta más barata posible para tu intercambio. Si prefieres utilizar específicamente 0x o 1inch, también puedes hacerlo.",
+        "text": "Por defecto, Rainbow elige la ruta más económica para tu intercambio. Si prefieres usar específicamente 0x o 1inch, también puedes hacerlo.",
         "title": "Enrutamiento de intercambio",
         "still_curious": {
           "fragment1": "¿Aún tienes curiosidad? ",
@@ -1481,7 +1480,7 @@
         "ABC": "Abc",
         "abc": "Abc",
         "MOST_RECENT": "Reciente",
-        "most_recent": "Reciente",
+        "most_recent": "Más Reciente",
         "FLOOR_PRICE": "Precio Base",
         "floor_price": "Precio Base",
         "order": {
@@ -1972,7 +1971,7 @@
       "rewards_claimed": "Recompensas Semanales Reclamadas",
       "refreshes_next_week": "Se actualiza la próxima semana",
       "all_rewards_claimed": "Todas las recompensas han sido reclamadas esta semana",
-      "rainbow_users_claimed": "Usuarios Rainbow han reclamado %{amount}",
+      "rainbow_users_claimed": "Usuarios de Rainbow han reclamado %{amount}",
       "refreshes_in_with_days": "Se refresca en %{days} días %{hours} horas",
       "refreshes_in_without_days": "Se refresca en %{hours} horas",
       "percent": "Recompensa del %{percent}%",
@@ -2088,7 +2087,7 @@
       "feedback_and_reports": "Comentarios y reportes de errores",
       "feedback_and_support": "Comentarios y soporte",
       "follow_us_on_twitter": "Síguenos en Twitter",
-      "hey_friend_message": "👋️ ¡Hola amigo! Deberías descargar Rainbow, es mi billetera Ethereum favorita 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
+      "hey_friend_message": "👋️ ¡Hola amigo! Deberías descargar Rainbow, es mi billetera de Ethereum favorita 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Configuraciones",
       "language": "Idioma",
       "learn": "Aprende sobre Ethereum",
@@ -2127,11 +2126,11 @@
       "privacy": "Privacidad",
       "privacy_section": {
         "public_showcase": "Mostrar Públicamente",
-        "when_public": "¡Cuando sea público, tu vitrina de NFT será visible en tu perfil de Rainbow!",
+        "when_public": "¡Cuando sea pública, tu vitrina de NFT será visible en tu perfil de Rainbow!",
         "when_public_prefix": "¡Cuando sea pública, tu vitrina de NFT será visible en tu perfil web de Rainbow! Puedes ver tu perfil en",
         "view_profile": "Ver tu perfil",
         "analytics_toggle": "Analítica",
-        "analytics_toggle_description": "Ayuda a Rainbow a mejorar sus productos y servicios permitiendo analizar los datos de uso. Los datos recopilados no están asociados contigo ni con tu cuenta."
+        "analytics_toggle_description": "Ayuda a Rainbow a mejorar sus productos y servicios permitiendo el uso de datos analíticos. Los datos recopilados no están asociados contigo ni con tu cuenta."
       },
       "restore": "Restaurar a implementación original",
       "review": "Revisar Rainbow",
@@ -2854,7 +2853,7 @@
       },
       "push_notifications": {
         "please_enable_body": "Parece que estás usando WalletConnect. Habilita las notificaciones push para recibir solicitudes de transacción de WalletConnect.",
-        "please_enable_title": "Rainbow quisiera enviarte notificaciones push"
+        "please_enable_title": "Rainbow desea enviarte notificaciones push"
       },
       "qr": {
         "camera_access_needed": "¡Se necesita acceso a la cámara para escanear!",
@@ -3010,7 +3009,7 @@
         "generic_error": "Algo salió mal. Por favor, intenta nuevamente o contáctate con nuestro equipo de soporte.",
         "pairing_timeout": "Esta sesión se agotó antes de que se pudiera establecer una conexión. Esto suele ser debido a un error de red. Por favor, intenta nuevamente.",
         "pairing_unsupported_methods": "La dapp solicitó métodos RPC de billetera que no son compatibles con Rainbow.",
-        "pairing_unsupported_networks": "La dApp solicitó redes no compatibles con Rainbow.",
+        "pairing_unsupported_networks": "La dapp solicitó redes que no son compatibles con Rainbow.",
         "read_only_wallet_on_signing_method": "Parece que estás usando una cartera de solo lectura, lo cual no está permitido para esta solicitud.",
         "namespaces_invalid": "Hubo un problema con los espacios de nombres solicitados por la dapp. Intente de nuevo o contacte a los equipos de soporte de Rainbow y/o dapp.",
         "request_invalid": "La solicitud contiene parámetros no válidos. Por favor, intenta nuevamente o contacta con los equipos de soporte de Rainbow y/o la dapp.",
@@ -3348,7 +3347,7 @@
       "airdrops_sheet": {
         "claim_button_text": "Reclamar",
         "empty_state_title": "Aún No Hay Airdrops",
-        "title": "Reclamar Monedas Arcoíris"
+        "title": "Reclamar Monedas Rainbow"
       },
       "cards": {
         "airdrops": {
