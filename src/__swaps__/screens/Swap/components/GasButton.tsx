@@ -44,14 +44,13 @@ function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithC
 }
 
 function EstimatedGasFee() {
-  const { isFetching } = useSwapContext();
   return (
     <Inline alignVertical="center" space="4px">
       <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={18}>
         􀵟
       </TextIcon>
-      <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" isFetching={isFetching} />}>
-        <EstimatedSwapGasFee isFetching={isFetching} />
+      <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
+        <EstimatedSwapGasFee />
       </UnmountWhenGasButtonIsNotInScreen>
     </Inline>
   );

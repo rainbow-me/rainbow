@@ -1,7 +1,7 @@
 import c from 'chroma-js';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { AnimatedRef, SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { AnimatedRef, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import * as i18n from '@/languages';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/state/backendNetworks/types';
@@ -21,45 +21,26 @@ import { GestureHandlerButton } from '../GestureHandlerButton';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 
 type ChainSelectionProps = {
+  allText?: string;
   animatedRef: AnimatedRef<Animated.FlatList<string>> | AnimatedRef<Animated.FlatList<TokenToBuyListItem>>;
   output: boolean;
-  onNavigateToNetworkSelector?: () => void;
-  onChainSelected: (chainId: ChainId | undefined) => void;
-  selectedChainId: SharedValue<UserAssetFilter>;
 };
 
-const allText = i18n.t(i18n.l.exchange.all_networks);
-
-export const ChainSelection = memo(function ChainSelection({
-  animatedRef,
-  output,
-  onNavigateToNetworkSelector,
-  onChainSelected,
-  selectedChainId,
-}: ChainSelectionProps) {
+export const ChainSelection = memo(function ChainSelection({ allText, animatedRef, output }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
+  const { inputSearchRef, outputSearchRef, selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
-  const swapSupportedChainIds = useBackendNetworksStore(state => state.getSwapSupportedChainIds());
 
   // chains sorted by balance on output, chains without balance hidden on input
   const balanceSortedChainList = useUserAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
 
-  // For output, use all swap-supported chains instead of just chains with balance
-  const chainList = useMemo(() => {
-    if (output) {
-      // Include all swap-supported chains for output selection
-      return swapSupportedChainIds;
-    }
-    return balanceSortedChainList;
-  }, [output, swapSupportedChainIds, balanceSortedChainList]);
-
-  // const [initialFilter] = useState(() => {
-  //   const filter = useUserAssetsStore.getState().filter;
-  //   return filter === 'all' ? undefined : filter;
-  // });
-  // const inputListFilter = useSharedValue<UserAssetFilter | undefined>(initialFilter);
+  const [initialFilter] = useState(() => {
+    const filter = useUserAssetsStore.getState().filter;
+    return filter === 'all' ? undefined : filter;
+  });
+  const inputListFilter = useSharedValue<UserAssetFilter | undefined>(initialFilter);
 
   const accentColor = useMemo(() => {
     if (c.contrast(accountColor, isDarkMode ? '#191A1C' : globalColors.white100) < (isDarkMode ? 2.125 : 1.5)) {
@@ -71,44 +52,49 @@ export const ChainSelection = memo(function ChainSelection({
   }, [accountColor, isDarkMode]);
 
   const chainName = useDerivedValue(() => {
-    if (!selectedChainId) return '';
-    if (selectedChainId.value === 'all') return allText;
-    return chainLabels[selectedChainId.value];
-    // return output
-    //   ? chainLabels[selectedChainId.value]
-    //   : !inputListFilter.value || inputListFilter.value === 'all'
-    //     ? allText
-    //     : chainLabels[inputListFilter.value];
+    return output
+      ? chainLabels[selectedOutputChainId.value]
+      : !inputListFilter.value || inputListFilter.value === 'all'
+        ? allText
+        : chainLabels[inputListFilter.value];
   });
 
   const handleSelectChain = useCallback(
     (chainId: ChainId | undefined) => {
       animatedRef.current?.scrollToOffset({ animated: true, offset: 0 });
-      // if (!output) {
-      //   inputListFilter.value = chainId;
-      // }
-      onChainSelected(chainId);
+
+      if (output && chainId) {
+        setSelectedOutputChainId(chainId);
+      } else {
+        inputListFilter.value = chainId;
+        userAssetsStore.setState({ filter: chainId === undefined ? 'all' : chainId });
+      }
+
+      analytics.track(analytics.event.swapsChangedChainId, {
+        inputAsset: swapsStore.getState().inputAsset,
+        type: output ? 'output' : 'input',
+        chainId,
+      });
     },
-    [animatedRef, onChainSelected]
+    [animatedRef, inputListFilter, output, setSelectedOutputChainId]
   );
 
   const navigateToNetworkSelector = useCallback(() => {
-    onNavigateToNetworkSelector?.();
+    if (output) outputSearchRef.current?.blur();
+    else inputSearchRef.current?.blur();
 
     Navigation.handleAction(Routes.NETWORK_SELECTOR, {
-      allowedNetworks: chainList,
+      allowedNetworks: balanceSortedChainList,
       canEdit: false,
       canSelectAllNetworks: !output,
       goBackOnSelect: true,
-      // @ts-ignore: TODO (kane)
-      selected: selectedChainId,
-      // selected: selectedChainId,
+      selected: output ? selectedOutputChainId : inputListFilter,
       setSelected: handleSelectChain,
     });
-  }, [chainList, handleSelectChain, onNavigateToNetworkSelector, output, selectedChainId]);
+  }, [balanceSortedChainList, handleSelectChain, inputListFilter, inputSearchRef, output, outputSearchRef, selectedOutputChainId]);
 
   return (
-    <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px">
+    <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">
       <Inline alignHorizontal="justify" alignVertical="center">
         {output ? (
           <Inline alignVertical="center" space="6px">
@@ -151,7 +137,7 @@ export const ChainSelection = memo(function ChainSelection({
 
         <GestureHandlerButton onPressJS={navigateToNetworkSelector} testID={`chain-selection-${output ? 'output' : 'input'}`}>
           <Box paddingVertical="6px" paddingLeft="16px" flexDirection="row" alignItems="center" justifyContent="center" gap={6}>
-            {/* <ChainButtonIcon output={output} /> */}
+            <ChainButtonIcon output={output} />
             <AnimatedText color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
               {chainName}
             </AnimatedText>

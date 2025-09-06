@@ -19,6 +19,7 @@ import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
 import { HYPERLIQUID_COLORS, SLIDER_WIDTH } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
@@ -31,6 +32,7 @@ import { View } from 'react-native';
 import Animated, { SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
+import { logger, RainbowError } from '@/logger';
 
 const AssetCoinIcon = ({
   asset,
@@ -84,7 +86,7 @@ const DepositInputSection = ({
 
 export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   const insets = useSafeAreaInsets();
-  const { balance, status } = useHyperliquidAccountStore();
+  const { balance, status, withdraw } = useHyperliquidAccountStore();
   const balanceLoading = balance === '0' && status === 'loading';
   // TODO (kane): use neweset currency formatting
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
@@ -94,7 +96,6 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   const inputMethod = useSharedValue<InputMethod>('inputAmount');
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * 0.25); // Default to 25% of slider width
 
-  const [selectedAsset, setSelectedAsset] = useState<ExtendedAnimatedAssetWithColors | null>(USDC_ASSET as ExtendedAnimatedAssetWithColors);
   const [gasSpeed, setGasSpeed] = useState(GasSpeed.FAST);
   const [loading, setLoading] = useState(false);
 
@@ -137,19 +138,16 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   });
 
   const handleNumberPadChange = useCallback(
-    (fieldId: string, newValue: string | number) => {
+    (_fieldId: string, newValue: string | number) => {
       'worklet';
-      const asset = selectedAsset;
-      if (!asset) return;
-
-      const amount = Number(newValue);
 
       // Update slider position
-      const maxAmount = Number(asset.balance?.amount || '0');
+      const amount = Number(newValue);
+      const maxAmount = Number(balance);
       const percentage = maxAmount > 0 ? Number(divWorklet(amount, maxAmount)) : 0;
       sliderXPosition.value = withSpring(clamp(percentage * SLIDER_WIDTH, 0, SLIDER_WIDTH), SPRING_CONFIGS.snappySpringConfig);
     },
-    [selectedAsset, sliderXPosition]
+    [balance, sliderXPosition]
   );
 
   const handlePercentageChange = useCallback(
@@ -171,8 +169,21 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   );
 
   const handleSwap = useCallback(async () => {
-    // TODO:
-  }, []);
+    setLoading(true);
+    try {
+      const amount = fields.value.inputAmount.value;
+      // TODO: Handle min values.
+      await withdraw(String(amount));
+      Navigation.goBack();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Generic error while trying to withdraw';
+      logger.error(new RainbowError(`[withdraw]: ${message}`), {
+        data: { error },
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [fields, withdraw]);
 
   const formattedValues = useDerivedValue(() => {
     return {
@@ -194,14 +205,14 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
             )}
           </ButtonPressAnimation>
         }
-        title={'Withdraw'}
+        title={i18n.t(i18n.l.perps.withdraw.title)}
       />
       <View style={{ top: -10, alignSelf: 'center' }}>
         {balanceLoading ? (
           <PerpsTextSkeleton width={150} height={15} />
         ) : (
           <Text size="15pt" weight="bold" color="labelQuaternary">
-            {formattedBalance} available
+            {i18n.t(i18n.l.perps.withdraw.available_balance, { balance: formattedBalance })}:
           </Text>
         )}
       </View>
@@ -217,9 +228,8 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
         onPercentageUpdate={handleGestureUpdate}
         showMaxButton={true}
         showPercentage={true}
-        // TODO: INTL
-        labels={{ title: 'Withdrawing' }}
-        icon={<AssetCoinIcon asset={selectedAsset} size={16} showBadge={false} />}
+        labels={{ title: i18n.t(i18n.l.perps.withdraw.slider_label) }}
+        icon={<AssetCoinIcon asset={USDC_ASSET as ExtendedAnimatedAssetWithColors} size={16} showBadge={false} />}
         colors={sliderColors}
       />
       <NumberPad
@@ -243,7 +253,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
         </Box>
         <Box flexGrow={1}>
           <PerpsSwapButton
-            label={loading ? 'Withdrawing...' : 'Hold to Withdraw'}
+            label={loading ? i18n.t(i18n.l.perps.withdraw.confirm_button_loading_text) : i18n.t(i18n.l.perps.withdraw.confirm_button_text)}
             onLongPress={handleSwap}
             disabled={loading || balanceLoading}
           />

@@ -1,39 +1,35 @@
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
-import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
-import { Box, globalColors, useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { borders } from '@/styles';
-import { useTheme } from '@/theme';
-import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import React, { memo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import Animated, {
-  SharedValue,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import { fadeConfig } from '../constants';
+import { borders } from '@/styles';
+import { useTheme } from '@/theme';
+import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
+import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { AnimatedChainImage } from './AnimatedChainImage';
+import { fadeConfig } from '../constants';
 import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
+import { Box, globalColors, useColorMode } from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { PIXEL_RATIO } from '@/utils/deviceUtils';
+import { useSwapContext } from '../providers/swap-provider';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
 export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
-  asset,
+  assetType,
   size = 32,
   chainSize = size / 2,
   showBadge = true,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  assetType: 'input' | 'output';
   size?: number;
   chainSize?: number;
   showBadge?: boolean;
 }) {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
+  const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+
+  const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
 
   const didErrorForUniqueId = useSharedValue<string | undefined>(undefined);
 
@@ -59,7 +55,8 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
   });
 
   const animatedCoinIconWrapperStyles = useAnimatedStyle(() => {
-    const assetBackgroundColor = asset.value?.tintedBackgroundColor;
+    const assetBackgroundColor = (assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset).value
+      ?.tintedBackgroundColor;
     const backgroundColor = assetBackgroundColor
       ? isDarkMode
         ? getColorValueForThemeWorklet(assetBackgroundColor, isDarkMode)
@@ -125,7 +122,7 @@ export const AnimatedSwapCoinIcon = memo(function AnimatedSwapCoinIcon({
         />
       </Animated.View>
 
-      {showBadge && <AnimatedChainImage asset={asset} size={chainSize} />}
+      {showBadge && <AnimatedChainImage assetType={assetType} size={chainSize} />}
     </View>
   );
 });

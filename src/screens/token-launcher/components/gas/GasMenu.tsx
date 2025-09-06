@@ -62,8 +62,8 @@ export function GasMenu({
   );
 
   const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
-      if (buttonIndex < 0) return;
+    (buttonIndex: number | undefined) => {
+      if (buttonIndex == null || buttonIndex < 0) return;
       handlePressSpeedOption(menuOptions[buttonIndex] as GasSpeed);
     },
     [handlePressSpeedOption, menuOptions]
