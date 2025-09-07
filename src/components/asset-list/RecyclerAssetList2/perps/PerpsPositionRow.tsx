@@ -12,15 +12,13 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { useNavigation } from '@react-navigation/native';
-import Routes from '@/navigation/routesNames';
+import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
 };
 
 export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: PerpsPositionRowProps) {
-  const navigation = useNavigation();
   const isPositivePnl = !position.unrealizedPnl.includes('-');
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
@@ -37,14 +35,9 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
   }, [position]);
 
   const navigateToPerpDetail = useCallback(() => {
-    if (market) {
-      // We use the hook navigator here because Navigation.handleAction is not properly typed for nested stack params
-      navigation.navigate(Routes.PERPS_ACCOUNT_NAVIGATOR, {
-        screen: Routes.PERPS_DETAIL_SCREEN,
-        params: { market },
-      });
-    }
-  }, [navigation, market]);
+    if (!market) return;
+    navigateToPerpDetailScreen(market.symbol);
+  }, [market]);
 
   return (
     <ButtonPressAnimation onPress={navigateToPerpDetail}>
