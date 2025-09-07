@@ -2,7 +2,8 @@ import { memo, useMemo } from 'react';
 import { Box, Text } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
-import { calculateIsolatedLiquidationPrice, getHyperliquidTokenId } from '@/features/perps/utils';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { calculateIsolatedLiquidationPrice } from '@/features/perps/utils/calculateLiquidationPrice';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
@@ -11,35 +12,35 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
   const leverage = useHlNewPositionStore(state => state.leverage);
   const amount = useHlNewPositionStore(state => state.amount);
   const side = useHlNewPositionStore(state => state.positionSide);
-  // TODO (kane): need to select for mid price not mark price
-  const markPrice = useLiveTokenValue({
+  const midPrice = useLiveTokenValue({
     tokenId: getHyperliquidTokenId(market.symbol),
     initialValue: market.price,
-    selector: state => state.price,
+    selector: state => state.midPrice ?? state.price,
   });
 
   const maxLeverage = useMemo(() => {
-    if (!market.marginTiers || market.marginTiers.length === 0) return 1;
-    const positionValue = Number(amount) * Number(markPrice);
+    if (!market.marginTiers || market.marginTiers.length === 0) return market.maxLeverage;
+    const positionValue = Number(amount) * Number(midPrice);
     const applicableTier = market.marginTiers.find(tier => positionValue >= Number(tier.lowerBound));
     return applicableTier?.maxLeverage || market.marginTiers[0]?.maxLeverage || leverage;
-  }, [market.marginTiers, amount, markPrice, leverage]);
+  }, [market.marginTiers, amount, midPrice, leverage, market.maxLeverage]);
 
   const estimatedLiquidationPrice = useMemo(() => {
     if (!leverage || !amount || !maxLeverage) return null;
+    // TODO (kane): size here should be changed in the function to be margin amount
     return calculateIsolatedLiquidationPrice({
-      entryPrice: Number(markPrice),
+      entryPrice: Number(midPrice),
       positionSize: Number(amount),
       positionSide: side,
       leverage,
       maxLeverage,
     });
-  }, [markPrice, amount, side, leverage, maxLeverage]);
+  }, [midPrice, amount, side, leverage, maxLeverage]);
 
   const liquidationDistanceFromCurrentPrice = useMemo(() => {
-    if (!estimatedLiquidationPrice || !markPrice) return '-';
-    return ((Number(markPrice) - Number(estimatedLiquidationPrice)) / Number(markPrice)) * 100;
-  }, [estimatedLiquidationPrice, markPrice]);
+    if (!estimatedLiquidationPrice || !midPrice) return '-';
+    return ((Number(midPrice) - Number(estimatedLiquidationPrice)) / Number(midPrice)) * 100;
+  }, [estimatedLiquidationPrice, midPrice]);
 
   const liquidationDistanceFromCurrentPriceDisplay = useMemo(() => {
     if (liquidationDistanceFromCurrentPrice === '-') return '-';
