@@ -47,6 +47,7 @@
       "unknown_token": "رمز غير معروف"
     },
     "activity_list": {
+      "title": "النشاط",
       "empty_state": {
         "default_label": "لا توجد معاملات بعد",
         "recycler_label": "لا توجد معاملات بعد",
@@ -525,7 +526,7 @@
       "alert": "تنبيه",
       "analyze_env_variables": "تحليل متغيرات البيئة",
       "analyze_react_query": "تحليل استعلام React",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "تحليل استعلام أصول المستخدم",
       "applied": "تم التطبيق",
       "backups_deleted_successfully": "تم حذف النسخ الاحتياطية بنجاح",
       "clear_async_storage": "مسح التخزين غير المتزامن",
@@ -755,6 +756,7 @@
           "what_is": "ما هو %{assetName}؟"
         },
         "history": {
+          "title": "التاريخ",
           "tabs": {
             "all": "الكل",
             "buys": "عمليات الشراء",
@@ -2019,6 +2021,9 @@
       "rewards": "المكافآت",
       "pools": "المجمعات"
     },
+    "profile": {
+      "title": "النشاط"
+    },
     "savings": {
       "deposit": "إيداع",
       "deposit_from_wallet": "الإيداع من المحفظة",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "حساب جوجل",
       "currency": {
         "title": "العملة",
-        "ETH": "إيثيريوم",
-        "USD": "دولار الولايات المتحدة",
-        "EUR": "اليورو",
-        "GBP": "الجنيه البريطاني",
-        "AUD": "الدولار الأسترالي",
-        "CNY": "اليوان الصيني",
-        "KRW": "الوون الكوري الجنوبي",
-        "JPY": "الين الياباني",
-        "RUB": "الروبل الروسي",
-        "INR": "الروبية الهندية",
-        "TRY": "الليرة التركية",
-        "CAD": "الدولار الكندي",
-        "NZD": "الدولار النيوزيلندي",
-        "ZAR": "الراند الجنوب أفريقي"
+        "ETH": {
+          "label": "إيثيريوم",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "أيقونة التطبيق",
       "developer": "إعدادات المطور",
@@ -2862,6 +2909,7 @@
         "find_a_code": "العثور على رمز للمسح",
         "qr_1_app_connected": "تطبيق 1 متصل",
         "qr_multiple_apps_connected": "%{appsConnectedCount} تطبيقات متصلة",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "المسح للدفع أو الاتصال",
         "simulator_mode": "وضع المحاكاة",
         "sorry_could_not_be_recognized": "عذراً، لم يتم التعرف على هذا الرمز الشريطي QR.",
@@ -3215,7 +3263,8 @@
       "show_less": "اعرض أقل",
       "more": "أكثر",
       "show_more": "المزيد من الشبكات",
-      "all_networks": "جميع الشبكات"
+      "all_networks": "جميع الشبكات",
+      "search": "بحث"
     },
     "token_launcher": {
       "airdrop": {
