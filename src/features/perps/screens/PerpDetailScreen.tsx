@@ -209,7 +209,7 @@ const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket 
 
   return (
     <Box as={Page} backgroundColor={colors.accentColors.surfacePrimary} flex={1} height="full" testID="perps-details-screen" width="full">
-      <SheetHandle withoutGradient extraPaddingTop={6} backgroundColor={colors.accentColors.surfaceSecondary} />
+      <SheetHandle withoutGradient extraPaddingTop={6} />
       <Box height="full" width="full" paddingTop={{ custom: 96 }}>
         <Box as={ScrollView} gap={32}>
           <Box gap={20}>

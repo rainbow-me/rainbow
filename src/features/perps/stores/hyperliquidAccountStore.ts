@@ -1,14 +1,13 @@
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { Address } from 'viem';
-import { PerpPositionSide, PerpsPosition, OrderType } from '../types';
+import { PerpPositionSide, PerpsPosition, TriggerOrder } from '../types';
 import { getHyperliquidAccountClient, getHyperliquidExchangeClient } from '../services';
 import { RainbowError } from '@/logger';
 import { add, divide } from '@/helpers/utilities';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { OrderResponse } from '@nktkas/hyperliquid';
-import type { TriggerOrder } from '../services/hyperliquid-exchange-client';
 
 type HyperliquidAccountStoreState = {
   positions: Record<string, PerpsPosition>;

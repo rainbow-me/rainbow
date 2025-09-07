@@ -2,24 +2,15 @@ import React, { memo, useCallback } from 'react';
 import { Box, Separator, Text } from '@/design-system';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
-import { navigateToNewPositionScreen } from '@/features/perps/utils';
-import { useNavigation } from '@react-navigation/native';
-import Routes from '@/navigation/routesNames';
+import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
-  const navigation = useNavigation();
   const markets = useHyperliquidMarketsStore(state => state.getSearchResults());
 
-  const onPressMarket = useCallback(
-    (market: PerpMarket) => {
-      navigation.navigate(Routes.PERPS_ACCOUNT_NAVIGATOR, {
-        screen: Routes.PERPS_DETAIL_SCREEN,
-        params: { market },
-      });
-    },
-    [navigation]
-  );
+  const onPressMarket = useCallback((market: PerpMarket) => {
+    navigateToPerpDetailScreen(market.symbol);
+  }, []);
 
   return (
     <Box background={'surfacePrimary'} style={{ flex: 1 }}>

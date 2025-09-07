@@ -33,10 +33,8 @@ export function navigateToNewPositionScreen(market: PerpMarket) {
 export function navigateToPerpDetailScreen(symbol: string) {
   const market = hyperliquidMarketStoreActions.getMarket(symbol);
   if (market) {
-    Navigation.handleAction(Routes.PERPS_ACCOUNT_NAVIGATOR, {
-      screen: Routes.PERPS_DETAIL_SCREEN,
-      // handleAction's implementation does not have proper nested stack param type checking
-      params: { market },
+    Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, {
+      market,
     });
   }
 }
