@@ -140,7 +140,7 @@ export const useHlTradesStore = createQueryStore<FetchHlTradesResponse, HlTrades
     },
     staleTime: time.minutes(1),
   },
-  (set, get) => ({
+  (_, get) => ({
     trades: [],
     tradesBySymbol: {},
     getTrade: (tradeId: number) => get().trades.find(trade => trade.id === tradeId),

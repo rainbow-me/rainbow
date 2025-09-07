@@ -59,6 +59,8 @@ export type PriceReliabilityStatus =
 
 export interface TokenData {
   price: string;
+  // This is exclusively for Hyperliquid markets
+  midPrice?: string | null;
   change: {
     change5mPct: string;
     change1hPct: string;

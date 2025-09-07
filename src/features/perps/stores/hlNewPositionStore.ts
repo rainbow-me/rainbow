@@ -10,7 +10,7 @@ type TriggerOrder = {
   localId: string;
   isMarket: boolean;
   price: string;
-  size: string;
+  orderFraction: string;
   type: TriggerOrderType;
 };
 
@@ -73,7 +73,7 @@ export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set
   reset: () => {
     set({
       positionSide: PerpPositionSide.LONG,
-      leverage: 1,
+      leverage: null,
       amount: '0',
       triggerOrders: [],
       market: null,

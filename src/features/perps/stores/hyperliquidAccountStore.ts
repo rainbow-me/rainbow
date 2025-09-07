@@ -8,6 +8,7 @@ import { add, divide } from '@/helpers/utilities';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { OrderResponse } from '@nktkas/hyperliquid';
+import type { TriggerOrder } from '../services/hyperliquid-exchange-client';
 
 type HyperliquidAccountStoreState = {
   positions: Record<string, PerpsPosition>;
@@ -21,15 +22,17 @@ type HyperliquidAccountStoreActions = {
     side,
     leverage,
     amount,
-    assetPrice,
+    price,
     decimals,
+    triggerOrders,
   }: {
     assetId: number;
     side: PerpPositionSide;
     leverage: number;
     amount: string;
-    assetPrice: string;
+    price: string;
     decimals: number;
+    triggerOrders?: TriggerOrder[];
   }) => Promise<OrderResponse>;
   checkIfHyperliquidAccountExists: () => Promise<boolean>;
   // derivative state
@@ -93,22 +96,21 @@ export const useHyperliquidAccountStore = createQueryStore<
       await exchangeClient.withdraw(amount);
     },
     getPosition: symbol => get().positions[symbol],
-    createIsolatedMarginPosition: async ({ assetId, side, leverage, amount, assetPrice, decimals }) => {
+    createIsolatedMarginPosition: async ({ assetId, side, leverage, amount, price, decimals, triggerOrders }) => {
       const address = useWalletsStore.getState().accountAddress;
       const exchangeClient = await getHyperliquidExchangeClient(address);
       return await exchangeClient.openIsolatedMarginPosition({
         assetId,
         side,
         marginAmount: amount,
-        assetPrice,
+        price,
         leverage,
-        decimals,
-        orderType: OrderType.MARKET,
+        sizeDecimals: decimals,
+        triggerOrders,
       });
     },
     checkIfHyperliquidAccountExists: async () => {
-      // This is fine
-      // save to state, address -> exists and don't check if true
+      // TODO (kane): save to state, address -> exists and don't check if true
       const address = useWalletsStore.getState().accountAddress;
       const accountClient = await getHyperliquidAccountClient(address);
       return await accountClient.hasAccount();

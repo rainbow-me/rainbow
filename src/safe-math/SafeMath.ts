@@ -511,3 +511,23 @@ export function getPercentageDifferenceWorklet(oldValue: string | number, newVal
   const ratio = divWorklet(difference, oldValueStr);
   return mulWorklet(ratio, 100);
 }
+
+export function trimTrailingZeros(value: string): string {
+  'worklet';
+
+  if (!value || value === '0') return value;
+
+  const parts = value.split('.');
+  if (parts.length === 1) {
+    return value;
+  }
+
+  const [integerPart, fractionalPart] = parts;
+  const trimmedFractional = fractionalPart.replace(patterns.trailingZeros, '');
+
+  if (trimmedFractional.length === 0) {
+    return integerPart;
+  }
+
+  return `${integerPart}.${trimmedFractional}`;
+}

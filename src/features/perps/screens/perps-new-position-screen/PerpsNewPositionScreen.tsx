@@ -1,86 +1,34 @@
-import React, { memo } from 'react';
-import { Box, Separator, Stack, Text, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
-import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { formatPriceChange } from '@/features/perps/utils';
-import { PerpMarket } from '@/features/perps/types';
+import React, { memo, useEffect } from 'react';
+import { Box, Separator, Stack, useBackgroundColor } from '@/design-system';
 import { AmountInputCard } from './AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { PositionSideSelector } from './PositionSideSelector';
 import { DetailsSection } from './DetailsSection';
-import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
 import { ScrollView } from 'react-native';
 import { FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-
-type MarketInfoSectionProps = {
-  market: PerpMarket;
-};
-
-function MarketInfoSection({ market }: MarketInfoSectionProps) {
-  const green = useForegroundColor('green');
-  const red = useForegroundColor('red');
-  const labelTertiary = useForegroundColor('labelTertiary');
-
-  return (
-    <Box flexDirection="row" alignItems="center" gap={12}>
-      <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 40, height: 40 }} />
-      <Box gap={12}>
-        <Text size="17pt" weight="bold" color="label">
-          {market.symbol}
-        </Text>
-        <Box flexDirection="row" alignItems="center" gap={8}>
-          <LiveTokenText
-            tokenId={`${market.symbol}:hl`}
-            initialValue={formatAssetPrice({ value: market.price, currency: 'USD' })}
-            initialValueLastUpdated={0}
-            selector={token => {
-              return formatAssetPrice({ value: token.price, currency: 'USD' });
-            }}
-            size="15pt"
-            weight="bold"
-            color="labelSecondary"
-          />
-          <LiveTokenText
-            selector={state => {
-              return formatPriceChange(state.change.change24hPct);
-            }}
-            tokenId={`${market.symbol}:hl`}
-            initialValueLastUpdated={0}
-            initialValue={formatPriceChange(market.priceChange['24h'])}
-            autoSubscriptionEnabled={false}
-            usePriceChangeColor
-            priceChangeChangeColors={{
-              positive: green,
-              negative: red,
-              neutral: labelTertiary,
-            }}
-            color={'label'}
-            size="15pt"
-            weight="bold"
-            align="right"
-          />
-        </Box>
-      </Box>
-    </Box>
-  );
-}
+import { MarketInfoSection } from './MarketInfoSection';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const market = useHlNewPositionStore(state => state.market);
   const screenBackgroundColor = useBackgroundColor('surfacePrimary');
 
+  useEffect(() => {
+    return () => {
+      hlNewPositionStoreActions.reset();
+    };
+  }, []);
+
   if (!market) return null;
 
   return (
     <Box background={'surfacePrimary'} paddingHorizontal={'20px'} style={{ flex: 1 }}>
-      <PerpsNavbar />
-      <Box style={{ overflow: 'visible', paddingBottom: 24 }}>
+      {/* TODO (kane): shadow is being clipped, might be able to fix by moving to a sticky header */}
+      <Box overflow={'visible'} paddingBottom={'24px'} paddingTop={'8px'}>
         <PositionSideSelector />
       </Box>
       <Box style={{ flex: 1, position: 'relative' }}>

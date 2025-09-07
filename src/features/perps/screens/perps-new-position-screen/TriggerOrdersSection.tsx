@@ -12,11 +12,14 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
   const market = useHlNewPositionStore(state => state.market);
   const { accentColors } = usePerpsAccentColorContext();
   const triggerOrders = useHlNewPositionStore(state => state.triggerOrders);
+  const hasTakeProfit = triggerOrders.some(order => order.type === TriggerOrderType.TAKE_PROFIT);
+  const hasStopLoss = triggerOrders.some(order => order.type === TriggerOrderType.STOP_LOSS);
 
   const navigateToTriggerOrderSheet = useCallback(
     (triggerOrderType: TriggerOrderType) => {
       Navigation.handleAction(Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET, {
         triggerOrderType,
+        // TODO (kane): fix
         market: market!,
       });
     },
@@ -24,7 +27,7 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
   );
 
   return (
-    <Box width="full">
+    <Box width="full" gap={20}>
       <Box gap={20}>
         <Box paddingHorizontal={'8px'}>
           <Text size="20pt" weight="bold" color="labelSecondary">
@@ -36,6 +39,7 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
             onPress={() => {
               navigateToTriggerOrderSheet(TriggerOrderType.TAKE_PROFIT);
             }}
+            disabled={hasTakeProfit}
           >
             <Box
               borderWidth={2}
@@ -45,10 +49,11 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
               padding={'20px'}
               borderRadius={28}
               backgroundColor={accentColors.opacity8}
+              style={{ opacity: hasTakeProfit ? 0.5 : 1 }}
             >
               <TextShadow blur={8} shadowOpacity={0.2}>
                 <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                  {'􀅼 Add Take Profit'}
+                  {'Add Take Profit 􀅼'}
                 </Text>
               </TextShadow>
             </Box>
@@ -57,6 +62,7 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
             onPress={() => {
               navigateToTriggerOrderSheet(TriggerOrderType.STOP_LOSS);
             }}
+            disabled={hasStopLoss}
           >
             <Box
               borderWidth={2}
@@ -66,10 +72,11 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
               padding={'20px'}
               borderRadius={28}
               backgroundColor={accentColors.opacity8}
+              style={{ opacity: hasStopLoss ? 0.5 : 1 }}
             >
               <TextShadow blur={8} shadowOpacity={0.2}>
                 <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                  {'􀅼 Add Stop Loss'}
+                  {'Add Stop Loss 􀅼'}
                 </Text>
               </TextShadow>
             </Box>
@@ -82,8 +89,7 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
             key={triggerOrder.localId}
             type={triggerOrder.type}
             price={triggerOrder.price}
-            // percentage={triggerOrder.percentage}
-            percentage={'100%'}
+            percentage={`${triggerOrder.orderFraction}%`}
             onPressDelete={() => {
               hlNewPositionStoreActions.removeTriggerOrder(triggerOrder.localId);
             }}

@@ -7,6 +7,7 @@ const DEFAULT_LIQUIDITY_CAP = '1000000000';
 export function transformHyperliquidMarketToTokenData(market: PerpMarket, updateTime: string = new Date().toISOString()): TokenData {
   return {
     price: market.price,
+    midPrice: market.midPrice,
     change: {
       // These other timespans are possible to retrieve from the API, but require deriving from candlestick data and is currently not needed in the UI
       change5mPct: '0',

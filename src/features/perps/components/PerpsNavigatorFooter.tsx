@@ -23,6 +23,8 @@ import { hyperliquidAccountStoreActions } from '@/features/perps/stores/hyperliq
 import { logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
+import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
+import { getHyperliquidTokenId } from '@/features/perps/utils';
 
 const BUTTON_HEIGHT = 48;
 
@@ -57,26 +59,6 @@ function BackButton({ onPress, backgroundColor, borderColor, textColor }: BackBu
 const PerpsSearchScreenFooter = () => {
   const { accentColors } = usePerpsAccentColorContext();
   const inputRef = useAnimatedRef<TextInput>();
-  // TODO (kane): do we need this?
-  // const isFocused = useSharedValue<boolean>(false);
-
-  // const onPressSearchWorklet = useCallback(() => {
-  //   'worklet';
-  //   isFocused.value = true;
-  //   dispatchCommand(inputRef, 'focus');
-  // }, []);
-
-  // const onBlurWorklet = useCallback(() => {
-  //   'worklet';
-  //   console.log('onBlurWorklet');
-  //   isFocused.value = false;
-  // }, [isFocused]);
-
-  // const onFocusWorklet = useCallback(() => {
-  //   'worklet';
-  //   console.log('onFocusWorklet');
-  //   isFocused.value = true;
-  // }, [isFocused]);
 
   const onSearchQueryChange = useCallback((event: NativeSyntheticEvent<TextInputChangeEventData>) => {
     useHyperliquidMarketsStore.getState().setSearchQuery(event.nativeEvent.text);
@@ -116,11 +98,8 @@ const PerpsSearchScreenFooter = () => {
           </Text>
         </TextShadow>
         <AnimatedInput
-          // animatedProps={searchInputValue}
           clearButtonMode="while-editing"
           enablesReturnKeyAutomatically
-          // onBlur={() => runOnUI(onBlurWorklet)()}
-          // onFocus={() => runOnUI(onFocusWorklet)()}
           onChange={onSearchQueryChange}
           placeholder={'Search markets'}
           placeholderTextColor={accentColors.opacity40}
@@ -190,7 +169,7 @@ const PerpsDetailScreenFooter = () => {
   );
 };
 
-const PerpsNewPositionScreenFooter = () => {
+const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const green = PERPS_COLORS.longGreen;
   const red = PERPS_COLORS.shortRed;
@@ -210,14 +189,18 @@ const PerpsNewPositionScreenFooter = () => {
     const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
     if (!market || !leverage) return;
     setIsSubmitting(true);
+    const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)].midPrice;
+    console.log('live price', livePrice, market.price);
     try {
       const result = await hyperliquidAccountStoreActions.createIsolatedMarginPosition({
         assetId: market.id,
         side: positionSide,
         leverage: leverage,
         amount,
-        assetPrice: market.price,
+        // TODO (kane): market.price will be stale and the live price shouldn't actually be null in any case
+        price: livePrice ?? market.price,
         decimals: market.decimals,
+        triggerOrders,
       });
 
       // TODO (kane): how do we want to handle partially filled orders? Is this possible with a market order?
@@ -267,7 +250,7 @@ const PerpsNewPositionScreenFooter = () => {
       </Box>
     </Box>
   );
-};
+});
 
 export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const safeAreaInsets = useSafeAreaInsets();
@@ -307,16 +290,17 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           as={Animated.View}
           entering={FadeIn.duration(150)}
           exiting={FadeOut.duration(100)}
-          key={activeRoute}
           paddingHorizontal={'20px'}
           paddingVertical={'20px'}
         >
-          {activeRoute === Routes.PERPS_SEARCH_SCREEN && <PerpsSearchScreenFooter />}
-          {activeRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN && <PerpsSearchScreenFooter />}
+          {(activeRoute === Routes.PERPS_SEARCH_SCREEN || activeRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN) && (
+            <PerpsSearchScreenFooter />
+          )}
           {activeRoute === Routes.PERPS_ACCOUNT_SCREEN && <PerpsAccountScreenFooter />}
           {activeRoute === Routes.PERPS_DETAIL_SCREEN && <PerpsDetailScreenFooter />}
-          {activeRoute === Routes.PERPS_NEW_POSITION_SCREEN && <PerpsNewPositionScreenFooter />}
-          {activeRoute === Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET && <PerpsNewPositionScreenFooter />}
+          {(activeRoute === Routes.PERPS_NEW_POSITION_SCREEN || activeRoute === Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET) && (
+            <PerpsNewPositionScreenFooter />
+          )}
         </Box>
       </Box>
     </KeyboardStickyView>

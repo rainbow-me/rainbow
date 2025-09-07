@@ -20,6 +20,8 @@ export const PerpsNavbar = function PerpsNavbar() {
         return 'New Position';
       case Routes.PERPS_NEW_POSITION_SCREEN:
         return 'New Position';
+      case Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET:
+        return 'New Position';
       default:
         return 'Perps';
     }

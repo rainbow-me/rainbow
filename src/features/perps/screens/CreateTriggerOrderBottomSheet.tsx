@@ -2,19 +2,15 @@ import React, { memo, useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AnimatedText, Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { SLIDER_WIDTH } from '@/features/perps/constants';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { addCommasToNumber, opacityWorklet, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
-import { divide } from '@/helpers/utilities';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel } from '@/components/SmoothPager/ListPanel';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { safeAreaInsetValues } from '@/utils';
 import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
-import { PerpMarket, TriggerOrderType } from '@/features/perps/types';
+import { PerpMarket, PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
@@ -24,9 +20,11 @@ import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { calculatePnL } from '@/features/perps/utils/profit-calculator';
-import { getPercentageDifferenceWorklet, greaterThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
-import { hlNewPositionStoreActions } from '@/features/perps/stores/hlNewPositionStore';
+import { calculatePnl } from '@/features/perps/utils/profit-calculator';
+import { getPercentageDifferenceWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+
+const PANEL_HEIGHT = 375;
 
 // TODO (kane): centralize this formatting
 function formatInput(text: string) {
@@ -87,27 +85,18 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
   const { accentColors } = usePerpsAccentColorContext();
-  const availableBalanceString = useHyperliquidAccountStore(state => state.balance);
-  const availableBalance = Number(availableBalanceString);
-  const sliderXPosition = useSharedValue(0.5 * SLIDER_WIDTH);
-  const initialAmount = formatInput(formatDisplay(divide(availableBalanceString, 2)));
-  const inputValue = useSharedValue(initialAmount);
+  const amount = useHlNewPositionStore(state => state.amount);
+  const leverage = useHlNewPositionStore(state => state.leverage);
+  const positionSide = useHlNewPositionStore(state => state.positionSide);
   const isTakeProfit = triggerOrderType === TriggerOrderType.TAKE_PROFIT;
+  const isLong = positionSide === PerpPositionSide.LONG;
+  const initialAmount = formatInput(formatDisplay(mulWorklet(market.price, isLong ? 1.1 : 0.9)));
+  const inputValue = useSharedValue(initialAmount);
+
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId: getHyperliquidTokenId(market.symbol),
     initialValue: market.price,
     selector: state => state.price,
-  });
-
-  const projectedPnL = useDerivedValue(() => {
-    if (inputValue.value === '') return '0';
-    const result = calculatePnL({
-      entryPrice: liveTokenPrice.value,
-      exitPrice: inputValue.value,
-      positionSize: availableBalanceString,
-      isMakerOrder: isTakeProfit,
-    });
-    return result.netProfit;
   });
 
   const targetPriceDifferential = useDerivedValue(() => {
@@ -119,6 +108,19 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
     const isTargetPriceAboveCurrentPrice = greaterThanWorklet(targetPriceDifferential.value, '0');
     if ((isTakeProfit && !isTargetPriceAboveCurrentPrice) || (!isTakeProfit && isTargetPriceAboveCurrentPrice)) return false;
     return true;
+  });
+
+  const projectedPnl = useDerivedValue(() => {
+    if (!isValidTargetPrice.value || inputValue.value === '' || !leverage) return '-';
+    const result = calculatePnl({
+      entryPrice: liveTokenPrice.value,
+      exitPrice: inputValue.value,
+      margin: amount,
+      leverage: String(leverage),
+      isLong,
+      isMakerOrder: isTakeProfit,
+    });
+    return formatAssetPrice({ value: result.netProfit, currency: 'USD' });
   });
 
   const targetPriceDifferentialLabelStyle = useAnimatedStyle(() => {
@@ -137,29 +139,20 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
       return `must be above ${formatAssetPrice({ value: liveTokenPrice.value, currency: 'USD' })}`;
     if (!isTakeProfit && !isValidTargetPrice.value)
       return `must be below ${formatAssetPrice({ value: liveTokenPrice.value, currency: 'USD' })}`;
-    if (isTakeProfit) return `${isTakeProfit ? 'above' : 'below'} current price`;
+    return `${isTakeProfit ? 'above' : 'below'} current price`;
   });
-
-  const onChangeValue = useCallback(
-    (value: string) => {
-      'worklet';
-      const amount = parseFloat(value) || 0;
-      const percentage = availableBalance > 0 ? amount / availableBalance : 0;
-      const newSliderX = percentage * SLIDER_WIDTH;
-      sliderXPosition.value = withSpring(newSliderX, SPRING_CONFIGS.sliderConfig);
-    },
-    [availableBalance, sliderXPosition]
-  );
 
   const addTriggerOrder = useCallback(() => {
     hlNewPositionStoreActions.addTriggerOrder({
       type: triggerOrderType,
       price: inputValue.value,
-      size: availableBalanceString,
+      // We currently only support 100% of the order size for trigger orders
+      orderFraction: '1',
       isMarket: true,
       localId: (Date.now() + Math.random()).toString(),
     });
-  }, [triggerOrderType, inputValue, availableBalanceString]);
+    navigation.goBack();
+  }, [triggerOrderType, inputValue, navigation]);
 
   return (
     <Box paddingHorizontal={'24px'} paddingTop={'28px'} alignItems="center" style={{ flex: 1 }}>
@@ -209,7 +202,6 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
             placeholderTextColor={accentColors.opacity24}
             formatInput={formatInput}
             formatDisplay={formatDisplay}
-            onChangeValue={onChangeValue}
             size="30pt"
             weight="bold"
             align="right"
@@ -238,7 +230,7 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
             {`${isTakeProfit ? 'Projected Profit' : 'Projected Loss'}`}
           </Text>
           <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'}>
-            {projectedPnL}
+            {projectedPnl}
           </AnimatedText>
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full" gap={12}>
@@ -288,7 +280,6 @@ export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBot
     params: { triggerOrderType, market },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET>>();
 
-  const PANEL_HEIGHT = 375;
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');
 
   return (

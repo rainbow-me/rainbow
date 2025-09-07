@@ -3,6 +3,7 @@ import { TriggerOrderType } from '@/features/perps/types';
 import React, { memo } from 'react';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { ButtonPressAnimation } from '@/components/animations';
+import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 
 type TriggerOrderCardProps = {
   type: TriggerOrderType;
@@ -24,6 +25,8 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({ type, price, pe
       borderRadius={28}
       padding={'20px'}
       alignItems="center"
+      flexDirection="row"
+      justifyContent="space-between"
     >
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
         <Box gap={12}>
@@ -31,17 +34,17 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({ type, price, pe
             <TextIcon color={isTakeProfit ? 'green' : 'red'} size="11pt" weight="heavy">
               {isTakeProfit ? '􀑁' : '􁘳'}
             </TextIcon>
-            <Text size="13pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
+            <Text size="13pt" weight="bold" color={'labelSecondary'}>
               {isTakeProfit ? 'Take Profit' : 'Stop Loss'}
             </Text>
           </Box>
           <Box flexDirection="row" alignItems="center" gap={8}>
             <Text size="17pt" weight="heavy" color={'label'}>
-              {price}
+              {formatAssetPrice({ value: price, currency: 'USD' })}
             </Text>
-            <Text size="13pt" weight="bold" color={'labelTertiary'}>
+            <Text size="17pt" weight="bold" color={'labelTertiary'}>
               {'Sell '}
-              <Text size="13pt" weight="bold" color={'labelSecondary'}>
+              <Text size="17pt" weight="bold" color={'labelSecondary'}>
                 {percentage}
               </Text>
             </Text>
@@ -50,7 +53,7 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({ type, price, pe
       </Box>
       <ButtonPressAnimation onPress={onPressDelete}>
         <TextIcon color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy">
-          {'􀄨'}
+          {'􀈒'}
         </TextIcon>
       </ButtonPressAnimation>
     </Box>

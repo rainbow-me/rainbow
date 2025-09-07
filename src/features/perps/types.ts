@@ -109,3 +109,11 @@ export type HlTrade = {
   triggerOrderType?: TriggerOrderType;
   triggerOrderPrice?: string;
 };
+
+export type TriggerOrder = {
+  price: string;
+  // "1" = 100% of the position size
+  orderFraction: string;
+  isMarket: boolean;
+  type: TriggerOrderType;
+};
