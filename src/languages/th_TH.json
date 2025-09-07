@@ -47,6 +47,7 @@
       "unknown_token": "โทเคนที่ไม่รู้จัก"
     },
     "activity_list": {
+      "title": "กิจกรรม",
       "empty_state": {
         "default_label": "ยังไม่มีการทำธุรกรรม",
         "recycler_label": "ยังไม่มีการทำธุรกรรม",
@@ -525,7 +526,7 @@
       "alert": "เตือน",
       "analyze_env_variables": "วิเคราะห์ตัวแปร ENV",
       "analyze_react_query": "วิเคราะห์ React Query",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "วิเคราะห์ Query ผู้ใช้งานสินทรัพย์",
       "applied": "ที่ปรับใช้แล้ว",
       "backups_deleted_successfully": "ลบการสำรองข้อมูลเรียบร้อยแล้ว",
       "clear_async_storage": "ล้างข้อมูล AsyncStorage",
@@ -755,6 +756,7 @@
           "what_is": "%{assetName} คืออะไร?"
         },
         "history": {
+          "title": "ประวัติ",
           "tabs": {
             "all": "ทั้งหมด",
             "buys": "การซื้อ",
@@ -2019,6 +2021,9 @@
       "rewards": "รางวัล",
       "pools": "สระน้ำ"
     },
+    "profile": {
+      "title": "กิจกรรม"
+    },
     "savings": {
       "deposit": "ฝาก",
       "deposit_from_wallet": "ฝากจากกระเป๋าเงิน",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "บัญชี Google",
       "currency": {
         "title": "สกุลเงิน",
-        "ETH": "อีเธอเรียม",
-        "USD": "ดอลลาร์สหรัฐฯ",
-        "EUR": "ยูโร",
-        "GBP": "ปอนด์อังกฤษ",
-        "AUD": "ดอลลาร์ออสเตรเลีย",
-        "CNY": "หยวนจีน",
-        "KRW": "วอนเกาหลีใต้",
-        "JPY": "เยนญี่ปุ่น",
-        "RUB": "รูเบิลรัสเซีย",
-        "INR": "รูปีอินเดีย",
-        "TRY": "ลีราตุรกี",
-        "CAD": "ดอลลาร์แคนาดา",
-        "NZD": "ดอลลาร์นิวซีแลนด์",
-        "ZAR": "แรนด์แอฟริกาใต้"
+        "ETH": {
+          "label": "อีเธอเรียม",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "ไอคอนแอป",
       "developer": "การตั้งค่าของผู้พัฒนา",
@@ -2862,6 +2909,7 @@
         "find_a_code": "ค้นหารหัสเพื่อสแกน",
         "qr_1_app_connected": "1 แอพที่เชื่อมต่อ",
         "qr_multiple_apps_connected": "%{appsConnectedCount} แอพที่เชื่อมต่อ",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "สแกนเพื่อจ่ายเงินหรือเชื่อมต่อ",
         "simulator_mode": "โหมดจำลอง",
         "sorry_could_not_be_recognized": "ขออภัย, ไม่สามารถรู้จำรหัส QR นี้ได้.",
@@ -3215,7 +3263,8 @@
       "show_less": "แสดงน้อยลง",
       "more": "เพิ่มเติม",
       "show_more": "เครือข่ายเพิ่มเติม",
-      "all_networks": "ทุกเครือข่าย"
+      "all_networks": "ทุกเครือข่าย",
+      "search": "ค้นหา"
     },
     "token_launcher": {
       "airdrop": {
