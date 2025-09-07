@@ -47,6 +47,7 @@
       "unknown_token": "अज्ञात टोकन"
     },
     "activity_list": {
+      "title": "गतिविधि",
       "empty_state": {
         "default_label": "अभी तक कोई लेन-देन नहीं",
         "recycler_label": "अभी तक कोई लेन-देन नहीं",
@@ -525,7 +526,7 @@
       "alert": "अलर्ट",
       "analyze_env_variables": "ENV वेरिएबल्स का विश्लेषण करें",
       "analyze_react_query": "React Query का विश्लेषण करें",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "उपयोगकर्ता संपत्तियों का विश्लेषण करें",
       "applied": "लागू किया गया",
       "backups_deleted_successfully": "बैकअप सफलतापूर्वक हटा दिए गए",
       "clear_async_storage": "AsyncStorage साफ़ करें",
@@ -755,6 +756,7 @@
           "what_is": "%{assetName} क्या है?"
         },
         "history": {
+          "title": "इतिहास",
           "tabs": {
             "all": "सभी",
             "buys": "खरीद",
@@ -2019,6 +2021,9 @@
       "rewards": "इनाम",
       "pools": "पूल्स"
     },
+    "profile": {
+      "title": "गतिविधि"
+    },
     "savings": {
       "deposit": "जमा",
       "deposit_from_wallet": "वॉलेट से जमा करें",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "Google खाता",
       "currency": {
         "title": "मुद्रा",
-        "ETH": "ईथेरियम",
-        "USD": "अमेरिकी डॉलर",
-        "EUR": "यूरो",
-        "GBP": "ब्रिटिश पाउंड",
-        "AUD": "ऑस्ट्रेलियन डॉलर",
-        "CNY": "चीनी युआन",
-        "KRW": "दक्षिण कोरियाई वॉन",
-        "JPY": "जापानी येन",
-        "RUB": "रूसी रूबल",
-        "INR": "भारतीय रुपया",
-        "TRY": "तुर्की लीरा",
-        "CAD": "कैनेडियन डॉलर",
-        "NZD": "न्यूज़ीलैंड डॉलर",
-        "ZAR": "दक्षिण अफ़्रीकी रैंड"
+        "ETH": {
+          "label": "ईथेरियम",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "ऐप आइकन",
       "developer": "डेवलपर सेटिंग्स",
@@ -2862,6 +2909,7 @@
         "find_a_code": "स्कैन करने के लिए एक कोड ढूंढें",
         "qr_1_app_connected": "1 जुड़ा हुआ एप्लिकेशन",
         "qr_multiple_apps_connected": "%{appsConnectedCount} जुड़े हुए एप्लिकेशन",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "भुगतान करने या जुड़ने के लिए स्कैन करें",
         "simulator_mode": "सिमुलेटर मोड",
         "sorry_could_not_be_recognized": "क्षमा करें, इस QR कोड को पहचाना नहीं जा सका।",
@@ -3215,7 +3263,8 @@
       "show_less": "कम दिखाएँ",
       "more": "अधिक",
       "show_more": "अधिक नेटवर्क्स",
-      "all_networks": "सभी नेटवर्क"
+      "all_networks": "सभी नेटवर्क",
+      "search": "खोज"
     },
     "token_launcher": {
       "airdrop": {
