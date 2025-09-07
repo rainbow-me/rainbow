@@ -47,6 +47,7 @@
       "unknown_token": "Неизвестный токен"
     },
     "activity_list": {
+      "title": "Активность",
       "empty_state": {
         "default_label": "Пока нет транзакций",
         "recycler_label": "Пока нет транзакций",
@@ -525,7 +526,7 @@
       "alert": "Внимание",
       "analyze_env_variables": "Анализировать переменные ENV",
       "analyze_react_query": "Анализировать запросы React",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "Анализировать запрос активов пользователя",
       "applied": "ПРИМЕНЕНО",
       "backups_deleted_successfully": "Резервные копии успешно удалены",
       "clear_async_storage": "Очистить AsyncStorage",
@@ -755,6 +756,7 @@
           "what_is": "Что такое %{assetName}?"
         },
         "history": {
+          "title": "История",
           "tabs": {
             "all": "Все",
             "buys": "Покупки",
@@ -2019,6 +2021,9 @@
       "rewards": "Награды",
       "pools": "Пулы"
     },
+    "profile": {
+      "title": "Активность"
+    },
     "savings": {
       "deposit": "Депозит",
       "deposit_from_wallet": "Пополнить из кошелька",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "Учетная запись Google",
       "currency": {
         "title": "Валюта",
-        "ETH": "Эфириум",
-        "USD": "Доллар США",
-        "EUR": "Евро",
-        "GBP": "Фунт стерлингов",
-        "AUD": "Австралийский доллар",
-        "CNY": "Китайский юань",
-        "KRW": "Южнокорейская вона",
-        "JPY": "Японская иена",
-        "RUB": "Российский рубль",
-        "INR": "Индийская рупия",
-        "TRY": "Турецкая лира",
-        "CAD": "Канадский доллар",
-        "NZD": "Новозеландский доллар",
-        "ZAR": "Южноафриканский рэнд"
+        "ETH": {
+          "label": "Эфириум",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "Иконка приложения",
       "developer": "Настройки разработчика",
@@ -2862,6 +2909,7 @@
         "find_a_code": "Найти код для сканирования",
         "qr_1_app_connected": "1 подключенное приложение",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Подключенных приложений",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "Сканировать для оплаты или подключения",
         "simulator_mode": "Режим симулятора",
         "sorry_could_not_be_recognized": "Извините, этот QR-код не может быть распознан.",
@@ -3215,7 +3263,8 @@
       "show_less": "Показать меньше",
       "more": "Больше",
       "show_more": "Больше сетей",
-      "all_networks": "Все сети"
+      "all_networks": "Все сети",
+      "search": "Поиск"
     },
     "token_launcher": {
       "airdrop": {
