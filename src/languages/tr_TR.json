@@ -47,6 +47,7 @@
       "unknown_token": "Bilinmeyen Token"
     },
     "activity_list": {
+      "title": "Aktivite",
       "empty_state": {
         "default_label": "Henüz işlem yok",
         "recycler_label": "Henüz işlem yok",
@@ -525,7 +526,7 @@
       "alert": "Uyarı",
       "analyze_env_variables": "ENV Değişkenlerini Analiz Et",
       "analyze_react_query": "React Sorgusunu Analiz Et",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "Kullanıcı Varlıklarını Sorgula",
       "applied": "UYGULANDI",
       "backups_deleted_successfully": "Yedeklemeler Başarıyla Silindi",
       "clear_async_storage": "AsyncStorage'ı Temizle",
@@ -755,6 +756,7 @@
           "what_is": "%{assetName} nedir?"
         },
         "history": {
+          "title": "Geçmiş",
           "tabs": {
             "all": "Tümü",
             "buys": "Alımlar",
@@ -2019,6 +2021,9 @@
       "rewards": "Ödüller",
       "pools": "Havuzlar"
     },
+    "profile": {
+      "title": "Aktivite"
+    },
     "savings": {
       "deposit": "Mevduat",
       "deposit_from_wallet": "Cüzdandan Mevduat Yapın",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "Google Hesabı",
       "currency": {
         "title": "Para Birimi",
-        "ETH": "Ethereum",
-        "USD": "Amerikan Doları",
-        "EUR": "Euro",
-        "GBP": "İngiliz Sterlini",
-        "AUD": "Avustralya Doları",
-        "CNY": "Çin Yuanı",
-        "KRW": "Güney Kore Wonu",
-        "JPY": "Japon Yeni",
-        "RUB": "Rus Rublesi",
-        "INR": "Hint Rupisi",
-        "TRY": "Türk Lirası",
-        "CAD": "Kanada Doları",
-        "NZD": "Yeni Zelanda Doları",
-        "ZAR": "Güney Afrika Randı"
+        "ETH": {
+          "label": "Ethereum",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "Uygulama İkonu",
       "developer": "Geliştirici Ayarları",
@@ -2862,6 +2909,7 @@
         "find_a_code": "Taramak için bir kod bul",
         "qr_1_app_connected": "1 Bağlı Uygulama",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Bağlı Uygulamalar",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "Tarama yaparak ödeme yapın veya bağlanın",
         "simulator_mode": "Simülatör Modu",
         "sorry_could_not_be_recognized": "Üzgünüz, bu QR kodu tanınmadı.",
@@ -3215,7 +3263,8 @@
       "show_less": "Daha Az Göster",
       "more": "Daha fazla",
       "show_more": "Daha Fazla Ağ",
-      "all_networks": "Tüm Ağlar"
+      "all_networks": "Tüm Ağlar",
+      "search": "Ara"
     },
     "token_launcher": {
       "airdrop": {
