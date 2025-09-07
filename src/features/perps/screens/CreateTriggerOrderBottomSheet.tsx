@@ -20,7 +20,7 @@ import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { calculatePnl } from '@/features/perps/utils/profit-calculator';
+import { estimatePnl } from '@/features/perps/utils/estimatePnl';
 import { getPercentageDifferenceWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 
@@ -112,7 +112,7 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
 
   const projectedPnl = useDerivedValue(() => {
     if (!isValidTargetPrice.value || inputValue.value === '' || !leverage) return '-';
-    const result = calculatePnl({
+    const projectedPnl = estimatePnl({
       entryPrice: liveTokenPrice.value,
       exitPrice: inputValue.value,
       margin: amount,
@@ -120,7 +120,7 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
       isLong,
       isMakerOrder: isTakeProfit,
     });
-    return formatAssetPrice({ value: result.netProfit, currency: 'USD' });
+    return formatAssetPrice({ value: projectedPnl, currency: 'USD' });
   });
 
   const targetPriceDifferentialLabelStyle = useAnimatedStyle(() => {
