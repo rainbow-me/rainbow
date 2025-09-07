@@ -47,6 +47,7 @@
       "unknown_token": "不明なトークン"
     },
     "activity_list": {
+      "title": "アクティビティ",
       "empty_state": {
         "default_label": "まだ取引はありません",
         "recycler_label": "まだ取引はありません",
@@ -525,7 +526,7 @@
       "alert": "アラート",
       "analyze_env_variables": "環境変数を解析",
       "analyze_react_query": "React Queryを解析",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "ユーザー資産クエリを解析",
       "applied": "適用済み",
       "backups_deleted_successfully": "バックアップは正常に削除されました",
       "clear_async_storage": "AsyncStorageをクリア",
@@ -755,6 +756,7 @@
           "what_is": "%{assetName}とは何ですか？"
         },
         "history": {
+          "title": "履歴",
           "tabs": {
             "all": "全て",
             "buys": "購入",
@@ -2019,6 +2021,9 @@
       "rewards": "報酬",
       "pools": "プール"
     },
+    "profile": {
+      "title": "アクティビティ"
+    },
     "savings": {
       "deposit": "預金",
       "deposit_from_wallet": "ウォレットからの預金",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "Google Account",
       "currency": {
         "title": "通貨",
-        "ETH": "イーサリアム",
-        "USD": "米ドル",
-        "EUR": "ユーロ",
-        "GBP": "英ポンド",
-        "AUD": "豪ドル",
-        "CNY": "人民元",
-        "KRW": "韓国ウォン",
-        "JPY": "日本円",
-        "RUB": "ロシアルーブル",
-        "INR": "インドルピー",
-        "TRY": "トルコリラ",
-        "CAD": "カナダドル",
-        "NZD": "ニュージーランドドル",
-        "ZAR": "南アフリカランド"
+        "ETH": {
+          "label": "イーサリアム",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "App Icon",
       "developer": "Developer Settings",
@@ -2862,6 +2909,7 @@
         "find_a_code": "スキャンするコードを見つける",
         "qr_1_app_connected": "1つの連携アプリ",
         "qr_multiple_apps_connected": "%{appsConnectedCount} 接続されたアプリ",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "支払いまたは接続するためにスキャン",
         "simulator_mode": "シミュレーターモード",
         "sorry_could_not_be_recognized": "申し訳ありませんが、このQRコードは認識されませんでした。",
@@ -3215,7 +3263,8 @@
       "show_less": "表示を減らす",
       "more": "もっと",
       "show_more": "もっとネットワークを見る",
-      "all_networks": "全てのネットワーク"
+      "all_networks": "全てのネットワーク",
+      "search": "検索する"
     },
     "token_launcher": {
       "airdrop": {
