@@ -47,6 +47,7 @@
       "unknown_token": "Token desconocido"
     },
     "activity_list": {
+      "title": "Actividad",
       "empty_state": {
         "default_label": "Sin transacciones aún",
         "recycler_label": "Sin transacciones aún",
@@ -525,7 +526,7 @@
       "alert": "Alerta",
       "analyze_env_variables": "Analizar Variables del Entorno",
       "analyze_react_query": "Analizar React Query",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "Analizar consulta de activos de usuario",
       "applied": "APLICADO",
       "backups_deleted_successfully": "Resguardos Eliminados Exitosamente",
       "clear_async_storage": "Borrar AsyncStorage",
@@ -755,6 +756,7 @@
           "what_is": "¿Qué es %{assetName}?"
         },
         "history": {
+          "title": "Historial",
           "tabs": {
             "all": "Todos",
             "buys": "Compras",
@@ -2019,6 +2021,9 @@
       "rewards": "Recompensas",
       "pools": "Pools"
     },
+    "profile": {
+      "title": "Actividad"
+    },
     "savings": {
       "deposit": "Depósito",
       "deposit_from_wallet": "Depósito desde la billetera",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "Cuenta de Google",
       "currency": {
         "title": "Moneda",
-        "ETH": "Ethereum",
-        "USD": "Dólar Estadounidense",
-        "EUR": "Euro",
-        "GBP": "Libra Esterlina",
-        "AUD": "Dólar Australiano",
-        "CNY": "Yuan Chino",
-        "KRW": "Won Surcoreano",
-        "JPY": "Yen Japonés",
-        "RUB": "Rublo Ruso",
-        "INR": "Rupia India",
-        "TRY": "Lira Turca",
-        "CAD": "Dólar Canadiense",
-        "NZD": "Dólar Neozelandés",
-        "ZAR": "Rand Sudafricano"
+        "ETH": {
+          "label": "Ethereum",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "Icono de la aplicación",
       "developer": "Configuración de desarrollador",
@@ -2862,6 +2909,7 @@
         "find_a_code": "Encuentra un código para escanear",
         "qr_1_app_connected": "1 Aplicación Conectada",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Aplicaciones Conectadas",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "Escanear para pagar o conectar",
         "simulator_mode": "Modo Simulador",
         "sorry_could_not_be_recognized": "Lo sentimos, este código QR no pudo ser reconocido.",
@@ -3215,7 +3263,8 @@
       "show_less": "Mostrar Menos",
       "more": "Más",
       "show_more": "Más Redes",
-      "all_networks": "Todas las Redes"
+      "all_networks": "Todas las Redes",
+      "search": "Buscar"
     },
     "token_launcher": {
       "airdrop": {
