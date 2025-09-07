@@ -1544,6 +1544,23 @@
         "address_copied_to_clipboard": "Address copied to clipboard"
       }
     },
+    "perps": {
+      "deposit": {
+        "title": "Deposit",
+        "no_balance": "No Balance",
+        "receive": "Receive",
+        "slider_label": "Depositing",
+        "confirm_button_text": "Hold to Deposit",
+        "confirm_button_loading_text": "Depositing..."
+      },
+      "withdraw": {
+        "title": "Withdraw",
+        "slider_label": "Withdrawing",
+        "confirm_button_text": "Hold to Withdraw",
+        "confirm_button_loading_text": "Withdrawing...",
+        "available_balance": "%{balance} available"
+      }
+    },
     "points": {
       "placeholder": {
         "coming_soon_title": "Coming Soon",

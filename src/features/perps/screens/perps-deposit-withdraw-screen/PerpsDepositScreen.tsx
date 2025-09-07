@@ -19,7 +19,6 @@ import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import ContactAvatar from '@/components/contacts/ContactAvatar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
@@ -73,21 +72,7 @@ import Animated, {
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { useDebouncedCallback } from 'use-debounce';
 import { FOOTER_HEIGHT, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from './constants';
-
-const AssetCoinIcon = ({
-  asset,
-  size,
-  showBadge,
-}: {
-  asset: ExtendedAnimatedAssetWithColors | null;
-  size: number;
-  showBadge?: boolean;
-}) => {
-  if (!asset) return null;
-  return <RainbowCoinIcon chainId={asset.chainId} symbol={asset.symbol} icon={asset.icon_url} size={size} showBadge={showBadge} />;
-};
-
-const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
+import { PerpsAssetCoinIcon } from './PerpsAssetCoinIcon';
 
 const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -117,14 +102,15 @@ const DepositInputSection = ({
   changeInputMethod: (inputMethod: InputMethod) => void;
   onSelectAsset: (asset: ParsedSearchAsset | null) => void;
 }) => {
+  const noBalanceLabel = i18n.t(i18n.l.perps.deposit.no_balance);
   const { isDarkMode } = useColorMode();
   const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const selectedInputChainId = useSharedValue<ChainId | undefined>(undefined);
+  const [selectedInputChainId, setSelectedInputChainId] = useState<ChainId | undefined>(undefined);
 
   const balanceLabel = useDerivedValue(() => {
-    if (!asset) return NO_BALANCE_LABEL;
+    if (!asset) return noBalanceLabel;
     const hasBalance = Number(asset.balance?.amount) > 0;
-    return hasBalance ? asset.balance?.display || NO_BALANCE_LABEL : NO_BALANCE_LABEL;
+    return hasBalance ? asset.balance?.display || noBalanceLabel : noBalanceLabel;
   });
 
   const sharedAsset = useDerivedValue(() => asset);
@@ -182,7 +168,7 @@ const DepositInputSection = ({
         <Columns alignHorizontal="justify" alignVertical="center">
           <Column width="content">
             <Box paddingRight="10px">
-              <AssetCoinIcon asset={asset} size={40} />
+              <PerpsAssetCoinIcon asset={asset} size={40} />
             </Box>
           </Column>
           <Column>
@@ -227,7 +213,7 @@ const DepositInputSection = ({
           >
             <Box gap={6} flexDirection="row" alignItems="center" justifyContent="center">
               <Animated.View style={secondaryInputIconStyle}>
-                <AssetCoinIcon asset={asset} size={16} showBadge={false} />
+                <PerpsAssetCoinIcon asset={asset} size={16} showBadge={false} />
               </Animated.View>
               <AnimatedText size="17pt" weight="bold" color="labelTertiary" tabularNumbers numberOfLines={1} ellipsizeMode="middle">
                 {secondaryFormattedInput}
@@ -246,9 +232,8 @@ const DepositInputSection = ({
             }}
             style={{ width: 14, height: 14, marginRight: 6 }}
           />
-          {/* TODO: INTL */}
           <Text size="15pt" weight="bold" color="labelQuaternary">
-            Receive{' '}
+            {i18n.t(i18n.l.perps.deposit.receive)}{' '}
           </Text>
           {formattedOutputAmount == null ? (
             <PerpsTextSkeleton width={90} height={15} />
@@ -268,14 +253,14 @@ const DepositInputSection = ({
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <PerpsTokenList
+          selectedChainId={selectedInputChainId}
           onSelectChain={chainId => {
-            selectedInputChainId.value = chainId;
+            setSelectedInputChainId(chainId);
           }}
           onSelectToken={token => {
             inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
             onSelectAsset(token);
           }}
-          inputProgress={inputProgress}
         />
       </Box>
     </PerpsInputContainer>
@@ -590,7 +575,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
             )}
           </ButtonPressAnimation>
         }
-        title={'Deposit'}
+        title={i18n.t(i18n.l.perps.deposit.title)}
       />
       <Box alignItems="center" paddingTop="20px">
         <DepositInputSection
@@ -614,9 +599,11 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
         onPercentageUpdate={handleGestureUpdate}
         showMaxButton={true}
         showPercentage={true}
-        // TODO: INTL
-        labels={{ title: 'Depositing', maxButtonText: 'Max', disabledText: NO_BALANCE_LABEL }}
-        icon={<AssetCoinIcon asset={selectedAsset} size={16} showBadge={false} />}
+        labels={{
+          title: i18n.t(i18n.l.perps.deposit.slider_label),
+          disabledText: i18n.t(i18n.l.perps.deposit.no_balance),
+        }}
+        icon={<PerpsAssetCoinIcon asset={selectedAsset} size={16} showBadge={false} />}
         colors={sliderColors}
       />
       <NumberPad
@@ -631,7 +618,11 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           <GasButton gasSpeed={gasSpeed} chainId={ChainId.mainnet} onSelectGasSpeed={setGasSpeed} gasLimit={gasLimit} />
         </Box>
         <Box flexGrow={1}>
-          <PerpsSwapButton label={loading ? 'Depositing...' : 'Hold to Deposit'} onLongPress={handleSwap} disabled={loading} />
+          <PerpsSwapButton
+            label={loading ? i18n.t(i18n.l.perps.deposit.confirm_button_loading_text) : i18n.t(i18n.l.perps.deposit.confirm_button_text)}
+            onLongPress={handleSwap}
+            disabled={loading}
+          />
         </Box>
       </Box>
     </Box>

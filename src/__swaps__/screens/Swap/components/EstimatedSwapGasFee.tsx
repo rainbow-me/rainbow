@@ -8,11 +8,11 @@ import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
 import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '@/__swaps__/screens/Swap/hooks/useEstimatedGasFee';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
-type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings; isFetching: SharedValue<boolean> } & Partial<
+type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>
 >;
-
 export function EstimatedSwapGasFeeSlot({
   color = 'labelTertiary',
   size = '15pt',
@@ -22,8 +22,7 @@ export function EstimatedSwapGasFeeSlot({
   const label = useDerivedValue(() => props.text);
   return <GasFeeText color={color} size={size} weight={weight} {...props} label={label} />;
 }
-
-export function EstimatedSwapGasFee({ align, color, gasSettings, size, tabularNumbers, weight, isFetching }: EstimatedSwapGasFeeProps) {
+export function EstimatedSwapGasFee({ align, color, gasSettings, size, tabularNumbers, weight }: EstimatedSwapGasFeeProps) {
   const estimatedGasFee = useSwapEstimatedGasFee(gasSettings) || '--';
   return (
     <EstimatedSwapGasFeeSlot
@@ -32,7 +31,6 @@ export function EstimatedSwapGasFee({ align, color, gasSettings, size, tabularNu
       size={size}
       tabularNumbers={tabularNumbers}
       text={estimatedGasFee}
-      isFetching={isFetching}
       weight={weight}
     />
   );
@@ -45,11 +43,9 @@ const GasFeeText = memo(function GasFeeText({
   size,
   weight,
   tabularNumbers,
-  isFetching,
-}: { label: SharedValue<string>; isFetching: SharedValue<boolean> } & Pick<
-  TextProps,
-  'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'
->) {
+}: { label: SharedValue<string> } & Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>) {
+  const { isFetching } = useSwapContext();
+
   const textColor = useForegroundColor(color);
   const labelTertiary = useForegroundColor('labelTertiary');
   const zeroAmountColor = opacity(labelTertiary, 0.3);

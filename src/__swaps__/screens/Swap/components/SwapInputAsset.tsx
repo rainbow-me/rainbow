@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { useDerivedValue, runOnUI } from 'react-native-reanimated';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -23,10 +23,6 @@ import * as i18n from '@/languages';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { CopyPasteMenu } from './CopyPasteMenu';
-import { TokenToSellListProps } from './TokenList/TokenToSellList';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { SwapAssetType } from '@/__swaps__/types/swap';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -98,10 +94,9 @@ function SwapInputAmount() {
 }
 
 function SwapInputIcon() {
-  const { internalSelectedInputAsset } = useSwapContext();
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon asset={internalSelectedInputAsset} size={36} chainSize={16} />
+      <AnimatedSwapCoinIcon assetType="input" size={36} chainSize={16} />
     </Box>
   );
 }
@@ -125,47 +120,7 @@ function InputAssetBalanceBadge() {
 }
 
 export function SwapInputAsset() {
-  const {
-    outputProgress,
-    inputProgress,
-    AnimatedSwapStyles,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    SwapNavigation,
-    outputSearchRef,
-    isFetching,
-    isQuoteStale,
-    setAsset,
-    selectedOutputChainId,
-  } = useSwapContext();
-
-  // Create the callback for selecting a token
-  const handleSelectInputToken = useCallback(
-    (token: ParsedSearchAsset | null) => {
-      if (!token) return;
-
-      runOnUI(() => {
-        if (internalSelectedOutputAsset.value && getUniqueId(token.address, token.chainId) !== internalSelectedInputAsset.value?.uniqueId) {
-          isQuoteStale.value = 1;
-          isFetching.value = true;
-        }
-      })();
-
-      setAsset({
-        type: SwapAssetType.inputAsset,
-        asset: token,
-      });
-    },
-    [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
-  );
-
-  // Prepare props for TokenToSellList
-  const tokenToSellListProps: TokenToSellListProps = {
-    onSelectToken: handleSelectInputToken,
-    inputProgress,
-    selectedOutputChainId: selectedOutputChainId as any,
-    onNavigateToNetworkSelector: () => outputSearchRef.current?.blur(),
-  };
+  const { outputProgress, inputProgress, AnimatedSwapStyles, internalSelectedInputAsset, SwapNavigation } = useSwapContext();
 
   return (
     <SwapInput asset={internalSelectedInputAsset} otherInputProgress={outputProgress} progress={inputProgress}>
@@ -200,7 +155,6 @@ export function SwapInputAsset() {
           handleExitSearchWorklet={SwapNavigation.handleExitSearch}
           handleFocusSearchWorklet={SwapNavigation.handleFocusInputSearch}
           output={false}
-          tokenToSellListProps={tokenToSellListProps}
         />
       </Box>
     </SwapInput>

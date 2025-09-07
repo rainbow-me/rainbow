@@ -25,7 +25,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import React, { use, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   runOnJS,
@@ -109,8 +109,7 @@ const RainbowFee = () => {
 };
 
 function EstimatedGasFee() {
-  const { isFetching } = useSwapContext();
-  return <EstimatedSwapGasFee align="left" color="label" size="15pt" weight="heavy" isFetching={isFetching} />;
+  return <EstimatedSwapGasFee align="left" color="label" size="15pt" weight="heavy" />;
 }
 
 function EstimatedArrivalTime() {
@@ -246,7 +245,7 @@ export const SlippageRow = () => {
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
-  const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote, isFetching } = useSwapContext();
+  const { configProgress, lastTypedInput, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
   const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
 
   const labelTertiary = useForegroundColor('labelTertiary');
@@ -323,7 +322,7 @@ export function ReviewPanel() {
 
             <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
               <View style={sx.chainBadgeContainer}>
-                <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
               </View>
               <AnimatedText
                 align="right"
@@ -384,7 +383,7 @@ export function ReviewPanel() {
               <Stack space="10px">
                 <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
                   <View style={sx.chainBadgeContainer}>
-                    <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                    <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
                   </View>
                   <UnmountOnAnimatedReaction
                     isMountedWorklet={() => {
@@ -394,14 +393,7 @@ export function ReviewPanel() {
                     }}
                     placeholder={
                       <Inline horizontalSpace="4px">
-                        <EstimatedSwapGasFeeSlot
-                          text="Loading…"
-                          align="left"
-                          color="label"
-                          size="15pt"
-                          weight="heavy"
-                          isFetching={isFetching}
-                        />
+                        <EstimatedSwapGasFeeSlot text="Loading…" align="left" color="label" size="15pt" weight="heavy" />
                         {null}
                       </Inline>
                     }
