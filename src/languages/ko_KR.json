@@ -47,6 +47,7 @@
       "unknown_token": "알 수 없는 토큰"
     },
     "activity_list": {
+      "title": "활동",
       "empty_state": {
         "default_label": "아직 거래 없음",
         "recycler_label": "아직 거래 없음",
@@ -525,7 +526,7 @@
       "alert": "알림",
       "analyze_env_variables": "환경 변수 분석",
       "analyze_react_query": "React 쿼리 분석",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "사용자 자산 쿼리 분석",
       "applied": "적용됨",
       "backups_deleted_successfully": "백업이 성공적으로 삭제됨",
       "clear_async_storage": "AsyncStorage 지우기",
@@ -755,6 +756,7 @@
           "what_is": "%{assetName}에 대해 알고 싶으세요?"
         },
         "history": {
+          "title": "기록",
           "tabs": {
             "all": "모두",
             "buys": "구매",
@@ -2019,6 +2021,9 @@
       "rewards": "보상",
       "pools": "풀"
     },
+    "profile": {
+      "title": "활동"
+    },
     "savings": {
       "deposit": "예금",
       "deposit_from_wallet": "지갑에서 입금",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "Google 계정",
       "currency": {
         "title": "통화",
-        "ETH": "이더리움",
-        "USD": "미국 달러",
-        "EUR": "유로",
-        "GBP": "브리티시 파운드",
-        "AUD": "호주 달러",
-        "CNY": "중국 위안화",
-        "KRW": "대한민국 원",
-        "JPY": "일본 엔화",
-        "RUB": "러시아 루블",
-        "INR": "인도 루피",
-        "TRY": "터키 리라",
-        "CAD": "캐나다 달러",
-        "NZD": "뉴질랜드 달러",
-        "ZAR": "남아프리카 공화국 랜드"
+        "ETH": {
+          "label": "이더리움",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "앱 아이콘",
       "developer": "개발자 설정",
@@ -2862,6 +2909,7 @@
         "find_a_code": "스캔할 코드를 찾아보세요",
         "qr_1_app_connected": "1개의 연결된 앱",
         "qr_multiple_apps_connected": "%{appsConnectedCount} 개의 연결된 앱들",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "결제하거나 연결하기 위해 스캔하세요",
         "simulator_mode": "시뮬레이터 모드",
         "sorry_could_not_be_recognized": "죄송합니다, 이 QR 코드를 인식할 수 없습니다.",
@@ -3215,7 +3263,8 @@
       "show_less": "줄이기",
       "more": "더 보기",
       "show_more": "더 많은 네트워크",
-      "all_networks": "모든 네트워크"
+      "all_networks": "모든 네트워크",
+      "search": "검색"
     },
     "token_launcher": {
       "airdrop": {
