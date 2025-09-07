@@ -1,8 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { Box, Separator, Text } from '@/design-system';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
-import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
 import { navigateToNewPositionScreen } from '@/features/perps/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -26,16 +24,14 @@ export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   return (
     <Box background={'surfacePrimary'} style={{ flex: 1 }}>
       <Box justifyContent={'center'} alignItems={'center'}>
-        <PerpsNavbar />
         <Text size="11pt" weight="heavy" color="labelQuaternary">
           {`${markets.length} MARKETS`}
         </Text>
       </Box>
-      <Box paddingTop={'20px'}>
+      <Box paddingTop={'20px'} paddingHorizontal={'20px'}>
         <Separator color={'separatorTertiary'} direction="horizontal" />
       </Box>
       <PerpMarketsList onPressMarket={onPressMarket} />
-      <SheetHandle />
     </Box>
   );
 });
@@ -47,7 +43,12 @@ export const PerpsNewPositionSearchScreen = memo(function PerpsNewPositionSearch
 
   return (
     <Box background={'surfacePrimary'} style={{ flex: 1 }}>
-      <Box paddingTop={'20px'}>
+      <Box justifyContent={'center'} alignItems={'center'}>
+        <Text size="11pt" weight="heavy" color="labelQuaternary">
+          {'CHOOSE A MARKET'}
+        </Text>
+      </Box>
+      <Box paddingTop={'20px'} paddingHorizontal={'20px'}>
         <Separator color={'separatorTertiary'} direction="horizontal" />
       </Box>
       <PerpMarketsList onPressMarket={onPressMarket} />
