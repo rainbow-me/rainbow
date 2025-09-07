@@ -15,9 +15,8 @@ export const MarketsSection = memo(function MarketsSection() {
 
   const onPressMarket = useCallback(
     (market: PerpMarket) => {
-      navigation.navigate(Routes.PERPS_ACCOUNT_NAVIGATOR, {
-        screen: Routes.PERPS_DETAIL_SCREEN,
-        params: { market },
+      navigation.navigate(Routes.PERPS_DETAIL_SCREEN, {
+        market,
       });
     },
     [navigation]

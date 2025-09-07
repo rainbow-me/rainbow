@@ -9,16 +9,23 @@ const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 
 export interface SheetHandleProps {
   extraPaddingTop?: number;
+  backgroundColor?: string;
+  withoutGradient?: boolean;
 }
 
-export const SheetHandle = ({ extraPaddingTop = IS_ANDROID ? 24 : 12 }: SheetHandleProps) => {
+export const SheetHandle = ({ extraPaddingTop = IS_ANDROID ? 24 : 12, backgroundColor, withoutGradient }: SheetHandleProps) => {
   const { isDarkMode } = useColorMode();
   const screenBackgroundColor = useBackgroundColor('surfacePrimary');
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
     <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-      <Box background={'surfacePrimary'} height={safeAreaInsets.top + extraPaddingTop} width="full">
+      <Box
+        // background={backgroundColor ? undefined: 'surfacePrimary'}
+        backgroundColor={backgroundColor}
+        height={safeAreaInsets.top + extraPaddingTop}
+        width="full"
+      >
         <Box
           height={{ custom: 5 }}
           width={{ custom: 36 }}
@@ -27,13 +34,15 @@ export const SheetHandle = ({ extraPaddingTop = IS_ANDROID ? 24 : 12 }: SheetHan
           style={{ backgroundColor: isDarkMode ? HANDLE_COLOR : LIGHT_HANDLE_COLOR, bottom: 0, alignSelf: 'center' }}
         />
       </Box>
-      <EasingGradient
-        endColor={screenBackgroundColor}
-        startColor={screenBackgroundColor}
-        endOpacity={0}
-        startOpacity={1}
-        style={{ height: 32, width: '100%', pointerEvents: 'none' }}
-      />
+      {!withoutGradient && (
+        <EasingGradient
+          endColor={screenBackgroundColor}
+          startColor={screenBackgroundColor}
+          endOpacity={0}
+          startOpacity={1}
+          style={{ height: 32, width: '100%', pointerEvents: 'none' }}
+        />
+      )}
     </Box>
   );
 };

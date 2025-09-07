@@ -636,13 +636,13 @@ export type RootStackParamList = {
     market: PerpMarket;
   };
   [Routes.PERPS_ACCOUNT_NAVIGATOR]: NavigatorScreenParams<PerpsStackParamList> | undefined;
+  [Routes.PERPS_DETAIL_SCREEN]: {
+    market: PerpMarket;
+  };
 } & UntypedRoutes;
 
 export type PerpsStackParamList = {
   [Routes.PERPS_NEW_POSITION_SCREEN]: {
-    market: PerpMarket;
-  };
-  [Routes.PERPS_DETAIL_SCREEN]: {
     market: PerpMarket;
   };
 };
