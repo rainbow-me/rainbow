@@ -1,6 +1,7 @@
 import '@/languages';
 import * as Sentry from '@sentry/react-native';
 import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Provider as ReduxProvider } from 'react-redux';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { Toaster } from 'sonner-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
@@ -9,7 +10,6 @@ import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import { Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
 import { OfflineToast } from '@/components/toasts';
@@ -21,7 +21,6 @@ import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
 import store from '@/redux/store';
 import { MainThemeProvider } from '@/theme/ThemeContext';
-import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { analytics } from '@/analytics';
@@ -31,6 +30,7 @@ import * as ls from '@/storage';
 import { migrate } from '@/migrations';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
+import { loadSettingsData } from '@/state/settings/loadSettingsData';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { IS_DEV, IS_PROD, IS_TEST } from '@/env';
@@ -58,6 +58,7 @@ const sx = StyleSheet.create({
 
 function AppComponent() {
   const { initialRoute } = useApplicationSetup();
+
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
   }, []);
@@ -125,12 +126,10 @@ function Root() {
                 <MainThemeProvider>
                   <GestureHandlerRootView style={sx.container}>
                     <RainbowContextWrapper>
-                      <SharedValuesProvider>
-                        <ErrorBoundary>
-                          <App />
-                          <RainbowToastDisplay />
-                        </ErrorBoundary>
-                      </SharedValuesProvider>
+                      <ErrorBoundary>
+                        <App />
+                        <RainbowToastDisplay />
+                      </ErrorBoundary>
                     </RainbowContextWrapper>
                   </GestureHandlerRootView>
                 </MainThemeProvider>
@@ -171,7 +170,12 @@ function onReportPrepared() {
 
 async function initializeApplication() {
   PerformanceTracking.startReportSegment(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.initRootComponent);
-  await Promise.all([initializeRemoteConfig(), migrate()]);
+
+  await Promise.all([
+    initializeRemoteConfig(),
+    migrate(),
+    loadSettingsData(), // load i18n early for first-render
+  ]);
 
   const isReturningUser = ls.device.get(['isReturningUser']);
   const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
