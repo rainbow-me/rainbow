@@ -47,6 +47,7 @@
       "unknown_token": "未知代币"
     },
     "activity_list": {
+      "title": "活动",
       "empty_state": {
         "default_label": "暂无交易记录",
         "recycler_label": "暂无交易记录",
@@ -525,7 +526,7 @@
       "alert": "警报",
       "analyze_env_variables": "分析环境变量",
       "analyze_react_query": "分析 React Query",
-      "analyze_user_assets_query": "Analyze User Assets Query",
+      "analyze_user_assets_query": "分析用户资产查询",
       "applied": "已应用",
       "backups_deleted_successfully": "备份已成功删除",
       "clear_async_storage": "清除异步存储",
@@ -755,6 +756,7 @@
           "what_is": "%{assetName} 是什么？"
         },
         "history": {
+          "title": "历史记录",
           "tabs": {
             "all": "全部",
             "buys": "购买",
@@ -2019,6 +2021,9 @@
       "rewards": "奖励",
       "pools": "池"
     },
+    "profile": {
+      "title": "活动"
+    },
     "savings": {
       "deposit": "存款",
       "deposit_from_wallet": "从钱包存款",
@@ -2066,20 +2071,62 @@
       "backup_google_account": "Google账户",
       "currency": {
         "title": "货币",
-        "ETH": "以太坊",
-        "USD": "美元",
-        "EUR": "欧元",
-        "GBP": "英镑",
-        "AUD": "澳大利亚元",
-        "CNY": "人民币",
-        "KRW": "韩元",
-        "JPY": "日元",
-        "RUB": "卢布",
-        "INR": "印度卢比",
-        "TRY": "土耳其里拉",
-        "CAD": "加拿大元",
-        "NZD": "新西兰元",
-        "ZAR": "南非兰特"
+        "ETH": {
+          "label": "以太坊",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "应用图标",
       "developer": "开发者设置",
@@ -2862,6 +2909,7 @@
         "find_a_code": "查找要扫描的代码",
         "qr_1_app_connected": "1个已连接的应用",
         "qr_multiple_apps_connected": "%{appsConnectedCount} 个已连接的应用",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "扫描以支付或连接",
         "simulator_mode": "模拟器模式",
         "sorry_could_not_be_recognized": "对不起，无法识别该二维码。",
@@ -3215,7 +3263,8 @@
       "show_less": "显示较少",
       "more": "更多",
       "show_more": "更多网络",
-      "all_networks": "所有网络"
+      "all_networks": "所有网络",
+      "search": "搜索"
     },
     "token_launcher": {
       "airdrop": {
