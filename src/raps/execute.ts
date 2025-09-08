@@ -27,38 +27,12 @@ import { createClaimClaimableRap } from './claimClaimable';
 import { claimClaimable } from './actions/claimClaimable';
 import { IS_TEST } from '@/env';
 
-const short = (v?: string | null) => {
-  if (!v || typeof v !== 'string') return 'n/a';
-  return v.length > 12 ? `${v.slice(0, 8)}…${v.slice(-6)}` : v;
-};
-const sameAddr = (a?: string, b?: string) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
-const gasSummary = (g?: any) => {
-  if (!g) return 'n/a';
-  const legacy = g?.gasPrice;
-  const eip = g?.maxFeePerGas || g?.maxPriorityFeePerGas;
-  if (eip) return `1559 mf=${g.maxFeePerGas ?? 'n/a'} mp=${g.maxPriorityFeePerGas ?? 'n/a'}`;
-  if (legacy) return `legacy gp=${legacy}`;
-  return 'n/a';
-};
-const log = (msg: string, extra?: Record<string, unknown>) => {
-  try {
-    if (extra) {
-      console.log(`[RAP] ${msg} ${JSON.stringify(extra)}`);
-    } else {
-      console.log(`[RAP] ${msg}`);
-    }
-  } catch {
-    console.log(`[RAP] ${msg}`);
-  }
-};
-
 const PERF_TRACKING_EXEMPTIONS: RapTypes[] = ['claimBridge', 'claimClaimable'];
 
 export function createSwapRapByType<T extends RapTypes>(
   type: T,
   swapParameters: RapSwapActionParameters<T>
 ): Promise<{ actions: RapAction<RapActionTypes>[] }> {
-  log('createSwapRapByType:start', { type, chainId: swapParameters?.chainId });
   switch (type) {
     case 'claimBridge':
       return createClaimAndBridgeRap(swapParameters as RapSwapActionParameters<'claimBridge'>);
@@ -113,35 +87,6 @@ export async function executeAction<T extends RapActionTypes>({
   gasFeeParamsBySpeed: RapSwapActionParameters<Exclude<T, 'unlock' | 'claim'>>['gasFeeParamsBySpeed'];
 }): Promise<RapActionResponse> {
   const { type, parameters } = action;
-
-  if (type === 'unlock') {
-    const p = parameters as any;
-    log('executeAction:unlock:start', {
-      rap: rapName,
-      index,
-      baseNonce,
-      chainId: p?.chainId,
-      token: short(p?.assetToUnlock?.address),
-      spender: short(p?.contractAddress),
-      amount: p?.amount,
-      gas: gasSummary(gasParams),
-    });
-  } else if (type === 'swap') {
-    const p = parameters as any;
-    log('executeAction:swap:start', {
-      rap: rapName,
-      index,
-      baseNonce,
-      chainId: p?.chainId,
-      requiresApprove: !!p?.requiresApprove,
-      sellAmount: p?.sellAmount,
-      quoteSellToken: short(p?.quote?.sellTokenAddress),
-      gas: gasSummary(gasParams),
-    });
-  } else {
-    log('executeAction:other:start', { rap: rapName, type, index, baseNonce });
-  }
-
   try {
     const actionProps = {
       wallet,
@@ -153,15 +98,14 @@ export async function executeAction<T extends RapActionTypes>({
       gasFeeParamsBySpeed,
     };
     const { nonce, hash } = (await typeAction<T>(type, actionProps)()) as RapActionResult;
-
-    log('executeAction:success', { type, index, hash: short(hash ?? null), returnedBaseNonce: nonce });
-
     return { baseNonce: nonce, errorMessage: null, hash };
   } catch (error) {
-    const message = (error as Error)?.message ?? String(error);
-    logger.error(new RainbowError(`[raps/execute]: ${rapName} - error execute action`), { message });
-    log('executeAction:error', { type, index, msg: message });
-
+    logger.error(new RainbowError(`[raps/execute]: ${rapName} - error execute action`), {
+      message: (error as Error)?.message,
+    });
+    if (index === 0) {
+      return { baseNonce: null, errorMessage: error?.toString() ?? null };
+    }
     return { baseNonce: null, errorMessage: error?.toString() ?? null };
   }
 }
@@ -192,20 +136,6 @@ export const walletExecuteRap = async <T extends RapTypes>(
   type: T,
   parameters: RapSwapActionParameters<T>
 ): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
-  const pAny = parameters as any;
-  const uiSell = pAny?.assetToSell?.address as string | undefined;
-  const quoteSell = pAny?.quote?.sellTokenAddress as string | undefined;
-  const mismatch = !!(quoteSell && uiSell && !sameAddr(quoteSell, uiSell));
-
-  log('walletExecuteRap:start', {
-    type,
-    chainId: parameters?.chainId,
-    uiSell: short(uiSell),
-    quoteSell: short(quoteSell),
-    sellAddrMismatch: mismatch,
-    allowanceNeeded: !!pAny?.quote?.allowanceNeeded,
-  });
-
   // NOTE: We don't care to track claimBridge raps
   const rap = PERF_TRACKING_EXEMPTIONS.includes(type)
     ? await createSwapRapByType(type, parameters)
@@ -220,28 +150,10 @@ export const walletExecuteRap = async <T extends RapTypes>(
 
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
-
-  log('walletExecuteRap:actions', {
-    count: actions.length,
-    order: actions.map(a => a.type),
-  });
-
   let nonce = parameters?.nonce;
   let errorMessage = null;
-
   if (actions.length) {
     const firstAction = actions[0];
-
-    if (firstAction.type === 'unlock') {
-      const p = firstAction.parameters as any;
-      log('walletExecuteRap:firstAction:unlock', {
-        token: short(p?.assetToUnlock?.address),
-        spender: short(p?.contractAddress),
-        chainId: p?.chainId,
-        amount: p?.amount,
-      });
-    }
-
     const actionParams = {
       action: firstAction,
       wallet,
@@ -254,47 +166,14 @@ export const walletExecuteRap = async <T extends RapTypes>(
     };
 
     const { baseNonce, errorMessage: error, hash: firstHash } = await executeAction(actionParams);
-
     const shouldDelayForNodeAck = parameters.chainId !== ChainId.mainnet || IS_TEST;
-    log('walletExecuteRap:postFirstAction', {
-      firstType: firstAction.type,
-      firstHash: short(firstHash ?? null),
-      baseNonce,
-      shouldDelayForNodeAck,
-      nodeAckDelayMs: shouldDelayForNodeAck ? getNodeAckDelay(parameters.chainId) : 0,
-    });
 
     if (typeof baseNonce === 'number') {
       let latestHash = firstHash;
-
       for (let index = 1; index < actions.length; index++) {
-        if (latestHash && shouldDelayForNodeAck) {
-          log('walletExecuteRap:nodeAckDelay', { index, ms: getNodeAckDelay(parameters.chainId) });
-          await delay(getNodeAckDelay(parameters.chainId));
-        }
+        latestHash && shouldDelayForNodeAck && (await delay(getNodeAckDelay(parameters.chainId)));
 
         const action = actions[index];
-        if (action.type === 'unlock') {
-          const p = action.parameters as any;
-          log('walletExecuteRap:nextAction:unlock', {
-            index,
-            token: short(p?.assetToUnlock?.address),
-            spender: short(p?.contractAddress),
-            chainId: p?.chainId,
-            amount: p?.amount,
-          });
-        } else if (action.type === 'swap') {
-          const p = action.parameters as any;
-          log('walletExecuteRap:nextAction:swap', {
-            index,
-            requiresApprove: !!p?.requiresApprove,
-            sellAmount: p?.sellAmount,
-            quoteSellToken: short(p?.quote?.sellTokenAddress),
-          });
-        } else {
-          log('walletExecuteRap:nextAction', { index, type: action.type });
-        }
-
         const actionParams = {
           action,
           wallet,
@@ -305,24 +184,17 @@ export const walletExecuteRap = async <T extends RapTypes>(
           gasParams: parameters?.gasParams,
           gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };
-        const { hash: nextHash, errorMessage: nextErr } = await executeAction(actionParams);
-
-        if (!errorMessage && nextErr) {
-          errorMessage = nextErr;
-          log('walletExecuteRap:actionErrorCaptured', { index, type: action.type, msg: nextErr });
+        const { hash: nextHash, errorMessage: error } = await executeAction(actionParams);
+        // if previous action didn't fail, but the current one did, set the error message
+        if (!errorMessage && error) {
+          errorMessage = error;
         }
         latestHash = nextHash;
       }
-
       nonce = baseNonce + actions.length - 1;
-      log('walletExecuteRap:complete', { finalNonce: nonce, errorMessage });
     } else {
       errorMessage = error;
-      log('walletExecuteRap:abortAfterFirst', { errorMessage: error });
     }
-  } else {
-    log('walletExecuteRap:noActions');
   }
-
   return { nonce, errorMessage };
 };
