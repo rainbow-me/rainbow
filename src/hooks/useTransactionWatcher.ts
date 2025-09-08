@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { MinedTransaction, RainbowTransaction } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
@@ -24,7 +24,7 @@ export function useTransactionWatcher<T extends RainbowTransaction | MinedTransa
   const watchFnRef = useRef(watchFunction);
   watchFnRef.current = watchFunction;
 
-  const transactionsKey = buildTransactionsKey(transactions);
+  const transactionsKey = useMemo(() => buildTransactionsKey(transactions), [transactions]);
 
   const runWatcher = useCallback(
     async (controller: AbortController) => {
