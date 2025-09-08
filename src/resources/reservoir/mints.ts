@@ -4,15 +4,15 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { ChainId } from '@/state/backendNetworks/types';
 
 const showAlert = () => {
   Alert.alert(
-    lang.t(lang.l.minting.could_not_find_collection),
-    lang.t(lang.l.minting.unable_to_find_check_again),
-    [{ text: lang.t(lang.l.button.ok) }],
+    i18n.t(i18n.l.minting.could_not_find_collection),
+    i18n.t(i18n.l.minting.unable_to_find_check_again),
+    [{ text: i18n.t(i18n.l.button.ok) }],
     { cancelable: false }
   );
 };

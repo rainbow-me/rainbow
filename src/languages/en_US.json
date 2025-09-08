@@ -1184,6 +1184,30 @@
         "title": "No %{networkName} %{gasToken} detected",
         "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
         "button": "Proceed anyway"
+      },
+      "ens_primary_name": {
+        "title": "What does it mean to set my ENS name?",
+        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+      },
+      "ens_on_chain_data_warning": {
+        "title": "Heads up!",
+        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+      },
+      "ens_manager": {
+        "title": "What is the .eth manager?",
+        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+      },
+      "ens_owner": {
+        "title": "What is the .eth name owner?",
+        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+      },
+      "ens_resolver": {
+        "title": "What is a .eth resolver?",
+        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+      },
+      "ens_configuration": {
+        "title": "What do these options mean?",
+        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
       }
     },
     "fedora": {

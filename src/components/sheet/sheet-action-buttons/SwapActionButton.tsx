@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import SheetActionButton from './SheetActionButton';
 import { useTheme } from '@/theme';
@@ -144,12 +144,12 @@ function SwapActionButton({ asset, color: givenColor, height, icon, inputType, l
             {icon}
           </TextIcon>
           <Text align="center" color="label" containsEmoji={symbolHasEmoji} numberOfLines={1} size="20pt" weight="heavy">
-            {label || `${lang.t('button.swap')}`}
+            {label || `${i18n.t(i18n.l.button.swap)}`}
           </Text>
         </Inline>
       ) : (
         <Text align="center" color="label" containsEmoji={symbolHasEmoji} numberOfLines={1} size="20pt" weight="heavy">
-          {label || `${lang.t('button.swap')}`}
+          {label || `${i18n.t(i18n.l.button.swap)}`}
         </Text>
       )}
     </SheetActionButton>

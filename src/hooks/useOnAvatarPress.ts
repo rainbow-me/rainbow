@@ -10,7 +10,7 @@ import { useAccountProfileInfo, getIsReadOnlyWallet, useWalletsStore, updateAcco
 import { showActionSheetWithOptions } from '@/utils';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import { openInBrowser } from '@/utils/openInBrowser';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { useCallback } from 'react';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { useNavigation } from '../navigation/Navigation';
@@ -197,31 +197,31 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         !isReadOnly &&
         !isZeroETH && {
           actionKey: 'editProfile',
-          actionTitle: lang.t('profiles.profile_avatar.edit_profile'),
+          actionTitle: i18n.t(i18n.l.profiles.profile_avatar.edit_profile),
           ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'pencil.circle' } }),
         },
       isENSProfile && {
         actionKey: 'viewProfile',
-        actionTitle: lang.t('profiles.profile_avatar.view_profile'),
+        actionTitle: i18n.t(i18n.l.profiles.profile_avatar.view_profile),
         ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
       },
       !isENSProfile &&
         !isReadOnly &&
         !isZeroETH && {
           actionKey: 'createProfile',
-          actionTitle: lang.t('profiles.profile_avatar.create_profile'),
+          actionTitle: i18n.t(i18n.l.profiles.profile_avatar.create_profile),
           ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'person.crop.circle' } }),
         },
       {
         actionKey: 'chooseFromLibrary',
-        actionTitle: lang.t('profiles.profile_avatar.choose_from_library'),
+        actionTitle: i18n.t(i18n.l.profiles.profile_avatar.choose_from_library),
         ...(ios && { icon: { iconType: 'SYSTEM', iconValue: 'photo.on.rectangle.angled' } }),
       },
       !accountImage
         ? ios
           ? {
               actionKey: 'pickEmoji',
-              actionTitle: lang.t('profiles.profile_avatar.pick_emoji'),
+              actionTitle: i18n.t(i18n.l.profiles.profile_avatar.pick_emoji),
               icon: {
                 iconType: 'SYSTEM',
                 iconValue: 'face.smiling',
@@ -229,11 +229,11 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
             }
           : {
               actionKey: 'shuffleEmoji',
-              actionTitle: lang.t('profiles.profile_avatar.shuffle_emoji'),
+              actionTitle: i18n.t(i18n.l.profiles.profile_avatar.shuffle_emoji),
             }
         : {
             actionKey: 'removePhoto',
-            actionTitle: lang.t('profiles.profile_avatar.remove_photo'),
+            actionTitle: i18n.t(i18n.l.profiles.profile_avatar.remove_photo),
           },
     ].filter(Boolean),
   };

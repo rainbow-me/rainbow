@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import { ButtonPressAnimation, HourglassAnimation } from '../../../components/animations';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
@@ -30,10 +30,10 @@ const WaitCommitmentConfirmationContent = ({
                 <HourglassAnimation />
                 <Stack alignHorizontal="center" space="19px (Deprecated)">
                   <Heading align="center" color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
-                    {lang.t('profiles.confirm.transaction_pending')}
+                    {i18n.t(i18n.l.profiles.confirm.transaction_pending)}
                   </Heading>
                   <Text align="center" color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
-                    {lang.t('profiles.confirm.transaction_pending_description')}
+                    {i18n.t(i18n.l.profiles.confirm.transaction_pending_description)}
                   </Text>
                 </Stack>
               </Stack>
@@ -44,7 +44,7 @@ const WaitCommitmentConfirmationContent = ({
       <Inset bottom={isSmallPhone ? '30px (Deprecated)' : undefined}>
         <ButtonPressAnimation onPress={speedUpEnabled ? action : () => null}>
           <Text align="center" color={{ custom: accentColor }} containsEmoji size="16px / 22px (Deprecated)" weight="heavy">
-            {`🚀 ${lang.t('profiles.confirm.speed_up')}`}
+            {`🚀 ${i18n.t(i18n.l.profiles.confirm.speed_up)}`}
           </Text>
         </ButtonPressAnimation>
       </Inset>

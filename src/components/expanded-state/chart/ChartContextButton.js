@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
@@ -43,16 +43,16 @@ export default function ChartContextButton({ asset, color }) {
 
   const options = useMemo(
     () => [
-      `📌️ ${emojiSpacing}${currentAction === EditAction.unpin ? lang.t('wallet.action.unpin') : lang.t('wallet.action.pin')}`,
-      `🙈️ ${emojiSpacing}${currentAction === EditAction.unhide ? lang.t('wallet.action.unhide') : lang.t('wallet.action.hide')}`,
+      `📌️ ${emojiSpacing}${currentAction === EditAction.unpin ? i18n.t(i18n.l.wallet.action.unpin) : i18n.t(i18n.l.wallet.action.pin)}`,
+      `🙈️ ${emojiSpacing}${currentAction === EditAction.unhide ? i18n.t(i18n.l.wallet.action.unhide) : i18n.t(i18n.l.wallet.action.hide)}`,
       ...(asset?.isNativeAsset
         ? []
         : [
-            `🔍 ${emojiSpacing}${lang.t('wallet.action.view_on', {
+            `🔍 ${emojiSpacing}${i18n.t(i18n.l.wallet.action.view_on, {
               blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId: asset?.chainId })),
             })}`,
           ]),
-      ...(ios ? [lang.t('wallet.action.cancel')] : []),
+      ...(ios ? [i18n.t(i18n.l.wallet.action.cancel)] : []),
     ],
     [asset?.chainId, asset?.isNativeAsset, currentAction]
   );

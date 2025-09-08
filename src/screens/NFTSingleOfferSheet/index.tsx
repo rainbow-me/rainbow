@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -18,7 +18,6 @@ import {
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
-import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
@@ -441,7 +440,7 @@ export function NFTSingleOfferSheet() {
   let buttonLabel = '';
   if (!isAccepting) {
     if (insufficientEth) {
-      buttonLabel = lang.t('button.confirm_exchange.insufficient_token', {
+      buttonLabel = i18n.t(i18n.l.button.confirm_exchange.insufficient_token, {
         tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[offerChainId].symbol,
       });
     } else {

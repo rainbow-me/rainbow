@@ -2,7 +2,7 @@ import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import walletTypes from '@/helpers/walletTypes';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSelectedWallet } from '@/state/wallets/walletsStore';
@@ -57,7 +57,7 @@ export default function ManualBackupPrompt() {
             size={imageSize}
           />
           <Text align="center" size="26pt" weight="bold" color="label">
-            {lang.t(lang.l.back_up.manual.backup_manually_now)}
+            {i18n.t(i18n.l.back_up.manual.backup_manually_now)}
           </Text>
         </Stack>
       </Inset>
@@ -71,7 +71,7 @@ export default function ManualBackupPrompt() {
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
               <Text color={'action (Deprecated)'} size="20pt" weight="bold">
-                {lang.t(lang.l.back_up.manual.back_up_now)}
+                {i18n.t(i18n.l.back_up.manual.back_up_now)}
               </Text>
             </Inline>
           </Box>
@@ -87,7 +87,7 @@ export default function ManualBackupPrompt() {
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
               <Text color={'labelSecondary'} size="20pt" weight="bold">
-                {lang.t(lang.l.back_up.manual.already_backed_up)}
+                {i18n.t(i18n.l.back_up.manual.already_backed_up)}
               </Text>
             </Inline>
           </Box>

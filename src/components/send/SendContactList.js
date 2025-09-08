@@ -1,5 +1,5 @@
 import { toChecksumAddress } from 'ethereumjs-util';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
@@ -161,26 +161,26 @@ export default function SendContactList({
       tmp.push({
         data: filteredContacts,
         id: 'contacts',
-        title: `􀉮 ${lang.t('contacts.contacts_title')}`,
+        title: `􀉮 ${i18n.t(i18n.l.contacts.contacts_title)}`,
       });
     filteredAddresses.length &&
       tmp.push({
         data: filteredAddresses,
         id: 'accounts',
-        title: `􀢲 ${lang.t('contacts.my_wallets')}`,
+        title: `􀢲 ${i18n.t(i18n.l.contacts.my_wallets)}`,
       });
     filteredWatchedAddresses.length &&
       tmp.push({
         data: filteredWatchedAddresses,
         id: 'watching',
-        title: `${isDarkMode ? '􀨭' : '􀦧'} ${lang.t('contacts.watching')}`,
+        title: `${isDarkMode ? '􀨭' : '􀦧'} ${i18n.t(i18n.l.contacts.watching)}`,
       });
     currentInput?.length >= 3 &&
       filteredEnsSuggestions.length &&
       tmp.push({
         data: filteredEnsSuggestions,
         id: 'suggestions',
-        title: `􀊫 ${lang.t('contacts.suggestions')}`,
+        title: `􀊫 ${i18n.t(i18n.l.contacts.suggestions)}`,
       });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps

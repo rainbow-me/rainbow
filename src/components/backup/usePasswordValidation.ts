@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { isCloudBackupPasswordValid, cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
 import { useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
@@ -19,7 +19,7 @@ export const usePasswordValidation = (password: string, confirmPassword: string)
     if (password === confirmPassword && isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
     } else if (password.length < cloudBackupPasswordMinLength) {
-      newLabel = lang.t('back_up.cloud.password.minimum_characters', {
+      newLabel = i18n.t(i18n.l.back_up.cloud.password.minimum_characters, {
         minimumLength: cloudBackupPasswordMinLength,
       });
       passwordIsValid = false;
@@ -29,7 +29,7 @@ export const usePasswordValidation = (password: string, confirmPassword: string)
       confirmPassword.length >= password.length &&
       password !== confirmPassword
     ) {
-      newLabel = lang.t(lang.l.back_up.cloud.password.passwords_dont_match);
+      newLabel = i18n.t(i18n.l.back_up.cloud.password.passwords_dont_match);
       setLabelColor(colors.red);
       passwordIsValid = false;
     }

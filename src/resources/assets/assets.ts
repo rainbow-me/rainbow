@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isNativeAsset } from '@/handlers/assets';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import { ParsedAddressAsset } from '@/entities';
@@ -23,7 +23,7 @@ export function parseAsset({ address, asset }: { address: string; asset: AddysAs
     id: address,
     icon_url: asset?.icon_url,
     isNativeAsset: isNativeAsset(address, chainId),
-    name: asset?.name || lang.t('account.unknown_token'),
+    name: asset?.name || i18n.t(i18n.l.account.unknown_token),
     mainnet_address: mainnetAddress,
     mainnetAddress,
     network,

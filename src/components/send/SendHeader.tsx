@@ -1,5 +1,5 @@
 import { isHexString } from '@ethersproject/bytes';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import isEmpty from 'lodash/isEmpty';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Keyboard, TextInput } from 'react-native';
@@ -170,10 +170,10 @@ export default function SendHeader({
         cancelButtonIndex: 3,
         destructiveButtonIndex: 0,
         options: [
-          lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
-          lang.t('contacts.options.edit'),
-          lang.t('wallet.settings.copy_address_capitalized'),
-          lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
+          i18n.t(i18n.l.contacts.options.delete), // <-- destructiveButtonIndex
+          i18n.t(i18n.l.contacts.options.edit),
+          i18n.t(i18n.l.wallet.settings.copy_address_capitalized),
+          i18n.t(i18n.l.contacts.options.cancel), // <-- cancelButtonIndex
         ],
       },
       async buttonIndex => {
@@ -218,9 +218,9 @@ export default function SendHeader({
   return (
     <Fragment>
       <SheetHandleFixedToTop />
-      {isTinyPhone ? null : <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>}
+      {isTinyPhone ? null : <SendSheetTitle>{i18n.t(i18n.l.contacts.send_header)}</SendSheetTitle>}
       <AddressInputContainer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone}>
-        <AddressFieldLabel>{lang.t('contacts.to_header')}:</AddressFieldLabel>
+        <AddressFieldLabel>{i18n.t(i18n.l.contacts.to_header)}:</AddressFieldLabel>
         <AddressField
           address={recipient}
           autoFocus={!showAssetList}
@@ -242,7 +242,7 @@ export default function SendHeader({
               testID={isPreExistingContact ? 'edit-contact-button' : 'add-contact-button'}
               weight="heavy"
             >
-              {isPreExistingContact ? '􀍡' : ` 􀉯 ${lang.t('button.save')}`}
+              {isPreExistingContact ? '􀍡' : ` 􀉯 ${i18n.t(i18n.l.button.save)}`}
             </Text>
           </ButtonPressAnimation>
         )}

@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { analytics } from '@/analytics';
 import { coinbaseGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { openInBrowser } from '@/utils/openInBrowser';
 
 export function Coinbase({ accountAddress, config }: { accountAddress: string; config: ProviderConfig }) {
@@ -46,11 +46,11 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
           });
 
           WrappedAlert.alert(
-            lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
-            lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
+            i18n.t(i18n.l.wallet.add_cash_v2.generic_error.title),
+            i18n.t(i18n.l.wallet.add_cash_v2.generic_error.message),
             [
               {
-                text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
+                text: i18n.t(i18n.l.wallet.add_cash_v2.generic_error.button),
               },
             ]
           );
