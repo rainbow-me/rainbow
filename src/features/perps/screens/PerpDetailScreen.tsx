@@ -212,10 +212,12 @@ const CollapsibleHeader = memo(function CollapsibleHeader({
   isExpanded,
   onPress,
   title,
+  isEmpty,
 }: {
-  isExpanded: boolean;
-  onPress: () => void;
+  isExpanded?: boolean;
+  onPress?: () => void;
   title: string;
+  isEmpty?: boolean;
 }) {
   const colors = usePerpsAccentColorContext();
 
@@ -230,11 +232,13 @@ const CollapsibleHeader = memo(function CollapsibleHeader({
             {title}
           </Text>
         </Box>
-        <Box style={{ transform: [{ rotate: isExpanded ? '0deg' : '-90deg' }] }}>
-          <Text size="17pt" weight="heavy" color={{ custom: colors.accentColors.opacity56 }}>
-            􀆈
-          </Text>
-        </Box>
+        {!isEmpty && (
+          <Box style={{ transform: [{ rotate: isExpanded ? '0deg' : '-90deg' }] }}>
+            <Text size="17pt" weight="heavy" color={{ custom: colors.accentColors.opacity56 }}>
+              􀆈
+            </Text>
+          </Box>
+        )}
       </Box>
     </ButtonPressAnimation>
   );
@@ -293,7 +297,17 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
   const visibleTrades = isExpanded ? trades : trades.slice(0, 3);
 
   if (trades.length === 0) {
-    return null;
+    return (
+      <Box gap={16}>
+        <CollapsibleHeader isEmpty title="History" />
+
+        <Box>
+          <Text weight="semibold" size="17pt" color="labelTertiary">
+            No trades
+          </Text>
+        </Box>
+      </Box>
+    );
   }
 
   return (
