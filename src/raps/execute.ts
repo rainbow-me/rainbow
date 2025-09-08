@@ -269,7 +269,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
 
       for (let index = 1; index < actions.length; index++) {
         if (latestHash && shouldDelayForNodeAck) {
-          log('walletExecuteRap:nodeAckDelay', { index, ms: NODE_ACK_DELAY });
+          log('walletExecuteRap:nodeAckDelay', { index, ms: getNodeAckDelay(parameters.chainId) });
           await delay(getNodeAckDelay(parameters.chainId));
         }
 
