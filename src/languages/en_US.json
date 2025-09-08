@@ -13,7 +13,7 @@
       "show": "Show",
       "show_all": "Show all",
       "show_less": "Show less",
-      "tab_balances": "Balances",
+      "tab_tokens": "Tokens",
       "tab_balances_empty_state": "Balance",
       "tab_balances_tooltip": "Ethereum and Token Balances",
       "tab_claimables": "Claimables",

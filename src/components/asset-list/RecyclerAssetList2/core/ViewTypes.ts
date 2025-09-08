@@ -50,6 +50,9 @@ export enum CellType {
   PERPS_NO_POSITIONS = 'PERPS_NO_POSITIONS',
   PERPS_SPACE_AFTER = 'PERPS_SPACE_AFTER',
 
+  TOKENS_HEADER = 'TOKENS_HEADER',
+  TOKENS_HEADER_SPACE_BEFORE = 'TOKENS_HEADER_SPACE_BEFORE',
+
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
   ETH_CARD = 'ETH_CARD',
@@ -135,6 +138,10 @@ export type PerpsHeaderExtraData = {
   total: string;
 };
 
+export type TokensHeaderExtraData = {
+  type: CellType.TOKENS_HEADER;
+};
+
 export type LegacyNFTFamilyExtraData = {
   type: CellType.LEGACY_FAMILY_HEADER;
   name: string;
@@ -178,6 +185,7 @@ export type CellExtraData =
   | PerpsPositionExtraData
   | PerpsNoPositionsExtraData
   | PerpsHeaderExtraData
+  | TokensHeaderExtraData
   | ProfileActionButtonsRowExtraData;
 
 export type CellTypes = BaseCellType | (CellExtraData & BaseCellType);

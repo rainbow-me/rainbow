@@ -95,7 +95,8 @@ const listTypeSelector = (state: WalletSectionsState) => state.listType;
 const isReadOnlyWalletSelector = (state: WalletSectionsState) => state.isReadOnlyWallet;
 
 interface BalanceSectionData {
-  balanceSection: CellTypes[];
+  headerSection: CellTypes[];
+  contentSection: CellTypes[];
   isEmpty: boolean;
   isLoadingUserAssets: boolean;
 }
@@ -106,7 +107,8 @@ interface BriefWalletSectionsResult {
 }
 
 interface BalanceSectionResult {
-  balanceSection: CellTypes[];
+  headerSection: CellTypes[];
+  contentSection: CellTypes[];
   isLoadingUserAssets: boolean;
   isEmpty: boolean;
 }
@@ -123,14 +125,23 @@ const buildBriefWalletSections = (
   positions: RainbowPositions | null,
   perpsData: PerpsWalletListData | null
 ): BriefWalletSectionsResult => {
-  const { isEmpty, balanceSection, isLoadingUserAssets } = balanceSectionData;
+  const { isEmpty, headerSection, contentSection, isLoadingUserAssets } = balanceSectionData;
 
   const positionsSection = withPositionsSection(positions, isLoadingUserAssets);
   const claimablesSection = withClaimablesSection(claimables, isLoadingUserAssets);
   const perpsSection = withPerpsSection(perpsData, isLoadingUserAssets);
+  const tokensHeaderSection = withTokensHeaderSection(contentSection);
 
   return {
-    briefSectionsData: [...balanceSection, ...perpsSection, ...claimablesSection, ...positionsSection, ...uniqueTokenFamiliesSection],
+    briefSectionsData: [
+      ...headerSection,
+      ...perpsSection,
+      ...tokensHeaderSection,
+      ...contentSection,
+      ...claimablesSection,
+      ...positionsSection,
+      ...uniqueTokenFamiliesSection,
+    ],
     isEmpty,
   };
 };
@@ -241,6 +252,26 @@ const withPerpsSection = (perpsData: PerpsWalletListData | null, isLoadingUserAs
     {
       type: CellType.PERPS_SPACE_AFTER,
       uid: 'perps-spacer-after',
+    },
+  ];
+};
+
+const withTokensHeaderSection = (contentSection: CellTypes[]): CellTypes[] => {
+  // Only show tokens header if we have token content (not empty wallet state)
+  const hasTokenContent = contentSection.some(
+    item => item.type === CellType.COIN || item.type === CellType.COIN_DIVIDER || item.type === CellType.LOADING_ASSETS
+  );
+
+  if (!hasTokenContent) return [];
+
+  return [
+    {
+      type: CellType.TOKENS_HEADER_SPACE_BEFORE,
+      uid: 'tokens-header-spacer-before',
+    },
+    {
+      type: CellType.TOKENS_HEADER,
+      uid: 'tokens-header',
     },
   ];
 };
@@ -364,7 +395,8 @@ const withBriefBalanceSection = (
   }
 
   const result = {
-    balanceSection: [...header, ...content],
+    headerSection: header,
+    contentSection: content,
     isLoadingUserAssets,
     isEmpty,
   };

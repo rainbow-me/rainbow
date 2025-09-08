@@ -19,7 +19,7 @@ export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balan
   const color = opacityWorklet(USDC_COLORS.primary, 0.06);
 
   return (
-    <Box paddingHorizontal={'20px'}>
+    <Box paddingHorizontal={'19px (Deprecated)'}>
       <ButtonPressAnimation
         onPress={() => {
           Navigation.handleAction(Routes.PERPS_ACCOUNT_NAVIGATOR);

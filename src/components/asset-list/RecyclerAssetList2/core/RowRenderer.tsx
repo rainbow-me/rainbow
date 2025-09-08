@@ -48,6 +48,7 @@ import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/Pe
 import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
 import { PerpsNoPositions } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsNoPositions';
 import { PerpsAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsAvailableBalance';
+import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/TokensHeader';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -70,6 +71,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.CLAIMABLES_SPACE_BEFORE:
     case CellType.PERPS_SPACE_AFTER:
     case CellType.PERPS_SPACE_BEFORE:
+    case CellType.TOKENS_HEADER_SPACE_BEFORE:
     case CellType.EMPTY_REMOTE_CARD_CAROUSEL:
       return null;
     case CellType.COIN_DIVIDER:
@@ -224,11 +226,14 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <PerpsAvailableBalance balance={balance} />;
     }
     case CellType.PERPS_POSITION: {
-      const { position, index } = data as PerpsPositionExtraData;
+      const { position } = data as PerpsPositionExtraData;
       return <PerpsPositionRow position={position} />;
     }
     case CellType.PERPS_NO_POSITIONS: {
       return <PerpsNoPositions />;
+    }
+    case CellType.TOKENS_HEADER: {
+      return <TokensHeader />;
     }
     case CellType.LOADING_ASSETS:
       return <AssetListItemSkeleton />;
@@ -237,4 +242,4 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
   }
 }
 
-export default rowRenderer as (type: string | number, data: any) => React.ReactElement;
+export default rowRenderer as (type: string | number, data: any) => React.ReactElement; // eslint-disable-line @typescript-eslint/no-explicit-any
