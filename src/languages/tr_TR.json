@@ -1184,6 +1184,30 @@
         "title": "Hayır %{networkName} %{gasToken} tespit edilmedi",
         "text": "%{networkName} yi %{networkName} %{gasToken}olmadan kullanamazsınız . Bu işlemi gerçekleştirirseniz, %{networkName} jetonlarınızı değiştiremez, köprülemez veya cüzdanınıza %{networkName} %{gasToken} eklenmedikçe aktaramazsınız.",
         "button": "Yine de Devam Et"
+      },
+      "ens_primary_name": {
+        "title": "What does it mean to set my ENS name?",
+        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+      },
+      "ens_on_chain_data_warning": {
+        "title": "Dikkat!",
+        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+      },
+      "ens_manager": {
+        "title": "What is the .eth manager?",
+        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+      },
+      "ens_owner": {
+        "title": "What is the .eth name owner?",
+        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+      },
+      "ens_resolver": {
+        "title": "What is a .eth resolver?",
+        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+      },
+      "ens_configuration": {
+        "title": "What do these options mean?",
+        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
       }
     },
     "fedora": {
@@ -2076,7 +2100,7 @@
           "code": "ETH"
         },
         "USD": {
-          "label": "United States Dollar",
+          "label": "Amerikan Doları",
           "code": "USD"
         },
         "EUR": {
@@ -2084,47 +2108,47 @@
           "code": "EUR"
         },
         "GBP": {
-          "label": "British Pound",
+          "label": "İngiliz Sterlini",
           "code": "GBP"
         },
         "AUD": {
-          "label": "Australian Dollar",
+          "label": "Avustralya Doları",
           "code": "AUD"
         },
         "CNY": {
-          "label": "Chinese Yuan",
+          "label": "Çin Yuanı",
           "code": "CNY"
         },
         "KRW": {
-          "label": "South Korean Won",
+          "label": "Güney Kore Wonu",
           "code": "KRW"
         },
         "JPY": {
-          "label": "Japanese Yen",
+          "label": "Japon Yeni",
           "code": "JPY"
         },
         "RUB": {
-          "label": "Russian Ruble",
+          "label": "Rus Rublesi",
           "code": "RUB"
         },
         "INR": {
-          "label": "Indian Rupee",
+          "label": "Hint Rupisi",
           "code": "INR"
         },
         "TRY": {
-          "label": "Turkish Lira",
+          "label": "Türk Lirası",
           "code": "TRY"
         },
         "CAD": {
-          "label": "Canadian Dollar",
+          "label": "Kanada Doları",
           "code": "CAD"
         },
         "NZD": {
-          "label": "New Zealand Dollar",
+          "label": "Yeni Zelanda Doları",
           "code": "NZD"
         },
         "ZAR": {
-          "label": "South African Rand",
+          "label": "Güney Afrika Randı",
           "code": "ZAR"
         }
       },
@@ -2909,7 +2933,7 @@
         "find_a_code": "Taramak için bir kod bul",
         "qr_1_app_connected": "1 Bağlı Uygulama",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Bağlı Uygulamalar",
-        "scan_to_connect": "Scan to Connect",
+        "scan_to_connect": "Bağlanmak için Tarayın",
         "scan_to_pay_or_connect": "Tarama yaparak ödeme yapın veya bağlanın",
         "simulator_mode": "Simülatör Modu",
         "sorry_could_not_be_recognized": "Üzgünüz, bu QR kodu tanınmadı.",
@@ -3467,16 +3491,31 @@
         "steps": {
           "step_1": {
             "title": "Yarış başladı",
-            "subtitle_parts": ["En yüksek", " alım hacmine ", "sahip jeton şu anki kraldır."]
+            "subtitle_parts": [
+              "En yüksek",
+              " alım hacmine ",
+              "sahip jeton şu anki kraldır."
+            ]
           },
           "step_2": {
             "title": "Günde bir taç",
-            "subtitle_parts": ["Saat", " gece yarısı (12:00 AM UTC), ", "lider jeton günlük kazanan ilan edilir."]
+            "subtitle_parts": [
+              "Saat",
+              " gece yarısı (12:00 AM UTC), ",
+              "lider jeton günlük kazanan ilan edilir."
+            ]
           },
           "step_3": {
             "title": "Ödül Kazan",
-            "subtitle_parts": ["Şu anki kralın alıcıları", " 2x puan alır."],
-            "subtitle_two_parts": ["Yaratıcılar", " puan kazanır ", "taçlandırıldığında."]
+            "subtitle_parts": [
+              "Şu anki kralın alıcıları",
+              " 2x puan alır."
+            ],
+            "subtitle_two_parts": [
+              "Yaratıcılar",
+              " puan kazanır ",
+              "taçlandırıldığında."
+            ]
           }
         }
       }
