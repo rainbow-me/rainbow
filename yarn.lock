@@ -4230,15 +4230,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@legendapp/list@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@legendapp/list@npm:1.1.4"
+"@legendapp/list@npm:2.0.2":
+  version: 2.0.2
+  resolution: "@legendapp/list@npm:2.0.2"
   dependencies:
     use-sync-external-store: "npm:^1.5.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/add14842533c2a50de36c9e019620b982e6fb76e1133258c1f959371180cb2d81a5436e2c3228987ef278efe18187282e6357d5b195b75b0add5fe7d0246902e
+  checksum: 10c0/5c5140ef31d78b17b59d88145ad453bb3cf3be4f40955a4a3906939e03d6dd8f3a41620501a5209fe203e197949abd2dcd2ad9717de93be4aaed676fc6d2c1dc
   languageName: node
   linkType: hard
 
@@ -8787,7 +8787,7 @@ __metadata:
     "@lavamoat/preinstall-always-fail": "npm:2.0.0"
     "@ledgerhq/hw-app-eth": "npm:6.39.0"
     "@ledgerhq/react-native-hw-transport-ble": "npm:6.33.4"
-    "@legendapp/list": "npm:1.1.4"
+    "@legendapp/list": "npm:2.0.2"
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@nktkas/hyperliquid": "npm:0.24.3"
     "@notifee/react-native": "npm:7.8.2"

@@ -13,6 +13,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { NativeCurrencyKey } from '@/entities';
+import * as i18n from '@/languages';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
 
@@ -44,7 +45,7 @@ const CurrencySection = () => {
   return (
     <MenuContainer>
       <Menu>
-        {currencyListItems.map(({ label, emojiName, currency }: any) => (
+        {currencyListItems.map(({ emojiName, currency }: any) => (
           <MenuItem
             key={currency}
             leftComponent={
@@ -64,7 +65,11 @@ const CurrencySection = () => {
             onPress={() => onSelectCurrency(currency)}
             rightComponent={currency === nativeCurrency && <MenuItem.StatusIcon status="selected" />}
             size={52}
-            titleComponent={<MenuItem.Title text={label} />}
+            titleComponent={
+              <MenuItem.Title
+                text={i18n.t(i18n.l.settings.currency[currency as Exclude<keyof typeof i18n.l.settings.currency, 'title'>].label)}
+              />
+            }
           />
         ))}
       </Menu>

@@ -5,11 +5,23 @@ import { ADDYS_API_KEY, ADDYS_BASE_URL } from 'react-native-dotenv';
 let addysHttp: RainbowFetchClient | undefined;
 
 export const getAddysHttpClient = ({ abortController }: { abortController?: AbortController | null } = {}) => {
-  const clientUrl = addysHttp?.baseURL;
   const baseUrl = ADDYS_BASE_URL;
-  if (!addysHttp || clientUrl !== baseUrl) {
+
+  if (!addysHttp || addysHttp.baseURL !== baseUrl) {
     addysHttp = new RainbowFetchClient({
-      baseURL: ADDYS_BASE_URL,
+      baseURL: baseUrl,
+      headers: {
+        Authorization: `Bearer ${ADDYS_API_KEY}`,
+      },
+      timeout: time.seconds(30),
+    });
+  }
+
+  // If a per-request AbortController is provided, return a dedicated
+  // client configured with it to avoid leaking aborted signals.
+  if (abortController) {
+    return new RainbowFetchClient({
+      baseURL: baseUrl,
       abortController,
       headers: {
         Authorization: `Bearer ${ADDYS_API_KEY}`,

@@ -1,0 +1,12 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- runFlow: ./Prepare.yaml
+- assertVisible:
+    id: welcome-screen
+- tapOn: '.*Get a new wallet'
+- runFlow: ../utils/MaybeSetupPin.yaml
+- assertVisible:
+    id: 'eth-card'

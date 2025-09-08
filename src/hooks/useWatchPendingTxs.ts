@@ -1,9 +1,9 @@
-import { useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
-import { transactionFetchQuery } from '@/resources/transactions/transaction';
+import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -26,7 +26,7 @@ async function fetchTransaction({
     if (!transaction.chainId || !transaction.hash) {
       throw new Error('Pending transaction missing chainId or hash');
     }
-    const fetchedTransaction = await transactionFetchQuery({
+    const fetchedTransaction = await fetchRawTransaction({
       address,
       chainId: transaction.chainId,
       currency,
@@ -64,7 +64,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       const now = Math.floor(Date.now() / 1000);
 
       const fetchedTransactions = await Promise.all(
-        pendingTransactions.map((tx: RainbowTransaction) => fetchTransaction({ address, currency: nativeCurrency, transaction: tx }))
+        pendingTransactions.map((transaction: RainbowTransaction) => fetchTransaction({ address, currency: nativeCurrency, transaction }))
       );
 
       if (canceled) return;
@@ -92,7 +92,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         }
       );
 
-      usePendingTransactionsStore.getState().setPendingTransactions({
+      pendingTransactionsActions.setPendingTransactions({
         address,
         pendingTransactions: newPendingTransactions,
       });
@@ -114,5 +114,5 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     [address, nativeCurrency]
   );
 
-  return { watchPendingTransactions };
+  return watchPendingTransactions;
 };

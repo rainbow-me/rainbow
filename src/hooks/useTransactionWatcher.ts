@@ -1,48 +1,81 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { MinedTransaction, RainbowTransaction } from '@/entities';
+import { RainbowError, logger } from '@/logger';
+import { MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { time } from '@/utils/time';
 
-interface UseTransactionWatcherProps<T> {
+interface UseTransactionWatcherProps<T extends RainbowTransaction | MinedTransactionWithPolling> {
+  interval?: number;
   transactions: T[];
   watchFunction: (transactions: T[], signal: AbortSignal) => Promise<void>;
-  interval?: number;
 }
 
-export function useTransactionWatcher<T>({ transactions, watchFunction, interval = time.seconds(1) }: UseTransactionWatcherProps<T>) {
-  const isProcessingRef = useRef(false);
-  const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
-  const abortControllerRef = useRef<AbortController | null>(null);
+export function useTransactionWatcher<T extends RainbowTransaction | MinedTransactionWithPolling>({
+  interval = time.seconds(1),
+  transactions,
+  watchFunction,
+}: UseTransactionWatcherProps<T>) {
+  const abortRef = useRef<AbortController | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const processTransactions = useCallback(async () => {
-    if (isProcessingRef.current || transactions.length === 0) return;
+  const transactionsRef = useRef<T[]>(transactions);
+  transactionsRef.current = transactions;
 
-    isProcessingRef.current = true;
-    abortControllerRef.current?.abort();
-    abortControllerRef.current = new AbortController();
-    try {
-      await watchFunction(transactions, abortControllerRef.current.signal);
-    } finally {
-      // eslint-disable-next-line require-atomic-updates
-      isProcessingRef.current = false;
-    }
-  }, [watchFunction, transactions]);
+  const watchFnRef = useRef(watchFunction);
+  watchFnRef.current = watchFunction;
+
+  const transactionsKey = useMemo(() => buildTransactionsKey(transactions), [transactions]);
+
+  const runWatcher = useCallback(
+    async (controller: AbortController) => {
+      if (controller.signal.aborted) return;
+
+      const currentTransactions = transactionsRef.current;
+      if (currentTransactions.length) {
+        try {
+          await watchFnRef.current(currentTransactions, controller.signal);
+        } catch (e) {
+          if (!controller.signal.aborted) logger.error(new RainbowError('[useTransactionWatcher]: Error watching transactions', e));
+        }
+      }
+
+      if (!controller.signal.aborted) {
+        timeoutRef.current = setTimeout(() => runWatcher(controller), interval);
+      }
+    },
+    [interval]
+  );
 
   useEffect(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = undefined;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
+    abortRef.current?.abort();
 
-    if (transactions.length > 0) {
-      processTransactions();
-      intervalRef.current = setInterval(processTransactions, interval);
-    }
+    if (!transactionsKey) return;
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    runWatcher(controller);
 
     return () => {
-      abortControllerRef.current?.abort();
-      abortControllerRef.current = null;
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
+      controller.abort();
+      abortRef.current = null;
     };
-  }, [transactions.length, processTransactions, interval]);
+  }, [interval, runWatcher, transactionsKey]);
+}
+
+function buildTransactionsKey<T extends RainbowTransaction | MinedTransactionWithPolling>(transactions: T[]): string {
+  let key = '';
+  for (const transaction of transactions) {
+    const tx: MinedTransaction | RainbowTransaction = 'transaction' in transaction ? transaction.transaction : transaction;
+    key += `${tx.hash}:${tx.chainId}:${tx.nonce}:${tx.status}`;
+  }
+  return key;
 }

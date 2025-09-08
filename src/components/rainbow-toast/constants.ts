@@ -1,3 +1,4 @@
+import { IS_TEST } from '@/env';
 import { time } from '@/utils';
 
 export const TOAST_ICON_SIZE = 28;
@@ -13,7 +14,7 @@ export const TOAST_GAP_FAR = 3.5; // gap for third item
 export const TOAST_TOP_OFFSET = 10;
 export const TOAST_INITIAL_OFFSET_ABOVE = -80;
 export const TOAST_INITIAL_OFFSET_BELOW = 10;
-export const TOAST_HIDE_TIMEOUT_MS = time.seconds(4);
+export const TOAST_HIDE_TIMEOUT_MS = IS_TEST ? time.seconds(15) : time.seconds(4);
 
 // make dismissing easier (lower) or harder (higher)
 export const TOAST_EXPANDED_DISMISS_SENSITIVITY = 1;

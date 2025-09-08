@@ -3,6 +3,7 @@
 set -euo pipefail
 
 export PATH="$PATH":"$HOME/.maestro/bin"
+export MAESTRO_DISABLE_UPDATE_CHECK=true
 export MAESTRO_CLI_NO_ANALYTICS=true
 export MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true
 
