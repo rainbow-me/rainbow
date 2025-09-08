@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { format, formatDistanceStrict } from 'date-fns';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { ENSConfirmRenewSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
@@ -93,7 +93,9 @@ export default function ENSBriefTokenInfoRow({
         loading={!expiryDate}
         onPress={handlePressExpiryDate}
         size="larger"
-        title={lang.t(`expanded_state.unique_expanded.${showExpiryDistance ? 'expires_in' : 'expires_on'}`)}
+        title={i18n.t(
+          showExpiryDistance ? i18n.l.expanded_state.unique_expanded.expires_in : i18n.l.expanded_state.unique_expanded.expires_on
+        )}
         weight="heavy"
       >
         {expiryDate

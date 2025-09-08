@@ -1,5 +1,5 @@
 import ConditionalWrap from 'conditional-wrap';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
 import ActionButton from './ActionButton';
@@ -29,11 +29,11 @@ export default function WatchButton({ address, ensName, avatarUrl }: { address?:
       menuItems: [
         {
           actionKey: 'unwatch',
-          actionTitle: lang.t('profiles.actions.unwatch_ens', { ensName }),
+          actionTitle: i18n.t(i18n.l.profiles.actions.unwatch_ens, { ensName: ensName as string }),
           menuAttributes: ['destructive'],
         },
       ],
-      menuTitle: lang.t('profiles.actions.unwatch_ens_title', { ensName }),
+      menuTitle: i18n.t(i18n.l.profiles.actions.unwatch_ens_title, { ensName: ensName as string }),
     } as MenuConfig;
   }, [ensName]);
 
@@ -60,7 +60,8 @@ export default function WatchButton({ address, ensName, avatarUrl }: { address?:
         testID="profile-sheet-watch-button"
         variant={!optimisticIsWatching ? 'solid' : 'outlined'}
       >
-        {(optimisticIsWatching ? '' : '􀨭 ') + lang.t(`profiles.actions.${optimisticIsWatching ? 'watching' : 'watch'}`)}
+        {(optimisticIsWatching ? '' : '􀨭 ') +
+          i18n.t(optimisticIsWatching ? i18n.l.profiles.actions.watching : i18n.l.profiles.actions.watch)}
       </ActionButton>
     </ConditionalWrap>
   );

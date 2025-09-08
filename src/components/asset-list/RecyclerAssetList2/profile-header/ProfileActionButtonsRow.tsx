@@ -1,7 +1,7 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -153,7 +153,7 @@ function BuyButton() {
   return (
     <Box>
       <ActionButton icon="􀁌" onPress={handlePress} testID="buy-button">
-        {lang.t('wallet.buy')}
+        {i18n.t(i18n.l.wallet.buy)}
       </ActionButton>
     </Box>
   );
@@ -171,7 +171,7 @@ function SwapButton() {
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">
-      {lang.t('button.swap')}
+      {i18n.t(i18n.l.button.swap)}
     </ActionButton>
   );
 }
@@ -189,7 +189,7 @@ function SendButton() {
 
   return (
     <ActionButton icon="􀈟" onPress={handlePress} testID="send-button">
-      {lang.t('button.send')}
+      {i18n.t(i18n.l.button.send)}
     </ActionButton>
   );
 }
@@ -217,7 +217,7 @@ export function CopyButton() {
     <>
       <CopyFloatingEmojis textToCopy={accountAddress}>
         <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
-          {lang.t('wallet.copy')}
+          {i18n.t(i18n.l.wallet.copy)}
         </ActionButton>
       </CopyFloatingEmojis>
     </>

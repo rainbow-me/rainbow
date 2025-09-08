@@ -1,11 +1,11 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import Text from './Text';
 import { abbreviations } from '@/utils';
 
 const TruncatedENS = ({ ens, truncationLength, ...props }, ref) => {
   const text = React.useMemo(
-    () => (ens ? abbreviations.abbreviateEnsForDisplay(ens, truncationLength) : lang.t('wallet.error_displaying_address')),
+    () => (ens ? abbreviations.abbreviateEnsForDisplay(ens, truncationLength) : i18n.t(i18n.l.wallet.error_displaying_address)),
     [ens, truncationLength]
   );
   return (

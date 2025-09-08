@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Source } from 'react-native-fast-image';
 
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { cloudPlatform } from '@/utils/platform';
 import { PasswordField } from '@/components/fields';
@@ -114,13 +114,13 @@ export function BackupCloudStep() {
               size={72}
             />
             <Stack space="12px">
-              <Title>{lang.t(lang.l.back_up.cloud.password.choose_a_password)}</Title>
+              <Title>{i18n.t(i18n.l.back_up.cloud.password.choose_a_password)}</Title>
               <DescriptionText>
-                {lang.t(lang.l.back_up.cloud.password.a_password_youll_remember_part_one)}
+                {i18n.t(i18n.l.back_up.cloud.password.a_password_youll_remember_part_one)}
                 &nbsp;
-                <ImportantText>{lang.t(lang.l.back_up.cloud.password.not)}</ImportantText>
+                <ImportantText>{i18n.t(i18n.l.back_up.cloud.password.not)}</ImportantText>
                 &nbsp;
-                {lang.t(lang.l.back_up.cloud.password.a_password_youll_remember_part_two)}
+                {i18n.t(i18n.l.back_up.cloud.password.a_password_youll_remember_part_two)}
               </DescriptionText>
             </Stack>
           </Masthead>
@@ -133,7 +133,7 @@ export function BackupCloudStep() {
               onFocus={(target: any) => onTextInputFocus(target)}
               onSubmitEditing={onPasswordSubmit}
               password={password}
-              placeholder={lang.t(lang.l.back_up.cloud.password.backup_password)}
+              placeholder={i18n.t(i18n.l.back_up.cloud.password.backup_password)}
               ref={passwordRef}
               returnKeyType="next"
               textContentType="newPassword"
@@ -151,7 +151,7 @@ export function BackupCloudStep() {
                 onFocus={(target: any) => onTextInputFocus(target, true)}
                 onSubmitEditing={() => onSuccessAndNavigateBack(password)}
                 password={confirmPassword}
-                placeholder={lang.t(lang.l.back_up.cloud.password.confirm_placeholder)}
+                placeholder={i18n.t(i18n.l.back_up.cloud.password.confirm_placeholder)}
                 ref={confirmPasswordRef}
                 testID="confirm-password-input"
               />
@@ -168,7 +168,7 @@ export function BackupCloudStep() {
               width={deviceWidth - 48}
               disabled={!validPassword}
               type={RainbowButtonTypes.backup}
-              label={`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
+              label={`􀎽 ${i18n.t(i18n.l.back_up.cloud.back_up_to_platform, {
                 cloudPlatformName: cloudPlatform,
               })}`}
               onPress={() => onSuccessAndNavigateBack(password)}
@@ -186,7 +186,7 @@ export function BackupCloudStep() {
               width="full"
             >
               <ButtonText>
-                {`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
+                {`􀎽 ${i18n.t(i18n.l.back_up.cloud.back_up_to_platform, {
                   cloudPlatformName: cloudPlatform,
                 })}`}
               </ButtonText>

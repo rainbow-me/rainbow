@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
@@ -9,7 +9,6 @@ import { borders } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon, initials } from '@/utils';
 import ShadowStack from '@/react-native-shadow-stack';
-import * as i18n from '@/languages';
 
 type Props = {
   familyName: string;
@@ -53,7 +52,7 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
     );
   }
 
-  if (familyName === lang.t('button.hidden')) {
+  if (familyName === i18n.t(i18n.l.button.hidden)) {
     return (
       <View
         style={[

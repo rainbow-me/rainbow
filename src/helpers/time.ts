@@ -1,13 +1,13 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { findKey, isObjectLike, isString } from 'lodash';
 import parseMilliseconds from 'parse-ms';
 import { convertStringToNumber, omitBy } from './utilities';
 
-const buildLocalizedTimeUnitString = ({ plural, short, unit }: any) => {
+const buildLocalizedTimeUnitString = ({ plural, short, unit }: { plural: boolean; short: boolean; unit: string }) => {
   const length = short ? 'short' : 'long';
   const plurality = plural ? 'plural' : 'singular';
 
-  return lang.t(`time.${unit}.${length}.${plurality}`);
+  return i18n.t((i18n.l.time as Record<string, any>)[unit][length][plurality]);
 };
 
 const getHighestResolutionUnit = (timeUnitValues: any) => {

@@ -4,7 +4,7 @@ import Mailer from 'react-native-mail';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import { Alert } from '@/components/alerts';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 
 type Options = {
   subject: string;
@@ -26,15 +26,15 @@ export function emailRainbow({ subject, email = 'support@rainbow.me', hideRainbo
           buttons: [
             {
               onPress: () => Clipboard.setString(email),
-              text: lang.t(lang.l.support.error_alert.copy_email_address),
+              text: i18n.t(i18n.l.support.error_alert.copy_email_address),
             },
             {
               style: 'cancel',
-              text: lang.t(lang.l.support.error_alert.no_thanks),
+              text: i18n.t(i18n.l.support.error_alert.no_thanks),
             },
           ],
-          message: lang.t(lang.l.support.error_alert.message),
-          title: lang.t(lang.l.support.error_alert.title),
+          message: i18n.t(i18n.l.support.error_alert.message),
+          title: i18n.t(i18n.l.support.error_alert.title),
         });
       }
     }, 250)

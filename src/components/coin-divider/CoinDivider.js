@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useContext, useRef, useState, memo } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
@@ -122,14 +122,14 @@ const CoinDivider = memo(function CoinDivider({ balancesSum, defaultToEditButton
               isVisible={isCoinListEdited}
               onPress={setPinnedCoins}
               shouldReloadList
-              text={currentAction === EditAction.unpin ? lang.t('button.unpin') : lang.t('button.pin')}
+              text={currentAction === EditAction.unpin ? i18n.t(i18n.l.button.unpin) : i18n.t(i18n.l.button.pin)}
             />
             <CoinDividerEditButton
               isActive={currentAction !== EditAction.none}
               isVisible={isCoinListEdited}
               onPress={setHiddenCoins}
               shouldReloadList
-              text={currentAction === EditAction.unhide ? lang.t('button.unhide') : lang.t('button.hide')}
+              text={currentAction === EditAction.unhide ? i18n.t(i18n.l.button.unhide) : i18n.t(i18n.l.button.hide)}
             />
           </CoinDividerButtonRow>
         </Row>
@@ -144,7 +144,7 @@ const CoinDivider = memo(function CoinDivider({ balancesSum, defaultToEditButton
               isActive={isCoinListEdited}
               isVisible={defaultToEditButton || isCoinListEdited || isSmallBalancesOpen}
               onPress={handlePressEdit}
-              text={isCoinListEdited ? lang.t('button.done') : lang.t('button.edit')}
+              text={isCoinListEdited ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.button.edit)}
               textOpacityAlwaysOn
             />
           </EditButtonWrapper>

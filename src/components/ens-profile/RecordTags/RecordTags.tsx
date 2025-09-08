@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -63,7 +63,7 @@ export default function RecordTags({
           )}
           {firstTransactionTimestamp && (
             <Tag color="grey" symbol="􀉉">
-              {`${lang.t(`profiles.records.since`)} ${format(firstTransactionTimestamp, 'MMM yyyy')}`}
+              {`${i18n.t(i18n.l.profiles.records.since)} ${format(firstTransactionTimestamp, 'MMM yyyy')}`}
             </Tag>
           )}
         </Inline>

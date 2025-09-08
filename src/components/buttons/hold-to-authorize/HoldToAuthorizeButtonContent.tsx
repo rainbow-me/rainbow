@@ -26,7 +26,7 @@ import { padding, position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { haptics } from '@/utils';
 import ShadowStack from 'react-native-shadow-stack';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useDimensions } from '@/hooks';
@@ -214,9 +214,9 @@ function HoldToAuthorizeButtonContent2({
   let buttonLabel = label;
   if (isAuthorizing) {
     if (isHardwareWallet) {
-      buttonLabel = lang.t(lang.l.button.hold_to_authorize.confirming_on_ledger);
+      buttonLabel = i18n.t(i18n.l.button.hold_to_authorize.confirming_on_ledger);
     } else {
-      buttonLabel = lang.t(lang.l.button.hold_to_authorize.authorizing);
+      buttonLabel = i18n.t(i18n.l.button.hold_to_authorize.authorizing);
     }
   }
   return (
