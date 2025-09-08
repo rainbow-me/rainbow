@@ -1184,6 +1184,30 @@
         "title": "Non %{networkName} %{gasToken} détecté",
         "text": "Vous ne pourrez pas utiliser %{networkName} sans %{networkName} %{gasToken}. Si vous poursuivez cette transaction, vous ne pourrez pas échanger, relier ou transférer vos jetons %{networkName} sans ajouter %{networkName} %{gasToken} à votre portefeuille.",
         "button": "Procéder quand même"
+      },
+      "ens_primary_name": {
+        "title": "What does it mean to set my ENS name?",
+        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+      },
+      "ens_on_chain_data_warning": {
+        "title": "Attention !",
+        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+      },
+      "ens_manager": {
+        "title": "What is the .eth manager?",
+        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+      },
+      "ens_owner": {
+        "title": "What is the .eth name owner?",
+        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+      },
+      "ens_resolver": {
+        "title": "What is a .eth resolver?",
+        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+      },
+      "ens_configuration": {
+        "title": "What do these options mean?",
+        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
       }
     },
     "fedora": {
@@ -2076,7 +2100,7 @@
           "code": "ETH"
         },
         "USD": {
-          "label": "United States Dollar",
+          "label": "Dollar des États-Unis",
           "code": "USD"
         },
         "EUR": {
@@ -2084,47 +2108,47 @@
           "code": "EUR"
         },
         "GBP": {
-          "label": "British Pound",
+          "label": "Livre britannique",
           "code": "GBP"
         },
         "AUD": {
-          "label": "Australian Dollar",
+          "label": "Dollar australien",
           "code": "AUD"
         },
         "CNY": {
-          "label": "Chinese Yuan",
+          "label": "Yuan chinois",
           "code": "CNY"
         },
         "KRW": {
-          "label": "South Korean Won",
+          "label": "Won sud-coréen",
           "code": "KRW"
         },
         "JPY": {
-          "label": "Japanese Yen",
+          "label": "Yen japonais",
           "code": "JPY"
         },
         "RUB": {
-          "label": "Russian Ruble",
+          "label": "Rouble russe",
           "code": "RUB"
         },
         "INR": {
-          "label": "Indian Rupee",
+          "label": "Roupie indienne",
           "code": "INR"
         },
         "TRY": {
-          "label": "Turkish Lira",
+          "label": "Livre turque",
           "code": "TRY"
         },
         "CAD": {
-          "label": "Canadian Dollar",
+          "label": "Dollar canadien",
           "code": "CAD"
         },
         "NZD": {
-          "label": "New Zealand Dollar",
+          "label": "Dollar néo-zélandais",
           "code": "NZD"
         },
         "ZAR": {
-          "label": "South African Rand",
+          "label": "Rand sud-africain",
           "code": "ZAR"
         }
       },
@@ -2909,7 +2933,7 @@
         "find_a_code": "Trouvez un code à scanner",
         "qr_1_app_connected": "1 Application Connectée",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Applications Connectées",
-        "scan_to_connect": "Scan to Connect",
+        "scan_to_connect": "Scanner pour connecter",
         "scan_to_pay_or_connect": "Scannez pour payer ou vous connecter",
         "simulator_mode": "Mode simulateur",
         "sorry_could_not_be_recognized": "Désolé, ce code QR n'a pas pu être reconnu.",
@@ -3467,16 +3491,31 @@
         "steps": {
           "step_1": {
             "title": "La course est en direct",
-            "subtitle_parts": ["Le jeton avec le plus", " de volume d'achat ", "en ce moment est le roi actuel."]
+            "subtitle_parts": [
+              "Le jeton avec le plus",
+              " de volume d'achat ",
+              "en ce moment est le roi actuel."
+            ]
           },
           "step_2": {
             "title": "Une couronne par jour",
-            "subtitle_parts": ["À", " minuit (12:00 AM UTC), ", "le jeton en tête est couronné gagnant du jour."]
+            "subtitle_parts": [
+              "À",
+              " minuit (12:00 AM UTC), ",
+              "le jeton en tête est couronné gagnant du jour."
+            ]
           },
           "step_3": {
             "title": "Gagner des récompenses",
-            "subtitle_parts": ["Les acheteurs du roi actuel obtiennent", " 2x points."],
-            "subtitle_two_parts": ["Créateurs", " gagnent des points ", "lorsqu'ils sont couronnés."]
+            "subtitle_parts": [
+              "Les acheteurs du roi actuel obtiennent",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Créateurs",
+              " gagnent des points ",
+              "lorsqu'ils sont couronnés."
+            ]
           }
         }
       }
