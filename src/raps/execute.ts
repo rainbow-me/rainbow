@@ -118,7 +118,7 @@ function getRapFullName<T extends RapActionTypes>(actions: RapAction<T>[]) {
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 // When testing, give it some time to let approvals through
-const NODE_ACK_DELAY = IS_TEST ? 5000 : 500;
+const NODE_ACK_DELAY = IS_TEST ? 5000 : 2500;
 
 export const walletExecuteRap = async <T extends RapTypes>(
   wallet: Signer,
