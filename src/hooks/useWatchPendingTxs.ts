@@ -114,5 +114,5 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     [address, nativeCurrency]
   );
 
-  return { watchPendingTransactions };
+  return watchPendingTransactions;
 };
