@@ -3,7 +3,7 @@ import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entit
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -92,7 +92,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         }
       );
 
-      usePendingTransactionsStore.getState().setPendingTransactions({
+      pendingTransactionsActions.setPendingTransactions({
         address,
         pendingTransactions: newPendingTransactions,
       });
