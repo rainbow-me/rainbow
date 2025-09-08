@@ -1,24 +1,28 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { PerpMarket } from '@/features/perps/types';
+import { HlTrade, PerpMarket } from '@/features/perps/types';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { colors } from '@/styles';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { abs, greaterThan, isEqual } from '@/helpers/utilities';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
-import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { DOWN_ARROW, UP_ARROW, PERPS_COLORS } from '@/features/perps/constants';
 import { Page } from '@/components/layout';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { ChartType } from '@/features/charts/types';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { ScrollView } from 'react-native';
 import { Chart } from '@/components/value-chart/Chart';
+import { useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
+import { ButtonPressAnimation } from '@/components/animations';
+import { format } from 'date-fns';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({ market }: { market: PerpMarket }) {
   return (
@@ -204,14 +208,135 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
   );
 });
 
+const CollapsibleHeader = memo(function CollapsibleHeader({
+  isExpanded,
+  onPress,
+  title,
+}: {
+  isExpanded: boolean;
+  onPress: () => void;
+  title: string;
+}) {
+  const colors = usePerpsAccentColorContext();
+
+  return (
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
+      <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+        <Box flexDirection="row" gap={8} alignItems="center">
+          <Text size="icon 17px" weight="bold" color={{ custom: colors.accentColors.opacity100 }}>
+            􀐫
+          </Text>
+          <Text size="20pt" weight="heavy" color={{ custom: colors.accentColors.opacity100 }}>
+            {title}
+          </Text>
+        </Box>
+        <Box style={{ transform: [{ rotate: isExpanded ? '0deg' : '-90deg' }] }}>
+          <Text size="17pt" weight="heavy" color={{ custom: colors.accentColors.opacity56 }}>
+            􀆈
+          </Text>
+        </Box>
+      </Box>
+    </ButtonPressAnimation>
+  );
+});
+
+const TradeListItem = memo(function TradeListItem({ trade, isLast }: { trade: HlTrade; isLast: boolean }) {
+  const pnlValue = parseFloat(trade.pnl);
+  const pnlColor = pnlValue >= 0 ? PERPS_COLORS.longGreen : PERPS_COLORS.shortRed;
+
+  const formattedDate = useMemo(() => {
+    return format(trade.executedAt, 'MMM d, HH:mm');
+  }, [trade.executedAt]);
+
+  return (
+    <>
+      <Box padding="16px" gap={8}>
+        <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+          <Box flexDirection="row" gap={8} alignItems="center">
+            <Text size="15pt" weight="semibold" color={trade.side === 'sell' ? 'red' : 'labelTertiary'}>
+              {trade.direction}
+            </Text>
+          </Box>
+          <Text size="13pt" color="labelQuaternary">
+            {formattedDate}
+          </Text>
+        </Box>
+
+        <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+          <Text size="13pt" color="white">
+            ${trade.size}{' '}
+            <Text size="13pt" color="labelTertiary">
+              @
+            </Text>{' '}
+            ${formatAssetPrice({ value: trade.price })}
+          </Text>
+          {pnlValue !== 0 && (
+            <Text size="15pt" weight="semibold" color={{ custom: pnlColor }}>
+              {pnlValue >= 0 ? '+' : ''}
+              {formatAssetPrice({ value: trade.pnl, currency: 'USD' })}
+            </Text>
+          )}
+        </Box>
+      </Box>
+
+      {!isLast && <Box backgroundColor="#F5F8FF06" height={{ custom: 1.33 }} width="full" />}
+    </>
+  );
+});
+
+export const HistorySection = memo(function HistorySection({ market }: { market: PerpMarket }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const colors = usePerpsAccentColorContext();
+  const historyData = useHlTradesStore(state => state.tradesBySymbol);
+
+  const trades = historyData[market.symbol] || [];
+  const visibleTrades = isExpanded ? trades : trades.slice(0, 3);
+
+  if (trades.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box gap={16}>
+      <CollapsibleHeader isExpanded={isExpanded} onPress={() => setIsExpanded(!isExpanded)} title="History" />
+
+      {(isExpanded || trades.length > 0) && (
+        <Box gap={12}>
+          {visibleTrades.map((trade, index) => (
+            <TradeListItem key={`${trade.id}-${index}`} trade={trade} isLast={index === visibleTrades.length - 1} />
+          ))}
+
+          {trades.length > 3 && !isExpanded && (
+            <ButtonPressAnimation onPress={() => setIsExpanded(true)} scaleTo={0.98}>
+              <Box
+                backgroundColor="#192928"
+                borderRadius={28}
+                borderWidth={2}
+                borderColor={{ custom: opacityWorklet('#3ECFAD', 0.06) }}
+                padding="12px"
+                alignItems="center"
+              >
+                <Text size="15pt" weight="semibold" color={{ custom: colors.accentColors.opacity56 }}>
+                  More
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          )}
+        </Box>
+      )}
+    </Box>
+  );
+});
+
 const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket }) {
   const colors = usePerpsAccentColorContext();
+  const insets = useSafeAreaInsets();
 
   return (
     <Box as={Page} backgroundColor={colors.accentColors.surfacePrimary} flex={1} height="full" testID="perps-details-screen" width="full">
       <SheetHandle withoutGradient extraPaddingTop={6} />
       <Box height="full" width="full" paddingTop={{ custom: 96 }}>
-        <Box as={ScrollView} gap={32}>
+        <Box as={ScrollView} gap={32} contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
           <Box gap={20}>
             {/* the chart dont take padding that's why we add it here */}
             <Box paddingHorizontal="24px">
@@ -220,6 +345,9 @@ const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket 
             <ChartSection market={market} />
             <Box paddingHorizontal="24px">
               <PositionValueSection market={market} />
+            </Box>
+            <Box paddingHorizontal="24px">
+              <HistorySection market={market} />
             </Box>
           </Box>
         </Box>
