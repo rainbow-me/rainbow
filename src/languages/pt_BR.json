@@ -1184,6 +1184,30 @@
         "title": "Nenhum %{networkName} %{gasToken} detectado",
         "text": "Você não poderá usar %{networkName} sem %{networkName} %{gasToken}. Se você prosseguir com essa transação, não poderá trocar, conectar ou transferir seus tokens %{networkName} sem adicionar %{networkName} %{gasToken} à sua carteira.",
         "button": "Proceder mesmo assim"
+      },
+      "ens_primary_name": {
+        "title": "What does it mean to set my ENS name?",
+        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+      },
+      "ens_on_chain_data_warning": {
+        "title": "Atenção!",
+        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+      },
+      "ens_manager": {
+        "title": "What is the .eth manager?",
+        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+      },
+      "ens_owner": {
+        "title": "What is the .eth name owner?",
+        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+      },
+      "ens_resolver": {
+        "title": "What is a .eth resolver?",
+        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+      },
+      "ens_configuration": {
+        "title": "What do these options mean?",
+        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
       }
     },
     "fedora": {
@@ -2076,7 +2100,7 @@
           "code": "ETH"
         },
         "USD": {
-          "label": "United States Dollar",
+          "label": "Dólar Americano",
           "code": "USD"
         },
         "EUR": {
@@ -2084,47 +2108,47 @@
           "code": "EUR"
         },
         "GBP": {
-          "label": "British Pound",
+          "label": "Libra Esterlina",
           "code": "GBP"
         },
         "AUD": {
-          "label": "Australian Dollar",
+          "label": "Dólar Australiano",
           "code": "AUD"
         },
         "CNY": {
-          "label": "Chinese Yuan",
+          "label": "Yuan Chinês",
           "code": "CNY"
         },
         "KRW": {
-          "label": "South Korean Won",
+          "label": "Won Sul-Coreano",
           "code": "KRW"
         },
         "JPY": {
-          "label": "Japanese Yen",
+          "label": "Iene Japonês",
           "code": "JPY"
         },
         "RUB": {
-          "label": "Russian Ruble",
+          "label": "Rublo Russo",
           "code": "RUB"
         },
         "INR": {
-          "label": "Indian Rupee",
+          "label": "Rúpia Indiana",
           "code": "INR"
         },
         "TRY": {
-          "label": "Turkish Lira",
+          "label": "Lira Turca",
           "code": "TRY"
         },
         "CAD": {
-          "label": "Canadian Dollar",
+          "label": "Dólar Canadense",
           "code": "CAD"
         },
         "NZD": {
-          "label": "New Zealand Dollar",
+          "label": "Dólar Neozelandês",
           "code": "NZD"
         },
         "ZAR": {
-          "label": "South African Rand",
+          "label": "Rand Sul-Africano",
           "code": "ZAR"
         }
       },
@@ -2909,7 +2933,7 @@
         "find_a_code": "Encontre um código para escanear",
         "qr_1_app_connected": "1 aplicativo conectado",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Aplicativos Conectados",
-        "scan_to_connect": "Scan to Connect",
+        "scan_to_connect": "Escanear para conectar",
         "scan_to_pay_or_connect": "Escanear para pagar ou conectar",
         "simulator_mode": "Modo Simulador",
         "sorry_could_not_be_recognized": "Desculpe, este código QR não pôde ser reconhecido.",
@@ -3467,16 +3491,31 @@
         "steps": {
           "step_1": {
             "title": "A corrida está ao vivo",
-            "subtitle_parts": ["O token com o maior", " volume de compra ", "neste momento é o rei atual."]
+            "subtitle_parts": [
+              "O token com o maior",
+              " volume de compra ",
+              "neste momento é o rei atual."
+            ]
           },
           "step_2": {
             "title": "Uma coroa por dia",
-            "subtitle_parts": ["Às", " meia-noite (0:00 UTC), ", "o token líder é coroado o vencedor diário."]
+            "subtitle_parts": [
+              "Às",
+              " meia-noite (0:00 UTC), ",
+              "o token líder é coroado o vencedor diário."
+            ]
           },
           "step_3": {
             "title": "Vencer Recompensas",
-            "subtitle_parts": ["Compradores do Rei atual ganham", " 2x pontos."],
-            "subtitle_two_parts": ["Criadores", " ganham pontos ", "quando são coroados."]
+            "subtitle_parts": [
+              "Compradores do Rei atual ganham",
+              " 2x pontos."
+            ],
+            "subtitle_two_parts": [
+              "Criadores",
+              " ganham pontos ",
+              "quando são coroados."
+            ]
           }
         }
       }
