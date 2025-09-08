@@ -1184,6 +1184,30 @@
         "title": "कोई %{networkName} %{gasToken} पता चला",
         "text": "आप %{networkName} का उपयोग %{networkName} %{gasToken}के बिना नहीं कर पाएंगे। अगर आप इस लेन-देन के साथ चलते हैं, तो आपको अपने %{networkName} टोकन को स्वैप, पुल या ट्रांसफर करने में सक्षम नहीं हो पाएंगे, जब तक आप अपने वॉलेट में %{networkName} %{gasToken} नहीं जोड़ते हैं।",
         "button": "फिर भी आगे बढ़ें"
+      },
+      "ens_primary_name": {
+        "title": "What does it mean to set my ENS name?",
+        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+      },
+      "ens_on_chain_data_warning": {
+        "title": "ध्यान दें!",
+        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+      },
+      "ens_manager": {
+        "title": "What is the .eth manager?",
+        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+      },
+      "ens_owner": {
+        "title": "What is the .eth name owner?",
+        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+      },
+      "ens_resolver": {
+        "title": "What is a .eth resolver?",
+        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+      },
+      "ens_configuration": {
+        "title": "What do these options mean?",
+        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
       }
     },
     "fedora": {
@@ -2076,55 +2100,55 @@
           "code": "ETH"
         },
         "USD": {
-          "label": "United States Dollar",
+          "label": "अमेरिकी डॉलर",
           "code": "USD"
         },
         "EUR": {
-          "label": "Euro",
+          "label": "यूरो",
           "code": "EUR"
         },
         "GBP": {
-          "label": "British Pound",
+          "label": "ब्रिटिश पाउंड",
           "code": "GBP"
         },
         "AUD": {
-          "label": "Australian Dollar",
+          "label": "ऑस्ट्रेलियन डॉलर",
           "code": "AUD"
         },
         "CNY": {
-          "label": "Chinese Yuan",
+          "label": "चीनी युआन",
           "code": "CNY"
         },
         "KRW": {
-          "label": "South Korean Won",
+          "label": "दक्षिण कोरियाई वॉन",
           "code": "KRW"
         },
         "JPY": {
-          "label": "Japanese Yen",
+          "label": "जापानी येन",
           "code": "JPY"
         },
         "RUB": {
-          "label": "Russian Ruble",
+          "label": "रूसी रूबल",
           "code": "RUB"
         },
         "INR": {
-          "label": "Indian Rupee",
+          "label": "भारतीय रुपया",
           "code": "INR"
         },
         "TRY": {
-          "label": "Turkish Lira",
+          "label": "तुर्की लीरा",
           "code": "TRY"
         },
         "CAD": {
-          "label": "Canadian Dollar",
+          "label": "कैनेडियन डॉलर",
           "code": "CAD"
         },
         "NZD": {
-          "label": "New Zealand Dollar",
+          "label": "न्यूज़ीलैंड डॉलर",
           "code": "NZD"
         },
         "ZAR": {
-          "label": "South African Rand",
+          "label": "दक्षिण अफ़्रीकी रैंड",
           "code": "ZAR"
         }
       },
@@ -2909,7 +2933,7 @@
         "find_a_code": "स्कैन करने के लिए एक कोड ढूंढें",
         "qr_1_app_connected": "1 जुड़ा हुआ एप्लिकेशन",
         "qr_multiple_apps_connected": "%{appsConnectedCount} जुड़े हुए एप्लिकेशन",
-        "scan_to_connect": "Scan to Connect",
+        "scan_to_connect": "स्कैन करने के लिए कनेक्ट करें",
         "scan_to_pay_or_connect": "भुगतान करने या जुड़ने के लिए स्कैन करें",
         "simulator_mode": "सिमुलेटर मोड",
         "sorry_could_not_be_recognized": "क्षमा करें, इस QR कोड को पहचाना नहीं जा सका।",
@@ -3467,16 +3491,31 @@
         "steps": {
           "step_1": {
             "title": "रेस लाइव है",
-            "subtitle_parts": ["सबसे अधिक वाला टोकन", " खरीद वॉल्यूम ", "अभी वर्तमान किंग है।"]
+            "subtitle_parts": [
+              "सबसे अधिक वाला टोकन",
+              " खरीद वॉल्यूम ",
+              "अभी वर्तमान किंग है।"
+            ]
           },
           "step_2": {
             "title": "एक ताज एक दिन में",
-            "subtitle_parts": ["पर", " मध्यरात्रि (12:00 AM UTC), ", "प्रमुख टोकन को दैनिक विजेता घोषित किया जाता है।"]
+            "subtitle_parts": [
+              "पर",
+              " मध्यरात्रि (12:00 AM UTC), ",
+              "प्रमुख टोकन को दैनिक विजेता घोषित किया जाता है।"
+            ]
           },
           "step_3": {
             "title": "पुरस्कार जीतें",
-            "subtitle_parts": ["वर्तमान किंग के खरीदारों को मिलते हैं", " 2x अंक।"],
-            "subtitle_two_parts": ["निर्माता", " अंक कमाते हैं ", "विजेता घोषित होने पर।"]
+            "subtitle_parts": [
+              "वर्तमान किंग के खरीदारों को मिलते हैं",
+              " 2x अंक।"
+            ],
+            "subtitle_two_parts": [
+              "निर्माता",
+              " अंक कमाते हैं ",
+              "विजेता घोषित होने पर।"
+            ]
           }
         }
       }
