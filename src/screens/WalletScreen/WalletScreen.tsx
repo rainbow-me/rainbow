@@ -129,6 +129,7 @@ function WalletScreen() {
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
       <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
         <AssetList
+          key={accountAddress} // force remount when switching account
           accentColor={highContrastAccentColor}
           disableRefreshControl={disableRefreshControl}
           isWalletEthZero={isWalletEthZero}

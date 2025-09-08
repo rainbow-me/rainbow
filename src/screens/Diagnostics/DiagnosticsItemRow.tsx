@@ -2,7 +2,7 @@ import { useTheme } from '@/theme';
 import { useImportingWallet } from '@/hooks';
 import React, { useCallback } from 'react';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { ColumnWithMargins, RowWithMargins } from '@/components/layout';
 import { Bold, Text } from '@/components/text';
@@ -18,8 +18,8 @@ export const DiagnosticsItemRow = ({ data }: any) => {
   const handlePressRestore = useCallback(async () => {
     if (busy) return;
     Alert.alert(
-      lang.t('wallet.diagnostics.restore.heads_up_title'),
-      lang.t('wallet.diagnostics.restore.this_action_will_completely_replace'),
+      i18n.t(i18n.l.wallet.diagnostics.restore.heads_up_title),
+      i18n.t(i18n.l.wallet.diagnostics.restore.this_action_will_completely_replace),
       [
         {
           onPress: async () => {
@@ -34,11 +34,11 @@ export const DiagnosticsItemRow = ({ data }: any) => {
               });
             }
           },
-          text: lang.t('wallet.diagnostics.restore.yes_i_understand'),
+          text: i18n.t(i18n.l.wallet.diagnostics.restore.yes_i_understand),
         },
         {
           style: 'cancel',
-          text: lang.t('button.cancel'),
+          text: i18n.t(i18n.l.button.cancel),
         },
       ]
     );
@@ -49,7 +49,7 @@ export const DiagnosticsItemRow = ({ data }: any) => {
       <ColumnWithMargins key={`key_${data.username}`}>
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>{lang.t('wallet.diagnostics.restore.key')}:</Bold> {` `}
+            <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.key)}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.username}</Text>
           </Text>
         </RowWithMargins>
@@ -61,20 +61,20 @@ export const DiagnosticsItemRow = ({ data }: any) => {
     <ColumnWithMargins key={`key_${data.username}`}>
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>{lang.t('wallet.diagnostics.restore.type')}:</Bold> {` `}
+          <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.type)}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.type}</Text>
         </Text>
       </RowWithMargins>
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>{lang.t('wallet.diagnostics.restore.key')}:</Bold> {` `}
+          <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.key)}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.username}</Text>
         </Text>
       </RowWithMargins>
       {data.createdAt && (
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>{lang.t('wallet.diagnostics.restore.created_at')}:</Bold> {` `}
+            <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.created_at)}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.createdAt}</Text>
           </Text>
         </RowWithMargins>
@@ -82,19 +82,19 @@ export const DiagnosticsItemRow = ({ data }: any) => {
       {data.label && (
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>{lang.t('wallet.diagnostics.restore.label')}:</Bold> {` `}
+            <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.label)}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.label}</Text>
           </Text>
         </RowWithMargins>
       )}
       <RowWithMargins>
         <Text size="lmedium">
-          <Bold>{lang.t('wallet.diagnostics.restore.address')}:</Bold> {` `}
+          <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.address)}:</Bold> {` `}
           <Text color={colors.blueGreyDark50}>{data.address}</Text>
         </Text>
       </RowWithMargins>
       <Text size="lmedium">
-        <Bold>{lang.t('wallet.diagnostics.restore.secret')}:</Bold> {` `}
+        <Bold>{i18n.t(i18n.l.wallet.diagnostics.restore.secret)}:</Bold> {` `}
       </Text>
       <RowWithMargins>
         <DiagnosticsSecretInput color={colors.blueGreyDark} value={data.secret} />
@@ -109,7 +109,7 @@ export const DiagnosticsItemRow = ({ data }: any) => {
           }}
         >
           <Text align="center" color={colors.whiteLabel} weight="bold">
-            {lang.t('wallet.diagnostics.restore.restore')}
+            {i18n.t(i18n.l.wallet.diagnostics.restore.restore)}
           </Text>
         </View>
       </ButtonPressAnimation>

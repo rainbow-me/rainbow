@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
@@ -47,7 +47,7 @@ export default function PasteAddressButton({ onPress }) {
         size="large"
         weight="heavy"
       >
-        􀜍 {lang.t('button.paste_address')}
+        􀜍 {i18n.t(i18n.l.button.paste_address)}
       </Text>
     </ButtonPressAnimation>
   );

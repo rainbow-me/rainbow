@@ -1,24 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { View } from 'react-native';
 import { useDebounce } from 'use-debounce';
 
-import * as lang from '@/languages';
 import deviceUtils from '@/utils/deviceUtils';
 import CurrencySelectionList from '@/components/CurrencySelectionList';
 import { useDiscoverScreenContext } from '@/components/Discover/DiscoverScreenContext';
 import { analytics } from '@/analytics';
-import { PROFILES, useExperimentalFlag } from '@/config';
-import { useSearchCurrencyList, usePrevious, useHardwareBackOnFocus } from '@/hooks';
+import { useSearchCurrencyList, useHardwareBackOnFocus } from '@/hooks';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { fetchSuggestions } from '@/handlers/ens';
 import { ethereumUtils } from '@/utils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { IS_TEST } from '@/env';
-import { useTheme } from '@/theme';
 import { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, Network } from '@/state/backendNetworks/types';
@@ -27,30 +23,11 @@ import { useDiscoverSearchQueryStore, useDiscoverSearchStore } from '@/__swaps__
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 
-type EnsResult = {
-  address: string;
-  color: string;
-  ens: boolean;
-  image: string;
-  network: string;
-  nickname: string;
-  uniqueId: string;
-};
-
-type EnsSearchResult = {
-  color: string;
-  data: EnsResult[];
-  key: string;
-  title: string;
-};
-
 export default function DiscoverSearch() {
   const accountAddress = useAccountAddress();
-  const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
 
-  const [isFetchingEns, setIsFetchingEns] = useState(false);
-  const { cancelSearch, searchInputRef, sectionListRef } = useDiscoverScreenContext();
+  const { cancelSearch, sectionListRef } = useDiscoverScreenContext();
   const isLoading = useDiscoverSearchStore(state => state.getStatus().isFetching);
   const { isSearching, searchQuery } = useDiscoverSearchQueryStore(state => {
     return {
@@ -61,35 +38,17 @@ export default function DiscoverSearch() {
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
 
-  const lastSearchQuery = usePrevious(searchQueryForSearch);
-
-  const [ensResults, setEnsResults] = useState<EnsSearchResult[]>([]);
   const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList();
 
-  const profilesEnabled = useExperimentalFlag(PROFILES);
   const TOP_OFFSET = safeAreaInsets.top + navbarHeight;
 
   const currencyList = useMemo(() => {
     // order:
     // 1. favorites
     // 2. verified
-    // 3. profiles
-    // 4. unverified high liquidity
-    // 5. low liquidity
+    // 3. unverified high liquidity
+    // 4. low liquidity
     let list = [...swapCurrencyList];
-    const listKeys = swapCurrencyList.map(item => item.key);
-
-    const profilesSecond = (listKeys[0] === 'favorites' && listKeys[1] !== 'verified') || listKeys[0] === 'verified';
-    const profilesThird =
-      listKeys[1] === 'verified' || listKeys[0] === 'unfilteredFavorites' || (listKeys[0] === 'favorites' && listKeys[1] === 'verified');
-
-    if (profilesSecond) {
-      list.splice(1, 0, ...ensResults);
-    } else if (profilesThird) {
-      list.splice(2, 0, ...ensResults);
-    } else {
-      list = [...ensResults, ...swapCurrencyList];
-    }
 
     // ONLY FOR e2e!!! Include index along with section key to confirm order while testing for visibility
     if (IS_TEST) {
@@ -99,12 +58,9 @@ export default function DiscoverSearch() {
       }));
     }
     return list.filter(section => section.data.length > 0);
-  }, [swapCurrencyList, ensResults]);
+  }, [swapCurrencyList]);
 
-  const currencyListDataKey = useMemo(
-    () => `${swapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${ensResults?.[0]?.data?.[0]?.address || '_'}`,
-    [ensResults, swapCurrencyList]
-  );
+  const currencyListDataKey = useMemo(() => `${swapCurrencyList?.[0]?.data?.[0]?.address || '_'}`, [swapCurrencyList]);
 
   useHardwareBackOnFocus(() => {
     cancelSearch();
@@ -153,39 +109,18 @@ export default function DiscoverSearch() {
     checkAndHandleMint(searchQuery);
   }, [accountAddress, searchQuery]);
 
-  const handlePress = useCallback(
-    (item: EnrichedExchangeAsset) => {
-      if (item.ens) {
-        // navigate to Showcase sheet
-        searchInputRef?.current?.blur();
-        InteractionManager.runAfterInteractions(() => {
-          Navigation.handleAction(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
-            address: item.nickname,
-            fromRoute: 'DiscoverSearch',
-          });
-          if (profilesEnabled) {
-            analytics.track(analytics.event.viewedEnsProfile, {
-              category: 'profiles',
-              ens: item.nickname,
-              from: 'Discover search',
-            });
-          }
-        });
-      } else {
-        const accountAsset = ethereumUtils.getAccountAsset(item.uniqueId);
-        if (item.favorite) {
-          item.network = Network.mainnet;
-        }
-        const asset = accountAsset || item;
-        Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
-          asset,
-          address: item.address,
-          chainId: item.chainId,
-        });
-      }
-    },
-    [profilesEnabled, searchInputRef]
-  );
+  const handlePress = useCallback((item: EnrichedExchangeAsset) => {
+    const accountAsset = ethereumUtils.getAccountAsset(item.uniqueId);
+    if (item.favorite) {
+      item.network = Network.mainnet;
+    }
+    const asset = accountAsset || item;
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
+      asset,
+      address: item.address,
+      chainId: item.chainId,
+    });
+  }, []);
 
   const itemProps = useMemo(
     () => ({
@@ -195,30 +130,6 @@ export default function DiscoverSearch() {
     }),
     [handlePress]
   );
-
-  const addEnsResults = useCallback(
-    (ensResults: EnsResult[]) => {
-      let ensSearchResults: EnsSearchResult[] = [];
-      if (ensResults && ensResults.length) {
-        ensSearchResults = [
-          {
-            color: colors.appleBlue,
-            data: ensResults,
-            key: 'profiles',
-            title: `􀉮 ${lang.t('discover.search.profiles')}`,
-          },
-        ];
-      }
-      setEnsResults(ensSearchResults);
-    },
-    [colors.appleBlue]
-  );
-
-  useEffect(() => {
-    if (searchQueryForSearch && lastSearchQuery !== searchQueryForSearch) {
-      fetchSuggestions(searchQueryForSearch, addEnsResults, setIsFetchingEns, profilesEnabled);
-    }
-  }, [addEnsResults, lastSearchQuery, setIsFetchingEns, profilesEnabled, searchQueryForSearch]);
 
   useEffect(() => {
     if (!sectionListRef.current?.props.data?.length) {
@@ -234,10 +145,7 @@ export default function DiscoverSearch() {
 
   useTimeoutEffect(
     () => {
-      const assets = currencyList
-        .filter(a => a.key !== 'profiles')
-        .map(asset => asset.data)
-        .flat();
+      const assets = currencyList.map(asset => asset.data).flat();
       if (assets.length === 0) return;
       const params = {
         screen: 'discover' as const,
@@ -266,9 +174,8 @@ export default function DiscoverSearch() {
         fromDiscover
         itemProps={itemProps}
         keyboardDismissMode="on-drag"
-        // @ts-expect-error - FIXME: ens results / rainbow token results are not compatible with one another
         listItems={currencyList}
-        loading={swapCurrencyListLoading || isFetchingEns}
+        loading={swapCurrencyListLoading}
         query={searchQueryForSearch}
         ref={sectionListRef}
         showList

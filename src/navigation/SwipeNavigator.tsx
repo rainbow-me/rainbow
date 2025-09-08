@@ -611,6 +611,8 @@ function SwipeNavigatorScreens() {
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const showKingOfTheHillTab = useShowKingOfTheHill();
 
+  const { language } = useAccountSettings();
+
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }): MaterialTopTabNavigationOptions => {
       const isOnBrowserTab = props.route.name === Routes.DAPP_BROWSER_SCREEN;
@@ -627,8 +629,8 @@ function SwipeNavigatorScreens() {
 
   return (
     <Swipe.Navigator
-      // required to force re-render when showKingOfTheHillTab changes
-      key={`swipe-navigator-${showKingOfTheHillTab ? 'koth' : 'profile'}`}
+      // required to force re-render when showKingOfTheHillTab or language changes
+      key={`swipe-navigator-${showKingOfTheHillTab ? 'koth' : 'profile'}-${language}`}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
       screenOptions={getScreenOptions}

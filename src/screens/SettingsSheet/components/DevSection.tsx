@@ -18,7 +18,7 @@ import { clearWalletState, updateWallets, useWallets } from '@/state/wallets/wal
 import { isAuthenticated } from '@/utils/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useContext, useState } from 'react';
 // @ts-expect-error - react-native-restart is not typed
 import Restart from 'react-native-restart';
@@ -77,9 +77,9 @@ const DevSection = () => {
       const request = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest');
       if (android && request.status === 500) throw new Error('failed');
       await request.json();
-      Alert.alert(lang.t('developer_settings.status'), lang.t('developer_settings.not_applied'));
+      Alert.alert(i18n.t(i18n.l.developer_settings.status), i18n.t(i18n.l.developer_settings.not_applied));
     } catch (e) {
-      Alert.alert(lang.t('developer_settings.status'), lang.t('developer_settings.applied'));
+      Alert.alert(i18n.t(i18n.l.developer_settings.status), i18n.t(i18n.l.developer_settings.applied));
     }
   }, []);
 
@@ -97,7 +97,7 @@ const DevSection = () => {
     // Delete all backups (debugging)
     await deleteAllBackups();
 
-    Alert.alert(lang.t('developer_settings.backups_deleted_successfully'));
+    Alert.alert(i18n.t(i18n.l.developer_settings.backups_deleted_successfully));
     Restart();
   };
 
@@ -218,7 +218,7 @@ const DevSection = () => {
           testID="testnet-switch"
           titleComponent={
             <MenuItem.Title
-              text={lang.t('developer_settings.enable_testnets')}
+              text={i18n.t(i18n.l.developer_settings.enable_testnets)}
             />
           }
         />
@@ -227,7 +227,7 @@ const DevSection = () => {
           leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
           onPress={clearLocalStorage}
           size={52}
-          titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_local_storage')} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_local_storage)} />}
           rightComponent={loadingStates.clearLocalStorage && <SettingsLoadingIndicator />}
         />
         <MenuItem
@@ -235,14 +235,14 @@ const DevSection = () => {
           onPress={clearPendingTransactions}
           size={52}
           testID="clear-pending-transactions-section"
-          titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_pending_txs')} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_pending_txs)} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="🚨" isEmoji />}
           onPress={wipeKeychainWithAlert}
           size={52}
           testID="reset-keychain-section"
-          titleComponent={<MenuItem.Title text={lang.t('developer_settings.keychain.menu_title')} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.keychain.menu_title)} />}
         />
       </Menu>
       {(IS_DEV || isTestFlight) && (
@@ -252,7 +252,7 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
               onPress={() => Restart.Restart()}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.restart_app')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.restart_app)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔍" isEmoji />}
@@ -272,52 +272,52 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}
               onPress={() => analyzeReactQueryStore()}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_react_query')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.analyze_react_query)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔦" isEmoji />}
               onPress={() => analyzeUserAssets()}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_user_assets_query')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.analyze_user_assets_query)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
               onPress={() => clearReactQueryCache()}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_react_query_cache')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_react_query_cache)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={clearAsyncStorage}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_async_storage')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_async_storage)} />}
               rightComponent={loadingStates.clearAsyncStorage && <SettingsLoadingIndicator />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={clearMMKVStorage}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_mmkv_storage')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_mmkv_storage)} />}
               rightComponent={loadingStates.clearMmkvStorage && <SettingsLoadingIndicator />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="📷️" isEmoji />}
               onPress={clearImageMetadataCache}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_image_metadata_cache')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_image_metadata_cache)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="📷️" isEmoji />}
               onPress={clearImageCache}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_image_cache')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.clear_image_cache)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={throwRenderError}
               size={52}
               testID="crash-app-section"
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.crash_app_render_error')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.crash_app_render_error)} />}
             />
             {errorObj}
             {/* TEMP: Removal for public TF}
@@ -325,13 +325,13 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
               onPress={removeBackups}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.remove_all_backups')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.remove_all_backups)} />}
             /> */}
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🤷" isEmoji />}
               onPress={() => AsyncStorage.removeItem('experimentalConfig')}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.reset_experimental_config')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.reset_experimental_config)} />}
             />
 
             <MenuItem
@@ -343,8 +343,8 @@ const DevSection = () => {
                 <MenuItem.Title
                   text={
                     useConnectedToAnvilStore.getState().connectedToAnvil
-                      ? lang.t('developer_settings.disconnect_to_anvil')
-                      : lang.t('developer_settings.connect_to_anvil')
+                      ? i18n.t(i18n.l.developer_settings.disconnect_to_anvil)
+                      : i18n.t(i18n.l.developer_settings.connect_to_anvil)
                   }
                 />
               }
@@ -354,13 +354,13 @@ const DevSection = () => {
               onPress={checkAlert}
               size={52}
               testID="alert-section"
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.alert')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.alert)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗺️" isEmoji />}
               onPress={onPressNavigationEntryPoint}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.navigation_entry_point')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.navigation_entry_point)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🤖" isEmoji />}
@@ -374,7 +374,7 @@ const DevSection = () => {
                 Alert.alert(publicKey ? `Copied` : `Couldn't get public key`);
               }}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_signing_wallet_address')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.copy_signing_wallet_address)} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🌎" isEmoji />}
@@ -388,7 +388,7 @@ const DevSection = () => {
                 Alert.alert(fcmToken ? 'Copied' : "Couldn't get FCM token");
               }}
               size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_fcm_token')} />}
+              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.copy_fcm_token)} />}
             />
             {getExperimentalFlag(LOG_PUSH) && (
               <MenuItem
@@ -399,7 +399,7 @@ const DevSection = () => {
                   Alert.alert(`Copied`);
                 }}
                 size={52}
-                titleComponent={<MenuItem.Title text={lang.t('developer_settings.copy_log_lines')} />}
+                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.copy_log_lines)} />}
               />
             )}
           </Menu>
@@ -425,19 +425,19 @@ const DevSection = () => {
 
 function confirmKeychainAlert(): Promise<boolean> {
   return new Promise<boolean>(resolve => {
-    Alert.alert(lang.t('developer_settings.keychain.alert_title'), lang.t('developer_settings.keychain.alert_body'), [
+    Alert.alert(i18n.t(i18n.l.developer_settings.keychain.alert_title), i18n.t(i18n.l.developer_settings.keychain.alert_body), [
       {
         onPress: () => {
           resolve(true);
         },
-        text: lang.t('developer_settings.keychain.delete_wallets'),
+        text: i18n.t(i18n.l.developer_settings.keychain.delete_wallets),
       },
       {
         onPress: () => {
           resolve(false);
         },
         style: 'cancel',
-        text: lang.t('button.cancel'),
+        text: i18n.t(i18n.l.button.cancel),
       },
     ]);
   });

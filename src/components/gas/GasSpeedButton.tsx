@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import AnimateNumber from '@bankify/react-native-animate-number';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isEmpty, isNaN, isNil, noop } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
@@ -245,7 +245,7 @@ const GasSpeedButton = ({
 
   const renderGasPriceText = useCallback(
     (animatedNumber: number) => {
-      const priceText = animatedNumber === 0 || loading ? lang.t('swap.loading') : animatedNumber;
+      const priceText = animatedNumber === 0 || loading ? i18n.t(i18n.l.swap.loading) : animatedNumber;
       return (
         <Text
           color={theme === 'dark' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}
@@ -506,7 +506,7 @@ const GasSpeedButton = ({
               size="smedium"
               weight="bold"
             >
-              {lang.t('swap.gas.estimated_fee')}{' '}
+              {i18n.t(i18n.l.swap.gas.estimated_fee)}{' '}
               <Label
                 color={theme === 'dark' ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25) : colors.alpha(colors.blueGreyDark, 0.25)}
                 size="smedium"
@@ -536,7 +536,7 @@ const GasSpeedButton = ({
                     theme !== 'light' ? colors.whiteLabel : makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)
                   }
                 >
-                  {lang.t('button.done')}
+                  {i18n.t(i18n.l.button.done)}
                 </DoneCustomGas>
               </CustomGasButton>
             ) : (

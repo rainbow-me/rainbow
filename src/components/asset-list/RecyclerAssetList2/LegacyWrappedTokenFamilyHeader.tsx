@@ -1,7 +1,7 @@
 import { useLatestCallback } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useMemo, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -175,7 +175,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
         </View>
         <View style={[sx.title, { paddingLeft: 10 }]}>
           <Text
-            color={title === lang.t('button.hidden') ? 'secondary60 (Deprecated)' : 'primary (Deprecated)'}
+            color={title === i18n.t(i18n.l.button.hidden) ? 'secondary60 (Deprecated)' : 'primary (Deprecated)'}
             numberOfLines={1}
             size="18px / 27px (Deprecated)"
             weight="heavy"
@@ -187,7 +187,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
           <Animated.View style={amountAnimatedStyles}>
             <Text
               align="right"
-              color={title === lang.t('button.hidden') ? 'secondary60 (Deprecated)' : 'primary (Deprecated)'}
+              color={title === i18n.t(i18n.l.button.hidden) ? 'secondary60 (Deprecated)' : 'primary (Deprecated)'}
               size="18px / 27px (Deprecated)"
             >
               {childrenAmount}
@@ -198,7 +198,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
               resizeMode={ImgixImage.resizeMode.contain}
               source={CaretImageSource}
               style={sx.chevron}
-              tintColor={title === lang.t('button.hidden') ? colors.blueGreyDark60 : colors.dark}
+              tintColor={title === i18n.t(i18n.l.button.hidden) ? colors.blueGreyDark60 : colors.dark}
             />
           </Animated.View>
         </View>

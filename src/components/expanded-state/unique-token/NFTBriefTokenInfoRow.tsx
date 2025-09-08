@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TokenInfoItem } from '../../token-info';
 import { Columns } from '@/design-system';
@@ -96,8 +96,8 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
         size="big"
         title={
           listingValue
-            ? `􀋢 ${lang.t('expanded_state.nft_brief_token_info.for_sale')}`
-            : lang.t('expanded_state.nft_brief_token_info.last_sale')
+            ? `􀋢 ${i18n.t(i18n.l.expanded_state.nft_brief_token_info.for_sale)}`
+            : i18n.t(i18n.l.expanded_state.nft_brief_token_info.last_sale)
         }
         weight={lastSalePrice === NONE && !listingValue ? 'bold' : 'heavy'}
       >

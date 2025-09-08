@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { useCallback } from 'react';
 import { Linking } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -20,14 +20,14 @@ export default function useImagePicker() {
         if (e?.message === 'User did not grant library permission.') {
           Alert({
             buttons: [
-              { style: 'cancel', text: lang.t('image_picker.cancel') },
+              { style: 'cancel', text: i18n.t(i18n.l.image_picker.cancel) },
               {
                 onPress: Linking.openSettings,
-                text: lang.t('image_picker.confirm'),
+                text: i18n.t(i18n.l.image_picker.confirm),
               },
             ],
-            message: lang.t('image_picker.message'),
-            title: lang.t('image_picker.title'),
+            message: i18n.t(i18n.l.image_picker.message),
+            title: i18n.t(i18n.l.image_picker.title),
           });
         }
       }

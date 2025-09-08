@@ -1,5 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
@@ -16,19 +16,21 @@ import { settingsOptions } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import Routes from '@/navigation/routesNames';
+import { useAccountSettings } from '@/hooks';
 
 const Stack = createStackNavigator();
 
 export function SettingsSheet() {
   const { goBack, navigate } = useNavigation();
   const { colors } = useTheme();
+  const { language } = useAccountSettings();
 
   const sectionOnPressFactory = (section: (typeof SettingsPages)[keyof typeof SettingsPages]['key']) => () => {
     navigate(section);
   };
 
   const renderHeaderRight = useCallback(
-    () => <ModalHeaderButton label={lang.t('settings.done')} onPress={goBack} side="right" />,
+    () => <ModalHeaderButton label={i18n.t(i18n.l.settings.done)} onPress={goBack} side="right" />,
     [goBack]
   );
 
@@ -48,11 +50,12 @@ export function SettingsSheet() {
               name={Routes.SETTINGS_SECTION}
               options={{
                 cardStyleInterpolator: settingsCardStyleInterpolator,
-                title: lang.t('settings.label'),
+                title: i18n.t(i18n.l.settings.label),
               }}
             >
               {() => (
                 <SettingsSection
+                  key={language}
                   onCloseModal={goBack}
                   onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon.key)}
                   onPressBackup={sectionOnPressFactory(SettingsPages.backup.key)}
