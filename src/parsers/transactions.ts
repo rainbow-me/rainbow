@@ -142,6 +142,7 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
 
   return {
     ...tx,
+    asset,
     status: TransactionStatus.pending,
     data: tx.data,
     title: `${tx.type}.${tx.status}`,
