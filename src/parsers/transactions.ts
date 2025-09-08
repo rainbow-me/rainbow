@@ -197,3 +197,6 @@ export const isValidTransactionType = (type: string | undefined): type is Transa
   (TransactionTypeMap.withChanges.includes(type as TransactionWithChangesType) ||
     TransactionTypeMap.withoutChanges.includes(type as TransactionWithoutChangesType) ||
     type === 'sale');
+
+export const isValidTransactionStatus = (status: unknown): status is TransactionStatus =>
+  status === TransactionStatus.confirmed || status === TransactionStatus.failed || status === TransactionStatus.pending;

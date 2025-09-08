@@ -24,7 +24,7 @@ import {
   TransactionNotificationData,
 } from '@/notifications/types';
 import store, { AppState } from '@/redux/store';
-import { transactionFetchQuery } from '@/resources/transactions/transaction';
+import { fetchCachedTransaction } from '@/resources/transactions/transaction';
 import { switchWallet } from '@/state/wallets/switchWallet';
 import { getAccountAddress, getWalletReady, useWallets, useWalletsStore } from '@/state/wallets/walletsStore';
 import { isLowerCaseMatch } from '@/utils';
@@ -131,7 +131,7 @@ export const NotificationsHandler = () => {
 
       const chainId = parseInt(data.chain, 10);
 
-      const transaction = await transactionFetchQuery({
+      const transaction = await fetchCachedTransaction({
         hash: data.hash,
         chainId,
         address: walletAddress,
