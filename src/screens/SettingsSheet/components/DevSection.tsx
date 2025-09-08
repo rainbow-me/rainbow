@@ -33,7 +33,6 @@ import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reac
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
-import { analyzeEnvVariables } from '@/utils/analyzeEnvVariables';
 import FastImage from 'react-native-fast-image';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 
@@ -253,12 +252,6 @@ const DevSection = () => {
               onPress={() => Restart.Restart()}
               size={52}
               titleComponent={<MenuItem.Title text={i18n.t(i18n.l.developer_settings.restart_app)} />}
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="🔍" isEmoji />}
-              onPress={analyzeEnvVariables}
-              size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.analyze_env_variables')} />}
             />
             {/* TEMP: Removal for public TF */}
             {/* <MenuItem
