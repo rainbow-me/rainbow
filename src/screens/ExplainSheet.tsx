@@ -106,35 +106,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
   ...(height ? { height: height + deviceHeight } : {}),
 }));
 
-const SENDING_FUNDS_TO_CONTRACT = i18n.t(i18n.l.explain.sending_to_contract.text);
-const FLOOR_PRICE_EXPLAINER = i18n.t(i18n.l.explain.floor_price.text);
-const CURRENT_BASE_FEE_TITLE = i18n.t(i18n.l.explain.base_fee.title);
-const BASE_CURRENT_BASE_FEE_EXPLAINER = i18n.t(i18n.l.explain.base_fee.text_prefix);
-const CURRENT_BASE_FEE_EXPLAINER_STABLE = i18n.t(i18n.l.explain.base_fee.text_stable);
-const CURRENT_BASE_FEE_EXPLAINER_FALLING = i18n.t(i18n.l.explain.base_fee.text_falling);
-const CURRENT_BASE_FEE_EXPLAINER_RISING = i18n.t(i18n.l.explain.base_fee.text_rising);
-const CURRENT_BASE_FEE_EXPLAINER_SURGING = i18n.t(i18n.l.explain.base_fee.text_surging);
-const MAX_BASE_FEE_EXPLAINER = i18n.t(i18n.l.explain.max_base_fee.text);
-const MINER_TIP_EXPLAINER = i18n.t(i18n.l.explain.miner_tip.text);
-const BACKUP_EXPLAINER = i18n.t(i18n.l.back_up.explainers.backup, {
-  cloudPlatformName: cloudPlatformAccountName,
-});
-const ENS_PRIMARY_NAME_EXPLAINER =
-  'People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to "primary."';
-const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
-  'The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
-const ENS_ON_CHAIN_DATA_WARNING_TITLE = 'Heads up!';
-const ENS_PRIMARY_NAME_TITLE = 'What does it mean to set my ENS name?';
-const ENS_MANAGER_TITLE = `What is the .eth manager?`;
-const ENS_MANAGER_EXPLAINER = `The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller.`;
-const ENS_OWNER_TITLE = `What is the .eth name owner?`;
-const ENS_OWNER_EXPLAINER = `The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant.`;
-const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
-const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
-const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
-const ENS_CONFIGURATION_EXPLAINER =
-  "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name.";
-
 const missingRegex = /missing.*translation|translation.*missing/i;
 
 function hasMissingTranslation(str: string): boolean {
@@ -161,6 +132,33 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
   const colors = theme?.colors;
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
 
+  const SENDING_FUNDS_TO_CONTRACT = i18n.t(i18n.l.explain.sending_to_contract.text);
+  const FLOOR_PRICE_EXPLAINER = i18n.t(i18n.l.explain.floor_price.text);
+  const CURRENT_BASE_FEE_TITLE = i18n.t(i18n.l.explain.base_fee.title);
+  const BASE_CURRENT_BASE_FEE_EXPLAINER = i18n.t(i18n.l.explain.base_fee.text_prefix);
+  const CURRENT_BASE_FEE_EXPLAINER_STABLE = i18n.t(i18n.l.explain.base_fee.text_stable);
+  const CURRENT_BASE_FEE_EXPLAINER_FALLING = i18n.t(i18n.l.explain.base_fee.text_falling);
+  const CURRENT_BASE_FEE_EXPLAINER_RISING = i18n.t(i18n.l.explain.base_fee.text_rising);
+  const CURRENT_BASE_FEE_EXPLAINER_SURGING = i18n.t(i18n.l.explain.base_fee.text_surging);
+  const MAX_BASE_FEE_EXPLAINER = i18n.t(i18n.l.explain.max_base_fee.text);
+  const MINER_TIP_EXPLAINER = i18n.t(i18n.l.explain.miner_tip.text);
+  const BACKUP_EXPLAINER = i18n.t(i18n.l.back_up.explainers.backup, {
+    cloudPlatformName: cloudPlatformAccountName,
+  });
+
+  const ENS_PRIMARY_NAME_TITLE = i18n.t(i18n.l.explain.ens_primary_name.title);
+  const ENS_PRIMARY_NAME_EXPLAINER = i18n.t(i18n.l.explain.ens_primary_name.text);
+  const ENS_ON_CHAIN_DATA_WARNING_TITLE = i18n.t(i18n.l.explain.ens_on_chain_data_warning.title);
+  const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER = i18n.t(i18n.l.explain.ens_on_chain_data_warning.text);
+  const ENS_MANAGER_TITLE = i18n.t(i18n.l.explain.ens_manager.title);
+  const ENS_MANAGER_EXPLAINER = i18n.t(i18n.l.explain.ens_manager.text);
+  const ENS_OWNER_TITLE = i18n.t(i18n.l.explain.ens_owner.title);
+  const ENS_OWNER_EXPLAINER = i18n.t(i18n.l.explain.ens_owner.text);
+  const ENS_RESOLVER_TITLE = i18n.t(i18n.l.explain.ens_resolver.title);
+  const ENS_RESOLVER_EXPLAINER = i18n.t(i18n.l.explain.ens_resolver.text);
+  const ENS_CONFIGURATION_TITLE = i18n.t(i18n.l.explain.ens_configuration.title);
+  const ENS_CONFIGURATION_EXPLAINER = i18n.t(i18n.l.explain.ens_configuration.text);
+
   const buildLearnUrl = (path: string) =>
     buildRainbowLearnUrl({
       url: `https://learn.rainbow.me/${path}`,
@@ -173,7 +171,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     replacements?: Record<string, string | number>
   ) => (
     <Text {...getBodyTextPropsWithColor(colors)}>
-      {i18n.t(`explain.${textKeyPrefix}.fragment1` as any, replacements)}
+      {i18n.t((i18n.l.explain[textKeyPrefix as keyof typeof i18n.l.explain] as { fragment1: string }).fragment1, replacements)}
       <Text
         color={colors?.appleBlue}
         onPress={() => openInBrowser(buildLearnUrl(urlPath))}
@@ -181,9 +179,9 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         suppressHighlighting
         weight="semibold"
       >
-        {i18n.t(`explain.${textKeyPrefix}.fragment2` as any, replacements)}
+        {i18n.t((i18n.l.explain[textKeyPrefix as keyof typeof i18n.l.explain] as { fragment2: string }).fragment2, replacements)}
       </Text>
-      {i18n.t(`explain.${textKeyPrefix}.fragment3` as any, replacements)}
+      {i18n.t((i18n.l.explain[textKeyPrefix as keyof typeof i18n.l.explain] as { fragment3: string }).fragment3, replacements)}
     </Text>
   );
 
@@ -192,8 +190,8 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       const { chainId } = params;
       const chainName = chainsLabel[chainId];
       const chainNameLower = chainName.toLowerCase();
-      let title = i18n.t(`explain.${chainNameLower}.title` as any);
-      let text = i18n.t(`explain.${chainNameLower}.text` as any);
+      let title = i18n.t((i18n.l.explain[chainNameLower as keyof typeof i18n.l.explain] as { title: string }).title!);
+      let text = i18n.t((i18n.l.explain[chainNameLower as keyof typeof i18n.l.explain] as { text: string }).text!);
       if (hasMissingTranslation(title)) {
         title = i18n.t(i18n.l.explain.default_network_explainer.title, { chainName });
       }

@@ -26,7 +26,6 @@ import { BytesLike } from '@ethersproject/bytes';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { BigNumber } from 'bignumber.js';
-// removed old lang import - now using i18n above
 import { isEmpty } from 'lodash';
 import React, { ComponentProps, Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';

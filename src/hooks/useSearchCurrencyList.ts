@@ -92,14 +92,18 @@ const useSearchCurrencyList = () => {
           color: colors.yellowFavorite,
           data: abcSort(favoriteAssets, 'name'),
           key: 'favorites',
-          title: i18n.t((i18n.l.exchange.token_sections as any)[tokenSectionTypes.favoriteTokenSection]),
+          title: i18n.t(
+            i18n.l.exchange.token_sections[tokenSectionTypes.favoriteTokenSection as keyof typeof i18n.l.exchange.token_sections]
+          ),
         });
       }
       if (verifiedAssets?.length) {
         list.push({
           data: verifiedAssets,
           key: 'verified',
-          title: i18n.t((i18n.l.exchange.token_sections as any)[tokenSectionTypes.verifiedTokenSection]),
+          title: i18n.t(
+            i18n.l.exchange.token_sections[tokenSectionTypes.verifiedTokenSection as keyof typeof i18n.l.exchange.token_sections]
+          ),
           useGradientText: !IS_TEST,
         });
       }
@@ -107,14 +111,18 @@ const useSearchCurrencyList = () => {
         list.push({
           data: highLiquidityAssets,
           key: 'highLiquidity',
-          title: i18n.t((i18n.l.exchange.token_sections as any)[tokenSectionTypes.unverifiedTokenSection]),
+          title: i18n.t(
+            i18n.l.exchange.token_sections[tokenSectionTypes.unverifiedTokenSection as keyof typeof i18n.l.exchange.token_sections]
+          ),
         });
       }
       if (lowLiquidityAssets?.length) {
         list.push({
           data: lowLiquidityAssets,
           key: 'lowLiquidity',
-          title: i18n.t((i18n.l.exchange.token_sections as any)[tokenSectionTypes.lowLiquidityTokenSection]),
+          title: i18n.t(
+            i18n.l.exchange.token_sections[tokenSectionTypes.lowLiquidityTokenSection as keyof typeof i18n.l.exchange.token_sections]
+          ),
         });
       }
     } else {
@@ -123,14 +131,18 @@ const useSearchCurrencyList = () => {
           color: colors.yellowFavorite,
           data: abcSort(favoriteAssets, 'name'),
           key: 'unfilteredFavorites',
-          title: i18n.t((i18n.l.exchange.token_sections as any)[tokenSectionTypes.favoriteTokenSection]),
+          title: i18n.t(
+            i18n.l.exchange.token_sections[tokenSectionTypes.favoriteTokenSection as keyof typeof i18n.l.exchange.token_sections]
+          ),
         });
       }
       if (verifiedAssets?.length) {
         list.push({
           data: verifiedAssets,
           key: 'verified',
-          title: i18n.t((i18n.l.exchange.token_sections as any)[tokenSectionTypes.verifiedTokenSection]),
+          title: i18n.t(
+            i18n.l.exchange.token_sections[tokenSectionTypes.verifiedTokenSection as keyof typeof i18n.l.exchange.token_sections]
+          ),
           useGradientText: !IS_TEST,
         });
       }
