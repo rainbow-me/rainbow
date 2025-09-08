@@ -19,7 +19,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
 import { isDataComplete } from '@/state/nfts/utils';
-import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -81,10 +81,7 @@ export default function useWalletSectionsData({
 
   const perpsPositions = useHyperliquidAccountStore(state => state.positions);
   const perpsBalance = useHyperliquidAccountStore(state => state.balance);
-
-  const getTotalPerpPositionsValue = useCallback(() => {
-    return hyperliquidAccountStoreActions.getTotalPositionsInfo().value;
-  }, []);
+  const perpsAccountValue = useHyperliquidAccountStore(state => state.value);
 
   const perpsData = useMemo(() => {
     const hasBalance = perpsBalance && perpsBalance !== '0';
@@ -96,9 +93,9 @@ export default function useWalletSectionsData({
     return {
       positions: positionsArray,
       balance: perpsBalance,
-      getTotalPositionsValue: getTotalPerpPositionsValue,
+      value: perpsAccountValue,
     };
-  }, [perpsPositions, perpsBalance, getTotalPerpPositionsValue]);
+  }, [perpsPositions, perpsBalance, perpsAccountValue]);
 
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);

@@ -82,10 +82,10 @@ const ViewDimensions: Record<CellType, Dim> = {
     width: deviceUtils.dimensions.width,
   },
   [CellType.PERPS_HEADER]: { height: AssetListHeaderHeight },
-  [CellType.PERPS_SPACE_BEFORE]: { height: 10 },
-  [CellType.PERPS_SPACE_AFTER]: { height: 3 },
+  [CellType.PERPS_SPACE_BEFORE]: { height: 0 },
+  [CellType.PERPS_SPACE_AFTER]: { height: 0 },
   [CellType.PERPS_BALANCE]: {
-    height: 80,
+    height: 48,
     width: deviceUtils.dimensions.width,
   },
   [CellType.PERPS_POSITION]: {

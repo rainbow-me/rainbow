@@ -84,15 +84,20 @@ export class HyperliquidAccountClient {
         entryPrice: position.entryPx,
         value: position.positionValue,
         unrealizedPnl: position.unrealizedPnl,
+        returnOnEquity: position.returnOnEquity,
+        marginUsed: position.marginUsed,
+        size: position.szi,
         // TODO (kane): this calculation is not correct
-        unrealizedPnlPercent: divide(position.unrealizedPnl, position.positionValue),
-        funding: position.cumFunding.allTime,
+        unrealizedPnlPercent: position.returnOnEquity,
+        funding: position.cumFunding.sinceOpen,
         takeProfit,
         stopLoss,
       };
     });
 
+    // TODO (kane): add open orders
     return {
+      value: perpState.marginSummary.accountValue,
       balance: perpState.withdrawable,
       positions,
     };

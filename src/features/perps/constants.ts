@@ -1,5 +1,10 @@
+import { AddressOrEth } from '@/__swaps__/types/assets';
+import { SearchAsset } from '@/__swaps__/types/search';
+import { ChainId } from '@/state/backendNetworks/types';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { Address } from 'viem';
 
 export const DEFAULT_SLIPPAGE_BIPS = 50;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -43,3 +48,9 @@ export const DEFAULT_INITIAL_AMOUNT = 0.5;
 
 export const HYPERLIQUID_TAKER_FEE_RATE = '0.00035';
 export const HYPERLIQUID_MAKER_FEE_RATE = '0.0002';
+export const USDC_ICON_URL =
+  'https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png';
+export const USDC_COLORS = {
+  primary: '#2775CA',
+  fallback: '#FFFFFF',
+};

@@ -1,85 +1,52 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Animated, Easing, Image } from 'react-native';
-import CaretImageSource from '@/assets/family-dropdown-arrow.png';
-import { useTheme } from '@/theme/ThemeContext';
+import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Box, Inline, Text } from '@/design-system';
+import { Box, Inline, Text, TextIcon } from '@/design-system';
 import * as i18n from '@/languages';
-import useOpenClaimables from '@/hooks/useOpenClaimables';
+import { formatCurrency } from '@/helpers/strings';
+import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
-const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
-
-const TokenFamilyHeaderAnimationDuration = 200;
-const TokenFamilyHeaderHeight = 48;
+const HEIGHT = 48;
 
 export const PerpsHeader = React.memo(function PerpsHeader({ total }: { total: string }) {
-  const { colors } = useTheme();
-  // const { isClaimablesOpen, toggleOpenClaimables } = useOpenClaimables();
-  const isPerpsOpen = true;
+  const { accentColor: accountColor } = useAccountAccentColor();
 
-  const toValue = Number(!!isPerpsOpen);
-
-  const [animation] = useState(() => new Animated.Value(toValue));
-
-  useEffect(() => {
-    Animated.timing(animation, {
-      duration: TokenFamilyHeaderAnimationDuration,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-      toValue,
-      useNativeDriver: true,
-    }).start();
-  }, [toValue, animation]);
-
-  const imageAnimatedStyles = useMemo(
-    () => ({
-      height: 18,
-      marginBottom: 1,
-      right: 5,
-      transform: [
-        {
-          rotate: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: ['0deg', '90deg'],
-          }),
-        },
-      ],
-      width: 8,
-    }),
-    [animation]
-  );
-
-  const sumNumberAnimatedStyles = useMemo(
-    () => ({
-      opacity: animation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1, 0],
-      }),
-      paddingRight: 4,
-    }),
-    [animation]
-  );
+  const navigationButtonColors = useMemo(() => {
+    return {
+      icon: accountColor,
+      border: opacityWorklet(accountColor, 0.08),
+      background: opacityWorklet(accountColor, 0.16),
+    };
+  }, [accountColor]);
 
   return (
-    <ButtonPressAnimation
-      key={`perps_${isPerpsOpen}`}
-      // onPress={toggleOpenClaimables}
-      scaleTo={1.05}
-      testID={`perps-list-header`}
-    >
-      <Box height={{ custom: TokenFamilyHeaderHeight }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
+    <ButtonPressAnimation onPress={() => {}} scaleTo={1.05} testID={`perps-list-header`}>
+      <Box height={{ custom: HEIGHT }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">
-          <Text size="22pt" color={'label'} weight="heavy">
-            {i18n.t(i18n.l.account.tab_perps)}
-          </Text>
           <Inline horizontalSpace={'8px'} alignVertical="center">
-            {!isPerpsOpen && (
-              <Animated.View style={sumNumberAnimatedStyles}>
-                <Text size="20pt" color={'label'} weight="regular">
-                  {total}
-                </Text>
-              </Animated.View>
-            )}
-            <AnimatedImgixImage source={CaretImageSource} style={imageAnimatedStyles} tintColor={colors.dark} />
+            <Text size="22pt" color={'label'} weight="heavy">
+              {i18n.t(i18n.l.account.tab_perps)}
+            </Text>
+            <Box
+              borderWidth={5 / 3}
+              borderColor={{ custom: navigationButtonColors.border }}
+              backgroundColor={navigationButtonColors.background}
+              borderRadius={14}
+              height={28}
+              width={28}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <TextIcon color={{ custom: navigationButtonColors.icon }} size="icon 14px" weight="heavy">
+                {'􀆊'}
+              </TextIcon>
+            </Box>
+          </Inline>
+
+          <Inline horizontalSpace={'8px'} alignVertical="center">
+            <Text size="20pt" color={'label'} weight="regular">
+              {formatCurrency(total)}
+            </Text>
           </Inline>
         </Inline>
       </Box>

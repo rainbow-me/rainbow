@@ -12,6 +12,7 @@ import { OrderResponse } from '@nktkas/hyperliquid';
 type HyperliquidAccountStoreState = {
   positions: Record<string, PerpsPosition>;
   balance: string;
+  value: string;
 };
 
 type HyperliquidAccountStoreActions = {
@@ -52,6 +53,7 @@ type HyperliquidAccountParams = {
 type FetchHyperliquidAccountResponse = {
   positions: Record<string, PerpsPosition>;
   balance: string;
+  value: string;
 };
 
 async function fetchHyperliquidAccount({ address }: HyperliquidAccountParams): Promise<FetchHyperliquidAccountResponse> {
@@ -64,6 +66,7 @@ async function fetchHyperliquidAccount({ address }: HyperliquidAccountParams): P
   return {
     positions: account.positions,
     balance: account.balance,
+    value: account.value,
   };
 }
 
@@ -78,6 +81,7 @@ export const useHyperliquidAccountStore = createQueryStore<
       set({
         positions: data.positions,
         balance: data.balance,
+        value: data.value,
       });
     },
     cacheTime: time.days(1),
@@ -89,6 +93,7 @@ export const useHyperliquidAccountStore = createQueryStore<
   (set, get) => ({
     positions: {},
     balance: '0',
+    value: '0',
     withdraw: async (amount: string) => {
       const address = useWalletsStore.getState().accountAddress;
       const exchangeClient = await getHyperliquidExchangeClient(address);
@@ -98,7 +103,7 @@ export const useHyperliquidAccountStore = createQueryStore<
     createIsolatedMarginPosition: async ({ assetId, side, leverage, amount, price, decimals, triggerOrders }) => {
       const address = useWalletsStore.getState().accountAddress;
       const exchangeClient = await getHyperliquidExchangeClient(address);
-      return await exchangeClient.openIsolatedMarginPosition({
+      return exchangeClient.openIsolatedMarginPosition({
         assetId,
         side,
         marginAmount: amount,
@@ -140,11 +145,3 @@ export const useHyperliquidAccountStore = createQueryStore<
 );
 
 export const hyperliquidAccountStoreActions = createStoreActions(useHyperliquidAccountStore);
-
-// const useCachedUserAssetsStore = createDerivedStore<UserAssetsStoreType>(
-//   $ => {
-//     const address = $(useWalletsStore).accountAddress;
-//     return createUserAssetsStore(address);
-//   },
-//   { fastMode: true }
-// );

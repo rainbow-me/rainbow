@@ -52,14 +52,18 @@ export type PerpsPosition = {
   liquidationPrice: string | null;
   entryPrice: string;
   value: string;
+  size: string;
   unrealizedPnl: string;
   unrealizedPnlPercent: string;
   funding: string;
+  returnOnEquity: string;
+  marginUsed: string;
   takeProfit: Order | null;
   stopLoss: Order | null;
 };
 
 export type PerpAccount = {
+  value: string;
   balance: string;
   positions: Record<string, PerpsPosition>;
 };
@@ -116,4 +120,10 @@ export type TriggerOrder = {
   orderFraction: string;
   isMarket: boolean;
   type: TriggerOrderType;
+};
+
+export type PerpsWalletListData = {
+  positions: PerpsPosition[];
+  balance: string;
+  value: string;
 };

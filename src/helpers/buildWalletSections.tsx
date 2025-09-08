@@ -11,7 +11,7 @@ import { useExperimentalConfig } from '@/config/experimentalHooks';
 import { ClaimablesStore } from '@/state/claimables/claimables';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { Collection, CollectionId } from '@/state/nfts/types';
-import { PerpsPosition as PerpsPosition } from '@/features/perps/types';
+import { PerpsWalletListData } from '@/features/perps/types';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -64,11 +64,7 @@ export type WalletSectionsState = {
   isFetchingNfts: boolean;
   positions: RainbowPositions | null;
   claimables: ClaimablesStore | null;
-  perpsData: {
-    positions: PerpsPosition[];
-    balance: string;
-    getTotalPositionsValue: () => string;
-  } | null;
+  perpsData: PerpsWalletListData | null;
   remoteCards: string[];
   hasMoreCollections: boolean;
   isShowcaseDataMigrated: boolean;
@@ -125,7 +121,7 @@ const buildBriefWalletSections = (
   uniqueTokenFamiliesSection: CellTypes[],
   claimables: ClaimablesStore | null,
   positions: RainbowPositions | null,
-  perpsData: { positions: PerpsPosition[]; balance: string; getTotalPositionsValue: () => string } | null
+  perpsData: PerpsWalletListData | null
 ): BriefWalletSectionsResult => {
   const { isEmpty, balanceSection, isLoadingUserAssets } = balanceSectionData;
 
@@ -194,10 +190,7 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
   ];
 };
 
-const withPerpsSection = (
-  perpsData: { positions: PerpsPosition[]; balance: string; getTotalPositionsValue: () => string } | null,
-  isLoadingUserAssets: boolean
-): CellTypes[] => {
+const withPerpsSection = (perpsData: PerpsWalletListData | null, isLoadingUserAssets: boolean): CellTypes[] => {
   if (isLoadingUserAssets || !perpsData) return [];
 
   const hasBalance = perpsData.balance && perpsData.balance !== '0';
@@ -234,8 +227,6 @@ const withPerpsSection = (
     });
   }
 
-  const totalValue = perpsData.getTotalPositionsValue();
-
   return [
     {
       type: CellType.PERPS_SPACE_BEFORE,
@@ -244,7 +235,7 @@ const withPerpsSection = (
     {
       type: CellType.PERPS_HEADER,
       uid: 'perps-header',
-      total: totalValue,
+      total: perpsData.value,
     },
     ...perpsSectionItems,
     {
