@@ -173,8 +173,19 @@ function getRapFullName<T extends RapActionTypes>(actions: RapAction<T>[]) {
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-// When testing, give it some time to let approvals through
-const NODE_ACK_DELAY = IS_TEST ? 5000 : 2500;
+function getNodeAckDelay(chainId: ChainId): number {
+  // When testing, give it some time to let approvals through
+  if (IS_TEST) return 5000;
+
+  switch (chainId) {
+    case ChainId.mainnet:
+      return 0;
+    case ChainId.base:
+      return 2500;
+    default:
+      return 500;
+  }
+}
 
 export const walletExecuteRap = async <T extends RapTypes>(
   wallet: Signer,
@@ -250,7 +261,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
       firstHash: short(firstHash ?? null),
       baseNonce,
       shouldDelayForNodeAck,
-      nodeAckDelayMs: shouldDelayForNodeAck ? NODE_ACK_DELAY : 0,
+      nodeAckDelayMs: shouldDelayForNodeAck ? getNodeAckDelay(parameters.chainId) : 0,
     });
 
     if (typeof baseNonce === 'number') {
@@ -259,7 +270,7 @@ export const walletExecuteRap = async <T extends RapTypes>(
       for (let index = 1; index < actions.length; index++) {
         if (latestHash && shouldDelayForNodeAck) {
           log('walletExecuteRap:nodeAckDelay', { index, ms: NODE_ACK_DELAY });
-          await delay(NODE_ACK_DELAY);
+          await delay(getNodeAckDelay(parameters.chainId));
         }
 
         const action = actions[index];
