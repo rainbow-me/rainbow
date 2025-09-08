@@ -1,5 +1,6 @@
 import { TOP_INSET } from '@/components/DappBrowser/Dimensions';
 import { FastTransactionCoinRow, RequestCoinRow } from '@/components/coin-row';
+import { RainbowTransaction } from '@/entities';
 import { TransactionItemForSectionList, TransactionSections } from '@/helpers/buildTransactionsSectionsSelector';
 import { useAccountTransactions } from '@/hooks';
 import { Skeleton } from '@/screens/points/components/Skeleton';
@@ -11,7 +12,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { LegendList, LegendListRef } from '@legendapp/list';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
@@ -24,6 +25,9 @@ import { useLegendListNavBarScrollToTop } from '@/navigation/MainListContext';
 const PANEL_HEIGHT = DEVICE_HEIGHT - TOP_INSET - safeAreaInsetValues.bottom;
 
 const sx = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   sectionHeader: {
     paddingVertical: 18,
   },
@@ -76,6 +80,8 @@ type ListItems =
 // improves performance and reduces jitter (until move to new architecture)
 const ITEM_HEIGHT = 59;
 
+const EMPTY_LIST_DATA: ListItems[] = [];
+
 interface Props {
   scrollY?: SharedValue<number>;
   paddingTopForNavBar?: boolean;
@@ -90,11 +96,9 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
 
   // Flatten sections into a single data array for LegendList
   const flatData = useMemo(() => {
-    const items: ListItems[] = [];
+    if (isLoadingTransactions) return EMPTY_LIST_DATA;
 
-    if (isLoadingTransactions) {
-      return items;
-    }
+    const items: ListItems[] = [];
 
     if (paddingTopForNavBar) {
       items.push({ key: 'paddingTopForNavBar', type: 'paddingTopForNavBar' });
@@ -140,7 +144,7 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
       return (
         <FastTransactionCoinRow
           // @nate: this as any was here prior to change to legend-list
-          item={item.value as any}
+          item={item.value as RainbowTransaction}
           theme={theme}
           nativeCurrency={nativeCurrency}
         />
@@ -150,6 +154,14 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
   );
 
   const listRef = useRef<LegendListRef | null>(null);
+
+  const onScroll = useMemo(() => {
+    if (!scrollY) return undefined;
+    return (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      'worklet';
+      scrollY.value = event.nativeEvent.contentOffset.y;
+    };
+  }, [scrollY]);
 
   useLegendListNavBarScrollToTop(listRef);
 
@@ -168,10 +180,7 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
   return (
     <LegendList
       data={flatData}
-      style={{
-        // needs flex 1 or else going from loading => loaded scroll doesn't work
-        flex: 1,
-      }}
+      style={sx.flex}
       // changing key - we had a bug with key calculation where headers were
       // matching causing legend list to see the key move index and scroll to a
       // bad position i tried fixing just the key to avoid changing the key
@@ -185,24 +194,15 @@ export const ActivityList = ({ scrollY, paddingTopForNavBar }: Props) => {
       keyExtractor={keyExtractor}
       contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
       testID={'wallet-activity-list'}
-      ListEmptyComponent={<ActivityListEmptyState />}
-      ListFooterComponent={() =>
-        !isLoadingTransactions && remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />
+      ListEmptyComponent={ActivityListEmptyState}
+      ListFooterComponent={
+        !isLoadingTransactions && remainingItemsLabel ? <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} /> : undefined
       }
-      // recycleItems
-      // this caused issues when going from a wallet with many items that had scrolling
-      // to a wallet that has no scrollable area, causing it to show blank
-      // maintainVisibleContentPosition
+      recycleItems
+      maintainVisibleContentPosition={false}
       drawDistance={PANEL_HEIGHT / 2}
       estimatedItemSize={ITEM_HEIGHT}
-      {...(scrollY && {
-        onScroll: event => {
-          'worklet';
-          if (scrollY) {
-            scrollY.value = event.nativeEvent.contentOffset.y;
-          }
-        },
-      })}
+      onScroll={onScroll}
     />
   );
 };
