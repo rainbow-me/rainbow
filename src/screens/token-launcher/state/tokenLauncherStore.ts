@@ -26,6 +26,8 @@ import { LaunchTokenResponse, TokenLauncherSDKError } from '@rainbow-me/token-la
 import { Alert } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import { analytics } from '@/analytics';
+import { IS_DEV } from '@/env';
+import isTestFlight from '@/helpers/isTestFlight';
 import { Link, LinkType } from '../types';
 import { useSuperTokenStore } from './rainbowSuperTokenStore';
 import { calculateAndCacheDominantColor } from '@/hooks/usePersistentDominantColorFromImage';
@@ -37,7 +39,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { tokenLaunchErrorToErrorMessage } from '../helpers/tokenLaunchErrorToErrorMessage';
 
 // TODO: Remove this — temporary option for testing
-const REQUIRE_TOKEN_LOGO = false;
+const REQUIRE_TOKEN_LOGO = !(isTestFlight || IS_DEV);
 
 // TODO: same as colors.alpha, move to a helper file
 export const getAlphaColor = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
