@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useMemo } from 'react';
 import Text from './Text';
 import { toChecksumAddress } from '@/handlers/web3';
@@ -9,7 +9,7 @@ const TruncatedAddress = ({ address, firstSectionLength, truncationLength, ...pr
     () =>
       address
         ? abbreviations.formatAddressForDisplay(toChecksumAddress(address), truncationLength, firstSectionLength)
-        : lang.t('wallet.error_displaying_address'),
+        : i18n.t(i18n.l.wallet.error_displaying_address),
     [address, firstSectionLength, truncationLength]
   );
 

@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { EmojiCategory } from './types';
 
 // `name` is used for filtering Emoji, while `getTitle` is used to render the
@@ -6,7 +6,7 @@ import { EmojiCategory } from './types';
 // `getTitle` fields do.
 export const Categories: Record<string, EmojiCategory> = {
   people: {
-    getTitle: () => lang.t('avatar_builder.emoji_categories.smileys'),
+    getTitle: () => i18n.t(i18n.l.avatar_builder.emoji_categories.smileys),
     icon: 'emojiSmileys',
     index: 0,
     name: 'Smileys & People',

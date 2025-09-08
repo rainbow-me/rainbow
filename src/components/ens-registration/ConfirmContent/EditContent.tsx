@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
@@ -39,7 +39,7 @@ const EditContent = ({
           <Inline alignHorizontal="justify" alignVertical="center">
             <Inline>
               <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                {`${lang.t('profiles.confirm.set_ens_name')} `}
+                {`${i18n.t(i18n.l.profiles.confirm.set_ens_name)} `}
               </Text>
               <ButtonPressAnimation onPress={openPrimaryENSNameHelper} scaleTo={0.9}>
                 <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">

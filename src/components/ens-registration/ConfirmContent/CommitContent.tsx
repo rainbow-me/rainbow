@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import { Source } from 'react-native-fast-image';
 import brain from '../../../assets/brain.png';
@@ -28,7 +28,7 @@ const CommitContent = ({
             <ImgixImage source={brain as Source} style={{ height: 20, width: 20 }} size={30} />
           </Box>
           <Text align="center" color="secondary50 (Deprecated)" size="14px / 19px (Deprecated)" weight="bold" numberOfLines={1}>
-            {lang.t('profiles.confirm.suggestion')}
+            {i18n.t(i18n.l.profiles.confirm.suggestion)}
           </Text>
         </Inline>
         <RegistrationReviewRows

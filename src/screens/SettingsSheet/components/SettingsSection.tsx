@@ -18,7 +18,7 @@ import useExperimentalFlag, { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/config/
 import { Box } from '@/design-system';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useAccountSettings, useSendFeedback } from '@/hooks';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { backupsStore } from '@/state/backups/backups';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -78,7 +78,7 @@ const SettingsSection = ({
 
   const onPressShare = useCallback(() => {
     Share.share({
-      message: `${lang.t('settings.hey_friend_message')} ${SettingsExternalURLs.rainbowHomepage}`,
+      message: `${i18n.t(i18n.l.settings.hey_friend_message)} ${SettingsExternalURLs.rainbowHomepage}`,
     });
   }, []);
 
@@ -95,7 +95,7 @@ const SettingsSection = ({
       menuItems: [
         {
           actionKey: Themes.SYSTEM,
-          actionTitle: lang.t('settings.theme_section.system'),
+          actionTitle: i18n.t(i18n.l.settings.theme_section.system),
           icon: {
             iconType: 'SYSTEM',
             iconValue: 'gear',
@@ -104,7 +104,7 @@ const SettingsSection = ({
         },
         {
           actionKey: Themes.LIGHT,
-          actionTitle: lang.t('settings.theme_section.light'),
+          actionTitle: i18n.t(i18n.l.settings.theme_section.light),
           icon: {
             iconType: 'SYSTEM',
             iconValue: 'sun.max',
@@ -113,7 +113,7 @@ const SettingsSection = ({
         },
         {
           actionKey: Themes.DARK,
-          actionTitle: lang.t('settings.theme_section.dark'),
+          actionTitle: i18n.t(i18n.l.settings.theme_section.dark),
           icon: {
             iconType: 'SYSTEM',
             iconValue: 'moon',
@@ -126,7 +126,11 @@ const SettingsSection = ({
   }, [colorScheme, language]);
 
   const androidActions = useMemo(() => {
-    return [lang.t('settings.theme_section.system'), lang.t('settings.theme_section.light'), lang.t('settings.theme_section.dark')];
+    return [
+      i18n.t(i18n.l.settings.theme_section.system),
+      i18n.t(i18n.l.settings.theme_section.light),
+      i18n.t(i18n.l.settings.theme_section.dark),
+    ];
   }, [language]);
   const onPressThemeAndroidActions = useCallback(() => {
     showActionSheetWithOptions(
@@ -180,7 +184,7 @@ const SettingsSection = ({
           }
           size={60}
           testID={'backup-section'}
-          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.backup)} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.backup)} />}
         />
         {isNotificationsEnabled && (
           <MenuItem
@@ -188,7 +192,7 @@ const SettingsSection = ({
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? NotificationsIconDark : NotificationsIcon} />}
             onPress={onPressNotifications}
             size={60}
-            titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.notifications)} />}
+            titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications)} />}
           />
         )}
         <MenuItem
@@ -197,12 +201,12 @@ const SettingsSection = ({
           onPress={onPressCurrency}
           rightComponent={
             <MenuItem.Selection>
-              {lang.t(lang.l.settings.currency[nativeCurrency as Exclude<keyof typeof lang.l.settings.currency, 'title'>].code)}
+              {i18n.t(i18n.l.settings.currency[nativeCurrency as Exclude<keyof typeof i18n.l.settings.currency, 'title'>].code)}
             </MenuItem.Selection>
           }
           size={60}
           testID="currency-section"
-          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.currency.title)} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.currency.title)} />}
         />
         <ContextMenuButton
           menuConfig={themeMenuConfig}
@@ -219,10 +223,10 @@ const SettingsSection = ({
             hasChevron
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
             rightComponent={
-              <MenuItem.Selection>{colorScheme ? lang.t(lang.l.settings.theme_section[colorScheme]) : ''}</MenuItem.Selection>
+              <MenuItem.Selection>{colorScheme ? i18n.t(i18n.l.settings.theme_section[colorScheme]) : ''}</MenuItem.Selection>
             }
             size={60}
-            titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.theme)} />}
+            titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.theme)} />}
           />
         </ContextMenuButton>
 
@@ -233,7 +237,7 @@ const SettingsSection = ({
             onPress={onPressPrivacy}
             size={60}
             testID="privacy"
-            titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.privacy)} />}
+            titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.privacy)} />}
           />
         )}
         {isLanguageSelectionEnabled && (
@@ -241,9 +245,9 @@ const SettingsSection = ({
             hasRightArrow
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? LanguageIconDark : LanguageIcon} />}
             onPress={onPressLanguage}
-            rightComponent={<MenuItem.Selection>{(lang.supportedLanguages as any)[language].label || ''}</MenuItem.Selection>}
+            rightComponent={<MenuItem.Selection>{(i18n.supportedLanguages as any)[language].label || ''}</MenuItem.Selection>}
             size={60}
-            titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.language)} />}
+            titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.language)} />}
           />
         )}
         <MenuItem
@@ -252,7 +256,7 @@ const SettingsSection = ({
           onPress={onPressAppIcon}
           size={60}
           testID="app-icon-section"
-          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.app_icon)} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.app_icon)} />}
         />
       </Menu>
       <Menu>
@@ -261,21 +265,21 @@ const SettingsSection = ({
           onPress={onPressShare}
           size={52}
           testID="share-section"
-          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.share_rainbow)} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.share_rainbow)} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="🧠" isEmoji />}
           onPress={onPressLearn}
           size={52}
           testID="learn-section"
-          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.learn)} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.learn)} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="🐦" isEmoji />}
           onPress={onPressTwitter}
           size={52}
           testID="twitter-section"
-          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.follow_us_on_twitter)} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.follow_us_on_twitter)} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="💬" isEmoji />}
@@ -283,7 +287,7 @@ const SettingsSection = ({
           size={52}
           testID="feedback-section"
           titleComponent={
-            <MenuItem.Title text={ios ? lang.t(lang.l.settings.feedback_and_support) : lang.t(lang.l.settings.feedback_and_support)} />
+            <MenuItem.Title text={ios ? i18n.t(i18n.l.settings.feedback_and_support) : i18n.t(i18n.l.settings.feedback_and_support)} />
           }
         />
         <MenuItem
@@ -291,14 +295,14 @@ const SettingsSection = ({
           onPress={onPressReview}
           size={52}
           testID="review-section"
-          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.review)} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.review)} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
           onPress={onPressDev}
           size={52}
           testID="developer-section"
-          titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.developer)} />}
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.developer)} />}
         />
       </Menu>
     </MenuContainer>

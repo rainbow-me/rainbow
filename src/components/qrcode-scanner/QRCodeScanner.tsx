@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Camera, CodeScanner, useCameraDevice } from 'react-native-vision-camera';
 import Animated from 'react-native-reanimated';
@@ -39,7 +39,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ flashEnabled, isAc
   const cameraUI = (
     <>
       {!device ? (
-        <ErrorText color="red" error={lang.t('wallet.qr.error_mounting_camera')} />
+        <ErrorText color="red" error={i18n.t(i18n.l.wallet.qr.error_mounting_camera)} />
       ) : (
         <Box position="absolute" width="full" height={{ custom: customHeightValue }}>
           <Box as={Animated.View} style={{ opacity: 1 }}>
