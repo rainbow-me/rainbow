@@ -52,12 +52,12 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
   return changes?.[0]?.asset;
 };
 
-export const parseTransaction = async (
+export const parseTransaction = (
   transaction: TransactionApiResponse,
   nativeCurrency: NativeCurrencyKey,
   chainId: ChainId
-): Promise<RainbowTransaction> => {
-  const { status, hash, meta, nonce, protocol } = transaction;
+): RainbowTransaction => {
+  const { hash, meta, nonce, protocol, status } = transaction;
 
   const txn = {
     ...transaction,
@@ -196,4 +196,4 @@ export const isValidTransactionType = (type: string | undefined): type is Transa
   !!type &&
   (TransactionTypeMap.withChanges.includes(type as TransactionWithChangesType) ||
     TransactionTypeMap.withoutChanges.includes(type as TransactionWithoutChangesType) ||
-    type === ('sale' as TransactionType));
+    type === 'sale');

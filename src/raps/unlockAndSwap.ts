@@ -10,18 +10,14 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
   const { sellAmount, quote, chainId, assetToSell, assetToBuy } = swapParameters;
   const targetAddress = getTargetAddress(quote);
 
-  const { from: accountAddress, allowanceNeeded } = quote as {
-    from: Address;
-    sellTokenAddress: Address;
-    allowanceNeeded: boolean;
-  };
+  const { from: accountAddress, allowanceNeeded } = quote;
 
   let swapAssetNeedsUnlocking = false;
 
   if (allowanceNeeded) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking({
-      owner: accountAddress,
-      amount: sellAmount as string,
+      owner: accountAddress as Address,
+      amount: sellAmount,
       assetToUnlock: assetToSell,
       spender: targetAddress as Address,
       chainId,
