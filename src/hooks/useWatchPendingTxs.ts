@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
+import { isValidTransactionStatus } from '@/parsers/transactions';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
@@ -26,6 +27,7 @@ async function fetchTransaction({
     if (!transaction.chainId || !transaction.hash) {
       throw new Error('Pending transaction missing chainId or hash');
     }
+
     const fetchedTransaction = await fetchRawTransaction({
       address,
       chainId: transaction.chainId,
@@ -34,17 +36,13 @@ async function fetchTransaction({
       originalType: transaction.type,
     });
 
-    return {
-      ...transaction,
-      ...fetchedTransaction,
-    };
+    return applyTransactionUpdates(transaction, fetchedTransaction);
   } catch (e) {
     logger.error(new RainbowError('[fetchTransaction]: Failed to fetch transaction', e), {
       transaction,
     });
+    return transaction;
   }
-
-  return transaction;
 }
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
@@ -116,3 +114,26 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
   return watchPendingTransactions;
 };
+
+/**
+ * Applies only the fields that change during a pending transaction's lifecycle
+ * from the fetched transaction to the original transaction.
+ *
+ * Everything else (description, assets, value, etc.) stays from the original.
+ *
+ * This is a workaround for the lack of rich metadata in the fetched transaction.
+ */
+function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): RainbowTransaction {
+  if (!fetched) return original;
+
+  const updates: Partial<RainbowTransaction> = {};
+
+  if (isValidTransactionStatus(fetched.status)) updates.status = fetched.status;
+
+  if (fetched.gasPrice) updates.gasPrice = fetched.gasPrice;
+  if (fetched.maxFeePerGas) updates.maxFeePerGas = fetched.maxFeePerGas;
+  if (fetched.maxPriorityFeePerGas) updates.maxPriorityFeePerGas = fetched.maxPriorityFeePerGas;
+  if (fetched.gasLimit) updates.gasLimit = fetched.gasLimit;
+
+  return { ...original, ...updates };
+}
