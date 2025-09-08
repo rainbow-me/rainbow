@@ -1184,6 +1184,30 @@
         "title": "No %{networkName} %{gasToken} 감지됨",
         "text": "%{networkName} 를 %{networkName} 없이 사용할 수 없습니다 %{gasToken}. 이 거래를 진행하면 여러분의 %{networkName} 토큰을 스왑, 브리지, 또는 전송할 수 없게 되며, 지갑에 %{networkName} %{gasToken} 를 추가해야 합니다.",
         "button": "그럼에도 불구하고 진행"
+      },
+      "ens_primary_name": {
+        "title": "What does it mean to set my ENS name?",
+        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+      },
+      "ens_on_chain_data_warning": {
+        "title": "주의!",
+        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+      },
+      "ens_manager": {
+        "title": "What is the .eth manager?",
+        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+      },
+      "ens_owner": {
+        "title": "What is the .eth name owner?",
+        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+      },
+      "ens_resolver": {
+        "title": "What is a .eth resolver?",
+        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+      },
+      "ens_configuration": {
+        "title": "What do these options mean?",
+        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
       }
     },
     "fedora": {
@@ -2076,55 +2100,55 @@
           "code": "ETH"
         },
         "USD": {
-          "label": "United States Dollar",
+          "label": "미국 달러",
           "code": "USD"
         },
         "EUR": {
-          "label": "Euro",
+          "label": "유로",
           "code": "EUR"
         },
         "GBP": {
-          "label": "British Pound",
+          "label": "브리티시 파운드",
           "code": "GBP"
         },
         "AUD": {
-          "label": "Australian Dollar",
+          "label": "호주 달러",
           "code": "AUD"
         },
         "CNY": {
-          "label": "Chinese Yuan",
+          "label": "중국 위안화",
           "code": "CNY"
         },
         "KRW": {
-          "label": "South Korean Won",
+          "label": "대한민국 원",
           "code": "KRW"
         },
         "JPY": {
-          "label": "Japanese Yen",
+          "label": "일본 엔화",
           "code": "JPY"
         },
         "RUB": {
-          "label": "Russian Ruble",
+          "label": "러시아 루블",
           "code": "RUB"
         },
         "INR": {
-          "label": "Indian Rupee",
+          "label": "인도 루피",
           "code": "INR"
         },
         "TRY": {
-          "label": "Turkish Lira",
+          "label": "터키 리라",
           "code": "TRY"
         },
         "CAD": {
-          "label": "Canadian Dollar",
+          "label": "캐나다 달러",
           "code": "CAD"
         },
         "NZD": {
-          "label": "New Zealand Dollar",
+          "label": "뉴질랜드 달러",
           "code": "NZD"
         },
         "ZAR": {
-          "label": "South African Rand",
+          "label": "남아프리카 공화국 랜드",
           "code": "ZAR"
         }
       },
@@ -2909,7 +2933,7 @@
         "find_a_code": "스캔할 코드를 찾아보세요",
         "qr_1_app_connected": "1개의 연결된 앱",
         "qr_multiple_apps_connected": "%{appsConnectedCount} 개의 연결된 앱들",
-        "scan_to_connect": "Scan to Connect",
+        "scan_to_connect": "앱과 연결합니다",
         "scan_to_pay_or_connect": "결제하거나 연결하기 위해 스캔하세요",
         "simulator_mode": "시뮬레이터 모드",
         "sorry_could_not_be_recognized": "죄송합니다, 이 QR 코드를 인식할 수 없습니다.",
@@ -3467,16 +3491,31 @@
         "steps": {
           "step_1": {
             "title": "경주가 시작되었습니다",
-            "subtitle_parts": ["가장 많은", " 구매량 ", "높은 토큰이 현재 왕입니다."]
+            "subtitle_parts": [
+              "가장 많은",
+              " 구매량 ",
+              "높은 토큰이 현재 왕입니다."
+            ]
           },
           "step_2": {
             "title": "하루 한 왕관",
-            "subtitle_parts": ["자정(UTC 12:00에), ", " 자정 (오전 12:00 UTC), ", "선두 토큰이 일일 우승자로 선정됩니다."]
+            "subtitle_parts": [
+              "자정(UTC 12:00에), ",
+              " 자정 (오전 12:00 UTC), ",
+              "선두 토큰이 일일 우승자로 선정됩니다."
+            ]
           },
           "step_3": {
             "title": "보상 획득",
-            "subtitle_parts": ["현재 왕의 구매자는", " 2배 포인트를 받습니다."],
-            "subtitle_two_parts": ["창작자", "는 포인트를 획득합니다 ", "왕관을 받을 때."]
+            "subtitle_parts": [
+              "현재 왕의 구매자는",
+              " 2배 포인트를 받습니다."
+            ],
+            "subtitle_two_parts": [
+              "창작자",
+              "는 포인트를 획득합니다 ",
+              "왕관을 받을 때."
+            ]
           }
         }
       }
