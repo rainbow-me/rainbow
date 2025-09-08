@@ -3467,31 +3467,16 @@
         "steps": {
           "step_1": {
             "title": "A corrida está ao vivo",
-            "subtitle_parts": [
-              "O token com o maior",
-              " volume de compra ",
-              "neste momento é o rei atual."
-            ]
+            "subtitle_parts": ["O token com o maior", " volume de compra ", "neste momento é o rei atual."]
           },
           "step_2": {
             "title": "Uma coroa por dia",
-            "subtitle_parts": [
-              "Às",
-              " meia-noite (0:00 UTC), ",
-              "o token líder é coroado o vencedor diário."
-            ]
+            "subtitle_parts": ["Às", " meia-noite (0:00 UTC), ", "o token líder é coroado o vencedor diário."]
           },
           "step_3": {
             "title": "Vencer Recompensas",
-            "subtitle_parts": [
-              "Compradores do Rei atual ganham",
-              " 2x pontos."
-            ],
-            "subtitle_two_parts": [
-              "Criadores",
-              " ganham pontos ",
-              "quando são coroados."
-            ]
+            "subtitle_parts": ["Compradores do Rei atual ganham", " 2x pontos."],
+            "subtitle_two_parts": ["Criadores", " ganham pontos ", "quando são coroados."]
           }
         }
       }

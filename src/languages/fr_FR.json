@@ -3467,31 +3467,16 @@
         "steps": {
           "step_1": {
             "title": "La course est en direct",
-            "subtitle_parts": [
-              "Le jeton avec le plus",
-              " de volume d'achat ",
-              "en ce moment est le roi actuel."
-            ]
+            "subtitle_parts": ["Le jeton avec le plus", " de volume d'achat ", "en ce moment est le roi actuel."]
           },
           "step_2": {
             "title": "Une couronne par jour",
-            "subtitle_parts": [
-              "À",
-              " minuit (12:00 AM UTC), ",
-              "le jeton en tête est couronné gagnant du jour."
-            ]
+            "subtitle_parts": ["À", " minuit (12:00 AM UTC), ", "le jeton en tête est couronné gagnant du jour."]
           },
           "step_3": {
             "title": "Gagner des récompenses",
-            "subtitle_parts": [
-              "Les acheteurs du roi actuel obtiennent",
-              " 2x points."
-            ],
-            "subtitle_two_parts": [
-              "Créateurs",
-              " gagnent des points ",
-              "lorsqu'ils sont couronnés."
-            ]
+            "subtitle_parts": ["Les acheteurs du roi actuel obtiennent", " 2x points."],
+            "subtitle_two_parts": ["Créateurs", " gagnent des points ", "lorsqu'ils sont couronnés."]
           }
         }
       }

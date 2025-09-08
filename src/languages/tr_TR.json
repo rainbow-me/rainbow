@@ -3467,31 +3467,16 @@
         "steps": {
           "step_1": {
             "title": "Yarış başladı",
-            "subtitle_parts": [
-              "En yüksek",
-              " alım hacmine ",
-              "sahip jeton şu anki kraldır."
-            ]
+            "subtitle_parts": ["En yüksek", " alım hacmine ", "sahip jeton şu anki kraldır."]
           },
           "step_2": {
             "title": "Günde bir taç",
-            "subtitle_parts": [
-              "Saat",
-              " gece yarısı (12:00 AM UTC), ",
-              "lider jeton günlük kazanan ilan edilir."
-            ]
+            "subtitle_parts": ["Saat", " gece yarısı (12:00 AM UTC), ", "lider jeton günlük kazanan ilan edilir."]
           },
           "step_3": {
             "title": "Ödül Kazan",
-            "subtitle_parts": [
-              "Şu anki kralın alıcıları",
-              " 2x puan alır."
-            ],
-            "subtitle_two_parts": [
-              "Yaratıcılar",
-              " puan kazanır ",
-              "taçlandırıldığında."
-            ]
+            "subtitle_parts": ["Şu anki kralın alıcıları", " 2x puan alır."],
+            "subtitle_two_parts": ["Yaratıcılar", " puan kazanır ", "taçlandırıldığında."]
           }
         }
       }

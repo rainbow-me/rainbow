@@ -3467,31 +3467,16 @@
         "steps": {
           "step_1": {
             "title": "Perlombaan langsung",
-            "subtitle_parts": [
-              "Token dengan terbanyak",
-              " volume pembelian ",
-              "saat ini adalah raja sekarang."
-            ]
+            "subtitle_parts": ["Token dengan terbanyak", " volume pembelian ", "saat ini adalah raja sekarang."]
           },
           "step_2": {
             "title": "Satu mahkota sehari",
-            "subtitle_parts": [
-              "Pada",
-              " tengah malam (12:00 AM UTC), ",
-              "token terdepan dinobatkan sebagai pemenang harian."
-            ]
+            "subtitle_parts": ["Pada", " tengah malam (12:00 AM UTC), ", "token terdepan dinobatkan sebagai pemenang harian."]
           },
           "step_3": {
             "title": "Menangkan Hadiah",
-            "subtitle_parts": [
-              "Pembeli Raja saat ini mendapatkan",
-              " 2x poin."
-            ],
-            "subtitle_two_parts": [
-              "Pencipta",
-              " mendapatkan poin ",
-              "ketika dinobatkan."
-            ]
+            "subtitle_parts": ["Pembeli Raja saat ini mendapatkan", " 2x poin."],
+            "subtitle_two_parts": ["Pencipta", " mendapatkan poin ", "ketika dinobatkan."]
           }
         }
       }
