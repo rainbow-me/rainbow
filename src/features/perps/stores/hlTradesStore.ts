@@ -32,7 +32,11 @@ function getTradeExecutionDescription(trade: Omit<HlTrade, 'description'>): stri
   if (trade.triggerOrderType) {
     return trade.triggerOrderType === TriggerOrderType.TAKE_PROFIT ? 'Take profit executed' : 'Stop loss executed';
   }
-  return isLong ? 'Close long' : 'Close short';
+  if (trade.side === 'buy') {
+    return isLong ? 'Open long' : 'Open short';
+  } else {
+    return isLong ? 'Close short' : 'Close long';
+  }
 }
 
 function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.FrontendOrder }): HlTrade {

@@ -6,7 +6,7 @@ import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS } from '../constants';
 import { PerpPositionSide, TriggerOrder } from '../types';
 import { HyperliquidAccountClient } from './hyperliquid-account-client';
 import { Wallet } from '@ethersproject/wallet';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { isPositive, toFixedWorklet } from '@/safe-math/SafeMath';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import {
   buildMarketOrder,
@@ -14,6 +14,9 @@ import {
   calculatePositionSizeFromMarginAmount,
   getMarketType,
 } from '@/features/perps/utils/orders';
+import { getOppositePositionSide } from '@/features/perps/utils';
+
+type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
 export class HyperliquidExchangeClient {
   private exchangeClient: hl.ExchangeClient;
@@ -49,7 +52,6 @@ export class HyperliquidExchangeClient {
     leverage,
     slippageBips = DEFAULT_SLIPPAGE_BIPS,
     reduceOnly = false,
-    clientOrderId,
     triggerOrders = [],
   }: {
     assetId: number;
@@ -80,7 +82,6 @@ export class HyperliquidExchangeClient {
       price,
       sizeDecimals,
       reduceOnly,
-      clientOrderId,
     });
 
     const orders: OrderParams[] = [positionMarketOrder];
@@ -109,74 +110,44 @@ export class HyperliquidExchangeClient {
       orders,
       // You might think that grouping: positionTpsl would be for submitting a trigger order with the base order, but it is not, that will result in an error
       grouping: 'na',
-      // TODO (kane): blocked, account needs to be created
+      // TODO BLOCKED (kane): Account needs to be created
       // builder: RAINBOW_BUILDER_SETTINGS,
     });
   }
 
-  // TODO (kane): refactor to use available size and same formatting + slippage as the open position
-  // test if when closing position from API without the orders to cancel if they get auto cancelled
   async closeIsolatedMarginPosition({
     assetId,
-    symbol,
     price,
+    sizeDecimals,
+    size,
     slippageBips = DEFAULT_SLIPPAGE_BIPS,
-    clientOrderId,
   }: {
     assetId: number;
-    symbol: string;
     price: string;
+    size: string;
+    sizeDecimals: number;
     slippageBips?: number;
-    clientOrderId?: Hex;
-  }): Promise<void> {
-    // const account = await this.accountClient.getPerpAccount();
-    // const position = account.positions[symbol];
-    // if (!position) {
-    //   throw new RainbowError('[HyperliquidExchangeClient] No open position found', { symbol });
-    // }
-    // const orderIdsToCancel: { a: number; o: number }[] = [];
-    // if (position.stopLoss?.orders) {
-    //   for (const order of position.stopLoss.orders) {
-    //     if (order.oid) {
-    //       orderIdsToCancel.push({ a: assetId, o: order.oid });
-    //     }
-    //   }
-    // }
-    // if (position.takeProfit?.orders) {
-    //   for (const order of position.takeProfit.orders) {
-    //     if (order.oid) {
-    //       orderIdsToCancel.push({ a: assetId, o: order.oid });
-    //     }
-    //   }
-    // }
-    // if (orderIdsToCancel.length > 0) {
-    //   await this.exchangeClient.cancel({ cancels: orderIdsToCancel });
-    // }
-    // const nativeInfoClient = new hl.InfoClient({
-    //   transport: new hl.HttpTransport(),
-    // });
-    // const perpState = await nativeInfoClient.clearinghouseState({
-    //   user: this.userAddress,
-    // });
-    // const assetPosition = perpState.assetPositions.find(ap => ap.position.coin === symbol);
-    // if (!assetPosition) {
-    //   throw new RainbowError('[HyperliquidExchangeClient] Position data not found', { symbol });
-    // }
-    // const positionSize = Math.abs(parseFloat(assetPosition.position.szi)).toString();
-    // const closeOrder = createMarketOrder({
-    //   assetId,
-    //   side: getOppositePositionSide(position.side),
-    //   size: positionSize,
-    //   price,
-    //   slippageBips,
-    //   reduceOnly: true,
-    //   clientOrderId,
-    // });
-    // await this.exchangeClient.order({
-    //   orders: [closeOrder],
-    //   grouping: 'na',
-    //   // TODO (kane): blocked, account needs to be created
-    //   // builder: RAINBOW_BUILDER_SETTINGS,
-    // });
+  }): Promise<OrderStatusResponse> {
+    const side = isPositive(size) ? PerpPositionSide.LONG : PerpPositionSide.SHORT;
+    const absoluteSize = Math.abs(Number(size)).toString();
+    const closeOrder = buildMarketOrder({
+      assetId,
+      side: getOppositePositionSide(side),
+      size: absoluteSize,
+      price,
+      sizeDecimals,
+      slippageBips,
+      reduceOnly: true,
+    });
+
+    console.log('closeOrder', JSON.stringify(closeOrder, null, 2));
+    const result = await this.exchangeClient.order({
+      orders: [closeOrder],
+      grouping: 'na',
+      // TODO BLOCKED (kane): Account needs to be created
+      // builder: RAINBOW_BUILDER_SETTINGS,
+    });
+
+    return result.response.data.statuses[0];
   }
 }

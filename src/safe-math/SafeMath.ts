@@ -531,3 +531,8 @@ export function trimTrailingZeros(value: string): string {
 
   return `${integerPart}.${trimmedFractional}`;
 }
+
+export function isPositive(num: string) {
+  'worklet';
+  return greaterThanWorklet(num, '0');
+}

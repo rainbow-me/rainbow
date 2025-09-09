@@ -76,7 +76,6 @@ export function buildMarketOrder({
   slippageBips = DEFAULT_SLIPPAGE_BIPS,
   reduceOnly = false,
   tif = 'FrontendMarket',
-  clientOrderId,
 }: {
   assetId: number;
   side: PerpPositionSide;
@@ -86,19 +85,18 @@ export function buildMarketOrder({
   slippageBips?: number;
   reduceOnly?: boolean;
   tif?: TIF;
-  clientOrderId?: Hex;
 }): OrderParams {
   const marketType = getMarketType(assetId);
   const priceWithSlippage = calculatePriceWithSlippage({ price, side, slippageBips });
   const formattedPriceWithSlippage = formatOrderPrice({ price: priceWithSlippage, sizeDecimals, marketType });
+  const formattedSize = toFixedWorklet(size, sizeDecimals);
 
   return {
     a: assetId,
     b: side === PerpPositionSide.LONG,
     p: formattedPriceWithSlippage,
-    s: size,
+    s: formattedSize,
     r: reduceOnly,
     t: { limit: { tif } },
-    c: clientOrderId,
   };
 }

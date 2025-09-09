@@ -635,6 +635,9 @@ export type RootStackParamList = {
     triggerOrderType: TriggerOrderType;
     market: PerpMarket;
   };
+  [Routes.CLOSE_POSITION_BOTTOM_SHEET]: {
+    symbol: string;
+  };
   [Routes.PERPS_ACCOUNT_NAVIGATOR]: NavigatorScreenParams<PerpsStackParamList> | undefined;
   [Routes.PERPS_DETAIL_SCREEN]: {
     market: PerpMarket;

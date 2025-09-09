@@ -1,7 +1,8 @@
-import { divide, greaterThan } from '@/helpers/utilities';
+import { greaterThan } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
 import { PerpPositionSide, PerpAccount, PerpsPosition, TriggerOrderType } from '../types';
+import { sumWorklet } from '@/safe-math/SafeMath';
 
 const transport = new hl.HttpTransport();
 export const infoClient: hl.InfoClient = new hl.InfoClient({
@@ -44,6 +45,7 @@ export class HyperliquidAccountClient {
 
     const positions: Record<string, PerpsPosition> = {};
 
+    // TODO (kane): remove this in favor of using the dedicated open orders store
     perpState.assetPositions.forEach(({ position }) => {
       const tpslOrders = openOrders.filter(order => order.coin === position.coin && order.isPositionTpsl === true);
 
@@ -76,6 +78,9 @@ export class HyperliquidAccountClient {
             }
           : null;
 
+      const equity =
+        position.leverage.type === 'isolated' ? sumWorklet(position.marginUsed, position.unrealizedPnl) : position.unrealizedPnl;
+
       positions[position.coin] = {
         symbol: position.coin,
         side: greaterThan(position.szi, 0) ? PerpPositionSide.LONG : PerpPositionSide.SHORT,
@@ -87,6 +92,7 @@ export class HyperliquidAccountClient {
         returnOnEquity: position.returnOnEquity,
         marginUsed: position.marginUsed,
         size: position.szi,
+        equity,
         // TODO (kane): this calculation is not correct
         unrealizedPnlPercent: position.returnOnEquity,
         funding: position.cumFunding.sinceOpen,

@@ -41,10 +41,11 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
       transform: [
         { translateX: withSpring(positionSide.value === PerpPositionSide.LONG ? 0 : width / 2, SPRING_CONFIGS.snappyMediumSpringConfig) },
       ],
-      shadowColor: positionSide.value === PerpPositionSide.LONG ? PERPS_COLORS.longGreen : PERPS_COLORS.shortRed,
-      shadowRadius: 12,
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.12,
+      // TODO (kane): shadow is being clipped
+      // shadowColor: positionSide.value === PerpPositionSide.LONG ? PERPS_COLORS.longGreen : PERPS_COLORS.shortRed,
+      // shadowRadius: 12,
+      // shadowOffset: { width: 0, height: 8 },
+      // shadowOpacity: 0.12,
     };
   });
 

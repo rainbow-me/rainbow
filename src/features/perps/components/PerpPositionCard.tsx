@@ -10,6 +10,7 @@ import { abs } from '@/helpers/utilities';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { formatCurrency } from '@/helpers/strings';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;
@@ -32,13 +33,10 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
             currency: 'USD',
           })
         : 'N/A',
-      unrealizedPnl: formatAssetPrice({
-        value: abs(position.unrealizedPnl),
-        prefix: position.unrealizedPnl.includes('-') ? '-' : '+',
+      unrealizedPnl: `${position.unrealizedPnl.includes('-') ? '-' : '+'} ${formatCurrency(abs(position.unrealizedPnl), {
         currency: 'USD',
-      }),
-      positionValue: formatAssetPrice({
-        value: position.value,
+      })}`,
+      positionEquity: formatCurrency(position.equity, {
         currency: 'USD',
       }),
     };
@@ -48,7 +46,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
     return formatAssetPrice({ value: state.price, currency: 'USD' });
   }, []);
 
-  const { entryPrice, liquidationPrice, unrealizedPnl, positionValue } = formattedValues;
+  const { entryPrice, liquidationPrice, unrealizedPnl, positionEquity } = formattedValues;
 
   return (
     <Box
@@ -73,7 +71,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
                 </Text>
               </Box>
               <Text size="17pt" weight="bold" color="label">
-                {positionValue}
+                {positionEquity}
               </Text>
             </Box>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">

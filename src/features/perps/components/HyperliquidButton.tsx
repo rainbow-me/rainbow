@@ -19,8 +19,16 @@ export const HyperliquidButton = function HyperliquidButton({ children, onPress,
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <ButtonPressAnimation {...buttonProps} onPress={onPress}>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <Box borderColor={{ custom: opacityWorklet('#ffffff', 0.16) }} borderWidth={2} {...boxProps}>
+      <Box
+        borderColor={{ custom: opacityWorklet('#ffffff', 0.16) }}
+        borderWidth={2}
+        justifyContent="center"
+        alignItems="center"
+        height={48}
+        borderRadius={24}
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...boxProps}
+      >
         <LinearGradient
           colors={HYPERLIQUID_COLORS.gradient}
           style={StyleSheet.absoluteFillObject}

@@ -52,7 +52,7 @@ export const PerpsHeader = React.memo(function PerpsHeader({ total }: { total: s
           </Inline>
 
           <Inline horizontalSpace={'8px'} alignVertical="center">
-            <Text size="20pt" color={'label'} weight="regular">
+            <Text size="20pt" color={'label'} weight="bold">
               {formatCurrency(total)}
             </Text>
           </Inline>

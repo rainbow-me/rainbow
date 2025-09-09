@@ -189,30 +189,19 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
     const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
     if (!market || !leverage) return;
     setIsSubmitting(true);
-    const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)].midPrice;
-    console.log('live price', livePrice, market.price);
     try {
-      const result = await hyperliquidAccountStoreActions.createIsolatedMarginPosition({
-        assetId: market.id,
+      const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)].midPrice;
+      await hyperliquidAccountStoreActions.createIsolatedMarginPosition({
+        symbol: market.symbol,
         side: positionSide,
-        leverage: leverage,
-        amount,
+        leverage,
+        marginAmount: amount,
         // TODO (kane): market.price will be stale and the live price shouldn't actually be null in any case
         price: livePrice ?? market.price,
-        decimals: market.decimals,
         triggerOrders,
       });
-
-      // TODO (kane): how do we want to handle partially filled orders? Is this possible with a market order?
-      const allOrdersFilled = result.response.data.statuses.every(status => {
-        return 'filled' in status;
-      });
-
-      if (allOrdersFilled) {
-        hlNewPositionStoreActions.reset();
-        hyperliquidAccountStoreActions.fetch(undefined, { force: true });
-        Navigation.handleAction(Routes.PERPS_ACCOUNT_SCREEN);
-      }
+      hlNewPositionStoreActions.reset();
+      Navigation.handleAction(Routes.PERPS_ACCOUNT_SCREEN);
     } catch (e) {
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
     }

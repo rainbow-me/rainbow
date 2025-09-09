@@ -13,6 +13,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
@@ -28,9 +29,9 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
 
   const formattedValues = useMemo(() => {
     return {
-      value: formatAssetPrice({ value: position.value, currency: 'USD' }),
+      equity: formatCurrency(position.equity),
       liquidationPrice: position.liquidationPrice ? formatAssetPrice({ value: position.liquidationPrice, currency: 'USD' }) : 'N/A',
-      unrealizedPnl: formatAssetPrice({ value: abs(position.unrealizedPnl), decimalPlaces: 2, currency: 'USD' }),
+      unrealizedPnl: formatCurrency(abs(position.unrealizedPnl)),
     };
   }, [position]);
 
@@ -57,7 +58,7 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
                 </Box>
               </Box>
               <Text color="label" size="17pt" weight="semibold">
-                {formattedValues.value}
+                {formattedValues.equity}
               </Text>
             </Box>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">

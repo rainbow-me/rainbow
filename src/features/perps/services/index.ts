@@ -9,6 +9,16 @@ import { EthereumAddress } from '@/entities';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { Wallet } from '@ethersproject/wallet';
 
+// TODO (kane): convert to useDerivedStore
+
+// const useCachedUserAssetsStore = createDerivedStore<UserAssetsStoreType>(
+//   $ => {
+//     const address = $(useWalletsStore).accountAddress;
+//     return createUserAssetsStore(address);
+//   },
+//   { fastMode: true }
+// );
+
 // Cache for wallet and clients to avoid reloading on every fetch
 let cachedWallet: null | Wallet | LedgerSigner = null;
 let cachedAccountClient: HyperliquidAccountClient | null = null;

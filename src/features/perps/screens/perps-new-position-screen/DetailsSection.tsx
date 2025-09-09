@@ -5,6 +5,7 @@ import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PerpMarket } from '@/features/perps/types';
+import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 
 interface RowProps {
   children: React.ReactNode;
@@ -52,7 +53,7 @@ export const DetailsSection = memo(function DetailsSection({ market }: { market:
             </Text>
           </Box>
           <Text size="15pt" weight="bold" color={'labelSecondary'}>
-            {market.fundingRate}
+            {`${Number(market.fundingRate) * 100}%`}
           </Text>
         </Row>
         <Row highlighted={false}>
@@ -61,9 +62,12 @@ export const DetailsSection = memo(function DetailsSection({ market }: { market:
               {'􀘾'}
             </TextIcon>
             <Text size="15pt" weight="bold" color={'labelSecondary'}>
-              {'Slippage'}
+              {'Max Slippage'}
             </Text>
           </Box>
+          <Text size="15pt" weight="bold" color={'labelSecondary'}>
+            {`${DEFAULT_SLIPPAGE_BIPS / 100}%`}
+          </Text>
         </Row>
       </Box>
     </View>

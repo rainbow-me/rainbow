@@ -11,20 +11,23 @@ import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { safeAreaInsetValues } from '@/utils';
 import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { PerpMarket, PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
-import { LiveTokenText, useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
+import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
 import { getPercentageDifferenceWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
+import { SheetHandleFixedToTop } from '@/components/sheet';
+import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 
-const PANEL_HEIGHT = 375;
+const PANEL_HEIGHT = 360;
 
 // TODO (kane): centralize this formatting
 function formatInput(text: string) {
@@ -90,7 +93,8 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
   const positionSide = useHlNewPositionStore(state => state.positionSide);
   const isTakeProfit = triggerOrderType === TriggerOrderType.TAKE_PROFIT;
   const isLong = positionSide === PerpPositionSide.LONG;
-  const initialAmount = formatInput(formatDisplay(mulWorklet(market.price, isLong ? 1.1 : 0.9)));
+  const shouldBeAbove = isLong ? isTakeProfit : !isTakeProfit;
+  const initialAmount = formatInput(formatDisplay(mulWorklet(market.price, shouldBeAbove ? 1.1 : 0.9)));
   const inputValue = useSharedValue(initialAmount);
 
   const liveTokenPrice = useLiveTokenSharedValue({
@@ -106,7 +110,11 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
 
   const isValidTargetPrice = useDerivedValue(() => {
     const isTargetPriceAboveCurrentPrice = greaterThanWorklet(targetPriceDifferential.value, '0');
-    if ((isTakeProfit && !isTargetPriceAboveCurrentPrice) || (!isTakeProfit && isTargetPriceAboveCurrentPrice)) return false;
+    if (isLong) {
+      if ((isTakeProfit && !isTargetPriceAboveCurrentPrice) || (!isTakeProfit && isTargetPriceAboveCurrentPrice)) return false;
+    } else {
+      if ((isTakeProfit && isTargetPriceAboveCurrentPrice) || (!isTakeProfit && !isTargetPriceAboveCurrentPrice)) return false;
+    }
     return true;
   });
 
@@ -118,28 +126,31 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
       margin: amount,
       leverage: String(leverage),
       isLong,
-      isMakerOrder: isTakeProfit,
     });
-    return formatAssetPrice({ value: projectedPnl, currency: 'USD' });
+    return formatCurrency(projectedPnl);
   });
 
   const targetPriceDifferentialLabelStyle = useAnimatedStyle(() => {
     return {
-      color: !isValidTargetPrice.value ? red : isTakeProfit ? green : red,
+      color: !isValidTargetPrice.value ? red : greaterThanWorklet(targetPriceDifferential.value, '0') ? green : red,
     };
   });
 
   const targetPriceDifferentialLabel = useDerivedValue(() => {
     if (!isValidTargetPrice.value) return '􀇿';
-    return `${isTakeProfit ? '+' : ''}${toFixedWorklet(targetPriceDifferential.value, 2)}%`;
+    const isAbove = greaterThanWorklet(targetPriceDifferential.value, '0');
+    return `${isAbove ? '+' : ''}${toFixedWorklet(targetPriceDifferential.value, 2)}%`;
   });
 
   const targetPriceDifferentialLabelSecondary = useDerivedValue(() => {
-    if (isTakeProfit && !isValidTargetPrice.value)
-      return `must be above ${formatAssetPrice({ value: liveTokenPrice.value, currency: 'USD' })}`;
-    if (!isTakeProfit && !isValidTargetPrice.value)
-      return `must be below ${formatAssetPrice({ value: liveTokenPrice.value, currency: 'USD' })}`;
-    return `${isTakeProfit ? 'above' : 'below'} current price`;
+    const shouldBeAbove = isLong ? isTakeProfit : !isTakeProfit;
+
+    if (!isValidTargetPrice.value) {
+      const direction = shouldBeAbove ? 'above' : 'below';
+      return `must be ${direction} ${formatAssetPrice({ value: liveTokenPrice.value, currency: 'USD' })}`;
+    }
+
+    return `${shouldBeAbove ? 'above' : 'below'} current price`;
   });
 
   const addTriggerOrder = useCallback(() => {
@@ -157,63 +168,49 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
   return (
     <Box paddingHorizontal={'24px'} paddingTop={'28px'} alignItems="center" style={{ flex: 1 }}>
       <Box gap={24}>
-        <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full">
-          <Text size="20pt" weight="heavy" color={'label'}>
-            {triggerOrderType === TriggerOrderType.TAKE_PROFIT ? 'Take Profit' : 'Stop Loss'}
-          </Text>
-          <Box gap={12}>
-            <Text size="15pt" weight="bold" color={'labelQuaternary'}>
-              {'Current Price'}
+        <PerpBottomSheetHeader
+          title={triggerOrderType === TriggerOrderType.TAKE_PROFIT ? 'Take Profit' : 'Stop Loss'}
+          symbol={market.symbol}
+        />
+        <Box gap={14}>
+          <Box
+            flexDirection="row"
+            width="full"
+            borderWidth={2}
+            borderColor={{ custom: accentColors.opacity6 }}
+            borderRadius={28}
+            height={66}
+            paddingHorizontal={'20px'}
+            alignItems="center"
+            justifyContent="space-between"
+            backgroundColor={accentColors.surfacePrimary}
+          >
+            <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+              {'Price'}
             </Text>
-            <Box flexDirection="row" alignItems="center" gap={4}>
-              <HyperliquidTokenIcon symbol="BTC" style={{ width: 14, height: 14 }} />
-              <LiveTokenText
-                tokenId={getHyperliquidTokenId(market.symbol)}
-                size="15pt"
-                weight="heavy"
-                color={'labelSecondary'}
-                initialValue={market.price}
-                selector={token => formatAssetPrice({ value: token.price, currency: 'USD' })}
-              />
-            </Box>
+            <CurrencyInput
+              autoFocus={true}
+              ref={inputRef}
+              value={inputValue}
+              currencySymbol="$"
+              textColor={accentColors.opacity100}
+              placeholderTextColor={accentColors.opacity24}
+              formatInput={formatInput}
+              formatDisplay={formatDisplay}
+              size="30pt"
+              weight="bold"
+              align="right"
+            />
           </Box>
-        </Box>
-        <Box
-          flexDirection="row"
-          width="full"
-          borderWidth={2}
-          borderColor={{ custom: accentColors.opacity6 }}
-          borderRadius={28}
-          paddingVertical={'24px'}
-          paddingHorizontal={'20px'}
-          alignItems="center"
-          justifyContent="space-between"
-          backgroundColor={accentColors.surfacePrimary}
-        >
-          <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {'Price'}
-          </Text>
-          <CurrencyInput
-            autoFocus={true}
-            ref={inputRef}
-            value={inputValue}
-            currencySymbol="$"
-            textColor={accentColors.opacity100}
-            placeholderTextColor={accentColors.opacity24}
-            formatInput={formatInput}
-            formatDisplay={formatDisplay}
-            size="30pt"
-            weight="bold"
-            align="right"
-          />
-        </Box>
-        <Box flexDirection="row" alignItems="center" gap={6}>
-          <AnimatedText size="15pt" weight="bold" style={targetPriceDifferentialLabelStyle}>
-            {targetPriceDifferentialLabel}
-          </AnimatedText>
-          <AnimatedText size="15pt" weight="bold" color={'labelQuaternary'}>
-            {targetPriceDifferentialLabelSecondary}
-          </AnimatedText>
+
+          <Box paddingHorizontal={'8px'} flexDirection="row" alignItems="center" gap={6}>
+            <AnimatedText size="15pt" weight="bold" style={targetPriceDifferentialLabelStyle}>
+              {targetPriceDifferentialLabel}
+            </AnimatedText>
+            <AnimatedText size="15pt" weight="bold" color={'labelQuaternary'}>
+              {targetPriceDifferentialLabelSecondary}
+            </AnimatedText>
+          </Box>
         </Box>
         <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
         <Box
@@ -254,21 +251,12 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
               </Text>
             </Box>
           </ButtonPressAnimation>
-          <ButtonPressAnimation onPress={addTriggerOrder} style={{ flex: 1 }}>
-            <Box
-              height={48}
-              borderRadius={24}
-              backgroundColor={accentColors.opacity100}
-              borderWidth={2}
-              borderColor={'buttonStroke'}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text size="20pt" weight="black" color={{ custom: 'black' }}>
-                {'Add'}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
+          {/* TODO (kane): disabled state is shared value can't be used here */}
+          <HyperliquidButton onPress={addTriggerOrder} buttonProps={{ style: { flex: 1 } }}>
+            <Text size="20pt" weight="black" color={'black'}>
+              {'Add'}
+            </Text>
+          </HyperliquidButton>
         </Box>
       </Box>
     </Box>
@@ -288,6 +276,7 @@ export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBot
         <PanelSheet>
           <KeyboardStickyView>
             <Panel height={PANEL_HEIGHT} innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
+              <SheetHandleFixedToTop color={opacityWorklet('#F5F8FF', 0.3)} showBlur={true} top={14} />
               <PanelContent triggerOrderType={triggerOrderType} market={market} />
             </Panel>
           </KeyboardStickyView>

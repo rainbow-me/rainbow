@@ -4,7 +4,6 @@ import { HYPERLIQUID_GREEN, PERPS_COLORS } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { Navigation } from '@/navigation';
@@ -71,6 +70,8 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
               onPress={() => {
                 Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
               }}
+              height={40}
+              width={52}
               paddingHorizontal={'16px'}
               paddingVertical={'12px'}
               borderRadius={24}

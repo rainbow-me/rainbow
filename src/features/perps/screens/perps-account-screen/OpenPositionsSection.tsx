@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Stack, Text, TextShadow } from '@/design-system';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PerpPositionCard } from '@/features/perps/components/PerpPositionCard';
 import { abs, greaterThan, isEqual } from '@/helpers/utilities';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { UP_ARROW, DOWN_ARROW } from '@/features/perps/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { formatCurrency } from '@/helpers/strings';
 
 function NoPositions() {
   return (
@@ -22,19 +24,17 @@ function NoPositions() {
 export const OpenPositionsSection = function OpenPositionsSection() {
   const positions = useHyperliquidAccountStore(state => state.positions);
   const positionsArray = Object.values(positions);
-  const { value, unrealizedPnl, unrealizedPnlPercent } = useHyperliquidAccountStore(state => state.getTotalPositionsInfo());
+  const { equity, unrealizedPnl, unrealizedPnlPercent } = useHyperliquidAccountStore(state => state.getTotalPositionsInfo());
   const isPositivePnl = greaterThan(unrealizedPnl, 0);
   const isNeutralPnl = isEqual(unrealizedPnl, 0);
   const textColor = isPositivePnl ? 'green' : isNeutralPnl ? 'labelTertiary' : 'red';
-  const formattedUnrealizedPnl = formatAssetPrice({
-    value: abs(unrealizedPnl),
-    currency: 'USD',
-  });
-  const formattedUnrealizedPnlPercent = `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`;
-  const formattedValue = formatAssetPrice({
-    value,
-    currency: 'USD',
-  });
+  const formattedValues = useMemo(() => {
+    return {
+      equity: formatCurrency(equity, { currency: 'USD' }),
+      unrealizedPnl: formatCurrency(abs(unrealizedPnl), { currency: 'USD' }),
+      unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
+    };
+  }, [equity, unrealizedPnl, unrealizedPnlPercent]);
 
   return (
     <Box>
@@ -52,14 +52,14 @@ export const OpenPositionsSection = function OpenPositionsSection() {
               </TextShadow>
               <TextShadow blur={8} shadowOpacity={0.2}>
                 <Text size="17pt" weight="heavy" color={textColor}>
-                  {formattedUnrealizedPnlPercent}
+                  {formattedValues.unrealizedPnlPercent}
                 </Text>
               </TextShadow>
             </Box>
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Text size="30pt" weight="heavy" color="label">
-              {formattedValue}
+              {formattedValues.equity}
             </Text>
             <Box flexDirection="row" alignItems="center" gap={2}>
               <TextShadow blur={8} shadowOpacity={0.2}>
@@ -69,7 +69,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
               </TextShadow>
               <TextShadow blur={8} shadowOpacity={0.2}>
                 <Text size="22pt" weight="heavy" color={textColor}>
-                  {formattedUnrealizedPnl}
+                  {formattedValues.unrealizedPnl}
                 </Text>
               </TextShadow>
             </Box>
@@ -82,6 +82,11 @@ export const OpenPositionsSection = function OpenPositionsSection() {
               key={position.symbol}
               onPress={() => {
                 navigateToPerpDetailScreen(position.symbol);
+              }}
+              onLongPress={() => {
+                Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
+                  symbol: position.symbol,
+                });
               }}
               scaleTo={0.98}
             >

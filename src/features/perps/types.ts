@@ -51,6 +51,7 @@ export type PerpsPosition = {
   leverage: number;
   liquidationPrice: string | null;
   entryPrice: string;
+  equity: string;
   value: string;
   size: string;
   unrealizedPnl: string;

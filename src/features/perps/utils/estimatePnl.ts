@@ -1,60 +1,48 @@
-import { HYPERLIQUID_MAKER_FEE_RATE, HYPERLIQUID_TAKER_FEE_RATE } from '@/features/perps/constants';
+import { HYPERLIQUID_MAKER_FEE_BIPS, HYPERLIQUID_TAKER_FEE_BIPS, RAINBOW_FEE_BIPS } from '@/features/perps/constants';
+import { calculateTradingFee } from '@/features/perps/utils/calculateTradingFee';
 import { divWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
 
-// TODO (kane): cleanup
-export interface PnlParams {
-  entryPrice: string | number;
-  exitPrice: string | number;
-  /** Margin amount in USD */
-  margin: string | number;
-  /** Leverage multiplier */
+// TODO (kane): name this something better to make it clear it's only for non opened positions
+// This function allows us to estimate the PnL for a position that has not yet been opened
+// Passing in the margin and leverage when we do not yet have a real position size
+export function estimatePnl(params: {
+  entryPrice: string;
+  exitPrice: string;
+  margin: string;
   leverage: string | number;
-  /** Whether this is a long position (true) or short (false) */
   isLong: boolean;
-  /** Optional: Taker fee rate (e.g., 0.00035 for 0.035%) */
-  takerFeeRate?: string | number;
-  /** Optional: Maker fee rate (e.g., 0.0002 for 0.02%) */
-  makerFeeRate?: string | number;
+  takerFeeBips?: number;
+  makerFeeBips?: number;
   /** Optional: Whether the exit order is a maker order (limit) or taker (market) */
-  isMakerOrder?: boolean;
-}
-
-export function estimatePnl({
-  entryPrice,
-  exitPrice,
-  margin,
-  leverage,
-  isLong,
-  takerFeeRate = HYPERLIQUID_TAKER_FEE_RATE,
-  makerFeeRate = HYPERLIQUID_MAKER_FEE_RATE,
-  isMakerOrder = true,
-}: {
-  entryPrice: string | number;
-  exitPrice: string | number;
-  margin: string | number;
-  leverage: string | number;
-  isLong: boolean;
-  takerFeeRate?: string | number;
-  makerFeeRate?: string | number;
   isMakerOrder?: boolean;
 }): string {
   'worklet';
 
+  const {
+    entryPrice,
+    exitPrice,
+    margin,
+    leverage,
+    isLong,
+    takerFeeBips = HYPERLIQUID_TAKER_FEE_BIPS,
+    makerFeeBips = HYPERLIQUID_MAKER_FEE_BIPS,
+    isMakerOrder = false,
+  } = params;
+
   const notionalValue = mulWorklet(margin, leverage);
   const positionSize = divWorklet(notionalValue, entryPrice);
-
   const priceDiff = subWorklet(exitPrice, entryPrice);
-
-  // For long: profit = size * (exit - entry)
-  // For short: profit = size * (entry - exit) = -size * (exit - entry)
   const grossProfit = isLong ? mulWorklet(positionSize, priceDiff) : mulWorklet(positionSize, mulWorklet('-1', priceDiff));
 
-  const entryNotional = mulWorklet(positionSize, entryPrice);
-  const exitNotional = mulWorklet(positionSize, exitPrice);
+  console.log('grossProfit', grossProfit);
 
-  const entryFee = mulWorklet(entryNotional, takerFeeRate);
-  const exitFee = mulWorklet(exitNotional, isMakerOrder ? makerFeeRate : takerFeeRate);
+  // Fees are taken on both the entry and exit
+  const feeBips = (isMakerOrder ? makerFeeBips : takerFeeBips) + RAINBOW_FEE_BIPS;
+  const entryFee = calculateTradingFee({ size: positionSize, price: entryPrice, feeBips });
+  const exitFee = calculateTradingFee({ size: positionSize, price: exitPrice, feeBips });
   const totalFees = sumWorklet(entryFee, exitFee);
+
+  console.log('totalFees', entryFee, exitFee);
 
   return subWorklet(grossProfit, totalFees);
 }

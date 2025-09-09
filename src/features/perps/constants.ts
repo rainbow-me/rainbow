@@ -1,12 +1,7 @@
-import { AddressOrEth } from '@/__swaps__/types/assets';
-import { SearchAsset } from '@/__swaps__/types/search';
-import { ChainId } from '@/state/backendNetworks/types';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import { Address } from 'viem';
 
-export const DEFAULT_SLIPPAGE_BIPS = 50;
+export const DEFAULT_SLIPPAGE_BIPS = 100;
 export const RAINBOW_BUILDER_SETTINGS = {
   b: '0xREPLACE_WITH_RAINBOW_BUILDER_ADDRESS',
   f: 10,
@@ -46,8 +41,14 @@ export const SLIDER_WIDTH = DEVICE_WIDTH - 80;
 export const DEFAULT_MAINTENANCE_MARGIN_RATE = 0.006;
 export const DEFAULT_INITIAL_AMOUNT = 0.5;
 
-export const HYPERLIQUID_TAKER_FEE_RATE = '0.00035';
-export const HYPERLIQUID_MAKER_FEE_RATE = '0.0002';
+// Note: These are the base rates. Accounts with more trading volume will have lower rates and we should get this from the API: https://hyperliquid.gitbook.io/hyperliquid-docs/trading/fees
+// Taker fees apply to market orders
+export const HYPERLIQUID_TAKER_FEE_BIPS = 4.5;
+// Maker fees apply to limit orders
+export const HYPERLIQUID_MAKER_FEE_BIPS = 1.5;
+// Rainbow fees apply to all orders
+export const RAINBOW_FEE_BIPS = 5;
+
 export const USDC_ICON_URL =
   'https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png';
 export const USDC_COLORS = {

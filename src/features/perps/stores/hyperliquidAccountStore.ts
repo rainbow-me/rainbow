@@ -8,6 +8,8 @@ import { add, divide } from '@/helpers/utilities';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { OrderResponse } from '@nktkas/hyperliquid';
+import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 
 type HyperliquidAccountStoreState = {
   positions: Record<string, PerpsPosition>;
@@ -18,26 +20,25 @@ type HyperliquidAccountStoreState = {
 type HyperliquidAccountStoreActions = {
   withdraw: (amount: string) => Promise<void>;
   createIsolatedMarginPosition: ({
-    assetId,
+    symbol,
     side,
     leverage,
-    amount,
+    marginAmount,
     price,
-    decimals,
     triggerOrders,
   }: {
-    assetId: number;
+    symbol: string;
     side: PerpPositionSide;
     leverage: number;
-    amount: string;
+    marginAmount: string;
     price: string;
-    decimals: number;
     triggerOrders?: TriggerOrder[];
   }) => Promise<OrderResponse>;
+  closeIsolatedMarginPosition: ({ symbol, price, size }: { symbol: string; price: string; size: string }) => Promise<void>;
   checkIfHyperliquidAccountExists: () => Promise<boolean>;
   // derivative state
   getTotalPositionsInfo: () => {
-    value: string;
+    equity: string;
     unrealizedPnl: string;
     unrealizedPnlPercent: string;
   };
@@ -100,18 +101,38 @@ export const useHyperliquidAccountStore = createQueryStore<
       await exchangeClient.withdraw(amount);
     },
     getPosition: symbol => get().positions[symbol],
-    createIsolatedMarginPosition: async ({ assetId, side, leverage, amount, price, decimals, triggerOrders }) => {
+    createIsolatedMarginPosition: async ({ symbol, side, leverage, marginAmount, price, triggerOrders }) => {
       const address = useWalletsStore.getState().accountAddress;
       const exchangeClient = await getHyperliquidExchangeClient(address);
-      return exchangeClient.openIsolatedMarginPosition({
-        assetId,
+      const market = useHyperliquidMarketsStore.getState().markets[symbol];
+      if (!market) {
+        throw new RainbowError('[HyperliquidAccountStore] Market not found');
+      }
+      const result = await exchangeClient.openIsolatedMarginPosition({
+        assetId: market.id,
         side,
-        marginAmount: amount,
+        marginAmount,
         price,
         leverage,
-        sizeDecimals: decimals,
+        sizeDecimals: market.decimals,
         triggerOrders,
       });
+
+      // Refetch positions
+      await get().fetch(undefined, { force: true });
+
+      return result;
+    },
+    closeIsolatedMarginPosition: async ({ symbol, price, size }) => {
+      const address = useWalletsStore.getState().accountAddress;
+      const market = useHyperliquidMarketsStore.getState().markets[symbol];
+      if (!market) {
+        throw new RainbowError('[HyperliquidAccountStore] Market not found');
+      }
+      const exchangeClient = await getHyperliquidExchangeClient(address);
+      await exchangeClient.closeIsolatedMarginPosition({ assetId: market.id, price, sizeDecimals: market.decimals, size });
+      // Refetch positions
+      await get().fetch(undefined, { force: true });
     },
     checkIfHyperliquidAccountExists: async () => {
       // TODO (kane): save to state, address -> exists and don't check if true
@@ -127,18 +148,18 @@ export const useHyperliquidAccountStore = createQueryStore<
     },
     getTotalPositionsInfo: () => {
       const positions = Object.values(get().positions);
-      let totalPositionsValue = '0';
+      let totalPositionsEquity = '0';
       let totalPositionsPnl = '0';
 
       positions.forEach(position => {
-        totalPositionsValue = add(totalPositionsValue, position.value);
+        totalPositionsEquity = add(totalPositionsEquity, position.equity);
         totalPositionsPnl = add(totalPositionsPnl, position.unrealizedPnl);
       });
 
       return {
-        value: totalPositionsValue,
+        equity: totalPositionsEquity,
         unrealizedPnl: totalPositionsPnl,
-        unrealizedPnlPercent: totalPositionsValue === '0' ? '0' : divide(totalPositionsPnl, totalPositionsValue),
+        unrealizedPnlPercent: totalPositionsEquity === '0' ? '0' : divide(totalPositionsPnl, totalPositionsEquity),
       };
     },
   })

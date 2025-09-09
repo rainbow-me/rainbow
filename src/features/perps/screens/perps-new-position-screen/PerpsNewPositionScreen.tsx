@@ -27,8 +27,8 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
 
   return (
     <Box background={'surfacePrimary'} paddingHorizontal={'20px'} style={{ flex: 1 }}>
-      {/* TODO (kane): shadow is being clipped, might be able to fix by moving to a sticky header */}
-      <Box overflow={'visible'} paddingBottom={'24px'} paddingTop={'8px'}>
+      {/* TODO (kane): shadow - disabled for now - is being clipped, might be able to fix by moving to a sticky header */}
+      <Box overflow={'visible'} paddingTop={'8px'}>
         <PositionSideSelector />
       </Box>
       <Box style={{ flex: 1, position: 'relative' }}>

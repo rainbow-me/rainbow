@@ -89,7 +89,7 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
             key={triggerOrder.localId}
             type={triggerOrder.type}
             price={triggerOrder.price}
-            percentage={`${triggerOrder.orderFraction}%`}
+            percentage={`${Number(triggerOrder.orderFraction) * 100}%`}
             onPressDelete={() => {
               hlNewPositionStoreActions.removeTriggerOrder(triggerOrder.localId);
             }}

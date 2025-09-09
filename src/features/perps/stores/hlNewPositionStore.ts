@@ -43,14 +43,12 @@ export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set
 
   setMarket: async (market: PerpMarket) => {
     set({ market });
-
     // Whenever the market changes, we need to fetch the users account leverage for this asset
     const address = useWalletsStore.getState().accountAddress;
     const data = await infoClient.activeAssetData({
       user: address,
       coin: market.symbol,
     });
-    // const assetId = await hyperliquidMarketsClient.getAssetId(market.symbol);
     const accountAssetLeverage = data?.leverage?.value || 1;
     const availableBalance = data?.availableToTrade[0] ?? 0;
     set({ leverage: accountAssetLeverage, amount: toFixedWorklet(divide(availableBalance, 2), 2) });
