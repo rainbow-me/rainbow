@@ -1,18 +1,18 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { AnimatedText, Box, Text, TextShadow } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { HlTrade, PerpMarket, TriggerOrderType } from '@/features/perps/types';
+import { HlTrade, PerpMarket } from '@/features/perps/types';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { colors } from '@/styles';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { abs, greaterThan, isEqual } from '@/helpers/utilities';
 import { divWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
-import { DOWN_ARROW, UP_ARROW, PERPS_COLORS } from '@/features/perps/constants';
+import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { Page } from '@/components/layout';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
 import { ChartType } from '@/features/charts/types';
@@ -24,6 +24,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { format } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CollapsibleSection } from '@/features/perps/components/CollapsibleSection';
+import { useHlNewPositionStore } from '../stores/hlNewPositionStore';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({ market }: { market: PerpMarket }) {
   return (
@@ -171,7 +172,7 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
         gap={14}
       >
         <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={8}>
-          <Text size="22pt" weight="heavy" color="labelTertiary" testID={`poistion-value-header-${market.symbol}`}>
+          <Text size="22pt" weight="heavy" color="labelTertiary" testID={`position-value-header-${market.symbol}`}>
             Position Value
           </Text>
           <Box flexDirection="row" alignItems="center" gap={2}>
@@ -219,42 +220,6 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
   );
 });
 
-const CollapsibleHeader = memo(function CollapsibleHeader({
-  isExpanded,
-  onPress,
-  title,
-  isEmpty,
-}: {
-  isExpanded?: boolean;
-  onPress?: () => void;
-  title: string;
-  isEmpty?: boolean;
-}) {
-  const colors = usePerpsAccentColorContext();
-
-  return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.98}>
-      <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-        <Box flexDirection="row" gap={8} alignItems="center">
-          <Text size="icon 17px" weight="bold" color={{ custom: colors.accentColors.opacity100 }}>
-            􀐫
-          </Text>
-          <Text size="20pt" weight="heavy" color={{ custom: colors.accentColors.opacity100 }}>
-            {title}
-          </Text>
-        </Box>
-        {!isEmpty && (
-          <Box style={{ transform: [{ rotate: isExpanded ? '0deg' : '-90deg' }] }}>
-            <Text size="17pt" weight="heavy" color={{ custom: colors.accentColors.opacity56 }}>
-              􀆈
-            </Text>
-          </Box>
-        )}
-      </Box>
-    </ButtonPressAnimation>
-  );
-});
-
 const TradeListItem = memo(function TradeListItem({ trade, isLast }: { trade: HlTrade; isLast: boolean }) {
   const pnlValue = parseFloat(trade.pnl);
   const pnlColor = pnlValue >= 0 ? 'green' : 'red';
@@ -270,9 +235,7 @@ const TradeListItem = memo(function TradeListItem({ trade, isLast }: { trade: Hl
 
     // TODO: KANE
     return formatAssetPrice({ value: '0', currency: 'USD' });
-  }, [trade.size, trade.symbol]);
-
-  console.log({ trade });
+  }, [trade.fillStartSize, trade.size, trade.triggerOrderType]);
 
   return (
     <>
@@ -358,6 +321,106 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
   );
 });
 
+const LiquidationSection = memo(function LiquidationSection({ market }: { market: PerpMarket }) {
+  const colors = usePerpsAccentColorContext();
+  const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
+
+  const formattedValues = useMemo(() => {
+    if (!position) return null;
+    return {
+      entryPrice: formatAssetPrice({
+        value: position.entryPrice,
+        currency: 'USD',
+      }),
+      liquidationPrice: position.liquidationPrice
+        ? formatAssetPrice({
+            value: position.liquidationPrice,
+            currency: 'USD',
+          })
+        : 'N/A',
+      unrealizedPnl: formatAssetPrice({
+        value: abs(position.unrealizedPnl),
+        prefix: position.unrealizedPnl.includes('-') ? '-' : '+',
+        currency: 'USD',
+      }),
+      positionValue: formatAssetPrice({
+        value: position.value,
+        currency: 'USD',
+      }),
+    };
+  }, [position]);
+
+  const items = [
+    {
+      title: 'Mark Price',
+      value: formattedValues?.positionValue,
+    },
+    {
+      title: 'Entry Price',
+      value: formattedValues?.entryPrice,
+    },
+    {
+      title: 'Funding Rate',
+      value: '0.175%',
+    },
+  ];
+
+  if (!position) return null;
+  return (
+    <>
+      <Box
+        backgroundColor="#192928"
+        borderRadius={28}
+        borderWidth={2}
+        borderColor={{ custom: opacityWorklet('#3ECFAD', 0.06) }}
+        padding="20px"
+        gap={16}
+      >
+        <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={8}>
+          <Box>
+            <Text size="17pt" weight="semibold" color="labelTertiary" testID={`liquidation-price-header-${market.symbol}`}>
+              Liquidation Price
+            </Text>
+            <Box flexDirection="row" alignItems="center" gap={5} marginTop={{ custom: 12 }}>
+              <Text color={{ custom: colors.accentColors.opacity100 }} size="13pt" weight="heavy">
+                -26.82%
+              </Text>
+              <Text color="labelTertiary" size="13pt" weight="heavy">
+                from current price
+              </Text>
+            </Box>
+          </Box>
+          <Text color="white" size="17pt" weight="bold">
+            {formattedValues?.liquidationPrice}
+          </Text>
+        </Box>
+        <Box backgroundColor="#F5F8FF06" height={{ custom: 1 }} width="full" />
+        {items.map((item, index) => (
+          <Fragment key={item.title}>
+            <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={8}>
+              <Text size="17pt" weight="semibold" color="labelTertiary" testID={`liquidation-price-header-${market.symbol}`}>
+                {item.title}
+              </Text>
+              <Text color="white" size="17pt" weight="bold">
+                {item.value}
+              </Text>
+            </Box>
+            {index !== items.length - 1 && <Box backgroundColor="#F5F8FF06" height={{ custom: 1 }} width="full" />}
+          </Fragment>
+        ))}
+      </Box>
+      <Box
+        backgroundColor="#F5F8FF06"
+        height={{ custom: 1 }}
+        width="full"
+        marginTop={{ custom: 28 }}
+        // we have a gap of 20 already so 28 - 20
+        marginBottom={{ custom: 8 }}
+      />
+    </>
+  );
+});
+
 const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket }) {
   const colors = usePerpsAccentColorContext();
   const insets = useSafeAreaInsets();
@@ -375,6 +438,9 @@ const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket 
             <ChartSection market={market} />
             <Box paddingHorizontal="24px">
               <PositionValueSection market={market} />
+            </Box>
+            <Box paddingHorizontal="24px">
+              <LiquidationSection market={market} />
             </Box>
             <Box paddingHorizontal="24px">
               <CollapsibleSection
