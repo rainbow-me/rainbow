@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { MinedTransaction, RainbowTransaction } from '@/entities';
+import { useCallback, useEffect, useRef } from 'react';
+import { RainbowTransaction } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { time } from '@/utils/time';
@@ -17,14 +17,9 @@ export function useTransactionWatcher<T extends RainbowTransaction | MinedTransa
 }: UseTransactionWatcherProps<T>) {
   const abortRef = useRef<AbortController | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const transactionsRef = useRef<T[]>(transactions);
+
   transactionsRef.current = transactions;
-
-  const watchFnRef = useRef(watchFunction);
-  watchFnRef.current = watchFunction;
-
-  const transactionsKey = useMemo(() => buildTransactionsKey(transactions), [transactions]);
 
   const runWatcher = useCallback(
     async (abortController: AbortController) => {
@@ -33,7 +28,7 @@ export function useTransactionWatcher<T extends RainbowTransaction | MinedTransa
       const currentTransactions = transactionsRef.current;
       if (currentTransactions.length) {
         try {
-          await watchFnRef.current(currentTransactions, abortController);
+          await watchFunction(currentTransactions, abortController);
         } catch (e) {
           if (!abortController.signal.aborted) logger.error(new RainbowError('[useTransactionWatcher]: Error watching transactions', e));
         }
@@ -43,7 +38,7 @@ export function useTransactionWatcher<T extends RainbowTransaction | MinedTransa
         timeoutRef.current = setTimeout(() => runWatcher(abortController), interval);
       }
     },
-    [interval]
+    [interval, watchFunction]
   );
 
   useEffect(() => {
@@ -53,7 +48,7 @@ export function useTransactionWatcher<T extends RainbowTransaction | MinedTransa
     }
     abortRef.current?.abort();
 
-    if (!transactionsKey) return;
+    if (!transactions.length) return;
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -68,14 +63,5 @@ export function useTransactionWatcher<T extends RainbowTransaction | MinedTransa
       controller.abort();
       abortRef.current = null;
     };
-  }, [interval, runWatcher, transactionsKey]);
-}
-
-function buildTransactionsKey<T extends RainbowTransaction | MinedTransactionWithPolling>(transactions: T[]): string {
-  let key = '';
-  for (const transaction of transactions) {
-    const tx: MinedTransaction | RainbowTransaction = 'transaction' in transaction ? transaction.transaction : transaction;
-    key += `${tx.hash}:${tx.chainId}:${tx.nonce}:${tx.status}`;
-  }
-  return key;
+  }, [interval, runWatcher, transactions]);
 }
