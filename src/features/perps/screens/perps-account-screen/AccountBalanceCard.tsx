@@ -1,15 +1,15 @@
 import React, { memo } from 'react';
 import { Box, Stack, Text, TextShadow, useColorMode } from '@/design-system';
-import { HYPERLIQUID_GREEN, PERPS_COLORS } from '@/features/perps/constants';
+import { HYPERLIQUID_GREEN, PERPS_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
+import { RainbowImage } from '@/components/RainbowImage';
 
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
@@ -28,7 +28,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
     >
       <Box flexDirection="row" justifyContent="space-between">
         <Box flexDirection="row" alignItems="center" gap={12}>
-          <HyperliquidTokenIcon symbol="USDC" style={{ width: 40, height: 40 }} />
+          <RainbowImage source={{ url: USDC_ICON_URL }} style={{ width: 40, height: 40 }} />
           <Stack space={'10px'}>
             <Text color="labelSecondary" size="11pt" weight="heavy">
               {'AVAILABLE BALANCE'}
