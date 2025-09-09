@@ -15,10 +15,12 @@ import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransa
 import { queryClient } from '@/react-query';
 
 async function fetchTransaction({
+  abortController,
   address,
   currency,
   transaction,
 }: {
+  abortController: AbortController | null;
   address: string;
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
@@ -29,6 +31,7 @@ async function fetchTransaction({
     }
 
     const fetchedTransaction = await fetchRawTransaction({
+      abortController,
       address,
       chainId: transaction.chainId,
       currency,
@@ -49,20 +52,22 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const watchPendingTransactions = useCallback(
-    async (pendingTransactions: RainbowTransaction[], signal: AbortSignal) => {
+    async (pendingTransactions: RainbowTransaction[], abortController: AbortController) => {
       if (!pendingTransactions.length) return;
 
       // This abort signal will be called if new transactions are received. In that
       // case we need to cancel this fetch since it will now be stale.
-      let canceled = signal.aborted;
-      signal.addEventListener('abort', () => {
+      let canceled = abortController.signal.aborted;
+      abortController.signal.addEventListener('abort', () => {
         canceled = true;
       });
 
       const now = Math.floor(Date.now() / 1000);
 
       const fetchedTransactions = await Promise.all(
-        pendingTransactions.map((transaction: RainbowTransaction) => fetchTransaction({ address, currency: nativeCurrency, transaction }))
+        pendingTransactions.map((transaction: RainbowTransaction) =>
+          fetchTransaction({ abortController, address, currency: nativeCurrency, transaction })
+        )
       );
 
       if (canceled) return;

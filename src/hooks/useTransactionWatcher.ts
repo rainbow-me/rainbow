@@ -7,7 +7,7 @@ import { time } from '@/utils/time';
 interface UseTransactionWatcherProps<T extends RainbowTransaction | MinedTransactionWithPolling> {
   interval?: number;
   transactions: T[];
-  watchFunction: (transactions: T[], signal: AbortSignal) => Promise<void>;
+  watchFunction: (transactions: T[], abortController: AbortController) => Promise<void>;
 }
 
 export function useTransactionWatcher<T extends RainbowTransaction | MinedTransactionWithPolling>({
@@ -27,20 +27,20 @@ export function useTransactionWatcher<T extends RainbowTransaction | MinedTransa
   const transactionsKey = useMemo(() => buildTransactionsKey(transactions), [transactions]);
 
   const runWatcher = useCallback(
-    async (controller: AbortController) => {
-      if (controller.signal.aborted) return;
+    async (abortController: AbortController) => {
+      if (abortController.signal.aborted) return;
 
       const currentTransactions = transactionsRef.current;
       if (currentTransactions.length) {
         try {
-          await watchFnRef.current(currentTransactions, controller.signal);
+          await watchFnRef.current(currentTransactions, abortController);
         } catch (e) {
-          if (!controller.signal.aborted) logger.error(new RainbowError('[useTransactionWatcher]: Error watching transactions', e));
+          if (!abortController.signal.aborted) logger.error(new RainbowError('[useTransactionWatcher]: Error watching transactions', e));
         }
       }
 
-      if (!controller.signal.aborted) {
-        timeoutRef.current = setTimeout(() => runWatcher(controller), interval);
+      if (!abortController.signal.aborted) {
+        timeoutRef.current = setTimeout(() => runWatcher(abortController), interval);
       }
     },
     [interval]

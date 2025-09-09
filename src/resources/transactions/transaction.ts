@@ -74,12 +74,14 @@ type TransactionResponse = {
 };
 
 export const fetchRawTransaction = async ({
+  abortController,
   address,
   currency,
   chainId,
   hash,
   originalType,
 }: {
+  abortController?: AbortController | null;
   address: string;
   currency: NativeCurrencyKey;
   chainId: ChainId;
@@ -151,6 +153,7 @@ export const fetchRawTransaction = async ({
       params: {
         currency: currency.toLowerCase(),
       },
+      signal: abortController?.signal,
     });
 
     const transaction = normalizeTransactionResponse(response).data.payload.transaction;
