@@ -290,7 +290,7 @@ export const crosschainSwap = async ({
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: TransactionStatus.pending,
-    type: 'swap',
+    type: isBridging(updatedAssetToSell, assetToBuy) ? 'bridge' : 'swap',
     ...gasParamsToUse,
   } satisfies NewTransaction;
 
@@ -305,3 +305,7 @@ export const crosschainSwap = async ({
     hash: swap.hash,
   };
 };
+
+function isBridging(assetToSell: ParsedAsset, assetToBuy: ParsedAsset): boolean {
+  return !!assetToSell.networks && !!assetToBuy.chainId && assetToSell.networks[assetToBuy.chainId]?.address === assetToBuy.address;
+}
