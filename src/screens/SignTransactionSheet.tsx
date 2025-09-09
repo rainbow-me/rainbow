@@ -4,7 +4,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { GasSpeedButton } from '@/components/gas';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { NewTransaction, TransactionStatus } from '@/entities';
+import { NewTransaction, ParsedAddressAsset, TransactionStatus } from '@/entities';
 import { IS_IOS } from '@/env';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { getProvider } from '@/handlers/web3';
@@ -27,7 +27,7 @@ import {
 import { Transaction } from '@ethersproject/transactions';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { AnimatePresence, MotiView } from 'moti';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
@@ -82,6 +82,34 @@ type SignTransactionSheetParams = {
 
 export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
 
+// Render the cached native asset balance, fetch async, and re-render if balance changes
+// This re-fetch helps in wallet switching scenarios where balances could be stale
+const useOptimisticNativeAssetBalance = (chainId: ChainId, address: string): ParsedAddressAsset | undefined => {
+  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>(() => {
+    return ethereumUtils.getNetworkNativeAsset({ chainId, address });
+  });
+
+  const setNativeAssetIfChanged = (asset?: ParsedAddressAsset) => {
+    setNativeAsset(prev => {
+      if (!prev && asset) return asset;
+      if (prev && asset && prev.balance?.amount !== asset.balance?.amount) return asset;
+      return prev;
+    });
+  };
+
+  useEffect(() => {
+    const cachedAsset = ethereumUtils.getNetworkNativeAsset({ chainId, address });
+    setNativeAssetIfChanged(cachedAsset);
+
+    (async () => {
+      const fetchedAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId, address });
+      setNativeAssetIfChanged(fetchedAsset);
+    })();
+  }, [chainId, address]);
+
+  return nativeAsset;
+};
+
 export const SignTransactionSheet = () => {
   const { goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
@@ -105,13 +133,11 @@ export const SignTransactionSheet = () => {
 
   const provider = getProvider({ chainId });
 
-  // Native asset for dapp browser wallet selection vs global wallet
-  const nativeAsset = useMemo(() => {
-    return (
-      ethereumUtils.getNetworkNativeAsset({ chainId, address: addressToUse }) ??
-      useBackendNetworksStore.getState().getChainsNativeAsset()[chainId]
-    );
-  }, [chainId, addressToUse]);
+  // Native asset metadata for UI (decoupled from wallet asset balance)
+  const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
+
+  // Native asset balance reactive to wallet switching
+  const nativeAssetBalance = useOptimisticNativeAssetBalance(chainId, addressToUse);
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
@@ -139,21 +165,13 @@ export const SignTransactionSheet = () => {
   }, [isMessageRequest, transactionDetails?.displayDetails?.request, nativeAsset]);
 
   const walletBalance = useMemo(() => {
-    if (typeof nativeAsset === 'object' && 'balance' in nativeAsset) {
-      return {
-        amount: nativeAsset?.balance?.amount || 0,
-        display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
-        isLoaded: nativeAsset?.balance?.display !== undefined,
-        symbol: nativeAsset?.symbol || 'ETH',
-      };
-    }
     return {
-      amount: 0,
-      display: `0 ${nativeAsset?.symbol}`,
-      isLoaded: true,
-      symbol: nativeAsset?.symbol || 'ETH',
+      amount: nativeAssetBalance?.balance?.amount || 0,
+      display: nativeAssetBalance?.balance?.display || `0 ${nativeAsset.symbol}`,
+      isLoaded: nativeAssetBalance?.balance?.display !== undefined || true,
+      symbol: nativeAsset.symbol || 'ETH',
     };
-  }, [nativeAsset]);
+  }, [addressToUse, nativeAsset, nativeAssetBalance]);
 
   const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas({
     enableTracking: true,
@@ -345,7 +363,7 @@ export const SignTransactionSheet = () => {
         txDetails = {
           status: TransactionStatus.pending,
           chainId,
-          asset: displayDetails?.request?.asset || nativeAsset,
+          asset: displayDetails?.request?.asset || nativeAssetBalance,
           contract: {
             name: transactionDetails.dappName,
             iconUrl: transactionDetails.imageUrl,
@@ -433,7 +451,7 @@ export const SignTransactionSheet = () => {
     req,
     source,
     closeScreen,
-    nativeAsset,
+    nativeAssetBalance,
     gasLimit,
     onSuccessCallback,
     formattedDappUrl,
