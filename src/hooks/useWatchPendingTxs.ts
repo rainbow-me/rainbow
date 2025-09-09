@@ -121,12 +121,13 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 };
 
 /**
- * Applies only the fields that change during a pending transaction's lifecycle
- * from the fetched transaction to the original transaction.
+ * If pending, applies only the fields that change during a pending transaction's
+ * lifecycle to the original transaction.
  *
- * Everything else (description, assets, value, etc.) stays from the original.
+ * If confirmed, prefers the fetched transaction over the original (for certain
+ * transaction types.
  *
- * This is a workaround for the lack of rich metadata in the fetched transaction.
+ * This works around the lack of rich metadata in fetched pending transactions.
  */
 function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): RainbowTransaction {
   if (!fetched) return original;
@@ -134,9 +135,30 @@ function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowT
   const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
   if (status === original.status) return original;
 
+  if (status === TransactionStatus.confirmed && !shouldPreferLocalTransaction(original.type)) {
+    return { ...original, ...fetched };
+  }
+
   return {
     ...original,
     status,
     title: buildTransactionTitle(original.type, status),
   };
+}
+
+/**
+ * Prefers local transaction data for a subset of transaction types which
+ * contain bad metadata in the confirmed fetched transaction.
+ *
+ * This primarily affects the labels displayed in the confirmation toast.
+ */
+function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']): boolean {
+  switch (originalType) {
+    case 'bridge':
+    case 'cancel':
+    case 'swap':
+      return true;
+    default:
+      return false;
+  }
 }
