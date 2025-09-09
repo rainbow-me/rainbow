@@ -5,6 +5,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { nonceActions } from '@/state/nonces';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { shallowEqual } from '@/worklets/comparisons';
 
 export type PendingTransactionsState = {
   pendingTransactions: Partial<Record<string, RainbowTransaction[]>>;
@@ -60,6 +61,9 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
 
     setPendingTransactions: ({ address, pendingTransactions }) =>
       set(state => {
+        if (shallowEqual(state.pendingTransactions[address], pendingTransactions)) {
+          return state;
+        }
         return {
           pendingTransactions: {
             ...state.pendingTransactions,
