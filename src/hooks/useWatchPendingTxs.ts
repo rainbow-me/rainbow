@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
-import { isValidTransactionStatus } from '@/parsers/transactions';
+import { isValidTransactionStatus, isValidTransactionType } from '@/parsers/transactions';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
@@ -128,7 +128,13 @@ function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowT
 
   const updates: Partial<RainbowTransaction> = {};
 
-  if (isValidTransactionStatus(fetched.status)) updates.status = fetched.status;
+  const type = isValidTransactionType(fetched.type) ? fetched.type : original.type;
+  const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
+  const title = `${type}.${status}`;
+
+  if (type !== original.type) updates.type = type;
+  if (status !== original.status) updates.status = status;
+  if (title !== original.title) updates.title = title;
 
   if (fetched.gasPrice) updates.gasPrice = fetched.gasPrice;
   if (fetched.maxFeePerGas) updates.maxFeePerGas = fetched.maxFeePerGas;
