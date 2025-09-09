@@ -164,15 +164,6 @@ export const SignTransactionSheet = () => {
         };
   }, [isMessageRequest, transactionDetails?.displayDetails?.request, nativeAsset]);
 
-  const walletBalance = useMemo(() => {
-    return {
-      amount: nativeAssetBalance?.balance?.amount || 0,
-      display: nativeAssetBalance?.balance?.display || `0 ${nativeAsset.symbol}`,
-      isLoaded: nativeAssetBalance?.balance?.display !== undefined || true,
-      symbol: nativeAsset.symbol || 'ETH',
-    };
-  }, [addressToUse, nativeAsset, nativeAssetBalance]);
-
   const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas({
     enableTracking: true,
   });
@@ -188,7 +179,7 @@ export const SignTransactionSheet = () => {
 
   const { isBalanceEnough } = useHasEnoughBalance({
     isMessageRequest,
-    walletBalance,
+    nativeAssetBalance,
     chainId,
     selectedGasFee,
     req,
@@ -726,16 +717,19 @@ export const SignTransactionSheet = () => {
                         ) : (
                           <Box style={{ height: 9 }}>
                             <AnimatePresence>
-                              {!!chainId && walletBalance?.isLoaded && (
+                              {!!chainId && (nativeAssetBalance || nativeAsset) && (
                                 <MotiView animate={{ opacity: 1 }} from={{ opacity: 0 }} transition={{ opacity: motiTimingConfig }}>
                                   <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
                                     <Bleed vertical="4px">
                                       <ChainImage chainId={chainId} size={12} position="relative" />
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
-                                      {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
-                                        network: useBackendNetworksStore.getState().getChainsName()[chainId],
-                                      })}`}
+                                      {`${nativeAssetBalance?.balance?.display || `0 ${nativeAsset.symbol}`} ${i18n.t(
+                                        i18n.l.walletconnect.simulation.profile_section.on_network,
+                                        {
+                                          network: useBackendNetworksStore.getState().getChainsName()[chainId],
+                                        }
+                                      )}`}
                                     </Text>
                                   </Inline>
                                 </MotiView>
