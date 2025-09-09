@@ -24,7 +24,7 @@ const Container = styled(Row).attrs(({ side }) => ({
   backgroundColor: colors.transparent,
   bottom: 0,
   paddingLeft: 28,
-  paddingRight: 28,
+  paddingRight: 20,
   zIndex: 2,
   width: 120,
 }));
