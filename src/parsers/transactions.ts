@@ -113,7 +113,7 @@ export const parseTransaction = (
     chainId,
     from: txn.address_from,
     to,
-    title: `${type}.${status}`,
+    title: buildTransactionTitle(type, status),
     description,
     hash,
     network: txn.network,
@@ -201,3 +201,10 @@ export const isValidTransactionType = (type: string | undefined): type is Transa
 
 export const isValidTransactionStatus = (status: unknown): status is TransactionStatus =>
   status === TransactionStatus.confirmed || status === TransactionStatus.failed || status === TransactionStatus.pending;
+
+/**
+ * Builds a transaction `title` from a transaction `type` and `status`.
+ */
+export function buildTransactionTitle(type: TransactionType, status: TransactionStatus): string {
+  return `${type}.${status}`;
+}
