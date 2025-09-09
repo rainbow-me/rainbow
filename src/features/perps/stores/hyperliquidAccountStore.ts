@@ -89,7 +89,7 @@ export const useHyperliquidAccountStore = createQueryStore<
     params: {
       address: $ => $(useWalletsStore).accountAddress,
     },
-    staleTime: time.minutes(1),
+    staleTime: time.seconds(10),
   },
   (set, get) => ({
     positions: {},

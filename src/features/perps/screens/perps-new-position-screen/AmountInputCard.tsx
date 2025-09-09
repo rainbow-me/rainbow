@@ -3,7 +3,6 @@ import { Box, Text } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PERPS_COLORS, SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { runOnJS, SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider, SliderColors } from '@/features/perps/components/Slider';
 import { addCommasToNumber, opacityWorklet, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
@@ -11,6 +10,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { divide } from '@/helpers/utilities';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
 const AmountSlider = ({
   sliderXPosition,
@@ -144,7 +144,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
             {'Amount'}
           </Text>
           <Text size="15pt" weight="heavy" color="labelSecondary">
-            {formatAssetPrice({ value: availableBalanceString, currency: 'USD' })}
+            {formatCurrency(availableBalanceString)}
             <Text size="15pt" weight="bold" color="labelQuaternary">
               {' Available'}
             </Text>
