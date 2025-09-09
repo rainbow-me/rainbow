@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
 import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
-import { isValidTransactionStatus } from '@/parsers/transactions';
+import { buildTransactionTitle, isValidTransactionStatus } from '@/parsers/transactions';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
@@ -126,18 +126,12 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): RainbowTransaction {
   if (!fetched) return original;
 
-  const updates: Partial<RainbowTransaction> = {};
-
   const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
-  const title = `${original.type}.${status}`;
+  if (status === original.status) return original;
 
-  if (status !== original.status) updates.status = status;
-  if (title !== original.title) updates.title = title;
-
-  if (fetched.gasPrice) updates.gasPrice = fetched.gasPrice;
-  if (fetched.maxFeePerGas) updates.maxFeePerGas = fetched.maxFeePerGas;
-  if (fetched.maxPriorityFeePerGas) updates.maxPriorityFeePerGas = fetched.maxPriorityFeePerGas;
-  if (fetched.gasLimit) updates.gasLimit = fetched.gasLimit;
-
-  return { ...original, ...updates };
+  return {
+    ...original,
+    status,
+    title: buildTransactionTitle(original.type, status),
+  };
 }
