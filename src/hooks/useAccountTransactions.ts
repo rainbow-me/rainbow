@@ -7,7 +7,6 @@ import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { shallowEqual } from '@/worklets/comparisons';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
 import useContacts from './useContacts';
 
@@ -17,9 +16,8 @@ export default function useAccountTransactions() {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const accountAddress = useAccountAddress();
 
-  const pendingTransactionsMostRecentFirst = usePendingTransactionsStore(
-    state => state.getPendingTransactionsInReverseOrder(accountAddress),
-    shallowEqual
+  const pendingTransactionsMostRecentFirst = usePendingTransactionsStore(state =>
+    state.getPendingTransactionsInReverseOrder(accountAddress)
   );
 
   const walletConnectRequests = getSortedWalletConnectRequests();
