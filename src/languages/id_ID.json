@@ -1186,28 +1186,28 @@
         "button": "Lanjutkan saja"
       },
       "ens_primary_name": {
-        "title": "What does it mean to set my ENS name?",
-        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+        "title": "Apa arti dari mengatur nama ENS saya?",
+        "text": "Orang-orang dapat mengetikkan nama .eth Anda ke dalam dApps alih-alih alamat Ethereum lengkap Anda ketika mereka ingin mengirim sesuatu kepada Anda, dan dApps dapat menggunakan nama .eth dan profil Anda untuk menampilkan informasi tentang Anda. Ini juga dikenal sebagai mengatur nama ENS Anda menjadi \"utama.\""
       },
       "ens_on_chain_data_warning": {
         "title": "Perhatian!",
-        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+        "text": "Data yang Anda berikan di sini akan disimpan di blockchain Ethereum – yang berarti akan terlihat oleh semua orang dan dapat diakses oleh siapa saja. Jangan bagikan data apa pun yang Anda merasa tidak nyaman jika dipublikasikan."
       },
       "ens_manager": {
-        "title": "What is the .eth manager?",
-        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+        "title": "Apa itu pengelola .eth?",
+        "text": "Pengelola nama .eth dapat mengatur dan memperbarui catatan mereka, membuat subdomain dari nama tersebut atau mengelola konfigurasinya. Pengelola ditetapkan oleh pemilik nama .eth dan juga dikenal sebagai pengendali nama ENS."
       },
       "ens_owner": {
-        "title": "What is the .eth name owner?",
-        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+        "title": "Apa itu pemilik nama .eth?",
+        "text": "Pemilik nama .eth memiliki kontrol penuh dan mutlak atas nama tersebut. Mereka dapat mentransfer kepemilikan nama dan mengizinkan orang lain untuk mengelola nama itu untuk mereka jika mereka memilihnya (mengatur catatan dll). Pemilik juga dikenal sebagai pendaftar nama ENS."
       },
       "ens_resolver": {
-        "title": "What is a .eth resolver?",
-        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+        "title": "Apa itu resolver .eth? ",
+        "text": "Resolver adalah kontrak yang memetakan dari nama ke sumber daya (misalnya, alamat cryptocurrency, konten hash, dll). Resolver diarahkan oleh bidang resolver dari registri."
       },
       "ens_configuration": {
-        "title": "What do these options mean?",
-        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
+        "title": "Apa maksud opsi-opsi ini?",
+        "text": "Saat mengirimkan nama ENS kepada orang lain dan menjadikan mereka pemilik nama ENS yang baru, Anda mungkin ingin mengkonfigurasinya untuk mereka di muka dan menyimpan mereka dari transaksi di masa depan. Rainbow memungkinkan Anda untuk menghapus informasi profil apa pun yang saat ini diatur untuk nama tersebut, mengkonfigurasi nama ENS untuk diarahkan ke alamat penerima, dan menjadikan alamat penerima sebagai pengelola nama tersebut."
       }
     },
     "fedora": {
