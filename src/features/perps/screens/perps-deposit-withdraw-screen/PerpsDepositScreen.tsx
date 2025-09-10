@@ -621,7 +621,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           <PerpsSwapButton
             label={loading ? i18n.t(i18n.l.perps.deposit.confirm_button_loading_text) : i18n.t(i18n.l.perps.deposit.confirm_button_text)}
             onLongPress={handleSwap}
-            disabled={loading}
+            disabled={loading || quote == null || 'error' in quote}
           />
         </Box>
       </Box>
