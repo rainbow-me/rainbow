@@ -1186,28 +1186,28 @@
         "button": "Yine de Devam Et"
       },
       "ens_primary_name": {
-        "title": "What does it mean to set my ENS name?",
-        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+        "title": "ENS adımı ayarlamak ne anlama geliyor?",
+        "text": "İnsanlar size bir şey göndermek istediklerinde tam Ethereum adresiniz yerine .eth adınızı dApp'lere yazabilecek ve dApp'ler .eth adınızı ve profilinizi kullanarak sizin hakkınızda bilgi gösterebilecek. Bu aynı zamanda ENS adınızı \"birincil\" olarak ayarlamak olarak bilinir."
       },
       "ens_on_chain_data_warning": {
         "title": "Dikkat!",
-        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+        "text": "Burada sağladığınız veriler Ethereum blok zincirinde saklanacak - yani herkes tarafından görülebilir ve erişilebilir olacak. Yayınlamaktan rahatsız olduğunuz hiçbir veriyi paylaşmayın."
       },
       "ens_manager": {
-        "title": "What is the .eth manager?",
-        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+        "title": ".eth yöneticisi nedir?",
+        "text": "Bir .eth adının yöneticisi, kayıtlarını ayarlayabilir ve güncelleyebilir, o adın alt alan adlarını oluşturabilir veya yapılandırmasını yönetebilir. Yönetici, .eth adının sahibi tarafından ayarlanır ve ENS adının kontrolcüsü olarak da bilinir."
       },
       "ens_owner": {
-        "title": "What is the .eth name owner?",
-        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+        "title": ".eth adı sahibi nedir?",
+        "text": ".eth ismine sahip kişi, bu isim üzerinde tam ve nihai kontrole sahiptir. İsterlerse ismin sahipliğini başka birine devredip, onların isim yönetimini (kayıt ayarları vb.) yapmalarını sağlayabilirler. İsim sahibi, aynı zamanda bir ENS isminin kaydedeni olarak da bilinir."
       },
       "ens_resolver": {
-        "title": "What is a .eth resolver?",
-        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+        "title": "Bir .eth çözücü nedir?",
+        "text": "Çözücü, isimden kaynağa (örn. kripto para adresleri, içerik hashleri vb.) eşleme yapan bir sözleşmedir. Kayıt defterinin çözücü alanı tarafından işaret edilirler."
       },
       "ens_configuration": {
-        "title": "What do these options mean?",
-        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
+        "title": "Bu seçenekler ne anlama geliyor?",
+        "text": "Bir ENS ismini başka birine gönderip yeni ENS isim sahibi yaptığınızda, önceden yapılandırma yapmak ve ileride bir işlemden tasarruf etmelerini sağlamak isteyebilirsiniz. Rainbow, şu anda isim için ayarlanmış tüm profil bilgilerini silmenize, ENS ismini alıcının adresini işaret edecek şekilde yapılandırmanıza ve alıcı adresini ismin yöneticisi yapmanıza olanak tanır."
       }
     },
     "fedora": {
