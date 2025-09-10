@@ -1,8 +1,6 @@
-// same as /src/screens/expandedAssetSheet/components/shared/CollapsibleSection.tsx
-
 /** @refresh reset */
 import React from 'react';
-import Animated, { LinearTransition, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { DerivedValue, LinearTransition, SharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Box, IconContainer, Text, TextShadow } from '@/design-system';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -16,47 +14,40 @@ export const LAYOUT_ANIMATION = LinearTransition.springify()
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
-interface CollapsibleSectionProps {
+export interface CollapsibleSectionBaseProps {
   content: React.ReactNode;
   icon: string;
   primaryText: string;
   secondaryText?: string;
-  iconColor: string;
+  expanded: SharedValue<boolean> | DerivedValue<boolean>;
+  onToggle?: () => void;
+  iconColor?: string; // if provided, used as custom color; otherwise uses 'accent'
 }
 
-interface SectionHeaderProps {
-  icon: string;
-  primaryText: string;
-  secondaryText?: string;
-  expanded: boolean;
-  setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
-  iconColor: string;
-}
-
-const SectionHeader = React.memo(function SectionHeader({
+const SectionHeaderView = React.memo(function SectionHeaderView({
   icon,
   primaryText,
   secondaryText,
-  iconColor,
   expanded,
-  setExpanded,
-}: SectionHeaderProps) {
+  onToggle,
+  iconColor,
+}: Omit<CollapsibleSectionBaseProps, 'content'>) {
   const rotationStyle = useAnimatedStyle(
     () => ({
       transform: [
         {
-          rotate: withSpring(expanded ? '0deg' : '-90deg', ANIMATION_CONFIG),
+          rotate: withSpring(expanded.value ? '0deg' : '-90deg', ANIMATION_CONFIG),
         },
       ],
     }),
     [expanded]
   );
 
+  const iconColorProp = iconColor ? { custom: iconColor } : 'accent';
+
   return (
     <GestureHandlerButton
-      onPressJS={() => {
-        setExpanded(current => !current);
-      }}
+      onPressWorklet={onToggle}
       hapticTrigger="tap-end"
       hapticType="soft"
       hitSlop={{ bottom: 28, left: 24, right: 24, top: 28 }}
@@ -67,7 +58,7 @@ const SectionHeader = React.memo(function SectionHeader({
         <Box flexDirection="row" gap={10} alignItems="center">
           <IconContainer height={14} width={24}>
             <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text align="center" color={{ custom: iconColor }} size="icon 17px" weight="bold">
+              <Text align="center" color={iconColorProp} size="icon 17px" weight="bold">
                 {icon}
               </Text>
             </TextShadow>
@@ -88,7 +79,7 @@ const SectionHeader = React.memo(function SectionHeader({
         <AnimatedBox style={rotationStyle}>
           <IconContainer height={14} width={24}>
             <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text weight="heavy" align="center" size="17pt" color={{ custom: iconColor }}>
+              <Text weight="heavy" align="center" size="17pt" color={iconColorProp}>
                 􀆈
               </Text>
             </TextShadow>
@@ -99,26 +90,32 @@ const SectionHeader = React.memo(function SectionHeader({
   );
 });
 
-export function CollapsibleSection({ content, icon, primaryText, secondaryText, iconColor }: CollapsibleSectionProps) {
-  const [expanded, setExpanded] = React.useState(false);
-
+export function CollapsibleSectionBase({
+  content,
+  icon,
+  primaryText,
+  secondaryText,
+  expanded,
+  onToggle,
+  iconColor,
+}: CollapsibleSectionBaseProps) {
   const contentStyle = useAnimatedStyle(
     () => ({
-      display: expanded ? 'flex' : 'none',
-      opacity: withSpring(expanded ? 1 : 0, ANIMATION_CONFIG),
+      display: expanded.value ? 'flex' : 'none',
+      opacity: withSpring(expanded.value ? 1 : 0, ANIMATION_CONFIG),
     }),
     [expanded]
   );
 
   return (
     <AnimatedBox layout={LAYOUT_ANIMATION}>
-      <SectionHeader
-        expanded={expanded}
-        setExpanded={setExpanded}
-        iconColor={iconColor}
+      <SectionHeaderView
         icon={icon}
         primaryText={primaryText}
         secondaryText={secondaryText}
+        expanded={expanded}
+        onToggle={onToggle}
+        iconColor={iconColor}
       />
       <AnimatedBox style={contentStyle}>
         <Box paddingTop="24px">{content}</Box>

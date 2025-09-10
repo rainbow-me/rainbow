@@ -23,7 +23,8 @@ import { useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
 import { ButtonPressAnimation } from '@/components/animations';
 import { format } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CollapsibleSection } from '@/features/perps/components/CollapsibleSection';
+import { CollapsibleSectionBase } from '@/components/collapsible/CollapsibleSectionBase';
+import { useSharedValue } from 'react-native-reanimated';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({ market }: { market: PerpMarket }) {
   return (
@@ -171,8 +172,8 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
         gap={14}
       >
         <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={8}>
-          <Text size="22pt" weight="heavy" color="labelTertiary" testID={`position-value-header-${market.symbol}`}>
-            Position Value
+          <Text size="17pt" weight="bold" color="labelSecondary">
+            {'Position Value'}
           </Text>
           <Box flexDirection="row" alignItems="center" gap={2}>
             <TextShadow blur={8} shadowOpacity={0.2}>
@@ -188,7 +189,7 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
           </Box>
         </Box>
         <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={8}>
-          <AnimatedText size="22pt" weight="heavy" color="label" testID={`chart-header-${market.symbol}-price`}>
+          <AnimatedText size="22pt" weight="heavy" color="label">
             {formattedValue}
           </AnimatedText>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
@@ -445,6 +446,12 @@ const LiquidationSection = memo(function LiquidationSection({ market }: { market
 const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket }) {
   const colors = usePerpsAccentColorContext();
   const insets = useSafeAreaInsets();
+  const historyExpanded = useSharedValue(true);
+
+  const onToggleHistory = () => {
+    'worklet';
+    historyExpanded.value = !historyExpanded.value;
+  };
 
   return (
     <Box as={Page} backgroundColor={colors.accentColors.surfacePrimary} flex={1} height="full" testID="perps-details-screen" width="full">
@@ -461,11 +468,13 @@ const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket 
               <PositionValueSection market={market} />
             </Box>
             <Box paddingHorizontal="24px">
-              <CollapsibleSection
+              <CollapsibleSectionBase
                 iconColor={colors.accentColors.opacity100}
                 icon="􀐫"
                 content={<HistorySection market={market} />}
                 primaryText="History"
+                expanded={historyExpanded}
+                onToggle={onToggleHistory}
               />
             </Box>
           </Box>
