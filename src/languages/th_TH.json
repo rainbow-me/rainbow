@@ -1186,28 +1186,28 @@
         "button": "ดำเนินการต่อ"
       },
       "ens_primary_name": {
-        "title": "What does it mean to set my ENS name?",
-        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+        "title": "การตั้งชื่อ ENS ของฉันมีความหมายว่าอย่างไร?",
+        "text": "ผู้คนจะสามารถพิมพ์ชื่อ .eth ของคุณในแอปพลิเคชันโดยไม่ต้องใช้ที่อยู่ Ethereum เต็มรูปแบบเมื่อพวกเขาต้องการส่งบางสิ่งให้คุณ และแอปพลิเคชันสามารถใช้ชื่อ .eth และโปรไฟล์ของคุณเพื่อแสดงข้อมูลเกี่ยวกับคุณได้ นี่ถือเป็นการตั้งชื่อ ENS ของคุณเป็น \"ตัวเอก\""
       },
       "ens_on_chain_data_warning": {
         "title": "คำเตือน!",
-        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+        "text": "ข้อมูลที่คุณให้ไว้ที่นี่จะถูกจัดเก็บในเครือข่าย Ethereum ดังนั้นทุกคนสามารถเข้าถึงและดูได้ อย่าแบ่งปันข้อมูลใดๆ ที่คุณไม่สบายใจจะเผยแพร่ต่อสาธารณะ"
       },
       "ens_manager": {
-        "title": "What is the .eth manager?",
-        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+        "title": "ผู้จัดการ .eth คืออะไร?",
+        "text": "ผู้จัดการชื่อ .eth สามารถตั้งค่าและอัพเดทบันทึกข้อมูล สร้างซับโดเมนของชื่อนั้น หรือจัดการการตั้งค่าได้ ผู้จัดการถูกตั้งโดยเจ้าของชื่อ .eth และยังรู้จักในนามของผู้ควบคุมชื่อ ENS"
       },
       "ens_owner": {
-        "title": "What is the .eth name owner?",
-        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+        "title": "เจ้าของชื่อ .eth คืออะไร?",
+        "text": "เจ้าของชื่อ .eth มีการควบคุมเต็มที่และสิ้นสุดกับชื่อนั้น พวกเขาสามารถโอนการเป็นเจ้าของชื่อและอนุญาตให้ผู้อื่นจัดการชื่อแทนพวกเขาได้หากต้องการ (ตั้งค่าบันทึก ฯลฯ) เจ้าของยังเรียกว่าผู้ลงทะเบียนชื่อ ENS"
       },
       "ens_resolver": {
-        "title": "What is a .eth resolver?",
-        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+        "title": "ตัวแก้ปัญหาชื่อ .eth คืออะไร?",
+        "text": "ตัวแก้ปัญหาเป็นสัญญาที่แปลงจากชื่อไปยังทรัพยากร (เช่น ที่อยู่สกุลเงินดิจิทัล, เนื้อหาแฮช ฯลฯ) ตัวแก้ปัญหาเหล่านี้ชี้โดยฟิลด์ตัวแก้ปัญหาของทะเบียน"
       },
       "ens_configuration": {
-        "title": "What do these options mean?",
-        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
+        "title": "ตัวเลือกเหล่านี้หมายความว่าอย่างไร?",
+        "text": "เมื่อส่งชื่อ ENS ให้กับผู้อื่นและทำให้พวกเขาเป็นเจ้าของชื่อ ENS ใหม่ คุณอาจต้องการกำหนดค่าให้พวกเขาล่วงหน้าและประหยัดธุรกรรมในภายหน้า Rainbow ช่วยให้คุณล้างข้อมูลโปรไฟล์ที่ตั้งไว้สำหรับชื่อ ปรับชื่อ ENS ให้ชี้ไปยังที่อยู่ผู้รับ และทำให้ที่อยู่ผู้รับเป็นผู้จัดการของชื่อ"
       }
     },
     "fedora": {
