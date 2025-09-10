@@ -208,14 +208,6 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
         </Box>
       </Box>
       <LiquidationSection market={market} />
-      {/* <Box */}
-      {/*   backgroundColor="#F5F8FF06" */}
-      {/*   height={{ custom: 1 }} */}
-      {/*   width="full" */}
-      {/*   marginTop={{ custom: 28 }} */}
-      {/*   // we have a gap of 20 already so 28 - 20 */}
-      {/*   marginBottom={{ custom: 8 }} */}
-      {/* /> */}
     </>
   );
 });
