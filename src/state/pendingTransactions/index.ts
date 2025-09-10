@@ -24,23 +24,23 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
 
     addPendingTransaction: ({ address, pendingTransaction }) => {
       set(state => {
-        const existingPendingTransactions = state.pendingTransactions[address];
-        const updatedPendingTransactions = existingPendingTransactions
-          ? [
-              ...existingPendingTransactions.filter(tx => {
-                if (tx.chainId === pendingTransaction.chainId) {
-                  return tx.nonce !== pendingTransaction.nonce;
-                }
-                return true;
-              }),
-              pendingTransaction,
-            ]
-          : [pendingTransaction];
+        const existingTransactions = state.pendingTransactions[address] || [];
+        const existingIndex = existingTransactions.findIndex(
+          transaction => transaction.chainId === pendingTransaction.chainId && transaction.nonce === pendingTransaction.nonce
+        );
+
+        let updatedTransactions: RainbowTransaction[];
+        if (existingIndex >= 0) {
+          updatedTransactions = [...existingTransactions];
+          updatedTransactions[existingIndex] = pendingTransaction;
+        } else {
+          updatedTransactions = existingTransactions.length ? [...existingTransactions, pendingTransaction] : [pendingTransaction];
+        }
 
         return {
           pendingTransactions: {
             ...state.pendingTransactions,
-            [address]: updatedPendingTransactions,
+            [address]: updatedTransactions,
           },
         };
       });
@@ -54,9 +54,9 @@ export const usePendingTransactionsStore = createRainbowStore<PendingTransaction
       }),
 
     getPendingTransactionsInReverseOrder: address => {
-      const pendingTransactionsForAddress = get().pendingTransactions[address] || EMPTY_TRANSACTIONS;
-      const mostRecentToOldest = [...pendingTransactionsForAddress].sort((a, b) => (b.nonce ?? 0) - (a.nonce ?? 0));
-      return mostRecentToOldest;
+      const pendingTransactionsForAddress = get().pendingTransactions[address];
+      if (!pendingTransactionsForAddress) return EMPTY_TRANSACTIONS;
+      return [...pendingTransactionsForAddress].reverse();
     },
 
     setPendingTransactions: ({ address, pendingTransactions }) =>
