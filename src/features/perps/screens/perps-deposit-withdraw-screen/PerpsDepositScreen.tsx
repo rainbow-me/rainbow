@@ -33,13 +33,9 @@ import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
-import { HYPERCORE_PSEUDO_CHAIN_ID, HYPERLIQUID_USDC_ADDRESS } from '@/features/perps/constants';
-import { PerpsInputContainer } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsInputContainer';
-import { PerpsTokenList } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsTokenList';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
-import { convertAmountToRawAmount, convertRawAmountToDecimalFormat, handleSignificantDecimalsWorklet } from '@/helpers/utilities';
-import { useAccountSettings } from '@/hooks';
+import { convertRawAmountToDecimalFormat, handleSignificantDecimalsWorklet } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -50,12 +46,11 @@ import { RapSwapActionParameters } from '@/raps/references';
 import { divWorklet, sumWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { GasButton } from '@/screens/token-launcher/components/gas/GasButton';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
-import { CrosschainQuote, getCrosschainQuote, QuoteError } from '@rainbow-me/swaps';
+import { CrosschainQuote, QuoteError } from '@rainbow-me/swaps';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
 import Animated, {
@@ -70,9 +65,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { triggerHaptics } from 'react-native-turbo-haptics';
-import { useDebouncedCallback } from 'use-debounce';
 import { FOOTER_HEIGHT, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from './constants';
 import { PerpsAssetCoinIcon } from './PerpsAssetCoinIcon';
+import { PerpsInputContainer } from './PerpsInputContainer';
+import { PerpsTokenList } from './PerpsTokenList';
+import { usePerpsDepositQuote } from './usePerpsDepositQuote';
 
 const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -162,6 +159,8 @@ const DepositInputSection = ({
     ).toFixed(2)} ${USDC_ASSET.symbol}`;
   }, [quote]);
 
+  const assetColor = getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode);
+
   return (
     <PerpsInputContainer asset={asset} progress={inputProgress}>
       <Box testID={'swap-asset-input'} as={Animated.View} style={inputStyle} flexGrow={1} gap={20}>
@@ -173,7 +172,7 @@ const DepositInputSection = ({
           </Column>
           <Column>
             <Stack space="12px" alignHorizontal="left">
-              <Text size="17pt" weight="bold" color="label">
+              <Text size="17pt" weight="bold" color={{ custom: assetColor }}>
                 {asset?.name}
               </Text>
               <BalanceBadge label={balanceLabel} />
@@ -198,10 +197,10 @@ const DepositInputSection = ({
         <Separator direction="horizontal" color="separatorSecondary" />
         <Box alignItems="center" justifyContent="center" flexGrow={1} gap={16}>
           <Box gap={2} flexDirection="row" alignItems="center">
-            <AnimatedText size="44pt" weight="heavy" color="label" tabularNumbers numberOfLines={1} ellipsizeMode="middle">
+            <AnimatedText size="44pt" weight="heavy" color={{ custom: assetColor }} tabularNumbers numberOfLines={1} ellipsizeMode="middle">
               {primaryFormattedInput}
             </AnimatedText>
-            <InputValueCaret color={getColorValueForThemeWorklet(asset?.highContrastColor, isDarkMode)} value={primaryFormattedInput} />
+            <InputValueCaret color={assetColor} value={primaryFormattedInput} />
           </Box>
           <GestureHandlerButton
             disableHaptics
@@ -215,34 +214,42 @@ const DepositInputSection = ({
               <Animated.View style={secondaryInputIconStyle}>
                 <PerpsAssetCoinIcon asset={asset} size={16} showBadge={false} />
               </Animated.View>
-              <AnimatedText size="17pt" weight="bold" color="labelTertiary" tabularNumbers numberOfLines={1} ellipsizeMode="middle">
+              <AnimatedText size="17pt" weight="bold" color="labelSecondary" tabularNumbers numberOfLines={1} ellipsizeMode="middle">
                 {secondaryFormattedInput}
               </AnimatedText>
-              <TextIcon color="labelSecondary" size="13pt" weight="bold">
+              <TextIcon color={{ custom: assetColor }} size="13pt" weight="bold">
                 {'􀄬'}
               </TextIcon>
             </Box>
           </GestureHandlerButton>
         </Box>
         <Separator direction="horizontal" color="separatorSecondary" />
-        <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
-          <RainbowImage
-            source={{
-              url: USDC_ASSET.icon_url,
-            }}
-            style={{ width: 14, height: 14, marginRight: 6 }}
-          />
-          <Text size="15pt" weight="bold" color="labelQuaternary">
-            {i18n.t(i18n.l.perps.deposit.receive)}{' '}
-          </Text>
-          {formattedOutputAmount == null ? (
-            <PerpsTextSkeleton width={90} height={15} />
-          ) : (
-            <Text size="15pt" weight="bold" color="labelTertiary" tabularNumbers>
-              {formattedOutputAmount}
+        {quote != null && 'error' in quote ? (
+          <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
+            <Text size="15pt" weight="bold" color="labelTertiary">
+              {i18n.t(i18n.l.perps.deposit.quote_error)}
             </Text>
-          )}
-        </Box>
+          </Box>
+        ) : (
+          <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
+            <RainbowImage
+              source={{
+                url: USDC_ASSET.icon_url,
+              }}
+              style={{ width: 14, height: 14, marginRight: 6 }}
+            />
+            <Text size="15pt" weight="bold" color="labelQuaternary">
+              {i18n.t(i18n.l.perps.deposit.receive)}{' '}
+            </Text>
+            {formattedOutputAmount == null ? (
+              <PerpsTextSkeleton width={90} height={15} />
+            ) : (
+              <Text size="15pt" weight="bold" color="labelTertiary" tabularNumbers>
+                {formattedOutputAmount}
+              </Text>
+            )}
+          </Box>
+        )}
       </Box>
       <Box
         as={Animated.View}
@@ -268,26 +275,17 @@ const DepositInputSection = ({
 };
 
 export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
-  const accountAddress = userAssetsStoreManager(state => state.address);
   const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
-  const { nativeCurrency } = useAccountSettings();
 
   // State for input values
   const inputMethod = useSharedValue<InputMethod>('inputNativeValue');
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * 0.25); // Default to 25% of slider width
-  const [quote, setQuote] = useState<CrosschainQuote | QuoteError | null>(null);
 
   const highestValueNativeAsset = useUserAssetsStore(state => state.getHighestValueNativeAsset());
 
   const initialAsset = highestValueNativeAsset ? parseAssetAndExtend({ asset: highestValueNativeAsset }) : null;
   const [selectedAsset, setSelectedAsset] = useState<ExtendedAnimatedAssetWithColors | null>(initialAsset);
   const [gasSpeed, setGasSpeed] = useState(GasSpeed.FAST);
-  // TODO: Is this ok?
-  const gasLimit = useSwapEstimatedGasLimit({ quote, assetToSell: selectedAsset, chainId: ChainId.mainnet });
-  const { data: gasSuggestions } = useMeteorologySuggestions({
-    chainId: selectedAsset?.chainId ?? ChainId.mainnet,
-    enabled: true,
-  });
   const [loading, setLoading] = useState(false);
 
   const fieldsValueForAsset = (asset: ExtendedAnimatedAssetWithColors | null, percentage: number): Record<string, NumberPadField> => {
@@ -317,6 +315,15 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   };
 
   const fields = useSharedValue<Record<string, NumberPadField>>(fieldsValueForAsset(initialAsset, 0.25));
+
+  const [quote, fetchQuote] = usePerpsDepositQuote(selectedAsset, fields);
+  const hasQuoteError = quote != null && 'error' in quote;
+  // TODO: Is this ok?
+  const gasLimit = useSwapEstimatedGasLimit({ quote, assetToSell: selectedAsset, chainId: ChainId.mainnet });
+  const { data: gasSuggestions } = useMeteorologySuggestions({
+    chainId: selectedAsset?.chainId ?? ChainId.mainnet,
+    enabled: true,
+  });
 
   const sliderColors = {
     activeLeft: 'rgba(100, 117, 133, 0.90)',
@@ -398,35 +405,10 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     [handlePercentageChange]
   );
 
-  // Fetch quote
-  const fetchQuote = useCallback(async () => {
-    const amount = fields.value.inputAmount?.value;
-    if (!amount || amount === '0' || !selectedAsset) return;
-    setQuote(null);
-    try {
-      const quoteResult = await getCrosschainQuote({
-        chainId: selectedAsset.chainId,
-        toChainId: HYPERCORE_PSEUDO_CHAIN_ID,
-        sellTokenAddress: selectedAsset.address,
-        buyTokenAddress: HYPERLIQUID_USDC_ADDRESS,
-        sellAmount: convertAmountToRawAmount(amount, selectedAsset.decimals),
-        fromAddress: accountAddress || '',
-        slippage: 1,
-        currency: nativeCurrency,
-      });
-      setQuote(quoteResult);
-    } catch (error) {
-      setQuote(null);
-      console.error('Quote fetch error:', error);
-    }
-  }, [accountAddress, fields.value.inputAmount?.value, nativeCurrency, selectedAsset]);
-
-  const fetchQuoteDebounced = useDebouncedCallback(fetchQuote, 200, { leading: false, trailing: true });
-
   useAnimatedReaction(
     () => fields.value.inputAmount?.value,
     () => {
-      runOnJS(fetchQuoteDebounced)();
+      runOnJS(fetchQuote)();
     }
   );
 
@@ -561,6 +543,45 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     } as Record<string, string>;
   });
 
+  // Sync these JS states with input amount reanimated value.
+  const [isInputZero, setIsInputZero] = useState(true);
+  const [isInputOverBalance, setIsInputOverBalance] = useState(false);
+  useAnimatedReaction(
+    () => formattedInputAmount.value,
+    (inputAmount, previousInputAmount) => {
+      const inputAmountNumber = Number(inputAmount || '0');
+      const previousInputAmountNumber = Number(previousInputAmount || '0');
+      const balance = Number(selectedAsset?.balance?.amount || '0');
+
+      // Make sure to check previous values to avoid calling into JS too much.
+      if (previousInputAmountNumber !== 0 && inputAmountNumber === 0) {
+        runOnJS(setIsInputZero)(true);
+      } else if (previousInputAmountNumber === 0 && inputAmountNumber !== 0) {
+        runOnJS(setIsInputZero)(false);
+      } else if (previousInputAmountNumber <= balance && inputAmountNumber > balance) {
+        runOnJS(setIsInputOverBalance)(true);
+      } else if (previousInputAmountNumber > balance && inputAmountNumber <= balance) {
+        runOnJS(setIsInputOverBalance)(false);
+      }
+    }
+  );
+
+  const getConfirmButtonLabel = () => {
+    if (isInputZero) {
+      return i18n.t(i18n.l.perps.deposit.confirm_button_zero_text);
+    }
+    if (isInputOverBalance) {
+      return i18n.t(i18n.l.perps.deposit.confirm_button_over_balance_text);
+    }
+    if (hasQuoteError) {
+      return i18n.t(i18n.l.perps.deposit.confirm_button_error_text);
+    }
+    if (loading) {
+      return i18n.t(i18n.l.perps.deposit.confirm_button_loading_text);
+    }
+    return i18n.t(i18n.l.perps.deposit.confirm_button_text);
+  };
+
   return (
     <Box as={Page} flex={1} height="full" testID="perps-deposit-screen" width="full">
       <SheetHandle extraPaddingTop={6} />
@@ -619,9 +640,10 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
         </Box>
         <Box flexGrow={1}>
           <PerpsSwapButton
-            label={loading ? i18n.t(i18n.l.perps.deposit.confirm_button_loading_text) : i18n.t(i18n.l.perps.deposit.confirm_button_text)}
+            label={getConfirmButtonLabel()}
             onLongPress={handleSwap}
-            disabled={loading || quote == null || 'error' in quote}
+            disabled={loading || quote == null || hasQuoteError || isInputZero || isInputOverBalance}
+            disabledOpacity={isInputZero || isInputOverBalance || hasQuoteError ? 1 : undefined}
           />
         </Box>
       </Box>

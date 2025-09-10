@@ -67,17 +67,19 @@ export const PerpsSwapButton = ({
   testID,
   label,
   disabled,
+  disabledOpacity = 0.4,
 }: {
   label: string;
   style?: ViewStyle;
   testID?: string;
   onLongPress: () => void;
   disabled?: boolean;
+  disabledOpacity?: number;
 }) => {
   const labelColor = useForegroundColor('label');
   const holdProgress = useSharedValue(0);
   const containerStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(disabled ? 0.6 : 1, TIMING_CONFIGS.slowerFadeConfig),
+    opacity: withTiming(disabled ? disabledOpacity : 1, TIMING_CONFIGS.slowerFadeConfig),
   }));
   return (
     <GestureHandlerButton
@@ -86,6 +88,7 @@ export const PerpsSwapButton = ({
       onLongPressJS={onLongPress}
       style={style}
       scaleTo={0.9}
+      disabled={disabled}
       onLongPressEndWorklet={success => {
         'worklet';
         if (!success) {
