@@ -14,7 +14,6 @@ import { RainbowError, logger } from '@/logger';
 import { CloudBackupState, backupsStore } from '@/state/backups/backups';
 import { clearAllWalletsBackupStatus } from '@/state/wallets/walletsStore';
 import { showActionSheetWithOptions } from '@/utils';
-import lang from 'i18n-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
@@ -116,13 +115,13 @@ export default function useManageCloudBackups() {
                   removeBackupStateFromAllWallets();
 
                   await deleteAllBackups();
-                  Alert.alert(lang.t('back_up.backup_deleted_successfully'));
+                  Alert.alert(i18n.t(i18n.l.back_up.backup_deleted_successfully));
                 } catch (e) {
                   logger.error(new RainbowError(`[useManageCloudBackups]: Error deleting all backups`), {
                     error: (e as Error).message,
                   });
 
-                  Alert.alert(lang.t('back_up.errors.keychain_access'));
+                  Alert.alert(i18n.t(i18n.l.back_up.errors.keychain_access));
                 }
               }
             }

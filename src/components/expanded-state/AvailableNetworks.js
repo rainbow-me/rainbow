@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { Box } from '@/design-system';
@@ -78,10 +78,10 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginHorizontal = 
               weight={prominent ? 'heavy' : 'bold'}
             >
               {availableChainIds?.length > 1
-                ? lang.t('expanded_state.asset.available_networks', {
+                ? i18n.t(i18n.l.expanded_state.asset.available_networks, {
                     availableNetworks: availableChainIds?.length,
                   })
-                : lang.t('expanded_state.asset.available_network', {
+                : i18n.t(i18n.l.expanded_state.asset.available_network, {
                     availableNetwork: useBackendNetworksStore.getState().getChainsName()[availableChainIds[0]],
                   })}
             </Text>

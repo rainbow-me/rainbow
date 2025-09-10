@@ -26,6 +26,7 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   opacity: 0.6,
   size: 'large',
   weight: 'semibold',
+  paddingBottom: 24,
 }))({
   width: '100%',
 });

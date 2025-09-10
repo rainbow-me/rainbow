@@ -87,7 +87,9 @@ tags:
       # Open toast
       - tapOn:
           id: toast-.*
-      # Check expended toast data
+      - waitForAnimationToEnd:
+          timeout: 2000
+      # Check expanded toast data
       - assertVisible:
           text: 'Sending'
           childOf:

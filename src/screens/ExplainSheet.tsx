@@ -1,5 +1,5 @@
 import { RouteProp, useRoute, NavigationProp } from '@react-navigation/native';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -29,7 +29,7 @@ import { logger } from '@/logger';
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = IS_ANDROID ? 454 : 434;
 
-const l = lang.l.explain;
+const l = i18n.l.explain;
 
 type WithTheme<T> = T & { theme: ThemeContextProps };
 
@@ -106,35 +106,6 @@ const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeigh
   ...(height ? { height: height + deviceHeight } : {}),
 }));
 
-const SENDING_FUNDS_TO_CONTRACT = lang.t(l.sending_to_contract.text);
-const FLOOR_PRICE_EXPLAINER = lang.t(l.floor_price.text);
-const CURRENT_BASE_FEE_TITLE = lang.t(l.base_fee.title);
-const BASE_CURRENT_BASE_FEE_EXPLAINER = lang.t(l.base_fee.text_prefix);
-const CURRENT_BASE_FEE_EXPLAINER_STABLE = lang.t(l.base_fee.text_stable);
-const CURRENT_BASE_FEE_EXPLAINER_FALLING = lang.t(l.base_fee.text_falling);
-const CURRENT_BASE_FEE_EXPLAINER_RISING = lang.t(l.base_fee.text_rising);
-const CURRENT_BASE_FEE_EXPLAINER_SURGING = lang.t(l.base_fee.text_surging);
-const MAX_BASE_FEE_EXPLAINER = lang.t(l.max_base_fee.text);
-const MINER_TIP_EXPLAINER = lang.t(l.miner_tip.text);
-const BACKUP_EXPLAINER = lang.t(lang.l.back_up.explainers.backup, {
-  cloudPlatformName: cloudPlatformAccountName,
-});
-const ENS_PRIMARY_NAME_EXPLAINER =
-  'People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to "primary."';
-const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER =
-  'The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing.';
-const ENS_ON_CHAIN_DATA_WARNING_TITLE = 'Heads up!';
-const ENS_PRIMARY_NAME_TITLE = 'What does it mean to set my ENS name?';
-const ENS_MANAGER_TITLE = `What is the .eth manager?`;
-const ENS_MANAGER_EXPLAINER = `The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller.`;
-const ENS_OWNER_TITLE = `What is the .eth name owner?`;
-const ENS_OWNER_EXPLAINER = `The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant.`;
-const ENS_RESOLVER_TITLE = `What is a .eth resolver?`;
-const ENS_RESOLVER_EXPLAINER = `A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry.`;
-const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
-const ENS_CONFIGURATION_EXPLAINER =
-  "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name.";
-
 const missingRegex = /missing.*translation|translation.*missing/i;
 
 function hasMissingTranslation(str: string): boolean {
@@ -142,7 +113,7 @@ function hasMissingTranslation(str: string): boolean {
 }
 
 function getGasExplainerText(networkName: string): string {
-  return lang.t(l.gas.text, { networkName });
+  return i18n.t(i18n.l.explain.gas.text, { networkName });
 }
 
 function getAvailableNetworksExplainerText(tokenSymbol?: string, chainIds?: ChainId[]): string {
@@ -151,7 +122,7 @@ function getAvailableNetworksExplainerText(tokenSymbol?: string, chainIds?: Chai
   }
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
   const readableNetworks = chainIds.map(chainId => chainsLabel[chainId]).join(', ');
-  return lang.t(l.available_networks.text, {
+  return i18n.t(i18n.l.explain.available_networks.text, {
     tokenSymbol: tokenSymbol,
     networks: readableNetworks,
   });
@@ -160,6 +131,33 @@ function getAvailableNetworksExplainerText(tokenSymbol?: string, chainIds?: Chai
 export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: ThemeContextProps): ExplainSheetConfig | null {
   const colors = theme?.colors;
   const chainsLabel = useBackendNetworksStore.getState().getChainsLabel();
+
+  const SENDING_FUNDS_TO_CONTRACT = i18n.t(i18n.l.explain.sending_to_contract.text);
+  const FLOOR_PRICE_EXPLAINER = i18n.t(i18n.l.explain.floor_price.text);
+  const CURRENT_BASE_FEE_TITLE = i18n.t(i18n.l.explain.base_fee.title);
+  const BASE_CURRENT_BASE_FEE_EXPLAINER = i18n.t(i18n.l.explain.base_fee.text_prefix);
+  const CURRENT_BASE_FEE_EXPLAINER_STABLE = i18n.t(i18n.l.explain.base_fee.text_stable);
+  const CURRENT_BASE_FEE_EXPLAINER_FALLING = i18n.t(i18n.l.explain.base_fee.text_falling);
+  const CURRENT_BASE_FEE_EXPLAINER_RISING = i18n.t(i18n.l.explain.base_fee.text_rising);
+  const CURRENT_BASE_FEE_EXPLAINER_SURGING = i18n.t(i18n.l.explain.base_fee.text_surging);
+  const MAX_BASE_FEE_EXPLAINER = i18n.t(i18n.l.explain.max_base_fee.text);
+  const MINER_TIP_EXPLAINER = i18n.t(i18n.l.explain.miner_tip.text);
+  const BACKUP_EXPLAINER = i18n.t(i18n.l.back_up.explainers.backup, {
+    cloudPlatformName: cloudPlatformAccountName,
+  });
+
+  const ENS_PRIMARY_NAME_TITLE = i18n.t(i18n.l.explain.ens_primary_name.title);
+  const ENS_PRIMARY_NAME_EXPLAINER = i18n.t(i18n.l.explain.ens_primary_name.text);
+  const ENS_ON_CHAIN_DATA_WARNING_TITLE = i18n.t(i18n.l.explain.ens_on_chain_data_warning.title);
+  const ENS_ON_CHAIN_DATA_WARNING_EXPLAINER = i18n.t(i18n.l.explain.ens_on_chain_data_warning.text);
+  const ENS_MANAGER_TITLE = i18n.t(i18n.l.explain.ens_manager.title);
+  const ENS_MANAGER_EXPLAINER = i18n.t(i18n.l.explain.ens_manager.text);
+  const ENS_OWNER_TITLE = i18n.t(i18n.l.explain.ens_owner.title);
+  const ENS_OWNER_EXPLAINER = i18n.t(i18n.l.explain.ens_owner.text);
+  const ENS_RESOLVER_TITLE = i18n.t(i18n.l.explain.ens_resolver.title);
+  const ENS_RESOLVER_EXPLAINER = i18n.t(i18n.l.explain.ens_resolver.text);
+  const ENS_CONFIGURATION_TITLE = i18n.t(i18n.l.explain.ens_configuration.title);
+  const ENS_CONFIGURATION_EXPLAINER = i18n.t(i18n.l.explain.ens_configuration.text);
 
   const buildLearnUrl = (path: string) =>
     buildRainbowLearnUrl({
@@ -173,7 +171,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     replacements?: Record<string, string | number>
   ) => (
     <Text {...getBodyTextPropsWithColor(colors)}>
-      {lang.t(`explain.${textKeyPrefix}.fragment1`, replacements)}
+      {i18n.t((i18n.l.explain[textKeyPrefix as keyof typeof i18n.l.explain] as { fragment1: string }).fragment1, replacements)}
       <Text
         color={colors?.appleBlue}
         onPress={() => openInBrowser(buildLearnUrl(urlPath))}
@@ -181,9 +179,9 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         suppressHighlighting
         weight="semibold"
       >
-        {lang.t(`explain.${textKeyPrefix}.fragment2`, replacements)}
+        {i18n.t((i18n.l.explain[textKeyPrefix as keyof typeof i18n.l.explain] as { fragment2: string }).fragment2, replacements)}
       </Text>
-      {lang.t(`explain.${textKeyPrefix}.fragment3`, replacements)}
+      {i18n.t((i18n.l.explain[textKeyPrefix as keyof typeof i18n.l.explain] as { fragment3: string }).fragment3, replacements)}
     </Text>
   );
 
@@ -192,13 +190,13 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       const { chainId } = params;
       const chainName = chainsLabel[chainId];
       const chainNameLower = chainName.toLowerCase();
-      let title = lang.t(`explain.${chainNameLower}.title`);
-      let text = lang.t(`explain.${chainNameLower}.text`);
+      let title = i18n.t((i18n.l.explain[chainNameLower as keyof typeof i18n.l.explain] as { title: string }).title!);
+      let text = i18n.t((i18n.l.explain[chainNameLower as keyof typeof i18n.l.explain] as { text: string }).text!);
       if (hasMissingTranslation(title)) {
-        title = lang.t(`explain.default_network_explainer.title`, { chainName });
+        title = i18n.t(i18n.l.explain.default_network_explainer.title, { chainName });
       }
       if (hasMissingTranslation(text)) {
-        text = lang.t(`explain.default_network_explainer.text`, { chainName });
+        text = i18n.t(i18n.l.explain.default_network_explainer.text, { chainName });
       }
       return {
         emoji: '⛽️',
@@ -212,37 +210,37 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     case 'op_rewards_airdrop_timing':
       return {
         emoji: '📦',
-        title: lang.t(lang.l.rewards.op.airdrop_timing.title),
-        text: lang.t(lang.l.rewards.op.airdrop_timing.text),
+        title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
+        text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
         extraHeight: IS_ANDROID ? -65 : 10,
         readMoreLink: buildLearnUrl('OP-rewards-with-Rainbow'),
       };
     case 'op_rewards_amount_distributed':
       return {
         emoji: '💰',
-        title: lang.t(lang.l.rewards.op.amount_distributed.title),
-        text: lang.t(lang.l.rewards.op.amount_distributed.text),
+        title: i18n.t(i18n.l.rewards.op.amount_distributed.title),
+        text: i18n.t(i18n.l.rewards.op.amount_distributed.text),
         extraHeight: IS_ANDROID ? -110 : -65,
       };
     case 'op_rewards_bridge':
       return {
         emoji: '🌉',
-        title: lang.t(lang.l.rewards.op.bridge.title, { percent: params.percent || 0 }),
-        text: lang.t(lang.l.rewards.op.bridge.text, { percent: params.percent || 0 }),
+        title: i18n.t(i18n.l.rewards.op.bridge.title, { percent: params.percent || 0 }),
+        text: i18n.t(i18n.l.rewards.op.bridge.text, { percent: params.percent || 0 }),
         extraHeight: IS_ANDROID ? -65 : 10,
       };
     case 'op_rewards_swap':
       return {
         emoji: '🔀',
-        title: lang.t(lang.l.rewards.op.swap.title, { percent: params.percent || 0 }),
-        text: lang.t(lang.l.rewards.op.swap.text, { percent: params.percent || 0 }),
+        title: i18n.t(i18n.l.rewards.op.swap.title, { percent: params.percent || 0 }),
+        text: i18n.t(i18n.l.rewards.op.swap.text, { percent: params.percent || 0 }),
         extraHeight: IS_ANDROID ? -65 : 10,
       };
     case 'op_rewards_position':
       return {
         emoji: '🏆',
-        title: lang.t(lang.l.rewards.op.position.title),
-        text: lang.t(lang.l.rewards.op.position.text),
+        title: i18n.t(i18n.l.rewards.op.position.title),
+        text: i18n.t(i18n.l.rewards.op.position.text),
         extraHeight: IS_ANDROID ? -110 : -65,
       };
     case 'output_disabled': {
@@ -251,19 +249,19 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       return {
         extraHeight: -30,
         title: params.inputToken
-          ? lang.t(`explain.output_disabled.${params.isCrosschainSwap ? 'title_crosschain' : 'title'}`, {
+          ? i18n.t(`explain.output_disabled.${params.isCrosschainSwap ? 'title_crosschain' : 'title'}` as any, {
               inputToken: params.inputToken,
               fromNetwork: fromNetwork,
             })
-          : lang.t('explain.output_disabled.title_empty'),
+          : i18n.t(i18n.l.explain.output_disabled.title_empty),
         text: params.isCrosschainSwap
-          ? lang.t(`explain.output_disabled.${params.isBridgeSwap ? 'text_bridge' : 'text_crosschain'}`, {
+          ? i18n.t(`explain.output_disabled.${params.isBridgeSwap ? 'text_bridge' : 'text_crosschain'}` as any, {
               inputToken: params.inputToken ?? '',
               outputToken: params.outputToken ?? '',
               fromNetwork: fromNetwork ?? '',
               toNetwork: toNetwork ?? '',
             })
-          : lang.t('explain.output_disabled.text', {
+          : i18n.t(i18n.l.explain.output_disabled.text, {
               fromNetwork: fromNetwork ?? '',
               inputToken: params.inputToken ?? '',
               outputToken: params.outputToken ?? '',
@@ -276,7 +274,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         emoji: '📊',
         extraHeight: -102,
         text: FLOOR_PRICE_EXPLAINER,
-        title: lang.t('explain.floor_price.title'),
+        title: i18n.t(i18n.l.explain.floor_price.title),
       };
     case 'gas': {
       const networkName = chainsLabel[params.chainId];
@@ -291,7 +289,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         ),
         extraHeight: 2,
         text: getGasExplainerText(networkName),
-        title: lang.t('explain.gas.title', { networkName }),
+        title: i18n.t(i18n.l.explain.gas.title, { networkName }),
       };
     }
     case 'ens_primary_name':
@@ -337,11 +335,11 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     case 'currentBaseFeeNotrend':
       return { emoji: '⛽', extraHeight: IS_ANDROID ? -18 : -40, text: BASE_CURRENT_BASE_FEE_EXPLAINER, title: CURRENT_BASE_FEE_TITLE };
     case 'maxBaseFee':
-      return { emoji: '📈', extraHeight: -31, text: MAX_BASE_FEE_EXPLAINER, title: lang.t('explain.max_base_fee.title') };
+      return { emoji: '📈', extraHeight: -31, text: MAX_BASE_FEE_EXPLAINER, title: i18n.t(i18n.l.explain.max_base_fee.title) };
     case 'minerTip':
-      return { emoji: '⛏', extraHeight: -31, text: MINER_TIP_EXPLAINER, title: lang.t('explain.miner_tip.title') };
+      return { emoji: '⛏', extraHeight: -31, text: MINER_TIP_EXPLAINER, title: i18n.t(i18n.l.explain.miner_tip.title) };
     case 'sending_funds_to_contract':
-      return { emoji: '✋', extraHeight: 80, text: SENDING_FUNDS_TO_CONTRACT, title: lang.t('explain.sending_to_contract.title') };
+      return { emoji: '✋', extraHeight: 80, text: SENDING_FUNDS_TO_CONTRACT, title: i18n.t(i18n.l.explain.sending_to_contract.title) };
     case 'unverified': {
       const { asset } = params;
       const handlePress = () => {
@@ -355,67 +353,72 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         extraHeight: 120,
         emoji: '⚠️',
         button: {
-          label: lang.t('button.continue'),
+          label: i18n.t(i18n.l.button.continue),
           bgColor: colors?.alpha(colors?.blueGreyDark80, 0.04),
           textColor: colors?.blueGreyDark80,
         },
-        secondaryButton: { label: lang.t('button.go_back_lowercase'), textColor: colors?.appleBlue, bgColor: colors?.clearBlue },
-        title: lang.t('explain.unverified.title', { symbol }),
+        secondaryButton: { label: i18n.t(i18n.l.button.go_back_lowercase), textColor: colors?.appleBlue, bgColor: colors?.clearBlue },
+        title: i18n.t(i18n.l.explain.unverified.title, { symbol }),
         stillCurious: (
           <Text {...getBodyTextPropsWithColor(colors)}>
-            {lang.t('explain.unverified.fragment1')}
+            {i18n.t(i18n.l.explain.unverified.fragment1)}
             <Text color={colors?.appleBlue} onPress={handlePress} size="large" suppressHighlighting weight="semibold">
-              {lang.t('explain.unverified.fragment2')}
+              {i18n.t(i18n.l.explain.unverified.fragment2)}
             </Text>
-            {lang.t('explain.unverified.fragment3')}
+            {i18n.t(i18n.l.explain.unverified.fragment3)}
           </Text>
         ),
       };
     }
     case 'failed_wc_connection':
-      return { emoji: '😵', extraHeight: -50, text: lang.t(l.failed_walletconnect.text), title: lang.t(l.failed_walletconnect.title) };
+      return {
+        emoji: '😵',
+        extraHeight: -50,
+        text: i18n.t(i18n.l.explain.failed_walletconnect.text),
+        title: i18n.t(i18n.l.explain.failed_walletconnect.title),
+      };
     case 'failed_wc_invalid_methods':
       return {
         emoji: '😵',
         extraHeight: -100,
-        text: lang.t(l.failed_wc_invalid_methods.text),
-        title: lang.t(l.failed_wc_invalid_methods.title),
+        text: i18n.t(i18n.l.explain.failed_wc_invalid_methods.text),
+        title: i18n.t(i18n.l.explain.failed_wc_invalid_methods.title),
       };
     case 'failed_wc_invalid_chains':
       return {
         emoji: '😵',
         extraHeight: -100,
-        text: lang.t(l.failed_wc_invalid_chains.text),
-        title: lang.t(l.failed_wc_invalid_chains.title),
+        text: i18n.t(i18n.l.explain.failed_wc_invalid_chains.text),
+        title: i18n.t(i18n.l.explain.failed_wc_invalid_chains.title),
       };
     case 'failed_wc_invalid_chain':
       return {
         emoji: '😵',
         extraHeight: -100,
-        text: lang.t(l.failed_wc_invalid_chain.text),
-        title: lang.t(l.failed_wc_invalid_chain.title),
+        text: i18n.t(i18n.l.explain.failed_wc_invalid_chain.text),
+        title: i18n.t(i18n.l.explain.failed_wc_invalid_chain.title),
       };
     case 'backup':
-      return { emoji: '🔐', extraHeight: 20, text: BACKUP_EXPLAINER, title: lang.t(l.backup.title) };
+      return { emoji: '🔐', extraHeight: 20, text: BACKUP_EXPLAINER, title: i18n.t(i18n.l.explain.backup.title) };
     case 'rainbow_fee':
       return {
         emoji: '🌈',
         extraHeight: -100,
-        text: lang.t(l.rainbow_fee.text, { feePercentage: params.feePercentage ?? 0 }),
+        text: i18n.t(i18n.l.explain.rainbow_fee.text, { feePercentage: params.feePercentage ?? 0 }),
         title: 'Rainbow Fee',
       };
     case 'f2cSemiSupportedAssetPurchased':
       return {
         emoji: '🎉',
-        title: lang.t(lang.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
-        text: lang.t(lang.l.wallet.add_cash_v2.explain_sheet.semi_supported.text),
+        title: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.title),
+        text: i18n.t(i18n.l.wallet.add_cash_v2.explain_sheet.semi_supported.text),
         extraHeight: -80,
       };
     case 'insufficientLiquidity':
       return {
         extraHeight: -20,
         emoji: '🏦',
-        title: lang.t('explain.insufficient_liquidity.title'),
+        title: i18n.t(i18n.l.explain.insufficient_liquidity.title),
         stillCurious: createStillCuriousLink('insufficient_liquidity', 'a-beginners-guide-to-liquidity-providing'),
       };
     case 'feeOnTransfer':
@@ -431,7 +434,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
             />
           </RowWithMargins>
         ),
-        title: lang.t('explain.fee_on_transfer.title'),
+        title: i18n.t(i18n.l.explain.fee_on_transfer.title),
         stillCurious: createStillCuriousLink('fee_on_transfer', 'fee-on-transfer-tokens', {
           tokenName: params.inputCurrency?.symbol ?? '',
         }),
@@ -440,11 +443,11 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       return {
         extraHeight: -90,
         emoji: '🚧',
-        title: lang.t('explain.no_route_found.title'),
+        title: i18n.t(i18n.l.explain.no_route_found.title),
         stillCurious: (
           <>
-            <Text {...getBodyTextPropsWithColor(colors)}>{lang.t(l.no_route_found.fragment1)}</Text>
-            <Text {...getBodyTextPropsWithColor(colors)}>{lang.t(l.no_route_found.fragment2)}</Text>
+            <Text {...getBodyTextPropsWithColor(colors)}>{i18n.t(i18n.l.explain.no_route_found.fragment1)}</Text>
+            <Text {...getBodyTextPropsWithColor(colors)}>{i18n.t(i18n.l.explain.no_route_found.fragment2)}</Text>
           </>
         ),
       };
@@ -452,8 +455,8 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       return {
         extraHeight: -90,
         emoji: '🏦',
-        title: lang.t(l.no_quote.title),
-        text: lang.t(l.no_quote.text),
+        title: i18n.t(i18n.l.explain.no_quote.title),
+        text: i18n.t(i18n.l.explain.no_quote.text),
         logo: (
           <RowWithMargins justify="center" margin={35} marginBottom={10}>
             {params.inputCurrency && (
@@ -479,8 +482,8 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     case 'crossChainGas':
       return {
         extraHeight: 40,
-        title: lang.t(l.cross_chain_swap.title),
-        text: lang.t(l.cross_chain_swap.text),
+        title: i18n.t(i18n.l.explain.cross_chain_swap.title),
+        text: i18n.t(i18n.l.explain.cross_chain_swap.text),
         logo: (
           <RowWithMargins justify="center" margin={35} marginBottom={10}>
             {params.inputCurrency && (
@@ -511,8 +514,10 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         text: getAvailableNetworksExplainerText(tokenSymbol, safeChainIds),
         title:
           safeChainIds.length > 1
-            ? lang.t('explain.available_networks.title_plural', { length: safeChainIds.length })
-            : lang.t('explain.available_networks.title_singular', { network: safeChainIds.length > 0 ? chainsLabel[safeChainIds[0]] : '' }),
+            ? i18n.t(i18n.l.explain.available_networks.title_plural, { length: safeChainIds.length })
+            : i18n.t(i18n.l.explain.available_networks.title_singular, {
+                network: safeChainIds.length > 0 ? chainsLabel[safeChainIds[0]] : '',
+              }),
         logo: (
           <Row justify="center" marginBottom={10}>
             {safeChainIds.map((id, index) => (
@@ -536,12 +541,12 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
       return {
         extraHeight: 40,
         button: {
-          label: lang.t('explain.go_to_hop_with_icon.text'),
+          label: i18n.t(i18n.l.explain.go_to_hop_with_icon.text),
           bgColor: colors?.alpha(colors?.blueGreyDark80, 0.04),
           textColor: colors?.blueGreyDark80,
         },
         secondaryButton: {
-          label: lang.t('button.go_back_lowercase'),
+          label: i18n.t(i18n.l.button.go_back_lowercase),
           textColor: colors?.appleBlue,
           bgColor: colors?.clearBlue,
         },
@@ -550,7 +555,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
           tokenName: params.assetName ?? '',
         }),
         logo: <ChainImage chainId={params.chainId} size={40} position="relative" />,
-        title: lang.t(l.obtain_l2_asset.title, { networkName }),
+        title: i18n.t(i18n.l.explain.obtain_l2_asset.title, { networkName }),
       };
     }
     case 'routeSwaps':
@@ -558,8 +563,8 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         extraHeight: IS_ANDROID ? 20 : 0,
         emoji: '🔀',
         stillCurious: createStillCuriousLink('swap_routing.still_curious', 'swap-with-confidence-with-rainbow'),
-        text: lang.t(l.swap_routing.text),
-        title: lang.t(l.swap_routing.title),
+        text: i18n.t(i18n.l.explain.swap_routing.text),
+        title: i18n.t(i18n.l.explain.swap_routing.title),
       };
     case 'slippage':
       return {
@@ -567,7 +572,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         emoji: '🌊',
         stillCurious: (
           <Text {...getBodyTextPropsWithColor(colors)}>
-            {lang.t(l.slippage.still_curious.fragment1)}
+            {i18n.t(i18n.l.explain.slippage.still_curious.fragment1)}
             <Text
               color={colors?.appleBlue}
               onPress={() => openInBrowser('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
@@ -575,22 +580,22 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
               suppressHighlighting
               weight="semibold"
             >
-              {lang.t(l.slippage.still_curious.fragment2)}
+              {i18n.t(i18n.l.explain.slippage.still_curious.fragment2)}
             </Text>
-            {lang.t(l.slippage.still_curious.fragment3)}
+            {i18n.t(i18n.l.explain.slippage.still_curious.fragment3)}
           </Text>
         ),
-        text: lang.t(l.slippage.text),
-        title: lang.t(l.slippage.title),
+        text: i18n.t(i18n.l.explain.slippage.text),
+        title: i18n.t(i18n.l.explain.slippage.title),
       };
     case 'token_allocation': {
       const { sections } = params;
       return {
         extraHeight: 144,
         emoji: '💸',
-        title: lang.t(lang.l.token_launcher.titles.token_allocation_breakdown),
+        title: i18n.t(i18n.l.token_launcher.titles.token_allocation_breakdown),
         button: {
-          label: lang.t(lang.l.token_launcher.buttons.got_it),
+          label: i18n.t(i18n.l.token_launcher.buttons.got_it),
           bgColor: 'rgba(38, 143, 255, 0.06)',
           textColor: '#268FFF',
         },
@@ -699,7 +704,7 @@ const ExplainSheet = () => {
     };
 
     const secondaryButtonLabel =
-      explainSheetConfig?.secondaryButton?.label || (explainSheetConfig?.readMoreLink ? lang.t('explain.read_more') : undefined);
+      explainSheetConfig?.secondaryButton?.label || (explainSheetConfig?.readMoreLink ? i18n.t(i18n.l.explain.read_more) : undefined);
 
     const secondaryButton = secondaryButtonLabel && (
       <Column height={60} style={IS_ANDROID && reverseButtons ? { marginTop: 16 } : undefined}>
@@ -719,7 +724,7 @@ const ExplainSheet = () => {
       <SheetActionButton
         color={explainSheetConfig?.button?.bgColor || theme.colors.alpha(theme.colors.appleBlue, 0.04)}
         isTransparent
-        label={explainSheetConfig?.button?.label || lang.t('button.got_it')}
+        label={explainSheetConfig?.button?.label || i18n.t(i18n.l.button.got_it)}
         onPress={onPrimaryPress}
         size="big"
         textColor={explainSheetConfig?.button?.textColor ?? theme.colors.appleBlue}
@@ -775,7 +780,7 @@ const ExplainSheet = () => {
                     height: IS_ANDROID ? 62 : 47,
                   }}
                 >
-                  {lang.t('explain.verified.title')}
+                  {i18n.t(i18n.l.explain.verified.title)}
                 </Emoji>
               )
             ) : null}

@@ -7,9 +7,9 @@ import { Box, Cover, Text } from '@/design-system';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { UniqueAsset } from '@/entities';
 import { IS_ANDROID } from '@/env';
-import { useAccountAccentColor, usePendingTransactions, useWalletSectionsData } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, usePendingTransactions, useWalletSectionsData } from '@/hooks';
 import { useStableValue } from '@/hooks/useStableValue';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -26,24 +26,6 @@ import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingO
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
 type MenuItemRoute = typeof Routes.SETTINGS_SHEET | typeof Routes.RECEIVE_MODAL | typeof Routes.CONNECTED_DAPPS;
-
-const menuItems: MenuItem<MenuItemRoute>[] = [
-  {
-    actionKey: Routes.SETTINGS_SHEET,
-    actionTitle: lang.t(lang.l.settings.label),
-    icon: { iconType: 'SYSTEM', iconValue: 'gear' },
-  },
-  {
-    actionKey: Routes.RECEIVE_MODAL,
-    actionTitle: lang.t(lang.l.button.my_qr_code),
-    icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-  },
-  {
-    actionKey: Routes.CONNECTED_DAPPS,
-    actionTitle: lang.t(lang.l.wallet.connected_apps),
-    icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-  },
-];
 
 export interface RecyclerAssetList2Props {
   accentColor?: string;
@@ -126,6 +108,9 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
   const insets = useSafeAreaInsets();
   const showKingOfTheHillTab = useShowKingOfTheHill();
   const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
+
+  const { language } = useAccountSettings();
+  const menuItems = buildMenuItems(language);
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
 
@@ -312,3 +297,31 @@ const ActivityIcon = memo(function ActivityIcon() {
     <Navbar.TextIcon color={accentColor as string} icon="􀐫" />
   );
 });
+
+function buildMenuItems(language: i18n.Language): MenuItem<MenuItemRoute>[] {
+  let cachedMenuItems: MenuItem<MenuItemRoute>[] | undefined;
+  let lastLanguage: i18n.Language | undefined;
+
+  if (!cachedMenuItems || language !== lastLanguage) {
+    cachedMenuItems = [
+      {
+        actionKey: Routes.SETTINGS_SHEET,
+        actionTitle: i18n.t(i18n.l.settings.label),
+        icon: { iconType: 'SYSTEM', iconValue: 'gear' },
+      },
+      {
+        actionKey: Routes.RECEIVE_MODAL,
+        actionTitle: i18n.t(i18n.l.button.my_qr_code),
+        icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+      },
+      {
+        actionKey: Routes.CONNECTED_DAPPS,
+        actionTitle: i18n.t(i18n.l.wallet.connected_apps),
+        icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+      },
+    ];
+    lastLanguage = language;
+  }
+
+  return cachedMenuItems;
+}

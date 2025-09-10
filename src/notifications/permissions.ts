@@ -2,11 +2,10 @@ import messaging from '@react-native-firebase/messaging';
 import { PermissionStatus, requestNotifications, RESULTS } from 'react-native-permissions';
 import { subscribeExistingNotificationsSettings } from '@/notifications/settings/initialization';
 import { Alert } from '@/components/alerts';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { saveFCMToken } from '@/notifications/tokens';
 import { trackPushNotificationPermissionStatus } from '@/notifications/analytics';
 import { logger, RainbowError } from '@/logger';
-import * as i18n from '@/languages';
 
 export const getPermissionStatus = () => messaging().hasPermission();
 
@@ -62,8 +61,8 @@ export const checkPushNotificationPermissions = async () => {
             text: i18n.t(i18n.l.button.dismiss),
           },
         ],
-        message: lang.t('wallet.push_notifications.please_enable_body'),
-        title: lang.t('wallet.push_notifications.please_enable_title'),
+        message: i18n.t(i18n.l.wallet.push_notifications.please_enable_body),
+        title: i18n.t(i18n.l.wallet.push_notifications.please_enable_title),
       });
     } else {
       resolve(true);

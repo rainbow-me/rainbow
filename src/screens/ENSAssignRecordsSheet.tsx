@@ -22,7 +22,7 @@ import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { EmitterSubscription, Keyboard, LayoutChangeEvent, ScrollView } from 'react-native';
@@ -37,8 +37,11 @@ import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
+import { IS_ANDROID } from '@/env';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { safeAreaInsetValues } from '@/utils';
 
-const BottomActionHeight = ios ? 281 : 250;
+const BottomActionHeight = 250 + safeAreaInsetValues.bottom;
 const BottomActionHeightSmall = 215;
 const ExtraBottomPadding = 55;
 
@@ -172,7 +175,7 @@ export default function ENSAssignRecordsSheet() {
                 </Heading>
                 <Text align="center" color="accent" size="16px / 22px (Deprecated)" weight="heavy">
                   {displayTitleLabel
-                    ? lang.t(`profiles.${isEmptyProfile && params?.mode !== REGISTRATION_MODES.EDIT ? 'create' : 'edit'}.label`)
+                    ? i18n.t(i18n.l.profiles[isEmptyProfile && params?.mode !== REGISTRATION_MODES.EDIT ? 'create' : 'edit'].label)
                     : ''}
                 </Text>
               </Stack>
@@ -210,6 +213,7 @@ export function ENSAssignRecordsBottomActions({
   const { colors } = useTheme();
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
   const { mode, name } = useENSRegistration();
+  const insets = useSafeAreaInsets();
   const [fromRoute, setFromRoute] = useState<ENSRoutes | undefined>(previousRouteName);
   const {
     disabled,
@@ -297,7 +301,7 @@ export function ENSAssignRecordsBottomActions({
         testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
-          <Box paddingBottom="19px (Deprecated)" style={{ height: bottomActionHeight }}>
+          <Box paddingBottom={{ custom: insets.bottom }} style={{ height: bottomActionHeight }}>
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
@@ -312,7 +316,7 @@ export function ENSAssignRecordsBottomActions({
               </Row>
               <Row height="content">
                 <SheetActionButtonRow
-                  {...(android
+                  {...(IS_ANDROID
                     ? {
                         ignorePaddingBottom: true,
                         paddingBottom: 8,
@@ -322,10 +326,10 @@ export function ENSAssignRecordsBottomActions({
                         paddingBottom: isSmallPhone ? 0 : 36,
                       })}
                 >
-                  {hasBackButton && <TintButton onPress={handlePressBack}>{lang.t('profiles.create.back')}</TintButton>}
+                  {hasBackButton && <TintButton onPress={handlePressBack}>{i18n.t(i18n.l.profiles.create.back)}</TintButton>}
                   {isEmptyForm && mode === REGISTRATION_MODES.CREATE ? (
                     <TintButton disabled={disabled} onPress={handlePressContinue} testID="ens-assign-records-skip">
-                      {lang.t('profiles.create.skip')}
+                      {i18n.t(i18n.l.profiles.create.skip)}
                     </TintButton>
                   ) : (
                     <Box>
@@ -333,7 +337,7 @@ export function ENSAssignRecordsBottomActions({
                         <SheetActionButton
                           color={accentColor}
                           disabled={isValidating || !isEmpty(errors)}
-                          label={lang.t('profiles.create.review')}
+                          label={i18n.t(i18n.l.profiles.create.review)}
                           onPress={handlePressContinue}
                           size="big"
                           testID="ens-assign-records-review"
@@ -341,7 +345,7 @@ export function ENSAssignRecordsBottomActions({
                         />
                       ) : (
                         <TintButton onPress={() => goBack()} testID="ens-assign-records-cancel">
-                          {lang.t('profiles.create.cancel')}
+                          {i18n.t(i18n.l.profiles.create.cancel)}
                         </TintButton>
                       )}
                     </Box>

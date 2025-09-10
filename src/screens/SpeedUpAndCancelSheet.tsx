@@ -26,7 +26,6 @@ import { BytesLike } from '@ethersproject/bytes';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { BigNumber } from 'bignumber.js';
-import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { ComponentProps, Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
@@ -383,11 +382,15 @@ export default function SpeedUpAndCancelSheet() {
 
           // NOTE: We don't care about this for cancellations
           if (type === SPEED_UP) {
-            Alert.alert(lang.t('wallet.speed_up.unable_to_speed_up'), lang.t('wallet.speed_up.problem_while_fetching_transaction_data'), [
-              {
-                onPress: () => goBack(),
-              },
-            ]);
+            Alert.alert(
+              i18n.t(i18n.l.wallet.speed_up.unable_to_speed_up),
+              i18n.t(i18n.l.wallet.speed_up.problem_while_fetching_transaction_data),
+              [
+                {
+                  onPress: () => goBack(),
+                },
+              ]
+            );
           }
         }
       }
@@ -469,7 +472,7 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop={ios}>
                         <SheetActionButton
                           color={colors.red}
-                          label={`􀎽 ${lang.t('button.attempt_cancellation')}`}
+                          label={`􀎽 ${i18n.t(i18n.l.button.attempt_cancellation)}`}
                           onPress={handleCancellationWrapperFn}
                           size="big"
                           weight="bold"
@@ -478,7 +481,7 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom>
                         <SheetActionButton
                           color={colors.white}
-                          label={lang.t('button.close')}
+                          label={i18n.t(i18n.l.button.close)}
                           onPress={goBack}
                           size="big"
                           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -491,7 +494,7 @@ export default function SpeedUpAndCancelSheet() {
                     <SheetActionButtonRow ignorePaddingBottom={ios} ignorePaddingTop={ios}>
                       <SheetActionButton
                         color={colors.white}
-                        label={lang.t('button.cancel')}
+                        label={i18n.t(i18n.l.button.cancel)}
                         onPress={goBack}
                         size="big"
                         textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -499,7 +502,7 @@ export default function SpeedUpAndCancelSheet() {
                       />
                       <SheetActionButton
                         color={accentColor || colors.appleBlue}
-                        label={`􀎽 ${lang.t('button.confirm')}`}
+                        label={`􀎽 ${i18n.t(i18n.l.button.confirm)}`}
                         onPress={handleSpeedUpWrapperFn}
                         size="big"
                         weight="bold"

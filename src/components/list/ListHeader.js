@@ -5,7 +5,6 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import { getIsReadOnlyWallet, useAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { Share } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
@@ -29,7 +28,7 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel align="center" label={`􀈂 ${lang.t('button.share')}`} shareButton />
+    <CoinDividerButtonLabel align="center" label={`􀈂 ${i18n.t(i18n.l.button.share)}`} shareButton />
   </ShareCollectiblesBPA>
 );
 
@@ -66,8 +65,8 @@ export default function ListHeader({ children, contextMenuOptions, isCoinListEdi
     const showcaseUrl = `${RAINBOW_PROFILES_BASE_URL}/${accountENS || accountAddress}`;
     const shareOptions = {
       message: isReadOnly
-        ? lang.t('list.share.check_out_this_wallet', { showcaseUrl })
-        : lang.t('list.share.check_out_my_wallet', { showcaseUrl }),
+        ? i18n.t(i18n.l.list.share.check_out_this_wallet, { showcaseUrl })
+        : i18n.t(i18n.l.list.share.check_out_my_wallet, { showcaseUrl }),
     };
     Share.share(shareOptions);
   }, [accountAddress, accountColorHex, accountENS, accountSymbol, hiddenTokens, showcaseTokens]);
