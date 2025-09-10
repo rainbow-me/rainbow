@@ -1186,28 +1186,28 @@
         "button": "फिर भी आगे बढ़ें"
       },
       "ens_primary_name": {
-        "title": "What does it mean to set my ENS name?",
-        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+        "title": "मेरे ENS नाम सेट करने का क्या अर्थ है?",
+        "text": "लोग जब आपको कुछ भेजना चाहेंगे तो आपके पूर्ण Ethereum पते के बजाय आपकी .eth नाम dApps में टाइप कर सकेंगे, और dApps आपके .eth नाम और प्रोफाइल का उपयोग करके आपकी जानकारी प्रदर्शित कर सकेंगे। इसे आपका ENS नाम \"प्राथमिक\" सेट करना भी कहा जाता है।"
       },
       "ens_on_chain_data_warning": {
         "title": "ध्यान दें!",
-        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+        "text": "आप यहाँ जो डेटा प्रदान करते हैं, वह Ethereum ब्लॉकचेन पर संग्रहीत किया जाएगा - अर्थात यह सभी के लिए दृश्यमान और किसी के भी द्वारा सुलभ होगा। ऐसा कोई डेटा साझा न करें जिससे आप सार्वजनिक करने में असहज हों।"
       },
       "ens_manager": {
-        "title": "What is the .eth manager?",
-        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+        "title": "क्या है .eth प्रबंधक?",
+        "text": ".eth नाम का प्रबंधक इसके अभिलेख सेट और अपडेट कर सकता है, उस नाम के उपडोमेन बना सकता है या उसकी कॉन्फ़िगरेशन प्रबंधित कर सकता है। प्रबंधक को .eth नाम के धारक द्वारा सेट किया जाता है और इसे ENS नाम का नियंत्रक भी कहा जाता है।"
       },
       "ens_owner": {
-        "title": "What is the .eth name owner?",
-        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+        "title": "क्या है .eth नाम धारक?",
+        "text": ".eth नाम का मालिक उस नाम पर पूर्ण और अंतिम नियंत्रण रखता है। वे नाम का स्वामित्व हस्तांतरित कर सकते हैं और यदि वे चाहें तो किसी और को नाम का प्रबंधन करने की अनुमति दे सकते हैं (विवरण सेट करना आदि)। मालिक को भी ENS नाम का पंजीयक कहा जाता है।"
       },
       "ens_resolver": {
-        "title": "What is a .eth resolver?",
-        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+        "title": ".eth रेसॉल्वर क्या होता है?",
+        "text": "रेसॉल्वर एक अनुबंध है जो नाम से संसाधन (जैसे, क्रिप्टोक्यूरेंसी पते, सामग्री हैश आदि) को मैप करता है। रेसॉल्वर को रजिस्टर के रेसॉल्वर फील्ड द्वारा इंगित किया जाता है।"
       },
       "ens_configuration": {
-        "title": "What do these options mean?",
-        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
+        "title": "ये विकल्प क्या मतलब हैं?",
+        "text": "जब किसी ENS नाम को किसी और को भेजा जाता है और उन्हें नया ENS नाम का मालिक बनाया जाता है, तब आप उन्हें पहले से ही इसे कॉन्फ़िगर करना चाह सकते हैं और उन्हें भविष्य में एक लेनदेन से बचा सकते हैं। Rainbow आपको नाम के लिए वर्तमान में सेट की गई प्रोफ़ाइल जानकारी को साफ़ करने, ENS नाम को प्राप्तकर्ता के पते पर इंगित करने और प्राप्तकर्ता पते को नाम का प्रबंधक बनाने की अनुमति देता है।"
       }
     },
     "fedora": {
