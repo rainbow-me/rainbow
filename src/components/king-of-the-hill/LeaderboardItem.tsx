@@ -96,9 +96,7 @@ export const LeaderboardItem = memo(function LeaderboardItem({
                   showBadge={false}
                 />
               )}
-              {iconUrl && (ranking === 2 || ranking === 3) && (
-                <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />
-              )}
+              {(ranking === 2 || ranking === 3) && <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />}
             </View>
             <View style={styles.chainImageContainer}>
               <ChainImage chainId={token.chainId} size={16} position="absolute" />
