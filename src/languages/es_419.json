@@ -1186,28 +1186,28 @@
         "button": "Continuar de todos modos"
       },
       "ens_primary_name": {
-        "title": "What does it mean to set my ENS name?",
-        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+        "title": "¿Qué significa configurar mi nombre ENS?",
+        "text": "Las personas podrán escribir tu nombre .eth en dApps en lugar de tu dirección completa de Ethereum cuando quieran enviarte algo, y las dApps podrán usar tu nombre .eth y perfil para mostrar información sobre ti. Esto también se conoce como configurar tu nombre ENS como \"principal\"."
       },
       "ens_on_chain_data_warning": {
         "title": "¡Atención!",
-        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+        "text": "Los datos que proporciones aquí se almacenarán en la blockchain de Ethereum, lo que significa que serán visibles para todos y accesibles por cualquier persona. No compartas ningún dato con el que no te sientas cómodo publicando."
       },
       "ens_manager": {
-        "title": "What is the .eth manager?",
-        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+        "title": "¿Qué es el gestor de .eth?",
+        "text": "El gestor de un nombre .eth puede establecer y actualizar sus registros, crear subdominios de ese nombre o gestionar su configuración. El gestor es designado por el propietario del nombre .eth y también se conoce como el controlador del nombre ENS."
       },
       "ens_owner": {
-        "title": "What is the .eth name owner?",
-        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+        "title": "¿Quién es el propietario de un nombre .eth?",
+        "text": "El propietario de un nombre .eth tiene control total y definitivo sobre ese nombre. Puede transferir la propiedad del nombre y permitir que otra persona administre el nombre por ellos si así lo desea (configuración de registros, etc.). El propietario también se conoce como el registrante del nombre de ENS."
       },
       "ens_resolver": {
-        "title": "What is a .eth resolver?",
-        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+        "title": "¿Qué es un servidor de resolución .eth?",
+        "text": "Un servidor de resolución es un contrato que asigna de un nombre al recurso (por ejemplo, direcciones de criptomonedas, hash de contenido, etc.). Los servidores de resolución están vinculados por el campo de resolución del registro."
       },
       "ens_configuration": {
-        "title": "What do these options mean?",
-        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
+        "title": "¿Qué significan estas opciones?",
+        "text": "Al enviar un nombre ENS a otra persona y hacerla propietaria del nuevo nombre ENS, es posible que desees configurarlo para ellos por adelantado y ahorrarles una transacción futura. Rainbow te permite borrar cualquier información de perfil actualmente configurada para el nombre, configurar el nombre ENS para que apunte a la dirección del destinatario y hacer que la dirección del destinatario se convierta en el administrador del nombre."
       }
     },
     "fedora": {
