@@ -2,9 +2,9 @@ import React, { memo, useCallback } from 'react';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { ContactAvatar } from '@/components/contacts';
 import { ButtonPressAnimation } from '@/components/animations';
-import Routes from '@/navigation/Routes';
 import { Navigation } from '@/navigation';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import Routes from '@/navigation/routesNames';
 
 type AccountImageProps = {
   onPress?: () => void;
