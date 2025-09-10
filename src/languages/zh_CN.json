@@ -1186,28 +1186,28 @@
         "button": "无论如何都要继续"
       },
       "ens_primary_name": {
-        "title": "What does it mean to set my ENS name?",
-        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+        "title": "设置我的 ENS 名称意味着什么？",
+        "text": "人们可以在 dApps 中输入您的 .eth 名称，而不是您的完整 Ethereum 地址来向您发送东西，dApps 也可以使用您的 .eth 名称和个人资料来显示您的信息。这也被称为将 ENS 名称设置为“primary”。"
       },
       "ens_on_chain_data_warning": {
         "title": "注意！",
-        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+        "text": "您在此提供的数据将存储在 Ethereum 区块链上——这意味着它对所有人可见，任何人都可访问。请勿分享您不愿公开的数据。"
       },
       "ens_manager": {
-        "title": "What is the .eth manager?",
-        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+        "title": ".eth 管理器是什么？",
+        "text": ".eth 名称的管理器可以设置和更新其记录，创建该名称的子域或管理其配置。管理器由 .eth 名称的所有者设置，也被称为 ENS 名称的控制器。"
       },
       "ens_owner": {
-        "title": "What is the .eth name owner?",
-        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+        "title": ".eth 名称的所有者是什么？",
+        "text": "一个.eth 名称的所有者对该名称拥有完全和最终的控制权。他们可以转让该名称的所有权，并根据需要允许其他人代表他们管理该名称（设置记录等）。所有者也被称为 ENS 名称的注册人。"
       },
       "ens_resolver": {
-        "title": "What is a .eth resolver?",
-        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+        "title": "什么是 .eth 解析器？",
+        "text": "解析器是一个合约，它将名称映射到资源（例如，加密货币地址、内容哈希等）。解析器通过注册表的解析器字段被指向。"
       },
       "ens_configuration": {
-        "title": "What do these options mean?",
-        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
+        "title": "这些选项是什么意思？",
+        "text": "当将 ENS 名称发送给他人并使其成为新的 ENS 名称所有者时，您可能希望预先为他们配置它，以节省未来的交易。Rainbow 允许您清除当前设置的名称的任何配置文件信息，将 ENS 名称指向接收者的地址，并使接收者地址成为名称的管理者。"
       }
     },
     "fedora": {
