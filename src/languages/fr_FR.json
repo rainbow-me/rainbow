@@ -1186,28 +1186,28 @@
         "button": "Procéder quand même"
       },
       "ens_primary_name": {
-        "title": "What does it mean to set my ENS name?",
-        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+        "title": "Que signifie définir mon nom ENS?",
+        "text": "Les gens pourront taper votre nom .eth dans les dApps au lieu de votre adresse Ethereum complète lorsqu'ils souhaitent vous envoyer quelque chose, et les dApps pourront utiliser votre nom .eth et votre profil pour afficher des informations sur vous. Cela est également connu sous le nom de définir votre nom ENS comme \"primaire\"."
       },
       "ens_on_chain_data_warning": {
         "title": "Attention !",
-        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+        "text": "Les données que vous fournissez ici seront stockées sur la blockchain Ethereum - ce qui signifie qu'elles seront visibles par tous et accessibles à quiconque. Ne partagez pas de données dont vous n'êtes pas à l'aise avec la diffusion publique."
       },
       "ens_manager": {
-        "title": "What is the .eth manager?",
-        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+        "title": "Qu'est-ce que le gestionnaire .eth?",
+        "text": "Le gestionnaire d'un nom .eth peut définir et mettre à jour ses enregistrements, créer des sous-domaines de ce nom ou gérer sa configuration. Le gestionnaire est défini par le propriétaire du nom .eth et est également connu comme le contrôleur du nom ENS."
       },
       "ens_owner": {
-        "title": "What is the .eth name owner?",
-        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+        "title": "Qu'est-ce que le propriétaire du nom .eth?",
+        "text": "Le propriétaire d'un nom .eth a un contrôle total et ultime sur ce nom. Il peut transférer la propriété du nom et permettre à quelqu'un d'autre de gérer le nom pour lui s'il le souhaite (en configurant les enregistrements, etc.). Le propriétaire est également connu comme le titulaire du nom ENS."
       },
       "ens_resolver": {
-        "title": "What is a .eth resolver?",
-        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+        "title": "Qu'est-ce qu'un résolveur .eth ?",
+        "text": "Un résolveur est un contrat qui associe un nom à la ressource (par exemple, adresses de cryptomonnaie, hachage de contenu, etc.). Les résolveurs sont pointés par le champ du résolveur du registre."
       },
       "ens_configuration": {
-        "title": "What do these options mean?",
-        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
+        "title": "Que signifient ces options ?",
+        "text": "Lorsque vous envoyez un nom ENS à quelqu'un d'autre et que vous en faites le nouveau propriétaire, vous pouvez vouloir le configurer à l'avance pour lui éviter une transaction future. Rainbow vous permet d'effacer toute information de profil actuellement définie pour le nom, de configurer le nom ENS pour qu'il pointe vers l'adresse du destinataire et de faire de l'adresse du destinataire le gestionnaire du nom."
       }
     },
     "fedora": {
