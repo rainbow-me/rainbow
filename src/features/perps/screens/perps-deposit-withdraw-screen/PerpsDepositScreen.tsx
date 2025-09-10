@@ -225,7 +225,7 @@ const DepositInputSection = ({
           </GestureHandlerButton>
         </Box>
         <Separator direction="horizontal" color="separatorSecondary" />
-        <Box flexDirection="row" alignItems="center" justifyContent="center">
+        <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
           <RainbowImage
             source={{
               url: USDC_ASSET.icon_url,
