@@ -11,7 +11,7 @@ import { colors } from '@/styles';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { abs, greaterThan, isEqual } from '@/helpers/utilities';
-import { divWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, getPercentageDifferenceWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { Page } from '@/components/layout';
 import { useChartsStore } from '@/features/charts/stores/chartsStore';
@@ -24,7 +24,6 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { format } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CollapsibleSection } from '@/features/perps/components/CollapsibleSection';
-import { useHlNewPositionStore } from '../stores/hlNewPositionStore';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({ market }: { market: PerpMarket }) {
   return (
@@ -208,14 +207,15 @@ export const PositionValueSection = memo(function PositionValueSection({ market 
           </Box>
         </Box>
       </Box>
-      <Box
-        backgroundColor="#F5F8FF06"
-        height={{ custom: 1 }}
-        width="full"
-        marginTop={{ custom: 28 }}
-        // we have a gap of 20 already so 28 - 20
-        marginBottom={{ custom: 8 }}
-      />
+      <LiquidationSection market={market} />
+      {/* <Box */}
+      {/*   backgroundColor="#F5F8FF06" */}
+      {/*   height={{ custom: 1 }} */}
+      {/*   width="full" */}
+      {/*   marginTop={{ custom: 28 }} */}
+      {/*   // we have a gap of 20 already so 28 - 20 */}
+      {/*   marginBottom={{ custom: 8 }} */}
+      {/* /> */}
     </>
   );
 });
@@ -322,7 +322,6 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
 });
 
 const LiquidationSection = memo(function LiquidationSection({ market }: { market: PerpMarket }) {
-  const colors = usePerpsAccentColorContext();
   const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
 
   const formattedValues = useMemo(() => {
@@ -350,10 +349,28 @@ const LiquidationSection = memo(function LiquidationSection({ market }: { market
     };
   }, [position]);
 
+  const targetPriceDifferential = useMemo(() => {
+    if (!position || !position.liquidationPrice) return null;
+    return getPercentageDifferenceWorklet(market.price, position.liquidationPrice);
+  }, [position, market.price]);
+
+  const formattedMarkPrice = useMemo(() => {
+    return formatAssetPrice({
+      value: market.price,
+      currency: 'USD',
+    });
+  }, [market.price]);
+
+  const formattedFundingRate = useMemo(() => {
+    // Convert funding rate to percentage format
+    const fundingRatePercent = parseFloat(market.fundingRate) * 100;
+    return `${toFixedWorklet(fundingRatePercent, 4)}%`;
+  }, [market.fundingRate]);
+
   const items = [
     {
       title: 'Mark Price',
-      value: formattedValues?.positionValue,
+      value: formattedMarkPrice,
     },
     {
       title: 'Entry Price',
@@ -361,11 +378,13 @@ const LiquidationSection = memo(function LiquidationSection({ market }: { market
     },
     {
       title: 'Funding Rate',
-      value: '0.175%',
+      value: formattedFundingRate,
     },
   ];
 
   if (!position) return null;
+
+  const targetPriceDifferentialNegative = targetPriceDifferential && parseFloat(targetPriceDifferential) < 0;
   return (
     <>
       <Box
@@ -374,21 +393,31 @@ const LiquidationSection = memo(function LiquidationSection({ market }: { market
         borderWidth={2}
         borderColor={{ custom: opacityWorklet('#3ECFAD', 0.06) }}
         padding="20px"
+        marginTop={{ custom: 16 }}
         gap={16}
       >
         <Box flexDirection="row" alignItems="center" justifyContent="space-between" gap={8}>
           <Box>
-            <Text size="17pt" weight="semibold" color="labelTertiary" testID={`liquidation-price-header-${market.symbol}`}>
-              Liquidation Price
-            </Text>
-            <Box flexDirection="row" alignItems="center" gap={5} marginTop={{ custom: 12 }}>
-              <Text color={{ custom: colors.accentColors.opacity100 }} size="13pt" weight="heavy">
-                -26.82%
-              </Text>
-              <Text color="labelTertiary" size="13pt" weight="heavy">
-                from current price
+            <Box flexDirection="row" alignItems="center" gap={6}>
+              {targetPriceDifferentialNegative && (
+                <Text size="13pt" weight="semibold" color="red">
+                  􀇿
+                </Text>
+              )}
+              <Text size="17pt" weight="semibold" color="labelTertiary" testID={`liquidation-price-header-${market.symbol}`}>
+                Liquidation Price
               </Text>
             </Box>
+            {targetPriceDifferential && (
+              <Box flexDirection="row" alignItems="center" gap={5} marginTop={{ custom: 12 }}>
+                <Text color={targetPriceDifferentialNegative ? 'red' : 'green'} size="13pt" weight="heavy">
+                  {toFixedWorklet(targetPriceDifferential, 2)}%
+                </Text>
+                <Text color="labelTertiary" size="13pt" weight="heavy">
+                  from current price
+                </Text>
+              </Box>
+            )}
           </Box>
           <Text color="white" size="17pt" weight="bold">
             {formattedValues?.liquidationPrice}
@@ -438,9 +467,6 @@ const Screen = memo(function PerpsDetailScreen({ market }: { market: PerpMarket 
             <ChartSection market={market} />
             <Box paddingHorizontal="24px">
               <PositionValueSection market={market} />
-            </Box>
-            <Box paddingHorizontal="24px">
-              <LiquidationSection market={market} />
             </Box>
             <Box paddingHorizontal="24px">
               <CollapsibleSection
