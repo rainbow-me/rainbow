@@ -124,7 +124,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
  * If pending, applies only the fields that change during a pending transaction's
  * lifecycle to the original transaction.
  *
- * If confirmed, prefers the fetched transaction over the original (for certain
+ * If confirmed, prefers the fetched transaction over the original for certain
  * transaction types.
  *
  * This works around the lack of rich metadata in fetched pending transactions.
