@@ -149,10 +149,9 @@ export const handleMobileWalletProtocolRequest = async ({
           },
         };
 
-        Navigation.handleAction(
+        (getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET ? Navigation.replace : Navigation.handleAction)(
           Routes.WALLET_CONNECT_APPROVAL_SHEET,
-          routeParams,
-          getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
+          routeParams
         );
       });
     } else if (isEthereumAction(action)) {
@@ -329,10 +328,9 @@ export const handleDappBrowserConnectionPrompt = (
      * We might see this at any point in the app, so only use `replace`
      * sometimes if the user is already looking at the approval sheet.
      */
-    Navigation.handleAction(
+    (getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET ? Navigation.replace : Navigation.handleAction)(
       Routes.WALLET_CONNECT_APPROVAL_SHEET,
-      routeParams,
-      getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
+      routeParams
     );
   });
 };

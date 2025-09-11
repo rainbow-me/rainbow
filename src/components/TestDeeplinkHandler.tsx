@@ -26,14 +26,10 @@ export function TestDeeplinkHandler() {
             name: query.name,
             userPin: '1111',
           });
-          Navigation.handleAction(
-            Routes.SWIPE_LAYOUT,
-            {
-              screen: Routes.WALLET_SCREEN,
-              params: { initialized: true },
-            },
-            true
-          );
+          Navigation.handleAction(Routes.SWIPE_LAYOUT, {
+            screen: Routes.WALLET_SCREEN,
+            params: { initialized: true },
+          });
           break;
         default:
           logger.debug(`[TestDeeplinkHandler]: unknown path`, { url });

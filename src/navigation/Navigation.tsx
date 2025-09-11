@@ -29,8 +29,8 @@ export type { Route };
 export type RouteParams<RouteName extends Route> = RootStackParamList[RouteName];
 
 export type NavigateArgs<RouteName extends Route> = RouteName extends RoutesWithOptionalParams
-  ? [screen: RouteName, params?: RootStackParamList[RouteName], replace?: boolean]
-  : [screen: RouteName, params: RootStackParamList[RouteName], replace?: boolean];
+  ? [screen: RouteName, params?: RootStackParamList[RouteName]]
+  : [screen: RouteName, params: RootStackParamList[RouteName]];
 
 // ============ Internal Types ================================================= //
 
@@ -48,10 +48,6 @@ type ExtendedStackNavigationOptions = Partial<StackNavigationOptions> & {
   shortFormHeight?: number;
   onWillDismiss?: () => void;
 };
-
-type ReplaceArgs<RouteName extends Route> = RouteName extends RoutesWithOptionalParams
-  ? [screen: RouteName, params?: RootStackParamList[RouteName]]
-  : [screen: RouteName, params: RootStackParamList[RouteName]];
 
 // ============ Hooks ========================================================== //
 
@@ -100,18 +96,14 @@ export function goBack(): void {
  * Navigates to a screen from anywhere in the app.
  */
 export function navigate<RouteName extends Route>(...args: NavigateArgs<RouteName>): void {
-  const [routeName, params, replace] = args;
-  dispatchAction(
-    replace ? StackActions.replace(routeName, params) : CommonActions.navigate({ name: routeName, params }),
-    routeName,
-    params
-  );
+  const [routeName, params] = args;
+  dispatchAction(CommonActions.navigate({ name: routeName, params }), routeName, params);
 }
 
 /**
  * Replaces the current screen in the stack.
  */
-export function replace<RouteName extends Route>(...args: ReplaceArgs<RouteName>): void {
+export function replace<RouteName extends Route>(...args: NavigateArgs<RouteName>): void {
   const [routeName, params] = args;
   dispatchAction(StackActions.replace(routeName, params), routeName, params);
 }
@@ -295,6 +287,7 @@ export default {
   getState,
   goBack,
   handleAction: navigate,
+  replace,
   setParams,
   setNavigationRef,
 } as const;

@@ -292,14 +292,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
       // Navigate to wallet screen and dismiss the entire modal stack
       try {
-        Navigation.handleAction(
-          Routes.SWIPE_LAYOUT,
-          {
-            screen: Routes.WALLET_SCREEN,
-            params: { initialized: true },
-          },
-          previousWalletCount === 0
-        );
+        (previousWalletCount === 0 ? Navigation.replace : Navigation.handleAction)(Routes.SWIPE_LAYOUT, {
+          screen: Routes.WALLET_SCREEN,
+          params: { initialized: true },
+        });
 
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();
