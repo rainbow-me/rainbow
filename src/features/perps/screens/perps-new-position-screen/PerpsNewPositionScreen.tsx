@@ -1,4 +1,5 @@
 import React, { memo, useEffect } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 import { Box, Separator, Stack, useBackgroundColor } from '@/design-system';
 import { AmountInputCard } from './AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
@@ -7,11 +8,11 @@ import { DetailsSection } from './DetailsSection';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
-import { ScrollView } from 'react-native';
 import { FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { MarketInfoSection } from './MarketInfoSection';
+import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountError';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const market = useHlNewPositionStore(state => state.market);
@@ -38,8 +39,11 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
               <MarketInfoSection market={market} />
               <Box gap={17}>
                 <Box gap={24}>
-                  <AmountInputCard />
-                  <LeverageInputCard market={market} />
+                  <Box>
+                    <AmountInputCard />
+                    <AmountInputError />
+                  </Box>
+                  <LeverageInputCard maxLeverage={market.maxLeverage} />
                 </Box>
                 <Box paddingHorizontal={'8px'}>
                   <LiquidationInfo market={market} />
@@ -55,18 +59,22 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
           startColor={screenBackgroundColor}
           endOpacity={0}
           startOpacity={1}
-          style={{
-            height: 32,
-            width: DEVICE_WIDTH,
-            pointerEvents: 'none',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1000,
-          }}
+          style={styles.easingGradient}
         />
       </Box>
     </Box>
   );
+});
+
+const styles = StyleSheet.create({
+  easingGradient: {
+    height: 32,
+    width: DEVICE_WIDTH,
+    pointerEvents: 'none',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+  },
 });

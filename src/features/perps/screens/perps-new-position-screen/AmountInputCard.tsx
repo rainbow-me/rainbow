@@ -1,14 +1,14 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { Box, Text } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { PERPS_COLORS, SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT } from '@/features/perps/constants';
+import { PERPS_COLORS, SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT, INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { runOnJS, SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider, SliderColors } from '@/features/perps/components/Slider';
 import { addCommasToNumber, opacityWorklet, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
-import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { hlNewPositionStoreActions } from '@/features/perps/stores/hlNewPositionStore';
 import { divide } from '@/helpers/utilities';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
@@ -91,15 +91,20 @@ export const AmountInputCard = memo(function AmountInputCard() {
   const initialAmount = formatInput(formatDisplay(divide(availableBalanceString, 2)));
   const inputValue = useSharedValue(initialAmount);
 
+  const setAmount = useCallback((amount: string) => {
+    hlNewPositionStoreActions.setAmount(amount);
+  }, []);
+
   const onChangeValue = useCallback(
     (value: string) => {
       'worklet';
-      const amount = parseFloat(value) || 0;
+      const amount = Number(value) || 0;
       const percentage = availableBalance > 0 ? amount / availableBalance : 0;
       const newSliderX = percentage * SLIDER_WIDTH;
       sliderXPosition.value = withSpring(newSliderX, SPRING_CONFIGS.sliderConfig);
+      runOnJS(setAmount)(value);
     },
-    [availableBalance, sliderXPosition]
+    [availableBalance, sliderXPosition, setAmount]
   );
 
   // Called when gesture ends
@@ -110,9 +115,9 @@ export const AmountInputCard = memo(function AmountInputCard() {
       if (inputRef.current) {
         inputRef.current.setValue(formattedAmount);
       }
-      useHlNewPositionStore.getState().setAmount(formattedAmount);
+      setAmount(formattedAmount);
     },
-    [availableBalance]
+    [availableBalance, setAmount]
   );
 
   const onPercentageUpdate = useCallback(
@@ -120,11 +125,9 @@ export const AmountInputCard = memo(function AmountInputCard() {
       'worklet';
       const amount = availableBalance * percentage;
       const formattedAmount = formatInput(amount.toString());
-      if (inputRef.current) {
-        runOnJS(inputRef.current.setValue)(formattedAmount);
-      }
+      inputValue.value = formattedAmount;
     },
-    [availableBalance]
+    [availableBalance, inputValue]
   );
 
   return (
@@ -137,6 +140,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
       padding={'20px'}
       alignItems="center"
       gap={20}
+      height={INPUT_CARD_HEIGHT}
     >
       <Box width="full" flexDirection="row" alignItems="center">
         <Box gap={12}>

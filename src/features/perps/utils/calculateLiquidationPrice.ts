@@ -16,13 +16,13 @@ import { PerpPositionSide } from '@/features/perps/types';
  */
 export function calculateIsolatedLiquidationPrice({
   entryPrice,
-  positionSize,
+  marginAmount,
   positionSide,
   leverage,
   maxLeverage,
 }: {
   entryPrice: number;
-  positionSize: number;
+  marginAmount: number;
   positionSide: PerpPositionSide;
   leverage: number;
   maxLeverage: number;
@@ -31,7 +31,7 @@ export function calculateIsolatedLiquidationPrice({
   const side = isLong ? 1 : -1;
 
   // Calculate initial margin (collateral)
-  const positionValue = positionSize * entryPrice;
+  const positionValue = marginAmount * entryPrice;
   const isolatedMargin = positionValue / leverage;
 
   // Calculate maintenance margin rate
@@ -49,7 +49,7 @@ export function calculateIsolatedLiquidationPrice({
 
   // Apply Hyperliquid's liquidation price formula:
   // liq_price = price - side * margin_available / position_size / (1 - l * side)
-  const liquidationPrice = entryPrice - (side * marginAvailable) / positionSize / (1 - l * side);
+  const liquidationPrice = entryPrice - (side * marginAvailable) / marginAmount / (1 - l * side);
 
   // Ensure liquidation price is positive
   return Math.max(0, liquidationPrice);

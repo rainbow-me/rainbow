@@ -1,14 +1,13 @@
 import React, { memo, useCallback } from 'react';
 import { AnimatedText, Box, Text } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { PERPS_COLORS } from '@/features/perps/constants';
+import { INPUT_CARD_HEIGHT, PERPS_COLORS } from '@/features/perps/constants';
 import { runOnJS, SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Slider, SliderColors } from '@/features/perps/components/Slider';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
-import { PerpMarket } from '@/features/perps/types';
 import { useListen } from '@/state/internal/hooks/useListen';
 
 const SLIDER_WIDTH = DEVICE_WIDTH - 80;
@@ -42,9 +41,8 @@ const LeverageSlider = ({
   );
 };
 
-export const LeverageInputCard = memo(function LeverageInputCard({ market }: { market: PerpMarket }) {
+export const LeverageInputCard = memo(function LeverageInputCard({ maxLeverage }: { maxLeverage: number }) {
   const { accentColors } = usePerpsAccentColorContext();
-  const maxLeverage = market.maxLeverage;
   const initialLeverage = useHlNewPositionStore.getState().leverage ?? 1;
 
   const leverage = useSharedValue(initialLeverage);
@@ -92,6 +90,7 @@ export const LeverageInputCard = memo(function LeverageInputCard({ market }: { m
       padding={'20px'}
       alignItems="center"
       gap={20}
+      height={INPUT_CARD_HEIGHT}
     >
       <Box width="full" flexDirection="row" alignItems="center">
         <Box gap={12}>

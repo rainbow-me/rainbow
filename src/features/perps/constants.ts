@@ -7,9 +7,13 @@ export const RAINBOW_BUILDER_SETTINGS = {
   f: 10,
 } as const;
 export const HYPERCORE_PSEUDO_CHAIN_ID = 1337;
+// The minimum total order size (margin * leverage)
+export const MIN_ORDER_SIZE_USD = 10;
 
 export const FOOTER_HEIGHT = 110;
 export const FOOTER_HEIGHT_WITH_SAFE_AREA = 110 + safeAreaInsetValues.bottom;
+
+export const INPUT_CARD_HEIGHT = 106;
 
 export const HYPERLIQUID_USDC_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 // TODO (kane): remove these individual exports

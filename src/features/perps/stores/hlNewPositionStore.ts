@@ -34,7 +34,7 @@ type HlNewPositionActions = {
 
 type HlNewPositionStore = HlNewPositionState & HlNewPositionActions;
 
-export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set, get) => ({
+export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>(set => ({
   positionSide: PerpPositionSide.LONG,
   leverage: null,
   amount: '0',

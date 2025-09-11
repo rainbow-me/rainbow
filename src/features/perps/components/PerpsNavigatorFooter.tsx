@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Text, TextIcon, TextShadow, useForegroundColor } from '@/design-system';
+import { Box, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
+import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { HYPERLIQUID_COLORS, PERPS_COLORS } from '@/features/perps/constants';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -16,15 +16,16 @@ import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
 import { hyperliquidMarketStoreActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountStoreActions } from '@/features/perps/stores/hyperliquidAccountStore';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { useOrderAmountValidation } from '@/features/perps/hooks/useOrderAmountValidation';
+import { getSolidColorEquivalent } from '@/worklets/colors';
 
 const BUTTON_HEIGHT = 48;
 
@@ -170,6 +171,7 @@ const PerpsDetailScreenFooter = () => {
 };
 
 const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter() {
+  const { isValid } = useOrderAmountValidation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const green = PERPS_COLORS.longGreen;
   const red = PERPS_COLORS.shortRed;
@@ -177,13 +179,21 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   const positionSide = useHlNewPositionStore(state => state.positionSide);
 
   const button = useMemo(() => {
+    const isLong = positionSide === PerpPositionSide.LONG;
+    const positionSideColor = isLong ? green : red;
     return {
-      textColor: positionSide === PerpPositionSide.LONG ? '#000000' : '#FFFFFF',
-      backgroundColor: positionSide === PerpPositionSide.LONG ? green : red,
+      textColor: isValid ? (isLong ? '#000000' : '#FFFFFF') : opacityWorklet(positionSideColor, 0.4),
+      backTextColor: isLong ? '#000000' : '#FFFFFF',
+      backgroundColor: positionSideColor,
       borderColor: 'rgba(255, 255, 255, 0.12)',
-      text: positionSide === PerpPositionSide.LONG ? 'Hold to Long' : 'Hold to Short',
+      text: isLong ? 'Hold to Long' : 'Hold to Short',
+      disabledBackgroundColor: getSolidColorEquivalent({
+        background: PERPS_COLORS.surfacePrimary,
+        foreground: positionSideColor,
+        opacity: 0.07,
+      }),
     };
-  }, [positionSide, green, red]);
+  }, [positionSide, green, red, isValid]);
 
   const submitNewPosition = useCallback(async () => {
     const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
@@ -203,6 +213,8 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
       hlNewPositionStoreActions.reset();
       Navigation.handleAction(Routes.PERPS_ACCOUNT_SCREEN);
     } catch (e) {
+      const error = ensureError(e);
+      Alert.alert('Error submitting order', error.message);
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
     }
     setIsSubmitting(false);
@@ -216,13 +228,14 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         }}
         backgroundColor={button.backgroundColor}
         borderColor={button.borderColor}
-        textColor={button.textColor}
+        textColor={button.backTextColor}
       />
 
       <Box style={{ flex: 1 }}>
         <HoldToActivateButton
+          disabled={!isValid}
           backgroundColor={button.backgroundColor}
-          disabledBackgroundColor={button.borderColor}
+          disabledBackgroundColor={button.disabledBackgroundColor}
           isProcessing={isSubmitting}
           showBiometryIcon={true}
           processingLabel={'Submitting...'}

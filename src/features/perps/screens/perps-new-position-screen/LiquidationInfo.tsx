@@ -27,10 +27,9 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
 
   const estimatedLiquidationPrice = useMemo(() => {
     if (!leverage || !amount || !maxLeverage) return null;
-    // TODO (kane): size here should be changed in the function to be margin amount
     return calculateIsolatedLiquidationPrice({
       entryPrice: Number(midPrice),
-      positionSize: Number(amount),
+      marginAmount: Number(amount),
       positionSide: side,
       leverage,
       maxLeverage,
