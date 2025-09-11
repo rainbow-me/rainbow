@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box } from '@/design-system';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@/hooks';
+import { IS_ANDROID } from '@/env';
 
 interface KeyboardFixedOpenLayoutProps {
   additionalPadding?: number;
@@ -15,7 +16,7 @@ interface KeyboardFixedOpenLayoutProps {
 export default function KeyboardFixedOpenLayout({
   additionalPadding = 0,
   keyboardType = KeyboardType.default,
-  position = android ? undefined : 'absolute',
+  position = IS_ANDROID ? undefined : 'absolute',
   ...props
 }: KeyboardFixedOpenLayoutProps) {
   const insets = useSafeAreaInsets();
@@ -26,7 +27,11 @@ export default function KeyboardFixedOpenLayout({
 
   return (
     <Box height={{ custom: containerHeight }} left="0px" position={position} right="0px" top="0px">
-      <KeyboardAvoidingView behavior="height" enabled={!!keyboardHeight}>
+      {/* 
+        Android fix: KeyboardAvoidingView causes flickering when keyboard animates.
+        The height recalculation fights with the keyboard animation.
+      */}
+      <KeyboardAvoidingView behavior={IS_ANDROID ? undefined : 'height'} enabled={!IS_ANDROID && !!keyboardHeight}>
         <Box
           alignItems="center"
           height="full"
