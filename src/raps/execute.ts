@@ -124,8 +124,6 @@ function getNodeAckDelay(chainId: ChainId): number {
   switch (chainId) {
     case ChainId.mainnet:
       return 0;
-    case ChainId.base:
-      return 2500;
     default:
       return 500;
   }
