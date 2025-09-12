@@ -47,7 +47,7 @@ module.exports = {
           {
             name: 'react-native',
             importNames: ['StatusBar'],
-            message: 'Use StatusBarHelper or SystemBars from "react-native-edge-to-edge" instead.',
+            message: 'Use SystemBars from "react-native-edge-to-edge" instead.',
           },
         ],
         patterns: [

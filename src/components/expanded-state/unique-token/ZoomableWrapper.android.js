@@ -13,10 +13,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
-import { StatusBarHelper } from '@/helpers';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
+import { SystemBars } from 'react-native-edge-to-edge';
 
 const adjustConfig = {
   duration: 300,
@@ -122,12 +122,12 @@ export const ZoomableWrapper = ({
   const isZoomedValue = useSharedValue(false);
 
   useEffect(() => {
-    StatusBarHelper.setLightContent();
+    SystemBars.setStyle('light');
     if (isZoomed) {
-      StatusBarHelper.setHidden(true);
+      SystemBars.setHidden({ statusBar: true });
       onZoomIn?.();
     } else {
-      StatusBarHelper.setHidden(false);
+      SystemBars.setHidden({ statusBar: false });
       onZoomOut?.();
     }
   }, [isZoomed, onZoomIn, onZoomOut]);

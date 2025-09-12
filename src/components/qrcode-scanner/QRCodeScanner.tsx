@@ -8,15 +8,11 @@ import { deviceUtils } from '@/utils';
 import { Box, Cover, Rows, Row } from '@/design-system';
 import { CameraMaskSvg } from '../svg/CameraMaskSvg';
 import { IS_ANDROID } from '@/env';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useFocusEffect } from '@react-navigation/native';
+import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;
-
-const androidSoftMenuHeight = getSoftMenuBarHeight();
 
 interface QRCodeScannerProps {
   flashEnabled?: boolean;
@@ -28,7 +24,7 @@ interface QRCodeScannerProps {
 
 export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ flashEnabled, isActive, codeScanner, hasPermission, requestPermission }) => {
   const device = useCameraDevice('back');
-  const customHeightValue = deviceHeight + androidSoftMenuHeight;
+  const customHeightValue = deviceHeight + NAVIGATION_BAR_HEIGHT;
 
   useFocusEffect(
     useCallback(() => {
