@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
@@ -41,9 +40,10 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 const defaultCarouselHeight = 60;
-const baseHeight = 386 + (IS_ANDROID && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
+const baseHeight = 386 + (IS_ANDROID && 20 - NAVIGATION_BAR_HEIGHT) - defaultCarouselHeight;
 const heightWithoutChart = baseHeight + (IS_ANDROID && 30);
 const heightWithChart = baseHeight + 292;
 
@@ -109,7 +109,7 @@ function CarouselWrapper({ style, isAnyItemVisible, isAnyItemLoading, setCarouse
 }
 
 const Spacer = styled.View({
-  height: safeAreaInsetValues.bottom + 20 + getSoftMenuBarHeight(),
+  height: safeAreaInsetValues.bottom + 20 + NAVIGATION_BAR_HEIGHT,
 });
 
 // truncate after the first paragraph or 4th dot

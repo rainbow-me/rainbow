@@ -1,12 +1,11 @@
 import { Dimensions, PixelRatio, Platform, NativeModules } from 'react-native';
-import { getRealWindowHeight } from 'react-native-extra-dimensions-android';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 const scale = Dimensions.get('screen').scale;
 const { height, width } = Dimensions.get('window');
 
 export const NAVIGATION_BAR_HEIGHT = IS_ANDROID ? NativeModules.NavbarHeight.getNavigationBarHeight() / scale : 0;
-const PLATFORM_ADJUSTED_HEIGHT = IS_IOS ? height : getRealWindowHeight();
 
 const deviceUtils = (function () {
   const iPhone15ProHeight = 852,
@@ -21,7 +20,7 @@ const deviceUtils = (function () {
 
   return {
     dimensions: {
-      height: PLATFORM_ADJUSTED_HEIGHT,
+      height: initialWindowMetrics?.frame.height ?? height,
       width,
     },
     hasClipboardProtection: isIOS14 || isAndroid12,
