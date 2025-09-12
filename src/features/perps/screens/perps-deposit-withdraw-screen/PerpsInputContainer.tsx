@@ -113,10 +113,10 @@ export const styles = StyleSheet.create({
   },
   staticInputStyles: {
     borderCurve: 'continuous',
-    borderRadius: 30,
-    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
+    borderRadius: 40,
+    borderWidth: THICK_BORDER_WIDTH,
     overflow: 'hidden',
-    padding: INPUT_PADDING,
+    padding: 20,
     width: BASE_INPUT_WIDTH,
   },
 });

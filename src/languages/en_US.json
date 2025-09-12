@@ -1551,7 +1551,11 @@
         "receive": "Receive",
         "slider_label": "Depositing",
         "confirm_button_text": "Hold to Deposit",
-        "confirm_button_loading_text": "Depositing..."
+        "confirm_button_loading_text": "Depositing...",
+        "confirm_button_zero_text": "Enter Amount",
+        "confirm_button_over_balance_text": "Insufficient Funds",
+        "confirm_button_error_text": "Quote Error",
+        "quote_error": "􀇿 No quote available"
       },
       "withdraw": {
         "title": "Withdraw",
