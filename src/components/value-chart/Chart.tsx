@@ -38,7 +38,7 @@ const CHART_TOP_PADDING = 20;
 
 type ChartProps = ({ asset: ExpandedSheetAsset; hyperliquidSymbol?: never } | { asset?: never; hyperliquidSymbol: string }) & {
   backgroundColor: string;
-  accentColors: AssetAccentColors;
+  accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'>;
   hideChartTypeToggle?: boolean;
 };
 
@@ -165,7 +165,7 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
           >
             <LineChart
               asset={asset}
-              backgroundColor={accentColors.background}
+              backgroundColor={backgroundColor}
               chartGestureUnixTimestamp={chartGestureUnixTimestamp}
               height={LINE_CHART_HEIGHT - CHART_TOP_PADDING - CHART_BOTTOM_PADDING}
               isChartGestureActive={isChartGestureActive}

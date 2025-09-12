@@ -224,7 +224,8 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
     <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
       <BackButton
         onPress={() => {
-          Navigation.handleAction(Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
+          // TODO: This navigates back to the root screen of the stack no matter the previous screen, but that might be what we want?
+          Navigation.goBack();
         }}
         backgroundColor={button.backgroundColor}
         borderColor={button.borderColor}
@@ -298,8 +299,9 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           {(activeRoute === Routes.PERPS_SEARCH_SCREEN || activeRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN) && (
             <PerpsSearchScreenFooter />
           )}
-          {activeRoute === Routes.PERPS_ACCOUNT_SCREEN && <PerpsAccountScreenFooter />}
-          {activeRoute === Routes.PERPS_DETAIL_SCREEN && <PerpsDetailScreenFooter />}
+          {(activeRoute === Routes.PERPS_ACCOUNT_SCREEN ||
+            activeRoute === Routes.PERPS_DETAIL_SCREEN ||
+            activeRoute === Routes.CLOSE_POSITION_BOTTOM_SHEET) && <PerpsAccountScreenFooter />}
           {(activeRoute === Routes.PERPS_NEW_POSITION_SCREEN || activeRoute === Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET) && (
             <PerpsNewPositionScreenFooter />
           )}

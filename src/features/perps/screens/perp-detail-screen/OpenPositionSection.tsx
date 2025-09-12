@@ -2,7 +2,7 @@ import { memo, useMemo, Fragment } from 'react';
 import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { Box, Text, TextShadow, AnimatedText, Separator } from '@/design-system';
-import { abs, greaterThan, isEqual } from '@/helpers/utilities';
+import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';
 import { toFixedWorklet, getPercentageDifferenceWorklet } from '@/safe-math/SafeMath';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -14,7 +14,7 @@ import { getHyperliquidTokenId } from '@/features/perps/utils';
 export const PositionValueCard = memo(function PositionValueCard({ position }: { position: PerpsPosition }) {
   const { accentColors } = usePerpsAccentColorContext();
 
-  const { unrealizedPnl, unrealizedPnlPercent, value } = position;
+  const { unrealizedPnl, equity, returnOnEquity } = position;
   const isPositivePnl = greaterThan(unrealizedPnl, 0);
   const isNeutralPnl = isEqual(unrealizedPnl, 0);
   const textColor = isPositivePnl ? 'green' : isNeutralPnl ? 'labelTertiary' : 'red';
@@ -22,10 +22,10 @@ export const PositionValueCard = memo(function PositionValueCard({ position }: {
   const formattedValues = useMemo(() => {
     return {
       unrealizedPnl: formatCurrency(abs(unrealizedPnl)),
-      unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
-      equity: formatCurrency(value),
+      returnOnEquity: `${toFixedWorklet(multiply(abs(returnOnEquity), 100), 2)}%`,
+      equity: formatCurrency(equity),
     };
-  }, [unrealizedPnl, unrealizedPnlPercent, value]);
+  }, [unrealizedPnl, equity, returnOnEquity]);
 
   return (
     <Box
@@ -48,7 +48,7 @@ export const PositionValueCard = memo(function PositionValueCard({ position }: {
           </TextShadow>
           <TextShadow blur={8} shadowOpacity={0.2}>
             <Text size="17pt" weight="heavy" color={textColor}>
-              {formattedValues.unrealizedPnlPercent}
+              {formattedValues.returnOnEquity}
             </Text>
           </TextShadow>
         </Box>
@@ -102,8 +102,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
     },
     {
       title: 'Funding',
-      // TODO (kane): This value is negative when you are paid for funding, opposite of what we want to display
-      value: formatCurrency(position.funding),
+      value: isPositive(position.funding) ? `-${formatCurrency(position.funding)}` : `+${formatCurrency(position.funding)}`,
     },
   ];
 

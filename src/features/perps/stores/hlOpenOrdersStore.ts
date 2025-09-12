@@ -64,8 +64,6 @@ async function fetchHlOpenOrders({ address }: HlOpenOrdersParams): Promise<Fetch
     {} as Record<string, HlOpenOrder[]>
   );
 
-  console.log('ordersBySymbol', JSON.stringify(ordersBySymbol, null, 2));
-
   return {
     ordersBySymbol,
   };

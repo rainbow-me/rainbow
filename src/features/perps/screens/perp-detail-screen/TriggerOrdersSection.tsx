@@ -56,8 +56,6 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
   const orders = useHlOpenOrdersStore(data => data.getData()?.ordersBySymbol[symbol] ?? []);
   const triggerOrders = orders.filter(order => order.triggerCondition !== null);
 
-  console.log('triggerOrders', JSON.stringify(triggerOrders, null, 2));
-
   return (
     <Animated.View layout={LinearTransition.springify()}>
       <Box gap={24}>
@@ -69,11 +67,13 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
             {'Trigger Orders'}
           </Text>
         </Inline>
-        <Box gap={12}>
-          {triggerOrders.map(order => (
-            <ExistingTriggerOrderCard key={order.id} order={order} />
-          ))}
-        </Box>
+        {triggerOrders.length > 0 && (
+          <Box gap={12}>
+            {triggerOrders.map(order => (
+              <ExistingTriggerOrderCard key={order.id} order={order} />
+            ))}
+          </Box>
+        )}
         <Box gap={12}>
           <AddTriggerOrderButton
             symbol={symbol}
