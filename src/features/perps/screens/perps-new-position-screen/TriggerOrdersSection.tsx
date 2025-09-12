@@ -20,7 +20,7 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
       Navigation.handleAction(Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET, {
         triggerOrderType,
         // TODO (kane): fix
-        market: market!,
+        symbol: market!.symbol,
       });
     },
     [market]

@@ -35,11 +35,11 @@ function calculateDecimalsForSignificantFigures(input: string): number {
 export function formatOrderPrice({
   price,
   sizeDecimals,
-  marketType,
+  marketType = 'perp',
 }: {
   price: string;
   sizeDecimals: number;
-  marketType: 'perp' | 'spot';
+  marketType?: 'perp' | 'spot';
 }): string {
   const input = (price ?? '').toString().trim();
 

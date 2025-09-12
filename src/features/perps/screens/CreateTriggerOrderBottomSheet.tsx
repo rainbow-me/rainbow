@@ -26,6 +26,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 
 const PANEL_HEIGHT = 360;
 
@@ -265,10 +266,11 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
 
 export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBottomSheet() {
   const {
-    params: { triggerOrderType, market },
+    params: { triggerOrderType, symbol },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET>>();
-
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');
+
+  const market = useHyperliquidMarketsStore(state => state.getMarket(symbol));
 
   return (
     <KeyboardProvider>
@@ -277,7 +279,8 @@ export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBot
           <KeyboardStickyView>
             <Panel height={PANEL_HEIGHT} innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
               <SheetHandleFixedToTop color={opacityWorklet('#F5F8FF', 0.3)} showBlur={true} top={14} />
-              <PanelContent triggerOrderType={triggerOrderType} market={market} />
+              {/* The market should always be defined */}
+              {market && <PanelContent triggerOrderType={triggerOrderType} market={market} />}
             </Panel>
           </KeyboardStickyView>
         </PanelSheet>

@@ -1,6 +1,6 @@
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { hyperliquidMarketStoreActions } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
+import { OrderSide, PerpMarket, PerpPositionSide } from '@/features/perps/types';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
@@ -37,4 +37,8 @@ export function navigateToPerpDetailScreen(symbol: string) {
       market,
     });
   }
+}
+
+export function convertSide(side: 'B' | 'A'): OrderSide {
+  return side === 'B' ? 'buy' : 'sell';
 }

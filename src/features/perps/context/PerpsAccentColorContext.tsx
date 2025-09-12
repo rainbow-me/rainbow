@@ -65,7 +65,7 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
       opacity3: opacityWorklet(primary, 0.03),
       opacity2: opacityWorklet(primary, 0.02),
       opacity1: opacityWorklet(primary, 0.01),
-      surfacePrimary: PERPS_COLORS.surfacePrimary,
+      surfacePrimary: '#171E20',
     };
   }, [isDarkMode]);
 

@@ -5,7 +5,8 @@ import { getHyperliquidAccountClient } from '../services';
 import { RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import * as hl from '@nktkas/hyperliquid';
-import { OrderSide, TriggerOrderType, HlTrade } from '../types';
+import { TriggerOrderType, HlTrade } from '../types';
+import { convertSide } from '../utils';
 
 type HlTradesParams = {
   address: Address | string | null;
@@ -15,10 +16,6 @@ type FetchHlTradesResponse = {
   trades: HlTrade[];
   tradesBySymbol: Record<string, HlTrade[]>;
 };
-
-function convertSide(side: 'B' | 'A'): OrderSide {
-  return side === 'B' ? 'buy' : 'sell';
-}
 
 function getTradeExecutionDescription(trade: Omit<HlTrade, 'description'>): string {
   const isLong = Number(trade.fillStartSize) > 0;

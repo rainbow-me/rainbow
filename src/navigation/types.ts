@@ -633,7 +633,7 @@ export type RootStackParamList = {
   [Routes.MODAL_SCREEN]: ModalParams;
   [Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET]: {
     triggerOrderType: TriggerOrderType;
-    market: PerpMarket;
+    symbol: string;
   };
   [Routes.CLOSE_POSITION_BOTTOM_SHEET]: {
     symbol: string;

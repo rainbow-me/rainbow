@@ -4,15 +4,23 @@ import React, { memo } from 'react';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 
 type TriggerOrderCardProps = {
   type: TriggerOrderType;
   price: string;
   percentage: string;
   onPressDelete: () => void;
+  isCancelling?: boolean;
 };
 
-export const TriggerOrderCard = memo(function TriggerOrderCard({ type, price, percentage, onPressDelete }: TriggerOrderCardProps) {
+export const TriggerOrderCard = memo(function TriggerOrderCard({
+  type,
+  price,
+  percentage,
+  onPressDelete,
+  isCancelling,
+}: TriggerOrderCardProps) {
   const { accentColors } = usePerpsAccentColorContext();
   const isTakeProfit = type === TriggerOrderType.TAKE_PROFIT;
 
@@ -51,11 +59,15 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({ type, price, pe
           </Box>
         </Box>
       </Box>
-      <ButtonPressAnimation onPress={onPressDelete}>
-        <TextIcon color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy">
-          {'􀈒'}
-        </TextIcon>
-      </ButtonPressAnimation>
+      {isCancelling ? (
+        <AnimatedSpinner color={accentColors.opacity100} isLoading={isCancelling} scaleInFrom={1} size={24} />
+      ) : (
+        <ButtonPressAnimation onPress={onPressDelete}>
+          <TextIcon color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy">
+            {'􀈒'}
+          </TextIcon>
+        </ButtonPressAnimation>
+      )}
     </Box>
   );
 });

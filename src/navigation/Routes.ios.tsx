@@ -126,7 +126,7 @@ import { PerpsNewPositionSearchScreen, PerpsSearchScreen } from '@/features/perp
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
-import { PerpsDetailScreen } from '@/features/perps/screens/PerpDetailScreen';
+import { PerpsDetailScreen } from '@/features/perps/screens/perp-detail-screen/PerpDetailScreen';
 import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
 import { useBackgroundColor, Box } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

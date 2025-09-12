@@ -1,0 +1,92 @@
+import React, { memo, useCallback, useState } from 'react';
+import { Box, Inline, Text, TextIcon } from '@/design-system';
+import { HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
+import { TriggerOrderType } from '@/features/perps/types';
+import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
+import { isZero } from '@/helpers/utilities';
+import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { logger, RainbowError } from '@/logger';
+import { Alert } from 'react-native';
+import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import { toFixedWorklet } from '@/safe-math/SafeMath';
+
+type TriggerOrdersSectionProps = {
+  symbol: string;
+};
+
+const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order }: { order: HlOpenOrder }) {
+  const position = useHyperliquidAccountStore(state => state.getPosition(order.symbol));
+  const [isCancelling, setIsCancelling] = useState(false);
+  const isFullOrder = isZero(order.size);
+  const percentage = isFullOrder
+    ? '100%'
+    : `${toFixedWorklet((Number(order.size) / (position?.size ? Math.abs(Number(position.size)) : Number(order.originalSize))) * 100, 2)}%`;
+  const isTakeProfit = order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit';
+  const type = isTakeProfit ? TriggerOrderType.TAKE_PROFIT : TriggerOrderType.STOP_LOSS;
+
+  const onPressDelete = useCallback(async () => {
+    setIsCancelling(true);
+    try {
+      await hyperliquidAccountStoreActions.cancelOrder({ symbol: order.symbol, orderId: order.id });
+    } catch (e) {
+      Alert.alert('Error', 'Failed to cancel order');
+      logger.error(new RainbowError('[ExistingTriggerOrderCard]: error cancelling order', e));
+    } finally {
+      setIsCancelling(false);
+    }
+  }, [order.symbol, order.id]);
+
+  return (
+    <Animated.View entering={FadeIn.duration(200).springify()} exiting={FadeOut.duration(150)}>
+      <TriggerOrderCard
+        type={type}
+        price={order.triggerPrice}
+        percentage={percentage}
+        onPressDelete={onPressDelete}
+        isCancelling={isCancelling}
+      />
+    </Animated.View>
+  );
+});
+
+export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol }: TriggerOrdersSectionProps) {
+  const { accentColors } = usePerpsAccentColorContext();
+  const orders = useHlOpenOrdersStore(data => data.getData()?.ordersBySymbol[symbol] ?? []);
+  const triggerOrders = orders.filter(order => order.triggerCondition !== null);
+
+  console.log('triggerOrders', JSON.stringify(triggerOrders, null, 2));
+
+  return (
+    <Animated.View layout={LinearTransition.springify()}>
+      <Box gap={24}>
+        <Inline space="10px" alignVertical="center">
+          <TextIcon size="17pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+            {'􁣃'}
+          </TextIcon>
+          <Text size="20pt" weight="heavy" color="label">
+            {'Trigger Orders'}
+          </Text>
+        </Inline>
+        <Box gap={12}>
+          {triggerOrders.map(order => (
+            <ExistingTriggerOrderCard key={order.id} order={order} />
+          ))}
+        </Box>
+        <Box gap={12}>
+          <AddTriggerOrderButton
+            symbol={symbol}
+            type={TriggerOrderType.STOP_LOSS}
+            disabled={triggerOrders.some(order => order.orderType === 'Stop Market' || order.orderType === 'Stop Limit')}
+          />
+          <AddTriggerOrderButton
+            symbol={symbol}
+            type={TriggerOrderType.TAKE_PROFIT}
+            disabled={triggerOrders.some(order => order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit')}
+          />
+        </Box>
+      </Box>
+    </Animated.View>
+  );
+});

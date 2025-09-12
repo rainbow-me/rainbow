@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { AnimatedText, Box, Text } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { PERPS_COLORS, SLIDER_WIDTH } from '@/features/perps/constants';
+import { INPUT_CARD_HEIGHT, PERPS_COLORS, SLIDER_WIDTH } from '@/features/perps/constants';
 import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Slider, SliderColors } from '@/features/perps/components/Slider';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -81,6 +81,7 @@ export const PositionPercentageSlider = memo(function PositionPercentageSlider({
       padding={'20px'}
       alignItems="center"
       gap={20}
+      height={INPUT_CARD_HEIGHT}
     >
       <Box width="full" flexDirection="row" alignItems="center">
         <Box gap={12}>

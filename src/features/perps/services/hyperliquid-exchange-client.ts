@@ -1,6 +1,6 @@
 import { multiply } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
-import { OrderParams } from '@nktkas/hyperliquid/script/src/types/mod';
+import { CancelSuccessResponse, OrderParams } from '@nktkas/hyperliquid/script/src/types/mod';
 import { Address, Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS } from '../constants';
 import { PerpPositionSide, TriggerOrder } from '../types';
@@ -105,7 +105,6 @@ export class HyperliquidExchangeClient {
       orders.push(hlTriggerOrder);
     }
 
-    console.log('orders', JSON.stringify(orders, null, 2));
     return await this.exchangeClient.order({
       orders,
       // You might think that grouping: positionTpsl would be for submitting a trigger order with the base order, but it is not, that will result in an error
@@ -140,7 +139,6 @@ export class HyperliquidExchangeClient {
       reduceOnly: true,
     });
 
-    console.log('closeOrder', JSON.stringify(closeOrder, null, 2));
     const result = await this.exchangeClient.order({
       orders: [closeOrder],
       grouping: 'na',
@@ -149,5 +147,11 @@ export class HyperliquidExchangeClient {
     });
 
     return result.response.data.statuses[0];
+  }
+
+  async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<CancelSuccessResponse> {
+    return await this.exchangeClient.cancel({
+      cancels: [{ a: assetId, o: orderId }],
+    });
   }
 }

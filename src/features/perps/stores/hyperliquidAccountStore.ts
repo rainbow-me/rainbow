@@ -10,6 +10,7 @@ import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { OrderResponse } from '@nktkas/hyperliquid';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 
 type HyperliquidAccountStoreState = {
   positions: Record<string, PerpsPosition>;
@@ -36,6 +37,7 @@ type HyperliquidAccountStoreActions = {
   }) => Promise<OrderResponse>;
   closeIsolatedMarginPosition: ({ symbol, price, size }: { symbol: string; price: string; size: string }) => Promise<void>;
   checkIfHyperliquidAccountExists: () => Promise<boolean>;
+  cancelOrder: ({ symbol, orderId }: { symbol: string; orderId: number }) => Promise<void>;
   // derivative state
   getTotalPositionsInfo: () => {
     equity: string;
@@ -133,6 +135,17 @@ export const useHyperliquidAccountStore = createQueryStore<
       await exchangeClient.closeIsolatedMarginPosition({ assetId: market.id, price, sizeDecimals: market.decimals, size });
       // Refetch positions
       await get().fetch(undefined, { force: true });
+    },
+    cancelOrder: async ({ symbol, orderId }: { symbol: string; orderId: number }) => {
+      const address = useWalletsStore.getState().accountAddress;
+      const market = useHyperliquidMarketsStore.getState().markets[symbol];
+      if (!market) {
+        throw new RainbowError('[HyperliquidAccountStore] Market not found');
+      }
+      const exchangeClient = await getHyperliquidExchangeClient(address);
+      await exchangeClient.cancelOrder({ assetId: market.id, orderId });
+      // Refetch open orders
+      await useHlOpenOrdersStore.getState().fetch(undefined, { force: true });
     },
     checkIfHyperliquidAccountExists: async () => {
       // TODO (kane): save to state, address -> exists and don't check if true

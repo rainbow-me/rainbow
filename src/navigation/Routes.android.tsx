@@ -113,7 +113,7 @@ import { PerpsNavigatorFooter } from '@/features/perps/components/PerpsNavigator
 import { PerpsNewPositionSearchScreen, PerpsSearchScreen } from '@/features/perps/screens/PerpsSearchScreen';
 import { PerpsAccountScreen } from '@/features/perps/screens/perps-account-screen/PerpsAccountScreen';
 import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
-import { PerpsDetailScreen } from '@/features/perps/screens/PerpDetailScreen';
+import { PerpsDetailScreen } from '@/features/perps/screens/perp-detail-screen/PerpDetailScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
