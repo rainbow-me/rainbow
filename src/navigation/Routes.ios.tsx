@@ -164,7 +164,7 @@ function PerpsAccountNavigator() {
           <PerpsNavbar />
 
           <PerpsStack.Navigator
-            screenOptions={{ lazy: true, swipeEnabled: false }}
+            screenOptions={{ lazy: true, lazyPreloadDistance: 1, swipeEnabled: false }}
             tabBar={() => null}
             initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}
           >
