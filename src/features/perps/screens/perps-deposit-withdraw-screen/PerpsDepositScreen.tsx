@@ -334,7 +334,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
 
   // Formatted values
   const formattedInputAmount = useDerivedValue(() => {
-    const value = fields.value.inputAmount?.value || '0';
+    const value = fields.value.inputAmount.value;
     if (value === '0' || value === '') return '0';
     return addCommasToNumber(value, '0');
   });
@@ -406,7 +406,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   );
 
   useAnimatedReaction(
-    () => fields.value.inputAmount?.value,
+    () => fields.value.inputAmount.value,
     () => {
       runOnJS(fetchQuote)();
     }
@@ -543,34 +543,31 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     } as Record<string, string>;
   });
 
-  // Sync these JS states with input amount reanimated value.
-  const [isInputZero, setIsInputZero] = useState(true);
-  const [isInputOverBalance, setIsInputOverBalance] = useState(false);
+  // Sync this JS state with input amount reanimated value.
+  const [inputAmountError, setInputAmountError] = useState<'overBalance' | 'zero' | null>(null);
   useAnimatedReaction(
-    () => formattedInputAmount.value,
-    (inputAmount, previousInputAmount) => {
-      const inputAmountNumber = Number(inputAmount || '0');
-      const previousInputAmountNumber = Number(previousInputAmount || '0');
+    () => fields.value.inputAmount.value,
+    inputAmount => {
       const balance = Number(selectedAsset?.balance?.amount || '0');
+      const getInputAmountError = () => {
+        const amountNumber = Number(inputAmount || '0');
+        if (amountNumber === 0) return 'zero';
+        if (amountNumber > balance) return 'overBalance';
+        return null;
+      };
 
-      // Make sure to check previous values to avoid calling into JS too much.
-      if (previousInputAmountNumber !== 0 && inputAmountNumber === 0) {
-        runOnJS(setIsInputZero)(true);
-      } else if (previousInputAmountNumber === 0 && inputAmountNumber !== 0) {
-        runOnJS(setIsInputZero)(false);
-      } else if (previousInputAmountNumber <= balance && inputAmountNumber > balance) {
-        runOnJS(setIsInputOverBalance)(true);
-      } else if (previousInputAmountNumber > balance && inputAmountNumber <= balance) {
-        runOnJS(setIsInputOverBalance)(false);
+      const newError = getInputAmountError();
+      if (newError !== inputAmountError) {
+        runOnJS(setInputAmountError)(newError);
       }
     }
   );
 
   const getConfirmButtonLabel = () => {
-    if (isInputZero) {
+    if (inputAmountError === 'zero') {
       return i18n.t(i18n.l.perps.deposit.confirm_button_zero_text);
     }
-    if (isInputOverBalance) {
+    if (inputAmountError === 'overBalance') {
       return i18n.t(i18n.l.perps.deposit.confirm_button_over_balance_text);
     }
     if (hasQuoteError) {
@@ -642,8 +639,8 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
           <PerpsSwapButton
             label={getConfirmButtonLabel()}
             onLongPress={handleSwap}
-            disabled={loading || quote == null || hasQuoteError || isInputZero || isInputOverBalance}
-            disabledOpacity={isInputZero || isInputOverBalance || hasQuoteError ? 1 : undefined}
+            disabled={loading || quote == null || hasQuoteError || inputAmountError != null}
+            disabledOpacity={inputAmountError != null || hasQuoteError ? 1 : undefined}
           />
         </Box>
       </Box>

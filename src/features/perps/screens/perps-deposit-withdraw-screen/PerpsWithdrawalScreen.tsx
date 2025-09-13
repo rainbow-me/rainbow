@@ -29,7 +29,7 @@ import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import Animated, { SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
 import { logger, RainbowError } from '@/logger';
@@ -131,7 +131,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
 
   // Formatted values
   const formattedInputAmount = useDerivedValue(() => {
-    const value = fields.value.inputAmount?.value || '0';
+    const value = fields.value.inputAmount.value;
     if (value === '0' || value === '') return '$0';
     const formatted = addCommasToNumber(value, '0');
     return `$${formatted}`;
@@ -191,6 +191,38 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
     } as Record<string, string>;
   });
 
+  // Sync this JS state with input amount reanimated value.
+  const [inputAmountError, setInputAmountError] = useState<'overBalance' | 'zero' | null>(null);
+  useAnimatedReaction(
+    () => fields.value.inputAmount.value,
+    inputAmount => {
+      const getInputAmountError = () => {
+        const amountNumber = Number(inputAmount || '0');
+        if (amountNumber === 0) return 'zero';
+        if (amountNumber > Number(balance)) return 'overBalance';
+        return null;
+      };
+
+      const newError = getInputAmountError();
+      if (newError !== inputAmountError) {
+        runOnJS(setInputAmountError)(newError);
+      }
+    }
+  );
+
+  const getConfirmButtonLabel = () => {
+    if (inputAmountError === 'zero') {
+      return i18n.t(i18n.l.perps.withdraw.confirm_button_zero_text);
+    }
+    if (inputAmountError === 'overBalance') {
+      return i18n.t(i18n.l.perps.withdraw.confirm_button_over_balance_text);
+    }
+    if (loading) {
+      return i18n.t(i18n.l.perps.withdraw.confirm_button_loading_text);
+    }
+    return i18n.t(i18n.l.perps.withdraw.confirm_button_text);
+  };
+
   return (
     <Box as={Page} height={DEVICE_HEIGHT} testID="perps-withdraw-screen" width="full">
       <SheetHandle extraPaddingTop={6} />
@@ -212,7 +244,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
           <PerpsTextSkeleton width={150} height={15} />
         ) : (
           <Text size="15pt" weight="bold" color="labelQuaternary">
-            {i18n.t(i18n.l.perps.withdraw.available_balance, { balance: formattedBalance })}:
+            {i18n.t(i18n.l.perps.withdraw.available_balance, { balance: formattedBalance })}
           </Text>
         )}
       </View>
@@ -253,9 +285,10 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
         </Box>
         <Box flexGrow={1}>
           <PerpsSwapButton
-            label={loading ? i18n.t(i18n.l.perps.withdraw.confirm_button_loading_text) : i18n.t(i18n.l.perps.withdraw.confirm_button_text)}
+            label={getConfirmButtonLabel()}
             onLongPress={handleSwap}
-            disabled={loading || balanceLoading}
+            disabled={loading || balanceLoading || inputAmountError != null}
+            disabledOpacity={inputAmountError != null ? 1 : undefined}
           />
         </Box>
       </Box>

@@ -24,6 +24,8 @@ import { SCRUBBER_WIDTH, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/con
 const MAX_PERCENTAGE = 0.995;
 const MIN_PERCENTAGE = 0.005;
 
+export const SLIDER_DEFAULT_WIDTH = 300;
+
 export interface SliderColors {
   activeLeft: string;
   inactiveLeft: string;
@@ -53,7 +55,7 @@ export const Slider: React.FC<SliderProps> = ({
   colors: colorsProp,
   height = 10,
   expandedHeight = 16,
-  width = 300,
+  width = SLIDER_DEFAULT_WIDTH,
   snapPoints = [0, 0.25, 0.5, 0.75, 1],
   onPercentageChange,
   onPercentageUpdate,
