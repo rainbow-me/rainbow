@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils } from '../../utils';
@@ -13,12 +13,12 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
-const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
+const isSmallPhone = deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
-const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
+const selectedHeight = isTinyPhone ? 50 : isSmallPhone ? 64 : 70;
 
 const containerStyles = {
-  paddingTop: android ? 9 : 19,
+  paddingTop: 19,
 };
 
 const NativeAmountBubble = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
@@ -36,7 +36,7 @@ const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   weight: 'bold',
-}))(android ? padding.object(0, 10) : padding.object(4.5, 10, 6.5));
+}))(padding.object(4.5, 10, 6.5));
 
 const BottomRow = ({ balance, native, nativeCurrencySymbol, selected, showNativeValue }) => {
   const { colors } = useTheme();
@@ -49,7 +49,6 @@ const BottomRow = ({ balance, native, nativeCurrencySymbol, selected, showNative
       numberOfLines={1}
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
-      style={sx.bottomRow}
     >
       {showNativeValue
         ? `${fiatValue} available`
@@ -68,10 +67,6 @@ const TopRow = ({ item, name, selected }) => {
     <CoinName
       color={selected ? colorForAsset || colors.dark : colors.dark}
       size={selected ? 'large' : 'lmedium'}
-      style={{
-        marginBottom: android && selected ? -3 : 0,
-        marginTop: android && selected ? 3 : 0,
-      }}
       weight={selected ? 'bold' : 'regular'}
     >
       {name}
@@ -134,22 +129,13 @@ const SendCoinRow = ({
           children
         ) : (
           <NativeAmountBubble>
-            <NativeAmountBubbleText style={sx.nativeAmountBubbleText}>{fiatValueFormatted}</NativeAmountBubbleText>
+            <NativeAmountBubbleText>{fiatValueFormatted}</NativeAmountBubbleText>
           </NativeAmountBubble>
         )}
       </CoinRow>
     </Wrapper>
   );
 };
-
-const sx = StyleSheet.create({
-  nativeAmountBubbleText: {
-    marginTop: android ? -2.5 : 0,
-  },
-  bottomRow: {
-    marginTop: android ? -6 : 0,
-  },
-});
 
 SendCoinRow.displayName = 'SendCoinRow';
 SendCoinRow.selectedHeight = selectedHeight;
