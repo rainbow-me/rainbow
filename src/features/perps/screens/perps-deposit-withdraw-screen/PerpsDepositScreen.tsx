@@ -543,23 +543,19 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     } as Record<string, string>;
   });
 
-  // Sync this JS state with input amount reanimated value.
+  const inputAmountErrorShared = useDerivedValue(() => {
+    const balance = Number(selectedAsset?.balance?.amount || '0');
+    const amountNumber = Number(fields.value.inputAmount.value || '0');
+    if (amountNumber === 0) return 'zero';
+    if (amountNumber > balance) return 'overBalance';
+    return null;
+  });
+  // Sync this JS state with input amount error reanimated value.
   const [inputAmountError, setInputAmountError] = useState<'overBalance' | 'zero' | null>(null);
   useAnimatedReaction(
-    () => fields.value.inputAmount.value,
-    inputAmount => {
-      const balance = Number(selectedAsset?.balance?.amount || '0');
-      const getInputAmountError = () => {
-        const amountNumber = Number(inputAmount || '0');
-        if (amountNumber === 0) return 'zero';
-        if (amountNumber > balance) return 'overBalance';
-        return null;
-      };
-
-      const newError = getInputAmountError();
-      if (newError !== inputAmountError) {
-        runOnJS(setInputAmountError)(newError);
-      }
+    () => inputAmountErrorShared.value,
+    newError => {
+      runOnJS(setInputAmountError)(newError);
     }
   );
 
