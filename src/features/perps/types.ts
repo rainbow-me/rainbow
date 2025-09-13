@@ -55,12 +55,9 @@ export type PerpsPosition = {
   value: string;
   size: string;
   unrealizedPnl: string;
-  unrealizedPnlPercent: string;
   funding: string;
   returnOnEquity: string;
   marginUsed: string;
-  takeProfit: Order | null;
-  stopLoss: Order | null;
 };
 
 export type PerpAccount = {

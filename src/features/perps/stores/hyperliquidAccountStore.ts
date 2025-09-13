@@ -64,12 +64,12 @@ async function fetchHyperliquidAccount({ address }: HyperliquidAccountParams): P
 
   const accountClient = getHyperliquidAccountClient(address);
 
-  const account = await accountClient.getPerpAccount();
+  const { positions, balance, value } = await accountClient.getPerpAccount();
 
   return {
-    positions: account.positions,
-    balance: account.balance,
-    value: account.value,
+    positions,
+    balance,
+    value,
   };
 }
 

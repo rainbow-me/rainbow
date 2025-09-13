@@ -1,7 +1,7 @@
 import { greaterThan } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
-import { PerpPositionSide, PerpAccount, PerpsPosition, TriggerOrderType } from '../types';
+import { PerpPositionSide, PerpAccount, PerpsPosition } from '../types';
 import { sumWorklet } from '@/safe-math/SafeMath';
 
 const transport = new hl.HttpTransport();
@@ -36,76 +36,44 @@ export class HyperliquidAccountClient {
   }
 
   async getPerpAccount(): Promise<PerpAccount> {
-    const [perpState, openOrders] = await Promise.all([
-      infoClient.clearinghouseState({
-        user: this.userAddress,
-      }),
-      infoClient.frontendOpenOrders({ user: this.userAddress }),
-    ]);
-
-    const positions: Record<string, PerpsPosition> = {};
-
-    // TODO (kane): remove this in favor of using the dedicated open orders store
-    perpState.assetPositions.forEach(({ position }) => {
-      const tpslOrders = openOrders.filter(order => order.coin === position.coin && order.isPositionTpsl === true);
-
-      const takeProfitOrders = tpslOrders.filter(
-        order =>
-          order.triggerCondition === TriggerOrderType.TAKE_PROFIT ||
-          order.orderType === 'Take Profit Market' ||
-          order.orderType === 'Take Profit Limit'
-      );
-      const stopLossOrders = tpslOrders.filter(
-        order =>
-          order.triggerCondition === TriggerOrderType.STOP_LOSS || order.orderType === 'Stop Market' || order.orderType === 'Stop Limit'
-      );
-
-      // TODO (kane): it's possible to have multiple tp/sl orders, need to figure out how we want to handle this in the UI
-      const takeProfit =
-        takeProfitOrders.length > 0
-          ? {
-              // TODO (kane): transform needed fields into our own type
-              orders: takeProfitOrders,
-              price: takeProfitOrders[0].triggerPx,
-            }
-          : null;
-      const stopLoss =
-        stopLossOrders.length > 0
-          ? {
-              // TODO: transform needed fields into our own type
-              orders: stopLossOrders,
-              price: stopLossOrders[0].triggerPx,
-            }
-          : null;
-
-      const equity =
-        position.leverage.type === 'isolated' ? sumWorklet(position.marginUsed, position.unrealizedPnl) : position.unrealizedPnl;
-
-      positions[position.coin] = {
-        symbol: position.coin,
-        side: greaterThan(position.szi, 0) ? PerpPositionSide.LONG : PerpPositionSide.SHORT,
-        leverage: position.leverage.value,
-        liquidationPrice: position.liquidationPx,
-        entryPrice: position.entryPx,
-        value: position.positionValue,
-        unrealizedPnl: position.unrealizedPnl,
-        returnOnEquity: position.returnOnEquity,
-        marginUsed: position.marginUsed,
-        size: position.szi,
-        equity,
-        // TODO (kane): this calculation is not correct
-        unrealizedPnlPercent: position.returnOnEquity,
-        funding: position.cumFunding.sinceOpen,
-        takeProfit,
-        stopLoss,
-      };
+    const perpState = await infoClient.clearinghouseState({
+      user: this.userAddress,
     });
 
-    // TODO (kane): add open orders
+    const positions = perpState.assetPositions
+      .map(({ position }) => {
+        const equity =
+          position.leverage.type === 'isolated' ? sumWorklet(position.marginUsed, position.unrealizedPnl) : position.unrealizedPnl;
+
+        return {
+          symbol: position.coin,
+          side: greaterThan(position.szi, 0) ? PerpPositionSide.LONG : PerpPositionSide.SHORT,
+          leverage: position.leverage.value,
+          liquidationPrice: position.liquidationPx,
+          entryPrice: position.entryPx,
+          value: position.positionValue,
+          unrealizedPnl: position.unrealizedPnl,
+          returnOnEquity: position.returnOnEquity,
+          marginUsed: position.marginUsed,
+          size: position.szi,
+          equity,
+          funding: position.cumFunding.sinceOpen,
+        };
+      })
+      .sort((a, b) => Number(b.equity) - Number(a.equity));
+
+    const positionsBySymbol = positions.reduce(
+      (acc, position) => {
+        acc[position.symbol] = position;
+        return acc;
+      },
+      {} as Record<string, PerpsPosition>
+    );
+
     return {
       value: perpState.marginSummary.accountValue,
       balance: perpState.withdrawable,
-      positions,
+      positions: positionsBySymbol,
     };
   }
 
