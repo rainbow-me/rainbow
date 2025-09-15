@@ -44,6 +44,9 @@ function PanelContent({ symbol }: PanelContentProps) {
   const percentToClose = useSharedValue(1);
   const position = useHyperliquidAccountStore(state => state.getPosition(symbol));
   const navigation = useNavigation();
+  const isNegativePnl = position ? Number(position.unrealizedPnl) < 0 : false;
+  const pnlLabel = isNegativePnl ? 'Estimated Loss' : 'Estimated Profit';
+  const pnlColor = isNegativePnl ? 'red' : 'green';
 
   const liveTokenPrice = useLiveTokenValue({
     tokenId: getHyperliquidTokenId(symbol),
@@ -74,8 +77,8 @@ function PanelContent({ symbol }: PanelContentProps) {
 
   const projectedPnl = useDerivedValue(() => {
     if (!position) return '-';
-    return formatCurrency(mulWorklet(position.unrealizedPnl, percentToClose.value));
-  });
+    return `${isNegativePnl ? '-' : '+'}${formatCurrency(mulWorklet(position.unrealizedPnl, percentToClose.value))}`;
+  }, [position, percentToClose, isNegativePnl]);
 
   const closePosition = useCallback(async () => {
     if (!position) return;
@@ -122,9 +125,9 @@ function PanelContent({ symbol }: PanelContentProps) {
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full">
             <Text size="17pt" weight="medium" color={'labelSecondary'}>
-              {`Estimated PNL`}
+              {pnlLabel}
             </Text>
-            <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'}>
+            <AnimatedText size="17pt" weight="semibold" color={pnlColor}>
               {projectedPnl}
             </AnimatedText>
           </Box>
