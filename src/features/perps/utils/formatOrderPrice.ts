@@ -6,11 +6,7 @@ import {
   toFixedWorklet,
   trimTrailingZeros,
 } from '@/safe-math/SafeMath';
-
-// Logic defined here: https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
-const MAX_SIG_FIGS = 5;
-const MAX_DECIMALS_PERP = 6;
-const MAX_DECIMALS_SPOT = 8;
+import { MAX_SIG_FIGS, MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/features/perps/constants';
 
 function isInteger(rawBigInt: bigint, decimalPlaces: number): boolean {
   if (decimalPlaces <= 0) return true;
@@ -32,6 +28,7 @@ function calculateDecimalsForSignificantFigures(input: string): number {
   return firstSignificantPosition + MAX_SIG_FIGS - 1;
 }
 
+// Logic defined here: https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
 export function formatOrderPrice({
   price,
   sizeDecimals,

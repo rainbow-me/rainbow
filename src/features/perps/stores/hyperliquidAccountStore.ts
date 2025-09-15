@@ -175,7 +175,8 @@ export const useHyperliquidAccountStore = createQueryStore<
         unrealizedPnlPercent: totalPositionsEquity === '0' ? '0' : divide(totalPositionsPnl, totalPositionsEquity),
       };
     },
-  })
+  }),
+  { storageKey: 'hlAccount' }
 );
 
 export const hyperliquidAccountStoreActions = createStoreActions(useHyperliquidAccountStore);

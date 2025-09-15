@@ -27,38 +27,9 @@ import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomShe
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
 
 const PANEL_HEIGHT = 360;
-
-// TODO (kane): centralize this formatting
-function formatInput(text: string) {
-  'worklet';
-  const cleanedText = text.replace(/[^0-9.]/g, '');
-
-  if (!cleanedText) return '';
-
-  // Handle multiple decimals - keep only the first one
-  const parts = cleanedText.split('.');
-  let formattedText = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : cleanedText;
-
-  // Handle decimal point
-  if (formattedText.includes('.')) {
-    const [intPart, decPart] = formattedText.split('.');
-    // Allow empty integer part (will be displayed as "0.")
-    const cleanedInt = intPart === '' ? '0' : intPart.replace(/^0+/, '') || '0';
-    // Limit decimal places to 2
-    const truncatedDecPart = decPart.slice(0, 2);
-    formattedText = `${cleanedInt}.${truncatedDecPart}`;
-  } else {
-    // No decimal point - only strip leading zeros if there's more than one character
-    // This allows "0" to remain but "00" becomes "0", "05" becomes "5"
-    if (formattedText.length > 1) {
-      formattedText = formattedText.replace(/^0+/, '') || '0';
-    }
-  }
-
-  return formattedText;
-}
 
 function formatDisplay(value: string) {
   'worklet';
@@ -95,8 +66,9 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
   const isTakeProfit = triggerOrderType === TriggerOrderType.TAKE_PROFIT;
   const isLong = positionSide === PerpPositionSide.LONG;
   const shouldBeAbove = isLong ? isTakeProfit : !isTakeProfit;
-  const initialAmount = formatInput(formatDisplay(mulWorklet(market.price, shouldBeAbove ? 1.1 : 0.9)));
-  const inputValue = useSharedValue(initialAmount);
+  const formatInput = useCallback((text: string) => formatTriggerOrderInput(text, market.decimals), [market.decimals]);
+  const initialPrice = mulWorklet(market.price, shouldBeAbove ? 1.1 : 0.9);
+  const inputValue = useSharedValue(formatInput(initialPrice));
 
   const liveTokenPrice = useLiveTokenSharedValue({
     tokenId: getHyperliquidTokenId(market.symbol),

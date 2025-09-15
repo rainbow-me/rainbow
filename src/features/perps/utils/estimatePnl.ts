@@ -34,15 +34,11 @@ export function estimatePnl(params: {
   const priceDiff = subWorklet(exitPrice, entryPrice);
   const grossProfit = isLong ? mulWorklet(positionSize, priceDiff) : mulWorklet(positionSize, mulWorklet('-1', priceDiff));
 
-  console.log('grossProfit', grossProfit);
-
   // Fees are taken on both the entry and exit
   const feeBips = (isMakerOrder ? makerFeeBips : takerFeeBips) + RAINBOW_FEE_BIPS;
   const entryFee = calculateTradingFee({ size: positionSize, price: entryPrice, feeBips });
   const exitFee = calculateTradingFee({ size: positionSize, price: exitPrice, feeBips });
   const totalFees = sumWorklet(entryFee, exitFee);
-
-  console.log('totalFees', entryFee, exitFee);
 
   return subWorklet(grossProfit, totalFees);
 }

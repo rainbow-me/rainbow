@@ -59,3 +59,7 @@ export const USDC_COLORS = {
   primary: '#2775CA',
   fallback: '#FFFFFF',
 };
+
+export const MAX_SIG_FIGS = 5;
+export const MAX_DECIMALS_PERP = 6;
+export const MAX_DECIMALS_SPOT = 8;

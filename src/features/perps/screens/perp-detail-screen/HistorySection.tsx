@@ -5,7 +5,6 @@ import { tradeExecutionDescriptions, useHlTradesStore } from '@/features/perps/s
 import { Box, Separator, Text, TextShadow } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { format } from 'date-fns';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
@@ -22,7 +21,6 @@ const descriptionIcons = {
 };
 
 const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade }) {
-  console.log('trade', JSON.stringify(trade, null, 2));
   const pnlValue = Number(trade.pnl);
   const isPositivePnl = pnlValue >= 0;
   const pnlColor = isPositivePnl ? 'green' : 'red';
