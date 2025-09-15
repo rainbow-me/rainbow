@@ -141,6 +141,8 @@ export class HyperliquidExchangeClient {
       reduceOnly: true,
     });
 
+    await this.ensureApprovedBuilderFee();
+
     const result = await this.exchangeClient.order({
       orders: [closeOrder],
       grouping: 'na',
