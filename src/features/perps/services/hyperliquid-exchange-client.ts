@@ -65,12 +65,15 @@ export class HyperliquidExchangeClient {
     clientOrderId?: Hex;
     triggerOrders?: TriggerOrder[];
   }): Promise<hl.OrderSuccessResponse> {
-    // TODO (kane): technically we should not call this if the leverage is already set to the desired value
-    await this.exchangeClient.updateLeverage({
-      asset: assetId,
-      isCross: false,
-      leverage,
-    });
+    await Promise.all([
+      // TODO (kane): technically we should not call this if the leverage is already set to the desired value
+      this.exchangeClient.updateLeverage({
+        asset: assetId,
+        isCross: false,
+        leverage,
+      }),
+      this.ensureApprovedBuilderFee(),
+    ]);
 
     const marketType = getMarketType(assetId);
 
@@ -109,8 +112,7 @@ export class HyperliquidExchangeClient {
       orders,
       // You might think that grouping: positionTpsl would be for submitting a trigger order with the base order, but it is not, that will result in an error
       grouping: 'na',
-      // TODO BLOCKED (kane): Account needs to be created
-      // builder: RAINBOW_BUILDER_SETTINGS,
+      builder: RAINBOW_BUILDER_SETTINGS,
     });
   }
 
@@ -142,8 +144,7 @@ export class HyperliquidExchangeClient {
     const result = await this.exchangeClient.order({
       orders: [closeOrder],
       grouping: 'na',
-      // TODO BLOCKED (kane): Account needs to be created
-      // builder: RAINBOW_BUILDER_SETTINGS,
+      builder: RAINBOW_BUILDER_SETTINGS,
     });
 
     return result.response.data.statuses[0];
@@ -154,4 +155,21 @@ export class HyperliquidExchangeClient {
       cancels: [{ a: assetId, o: orderId }],
     });
   }
+
+  async ensureApprovedBuilderFee(): Promise<hl.SuccessResponse | void> {
+    const isApproved = await this.accountClient.isBuilderFeeApproved();
+    if (isApproved) return;
+
+    return await this.exchangeClient.approveBuilderFee({
+      builder: RAINBOW_BUILDER_SETTINGS.b,
+      maxFeeRate: toMaxFeeRate(RAINBOW_BUILDER_SETTINGS.f),
+    });
+  }
+}
+
+/**
+ * Converts the builder fee from tenths of a basis point to a percentage string.
+ */
+function toMaxFeeRate(feeInTenthsOfBips: number): `${string}%` {
+  return `${feeInTenthsOfBips * 0.001}%`;
 }
