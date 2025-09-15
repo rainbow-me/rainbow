@@ -1,8 +1,8 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
-import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { Panel } from '@/components/SmoothPager/ListPanel';
@@ -41,12 +41,25 @@ type PanelContentProps = {
 };
 
 function PanelContent({ symbol }: PanelContentProps) {
+  const [isCloseDisabled, setIsCloseDisabled] = useState(false);
   const percentToClose = useSharedValue(1);
   const position = useHyperliquidAccountStore(state => state.getPosition(symbol));
   const navigation = useNavigation();
   const isNegativePnl = position ? Number(position.unrealizedPnl) < 0 : false;
   const pnlLabel = isNegativePnl ? 'Estimated Loss' : 'Estimated Profit';
   const pnlColor = isNegativePnl ? 'red' : 'green';
+
+  useAnimatedReaction(
+    () => percentToClose.value,
+    (current, previous) => {
+      if (current === 0) {
+        runOnJS(setIsCloseDisabled)(true);
+      } else if (previous === 0 && current !== 0) {
+        runOnJS(setIsCloseDisabled)(false);
+      }
+    },
+    []
+  );
 
   const liveTokenPrice = useLiveTokenValue({
     tokenId: getHyperliquidTokenId(symbol),
@@ -132,7 +145,10 @@ function PanelContent({ symbol }: PanelContentProps) {
             </AnimatedText>
           </Box>
         </Box>
-        <HyperliquidButton onPress={closePosition}>
+        <HyperliquidButton
+          onPress={closePosition}
+          buttonProps={{ disabled: isCloseDisabled, style: { opacity: isCloseDisabled ? 0.5 : 1 } }}
+        >
           <Text size="20pt" weight="heavy" color={'black'}>
             {'Close Position'}
           </Text>
