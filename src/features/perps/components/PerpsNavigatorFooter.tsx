@@ -1,11 +1,10 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { Box, Text, TextShadow } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { HYPERLIQUID_COLORS, PERPS_COLORS } from '@/features/perps/constants';
+import { PERPS_COLORS } from '@/features/perps/constants';
 import { ButtonPressAnimation } from '@/components/animations';
-import LinearGradient from 'react-native-linear-gradient';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
 import Animated, { FadeIn, FadeOut, useAnimatedRef } from 'react-native-reanimated';
@@ -18,7 +17,7 @@ import { hyperliquidMarketStoreActions, useHyperliquidMarketsStore } from '@/fea
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { PerpPositionSide } from '@/features/perps/types';
-import { hyperliquidAccountStoreActions } from '@/features/perps/stores/hyperliquidAccountStore';
+import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
@@ -118,10 +117,13 @@ const PerpsSearchScreenFooter = () => {
 };
 
 const PerpsAccountScreenFooter = () => {
+  const balance = useHyperliquidAccountStore(state => state.balance);
+  const hasZeroBalance = Number(balance) === 0;
+
   return (
     <HyperliquidButton
       onPress={() => {
-        Navigation.handleAction(Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
+        Navigation.handleAction(hasZeroBalance ? Routes.PERPS_DEPOSIT_SCREEN : Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
       }}
       paddingVertical={'12px'}
       borderRadius={24}
@@ -130,43 +132,9 @@ const PerpsAccountScreenFooter = () => {
       alignItems={'center'}
     >
       <Text size="20pt" weight={'black'} color={{ custom: '#000000' }}>
-        {'New Position'}
+        {hasZeroBalance ? 'Deposit' : 'New Position'}
       </Text>
     </HyperliquidButton>
-  );
-};
-
-const PerpsDetailScreenFooter = () => {
-  const label = useForegroundColor('label');
-
-  return (
-    <Box>
-      <ButtonPressAnimation
-        onPress={() => {
-          // TODO: Add nav
-        }}
-      >
-        <Box
-          borderRadius={24}
-          height={48}
-          justifyContent={'center'}
-          alignItems={'center'}
-          borderWidth={2}
-          borderColor={{ custom: opacityWorklet(label, 0.16) }}
-        >
-          <LinearGradient
-            colors={HYPERLIQUID_COLORS.gradient}
-            style={StyleSheet.absoluteFillObject}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-          />
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
-          <Text size="20pt" weight={'black'} color={{ custom: '#000000' }}>
-            Close Position
-          </Text>
-        </Box>
-      </ButtonPressAnimation>
-    </Box>
   );
 };
 
