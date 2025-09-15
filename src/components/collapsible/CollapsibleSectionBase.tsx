@@ -118,7 +118,7 @@ export function CollapsibleSectionBase({
         iconColor={iconColor}
       />
       <AnimatedBox style={contentStyle}>
-        <Box paddingTop="24px">{content}</Box>
+        <Box paddingTop="12px">{content}</Box>
       </AnimatedBox>
     </AnimatedBox>
   );

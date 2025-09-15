@@ -7,7 +7,7 @@ import { toFixedWorklet, getPercentageDifferenceWorklet } from '@/safe-math/Safe
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsCurrency';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 

@@ -15,11 +15,12 @@ export function formatCurrency(
   options: {
     minValue?: number;
     decimals?: number;
+    useCompactNotation?: boolean;
   } = {}
 ): string {
   'worklet';
 
-  const { minValue = 0, decimals = 2 } = options;
+  const { minValue = 0, decimals = 2, useCompactNotation = true } = options;
 
   if (!isNumberStringWorklet(value)) {
     return '$0';
@@ -43,22 +44,31 @@ export function formatCurrency(
   let suffix = '';
 
   // Apply compact notation for large numbers
-  if (greaterThanOrEqualToWorklet(absValueStr, '1000000000000')) {
-    const divided = divWorklet(absValueStr, '1000000000000');
-    formattedValue = toFixedWorklet(divided, decimals);
-    suffix = 'T';
-  } else if (greaterThanOrEqualToWorklet(absValueStr, '1000000000')) {
-    const divided = divWorklet(absValueStr, '1000000000');
-    formattedValue = toFixedWorklet(divided, decimals);
-    suffix = 'B';
-  } else if (greaterThanOrEqualToWorklet(absValueStr, '1000000')) {
-    const divided = divWorklet(absValueStr, '1000000');
-    formattedValue = toFixedWorklet(divided, decimals);
-    suffix = 'M';
-  } else if (greaterThanOrEqualToWorklet(absValueStr, '1000')) {
-    const divided = divWorklet(absValueStr, '1000');
-    formattedValue = toFixedWorklet(divided, decimals);
-    suffix = 'K';
+  if (useCompactNotation) {
+    if (greaterThanOrEqualToWorklet(absValueStr, '1000000000000')) {
+      const divided = divWorklet(absValueStr, '1000000000000');
+      formattedValue = toFixedWorklet(divided, decimals);
+      suffix = 'T';
+    } else if (greaterThanOrEqualToWorklet(absValueStr, '1000000000')) {
+      const divided = divWorklet(absValueStr, '1000000000');
+      formattedValue = toFixedWorklet(divided, decimals);
+      suffix = 'B';
+    } else if (greaterThanOrEqualToWorklet(absValueStr, '1000000')) {
+      const divided = divWorklet(absValueStr, '1000000');
+      formattedValue = toFixedWorklet(divided, decimals);
+      suffix = 'M';
+    } else if (greaterThanOrEqualToWorklet(absValueStr, '1000')) {
+      const divided = divWorklet(absValueStr, '1000');
+      formattedValue = toFixedWorklet(divided, decimals);
+      suffix = 'K';
+    } else {
+      const formatter = getNumberFormatter('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+        useGrouping: true,
+      });
+      formattedValue = formatter.format(parseFloat(absValueStr));
+    }
   } else {
     const formatter = getNumberFormatter('en-US', {
       minimumFractionDigits: decimals,

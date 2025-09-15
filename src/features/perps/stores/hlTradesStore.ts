@@ -17,22 +17,39 @@ type FetchHlTradesResponse = {
   tradesBySymbol: Record<string, HlTrade[]>;
 };
 
+export const tradeExecutionDescriptions = {
+  takeProfitExecuted: 'Take Profit Executed',
+  stopLossExecuted: 'Stop Loss Executed',
+  longOpened: 'Long Opened',
+  shortOpened: 'Short Opened',
+  longClosed: 'Long Closed',
+  shortClosed: 'Short Closed',
+  longLiquidated: 'Long Liquidated',
+  shortLiquidated: 'Short Liquidated',
+};
+
 function getTradeExecutionDescription(trade: Omit<HlTrade, 'description'>): string {
-  const isLong = Number(trade.fillStartSize) > 0;
+  const isLong = Number(trade.size) > 0;
+  const isBuy = trade.side === 'buy';
   if (trade.liquidation) {
-    if (trade.liquidation.method === 'market') {
-      return isLong ? 'Market order liquidation: close long' : 'Market order liquidation: close short';
-    } else {
-      return isLong ? 'Backstop liquidation: close long' : 'Backstop liquidation: close short';
-    }
+    return `${isLong ? tradeExecutionDescriptions.longLiquidated : tradeExecutionDescriptions.shortLiquidated}`;
+    // TODO (kane): Am unsure if the liquidation method matters for display here
+    // if (trade.liquidation.method === 'market') {
+    //   return isLong ? 'Long Liquidated (Market)' : 'Short Liquidated (Market)';
+    // } else {
+    //   // Hyperliquid calls these backstop liquidations
+    //   return isLong ? 'Long Liquidated (Backstop)' : 'Short Liquidated (Backstop)';
+    // }
   }
   if (trade.triggerOrderType) {
-    return trade.triggerOrderType === TriggerOrderType.TAKE_PROFIT ? 'Take profit executed' : 'Stop loss executed';
+    return trade.triggerOrderType === TriggerOrderType.TAKE_PROFIT
+      ? tradeExecutionDescriptions.takeProfitExecuted
+      : tradeExecutionDescriptions.stopLossExecuted;
   }
-  if (trade.side === 'buy') {
-    return isLong ? 'Open long' : 'Open short';
+  if (isLong) {
+    return `${isBuy ? tradeExecutionDescriptions.longOpened : tradeExecutionDescriptions.longClosed}`;
   } else {
-    return isLong ? 'Close short' : 'Close long';
+    return `${isBuy ? tradeExecutionDescriptions.shortOpened : tradeExecutionDescriptions.shortClosed}`;
   }
 }
 
