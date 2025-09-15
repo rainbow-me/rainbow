@@ -90,7 +90,7 @@ function PanelContent({ symbol }: PanelContentProps) {
 
   const projectedPnl = useDerivedValue(() => {
     if (!position) return '-';
-    return `${isNegativePnl ? '-' : '+'}${formatCurrency(mulWorklet(position.unrealizedPnl, percentToClose.value))}`;
+    return `${isNegativePnl ? '' : '+'}${formatCurrency(mulWorklet(position.unrealizedPnl, percentToClose.value))}`;
   }, [position, percentToClose, isNegativePnl]);
 
   const closePosition = useCallback(async () => {
