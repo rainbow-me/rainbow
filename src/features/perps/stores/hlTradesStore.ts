@@ -29,27 +29,27 @@ export const tradeExecutionDescriptions = {
 };
 
 function getTradeExecutionDescription(trade: Omit<HlTrade, 'description'>): string {
-  const isLong = Number(trade.size) > 0;
+  const startPos = Number(trade.fillStartSize);
   const isBuy = trade.side === 'buy';
+
+  const isLong = isBuy ? startPos >= 0 : startPos > 0;
+
   if (trade.liquidation) {
     return `${isLong ? tradeExecutionDescriptions.longLiquidated : tradeExecutionDescriptions.shortLiquidated}`;
-    // TODO (kane): Am unsure if the liquidation method matters for display here
-    // if (trade.liquidation.method === 'market') {
-    //   return isLong ? 'Long Liquidated (Market)' : 'Short Liquidated (Market)';
-    // } else {
-    //   // Hyperliquid calls these backstop liquidations
-    //   return isLong ? 'Long Liquidated (Backstop)' : 'Short Liquidated (Backstop)';
-    // }
   }
+
   if (trade.triggerOrderType) {
     return trade.triggerOrderType === TriggerOrderType.TAKE_PROFIT
       ? tradeExecutionDescriptions.takeProfitExecuted
       : tradeExecutionDescriptions.stopLossExecuted;
   }
-  if (isLong) {
-    return `${isBuy ? tradeExecutionDescriptions.longOpened : tradeExecutionDescriptions.longClosed}`;
+
+  const isOpening = (isBuy && startPos >= 0) || (!isBuy && startPos <= 0);
+
+  if (isOpening) {
+    return isBuy ? tradeExecutionDescriptions.longOpened : tradeExecutionDescriptions.shortOpened;
   } else {
-    return `${isBuy ? tradeExecutionDescriptions.shortOpened : tradeExecutionDescriptions.shortClosed}`;
+    return isBuy ? tradeExecutionDescriptions.shortClosed : tradeExecutionDescriptions.longClosed;
   }
 }
 

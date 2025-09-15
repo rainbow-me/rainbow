@@ -94,6 +94,7 @@ export class HyperliquidAccountClient {
   async getFilledOrders(): Promise<hl.Fill[]> {
     return await infoClient.userFills({
       user: this.userAddress,
+      aggregateByTime: true,
     });
   }
 }
