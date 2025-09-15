@@ -74,7 +74,8 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
             ))}
           </Box>
         )}
-        <Box gap={12}>
+        {/* TODO (kane): implement, disabled for now */}
+        {/* <Box gap={12}>
           <AddTriggerOrderButton
             symbol={symbol}
             type={TriggerOrderType.STOP_LOSS}
@@ -85,7 +86,7 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
             type={TriggerOrderType.TAKE_PROFIT}
             disabled={triggerOrders.some(order => order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit')}
           />
-        </Box>
+        </Box> */}
       </Box>
     </Animated.View>
   );
