@@ -1562,7 +1562,9 @@
         "slider_label": "Withdrawing",
         "confirm_button_text": "Hold to Withdraw",
         "confirm_button_loading_text": "Withdrawing...",
-        "available_balance": "%{balance} available"
+        "available_balance": "%{balance} available",
+        "confirm_button_zero_text": "Enter Amount",
+        "confirm_button_over_balance_text": "Insufficient Funds"
       }
     },
     "points": {

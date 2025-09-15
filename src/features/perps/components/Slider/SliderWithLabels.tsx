@@ -15,7 +15,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { opacity } from '@/__swaps__/utils/swaps';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { pulsingConfig } from '@/__swaps__/screens/Swap/constants';
-import { Slider, SliderProps, SliderChangeSource, SliderVisualState } from './Slider';
+import { Slider, SliderProps, SliderChangeSource, SliderVisualState, SLIDER_DEFAULT_WIDTH } from './Slider';
 
 export interface SliderLabels {
   title?: string | SharedValue<string>;
@@ -40,7 +40,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   visualState: visualStateProp = 'idle',
   colors,
   height,
-  width,
+  width = SLIDER_DEFAULT_WIDTH,
   snapPoints,
   onPercentageChange: onPercentageChangeProp,
   onPercentageUpdate,
@@ -141,6 +141,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
       runOnJS(onMaxPress)();
     }
     runOnJS(onPercentageChange)(1, 'max-button');
+    sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
   };
 
   return (

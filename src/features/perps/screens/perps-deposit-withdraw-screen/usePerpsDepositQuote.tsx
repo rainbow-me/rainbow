@@ -19,7 +19,7 @@ export function usePerpsDepositQuote(
 
   const fetchQuoteId = useRef(0);
   const fetchQuote = useCallback(async () => {
-    const amount = Number(fields.value.inputAmount?.value || '0');
+    const amount = Number(fields.value.inputAmount.value);
     const balance = Number(selectedAsset?.balance?.amount || '0');
     if (amount === 0 || amount > balance || !selectedAsset) return;
     setQuote(null);
