@@ -298,10 +298,10 @@ const ActivityIcon = memo(function ActivityIcon() {
   );
 });
 
-function buildMenuItems(language: i18n.Language): MenuItem<MenuItemRoute>[] {
-  let cachedMenuItems: MenuItem<MenuItemRoute>[] | undefined;
-  let lastLanguage: i18n.Language | undefined;
+let cachedMenuItems: MenuItem<MenuItemRoute>[] | undefined;
+let lastLanguage: i18n.Language | undefined;
 
+function buildMenuItems(language: i18n.Language): MenuItem<MenuItemRoute>[] {
   if (!cachedMenuItems || language !== lastLanguage) {
     cachedMenuItems = [
       {
