@@ -1,6 +1,7 @@
 import { greaterThan } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
+import { RAINBOW_BUILDER_SETTINGS } from '@/features/perps/constants';
 import { PerpPositionSide, PerpAccount, PerpsPosition } from '../types';
 import { sumWorklet } from '@/safe-math/SafeMath';
 
@@ -96,5 +97,13 @@ export class HyperliquidAccountClient {
       user: this.userAddress,
       aggregateByTime: true,
     });
+  }
+
+  async isBuilderFeeApproved(): Promise<boolean> {
+    const approvedBuilderFee = await infoClient.maxBuilderFee({
+      builder: RAINBOW_BUILDER_SETTINGS.b,
+      user: this.userAddress,
+    });
+    return approvedBuilderFee >= RAINBOW_BUILDER_SETTINGS.f;
   }
 }

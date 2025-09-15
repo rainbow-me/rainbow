@@ -1,11 +1,12 @@
+import { HlBuilderSettings } from '@/features/perps/types';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const DEFAULT_SLIPPAGE_BIPS = 100;
 export const RAINBOW_BUILDER_SETTINGS = {
-  b: '0xREPLACE_WITH_RAINBOW_BUILDER_ADDRESS',
-  f: 10,
-} as const;
+  b: '0x60dC8E3dAd2e4E0738e813B9cB09b9c00B5e0Fc9',
+  f: 50,
+} as const satisfies HlBuilderSettings;
 export const HYPERCORE_PSEUDO_CHAIN_ID = 1337;
 // The minimum total order size (margin * leverage)
 export const MIN_ORDER_SIZE_USD = 10;

@@ -1,4 +1,5 @@
 import * as hl from '@nktkas/hyperliquid';
+import { Hex } from 'viem';
 
 export type FrontendOrder = hl.FrontendOrder;
 
@@ -114,7 +115,7 @@ export type HlTrade = {
 
 export type TriggerOrder = {
   price: string;
-  // "1" = 100% of the position size
+  /** Fraction from `0` to `1`, where `1` is 100% of the position size. */
   orderFraction: string;
   isMarket: boolean;
   type: TriggerOrderType;
@@ -124,4 +125,11 @@ export type PerpsWalletListData = {
   positions: PerpsPosition[];
   balance: string;
   value: string;
+};
+
+export type HlBuilderSettings = {
+  /** The builder address. */
+  b: Hex;
+  /** The builder fee in tenths of a basis point (e.g., `10` = 1 basis point). */
+  f: number;
 };
