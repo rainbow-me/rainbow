@@ -48,6 +48,7 @@
       "unknown_token": "Unknown Token"
     },
     "activity_list": {
+      "title": "Activity",
       "empty_state": {
         "default_label": "No transactions yet",
         "recycler_label": "No transactions yet",
@@ -567,7 +568,6 @@
         "trading_at_prefix": "Trading at"
       },
       "search": {
-        "profiles": "Profiles",
         "search_ethereum": "Search all of Ethereum",
         "search_ethereum_short": "Search Ethereum",
         "search": "Search",
@@ -757,6 +757,7 @@
           "what_is": "What is %{assetName}?"
         },
         "history": {
+          "title": "History",
           "tabs": {
             "all": "All",
             "buys": "Buys",
@@ -1184,6 +1185,30 @@
         "title": "No %{networkName} %{gasToken} detected",
         "text": "You won’t be able to use %{networkName} without %{networkName} %{gasToken}. If you go through with this transaction, you won’t be able to swap, bridge or transfer your %{networkName} tokens without adding %{networkName} %{gasToken} to your wallet.",
         "button": "Proceed anyway"
+      },
+      "ens_primary_name": {
+        "title": "What does it mean to set my ENS name?",
+        "text": "People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to \"primary.\""
+      },
+      "ens_on_chain_data_warning": {
+        "title": "Heads up!",
+        "text": "The data you provide here will be stored on the Ethereum blockchain – meaning it will be visible to everyone and accessible by anyone. Do not share any data you are uncomfortable with publicizing."
+      },
+      "ens_manager": {
+        "title": "What is the .eth manager?",
+        "text": "The manager of a .eth name is able to set and update its records, create subdomains of that name or manage its configuration. The manager is set by the owner of the .eth name and is also known as the ENS name's controller."
+      },
+      "ens_owner": {
+        "title": "What is the .eth name owner?",
+        "text": "The owner of a .eth name has full and ultimate control over that name. They can transfer ownership of the name and allow someone else to manage the name for them if they choose (setting records etc). The owner is also known as the ENS name's registrant."
+      },
+      "ens_resolver": {
+        "title": "What is a .eth resolver?",
+        "text": "A resolver is a contract that maps from name to the resource (e.g., cryptocurrency addresses, content hash, etc). Resolvers are pointed to by the resolver field of the registry."
+      },
+      "ens_configuration": {
+        "title": "What do these options mean?",
+        "text": "When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient's address and make the recipient address the manager of the name."
       }
     },
     "fedora": {
@@ -2035,6 +2060,9 @@
       "rewards": "Rewards",
       "pools": "Pools"
     },
+    "profile": {
+      "title": "Activity"
+    },
     "savings": {
       "deposit": "Deposit",
       "deposit_from_wallet": "Deposit from Wallet",
@@ -2082,20 +2110,62 @@
       "backup_google_account": "Google Account",
       "currency": {
         "title": "Currency",
-        "ETH": "Ethereum",
-        "USD": "United States Dollar",
-        "EUR": "Euro",
-        "GBP": "British Pound",
-        "AUD": "Australian Dollar",
-        "CNY": "Chinese Yuan",
-        "KRW": "South Korean Won",
-        "JPY": "Japanese Yen",
-        "RUB": "Russian Ruble",
-        "INR": "Indian Rupee",
-        "TRY": "Turkish Lira",
-        "CAD": "Canadian Dollar",
-        "NZD": "New Zealand Dollar",
-        "ZAR": "South African Rand"
+        "ETH": {
+          "label": "Ethereum",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "United States Dollar",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "British Pound",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Australian Dollar",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Chinese Yuan",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "South Korean Won",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Japanese Yen",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Russian Ruble",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Indian Rupee",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Turkish Lira",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Canadian Dollar",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "New Zealand Dollar",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "South African Rand",
+          "code": "ZAR"
+        }
       },
       "app_icon": "App Icon",
       "developer": "Developer Settings",
@@ -2878,6 +2948,7 @@
         "find_a_code": "Find a code to scan",
         "qr_1_app_connected": "1 Connected App",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Connected Apps",
+        "scan_to_connect": "Scan to Connect",
         "scan_to_pay_or_connect": "Camera access needed",
         "simulator_mode": "Simulator Mode",
         "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized.",
@@ -3231,7 +3302,8 @@
       "show_less": "Show Less",
       "more": "More",
       "show_more": "More Networks",
-      "all_networks": "All Networks"
+      "all_networks": "All Networks",
+      "search": "Search"
     },
     "token_launcher": {
       "airdrop": {

@@ -58,19 +58,3 @@ tags:
     id: verified-1
 - tapOn:
     id: discover-search-clear-input
-
-# Check ENS resolution and profile sheet
-- tapOn:
-    id: discover-search-input
-- inputText: 'rainbowwallet.eth'
-- assertVisible:
-    id: discover-currency-select-list-contact-row-rainbowwallet.eth
-- tapOn:
-    id: discover-currency-select-list-contact-row-rainbowwallet.eth
-- assertVisible:
-    id: profile-sheet
-- tapOn:
-    id: profile-sheet-watch-button
-- runFlow: ../../utils/MaybeSetupPin.yaml
-- assertVisible:
-    id: wallet-screen

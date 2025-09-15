@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { Source } from 'react-native-fast-image';
@@ -87,10 +87,10 @@ export default function ENSSearchSheet() {
         <Box flexGrow={1} paddingTop={{ custom: 28 }}>
           <Stack alignHorizontal="center" space={{ custom: 16 }}>
             <Heading align="center" color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
-              {`􀠎 ${lang.t('profiles.search.header')}`}
+              {`􀠎 ${i18n.t(i18n.l.profiles.search.header)}`}
             </Heading>
             <Text align="center" color="secondary60 (Deprecated)" size="18px / 27px (Deprecated)" weight="bold">
-              {lang.t('profiles.search.description')}
+              {i18n.t(i18n.l.profiles.search.description)}
             </Text>
           </Stack>
 
@@ -114,7 +114,7 @@ export default function ENSSearchSheet() {
                   <ImgixImage source={dice as Source} style={{ height: 20, top: -0.5, width: 20 }} size={30} />
                 </Box>
                 <Text align="center" color="secondary50 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                  {lang.t('profiles.search.3_char_min')}
+                  {i18n.t(i18n.l.profiles.search['3_char_min'])}
                 </Text>
               </Inline>
             </Box>
@@ -131,7 +131,7 @@ export default function ENSSearchSheet() {
             <Inset horizontal="30px (Deprecated)">
               <Stack space="15px (Deprecated)">
                 <Text align="center" color="secondary50 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                  {lang.t('profiles.search.already_registering_name')}
+                  {i18n.t(i18n.l.profiles.search.already_registering_name)}
                 </Text>
               </Stack>
             </Inset>
@@ -164,7 +164,7 @@ export default function ENSSearchSheet() {
                   registrationData?.registrationDate ? (
                     <Inset horizontal="15px (Deprecated)">
                       <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                        {lang.t('profiles.search.registered_on', {
+                        {i18n.t(i18n.l.profiles.search.registered_on, {
                           content: registrationData?.registrationDate,
                         })}
                       </Text>
@@ -175,15 +175,15 @@ export default function ENSSearchSheet() {
                     <Inline>
                       {registrationCostsDataIsAvailable ? (
                         <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" testID="ens-registration-fees" weight="bold">
-                          {lang.t('profiles.search.estimated_total_cost_1')}
+                          {i18n.t(i18n.l.profiles.search.estimated_total_cost_1)}
                           <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
                             {` ${registrationCostsData?.estimatedTotalRegistrationCost?.display} `}
                           </Text>
-                          {lang.t('profiles.search.estimated_total_cost_2')}
+                          {i18n.t(i18n.l.profiles.search.estimated_total_cost_2)}
                         </Text>
                       ) : (
                         <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                          {`${lang.t('profiles.search.loading_fees')}\n`}
+                          {`${i18n.t(i18n.l.profiles.search.loading_fees)}\n`}
                         </Text>
                       )}
                     </Inline>
@@ -196,7 +196,7 @@ export default function ENSSearchSheet() {
         <SheetActionButtonRow>
           {showFinishButton && (
             <SheetActionButton
-              label={lang.t('profiles.search.finish')}
+              label={i18n.t(i18n.l.profiles.search.finish)}
               onPress={handlePressFinish}
               size="big"
               testID="ens-search-continue"
@@ -206,7 +206,7 @@ export default function ENSSearchSheet() {
           {showContinueButton && (
             <SheetActionButton
               color={colors.green}
-              label={lang.t('profiles.search.continue')}
+              label={i18n.t(i18n.l.profiles.search.continue)}
               onPress={handlePressContinue}
               size="big"
               testID="ens-search-continue"
@@ -221,7 +221,7 @@ export default function ENSSearchSheet() {
               }}
               testID="ens-search-clear-button"
             >
-              {lang.t('profiles.search.clear')}
+              {i18n.t(i18n.l.profiles.search.clear)}
             </TintButton>
           )}
         </SheetActionButtonRow>

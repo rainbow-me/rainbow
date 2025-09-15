@@ -1,10 +1,10 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
 export default function watchingAlert() {
-  Alert.alert(lang.t('wallet.alert.this_wallet_in_watching_mode'), lang.t('wallet.alert.looks_like_imported_public_address'), [
+  Alert.alert(i18n.t(i18n.l.wallet.alert.this_wallet_in_watching_mode), i18n.t(i18n.l.wallet.alert.looks_like_imported_public_address), [
     {
       onPress: () => {
         Navigation.handleAction(Routes.ADD_WALLET_NAVIGATOR, {
@@ -12,10 +12,10 @@ export default function watchingAlert() {
           params: { type: 'import', isFirstWallet: false },
         });
       },
-      text: lang.t('wallet.alert.finish_importing'),
+      text: i18n.t(i18n.l.wallet.alert.finish_importing),
     },
     {
-      text: lang.t('wallet.alert.nevermind'),
+      text: i18n.t(i18n.l.wallet.alert.nevermind),
     },
   ]);
 }

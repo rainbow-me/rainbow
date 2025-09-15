@@ -47,6 +47,7 @@
       "unknown_token": "Token Tidak Dikenal"
     },
     "activity_list": {
+      "title": "Aktivitas",
       "empty_state": {
         "default_label": "Belum ada transaksi",
         "recycler_label": "Belum ada transaksi",
@@ -140,7 +141,7 @@
         "choose_backup_cloud_description": "Cadangkan dompet Anda dengan aman ke %{cloudPlatform} sehingga Anda dapat memulihkannya jika Anda kehilangan perangkat atau mendapatkan yang baru.",
         "choose_backup_manual_description": "Cadangkan dompet Anda secara manual dengan menyimpan frase rahasia Anda di tempat yang aman.",
         "enable_cloud_backups_description": "Jika Anda lebih suka mencadangkan dompet Anda secara manual, Anda dapat melakukannya di bawah.",
-        "latest_backup": "Backup Terakhir: %{date}",
+        "latest_backup": "Pencadangan Terakhir: %{date}",
         "back_up_all_wallets_to_cloud": "Backup Semua Dompet ke %{cloudPlatformName}",
         "most_recent_backup": "Backup Terbaru",
         "out_of_date": "Kedaluwarsa",
@@ -467,6 +468,9 @@
         "quote_error": "Kesalahan Kutipan",
         "no_route_found": "Tidak ada rute yang ditemukan",
         "fetching_quote": "Mengambil Kutipan...",
+        "rainbow_eth_rewards": "Rainbow ETH Rewards",
+        "merkl_claimable": "%{dappName} Benteng",
+        "merkl_claimable_description": "%{assetSymbols} Strategi",
         "select_a_network": "Pilih Jaringan",
         "select_a_token": "Pilih Token",
         "amount_to_claim_on_network": "%{amount} untuk diklaim di %{network}",
@@ -476,6 +480,9 @@
         "claimed": "Diklaim!",
         "claiming_failed": "Klaim Gagal",
         "insufficient_funds": "Dana Tidak Cukup",
+        "hold_to_claim": "Tahan untuk Mengklaim",
+        "creator_lp_fees": "Biaya LP Pembuat",
+        "rainbow_token_launcher": "Rainbow Token Launcher",
         "claim_amount": "Klaim %{amount}",
         "done": "Selesai",
         "try_again": "Coba Lagi",
@@ -519,38 +526,39 @@
       "alert": "Peringatan",
       "analyze_env_variables": "Analisis Variabel ENV",
       "analyze_react_query": "Analisis React Query",
+      "analyze_user_assets_query": "Analisis Query Aset Pengguna",
       "applied": "DITERAPKAN",
-      "backups_deleted_successfully": "Backup berhasil dihapus",
-      "clear_async_storage": "Hapus penyimpanan async",
+      "backups_deleted_successfully": "Backup Dihapus dengan Sukses",
+      "clear_async_storage": "Bersihkan AsyncStorage",
       "clear_pending_txs": "Hapus Transaksi Tertunda",
       "clear_image_cache": "Hapus Cache Gambar",
       "clear_image_metadata_cache": "Hapus Cache Metadata Gambar",
-      "clear_local_storage": "Hapus penyimpanan lokal",
-      "clear_mmkv_storage": "Hapus penyimpanan MMKV",
+      "clear_local_storage": "Bersihkan Penyimpanan Lokal",
+      "clear_mmkv_storage": "Bersihkan Penyimpanan MMKV",
       "clear_react_query_cache": "Bersihkan Cache React Query",
-      "connect_to_anvil": "Hubungkan ke anvil",
+      "connect_to_anvil": "Hubungkan ke Anvil",
       "copy_fcm_token": "Salin Token FCM",
       "copy_log_lines": "Salin Baris Log",
       "copy_signing_wallet_address": "Salin Alamat Dompet Penandatangan",
-      "disconnect_to_anvil": "Putuskan hubungan dari anvil",
-      "crash_app_render_error": "Aplikasi crash (kesalahan render)",
+      "disconnect_to_anvil": "Putuskan dari Anvil",
+      "crash_app_render_error": "Crash Aplikasi (Kesalahan Render)",
       "enable_testnets": "Aktifkan Testnets",
-      "installing_update": "Menginstal pembaruan",
-      "navigation_entry_point": "Titik masuk navigasi",
-      "no_update": "Tidak ada pembaruan",
+      "installing_update": "Memasang Pembaruan",
+      "navigation_entry_point": "Titik Masuk Navigasi",
+      "no_update": "Tidak Ada Pembaruan",
       "not_applied": "TIDAK DITERAPKAN",
       "notifications_debug": "Debug Notifikasi",
-      "remove_all_backups": "Hapus semua cadangan",
+      "remove_all_backups": "Hapus Semua Cadangan",
       "keychain": {
         "menu_title": "Reset Rantai Kunci",
-        "delete_wallets": "Hapus semua dompet",
+        "delete_wallets": "Hapus Semua Dompet",
         "alert_title": "Hati-hati!",
         "alert_body": "🚨🚨🚨 \nIni akan menghapus secara permanen semua kunci pribadi & data dompet Anda, pastikan Anda telah mencadangkan semuanya sebelum melanjutkan!! \n🚨🚨🚨"
       },
-      "restart_app": "Mulai ulang aplikasi",
-      "reset_experimental_config": "Reset konfigurasi eksperimental",
+      "restart_app": "Mulai Ulang Aplikasi",
+      "reset_experimental_config": "Atur Ulang Konfigurasi Eksperimental",
       "status": "Status",
-      "sync_codepush": "Sinkronkan codepush"
+      "sync_codepush": "Sinkronisasi CodePush"
     },
     "discover": {
       "pulse": {
@@ -559,7 +567,6 @@
         "trading_at_prefix": "Trading di"
       },
       "search": {
-        "profiles": "Profil",
         "search_ethereum": "Cari semua Ethereum",
         "search_ethereum_short": "Cari Ethereum",
         "search": "Cari",
@@ -604,6 +611,7 @@
         "expires_in": "Kadaluarsa dalam %{minutes}m",
         "from_divider": "dari",
         "to_divider": "ke",
+        "token": "Token",
         "view_on": "Tampilkan di %{blockExplorerName}",
         "view_on_etherscan": "Tampilkan di Etherscan",
         "copy_contract_address": "Salin Alamat Kontrak"
@@ -654,9 +662,7 @@
         "small_market_try_smaller_amount": "Pasar kecil — coba jumlah yang lebih kecil",
         "you_are_losing": "Anda kehilangan %{priceImpact}",
         "you_are_losing_prefix": "Anda kehilangan",
-        "no_data": "Nilai Pasar Tidak Diketahui",
-        "label": "Kemungkinan kerugian",
-        "no_data_subtitle": "Jika Anda memutuskan untuk melanjutkan, pastikan Anda puas dengan jumlah yang dikutip"
+        "label": "Kemungkinan kerugian"
       },
       "source": {
         "rainbow": "Otomatis",
@@ -727,6 +733,7 @@
           "circulating_supply": "Pasokan Beredar",
           "max_supply": "Persediaan Maks",
           "fully_diluted_valuation": "Penilaian Sepenuhnya Terdilusi",
+          "created_by": "Dibuat oleh",
           "market_cap": "Kap Pasar",
           "created": "Dibuat",
           "volume_24_hours": "Volume 24h",
@@ -747,9 +754,35 @@
         "about": {
           "title": "Tentang",
           "what_is": "Apa itu %{assetName}?"
+        },
+        "history": {
+          "title": "Riwayat",
+          "tabs": {
+            "all": "Semua",
+            "buys": "Beli",
+            "sells": "Jual"
+          },
+          "more": "Lebih",
+          "less": "Kurang",
+          "bought": "Dibeli",
+          "sold": "Dijual",
+          "received": "Diterima",
+          "sent": "Dikirim",
+          "unknown": "Tidak Diketahui"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Tutup",
+            "h": "H",
+            "l": "L",
+            "o": "Buka",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "Tidak ada"
+        },
         "all_time": "Sepanjang Waktu",
         "date": {
           "months": {
@@ -768,9 +801,9 @@
           }
         },
         "no_chart_data": "Tidak Ada Data Grafik",
-        "no_price_data": "Tidak ada data harga",
+        "no_price_data": "Tidak Ada Data Harga",
         "past_timespan": "Masa Lalu %{formattedTimespan}",
-        "today": "Hari Ini",
+        "today": "Hari Lalu",
         "token_pool": "%{tokenName} Kolam"
       },
       "contact_profile": {
@@ -929,6 +962,8 @@
       "farcaster_title": "Anda telah membuka\nRainbowcast",
       "redacted_description": "Ikon Rainbow eksklusif untuk para penikmat sejati Gdupi.",
       "redacted_title": "Anda telah membuka\n Rainbow yang Dihilangkan",
+      "baggy_description": "Dari jalanan hingga rantai, tas kecil ini memegang dosis portabel suasana Rainbow Anda. Rasakan warnanya, dan rasakan bedanya.",
+      "baggy_title": "Anda telah membuka\n Rainbow Baggy",
       "button": "Ambil ikon"
     },
     "explain": {
@@ -1149,6 +1184,30 @@
         "title": "Tidak ada %{networkName} %{gasToken} terdeteksi",
         "text": "Anda tidak akan bisa menggunakan %{networkName} tanpa %{networkName} %{gasToken}. Jika Anda melanjutkan transaksi ini, Anda tidak akan bisa swap, bridge, atau transfer token %{networkName} Anda tanpa menambahkan %{networkName} %{gasToken} ke dompet Anda.",
         "button": "Lanjutkan saja"
+      },
+      "ens_primary_name": {
+        "title": "Apa arti dari mengatur nama ENS saya?",
+        "text": "Orang-orang dapat mengetikkan nama .eth Anda ke dalam dApps alih-alih alamat Ethereum lengkap Anda ketika mereka ingin mengirim sesuatu kepada Anda, dan dApps dapat menggunakan nama .eth dan profil Anda untuk menampilkan informasi tentang Anda. Ini juga dikenal sebagai mengatur nama ENS Anda menjadi \"utama.\""
+      },
+      "ens_on_chain_data_warning": {
+        "title": "Perhatian!",
+        "text": "Data yang Anda berikan di sini akan disimpan di blockchain Ethereum – yang berarti akan terlihat oleh semua orang dan dapat diakses oleh siapa saja. Jangan bagikan data apa pun yang Anda merasa tidak nyaman jika dipublikasikan."
+      },
+      "ens_manager": {
+        "title": "Apa itu pengelola .eth?",
+        "text": "Pengelola nama .eth dapat mengatur dan memperbarui catatan mereka, membuat subdomain dari nama tersebut atau mengelola konfigurasinya. Pengelola ditetapkan oleh pemilik nama .eth dan juga dikenal sebagai pengendali nama ENS."
+      },
+      "ens_owner": {
+        "title": "Apa itu pemilik nama .eth?",
+        "text": "Pemilik nama .eth memiliki kontrol penuh dan mutlak atas nama tersebut. Mereka dapat mentransfer kepemilikan nama dan mengizinkan orang lain untuk mengelola nama itu untuk mereka jika mereka memilihnya (mengatur catatan dll). Pemilik juga dikenal sebagai pendaftar nama ENS."
+      },
+      "ens_resolver": {
+        "title": "Apa itu resolver .eth? ",
+        "text": "Resolver adalah kontrak yang memetakan dari nama ke sumber daya (misalnya, alamat cryptocurrency, konten hash, dll). Resolver diarahkan oleh bidang resolver dari registri."
+      },
+      "ens_configuration": {
+        "title": "Apa maksud opsi-opsi ini?",
+        "text": "Saat mengirimkan nama ENS kepada orang lain dan menjadikan mereka pemilik nama ENS yang baru, Anda mungkin ingin mengkonfigurasinya untuk mereka di muka dan menyimpan mereka dari transaksi di masa depan. Rainbow memungkinkan Anda untuk menghapus informasi profil apa pun yang saat ini diatur untuk nama tersebut, mengkonfigurasi nama ENS untuk diarahkan ke alamat penerima, dan menjadikan alamat penerima sebagai pengelola nama tersebut."
       }
     },
     "fedora": {
@@ -1526,7 +1585,7 @@
       "claim": {
         "title": "Klaim poin Anda",
         "title_rewards_line_1": "Selamat datang di",
-        "title_rewards_line_2": "Rainbow Rewards",
+        "title_rewards_line_2": "Dapatkan Hadiah ETH",
         "subtitle": "Poin telah ada. Cari tahu berapa banyak yang telah Anda dapatkan.",
         "subtitle_rewards": "Dapatkan hadiah karena menggunakan Rainbow. Lakukan aktivitas onchain, dapatkan poin, dan dapatkan ETH.",
         "get_started": "Mulai",
@@ -1632,7 +1691,7 @@
         "invalid_referral_code_alert": "Kode rujukan tidak valid. Silakan periksa kembali kode Anda dan coba lagi.",
         "no_balance_alert": "Untuk mendaftar di Poin, Anda harus memiliki saldo dompet yang bukan nol.",
         "referral_link_is_ready": "Tautan rujukan Anda siap",
-        "referral_link_bonus_text": "Tweet tautan rujukan Anda dan dapatkan tambahan 250 poin",
+        "referral_link_bonus_text": "Tweet tautan referensi Anda dan Anda akan mendapatkan 10% dari poin yang diperoleh oleh siapa pun yang Anda rujuk",
         "referral_link_bonus_text_extended": "Plus, Anda akan mendapatkan 10% dari poin yang diperoleh oleh siapapun yang Anda rujuk",
         "complete_onboarding": "Selesai",
         "share_to_x": "Bagikan ke X",
@@ -1986,6 +2045,9 @@
       "rewards": "Hadiah",
       "pools": "Kolam"
     },
+    "profile": {
+      "title": "Aktivitas"
+    },
     "savings": {
       "deposit": "Deposit",
       "deposit_from_wallet": "Deposit dari Dompet",
@@ -2033,20 +2095,62 @@
       "backup_google_account": "Akun Google",
       "currency": {
         "title": "Mata Uang",
-        "ETH": "Ethereum",
-        "USD": "Dolar Amerika Serikat",
-        "EUR": "Euro",
-        "GBP": "Pound Inggris",
-        "AUD": "Dolar Australia",
-        "CNY": "Yuan Tiongkok",
-        "KRW": "Won Korea Selatan",
-        "JPY": "Yen Jepang",
-        "RUB": "Rubel Rusia",
-        "INR": "Rupee India",
-        "TRY": "Lira Turki",
-        "CAD": "Dolar Kanada",
-        "NZD": "Dolar Selandia Baru",
-        "ZAR": "Rand Afrika Selatan"
+        "ETH": {
+          "label": "Ethereum",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "Dolar Amerika Serikat",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "Pound Inggris",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Dolar Australia",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Yuan Tiongkok",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "Won Korea Selatan",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Yen Jepang",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Rubel Rusia",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Rupee India",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Lira Turki",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Dolar Kanada",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "Dolar Selandia Baru",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "Rand Afrika Selatan",
+          "code": "ZAR"
+        }
       },
       "app_icon": "Ikon Aplikasi",
       "developer": "Pengaturan Pengembang",
@@ -2137,7 +2241,7 @@
         "quote_error": "Kesalahan Kutipan"
       },
       "aggregators": {
-        "rainbow": "Rainbow"
+        "rainbow": "Biaya Rainbow"
       },
       "bridging": "Membuat Jembatan",
       "swapping": "Menukar",
@@ -2829,6 +2933,7 @@
         "find_a_code": "Temukan kode untuk dipindai",
         "qr_1_app_connected": "1 Aplikasi Terhubung",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Aplikasi Terhubung",
+        "scan_to_connect": "Pindai untuk Terhubung",
         "scan_to_pay_or_connect": "Pindai untuk membayar atau terhubung",
         "simulator_mode": "Mode Simulator",
         "sorry_could_not_be_recognized": "Maaf, kode QR ini tidak bisa dikenali.",
@@ -2888,6 +2993,7 @@
         "sending_title": "Mengirim",
         "you_own_this_wallet": "Anda memiliki dompet ini",
         "first_time_send": "Pengiriman pertama",
+        "previous_send": "%{number} pengiriman sebelumnya",
         "previous_sends": "%{number} pengiriman sebelumnya"
       },
       "wallet_connect": {
@@ -2977,7 +3083,7 @@
         "pairing_unsupported_methods": "Beranda meminta metode RPC dompet yang tidak didukung oleh Rainbow.",
         "pairing_unsupported_networks": "Dapp meminta jaringan yang tidak didukung oleh Rainbow.",
         "read_only_wallet_on_signing_method": "Sepertinya Anda menggunakan dompet hanya untuk membaca, yang tidak diizinkan untuk permintaan ini.",
-        "namespaces_invalid": "Ada masalah dengan namespace yang diminta oleh dapp. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau dapp.",
+        "namespaces_invalid": "Terdapat masalah dengan namespace yang diminta oleh dapp. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau dapp.",
         "request_invalid": "Permintaan berisi parameter yang tidak valid. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau beranda.",
         "eth_sign": "Rainbow tidak mendukung eth_sign lama karena pertimbangan keamanan.  \n Silakan Hubungi tim dukungan Rainbow dan/atau dapp jika Anda memiliki pertanyaan.",
         "request_unsupported_network": "Jaringan yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
@@ -3143,7 +3249,7 @@
       "filters": {
         "categories": {
           "TRENDING": "Tren",
-          "RAINBOW": "Rainbow",
+          "RAINBOW": "Biaya Rainbow",
           "NEW": "Baru",
           "FARCASTER": "Farcaster"
         },
@@ -3181,7 +3287,8 @@
       "show_less": "Tampilkan Lebih Sedikit",
       "more": "Lebih",
       "show_more": "Lebih Banyak Jaringan",
-      "all_networks": "Semua Jaringan"
+      "all_networks": "Semua Jaringan",
+      "search": "Cari"
     },
     "token_launcher": {
       "airdrop": {
@@ -3340,10 +3447,78 @@
         "to_claim_on": "untuk diklaim di %{network}",
         "view_coin": "Lihat Koin",
         "you": "Anda"
+      },
+      "errors": {
+        "header": "Kesalahan meluncurkan token",
+        "api_request_failed": "Permintaan API gagal",
+        "api_response_invalid": "Respons API tidak valid",
+        "contract_interaction_failed": "Interaksi kontrak gagal",
+        "gas_estimation_failed": "Estimasi gas gagal",
+        "insufficient_funds": "Dana Tidak Cukup",
+        "submission_details_missing": "Detail pengajuan hilang",
+        "transaction_rejected": "Transaksi ditolak",
+        "transaction_failed": "Transaksi gagal",
+        "transaction_simulation_failed": "Simulasi transaksi gagal",
+        "unknown_error": "Kesalahan Tidak Diketahui",
+        "wallet_connection_error": "Kesalahan koneksi dompet",
+        "invalid_params": "Parameter tidak valid",
+        "missing_required_param": "Parameter wajib hilang"
       }
     },
     "done": "Selesai",
     "copy": "Salin",
-    "paste": "Tempel"
+    "paste": "Tempel",
+    "market_data": {
+      "vol": "VOL",
+      "price": "HARGA",
+      "mcap": "MCAP"
+    },
+    "king_of_hill": {
+      "title": "Peluncuran",
+      "launch": "Luncurkan",
+      "current_king": "RAJA SAAT INI",
+      "last_winner": "Pemenang terakhir",
+      "no_previous_winner": "Tidak ada pemenang sebelumnya",
+      "round_ends_in": "Putaran berakhir dalam",
+      "how_it_works": "Cara kerjanya",
+      "starting_next_round": "Memulai putaran berikutnya",
+      "left": "TERSISA",
+      "king_of_the_hill": "Raja Bukit",
+      "name": "Nama",
+      "explain_sheet": {
+        "next": "Selanjutnya",
+        "got_it": "Mengerti",
+        "steps": {
+          "step_1": {
+            "title": "Perlombaan langsung",
+            "subtitle_parts": [
+              "Token dengan terbanyak",
+              " volume pembelian ",
+              "saat ini adalah raja sekarang."
+            ]
+          },
+          "step_2": {
+            "title": "Satu mahkota sehari",
+            "subtitle_parts": [
+              "Pada",
+              " tengah malam (12:00 AM UTC), ",
+              "token terdepan dinobatkan sebagai pemenang harian."
+            ]
+          },
+          "step_3": {
+            "title": "Menangkan Hadiah",
+            "subtitle_parts": [
+              "Pembeli Raja saat ini mendapatkan",
+              " 2x poin."
+            ],
+            "subtitle_two_parts": [
+              "Pencipta",
+              " mendapatkan poin ",
+              "ketika dinobatkan."
+            ]
+          }
+        }
+      }
+    }
   }
 }

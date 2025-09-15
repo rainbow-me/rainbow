@@ -32,7 +32,7 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/em
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { checkForPendingSwap } from '@/helpers/transactions';
@@ -111,10 +111,10 @@ function CurrencyTile({
   const name = accountName || fetchedEnsName || addressContact?.nickname || addressContact?.ens || formattedAddress;
 
   if (accountAddress?.toLowerCase() === address?.toLowerCase() && !showAsset) {
-    title = lang.t(lang.l.transaction_details.you);
+    title = i18n.t(i18n.l.transaction_details.you);
   }
 
-  const shouldShowAddress = (!name.includes('...') || name === lang.t(lang.l.transaction_details.you)) && !showAsset;
+  const shouldShowAddress = (!name.includes('...') || name === i18n.t(i18n.l.transaction_details.you)) && !showAsset;
   const imageUrl = fetchedEnsImage ?? addressAccount?.image;
   const ensAvatarSharedValue = useTiming(!!image || (!!imageUrl && imageLoaded), {
     duration: image || addressAccount?.image ? 0 : 420,

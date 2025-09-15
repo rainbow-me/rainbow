@@ -18,7 +18,7 @@ import { useRainbowToasts, useRainbowToastsStore } from '@/components/rainbow-to
 import { Box, useColorMode, useForegroundColor } from '@/design-system';
 import { TransactionStatus } from '@/entities';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { useDimensions } from '@/hooks';
+import { useAccountSettings, useDimensions } from '@/hooks';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
@@ -40,12 +40,13 @@ import { useVerticalDismissPanGesture } from './useVerticalDismissPanGesture';
 
 export const RainbowToastDisplay = memo(function RainbowToastDisplay() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
+  const { language } = useAccountSettings();
 
   if (!rainbowToastsEnabled) {
     return null;
   }
 
-  return <RainbowToastDisplayContent />;
+  return <RainbowToastDisplayContent key={language} />;
 });
 
 /**

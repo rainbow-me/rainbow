@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
@@ -24,7 +24,7 @@ export default function ShareButton({ accountAddress, ...props }) {
   const handlePress = useCallback(() => {
     Share.share({
       message: accountAddress,
-      title: lang.t('wallet.my_account_address'),
+      title: i18n.t(i18n.l.wallet.my_account_address),
     });
   }, [accountAddress]);
 
@@ -42,7 +42,7 @@ export default function ShareButton({ accountAddress, ...props }) {
     <ButtonPressAnimation onPress={handlePress} overflowMargin={20} radiusAndroid={28} {...props}>
       <ShadowStack backgroundColor={isDarkMode ? colors.white : colors.dark} borderRadius={28} height={56} shadows={shadows} width={200}>
         <Centered cover style={{ paddingHorizontal: 10 }}>
-          <Label>{`􀈂 ${lang.t('button.share')}`}</Label>
+          <Label>{`􀈂 ${i18n.t(i18n.l.button.share)}`}</Label>
         </Centered>
         <InnerBorder />
       </ShadowStack>
