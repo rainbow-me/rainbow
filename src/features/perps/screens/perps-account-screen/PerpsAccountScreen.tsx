@@ -12,14 +12,11 @@ export const PerpsAccountScreen = function PerpsAccountScreen() {
 
   return (
     <ScrollView
-      style={{
-        backgroundColor: screenBackgroundColor,
-      }}
-      scrollIndicatorInsets={{
-        bottom: bottomInset,
-      }}
+      style={{ backgroundColor: screenBackgroundColor }}
+      contentContainerStyle={{ paddingTop: 8, paddingBottom: bottomInset, paddingHorizontal: 20 }}
+      scrollIndicatorInsets={{ bottom: bottomInset }}
     >
-      <Box paddingTop={{ custom: 8 }} paddingBottom={{ custom: bottomInset }} width="full" paddingHorizontal="20px" style={{ flex: 1 }}>
+      <Box width="full">
         <Stack space={'20px'}>
           <PerpsAccountBalanceCard />
           <Separator color={'separatorTertiary'} direction="horizontal" />
