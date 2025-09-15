@@ -9,7 +9,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { usePositionsStore } from '@/state/positions/positions';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
+import { CLAIMABLES, DEFI_POSITIONS, PERPS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
@@ -48,6 +48,7 @@ export default function useWalletSectionsData({
   const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !isReadOnlyWallet;
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
+  const perpsEnabled = experimentalConfig[PERPS] && !IS_TEST;
 
   const cardIds = remoteCardsStore(state => state.getCardIdsForScreen('WALLET_SCREEN'));
   const remoteCards = useMemo(() => (remoteCardsEnabled ? cardIds : []), [cardIds, remoteCardsEnabled]);
@@ -84,6 +85,9 @@ export default function useWalletSectionsData({
   const perpsAccountValue = useHyperliquidAccountStore(state => state.value);
 
   const perpsData = useMemo(() => {
+    // If perps feature is disabled, return null to hide all perps elements
+    if (!perpsEnabled) return null;
+
     const hasBalance = perpsBalance && perpsBalance !== '0';
     const positionsArray = Object.values(perpsPositions);
     const hasPositions = positionsArray.length > 0;
@@ -95,7 +99,7 @@ export default function useWalletSectionsData({
       balance: perpsBalance,
       value: perpsAccountValue,
     };
-  }, [perpsPositions, perpsBalance, perpsAccountValue]);
+  }, [perpsPositions, perpsBalance, perpsAccountValue, perpsEnabled]);
 
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
