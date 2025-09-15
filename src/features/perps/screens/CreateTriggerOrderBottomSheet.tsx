@@ -28,6 +28,8 @@ import { SheetHandleFixedToTop } from '@/components/sheet';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
+import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 
 const PANEL_HEIGHT = 360;
 
@@ -90,6 +92,8 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
     }
     return true;
   });
+
+  const isValidTargetPriceState = useSharedValueState(isValidTargetPrice, { initialValue: true });
 
   const projectedPnl = useDerivedValue(() => {
     if (!isValidTargetPrice.value || inputValue.value === '' || !leverage) return '-';
@@ -224,8 +228,10 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
               </Text>
             </Box>
           </ButtonPressAnimation>
-          {/* TODO (kane): disabled state is shared value can't be used here */}
-          <HyperliquidButton onPress={addTriggerOrder} buttonProps={{ style: { flex: 1 } }}>
+          <HyperliquidButton
+            onPress={addTriggerOrder}
+            buttonProps={{ style: { flex: 1, opacity: !isValidTargetPriceState ? 0.5 : 1 }, disabled: !isValidTargetPriceState }}
+          >
             <Text size="20pt" weight="black" color={'black'}>
               {'Add'}
             </Text>
