@@ -25,14 +25,20 @@ export const MarketsSection = memo(function MarketsSection() {
   return (
     <Box>
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-        <Box flexDirection="row" alignItems="center" gap={8}>
-          <Text size="22pt" weight="heavy" color="label">
-            {'Markets'}
-          </Text>
-          <Text size="17pt" weight="bold" color="labelTertiary">
-            {'􀆊'}
-          </Text>
-        </Box>
+        <ButtonPressAnimation
+          onPress={() => {
+            Navigation.handleAction(Routes.PERPS_SEARCH_SCREEN);
+          }}
+        >
+          <Box flexDirection="row" alignItems="center" gap={8}>
+            <Text size="22pt" weight="heavy" color="label">
+              {'Markets'}
+            </Text>
+            <Text size="17pt" weight="bold" color="labelTertiary">
+              {'􀆊'}
+            </Text>
+          </Box>
+        </ButtonPressAnimation>
         <ButtonPressAnimation
           onPress={() => {
             Navigation.handleAction(Routes.PERPS_SEARCH_SCREEN);
