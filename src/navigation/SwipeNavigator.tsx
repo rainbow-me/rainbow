@@ -62,6 +62,7 @@ import { BrowserTabIcon } from '@/components/tab-bar/BrowserTabIcon';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { PendingTransactionWatcher } from '@/components/pending-transaction-watcher/PendingTransactionWatcher';
+import { MinedTransactionWatcher } from '@/components/mined-transaction-watcher/MinedTransactionWatcher';
 import { KingOfTheHillScreen } from '@/screens/KingOfTheHill';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';
@@ -610,6 +611,8 @@ function SwipeNavigatorScreens() {
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const showKingOfTheHillTab = useShowKingOfTheHill();
 
+  const { language } = useAccountSettings();
+
   const getScreenOptions = useCallback(
     (props: { route: RouteProp<ParamListBase, string> }): MaterialTopTabNavigationOptions => {
       const isOnBrowserTab = props.route.name === Routes.DAPP_BROWSER_SCREEN;
@@ -626,6 +629,8 @@ function SwipeNavigatorScreens() {
 
   return (
     <Swipe.Navigator
+      // required to force re-render when showKingOfTheHillTab or language changes
+      key={`swipe-navigator-${showKingOfTheHillTab ? 'koth' : 'profile'}-${language}`}
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
       screenOptions={getScreenOptions}
@@ -669,6 +674,7 @@ export function SwipeNavigator() {
 
       <TestnetToast chainId={chainId} />
       <PendingTransactionWatcher />
+      <MinedTransactionWatcher />
     </FlexItem>
   );
 }

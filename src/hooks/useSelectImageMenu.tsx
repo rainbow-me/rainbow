@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useMutation } from '@tanstack/react-query';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -16,7 +16,7 @@ type Action = 'library' | 'nft';
 const items = {
   library: {
     actionKey: 'library',
-    actionTitle: lang.t('profiles.create.upload_photo'),
+    actionTitle: i18n.t(i18n.l.profiles.create.upload_photo),
     icon: {
       imageValue: {
         systemName: 'photo.on.rectangle.angled',
@@ -26,7 +26,7 @@ const items = {
   },
   nft: {
     actionKey: 'nft',
-    actionTitle: lang.t('profiles.create.choose_nft'),
+    actionTitle: i18n.t(i18n.l.profiles.create.choose_nft),
     icon: {
       imageValue: {
         systemName: 'square.grid.2x2',
@@ -37,7 +37,7 @@ const items = {
   },
   remove: {
     actionKey: 'remove',
-    actionTitle: lang.t('profiles.create.remove'),
+    actionTitle: i18n.t(i18n.l.profiles.create.remove),
     icon: {
       imageValue: {
         systemName: 'trash',

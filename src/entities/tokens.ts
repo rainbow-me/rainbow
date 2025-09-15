@@ -80,6 +80,13 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
   network: string;
+  images?: {
+    highResUrl?: string | null | undefined;
+    lowResUrl?: string | null | undefined;
+    mimeType?: string | null | undefined;
+    animatedUrl?: string | null | undefined;
+    animatedMimeType?: string | null | undefined;
+  };
 }
 
 export interface SwappableAsset extends ParsedAddressAsset {

@@ -17,7 +17,7 @@ export const getTheme = (): Promise<ThemesType> => getGlobal(THEME, 'system');
 export const saveTheme = (theme: ThemesType, isSystemDarkMode: boolean) => {
   if (IS_ANDROID) {
     const themeToUse = theme === Themes.SYSTEM ? (isSystemDarkMode ? Themes.DARK : Themes.LIGHT) : theme;
-    SystemBars.setStyle({ statusBar: themeToUse === Themes.DARK ? 'light' : 'dark' });
+    SystemBars.setStyle(themeToUse === Themes.DARK ? 'light' : 'dark');
   }
 
   return saveGlobal(THEME, theme);

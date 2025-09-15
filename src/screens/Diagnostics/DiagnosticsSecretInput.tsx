@@ -1,7 +1,7 @@
 import { useTheme } from '@/theme';
 import React, { useCallback } from 'react';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { haptics } from '@/utils';
 import { Row } from '@/components/layout';
@@ -13,20 +13,20 @@ export const DiagnosticsSecretInput = ({ value, color }: { value: string; color:
   const { colors } = useTheme();
   const handleCopy = useCallback(() => {
     Alert.alert(
-      lang.t('wallet.diagnostics.secret.reminder_title'),
-      lang.t('wallet.diagnostics.secret.these_words_are_for_your_eyes_only'),
+      i18n.t(i18n.l.wallet.diagnostics.secret.reminder_title),
+      i18n.t(i18n.l.wallet.diagnostics.secret.these_words_are_for_your_eyes_only),
       [
         {
           onPress: () => {
             Clipboard.setString(value);
             haptics.notificationSuccess();
           },
-          text: lang.t('wallet.diagnostics.secret.okay_i_understand'),
+          text: i18n.t(i18n.l.wallet.diagnostics.secret.okay_i_understand),
         },
         {
           onPress: undefined,
           style: 'cancel',
-          text: lang.t('button.cancel'),
+          text: i18n.t(i18n.l.button.cancel),
         },
       ]
     );
@@ -50,7 +50,7 @@ export const DiagnosticsSecretInput = ({ value, color }: { value: string; color:
           width="100%"
         >
           <Text align="center" color={colors.whiteLabel} weight="bold">
-            {lang.t('wallet.diagnostics.secret.copy_secret')}
+            {i18n.t(i18n.l.wallet.diagnostics.secret.copy_secret)}
           </Text>
         </Row>
       </ButtonPressAnimation>

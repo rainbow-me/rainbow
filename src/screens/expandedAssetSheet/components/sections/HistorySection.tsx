@@ -440,7 +440,7 @@ export const HistorySection = memo(function HistorySection() {
         content={<HistoryContent tokenInteractions={tokenInteractions} isLoadingTokenInteractions={isLoadingTokenInteractions} />}
         icon="􀐫"
         id={SectionId.HISTORY}
-        primaryText="History"
+        primaryText={i18n.t(l.title)}
       />
       <SheetSeparator />
     </Box>

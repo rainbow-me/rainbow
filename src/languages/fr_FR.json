@@ -22,7 +22,7 @@
       "tab_interactions_tooltip": "Interactions de contrat intelligent",
       "tab_investments": "Piscines",
       "tab_savings": "Économies",
-      "tab_showcase": "Vitrine",
+      "tab_showcase": "Showcase",
       "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_rewards": "Récompenses",
@@ -47,6 +47,7 @@
       "unknown_token": "Jeton Inconnu"
     },
     "activity_list": {
+      "title": "Activité",
       "empty_state": {
         "default_label": "Pas encore de transactions",
         "recycler_label": "Pas encore de transactions",
@@ -392,7 +393,7 @@
           },
           "crypto_and_wallets": {
             "title": "Crypto et Portefeuilles",
-            "description": "À un niveau vraiment simple, un portefeuille n'est qu'une clé cryptographique personnelle et unique (comme illustré ci-dessous). Les applications de portefeuille comme Rainbow sont des interfaces utilisateur qui vous permettent de créer, de stocker et de gérer des clés cryptographiques sans avoir besoin de compétences ou de connaissances techniques. :)"
+            "description": "À un niveau vraiment simple, un portefeuille n'est qu'une clé cryptographique personnelle et unique (comme illustré ci-dessous). Les applications de portefeuille comme Rainbow sont des interfaces utilisateur qui vous permettent de créer, de stocker et de gérer des clés cryptographiques sans avoir besoin de compétences ou de connaissances techniques."
           },
           "protect_wallet": {
             "title": "Protégez votre portefeuille",
@@ -467,6 +468,9 @@
         "quote_error": "Erreur de Devis",
         "no_route_found": "Aucun itinéraire trouvé",
         "fetching_quote": "Récupération du devis...",
+        "rainbow_eth_rewards": "Récompenses ETH de Rainbow",
+        "merkl_claimable": "Coffre %{dappName}",
+        "merkl_claimable_description": "Stratégie %{assetSymbols}",
         "select_a_network": "Sélectionnez un réseau",
         "select_a_token": "Sélectionner un token",
         "amount_to_claim_on_network": "%{amount} à réclamer sur %{network}",
@@ -476,6 +480,9 @@
         "claimed": "Réclamé!",
         "claiming_failed": "Échec de réclamation",
         "insufficient_funds": "Fonds insuffisants",
+        "hold_to_claim": "Tenir pour Réclamer",
+        "creator_lp_fees": "Frais LP du Créateur",
+        "rainbow_token_launcher": "Lanceur de Token Rainbow",
         "claim_amount": "Réclamer %{amount}",
         "done": "Terminé",
         "try_again": "Réessayer",
@@ -519,38 +526,39 @@
       "alert": "Alerte",
       "analyze_env_variables": "Analyser les Variables ENV",
       "analyze_react_query": "Analyser la Requête React",
+      "analyze_user_assets_query": "Analyser la Requête d'Actifs Utilisateur",
       "applied": "APPLIQUÉ",
       "backups_deleted_successfully": "Sauvegardes supprimées avec succès",
-      "clear_async_storage": "Effacer le stockage asynchrone",
+      "clear_async_storage": "Effacer AsyncStorage",
       "clear_pending_txs": "Effacer les transactions en attente",
       "clear_image_cache": "Effacer le cache d'image",
       "clear_image_metadata_cache": "Effacer le cache des métadonnées d'image",
-      "clear_local_storage": "Effacer le stockage local",
-      "clear_mmkv_storage": "Effacer le stockage MMKV",
+      "clear_local_storage": "Effacer le Stockage Local",
+      "clear_mmkv_storage": "Effacer MMKV Storage",
       "clear_react_query_cache": "Effacer le Cache de Requête React",
-      "connect_to_anvil": "Se connecter à anvil",
+      "connect_to_anvil": "Connecter à Anvil",
       "copy_fcm_token": "Copier le Jeton FCM",
       "copy_log_lines": "Copier les Lignes de Log",
       "copy_signing_wallet_address": "Copier l'Adresse du Portefeuille de Signature",
-      "disconnect_to_anvil": "Déconnecter de anvil",
-      "crash_app_render_error": "Crash app (render error) :)",
+      "disconnect_to_anvil": "Se Déconnecter d'Anvil",
+      "crash_app_render_error": "Appli en Crash (Erreur de Rendu)",
       "enable_testnets": "Activer Testnets",
-      "installing_update": "Installation de la mise à jour",
-      "navigation_entry_point": "Point d'entrée de navigation",
-      "no_update": "Pas de mise à jour",
+      "installing_update": "Installation de la Mise à jour",
+      "navigation_entry_point": "Point d'Entrée de Navigation",
+      "no_update": "Pas de Mise à jour",
       "not_applied": "NON APPLIQUÉ",
       "notifications_debug": "Débogage des notifications",
-      "remove_all_backups": "Supprimer toutes les sauvegardes",
+      "remove_all_backups": "Supprimer toutes les Sauvegardes",
       "keychain": {
         "menu_title": "Réinitialiser le trousseau",
-        "delete_wallets": "Supprimer tous les portefeuilles",
+        "delete_wallets": "Supprimer tous les Portefeuilles",
         "alert_title": "Attention !",
         "alert_body": "🚨🚨🚨 \nCeci supprimera définitivement toutes vos clés privées de portefeuille et données, assurez-vous d'avoir tout sauvegardé avant de continuer !! \n🚨🚨🚨"
       },
-      "restart_app": "Redémarrer l'application",
-      "reset_experimental_config": "Reset experimental config :)",
+      "restart_app": "Redémarrer l'Appli",
+      "reset_experimental_config": "Réinitialiser la Conf Expérimentale",
       "status": "Statut",
-      "sync_codepush": "Synchroniser codepush"
+      "sync_codepush": "Synchroniser CodePush"
     },
     "discover": {
       "pulse": {
@@ -559,7 +567,6 @@
         "trading_at_prefix": "Commerce à"
       },
       "search": {
-        "profiles": "Profils",
         "search_ethereum": "Recherchez tout sur Ethereum",
         "search_ethereum_short": "Recherche Ethereum",
         "search": "Recherche",
@@ -604,6 +611,7 @@
         "expires_in": "Expire dans %{minutes}m",
         "from_divider": "de",
         "to_divider": "à",
+        "token": "Jeton",
         "view_on": "Voir sur %{blockExplorerName}",
         "view_on_etherscan": "Voir sur Etherscan",
         "copy_contract_address": "Copier l'adresse du contrat"
@@ -647,16 +655,14 @@
         },
         "unknown_price": {
           "title": "Valeur de marché inconnue",
-          "description": "Si vous décidez de continuer, assurez-vous d'être satisfait de la quantité indiquée."
+          "description": "Si vous décidez de continuer, assurez-vous d'être satisfait des montants indiqués."
         },
         "losing_prefix": "Perdant",
         "small_market": "Petit marché",
         "small_market_try_smaller_amount": "Petit marché — essayez une plus petite quantité",
         "you_are_losing": "Vous perdez %{priceImpact}",
         "you_are_losing_prefix": "Vous perdez",
-        "no_data": "Valeur de marché inconnue",
-        "label": "Perte possible",
-        "no_data_subtitle": "Si vous décidez de continuer, assurez-vous d'être satisfait de la quantité indiquée"
+        "label": "Perte possible"
       },
       "source": {
         "rainbow": "Auto",
@@ -727,6 +733,7 @@
           "circulating_supply": "Offre en circulation",
           "max_supply": "Approvisionnement maximum",
           "fully_diluted_valuation": "Valorisation entièrement diluée",
+          "created_by": "Créé par",
           "market_cap": "Capitalisation boursière",
           "created": "Créé",
           "volume_24_hours": "Volume sur 24 heures",
@@ -747,9 +754,35 @@
         "about": {
           "title": "À propos",
           "what_is": "Qu'est-ce que %{assetName}?"
+        },
+        "history": {
+          "title": "Historique",
+          "tabs": {
+            "all": "Tout",
+            "buys": "Achats",
+            "sells": "Ventes"
+          },
+          "more": "Plus",
+          "less": "Moins",
+          "bought": "Acheté",
+          "sold": "Vendu",
+          "received": "Reçu",
+          "sent": "Envoyé",
+          "unknown": "Inconnue"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "Fermer",
+            "h": "H",
+            "l": "L",
+            "o": "Ouvrir",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "Aucun"
+        },
         "all_time": "Tout Temps",
         "date": {
           "months": {
@@ -768,9 +801,9 @@
           }
         },
         "no_chart_data": "Pas de Données de Graphiques",
-        "no_price_data": "Pas de données de prix",
+        "no_price_data": "Pas de Données de Prix",
         "past_timespan": "Passé %{formattedTimespan}",
-        "today": "Aujourd'hui :)",
+        "today": "Jour précédent",
         "token_pool": "%{tokenName} Piscine"
       },
       "contact_profile": {
@@ -919,7 +952,7 @@
       "raindoge_title": "Vous avez débloqué\nRainbow 􀆄 The Doge NFT",
       "pooly_description": "Une icône Rainbow Pooly en édition spéciale pour les supporters de la liberté.",
       "pooly_title": "Vous avez débloqué une\nRainbow Pooly",
-      "zorb_description": "Une icône spéciale Rainbow Zorb :\n100% de ce que vous aimez, plus rapide et plus efficace.",
+      "zorb_description": "Une icône spéciale Rainbow Zorb :\n100 % de ce que vous aimez, plus rapide et plus efficace.",
       "zorb_title": "Vous avez débloqué\nRainbow Zorb Energy!",
       "poolboy_description": "Une icône spéciale Rainbow x Poolsuite pour l'été onchain.",
       "poolboy_title": "Vous avez débloqué le\nRainbow Poolboy!",
@@ -929,6 +962,8 @@
       "farcaster_title": "Vous avez débloqué\nRainbowcast",
       "redacted_description": "Une icône Rainbow exclusive pour les véritables amateurs de Gdupi.",
       "redacted_title": "Vous avez débloqué\nRedacted Rainbow",
+      "baggy_description": "De la rue à la chaîne, ce petit sac contient votre dose portable de vibrations Rainbow. Goûtez les couleurs et ressentez la différence.",
+      "baggy_title": "Vous avez débloqué\nRainbow Baggy",
       "button": "Snag the icon :)"
     },
     "explain": {
@@ -976,7 +1011,7 @@
         "title": "Échec de la connexion"
       },
       "failed_wc_invalid_chains": {
-        "text": "L'application dapp a demandé des réseaux qui ne sont pas pris en charge par Rainbow.",
+        "text": "Le dapp a demandé des réseau(x) non pris en charge par Rainbow.",
         "title": "Échec de la connexion"
       },
       "failed_wc_invalid_chain": {
@@ -1149,6 +1184,30 @@
         "title": "Non %{networkName} %{gasToken} détecté",
         "text": "Vous ne pourrez pas utiliser %{networkName} sans %{networkName} %{gasToken}. Si vous poursuivez cette transaction, vous ne pourrez pas échanger, relier ou transférer vos jetons %{networkName} sans ajouter %{networkName} %{gasToken} à votre portefeuille.",
         "button": "Procéder quand même"
+      },
+      "ens_primary_name": {
+        "title": "Que signifie définir mon nom ENS?",
+        "text": "Les gens pourront taper votre nom .eth dans les dApps au lieu de votre adresse Ethereum complète lorsqu'ils souhaitent vous envoyer quelque chose, et les dApps pourront utiliser votre nom .eth et votre profil pour afficher des informations sur vous. Cela est également connu sous le nom de définir votre nom ENS comme \"primaire\"."
+      },
+      "ens_on_chain_data_warning": {
+        "title": "Attention !",
+        "text": "Les données que vous fournissez ici seront stockées sur la blockchain Ethereum - ce qui signifie qu'elles seront visibles par tous et accessibles à quiconque. Ne partagez pas de données dont vous n'êtes pas à l'aise avec la diffusion publique."
+      },
+      "ens_manager": {
+        "title": "Qu'est-ce que le gestionnaire .eth?",
+        "text": "Le gestionnaire d'un nom .eth peut définir et mettre à jour ses enregistrements, créer des sous-domaines de ce nom ou gérer sa configuration. Le gestionnaire est défini par le propriétaire du nom .eth et est également connu comme le contrôleur du nom ENS."
+      },
+      "ens_owner": {
+        "title": "Qu'est-ce que le propriétaire du nom .eth?",
+        "text": "Le propriétaire d'un nom .eth a un contrôle total et ultime sur ce nom. Il peut transférer la propriété du nom et permettre à quelqu'un d'autre de gérer le nom pour lui s'il le souhaite (en configurant les enregistrements, etc.). Le propriétaire est également connu comme le titulaire du nom ENS."
+      },
+      "ens_resolver": {
+        "title": "Qu'est-ce qu'un résolveur .eth ?",
+        "text": "Un résolveur est un contrat qui associe un nom à la ressource (par exemple, adresses de cryptomonnaie, hachage de contenu, etc.). Les résolveurs sont pointés par le champ du résolveur du registre."
+      },
+      "ens_configuration": {
+        "title": "Que signifient ces options ?",
+        "text": "Lorsque vous envoyez un nom ENS à quelqu'un d'autre et que vous en faites le nouveau propriétaire, vous pouvez vouloir le configurer à l'avance pour lui éviter une transaction future. Rainbow vous permet d'effacer toute information de profil actuellement définie pour le nom, de configurer le nom ENS pour qu'il pointe vers l'adresse du destinataire et de faire de l'adresse du destinataire le gestionnaire du nom."
       }
     },
     "fedora": {
@@ -1526,7 +1585,7 @@
       "claim": {
         "title": "Réclamez vos points",
         "title_rewards_line_1": "Bienvenue chez",
-        "title_rewards_line_2": "Rainbow Rewards",
+        "title_rewards_line_2": "Récompenses Rainbow",
         "subtitle": "Les points sont là. Découvrez combien vous en avez reçu.",
         "subtitle_rewards": "Soyez récompensé pour utiliser Rainbow. Faites des actions onchain, gagnez des points, gagnez de l'ETH.",
         "get_started": "Commencer",
@@ -1632,7 +1691,7 @@
         "invalid_referral_code_alert": "Code de parrainage invalide. Veuillez vérifier votre code et réessayer.",
         "no_balance_alert": "Pour vous inscrire aux Points, vous devez avoir un solde de portefeuille non nul.",
         "referral_link_is_ready": "Votre lien de parrainage est prêt",
-        "referral_link_bonus_text": "Tweetez votre lien de parrainage et obtenez 250 points supplémentaires",
+        "referral_link_bonus_text": "Tweetez votre lien de parrainage et vous gagnerez 10 % des points gagnés par toute personne que vous parrainez",
         "referral_link_bonus_text_extended": "De plus, vous gagnerez 10% des points gagnés par chaque personne que vous parrainez",
         "complete_onboarding": "Terminé",
         "share_to_x": "Partager sur X",
@@ -1986,6 +2045,9 @@
       "rewards": "Récompenses",
       "pools": "Piscines"
     },
+    "profile": {
+      "title": "Activité"
+    },
     "savings": {
       "deposit": "Dépôt",
       "deposit_from_wallet": "Dépôt à partir du portefeuille :)",
@@ -2033,20 +2095,62 @@
       "backup_google_account": "Compte Google",
       "currency": {
         "title": "Devise",
-        "ETH": "Ethereum",
-        "USD": "Dollar des États-Unis",
-        "EUR": "Euro",
-        "GBP": "Livre britannique",
-        "AUD": "Dollar australien",
-        "CNY": "Yuan chinois",
-        "KRW": "Won sud-coréen",
-        "JPY": "Yen japonais",
-        "RUB": "Rouble russe",
-        "INR": "Roupie indienne",
-        "TRY": "Livre turque",
-        "CAD": "Dollar canadien",
-        "NZD": "Dollar néo-zélandais",
-        "ZAR": "Rand sud-africain"
+        "ETH": {
+          "label": "Ethereum",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "Dollar des États-Unis",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "Euro",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "Livre britannique",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "Dollar australien",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "Yuan chinois",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "Won sud-coréen",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "Yen japonais",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "Rouble russe",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "Roupie indienne",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "Livre turque",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "Dollar canadien",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "Dollar néo-zélandais",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "Rand sud-africain",
+          "code": "ZAR"
+        }
       },
       "app_icon": "Icône de l'application",
       "developer": "Paramètres du développeur",
@@ -2700,7 +2804,7 @@
         "you_need_to_authenticate_with_your_pin": "Vous devez vous authentifier avec votre PIN pour accéder à vos secrets de portefeuille",
         "share_application_state": "Partager le dump de l'état de l'application",
         "wallet_details_title": "Détails du portefeuille",
-        "wallet_details_description": "Voici les détails de tous les portefeuilles ajoutés à Rainbow. :)"
+        "wallet_details_description": "Voici les détails de tous les portefeuilles ajoutés à Rainbow. :"
       },
       "error_displaying_address": "Erreur d'affichage de l'adresse",
       "feedback": {
@@ -2829,6 +2933,7 @@
         "find_a_code": "Trouvez un code à scanner",
         "qr_1_app_connected": "1 Application Connectée",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Applications Connectées",
+        "scan_to_connect": "Scanner pour connecter",
         "scan_to_pay_or_connect": "Scannez pour payer ou vous connecter",
         "simulator_mode": "Mode simulateur",
         "sorry_could_not_be_recognized": "Désolé, ce code QR n'a pas pu être reconnu.",
@@ -2888,6 +2993,7 @@
         "sending_title": "Envoi",
         "you_own_this_wallet": "Vous possédez ce portefeuille",
         "first_time_send": "Premier envoi",
+        "previous_send": "%{number} envoi précédent",
         "previous_sends": "%{number} envois précédents"
       },
       "wallet_connect": {
@@ -3181,7 +3287,8 @@
       "show_less": "Afficher moins",
       "more": "Plus",
       "show_more": "Plus de Réseaux",
-      "all_networks": "Tous les réseaux"
+      "all_networks": "Tous les réseaux",
+      "search": "Recherche"
     },
     "token_launcher": {
       "airdrop": {
@@ -3340,10 +3447,78 @@
         "to_claim_on": "à réclamer sur %{network}",
         "view_coin": "Voir Pièce",
         "you": "Vous"
+      },
+      "errors": {
+        "header": "Erreur lors du lancement du jeton",
+        "api_request_failed": "Échec de la demande API",
+        "api_response_invalid": "Réponse API invalide",
+        "contract_interaction_failed": "Échec de l'interaction du contrat",
+        "gas_estimation_failed": "Échec de l'estimation de gaz",
+        "insufficient_funds": "Fonds insuffisants",
+        "submission_details_missing": "Détails de soumission manquants",
+        "transaction_rejected": "Transaction rejetée",
+        "transaction_failed": "Transaction échouée",
+        "transaction_simulation_failed": "Échec de la simulation de transaction",
+        "unknown_error": "Erreur inconnue",
+        "wallet_connection_error": "Erreur de connexion du portefeuille",
+        "invalid_params": "Paramètres invalides",
+        "missing_required_param": "Paramètres requis manquants"
       }
     },
     "done": "Terminé",
     "copy": "Copier",
-    "paste": "Coller"
+    "paste": "Coller",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRIX",
+      "mcap": "CAPITALISATION"
+    },
+    "king_of_hill": {
+      "title": "Plateforme de lancement",
+      "launch": "Lancer",
+      "current_king": "ROI ACTUEL",
+      "last_winner": "Dernier gagnant",
+      "no_previous_winner": "Aucun gagnant précédent",
+      "round_ends_in": "La manche se termine dans",
+      "how_it_works": "Comment ça marche",
+      "starting_next_round": "Début de la prochaine manche",
+      "left": "RESTE",
+      "king_of_the_hill": "Le roi de la colline",
+      "name": "Nom",
+      "explain_sheet": {
+        "next": "Suivant",
+        "got_it": "Compris",
+        "steps": {
+          "step_1": {
+            "title": "La course est en direct",
+            "subtitle_parts": [
+              "Le jeton avec le plus",
+              " de volume d'achat ",
+              "en ce moment est le roi actuel."
+            ]
+          },
+          "step_2": {
+            "title": "Une couronne par jour",
+            "subtitle_parts": [
+              "À",
+              " minuit (12:00 AM UTC), ",
+              "le jeton en tête est couronné gagnant du jour."
+            ]
+          },
+          "step_3": {
+            "title": "Gagner des récompenses",
+            "subtitle_parts": [
+              "Les acheteurs du roi actuel obtiennent",
+              " 2x points."
+            ],
+            "subtitle_two_parts": [
+              "Créateurs",
+              " gagnent des points ",
+              "lorsqu'ils sont couronnés."
+            ]
+          }
+        }
+      }
+    }
   }
 }

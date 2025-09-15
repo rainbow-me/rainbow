@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
@@ -32,10 +32,10 @@ const RegisterContent = ({
           <Box flexGrow={1} justifyContent="center" paddingHorizontal="24px">
             <Stack space="24px">
               <Text align="center" color="primary (Deprecated)" containsEmoji size="23px / 27px (Deprecated)" weight="heavy">
-                {lang.t('profiles.confirm.last_step')} 💈
+                {i18n.t(i18n.l.profiles.confirm.last_step)} 💈
               </Text>
               <Text align="center" color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
-                {lang.t('profiles.confirm.last_step_description')}
+                {i18n.t(i18n.l.profiles.confirm.last_step_description)}
               </Text>
             </Stack>
           </Box>
@@ -46,7 +46,7 @@ const RegisterContent = ({
             <Inline alignHorizontal="justify" alignVertical="center">
               <Inline>
                 <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                  {`${lang.t('profiles.confirm.set_ens_name')} `}
+                  {`${i18n.t(i18n.l.profiles.confirm.set_ens_name)} `}
                 </Text>
                 <ButtonPressAnimation onPress={openPrimaryENSNameHelper} scaleTo={0.9}>
                   <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">

@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,7 +24,7 @@ type ActivityListEmptyStateProps = {
 const ActivityListEmptyState = ({
   children,
   emoji = '🏝',
-  label = lang.t('activity_list.empty_state.default_label'),
+  label = i18n.t(i18n.l.activity_list.empty_state.default_label),
 }: ActivityListEmptyStateProps) => {
   const { top: topInset } = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();

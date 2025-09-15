@@ -15,6 +15,7 @@ import { assetIsUniqueAsset } from '@/handlers/web3';
 import { KeyboardProvider, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
+import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],
@@ -86,7 +87,11 @@ export default function SendAssetForm({
 
   return (
     <KeyboardProvider statusBarTranslucent={false} preserveEdgeToEdge={false} navigationBarTranslucent={false}>
-      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
+      <KeyboardAwareScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="always"
+        extraKeyboardSpace={-NAVIGATION_BAR_HEIGHT}
+      >
         <Container>
           <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
             <ShadowStack

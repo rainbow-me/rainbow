@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../theme/ThemeContext';
@@ -143,7 +143,7 @@ const RainbowButton = ({
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
           <ButtonLabel disabled={disabled} isDarkMode={isDarkMode} type={type}>
-            {type === RainbowButtonTypes.addCash ? lang.t('button.add_cash') : label}
+            {type === RainbowButtonTypes.addCash ? i18n.t(i18n.l.button.add_cash) : label}
           </ButtonLabel>
         </ButtonContent>
       </ButtonContainer>

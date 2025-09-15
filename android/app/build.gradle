@@ -31,15 +31,12 @@ def getPassword(String currentUser, String keyChain) {
 
 import com.android.build.OutputFile
 
-def isE2E = project.getProperties().get("isE2E") == "true"
-
 apply plugin: "com.facebook.react"
 
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 apply plugin: "io.sentry.android.gradle"
 
 sentry {
-    ignoredBuildTypes = isE2E ? ["debug", "release"] : ["debug"]
     // Enables or disables the automatic configuration of Native Symbols
     // for Sentry. This executes sentry-cli automatically so
     // you don't need to do it manually.
@@ -62,48 +59,48 @@ sentry {
 }
 
 react {
-	    /* Folders */
-	    //   The root of your project, i.e. where "package.json" lives. Default is '..'
-	    // root = file("../")
-	    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-	    // reactNativeDir = file("../node_modules/react-native")
-	    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
-	    // codegenDir = file("../node_modules/@react-native/codegen")
-	    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
-	    // cliFile = file("../node_modules/react-native/cli.js")
+    /* Folders */
+    //   The root of your project, i.e. where "package.json" lives. Default is '..'
+    // root = file("../")
+    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
+    // reactNativeDir = file("../node_modules/react-native")
+    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
+    // codegenDir = file("../node_modules/@react-native/codegen")
+    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
+    // cliFile = file("../node_modules/react-native/cli.js")
 
-	    /* Variants */
-	    //   The list of variants to that are debuggable. For those we're going to
-	    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
-	    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
-	    // debuggableVariants = ["liteDebug", "prodDebug"]
+    /* Variants */
+    //   The list of variants to that are debuggable. For those we're going to
+    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
+    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
+    // debuggableVariants = ["liteDebug", "prodDebug"]
 
-	    /* Bundling */
-	    //   A list containing the node command and its flags. Default is just 'node'.
-	    // nodeExecutableAndArgs = ["node"]
-	    //
-	    //   The command to run when bundling. By default is 'bundle'
-	    // bundleCommand = "ram-bundle"
-	    //
-	    //   The path to the CLI configuration file. Default is empty.
-	    // bundleConfig = file(../rn-cli.config.js)
-	    //
-	    //   The name of the generated asset file containing your JS bundle
-	    // bundleAssetName = "MyApplication.android.bundle"
-	    //
-	    //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
-	    // entryFile = file("../js/MyApplication.android.js")
-	    //
-	    //   A list of extra flags to pass to the 'bundle' commands.
-	    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
-	    // extraPackagerArgs = []
+    /* Bundling */
+    //   A list containing the node command and its flags. Default is just 'node'.
+    // nodeExecutableAndArgs = ["node"]
+    //
+    //   The command to run when bundling. By default is 'bundle'
+    // bundleCommand = "ram-bundle"
+    //
+    //   The path to the CLI configuration file. Default is empty.
+    // bundleConfig = file(../rn-cli.config.js)
+    //
+    //   The name of the generated asset file containing your JS bundle
+    // bundleAssetName = "MyApplication.android.bundle"
+    //
+    //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
+    // entryFile = file("../js/MyApplication.android.js")
+    //
+    //   A list of extra flags to pass to the 'bundle' commands.
+    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
+    // extraPackagerArgs = []
 
-	    /* Hermes Commands */
-	    //   The hermes compiler command to run. By default it is 'hermesc'
-	    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
-	    //
-	    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
-	    // hermesFlags = ["-O", "-output-source-map"]
+    /* Hermes Commands */
+    //   The hermes compiler command to run. By default it is 'hermesc'
+    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
+    //
+    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
+    // hermesFlags = ["-O", "-output-source-map"]
 
     /* Autolinking */
     autolinkLibrariesWithApp()
@@ -160,8 +157,8 @@ android {
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 271
-        versionName "2.0.0"
+        versionCode 274
+        versionName "2.0.3"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true
@@ -185,10 +182,17 @@ android {
         def pass = System.getenv('RAINBOW_KEY_ANDROID_PASSWORD') ?: getPassword("rainbow","rainbow-android-key")
 
         release {
-            storeFile file('../keystores/rainbow-key.keystore')
-            storePassword pass
-            keyAlias 'rainbow-alias'
-            keyPassword pass
+            if (project.hasProperty('RNEF_UPLOAD_STORE_FILE')) {
+                storeFile file(RNEF_UPLOAD_STORE_FILE)
+                storePassword RNEF_UPLOAD_STORE_PASSWORD
+                keyAlias RNEF_UPLOAD_KEY_ALIAS
+                keyPassword RNEF_UPLOAD_KEY_PASSWORD
+            } else {
+                storeFile file('../keystores/rainbow-key.keystore')
+                storePassword pass
+                keyAlias 'rainbow-alias'
+                keyPassword pass
+            }
         }
     }
 
@@ -199,13 +203,8 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
-            if (isE2E) {
-                signingConfig signingConfigs.debug
-                minifyEnabled false
-            } else {
-                signingConfig signingConfigs.release
-                minifyEnabled enableProguardInReleaseBuilds
-            }
+            signingConfig signingConfigs.release
+            minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }

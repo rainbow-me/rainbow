@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { PermissionsAndroid, Platform } from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -13,10 +13,10 @@ async function getPermissionAndroid(): Promise<boolean | undefined> {
     }
 
     const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, {
-      buttonNegative: lang.t('button.cancel'),
-      buttonPositive: lang.t('button.ok'),
-      message: lang.t('expanded_state.unique.save.your_permission_is_required'),
-      title: lang.t('expanded_state.unique.save.image_download_permission'),
+      buttonNegative: i18n.t(i18n.l.button.cancel),
+      buttonPositive: i18n.t(i18n.l.button.ok),
+      message: i18n.t(i18n.l.expanded_state.unique.save.your_permission_is_required),
+      title: i18n.t(i18n.l.expanded_state.unique.save.image_download_permission),
     });
 
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -31,9 +31,9 @@ async function getPermissionAndroid(): Promise<boolean | undefined> {
 
 function alertError(error?: { message?: string }): void {
   Alert.alert(
-    lang.t('expanded_state.unique.save.failed_to_save_image'),
+    i18n.t(i18n.l.expanded_state.unique.save.failed_to_save_image),
     error?.message ? `${error.message}` : '',
-    [{ text: lang.t('button.ok') }],
+    [{ text: i18n.t(i18n.l.button.ok) }],
     { cancelable: false }
   );
 }
@@ -42,7 +42,7 @@ async function downloadImageAndroid(url: string): Promise<void> {
   const granted = await getPermissionAndroid();
   if (!granted) {
     alertError({
-      message: lang.t('expanded_state.unique.save.access_to_photo_library_was_denied'),
+      message: i18n.t(i18n.l.expanded_state.unique.save.access_to_photo_library_was_denied),
     });
     return;
   }

@@ -11,95 +11,14 @@ import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
 import { ChainId } from '@/state/backendNetworks/types';
 import { address } from '@/utils/abbreviations';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToBalanceDisplay,
-  convertRawAmountToBalance,
-  convertRawAmountToDecimalFormat,
-  greaterThan,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
-import * as lang from '@/languages';
+
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainImage } from '../coin-icon/ChainImage';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
+import { activityValues, useTransactionLaunchToken } from '@/helpers/transactions';
 
-export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
-  if (!approvalAmount || !asset) return;
-  if (approvalAmount === 'UNLIMITED') return lang.t(lang.l.transactions.approvals.unlimited);
-  if (type === 'revoke') return lang.t(lang.l.transactions.approvals.no_allowance);
-  const amountDisplay = convertRawAmountToBalance(
-    approvalAmount,
-    { decimals: asset?.decimals, symbol: asset?.symbol },
-    undefined,
-    true
-  )?.display;
-  return amountDisplay || '';
-};
-
-const approvalTypeValues = (transaction: RainbowTransaction) => {
-  const { asset, approvalAmount } = transaction;
-
-  if (!asset || !approvalAmount) return;
-  transaction.protocol;
-  return [transaction.protocol || '', getApprovalLabel(transaction)];
-};
-
-const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowTransaction['status']) => {
-  const tokenIn = changes?.filter(c => c?.direction === 'in')[0];
-  const tokenOut = changes?.filter(c => c?.direction === 'out')[0];
-
-  // NOTE: For pending txns let's use the change values instead of
-  // the transaction balance change since that hasn't happened yet
-  if (status === TransactionStatus.pending) {
-    const decimalsOut = typeof tokenOut?.asset.decimals === 'number' ? tokenOut.asset.decimals : 18;
-    const decimalsIn = typeof tokenIn?.asset.decimals === 'number' ? tokenIn.asset.decimals : 18;
-
-    const valueOut = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenOut?.value?.toString() || '0', decimalsOut), decimalsOut)} ${tokenOut?.asset.symbol}`;
-    const valueIn = `+${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenIn?.value?.toString() || '0', decimalsIn), decimalsIn)} ${tokenIn?.asset.symbol}`;
-
-    return [valueOut, valueIn];
-  }
-
-  if (!tokenIn?.asset.balance?.amount || !tokenOut?.asset.balance?.amount) return;
-
-  const valueOut = `${convertAmountToBalanceDisplay(tokenOut?.asset.balance?.amount, { ...tokenOut?.asset })}`;
-  const valueIn = `+${convertAmountToBalanceDisplay(tokenIn?.asset.balance?.amount, { ...tokenIn?.asset })}`;
-
-  return [valueOut, valueIn];
-};
-
-const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeCurrencyKey) => {
-  const { changes, direction, type, status } = transaction;
-  if (checkForPendingSwap(transaction)) return swapTypeValues(changes, status);
-  if (['approve', 'revoke'].includes(type)) return approvalTypeValues(transaction as RainbowTransaction);
-
-  const change = changes?.filter(c => c?.direction === direction && c?.asset.type !== 'nft')[0];
-  let valueSymbol = direction === 'out' ? '-' : '+';
-
-  if (type === 'send') {
-    valueSymbol = '-';
-  }
-  if (type === 'receive') {
-    valueSymbol = '+';
-  }
-
-  if (!change?.asset) return;
-
-  const { balance } = change.asset;
-
-  const assetValue = convertAmountToBalanceDisplay(balance?.amount || '0', change.asset);
-
-  const nativeBalance = convertAmountAndPriceToNativeDisplay(balance?.amount || '0', change.asset.price?.value || '0', nativeCurrency);
-  const assetNativeValue = greaterThan(nativeBalance.amount, '0')
-    ? `${valueSymbol}${nativeBalance?.display}`
-    : lang.t(lang.l.transactions.no_value);
-
-  return greaterThan(nativeBalance.amount, '0') ? [`${assetValue}`, assetNativeValue] : [assetNativeValue, `${valueSymbol}${assetValue}`];
-};
 const getIconTopMargin = (type: TransactionType) => {
   switch (type) {
     case 'swap':
@@ -137,6 +56,7 @@ const activityTypeIcon: Record<TransactionType, string> = {
   claim: '􀄩',
   borrow: '􀄩',
   deployment: '􀄩',
+  launch: '􀓎',
 };
 
 export const ActivityTypeIcon = ({
@@ -177,12 +97,7 @@ const BottomRow = React.memo(function BottomRow({
   nativeCurrency: NativeCurrencyKey;
   theme: ThemeContextProps;
 }) {
-  const rainbowSuperToken = useMemo(() => {
-    if (transaction?.type === 'launch') {
-      return useSuperTokenStore.getState().getSuperTokenByTransactionHash(transaction.hash);
-    }
-    return undefined;
-  }, [transaction.hash, transaction.type]);
+  const launchToken = useTransactionLaunchToken(transaction);
 
   const { type, to, asset } = transaction;
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -194,8 +109,8 @@ const BottomRow = React.memo(function BottomRow({
     tag = transaction.description;
   }
 
-  if (type === 'launch' && rainbowSuperToken) {
-    description = rainbowSuperToken?.name;
+  if (type === 'launch' && launchToken) {
+    description = launchToken?.name;
   }
 
   if (transaction?.type === 'mint') {

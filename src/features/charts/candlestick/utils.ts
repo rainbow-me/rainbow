@@ -1,5 +1,5 @@
 import { CandleResolution } from '../types';
-import { Bar, CandlestickChartResponse, Price } from './types';
+import { Bar, CandlestickEndpointResponse, Price } from './types';
 
 /**
  * Compares two candle `Bar` objects for equality.
@@ -17,7 +17,7 @@ export function arePricesEqual(previousPrice: Price | undefined, price: Price | 
   return price?.price === previousPrice?.price && price?.percentChange === previousPrice?.percentChange;
 }
 
-export function transformApiResponseToBars(response: CandlestickChartResponse, filterEmptyVolumes = false): Bar[] {
+export function transformApiResponseToBars(response: CandlestickEndpointResponse, filterEmptyVolumes = false): Bar[] {
   const payload = response.result.payload;
   const length = payload.t.length;
   const bars: Bar[] = [];

@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { Column } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 import { useDimensions } from '@/hooks';
@@ -8,11 +7,11 @@ import styled from '@/styled-thing';
 import { removeLeadingZeros } from '@/utils';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
+import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
-const footerMargin = getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(Column).attrs({
   justify: 'end',
-  marginBottom: IS_ANDROID ? footerMargin : 0,
+  marginBottom: NAVIGATION_BAR_HEIGHT,
 })({
   width: '100%',
   zIndex: 3,

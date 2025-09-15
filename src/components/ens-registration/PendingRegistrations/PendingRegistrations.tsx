@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useEffect } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { Alert } from '../../../components/alerts';
@@ -60,7 +60,7 @@ const PendingRegistration = ({
               >
                 <Inset horizontal="10px">
                   <Text color="action (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
-                    {lang.t('profiles.pending_registrations.finish')}
+                    {i18n.t(i18n.l.profiles.pending_registrations.finish)}
                   </Text>
                 </Inset>
               </Box>
@@ -90,17 +90,17 @@ const PendingRegistrations = () => {
         buttons: [
           {
             style: 'cancel',
-            text: lang.t('profiles.pending_registrations.alert_cancel'),
+            text: i18n.t(i18n.l.profiles.pending_registrations.alert_cancel),
           },
           {
             onPress: () => {
               removeRegistrationByName(name);
             },
-            text: lang.t('profiles.pending_registrations.alert_confirm'),
+            text: i18n.t(i18n.l.profiles.pending_registrations.alert_confirm),
           },
         ],
-        message: lang.t('profiles.pending_registrations.alert_message'),
-        title: lang.t('profiles.pending_registrations.alert_title'),
+        message: i18n.t(i18n.l.profiles.pending_registrations.alert_message),
+        title: i18n.t(i18n.l.profiles.pending_registrations.alert_title),
       });
     },
     [removeRegistrationByName]
@@ -113,7 +113,7 @@ const PendingRegistrations = () => {
       </Inset>
       <Stack space="19px (Deprecated)">
         <Text color="secondary50 (Deprecated)" size="14px / 19px (Deprecated)" weight="bold">
-          {lang.t('profiles.pending_registrations.in_progress')}
+          {i18n.t(i18n.l.profiles.pending_registrations.in_progress)}
         </Text>
         {pendingRegistrations.map(registration => (
           <PendingRegistration
