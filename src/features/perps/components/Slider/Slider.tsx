@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -47,6 +47,10 @@ export interface SliderProps {
   onPercentageChange?: (percentage: number, source: SliderChangeSource) => void;
   onPercentageUpdate?: (percentage: number) => void;
   containerStyle?: ViewStyle;
+  hitSlop?: {
+    horizontal: number;
+    vertical: number;
+  };
 }
 
 export const Slider: React.FC<SliderProps> = ({
@@ -60,6 +64,7 @@ export const Slider: React.FC<SliderProps> = ({
   onPercentageChange,
   onPercentageUpdate,
   containerStyle,
+  hitSlop = { horizontal: 20, vertical: 40 },
 }) => {
   const { isDarkMode } = useColorMode();
 
@@ -303,33 +308,42 @@ export const Slider: React.FC<SliderProps> = ({
 
   return (
     <GestureDetector gesture={composedGesture}>
-      <Animated.View
-        style={[
-          sliderContainerStyle,
-          containerStyle,
-          {
-            alignItems: 'center',
-            flexDirection: 'row',
-            width,
-          },
-        ]}
+      <View
+        style={{
+          marginVertical: -hitSlop.vertical,
+          paddingVertical: hitSlop.vertical,
+          marginHorizontal: -hitSlop.horizontal,
+          paddingHorizontal: hitSlop.horizontal,
+        }}
       >
-        {/* Left bar */}
-        <Animated.View style={[styles.sliderBox, { borderColor: separatorSecondary }, leftBarContainerStyle]} />
-        {/* Scrubber */}
-        <Box style={styles.sliderScrubberContainer}>
-          <Box style={[styles.sliderScrubber, { backgroundColor: isDarkMode ? globalColors.white100 : globalColors.grey80 }]} />
-        </Box>
-        {/* Right bar */}
-        <Box
-          as={Animated.View}
+        <Animated.View
           style={[
-            styles.sliderBox,
-            rightBarContainerStyle,
-            { borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)' },
+            sliderContainerStyle,
+            containerStyle,
+            {
+              alignItems: 'center',
+              flexDirection: 'row',
+              width,
+            },
           ]}
-        />
-      </Animated.View>
+        >
+          {/* Left bar */}
+          <Animated.View style={[styles.sliderBox, { borderColor: separatorSecondary }, leftBarContainerStyle]} />
+          {/* Scrubber */}
+          <Box style={styles.sliderScrubberContainer}>
+            <Box style={[styles.sliderScrubber, { backgroundColor: isDarkMode ? globalColors.white100 : globalColors.grey80 }]} />
+          </Box>
+          {/* Right bar */}
+          <Box
+            as={Animated.View}
+            style={[
+              styles.sliderBox,
+              rightBarContainerStyle,
+              { borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)' },
+            ]}
+          />
+        </Animated.View>
+      </View>
     </GestureDetector>
   );
 };
