@@ -12,6 +12,8 @@ interface MinedTransactionsState {
   clearMinedTransactions: (address: string) => void;
 }
 
+const EMPTY_MINED_TRANSACTIONS: MinedTransactionWithPolling[] = [];
+
 export const useMinedTransactionsStore = createRainbowStore<MinedTransactionsState>((set, get) => ({
   minedTransactions: {},
 
@@ -41,11 +43,14 @@ export const useMinedTransactionsStore = createRainbowStore<MinedTransactionsSta
   },
 
   clearMinedTransactions: (address: string) => {
-    set(state => ({
-      minedTransactions: {
-        ...state.minedTransactions,
-        [address]: [],
-      },
-    }));
+    set(state => {
+      if (state.minedTransactions[address] === EMPTY_MINED_TRANSACTIONS) return state;
+      return {
+        minedTransactions: {
+          ...state.minedTransactions,
+          [address]: EMPTY_MINED_TRANSACTIONS,
+        },
+      };
+    });
   },
 }));

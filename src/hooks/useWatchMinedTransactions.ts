@@ -13,7 +13,6 @@ import { event } from '@/analytics/event';
 import { useMinedTransactionsStore, MinedTransactionWithPolling } from '@/state/minedTransactions/minedTransactions';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { toUnixTime } from '@/worklets/dates';
 import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -172,7 +171,5 @@ export const useWatchMinedTransactions = ({ address }: { address: string }) => {
     [address, nativeCurrency, staleBalances]
   );
 
-  return {
-    watchMinedTransactions,
-  };
+  return watchMinedTransactions;
 };

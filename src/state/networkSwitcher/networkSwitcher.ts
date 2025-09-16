@@ -1,14 +1,14 @@
 import { ChainId } from '@/state/backendNetworks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 import { analytics } from '@/analytics';
-import { nonceStore } from '@/state/nonces';
+import { useNonceStore } from '@/state/nonces';
 import { logger } from '@/logger';
 
 export const defaultPinnedNetworks = [ChainId.base, ChainId.mainnet, ChainId.optimism, ChainId.arbitrum, ChainId.polygon, ChainId.zora];
 
 function getMostUsedChains() {
   try {
-    const noncesByAddress = nonceStore.getState().nonces;
+    const noncesByAddress = useNonceStore.getState().nonces;
     const summedNoncesByChainId: Record<string, number> = {};
     for (const addressNonces of Object.values(noncesByAddress)) {
       for (const [chainId, { currentNonce }] of Object.entries(addressNonces)) {

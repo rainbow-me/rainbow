@@ -31,6 +31,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const change = transaction?.changes?.[0];
 
   const isPendingSwap = checkForPendingSwap(transaction);
+  const isSpeedUpOrCancel = transaction.type === 'speed_up' || transaction.type === 'cancel';
 
   const value = change?.value || transaction.balance?.display;
   const valueDisplay = value ? convertRawAmountToBalance(value || '', assetData!).display : '';
@@ -40,7 +41,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const feeValue = fee?.value.display ?? '';
   const feeNativeCurrencyValue = fee?.native?.display ?? '';
 
-  if ((!value && !fee) || isPendingSwap) return null;
+  if ((!value && !fee) || isPendingSwap || isSpeedUpOrCancel) return null;
 
   return (
     <>

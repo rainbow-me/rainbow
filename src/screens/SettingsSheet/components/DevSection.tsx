@@ -31,8 +31,8 @@ import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 import { getFCMToken } from '@/notifications/tokens';
 import { analyzeReactQueryStore, clearReactQueryCache } from '@/react-query/reactQueryUtils';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
-import { nonceStore } from '@/state/nonces';
-import { pendingTransactionsStore } from '@/state/pendingTransactions';
+import { nonceActions } from '@/state/nonces';
+import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import FastImage from 'react-native-fast-image';
 import { analyzeUserAssets } from '@/state/debug/analyzeUserAssets';
 
@@ -134,11 +134,8 @@ const DevSection = () => {
   };
 
   const clearPendingTransactions = async () => {
-    const { clearPendingTransactions: clearPendingTxs } = pendingTransactionsStore.getState();
-    const { clearNonces } = nonceStore.getState();
-
-    clearPendingTxs();
-    clearNonces();
+    pendingTransactionsActions.clearPendingTransactions();
+    nonceActions.clearNonces();
   };
 
   const clearLocalStorage = async () => {
