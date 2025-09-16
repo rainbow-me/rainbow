@@ -146,8 +146,8 @@ type UninitializedState = typeof UNINITIALIZED;
 function derive<DerivedState>(
   deriveFunction: ($: DeriveGetter) => DerivedState,
   optionsOrEqualityFn: DeriveOptions<DerivedState> = Object.is
-  const { debounceOptions, debugMode, equalityFn, useStableSubscriptions } = parseOptions(optionsOrEqualityFn);
 ): WithGetSnapshot<WithFlushUpdates<StoreApi<DerivedState>>> {
+  const { debounceOptions, debugMode, equalityFn, useStableSubscriptions } = parseOptions(optionsOrEqualityFn);
 
   // Active subscriptions *to* the derived store
   const watchers = new Set<Watcher<DerivedState>>();
