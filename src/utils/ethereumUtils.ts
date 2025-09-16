@@ -82,12 +82,25 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
   return { address, chainId: +networkOrChainId };
 };
 
-const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
+/**
+ * Synchronously get native asset from cache. Fast but may return stale/missing data.
+ * @param chainId - The chain to get native asset for
+ * @param address - Optional wallet address (defaults to global selected wallet)
+ * @returns Cached native asset or undefined if not in store
+ */
+const getNetworkNativeAsset = ({ chainId, address }: { chainId: ChainId; address?: EthereumAddress }) => {
   const nativeAssetAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId].address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
-  return getAccountAsset(nativeAssetUniqueId);
+  return getAccountAsset(nativeAssetUniqueId, address);
 };
 
+/**
+ * Asynchronously get native asset with fresh balance. Accurate but slower.
+ * Falls back to external API + blockchain if cache miss or different wallet.
+ * @param chainId - The chain to get native asset for
+ * @param address - Optional wallet address (defaults to global selected wallet)
+ * @returns Native asset with up-to-date balance from cache, API, or blockchain
+ */
 export const getNativeAssetForNetwork = async ({
   chainId,
   address,
@@ -179,9 +192,14 @@ const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
   return accountAsset ?? externalAsset;
 };
 
-const getAccountAsset = (uniqueId: EthereumAddress): ParsedAddressAsset | undefined => {
+/**
+ * Get asset from a specific wallet's cache.
+ * @param uniqueId - The asset's unique identifier (address_chainId)
+ * @param address - Optional wallet address (defaults to global selected wallet)
+ */
+const getAccountAsset = (uniqueId: EthereumAddress, address?: EthereumAddress): ParsedAddressAsset | undefined => {
   const loweredUniqueId = uniqueId.toLowerCase();
-  return userAssetsStore.getState().getLegacyUserAsset(loweredUniqueId) ?? undefined;
+  return userAssetsStore.getState(address).getLegacyUserAsset(loweredUniqueId) ?? undefined;
 };
 
 const getAssetPrice = (
