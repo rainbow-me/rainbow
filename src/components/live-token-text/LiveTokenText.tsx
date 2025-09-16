@@ -168,6 +168,11 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   });
 
   const theme = useTheme();
+  const positiveThemeColor = theme.colors.green;
+  const negativeThemeColor = theme.colors.red;
+  const positivePriceChangeColor = priceChangeChangeColors?.positive;
+  const negativePriceChangeColor = priceChangeChangeColors?.negative;
+  const neutralPriceChangeColor = priceChangeChangeColors?.neutral;
 
   const baseColor = useForegroundColor(textProps.color ?? 'label');
   const textColor = useSharedValue(baseColor);
@@ -177,11 +182,11 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
     (value, previousValue) => {
       if (usePriceChangeColor) {
         if (parseFloat(value) > 0) {
-          textColor.value = priceChangeChangeColors?.positive ?? theme.colors.green;
+          textColor.value = positivePriceChangeColor ?? positiveThemeColor;
         } else if (parseFloat(value) < 0) {
-          textColor.value = priceChangeChangeColors?.negative ?? theme.colors.red;
+          textColor.value = negativePriceChangeColor ?? negativeThemeColor;
         } else {
-          textColor.value = priceChangeChangeColors?.neutral ?? baseColor;
+          textColor.value = neutralPriceChangeColor ?? baseColor;
         }
         return;
       }
@@ -190,17 +195,54 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
 
       let animateToColor = baseColor;
       if (value > previousValue) {
-        animateToColor = theme.colors.green;
+        animateToColor = positiveThemeColor;
       } else if (value < previousValue) {
-        animateToColor = theme.colors.red;
+        animateToColor = negativeThemeColor;
       }
 
       textColor.value = withTiming(animateToColor, { duration: 150 }, () => {
         textColor.value = withDelay(50, withTiming(baseColor, { duration: 150 }));
       });
     },
-    []
+    [
+      animateTrendChange,
+      baseColor,
+      negativePriceChangeColor,
+      negativeThemeColor,
+      neutralPriceChangeColor,
+      positivePriceChangeColor,
+      positiveThemeColor,
+      usePriceChangeColor,
+    ]
   );
+
+  useEffect(() => {
+    if (usePriceChangeColor) {
+      const numericValue = parseFloat(liveValue.value);
+
+      if (numericValue > 0) {
+        textColor.value = positivePriceChangeColor ?? positiveThemeColor;
+      } else if (numericValue < 0) {
+        textColor.value = negativePriceChangeColor ?? negativeThemeColor;
+      } else {
+        textColor.value = neutralPriceChangeColor ?? baseColor;
+      }
+
+      return;
+    }
+
+    textColor.value = baseColor;
+  }, [
+    baseColor,
+    liveValue,
+    negativePriceChangeColor,
+    negativeThemeColor,
+    neutralPriceChangeColor,
+    positivePriceChangeColor,
+    positiveThemeColor,
+    textColor,
+    usePriceChangeColor,
+  ]);
 
   const textStyle = useAnimatedStyle(() => {
     return {
