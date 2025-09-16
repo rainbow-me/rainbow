@@ -163,7 +163,7 @@ const DepositInputSection = ({
 
   return (
     <PerpsInputContainer asset={asset} progress={inputProgress}>
-      <Box testID={'swap-asset-input'} as={Animated.View} style={inputStyle} flexGrow={1} gap={20}>
+      <Box as={Animated.View} style={inputStyle} flexGrow={1} gap={20}>
         <Columns alignHorizontal="justify" alignVertical="center">
           <Column width="content">
             <Box paddingRight="10px">
@@ -318,9 +318,13 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
 
   const [quote, fetchQuote] = usePerpsDepositQuote(selectedAsset, fields);
   const hasQuoteError = quote != null && 'error' in quote;
-  // TODO: Is this ok?
-  const gasLimit = useSwapEstimatedGasLimit({ quote, assetToSell: selectedAsset, chainId: ChainId.mainnet });
-  const { data: gasSuggestions } = useMeteorologySuggestions({
+  const gasLimit = useSwapEstimatedGasLimit({
+    quote,
+    assetToSell: selectedAsset,
+    chainId: selectedAsset?.chainId ?? ChainId.mainnet,
+    usePlaceholderData: false,
+  });
+  const { data: gasSuggestions, isLoading: isGasSuggestionsLoading } = useMeteorologySuggestions({
     chainId: selectedAsset?.chainId ?? ChainId.mainnet,
     enabled: true,
   });
@@ -423,15 +427,11 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
       buyAmount: quote.buyAmount?.toString(),
       chainId: selectedAsset.chainId,
       assetToSell: selectedAsset,
-      // TODO: Check if this works.
       assetToBuy: USDC_ASSET as unknown as ParsedAsset,
       quote,
     };
 
     try {
-      // const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
-      // NotificationManager?.postNotification('rapInProgress');
-
       const provider = getProvider({ chainId: selectedAsset.chainId });
 
       const wallet = await performanceTracking.getState().executeFn({
@@ -451,7 +451,6 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
 
       if (!wallet) {
         triggerHaptics('notificationError');
-        // showWalletErrorAlert();
         return;
       }
 
@@ -499,7 +498,6 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
         }
       }
 
-      // NotificationManager?.postNotification('rapCompleted');
       performanceTracking.getState().executeFn({
         fn: () => {
           Navigation.goBack();
@@ -629,7 +627,13 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
       />
       <Box width="full" paddingHorizontal="20px" paddingTop="16px" height={{ custom: FOOTER_HEIGHT }} flexDirection="row" gap={20}>
         <Box width={96} alignItems="flex-start" justifyContent="center">
-          <GasButton gasSpeed={gasSpeed} chainId={ChainId.mainnet} onSelectGasSpeed={setGasSpeed} gasLimit={gasLimit} />
+          <GasButton
+            gasSpeed={gasSpeed}
+            chainId={selectedAsset?.chainId ?? ChainId.mainnet}
+            onSelectGasSpeed={setGasSpeed}
+            gasLimit={gasLimit}
+            isFetching={quote == null || isGasSuggestionsLoading}
+          />
         </Box>
         <Box flexGrow={1}>
           <PerpsSwapButton
