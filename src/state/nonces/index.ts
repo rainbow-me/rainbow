@@ -1,26 +1,60 @@
-import create from 'zustand';
-import { createStore } from '../internal/createStore';
 import { RainbowTransaction } from '@/entities/transactions';
-import { Network, ChainId } from '@/state/backendNetworks/types';
 import { getBatchedProvider } from '@/handlers/web3';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { pendingTransactionsStore } from '@/state/pendingTransactions';
+import { Network, ChainId } from '@/state/backendNetworks/types';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 
-type NonceData = {
-  currentNonce?: number;
-  latestConfirmedNonce?: number;
-};
-
-type GetNonceArgs = {
-  address: string;
-  chainId: ChainId;
-};
+type NonceData = { currentNonce?: number; latestConfirmedNonce?: number };
+type GetNonceArgs = { address: string; chainId: ChainId };
 
 type UpdateNonceArgs = NonceData & GetNonceArgs;
+type NoncesV0 = { [network in Network]: NonceData };
+type Nonces = { [chainId in ChainId]: NonceData };
+
+export type CurrentNonceState<T extends Nonces | NoncesV0> = {
+  nonces: Record<string, T>;
+  clearNonces: () => void;
+  getNonce: ({ address, chainId }: GetNonceArgs) => NonceData | null;
+  setNonce: ({ address, currentNonce, latestConfirmedNonce, chainId }: UpdateNonceArgs) => void;
+};
+
+const EMPTY_NONCES: Record<string, Nonces> = {};
+
+export const useNonceStore = createRainbowStore<CurrentNonceState<Nonces>>(
+  (set, get) => ({
+    nonces: EMPTY_NONCES,
+
+    clearNonces: () => set({ nonces: EMPTY_NONCES }),
+
+    getNonce: ({ address, chainId }) => get().nonces[address]?.[chainId] ?? null,
+
+    setNonce: ({ address, currentNonce, latestConfirmedNonce, chainId }) => {
+      const { nonces: oldNonces } = get();
+      const addressAndChainIdNonces = oldNonces?.[address]?.[chainId] || {};
+      set({
+        nonces: {
+          ...oldNonces,
+          [address]: {
+            ...oldNonces[address],
+            [chainId]: {
+              currentNonce: currentNonce ?? addressAndChainIdNonces?.currentNonce,
+              latestConfirmedNonce: latestConfirmedNonce ?? addressAndChainIdNonces?.latestConfirmedNonce,
+            },
+          },
+        },
+      });
+    },
+  }),
+
+  { storageKey: 'nonceStore' }
+);
+
+export const nonceActions = createStoreActions(useNonceStore);
 
 export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }): Promise<number> {
-  const { getNonce } = nonceStore.getState();
-  const localNonceData = getNonce({ address, chainId });
+  const localNonceData = nonceActions.getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || -1;
   const provider = getBatchedProvider({ chainId });
   const privateMempoolTimeout = useBackendNetworksStore.getState().getChainsPrivateMempoolTimeout()[chainId];
@@ -33,7 +67,7 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   if (numPendingLocalTx === numPendingPublicTx) return pendingTxCountFromPublicRpc; // nothing in private mempool, proceed normally
   if (numPendingLocalTx === 0 && numPendingPublicTx > 0) return latestTxCountFromPublicRpc; // catch up with public
 
-  const { pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
+  const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore.getState();
   const pendingTransactions: RainbowTransaction[] = storePendingTransactions[address]?.filter(txn => txn.chainId === chainId) || [];
 
   let nextNonce = localNonce + 1;
@@ -60,55 +94,3 @@ export async function getNextNonce({ address, chainId }: { address: string; chai
   }
   return nextNonce;
 }
-
-type NoncesV0 = {
-  [network in Network]: NonceData;
-};
-
-type Nonces = {
-  [chainId in ChainId]: NonceData;
-};
-
-export interface CurrentNonceState<T extends Nonces | NoncesV0> {
-  nonces: Record<string, T>;
-  setNonce: ({ address, currentNonce, latestConfirmedNonce, chainId }: UpdateNonceArgs) => void;
-  getNonce: ({ address, chainId }: GetNonceArgs) => NonceData | null;
-  clearNonces: () => void;
-}
-
-export const nonceStore = createStore<CurrentNonceState<Nonces>>(
-  (set, get) => ({
-    nonces: {},
-    setNonce: ({ address, currentNonce, latestConfirmedNonce, chainId }) => {
-      const { nonces: oldNonces } = get();
-      const addressAndChainIdNonces = oldNonces?.[address]?.[chainId] || {};
-      set({
-        nonces: {
-          ...oldNonces,
-          [address]: {
-            ...oldNonces[address],
-            [chainId]: {
-              currentNonce: currentNonce ?? addressAndChainIdNonces?.currentNonce,
-              latestConfirmedNonce: latestConfirmedNonce ?? addressAndChainIdNonces?.latestConfirmedNonce,
-            },
-          },
-        },
-      });
-    },
-    getNonce: ({ address, chainId }) => {
-      const { nonces } = get();
-      return nonces[address]?.[chainId] ?? null;
-    },
-    clearNonces: () => {
-      set({ nonces: {} });
-    },
-  }),
-  {
-    persist: {
-      name: 'nonces',
-      version: 2,
-    },
-  }
-);
-
-export const useNonceStore = create(nonceStore);

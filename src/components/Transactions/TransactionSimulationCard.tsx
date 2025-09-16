@@ -29,7 +29,6 @@ import {
 } from '@/components/Transactions/constants';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { ParsedAddressAsset } from '@/entities/tokens';
 
 interface TransactionSimulationCardProps {
   chainId: ChainId;
@@ -42,7 +41,7 @@ interface TransactionSimulationCardProps {
   simulation: TransactionSimulationResult | undefined;
   simulationError: TransactionErrorType | undefined;
   simulationScanResult: TransactionScanResultType | undefined;
-  nativeAsset: ParsedAddressAsset | ReturnType<ReturnType<typeof useBackendNetworksStore.getState>['getChainsNativeAsset']>[ChainId];
+  nativeAsset: ReturnType<ReturnType<typeof useBackendNetworksStore.getState>['getChainsNativeAsset']>[ChainId];
 }
 
 export const TransactionSimulationCard = ({

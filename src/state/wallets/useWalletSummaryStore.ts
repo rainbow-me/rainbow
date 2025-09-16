@@ -15,13 +15,14 @@ async function fetchWalletSummary(
   { addresses, currency }: WalletSummaryArgs,
   abortController: AbortController | null
 ): Promise<WalletSummary> {
-  const { data } = await getAddysHttpClient({ abortController }).post(
+  const { data } = await getAddysHttpClient().post(
     `/summary`,
     JSON.stringify({
       currency,
       addresses,
       enableThirdParty: true,
-    })
+    }),
+    { signal: abortController?.signal }
   );
   return data;
 }
