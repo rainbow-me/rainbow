@@ -47,7 +47,6 @@ export enum CellType {
   PERPS_HEADER = 'PERPS_HEADER',
   PERPS_BALANCE = 'PERPS_BALANCE',
   PERPS_POSITION = 'PERPS_POSITION',
-  PERPS_NO_POSITIONS = 'PERPS_NO_POSITIONS',
   PERPS_SPACE_AFTER = 'PERPS_SPACE_AFTER',
 
   TOKENS_HEADER = 'TOKENS_HEADER',
@@ -130,9 +129,6 @@ export type PerpsPositionExtraData = {
   position: PerpsPosition;
   index: number;
 };
-export type PerpsNoPositionsExtraData = {
-  type: CellType.PERPS_NO_POSITIONS;
-};
 export type PerpsHeaderExtraData = {
   type: CellType.PERPS_HEADER;
   total: string;
@@ -183,7 +179,6 @@ export type CellExtraData =
   | ClaimablesHeaderExtraData
   | PerpsBalanceExtraData
   | PerpsPositionExtraData
-  | PerpsNoPositionsExtraData
   | PerpsHeaderExtraData
   | TokensHeaderExtraData
   | ProfileActionButtonsRowExtraData;

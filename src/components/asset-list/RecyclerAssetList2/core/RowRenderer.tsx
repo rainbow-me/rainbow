@@ -46,7 +46,6 @@ import LegacyWrappedNFT from '../LegacyWrappedNFT';
 import LegacyWrappedTokenFamilyHeader from '../LegacyWrappedTokenFamilyHeader';
 import { PerpsHeader } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsHeader';
 import { PerpsPositionRow } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsPositionRow';
-import { PerpsNoPositions } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsNoPositions';
 import { PerpsAvailableBalance } from '@/components/asset-list/RecyclerAssetList2/perps/PerpsAvailableBalance';
 import { TokensHeader } from '@/components/asset-list/RecyclerAssetList2/tokens/TokensHeader';
 
@@ -228,9 +227,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.PERPS_POSITION: {
       const { position } = data as PerpsPositionExtraData;
       return <PerpsPositionRow position={position} />;
-    }
-    case CellType.PERPS_NO_POSITIONS: {
-      return <PerpsNoPositions />;
     }
     case CellType.TOKENS_HEADER: {
       return <TokensHeader />;

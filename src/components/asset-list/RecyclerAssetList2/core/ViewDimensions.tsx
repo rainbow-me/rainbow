@@ -92,10 +92,6 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 65,
     width: deviceUtils.dimensions.width,
   },
-  [CellType.PERPS_NO_POSITIONS]: {
-    height: 50,
-    width: deviceUtils.dimensions.width,
-  },
   [CellType.TOKENS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.TOKENS_HEADER_SPACE_BEFORE]: { height: 10 },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },

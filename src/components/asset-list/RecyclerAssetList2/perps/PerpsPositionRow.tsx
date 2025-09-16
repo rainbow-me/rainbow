@@ -14,6 +14,8 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
@@ -43,7 +45,16 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
   return (
     <Box paddingHorizontal={'20px'}>
       <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
-      <ButtonPressAnimation onPress={navigateToPerpDetail} scaleTo={0.96}>
+      <ButtonPressAnimation
+        onPress={navigateToPerpDetail}
+        onLongPress={() => {
+          if (!market) return;
+          Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
+            symbol: market.symbol,
+          });
+        }}
+        scaleTo={0.96}
+      >
         <Box height="full" justifyContent="center">
           <Box gap={10}>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
