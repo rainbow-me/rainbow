@@ -16,7 +16,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { accentColors } = usePerpsAccentColorContext();
   const balance = useHyperliquidAccountStore(state => state.balance);
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
-  const isBalanceZero = balance === '0';
+  const isBalanceZero = Number(balance) === 0;
 
   return (
     <Box
@@ -90,6 +90,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
             paddingHorizontal={'16px'}
             paddingVertical={'12px'}
             borderRadius={24}
+            height={40}
           >
             <Text color={isDarkMode ? 'black' : 'white'} size="20pt" weight="black">
               {'Deposit'}

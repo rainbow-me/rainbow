@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react';
+import { Fragment, memo, useMemo, useState } from 'react';
 import { HlTrade, PerpMarket } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { tradeExecutionDescriptions, useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
@@ -8,6 +8,8 @@ import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { format } from 'date-fns';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+
+const DEFAULT_VISIBLE_TRADE_COUNT = 10;
 
 const descriptionIcons = {
   [tradeExecutionDescriptions.longLiquidated]: '􀁞',
@@ -88,12 +90,12 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
   const historyData = useHlTradesStore(state => state.tradesBySymbol);
 
   const trades = historyData[market.symbol] || [];
-  const visibleTrades = isExpanded ? trades : trades.slice(0, 3);
+  const visibleTrades = isExpanded ? trades : trades.slice(0, DEFAULT_VISIBLE_TRADE_COUNT);
 
   if (trades.length === 0) {
     return (
-      <Box>
-        <Text weight="semibold" size="17pt" color="labelTertiary">
+      <Box alignItems="center" justifyContent="center" paddingVertical="24px">
+        <Text weight="bold" size="17pt" color="label">
           No trades
         </Text>
       </Box>
@@ -106,14 +108,14 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
         <Box gap={12}>
           <Box>
             {visibleTrades.map((trade, index) => (
-              <>
+              <Fragment key={trade.id}>
                 <TradeListItem key={trade.id} trade={trade} />
                 {index < visibleTrades.length - 1 && <Separator color={'separatorTertiary'} direction="horizontal" thickness={4 / 3} />}
-              </>
+              </Fragment>
             ))}
           </Box>
 
-          {trades.length > 3 && !isExpanded && (
+          {trades.length > DEFAULT_VISIBLE_TRADE_COUNT && !isExpanded && (
             <ButtonPressAnimation onPress={() => setIsExpanded(true)} scaleTo={0.98}>
               <Box
                 backgroundColor={accentColors.opacity3}

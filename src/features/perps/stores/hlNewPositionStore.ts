@@ -34,7 +34,7 @@ type HlNewPositionActions = {
 
 type HlNewPositionStore = HlNewPositionState & HlNewPositionActions;
 
-export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>(set => ({
+export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set, get) => ({
   positionSide: PerpPositionSide.LONG,
   leverage: null,
   amount: '0',
@@ -42,6 +42,9 @@ export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>(set 
   market: null,
 
   setMarket: async (market: PerpMarket) => {
+    // We do not have a relialbe way to reset this after the transition ends when leaving the screen, so we do it here
+    get().reset();
+
     set({ market });
     // Whenever the market changes, we need to fetch the users account leverage for this asset
     const address = useWalletsStore.getState().accountAddress;

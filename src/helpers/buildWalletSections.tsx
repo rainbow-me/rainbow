@@ -230,12 +230,6 @@ const withPerpsSection = (perpsData: PerpsWalletListData | null, isLoadingUserAs
         index,
       });
     });
-  } else if (hasBalance) {
-    // Show "No open positions" when user has balance but no positions
-    perpsSectionItems.push({
-      type: CellType.PERPS_NO_POSITIONS,
-      uid: 'perps-no-positions',
-    });
   }
 
   return [

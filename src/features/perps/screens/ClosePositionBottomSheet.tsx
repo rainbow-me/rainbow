@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
-import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
@@ -18,12 +18,13 @@ import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/fe
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
-import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { SLIDER_WIDTH } from '@/features/perps/constants';
 import { estimateReturnOnMarketClose } from '@/features/perps/utils/estimateReturnOnMarketClose';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { logger, RainbowError } from '@/logger';
+import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
+import { colors } from '@/styles';
 
 const PANEL_HEIGHT = 400;
 
@@ -41,6 +42,8 @@ type PanelContentProps = {
 };
 
 function PanelContent({ symbol }: PanelContentProps) {
+  const { accentColors } = usePerpsAccentColorContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCloseDisabled, setIsCloseDisabled] = useState(false);
   const percentToClose = useSharedValue(1);
   const position = useHyperliquidAccountStore(state => state.getPosition(symbol));
@@ -95,6 +98,7 @@ function PanelContent({ symbol }: PanelContentProps) {
 
   const closePosition = useCallback(async () => {
     if (!position) return;
+    setIsSubmitting(true);
     try {
       await hyperliquidAccountStoreActions.closeIsolatedMarginPosition({
         symbol,
@@ -105,6 +109,7 @@ function PanelContent({ symbol }: PanelContentProps) {
     } catch (e) {
       logger.error(new RainbowError('[ClosePositionBottomSheet] Failed to close position', e));
     }
+    setIsSubmitting(false);
   }, [position, symbol, liveTokenPrice, navigation, percentToClose]);
 
   if (!position) return null;
@@ -145,14 +150,23 @@ function PanelContent({ symbol }: PanelContentProps) {
             </AnimatedText>
           </Box>
         </Box>
-        <HyperliquidButton
-          onPress={closePosition}
-          buttonProps={{ disabled: isCloseDisabled, style: { opacity: isCloseDisabled ? 0.5 : 1 } }}
-        >
-          <Text size="20pt" weight="heavy" color={'black'}>
-            {'Close Position'}
-          </Text>
-        </HyperliquidButton>
+        <HoldToActivateButton
+          disabled={isCloseDisabled}
+          backgroundColor={accentColors.opacity100}
+          disabledBackgroundColor={accentColors.opacity24}
+          isProcessing={isSubmitting}
+          showBiometryIcon={true}
+          processingLabel={'Closing...'}
+          label={'Hold to Close'}
+          onLongPress={closePosition}
+          height={48}
+          textStyle={{
+            color: colors.black,
+            fontSize: 20,
+            fontWeight: '900',
+          }}
+          progressColor={colors.black}
+        />
       </Box>
     </Box>
   );

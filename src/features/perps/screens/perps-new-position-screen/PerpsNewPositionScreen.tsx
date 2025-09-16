@@ -1,11 +1,11 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { Box, Separator, Stack, useBackgroundColor } from '@/design-system';
 import { AmountInputCard } from './AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { PositionSideSelector } from './PositionSideSelector';
 import { DetailsSection } from './DetailsSection';
-import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
 import { FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
@@ -17,12 +17,6 @@ import { AmountInputError } from '@/features/perps/screens/perps-new-position-sc
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const market = useHlNewPositionStore(state => state.market);
   const screenBackgroundColor = useBackgroundColor('surfacePrimary');
-
-  useEffect(() => {
-    return () => {
-      hlNewPositionStoreActions.reset();
-    };
-  }, []);
 
   if (!market) return null;
 

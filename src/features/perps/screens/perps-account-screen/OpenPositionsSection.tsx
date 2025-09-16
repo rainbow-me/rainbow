@@ -11,16 +11,6 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatCurrency } from '@/helpers/strings';
 
-function NoPositions() {
-  return (
-    <Box height={100} justifyContent="center" alignItems="center">
-      <Text size="17pt" weight="heavy" color="labelTertiary">
-        {'No Open Positions'}
-      </Text>
-    </Box>
-  );
-}
-
 export const OpenPositionsSection = function OpenPositionsSection() {
   const positions = useHyperliquidAccountStore(state => state.positions);
   const positionsArray = Object.values(positions);
@@ -81,7 +71,13 @@ export const OpenPositionsSection = function OpenPositionsSection() {
           </Box>
         </Box>
         <Box gap={20}>
-          {!hasPositions && <NoPositions />}
+          {!hasPositions && (
+            <Box height={100} justifyContent="center" alignItems="center">
+              <Text size="17pt" weight="heavy" color="labelTertiary">
+                {'No Open Positions'}
+              </Text>
+            </Box>
+          )}
           {positionsArray.map(position => (
             <ButtonPressAnimation
               key={position.symbol}

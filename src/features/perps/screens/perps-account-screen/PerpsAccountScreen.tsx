@@ -13,7 +13,12 @@ export const PerpsAccountScreen = function PerpsAccountScreen() {
   return (
     <ScrollView
       style={{ backgroundColor: screenBackgroundColor }}
-      contentContainerStyle={{ paddingTop: 8, paddingBottom: bottomInset, paddingHorizontal: 20 }}
+      contentContainerStyle={{
+        paddingTop: 8,
+        paddingBottom: bottomInset,
+        paddingHorizontal: 20,
+        flexGrow: 1,
+      }}
       scrollIndicatorInsets={{ bottom: bottomInset }}
     >
       <Box width="full">
