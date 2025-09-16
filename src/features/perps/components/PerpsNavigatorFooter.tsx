@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { Box, Text, TextShadow } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
@@ -27,6 +27,34 @@ import { useOrderAmountValidation } from '@/features/perps/hooks/useOrderAmountV
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
 const BUTTON_HEIGHT = 48;
+
+// Routes that appear over the perps stack that we do not want to affect the footer
+const IGNORED_ROUTES = new Set<string>([
+  Routes.PERPS_WITHDRAWAL_SCREEN,
+  Routes.PERPS_DEPOSIT_SCREEN,
+  Routes.CLOSE_POSITION_BOTTOM_SHEET,
+  Routes.PERPS_DETAIL_SCREEN,
+  Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET,
+]);
+
+const FOOTER_ROUTES = new Set<string>([
+  Routes.PERPS_SEARCH_SCREEN,
+  Routes.PERPS_NEW_POSITION_SEARCH_SCREEN,
+  Routes.PERPS_ACCOUNT_SCREEN,
+  Routes.PERPS_NEW_POSITION_SCREEN,
+]);
+
+const usePersistedFooterRoute = () => {
+  const activeRoute = useNavigationStore(state => state.activeRoute);
+  const lastRelevantRoute = useRef<string | null>(null);
+
+  // Update last relevant route only if current route is a footer route
+  if (activeRoute && FOOTER_ROUTES.has(activeRoute) && !IGNORED_ROUTES.has(activeRoute)) {
+    lastRelevantRoute.current = activeRoute;
+  }
+
+  return IGNORED_ROUTES.has(activeRoute || '') ? lastRelevantRoute.current : activeRoute;
+};
 
 type BackButtonProps = {
   onPress: () => void;
@@ -227,14 +255,11 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const safeAreaInsets = useSafeAreaInsets();
   const { accentColors } = usePerpsAccentColorContext();
   const activeRoute = useNavigationStore(state => state.activeRoute);
-
-  if (activeRoute === Routes.PERPS_DEPOSIT_SCREEN) {
-    return null;
-  }
+  const effectiveRoute = usePersistedFooterRoute();
 
   return (
     <KeyboardStickyView
-      // TODO (kane): idk why this 6 is required
+      // TODO (kane): Where does this 6 come from?
       offset={{ opened: safeAreaInsets.bottom + 6 - 20 }}
       enabled={activeRoute !== Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET}
     >
@@ -264,15 +289,11 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           paddingHorizontal={'20px'}
           paddingVertical={'20px'}
         >
-          {(activeRoute === Routes.PERPS_SEARCH_SCREEN || activeRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN) && (
+          {(effectiveRoute === Routes.PERPS_SEARCH_SCREEN || effectiveRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN) && (
             <PerpsSearchScreenFooter />
           )}
-          {(activeRoute === Routes.PERPS_ACCOUNT_SCREEN ||
-            activeRoute === Routes.PERPS_DETAIL_SCREEN ||
-            activeRoute === Routes.CLOSE_POSITION_BOTTOM_SHEET) && <PerpsAccountScreenFooter />}
-          {(activeRoute === Routes.PERPS_NEW_POSITION_SCREEN || activeRoute === Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET) && (
-            <PerpsNewPositionScreenFooter />
-          )}
+          {effectiveRoute === Routes.PERPS_ACCOUNT_SCREEN && <PerpsAccountScreenFooter />}
+          {effectiveRoute === Routes.PERPS_NEW_POSITION_SCREEN && <PerpsNewPositionScreenFooter />}
         </Box>
       </Box>
     </KeyboardStickyView>
