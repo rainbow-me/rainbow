@@ -91,7 +91,7 @@ const config = {
   [CANDLESTICK_DATA_MONITOR]: { settings: true, value: false },
   [KING_OF_THE_HILL_TAB]: { settings: true, value: false },
   [RAINBOW_TOASTS]: { settings: true, value: false },
-  [PERPS]: { settings: true, value: false },
+  [PERPS]: { settings: true, value: true },
 } as const;
 
 /** This flag is not reactive. We use this in a static context. */
