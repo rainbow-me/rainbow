@@ -4,7 +4,7 @@ import { Address } from 'viem';
 import { PerpPositionSide, PerpsPosition, TriggerOrder } from '../types';
 import { getHyperliquidAccountClient, getHyperliquidExchangeClient } from '../services';
 import { RainbowError } from '@/logger';
-import { add, divide } from '@/helpers/utilities';
+import { add, divide, multiply, subtract } from '@/helpers/utilities';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { OrderResponse } from '@nktkas/hyperliquid';
@@ -38,7 +38,6 @@ type HyperliquidAccountStoreActions = {
   closeIsolatedMarginPosition: ({ symbol, price, size }: { symbol: string; price: string; size: string }) => Promise<void>;
   checkIfHyperliquidAccountExists: () => Promise<boolean>;
   cancelOrder: ({ symbol, orderId }: { symbol: string; orderId: number }) => Promise<void>;
-  // derivative state
   getTotalPositionsInfo: () => {
     equity: string;
     unrealizedPnl: string;
@@ -169,10 +168,12 @@ export const useHyperliquidAccountStore = createQueryStore<
         totalPositionsPnl = add(totalPositionsPnl, position.unrealizedPnl);
       });
 
+      const initialMargin = subtract(totalPositionsEquity, totalPositionsPnl);
+
       return {
         equity: totalPositionsEquity,
         unrealizedPnl: totalPositionsPnl,
-        unrealizedPnlPercent: totalPositionsEquity === '0' ? '0' : divide(totalPositionsPnl, totalPositionsEquity),
+        unrealizedPnlPercent: initialMargin === '0' ? '0' : multiply(divide(totalPositionsPnl, initialMargin), 100),
       };
     },
   }),
