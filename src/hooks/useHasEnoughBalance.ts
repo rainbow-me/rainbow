@@ -26,7 +26,7 @@ export const useHasEnoughBalance = ({ isMessageRequest, nativeAssetBalance, chai
     }
 
     const txFeeAmount = fromWei(gasFee?.maxFee?.value?.amount ?? 0);
-    const balanceAmount = nativeAssetBalance?.balance?.amount || 0;
+    const balanceAmount = nativeAssetBalance.balance?.amount || 0;
     const value = req?.value ?? 0;
 
     const totalAmount = new BigNumber(fromWei(value)).plus(txFeeAmount);
