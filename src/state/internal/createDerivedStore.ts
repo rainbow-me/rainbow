@@ -8,15 +8,15 @@ import {
   BaseRainbowStore,
   DebounceOptions,
   DeriveOptions,
-  DerivedRainbowStore,
+  DerivedStore,
   EqualityFn,
+  InferStoreState,
   Listener,
-  RainbowStore,
   Selector,
   SubscribeArgs,
   UnsubscribeFn,
   WithFlushUpdates,
-  WithInternalControls,
+  WithGetSnapshot,
 } from './types';
 
 // ============ Store Creator ================================================== //
@@ -88,11 +88,11 @@ import {
 export function createDerivedStore<Derived>(
   deriveFunction: ($: DeriveGetter) => Derived,
   optionsOrEqualityFn: DeriveOptions<Derived> = Object.is
-): DerivedRainbowStore<Derived> {
+): DerivedStore<Derived> {
   return attachStoreHook(derive(deriveFunction, optionsOrEqualityFn));
 }
 
-function attachStoreHook<S>(store: WithInternalControls<WithFlushUpdates<StoreApi<S>>>): DerivedRainbowStore<S> {
+function attachStoreHook<S>(store: WithGetSnapshot<WithFlushUpdates<StoreApi<S>>>): DerivedStore<S> {
   function useDerivedStore(): S;
   function useDerivedStore<T>(selector: (state: S) => T, equalityFn?: EqualityFn<T>): T;
   function useDerivedStore<T>(selector: (state: S) => T = identity, equalityFn: EqualityFn<T> | undefined = undefined): S | T {
@@ -104,8 +104,12 @@ function attachStoreHook<S>(store: WithInternalControls<WithFlushUpdates<StoreAp
 // ============ Types ========================================================== //
 
 export type DeriveGetter = {
-  <S>(store: RainbowStore<S>): S;
-  <S, Selected>(store: RainbowStore<S>, selector: Selector<S, Selected>, equalityFn?: EqualityFn<Selected>): Selected;
+  <S extends BaseRainbowStore<unknown>>(store: S): InferStoreState<S>;
+  <S extends BaseRainbowStore<unknown>, Selected>(
+    store: S,
+    selector: Selector<InferStoreState<S>, Selected>,
+    equalityFn?: EqualityFn<Selected>
+  ): Selected;
 };
 
 /**
@@ -142,8 +146,8 @@ type UninitializedState = typeof UNINITIALIZED;
 function derive<DerivedState>(
   deriveFunction: ($: DeriveGetter) => DerivedState,
   optionsOrEqualityFn: DeriveOptions<DerivedState> = Object.is
-): WithInternalControls<WithFlushUpdates<StoreApi<DerivedState>>> {
   const { debounceOptions, debugMode, equalityFn, useStableSubscriptions } = parseOptions(optionsOrEqualityFn);
+): WithGetSnapshot<WithFlushUpdates<StoreApi<DerivedState>>> {
 
   // Active subscriptions *to* the derived store
   const watchers = new Set<Watcher<DerivedState>>();

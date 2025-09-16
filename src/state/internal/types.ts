@@ -82,16 +82,20 @@ export type SubscribeFn<S, Selected = S> = (...args: SubscribeArgs<S, Selected>)
 
 // ============ Derived Store Types ============================================ //
 
-export type DerivedRainbowStore<S> = WithFlushUpdates<ReadOnlyDerivedStore<BaseRainbowStore<S>>>;
+export type DerivedStore<S> = WithFlushUpdates<ReadOnlyDerivedStore<BaseRainbowStore<S>>>;
 
 export type WithFlushUpdates<Store extends StoreApi<unknown>> = Store & {
+  /**
+   * Destroy the derived store and its subscriptions.
+   */
+  destroy: () => void;
   /**
    * Flush all pending updates — only applicable to **debounced** derived stores.
    */
   flushUpdates: () => void;
 };
 
-export type WithInternalControls<Store extends StoreApi<unknown>> = Store & {
+export type WithGetSnapshot<Store extends StoreApi<unknown>> = Store & {
   /**
    * Provided to `useSyncExternalStoreWithSelector` to ensure it activates the derived
    * store when it gets the initial state before subscribing to the store.
