@@ -32,6 +32,7 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
   leverage?: number;
   side?: PerpPositionSide;
 }) {
+  const { isDarkMode } = useColorMode();
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
 
@@ -42,6 +43,11 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
   const sideBackgroundColor = useMemo(() => {
     return opacityWorklet(sideColor, 0.16);
   }, [sideColor]);
+
+  const leverageColor = useMemo(() => {
+    if (isDarkMode) return opacityWorklet(ETH_COLOR_DARK, 0.16);
+    return opacityWorklet('#09111F', 0.04);
+  }, [isDarkMode]);
 
   return (
     <Box gap={20}>
@@ -62,10 +68,10 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
             alignItems="center"
             borderRadius={10}
             borderWidth={5 / 3}
-            backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.16)}
-            borderColor={{ custom: opacityWorklet(ETH_COLOR_DARK, 0.16) }}
+            backgroundColor={leverageColor}
+            borderColor={{ custom: leverageColor }}
           >
-            <Text size="15pt" color={{ custom: ETH_COLOR_DARK_ACCENT }} weight="heavy">
+            <Text size="15pt" color={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelTertiary'} weight="heavy">
               {`${leverage}x`}
             </Text>
           </Box>
@@ -96,6 +102,7 @@ const BACKGROUND_COLOR_DARK = '#17191C';
 const BACKGROUND_COLOR = '#FFFFFF';
 
 export const ChartSection = memo(function ChartSection({ symbol }: { symbol: string }) {
+  const { isDarkMode } = useColorMode();
   const { setToken, setChartType } = useChartsStore();
 
   useEffect(() => {
@@ -103,7 +110,8 @@ export const ChartSection = memo(function ChartSection({ symbol }: { symbol: str
     setChartType(ChartType.Candlestick);
   }, [setToken, setChartType, symbol]);
 
-  const color = ETH_COLOR_DARK;
+  const color = isDarkMode ? ETH_COLOR_DARK : 'black';
+  const backgroundColor = isDarkMode ? BACKGROUND_COLOR_DARK : BACKGROUND_COLOR;
   return (
     <Chart
       accentColors={{
@@ -111,7 +119,7 @@ export const ChartSection = memo(function ChartSection({ symbol }: { symbol: str
         opacity12: opacityWorklet(color, 0.12),
         opacity24: opacityWorklet(color, 0.24),
       }}
-      backgroundColor={BACKGROUND_COLOR_DARK}
+      backgroundColor={backgroundColor}
       hyperliquidSymbol={symbol}
       hideChartTypeToggle
     />

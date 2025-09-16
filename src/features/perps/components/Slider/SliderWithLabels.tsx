@@ -168,7 +168,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
               <Column width="content">
                 <GestureHandlerV1Button onPressWorklet={handleMaxPress} ref={maxButtonRef} style={{ margin: -12, padding: 12 }}>
                   <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
-                    {labelsValue.value.maxButtonText || 'MAX'}
+                    {labelsValue.value.maxButtonText || 'Max'}
                   </AnimatedText>
                 </GestureHandlerV1Button>
               </Column>

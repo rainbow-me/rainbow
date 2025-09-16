@@ -10,7 +10,8 @@ import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { OrderResponse } from '@nktkas/hyperliquid';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
+import { hlOpenOrdersStoreActions, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
+import { refetchHyperliquidStores } from '@/features/perps/utils';
 
 type HyperliquidAccountStoreState = {
   positions: Record<string, PerpsPosition>;
@@ -36,7 +37,6 @@ type HyperliquidAccountStoreActions = {
     triggerOrders?: TriggerOrder[];
   }) => Promise<OrderResponse>;
   closeIsolatedMarginPosition: ({ symbol, price, size }: { symbol: string; price: string; size: string }) => Promise<void>;
-  checkIfHyperliquidAccountExists: () => Promise<boolean>;
   cancelOrder: ({ symbol, orderId }: { symbol: string; orderId: number }) => Promise<void>;
   getTotalPositionsInfo: () => {
     equity: string;
@@ -119,8 +119,7 @@ export const useHyperliquidAccountStore = createQueryStore<
         triggerOrders,
       });
 
-      // Refetch positions
-      await get().fetch(undefined, { force: true });
+      await refetchHyperliquidStores();
 
       return result;
     },
@@ -132,8 +131,7 @@ export const useHyperliquidAccountStore = createQueryStore<
       }
       const exchangeClient = await getHyperliquidExchangeClient(address);
       await exchangeClient.closeIsolatedMarginPosition({ assetId: market.id, price, sizeDecimals: market.decimals, size });
-      // Refetch positions
-      await get().fetch(undefined, { force: true });
+      await refetchHyperliquidStores();
     },
     cancelOrder: async ({ symbol, orderId }: { symbol: string; orderId: number }) => {
       const address = useWalletsStore.getState().accountAddress;
@@ -144,19 +142,7 @@ export const useHyperliquidAccountStore = createQueryStore<
       const exchangeClient = await getHyperliquidExchangeClient(address);
       await exchangeClient.cancelOrder({ assetId: market.id, orderId });
       // Refetch open orders
-      await useHlOpenOrdersStore.getState().fetch(undefined, { force: true });
-    },
-    checkIfHyperliquidAccountExists: async () => {
-      // TODO (kane): save to state, address -> exists and don't check if true
-      const address = useWalletsStore.getState().accountAddress;
-      const accountClient = await getHyperliquidAccountClient(address);
-      return await accountClient.hasAccount();
-    },
-    getTotalUnrealizedPnl: () => {
-      const positions = Object.values(get().positions);
-      return positions.reduce((acc, position) => {
-        return add(acc, position.unrealizedPnl);
-      }, '0');
+      await hlOpenOrdersStoreActions.fetch(undefined, { force: true });
     },
     getTotalPositionsInfo: () => {
       const positions = Object.values(get().positions);

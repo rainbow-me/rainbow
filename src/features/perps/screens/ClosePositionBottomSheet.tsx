@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AnimatedText, Box, Text, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -42,6 +42,7 @@ type PanelContentProps = {
 };
 
 function PanelContent({ symbol }: PanelContentProps) {
+  const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCloseDisabled, setIsCloseDisabled] = useState(false);
@@ -155,17 +156,17 @@ function PanelContent({ symbol }: PanelContentProps) {
           backgroundColor={accentColors.opacity100}
           disabledBackgroundColor={accentColors.opacity24}
           isProcessing={isSubmitting}
-          showBiometryIcon={true}
+          showBiometryIcon={false}
           processingLabel={'Closing...'}
           label={'Hold to Close'}
           onLongPress={closePosition}
           height={48}
           textStyle={{
-            color: colors.black,
+            color: isDarkMode ? colors.black : colors.white,
             fontSize: 20,
             fontWeight: '900',
           }}
-          progressColor={colors.black}
+          progressColor={isDarkMode ? colors.black : colors.white}
         />
       </Box>
     </Box>

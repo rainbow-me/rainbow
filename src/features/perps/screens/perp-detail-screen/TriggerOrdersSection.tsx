@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useState } from 'react';
-import { Box, Inline, Text, TextIcon } from '@/design-system';
+import { Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
 import { HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { TriggerOrderType } from '@/features/perps/types';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
@@ -60,9 +60,13 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
     <Animated.View layout={LinearTransition.springify()}>
       <Box gap={24}>
         <Inline space="10px" alignVertical="center">
-          <TextIcon size="17pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {'􁣃'}
-          </TextIcon>
+          <IconContainer height={14} width={24}>
+            <TextShadow blur={12} shadowOpacity={0.24}>
+              <Text align="center" color={{ custom: accentColors.opacity100 }} size="icon 17px" weight="bold">
+                {'􁣃'}
+              </Text>
+            </TextShadow>
+          </IconContainer>
           <Text size="20pt" weight="heavy" color="label">
             {'Trigger Orders'}
           </Text>

@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import { Box, Text, TextShadow } from '@/design-system';
+import { Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, View } from 'react-native';
+import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData } from 'react-native';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PERPS_COLORS } from '@/features/perps/constants';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -145,6 +145,7 @@ const PerpsSearchScreenFooter = () => {
 };
 
 const PerpsAccountScreenFooter = () => {
+  const { isDarkMode } = useColorMode();
   const balance = useHyperliquidAccountStore(state => state.balance);
   const hasZeroBalance = Number(balance) === 0;
 
@@ -159,7 +160,7 @@ const PerpsAccountScreenFooter = () => {
       justifyContent={'center'}
       alignItems={'center'}
     >
-      <Text size="20pt" weight={'black'} color={{ custom: '#000000' }}>
+      <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
         {hasZeroBalance ? 'Deposit' : 'New Position'}
       </Text>
     </HyperliquidButton>
@@ -167,6 +168,9 @@ const PerpsAccountScreenFooter = () => {
 };
 
 const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter() {
+  // const navigation = useNavigation();
+  const { accentColors } = usePerpsAccentColorContext();
+  const { isDarkMode } = useColorMode();
   const { isValid } = useOrderAmountValidation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const green = PERPS_COLORS.longGreen;
@@ -177,19 +181,22 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   const button = useMemo(() => {
     const isLong = positionSide === PerpPositionSide.LONG;
     const positionSideColor = isLong ? green : red;
+    const darkModeTextColor = isValid ? (isLong ? 'black' : 'white') : opacityWorklet(positionSideColor, 0.4);
+    const lightModeTextColor = isValid ? 'white' : opacityWorklet(positionSideColor, 0.4);
+    const backTextColor = isDarkMode ? (isLong ? 'black' : 'white') : 'white';
     return {
-      textColor: isValid ? (isLong ? '#000000' : '#FFFFFF') : opacityWorklet(positionSideColor, 0.4),
-      backTextColor: isLong ? '#000000' : '#FFFFFF',
+      textColor: isDarkMode ? darkModeTextColor : lightModeTextColor,
+      backTextColor,
       backgroundColor: positionSideColor,
       borderColor: 'rgba(255, 255, 255, 0.12)',
       text: isLong ? 'Hold to Long' : 'Hold to Short',
       disabledBackgroundColor: getSolidColorEquivalent({
-        background: PERPS_COLORS.surfacePrimary,
+        background: accentColors.surfacePrimary,
         foreground: positionSideColor,
         opacity: 0.07,
       }),
     };
-  }, [positionSide, green, red, isValid]);
+  }, [positionSide, green, red, isValid, isDarkMode, accentColors]);
 
   const submitNewPosition = useCallback(async () => {
     const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
@@ -220,7 +227,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
     <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
       <BackButton
         onPress={() => {
-          // TODO: This navigates back to the root screen of the stack no matter the previous screen, but that might be what we want?
+          // navigation.goBack();
           Navigation.goBack();
         }}
         backgroundColor={button.backgroundColor}
@@ -234,7 +241,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
           backgroundColor={button.backgroundColor}
           disabledBackgroundColor={button.disabledBackgroundColor}
           isProcessing={isSubmitting}
-          showBiometryIcon={true}
+          showBiometryIcon={false}
           processingLabel={'Submitting...'}
           label={button.text}
           onLongPress={submitNewPosition}
@@ -252,6 +259,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
 });
 
 export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
+  const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
   const { accentColors } = usePerpsAccentColorContext();
   const activeRoute = useNavigationStore(state => state.activeRoute);
@@ -279,7 +287,7 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           borderTopWidth: 2,
           borderTopColor: accentColors.opacity6,
           paddingBottom: safeAreaInsets.bottom,
-          backgroundColor: PERPS_COLORS.surfacePrimary,
+          backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
         }}
       >
         <Box

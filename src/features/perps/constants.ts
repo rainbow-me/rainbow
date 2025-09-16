@@ -19,19 +19,16 @@ export const INPUT_CARD_HEIGHT = 106;
 export const HYPERLIQUID_USDC_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 // TODO (kane): remove these individual exports
 export const HYPERLIQUID_GREEN = '#3ECFAD';
-export const HYPERLIQUID_DARK_GREEN = '#072723';
-export const HYPERLIQUID_MINT_GREEN = '#98FBE4';
-export const HYPERLIQUID_GRADIENT = ['#72FFD9', '#3ECFAD'];
+export const HYPERLIQUID_GREEN_LIGHT = '#31C8A4';
 
 export const HYPERLIQUID_COLORS = {
-  green: HYPERLIQUID_GREEN,
-  darkGreen: HYPERLIQUID_DARK_GREEN,
-  mintGreen: HYPERLIQUID_MINT_GREEN,
-  gradient: HYPERLIQUID_GRADIENT,
+  green: '#3ECFAD',
+  darkGreen: '#072723',
+  mintGreen: '#98FBE4',
+  gradient: ['#72FFD9', '#3ECFAD'],
 };
 
 export const PERPS_COLORS = {
-  surfacePrimary: '#171E20',
   shortRed: '#C4362D',
   longGreen: '#23D246',
 };

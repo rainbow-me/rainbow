@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { Box, Separator, Stack, Text } from '@/design-system';
+import { Box, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { PerpsPosition } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
@@ -10,13 +10,14 @@ import { abs } from '@/helpers/utilities';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
-import { formatCurrency } from '@/helpers/strings';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;
 };
 
 export const PerpPositionCard = memo(function PerpPositionCard({ position }: PerpPositionCardProps) {
+  const { isDarkMode } = useColorMode();
   // TODO BLOCKED (kane): real token color, blocked by backend
   const tokenColor = opacityWorklet('#677483', 0.08);
   const isNegativePnl = position.unrealizedPnl.includes('-');
@@ -33,12 +34,8 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
             currency: 'USD',
           })
         : 'N/A',
-      unrealizedPnl: `${position.unrealizedPnl.includes('-') ? '-' : '+'} ${formatCurrency(abs(position.unrealizedPnl), {
-        currency: 'USD',
-      })}`,
-      positionEquity: formatCurrency(position.equity, {
-        currency: 'USD',
-      }),
+      unrealizedPnl: `${position.unrealizedPnl.includes('-') ? '-' : '+'} ${formatCurrency(abs(position.unrealizedPnl))}`,
+      positionEquity: formatCurrency(position.equity),
     };
   }, [position]);
 
@@ -51,11 +48,13 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
   return (
     <Box
       width={'full'}
-      backgroundColor={tokenColor}
+      backgroundColor={isDarkMode ? tokenColor : 'white'}
       borderRadius={32}
       padding={'16px'}
-      borderWidth={2}
+      borderWidth={isDarkMode ? 2 : 0}
       borderColor={{ custom: tokenColor }}
+      // @ts-ignore: TODO
+      shadow={isDarkMode ? null : '18px'}
     >
       <Box gap={12}>
         <Box flexDirection="row" alignItems="center" gap={12}>
@@ -104,7 +103,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
               selector={livePriceSelector}
               initialValue={'-'}
               size="15pt"
-              weight="bold"
+              weight="heavy"
               color="label"
             />
           </Stack>

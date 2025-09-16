@@ -1,4 +1,7 @@
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
+import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';
+import { hyperliquidAccountStoreActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { hyperliquidMarketStoreActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { OrderSide, PerpMarket, PerpPositionSide } from '@/features/perps/types';
 import { Navigation } from '@/navigation';
@@ -41,4 +44,13 @@ export function navigateToPerpDetailScreen(symbol: string) {
 
 export function convertSide(side: 'B' | 'A'): OrderSide {
   return side === 'B' ? 'buy' : 'sell';
+}
+
+export async function refetchHyperliquidStores() {
+  await Promise.allSettled([
+    hlOpenOrdersStoreActions.fetch(undefined, { force: true }),
+    hlTradesStoreActions.fetch(undefined, { force: true }),
+    hyperliquidMarketStoreActions.fetch(undefined, { force: true }),
+    hyperliquidAccountStoreActions.fetch(undefined, { force: true }),
+  ]);
 }

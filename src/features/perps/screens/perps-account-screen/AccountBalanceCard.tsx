@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Box, Stack, Text, TextShadow, useColorMode } from '@/design-system';
-import { HYPERLIQUID_GREEN, PERPS_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
+import { HYPERLIQUID_GREEN, USDC_ICON_URL } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -20,11 +20,12 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
 
   return (
     <Box
-      backgroundColor={PERPS_COLORS.surfacePrimary}
+      backgroundColor={isDarkMode ? accentColors.surfacePrimary : 'white'}
       padding={'12px'}
       borderRadius={110}
-      borderWidth={2}
+      borderWidth={isDarkMode ? 2 : 0}
       borderColor={{ custom: accentColors.opacity6 }}
+      shadow={'18px'}
     >
       <Box flexDirection="row" justifyContent="space-between">
         <Box flexDirection="row" alignItems="center" gap={12}>
@@ -75,8 +76,9 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
               paddingHorizontal={'16px'}
               paddingVertical={'12px'}
               borderRadius={24}
+              borderWidth={isDarkMode ? 2 : 0}
             >
-              <Text color={{ custom: '#000000' }} size="20pt" weight="black">
+              <Text color={isDarkMode ? 'black' : 'white'} size="20pt" weight="black">
                 {'􀅼'}
               </Text>
             </HyperliquidButton>

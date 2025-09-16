@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useRef } from 'react';
-import { Box, Text } from '@/design-system';
+import { Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { PERPS_COLORS, SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT, INPUT_CARD_HEIGHT } from '@/features/perps/constants';
+import { SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT, INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { runOnJS, SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider, SliderColors } from '@/features/perps/components/Slider';
@@ -24,10 +24,10 @@ const AmountSlider = ({
   const { accentColors } = usePerpsAccentColorContext();
 
   const colors = useDerivedValue<SliderColors>(() => ({
-    activeLeft: accentColors.opacity100,
-    inactiveLeft: accentColors.opacity100,
-    activeRight: opacityWorklet('#F5F8FF', 0.06),
-    inactiveRight: opacityWorklet('#F5F8FF', 0.06),
+    activeLeft: accentColors.slider.activeLeft,
+    inactiveLeft: accentColors.slider.inactiveLeft,
+    activeRight: accentColors.slider.activeRight,
+    inactiveRight: accentColors.slider.inactiveRight,
   }));
 
   return (
@@ -83,6 +83,7 @@ function formatDisplay(value: string) {
 }
 
 export const AmountInputCard = memo(function AmountInputCard() {
+  const { isDarkMode } = useColorMode();
   const inputRef = useRef<CurrencyInputRef>(null);
   const { accentColors } = usePerpsAccentColorContext();
   const availableBalanceString = useHyperliquidAccountStore(state => state.balance);
@@ -133,14 +134,15 @@ export const AmountInputCard = memo(function AmountInputCard() {
   return (
     <Box
       width="full"
-      borderWidth={2}
-      backgroundColor={PERPS_COLORS.surfacePrimary}
+      borderWidth={isDarkMode ? 2 : 0}
+      backgroundColor={accentColors.surfacePrimary}
       borderColor={{ custom: accentColors.opacity6 }}
       borderRadius={28}
       padding={'20px'}
       alignItems="center"
       gap={20}
       height={INPUT_CARD_HEIGHT}
+      shadow={'18px'}
     >
       <Box width="full" flexDirection="row" alignItems="center">
         <Box gap={12}>

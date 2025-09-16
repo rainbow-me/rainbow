@@ -20,7 +20,7 @@ export function formatCurrency(
 ): string {
   'worklet';
 
-  const { minValue = 0, decimals = 2, useCompactNotation = true } = options;
+  const { minValue = 0, decimals = 2, useCompactNotation = false } = options;
 
   if (!isNumberStringWorklet(value)) {
     return '$0';

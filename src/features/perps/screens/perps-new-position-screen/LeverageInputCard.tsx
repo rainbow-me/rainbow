@@ -1,11 +1,10 @@
 import React, { memo, useCallback } from 'react';
-import { AnimatedText, Box, Text } from '@/design-system';
+import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { INPUT_CARD_HEIGHT, PERPS_COLORS } from '@/features/perps/constants';
+import { INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { runOnJS, SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Slider, SliderColors } from '@/features/perps/components/Slider';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useListen } from '@/state/internal/hooks/useListen';
@@ -22,10 +21,10 @@ const LeverageSlider = ({
   const { accentColors } = usePerpsAccentColorContext();
 
   const colors = useDerivedValue<SliderColors>(() => ({
-    activeLeft: accentColors.opacity100,
-    inactiveLeft: accentColors.opacity100,
-    activeRight: opacityWorklet('#F5F8FF', 0.06),
-    inactiveRight: opacityWorklet('#F5F8FF', 0.06),
+    activeLeft: accentColors.slider.activeLeft,
+    inactiveLeft: accentColors.slider.inactiveLeft,
+    activeRight: accentColors.slider.activeRight,
+    inactiveRight: accentColors.slider.inactiveRight,
   }));
 
   return (
@@ -42,6 +41,7 @@ const LeverageSlider = ({
 };
 
 export const LeverageInputCard = memo(function LeverageInputCard({ maxLeverage }: { maxLeverage: number }) {
+  const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const initialLeverage = useHlNewPositionStore.getState().leverage ?? 1;
 
@@ -83,14 +83,15 @@ export const LeverageInputCard = memo(function LeverageInputCard({ maxLeverage }
   return (
     <Box
       width="full"
-      borderWidth={2}
-      backgroundColor={PERPS_COLORS.surfacePrimary}
+      borderWidth={isDarkMode ? 2 : 0}
+      backgroundColor={accentColors.surfacePrimary}
       borderColor={{ custom: accentColors.opacity8 }}
       borderRadius={28}
       padding={'20px'}
       alignItems="center"
       gap={20}
       height={INPUT_CARD_HEIGHT}
+      shadow={'18px'}
     >
       <Box width="full" flexDirection="row" alignItems="center">
         <Box gap={12}>

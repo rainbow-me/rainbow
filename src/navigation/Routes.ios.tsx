@@ -167,6 +167,7 @@ function PerpsAccountNavigator() {
           <PerpsStack.Navigator
             screenOptions={{ lazy: true, lazyPreloadDistance: 1, swipeEnabled: false }}
             tabBar={() => null}
+            backBehavior="history"
             initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}
           >
             <PerpsStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} />

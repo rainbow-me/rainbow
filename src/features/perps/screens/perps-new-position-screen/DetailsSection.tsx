@@ -6,6 +6,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PerpMarket } from '@/features/perps/types';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
+import { toFixedWorklet } from '@/safe-math/SafeMath';
 
 interface RowProps {
   children: React.ReactNode;
@@ -53,7 +54,7 @@ export const DetailsSection = memo(function DetailsSection({ market }: { market:
             </Text>
           </Box>
           <Text size="15pt" weight="bold" color={'labelSecondary'}>
-            {`${Number(market.fundingRate) * 100}%`}
+            {`${Number(toFixedWorklet(market.fundingRate, 8)) * 100}%`}
           </Text>
         </Row>
         <Row highlighted={false}>

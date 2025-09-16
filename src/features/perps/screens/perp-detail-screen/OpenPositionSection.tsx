@@ -129,7 +129,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
           </Box>
           {targetPriceDifferential && (
             <Box flexDirection="row" alignItems="center" gap={5} marginTop={{ custom: 12 }}>
-              <Text color={liquidationPriceIsClose ? 'red' : 'green'} size="13pt" weight="heavy">
+              <Text color={liquidationPriceIsClose ? 'red' : 'labelSecondary'} size="13pt" weight="heavy">
                 {`${toFixedWorklet(targetPriceDifferential, 2)}%`}
               </Text>
               <Text color="labelTertiary" size="13pt" weight="heavy">

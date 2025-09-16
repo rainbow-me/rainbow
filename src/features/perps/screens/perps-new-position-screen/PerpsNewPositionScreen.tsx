@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { Box, Separator, Stack, useBackgroundColor } from '@/design-system';
+import { Bleed, Box, Separator, Stack, useBackgroundColor } from '@/design-system';
 import { AmountInputCard } from './AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
 import { PositionSideSelector } from './PositionSideSelector';
@@ -21,22 +21,28 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   if (!market) return null;
 
   return (
-    <Box background={'surfacePrimary'} paddingHorizontal={'20px'} style={{ flex: 1 }}>
+    <Box background={'surfacePrimary'} style={{ flex: 1 }}>
       {/* TODO (kane): shadow - disabled for now - is being clipped, might be able to fix by moving to a sticky header */}
-      <Box overflow={'visible'} paddingTop={'8px'}>
+      <Box overflow={'visible'} paddingTop={'8px'} justifyContent={'center'} alignItems={'center'}>
         <PositionSideSelector />
       </Box>
-      <Box style={{ flex: 1, position: 'relative' }}>
-        <ScrollView showsVerticalScrollIndicator={false} contentInset={{ bottom: FOOTER_HEIGHT_WITH_SAFE_AREA }}>
+      <Box style={{ flex: 1, position: 'relative', overflow: 'visible' }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentInset={{ bottom: FOOTER_HEIGHT_WITH_SAFE_AREA }}
+          contentContainerStyle={{ paddingHorizontal: 20, overflow: 'visible' }}
+        >
           <Box paddingTop={'24px'}>
             <Stack space={'24px'} separator={<Separator color={'separatorTertiary'} direction="horizontal" />}>
               <MarketInfoSection market={market} />
               <Box gap={17}>
                 <Box gap={24}>
-                  <Box>
-                    <AmountInputCard />
-                    <AmountInputError />
-                  </Box>
+                  <Bleed horizontal={'20px'}>
+                    <Box paddingHorizontal={'20px'}>
+                      <AmountInputCard />
+                      <AmountInputError />
+                    </Box>
+                  </Bleed>
                   <LeverageInputCard maxLeverage={market.maxLeverage} />
                 </Box>
                 <Box paddingHorizontal={'8px'}>

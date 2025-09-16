@@ -7,6 +7,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import * as hl from '@nktkas/hyperliquid';
 import { TriggerOrderType, HlTrade } from '../types';
 import { convertSide } from '../utils';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 type HlTradesParams = {
   address: Address | string | null;
@@ -164,3 +165,5 @@ export const useHlTradesStore = createQueryStore<FetchHlTradesResponse, HlTrades
     getTrade: (tradeId: number) => get().trades.find(trade => trade.id === tradeId),
   })
 );
+
+export const hlTradesStoreActions = createStoreActions(useHlTradesStore);

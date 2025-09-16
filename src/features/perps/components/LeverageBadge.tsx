@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 type LeverageBadgeProps = {
@@ -10,7 +10,8 @@ type LeverageBadgeProps = {
 export const LeverageBadge = memo(function LeverageBadge({ leverage }: LeverageBadgeProps) {
   const { isDarkMode } = useColorMode();
   const color = useMemo(() => {
-    return opacityWorklet(isDarkMode ? ETH_COLOR_DARK : ETH_COLOR, 0.16);
+    if (isDarkMode) return opacityWorklet(ETH_COLOR_DARK, 0.16);
+    return opacityWorklet('#09111F', 0.04);
   }, [isDarkMode]);
 
   return (
@@ -24,7 +25,7 @@ export const LeverageBadge = memo(function LeverageBadge({ leverage }: LeverageB
       borderWidth={1}
       borderColor={{ custom: color }}
     >
-      <Text size="11pt" weight="heavy" color={{ custom: ETH_COLOR_DARK_ACCENT }}>
+      <Text size="11pt" weight="heavy" color={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelTertiary'}>
         {`${leverage}x`}
       </Text>
     </Box>

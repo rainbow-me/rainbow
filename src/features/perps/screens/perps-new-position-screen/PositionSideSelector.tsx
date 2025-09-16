@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AnimatedText, Border, Box, useBackgroundColor, useForegroundColor } from '@/design-system';
+import { AnimatedText, Border, Box, useBackgroundColor, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpPositionSide } from '@/features/perps/types';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -15,22 +15,22 @@ import { PERPS_COLORS } from '@/features/perps/constants';
 const HEIGHT = 36;
 
 export const PositionSideSelector = memo(function PositionSideSelector() {
+  const { isDarkMode } = useColorMode();
   const width = DEVICE_WIDTH - 40;
   const backgroundColor = useBackgroundColor('surfacePrimary');
-  const label = useForegroundColor('label');
   const labelSecondary = useForegroundColor('labelSecondary');
   const positionSide = useStoreSharedValue(useHlNewPositionStore, state => state.positionSide);
 
   const longTextStyle = useAnimatedStyle(() => {
     return {
-      color: positionSide.value === PerpPositionSide.LONG ? 'black' : labelSecondary,
+      color: positionSide.value === PerpPositionSide.LONG ? (isDarkMode ? 'black' : 'white') : labelSecondary,
       fontWeight: positionSide.value === PerpPositionSide.LONG ? '900' : '800',
     };
   });
 
   const shortTextStyle = useAnimatedStyle(() => {
     return {
-      color: positionSide.value === PerpPositionSide.SHORT ? label : labelSecondary,
+      color: positionSide.value === PerpPositionSide.SHORT ? (isDarkMode ? 'black' : 'white') : labelSecondary,
       fontWeight: positionSide.value === PerpPositionSide.SHORT ? '900' : '800',
     };
   });

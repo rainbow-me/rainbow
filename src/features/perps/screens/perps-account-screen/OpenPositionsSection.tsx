@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { formatCurrency } from '@/helpers/strings';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
 export const OpenPositionsSection = function OpenPositionsSection() {
   const positions = useHyperliquidAccountStore(state => state.positions);
@@ -21,8 +21,8 @@ export const OpenPositionsSection = function OpenPositionsSection() {
   const textColor = isPositivePnl ? 'green' : isNeutralPnl ? 'labelTertiary' : 'red';
   const formattedValues = useMemo(() => {
     return {
-      equity: formatCurrency(equity, { currency: 'USD' }),
-      unrealizedPnl: formatCurrency(abs(unrealizedPnl), { currency: 'USD' }),
+      equity: formatCurrency(equity),
+      unrealizedPnl: formatCurrency(abs(unrealizedPnl)),
       unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
     };
   }, [equity, unrealizedPnl, unrealizedPnlPercent]);

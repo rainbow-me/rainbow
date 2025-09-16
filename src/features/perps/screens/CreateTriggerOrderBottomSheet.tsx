@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AnimatedText, Box, Separator, Text, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { addCommasToNumber, opacityWorklet, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
@@ -30,6 +30,7 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
+import { colors } from '@/styles';
 
 const PANEL_HEIGHT = 360;
 
@@ -57,6 +58,7 @@ type PanelContentProps = {
 };
 
 function PanelContent({ triggerOrderType, market }: PanelContentProps) {
+  const { isDarkMode } = useColorMode();
   const navigation = useNavigation();
   const inputRef = useRef<CurrencyInputRef>(null);
   const red = useForegroundColor('red');
@@ -153,7 +155,7 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
           <Box
             flexDirection="row"
             width="full"
-            borderWidth={2}
+            borderWidth={isDarkMode ? 2 : 0}
             borderColor={{ custom: accentColors.opacity6 }}
             borderRadius={28}
             height={66}
@@ -161,6 +163,7 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
             alignItems="center"
             justifyContent="space-between"
             backgroundColor={accentColors.surfacePrimary}
+            shadow={'18px'}
           >
             <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
               {'Price'}
@@ -232,7 +235,7 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
             onPress={addTriggerOrder}
             buttonProps={{ style: { flex: 1, opacity: !isValidTargetPriceState ? 0.5 : 1 }, disabled: !isValidTargetPriceState }}
           >
-            <Text size="20pt" weight="black" color={'black'}>
+            <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
               {'Add'}
             </Text>
           </HyperliquidButton>
@@ -246,6 +249,7 @@ export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBot
   const {
     params: { triggerOrderType, symbol },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET>>();
+  const { isDarkMode } = useColorMode();
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');
 
   const market = useHyperliquidMarketsStore(state => state.getMarket(symbol));
@@ -256,7 +260,7 @@ export const CreateTriggerOrderBottomSheet = memo(function CreateTriggerOrderBot
         <PanelSheet>
           <KeyboardStickyView>
             <Panel height={PANEL_HEIGHT} innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
-              <SheetHandleFixedToTop color={opacityWorklet('#F5F8FF', 0.3)} showBlur={true} top={14} />
+              <SheetHandleFixedToTop color={isDarkMode ? opacityWorklet('#F5F8FF', 0.3) : colors.blueGreyDark30} showBlur={true} top={14} />
               {/* The market should always be defined */}
               {market && <PanelContent triggerOrderType={triggerOrderType} market={market} />}
             </Panel>

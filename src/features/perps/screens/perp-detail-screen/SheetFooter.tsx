@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { Box, Text } from '@/design-system';
+import { Box, Text, useColorMode } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
@@ -9,6 +9,7 @@ import Navigation from '@/navigation/Navigation';
 import { navigateToNewPositionScreen } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
 import { useNavigation } from '@react-navigation/native';
+import { InteractionManager } from 'react-native';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;
@@ -19,6 +20,7 @@ type SheetFooterProps = {
 };
 
 export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
+  const { isDarkMode } = useColorMode();
   const navigation = useNavigation();
   const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
   const safeAreaInsets = useSafeAreaInsets();
@@ -31,7 +33,12 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
 
   const navigateToNewPosition = useCallback(() => {
     navigation.goBack();
-    navigateToNewPositionScreen(market);
+    InteractionManager.runAfterInteractions(() => {
+      // Arbitrary delay to avoid being visually jarring
+      setTimeout(() => {
+        navigateToNewPositionScreen(market);
+      }, 75);
+    });
   }, [market, navigation]);
 
   const onPress = position ? navigateToClosePosition : navigateToNewPosition;
@@ -48,7 +55,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
       />
       <Box paddingHorizontal={'24px'} backgroundColor={backgroundColor} width="full" paddingBottom={{ custom: safeAreaInsets.bottom + 12 }}>
         <HyperliquidButton onPress={onPress}>
-          <Text size="20pt" weight="black" color={'black'}>
+          <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
             {buttonText}
           </Text>
         </HyperliquidButton>

@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { HYPERLIQUID_GREEN, PERPS_COLORS } from '@/features/perps/constants';
+import { HYPERLIQUID_COLORS, HYPERLIQUID_GREEN, HYPERLIQUID_GREEN_LIGHT, PERPS_COLORS } from '@/features/perps/constants';
 
 const theme = {
   dark: {
     primary: HYPERLIQUID_GREEN,
   },
   light: {
-    primary: HYPERLIQUID_GREEN,
+    primary: HYPERLIQUID_GREEN_LIGHT,
   },
 };
 
@@ -26,6 +26,13 @@ type PerpsAccentColors = {
   opacity2: string;
   opacity1: string;
   surfacePrimary: string;
+  gradient: string[];
+  slider: {
+    activeLeft: string;
+    inactiveLeft: string;
+    activeRight: string;
+    inactiveRight: string;
+  };
 };
 
 type PerpsAccentColorContextType = {
@@ -65,7 +72,14 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
       opacity3: opacityWorklet(primary, 0.03),
       opacity2: opacityWorklet(primary, 0.02),
       opacity1: opacityWorklet(primary, 0.01),
-      surfacePrimary: '#171E20',
+      surfacePrimary: isDarkMode ? '#171E20' : 'white',
+      gradient: isDarkMode ? ['#72FFD9', '#3ECFAD'] : ['#31C8A4'],
+      slider: {
+        activeLeft: primary,
+        inactiveLeft: primary,
+        activeRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(primary, 0.12),
+        inactiveRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(primary, 0.12),
+      },
     };
   }, [isDarkMode]);
 

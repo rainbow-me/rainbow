@@ -7,6 +7,7 @@ import { infoClient } from '@/features/perps/services/hyperliquid-account-client
 import { OrderSide } from '@/features/perps/types';
 import * as hl from '@nktkas/hyperliquid';
 import { convertSide } from '@/features/perps/utils';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 
 export type HlOpenOrder = {
   id: number;
@@ -82,3 +83,5 @@ export const useHlOpenOrdersStore = createQueryStore<FetchHlOpenOrdersResponse, 
     ordersBySymbol: {},
   })
 );
+
+export const hlOpenOrdersStoreActions = createStoreActions(useHlOpenOrdersStore);
