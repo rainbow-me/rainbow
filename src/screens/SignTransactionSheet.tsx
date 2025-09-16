@@ -27,7 +27,7 @@ import {
 import { Transaction } from '@ethersproject/transactions';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { AnimatePresence, MotiView } from 'moti';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
@@ -89,23 +89,42 @@ const useOptimisticNativeAssetBalance = (chainId: ChainId, address: string): Par
     return ethereumUtils.getNetworkNativeAsset({ chainId, address });
   });
 
-  const setNativeAssetIfChanged = (asset?: ParsedAddressAsset) => {
+  const accountSelectionKey = `${chainId}_${address}`;
+  const selectedAccount = useRef(accountSelectionKey);
+
+  const setNativeAssetIfChanged = (selectionKey: string, asset?: ParsedAddressAsset) => {
+    // bail on late async response from prior account/chain selection
+    if (selectionKey !== accountSelectionKey) {
+      return;
+    }
+
     setNativeAsset(prev => {
-      if (!prev && asset) return asset;
-      if (prev && asset && prev.balance?.amount !== asset.balance?.amount) return asset;
+      if (selectedAccount.current !== selectionKey) {
+        selectedAccount.current = selectionKey;
+        return asset;
+      } else if (!prev && asset) {
+        return asset;
+      } else if (prev && !asset) {
+        return asset;
+      } else if (prev && asset) {
+        const tokenChanged = prev.chainId !== asset.chainId || prev.address !== asset.address;
+        const balanceChanged = prev.balance?.amount !== asset.balance?.amount;
+        if (tokenChanged || balanceChanged) return asset;
+      }
       return prev;
     });
   };
 
   useEffect(() => {
     const cachedAsset = ethereumUtils.getNetworkNativeAsset({ chainId, address });
-    setNativeAssetIfChanged(cachedAsset);
+    setNativeAssetIfChanged(accountSelectionKey, cachedAsset);
 
+    // lazy async network fetch to refresh asset balance
     (async () => {
       const fetchedAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId, address });
-      setNativeAssetIfChanged(fetchedAsset);
+      setNativeAssetIfChanged(accountSelectionKey, fetchedAsset);
     })();
-  }, [chainId, address]);
+  }, [chainId, address, accountSelectionKey]);
 
   return nativeAsset;
 };
