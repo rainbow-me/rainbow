@@ -26,7 +26,7 @@ export function TestDeeplinkHandler() {
             name: query.name,
             userPin: '1111',
           });
-          Navigation.handleAction(Routes.SWIPE_LAYOUT, {
+          Navigation.replace(Routes.SWIPE_LAYOUT, {
             screen: Routes.WALLET_SCREEN,
             params: { initialized: true },
           });
