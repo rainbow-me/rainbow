@@ -11,6 +11,7 @@ import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+// import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;
@@ -18,8 +19,11 @@ type PerpPositionCardProps = {
 
 export const PerpPositionCard = memo(function PerpPositionCard({ position }: PerpPositionCardProps) {
   const { isDarkMode } = useColorMode();
-  // TODO BLOCKED (kane): real token color, blocked by backend
-  const tokenColor = opacityWorklet('#677483', 0.08);
+  // TODO (kane): does not look good
+  // const market = useHyperliquidMarketsStore(state => state.getMarket(position.symbol));
+  // const tokenColor = market?.metadata?.colors.color ?? '#677483';
+  // const backgroundColor = opacityWorklet(tokenColor, 0.06);
+  const backgroundColorDark = opacityWorklet('#677483', 0.08);
   const isNegativePnl = position.unrealizedPnl.includes('-');
 
   const formattedValues = useMemo(() => {
@@ -40,11 +44,11 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
   return (
     <Box
       width={'full'}
-      backgroundColor={isDarkMode ? tokenColor : 'white'}
+      backgroundColor={isDarkMode ? backgroundColorDark : 'white'}
       borderRadius={32}
       padding={'16px'}
       borderWidth={isDarkMode ? 2 : 0}
-      borderColor={{ custom: tokenColor }}
+      borderColor={{ custom: backgroundColorDark }}
       // @ts-ignore: TODO
       shadow={isDarkMode ? null : '18px'}
     >
