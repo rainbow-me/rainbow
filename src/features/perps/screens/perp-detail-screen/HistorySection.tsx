@@ -33,7 +33,7 @@ const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade })
 
   const leftHandSide = useMemo(() => {
     if (trade.triggerOrderType) {
-      return `${toFixedWorklet(divWorklet(trade.fillStartSize, trade.size), 2)}%`;
+      return `${toFixedWorklet(mulWorklet(divWorklet(trade.fillStartSize, trade.size), 100), 0)}%`;
     }
 
     return formatCurrency(mulWorklet(trade.size, trade.price), {
@@ -109,7 +109,7 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
           <Box>
             {visibleTrades.map((trade, index) => (
               <Fragment key={trade.id}>
-                <TradeListItem key={trade.id} trade={trade} />
+                <TradeListItem trade={trade} />
                 {index < visibleTrades.length - 1 && <Separator color={'separatorTertiary'} direction="horizontal" thickness={4 / 3} />}
               </Fragment>
             ))}
