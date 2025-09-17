@@ -774,10 +774,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "Cerrar",
+            "c": "CLOSE",
             "h": "A",
             "l": "B",
-            "o": "Abrir",
+            "o": "OPEN",
             "t": "",
             "v": "V"
           },
