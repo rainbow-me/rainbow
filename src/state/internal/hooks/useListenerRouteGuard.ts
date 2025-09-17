@@ -1,7 +1,8 @@
-import { useRoute } from '@react-navigation/native';
-import { MutableRefObject, useMemo } from 'react';
+import { RefObject, useMemo } from 'react';
 import { useStableValue } from '@/hooks/useStableValue';
-import { Route, UseRoute } from '@/navigation/routesNames';
+import { useRoute } from '@/navigation/Navigation';
+import { Route } from '@/navigation/routesNames';
+import { ListenHandleTuple, ReadOnlySharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { Listener, Selector } from '@/state/internal/types';
 import { NavigationState, useNavigationStore } from '@/state/navigation/navigationStore';
 import { ListenHandle, useListen } from './useListen';
@@ -58,9 +59,8 @@ const DEFAULT_OPTIONS = Object.freeze({
  * 💡 **Note:** The provided `route` is frozen to its initial value. Subsequent changes have no effect.
  *
  * ---
- * @param listenHandle - The `ListenHandle` to suspend/resume.
- * @param route - The route that must be active for the listener to run.
- * @param options - Optional settings for enabling/disabling the behavior.
+ * @param listenHandleOrTuple - The `ListenHandle` to suspend/resume, or a tuple of `[SharedValue, ListenHandle]`.
+ * @param options - Optional settings including the route and enabling/disabling behavior.
  *
  * ---
  * @example
@@ -72,48 +72,74 @@ const DEFAULT_OPTIONS = Object.freeze({
  *     state => state.getPrice(),
  *     { fireImmediately: true }
  *   ),
- *   Routes.EXPANDED_ASSET_SHEET_V2
+ *   { route: Routes.EXPANDED_ASSET_SHEET_V2 }
  * );
  *
- * // -- With `useStoreSharedValue`:
+ * // -- With `useStoreSharedValue` (returnListenHandle: true):
+ * const chartPrice = useListenerRouteGuard(
+ *   useStoreSharedValue(
+ *     useCandlestickStore,
+ *     state => state.getPrice(),
+ *     { returnListenHandle: true }
+ *   ),
+ *   { route: Routes.EXPANDED_ASSET_SHEET_V2 }
+ * );
+ *
+ * // -- With `useStoreSharedValue` (manual destructuring):
  * const [chartPrice, priceListener] = useStoreSharedValue(
  *   useCandlestickStore,
  *   state => state.getPrice(),
  *   { returnListenHandle: true }
  * );
  *
- * useListenerRouteGuard(priceListener, Routes.EXPANDED_ASSET_SHEET_V2);
+ * useListenerRouteGuard(priceListener, { route: Routes.EXPANDED_ASSET_SHEET_V2 });
  * ```
  */
-export function useListenerRouteGuard(
-  listenHandle: MutableRefObject<Readonly<ListenHandle>>,
+export function useListenerRouteGuard(listenHandle: RefObject<Readonly<ListenHandle>>, options?: UseListenerRouteGuardOptions): void;
+
+export function useListenerRouteGuard<T>(
+  listenHandleTuple: ListenHandleTuple<T>,
+  options?: UseListenerRouteGuardOptions
+): ReadOnlySharedValue<T>;
+
+export function useListenerRouteGuard<T>(
+  listenHandleOrTuple: RefObject<Readonly<ListenHandle>> | ListenHandleTuple<T>,
   { debugMode, enabled, fireImmediately, route }: UseListenerRouteGuardOptions = DEFAULT_OPTIONS
-): void {
-  const currentRoute = useRoute<UseRoute>().name;
-  const handlers = useStableValue(() => createHandlers(listenHandle, route ?? currentRoute, debugMode));
+): void | ReadOnlySharedValue<T> {
+  const currentRoute = useRoute().name;
+  const config = useStableValue(() => createRouteGuardConfig(listenHandleOrTuple, route ?? currentRoute, debugMode));
   const adjustedOptions = useMemo(() => stripDebugMode({ enabled, fireImmediately }), [enabled, fireImmediately]);
-  useListen(useNavigationStore, handlers.selector, handlers.suspensionHandler, adjustedOptions);
+
+  useListen(useNavigationStore, config.selector, config.suspensionHandler, adjustedOptions);
+
+  if (config.sharedValue) return config.sharedValue;
 }
 
 // ============ Utilities ====================================================== //
 
-type UseListenHandlers = {
+type RouteGuardConfig<T = unknown> = {
   selector: Selector<NavigationState, boolean>;
+  sharedValue: ReadOnlySharedValue<T> | undefined;
   suspensionHandler: Listener<boolean>;
 };
 
-function createHandlers(listenHandle: MutableRefObject<Readonly<ListenHandle>>, route: Route, debugMode?: boolean): UseListenHandlers {
+function createRouteGuardConfig<T>(
+  listenHandleOrTuple: RefObject<Readonly<ListenHandle>> | ListenHandleTuple<T>,
+  route: Route,
+  debugMode?: boolean
+): RouteGuardConfig<T> {
+  const isTuple = Array.isArray(listenHandleOrTuple);
+  const listenHandle = isTuple ? listenHandleOrTuple[1] : listenHandleOrTuple;
+  const sharedValue = isTuple ? listenHandleOrTuple[0] : undefined;
+
   return {
     selector: state => state.isRouteActive(route),
+    sharedValue,
     suspensionHandler: createSuspensionHandler(listenHandle, route, debugMode),
   };
 }
 
-function createSuspensionHandler(
-  listenHandle: MutableRefObject<Readonly<ListenHandle>>,
-  route: Route,
-  debugMode?: boolean
-): Listener<boolean> {
+function createSuspensionHandler(listenHandle: RefObject<Readonly<ListenHandle>>, route: Route, debugMode?: boolean): Listener<boolean> {
   return isActive => {
     if (isActive) {
       if (debugMode) console.log(`[✅ useListenerRouteGuard ✅] Resuming: '${route}' became active`);

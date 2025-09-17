@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import { format, formatDistanceStrict } from 'date-fns';
 import * as i18n from '@/languages';
 import React, { useCallback, useState } from 'react';

@@ -1,9 +1,9 @@
 import React from 'react';
 import { ViewProps } from 'react-native';
 import Animated, { AnimatedProps, AnimatedStyle, Easing, FadeIn, FadeOut } from 'react-native-reanimated';
-import { Route, UseRoute } from '@/navigation/routesNames';
+import { useRoute } from '@/navigation/Navigation';
+import { Route } from '@/navigation/routesNames';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { useRoute } from '@react-navigation/native';
 
 type MountWhenFocusedProps = {
   children: React.ReactNode;
@@ -27,10 +27,10 @@ type MountWhenFocusedProps = {
     }
 );
 
-const DEFAULTS = {
+const DEFAULTS = Object.freeze({
   duration: 300,
   easing: Easing.bezier(0.22, 1, 0.36, 1).factory(),
-};
+});
 
 export const MountWhenFocused = ({
   animated = true,
@@ -40,7 +40,7 @@ export const MountWhenFocused = ({
   route,
   style,
 }: MountWhenFocusedProps) => {
-  const currentRoute = useRoute<UseRoute>().name;
+  const currentRoute = useRoute().name;
   const isRouteActive = useNavigationStore(state => state.isRouteActive(route ?? currentRoute));
 
   if (!isRouteActive) return null;

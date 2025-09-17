@@ -654,7 +654,7 @@ export default function SendSheet() {
   const rainbowToastsEnabled = useRainbowToastEnabled();
 
   const submitTransaction = useCallback(
-    async (args: OnSubmitProps) => {
+    async (args?: OnSubmitProps) => {
       if (Number(amountDetails.assetAmount) <= 0) {
         logger.error(new RainbowError(`[SendSheet]: preventing tx submit because amountDetails.assetAmount is <= 0`), {
           amountDetails,

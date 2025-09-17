@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import * as i18n from '@/languages';
 import React from 'react';
 import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';

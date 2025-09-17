@@ -1,5 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import Routes from '@/navigation/routesNames';
+import Routes, { Route } from '@/navigation/routesNames';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { ParsedAddressAsset, PendingTransaction, RainbowTransaction, UniqueAsset } from '@/entities';
@@ -28,26 +28,19 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { LearnCardKey, LearnCategory } from '@/components/cards/utils/types';
 import { CardType } from '@/components/cards/GenericCard';
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import { ActiveTabRef } from '@/components/DappBrowser/types';
 import { WalletNotificationSettings } from '@/notifications/settings';
 import { LEDGER_ERROR_CODES } from '@/utils/ledger';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
+import { AreAllKeysOptional, ExtractOptionalKeys } from '@/types/objects';
 import { ScrollView } from 'react-native';
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace ReactNavigation {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface RootParamList extends RootStackParamList {}
-  }
-}
-
 export type PortalSheetProps = {
-  sheetHeight?: number;
   children: React.FC;
+  sheetHeight?: number;
 };
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
@@ -260,17 +253,15 @@ export type SignTransactionSheetParams = {
   source: RequestSource;
 };
 
-type UntypedRoutes = {
-  [key: string]: undefined;
-};
-
 export type SettingsStackParams = {
   [Routes.SETTINGS_SECTION]: undefined;
   [Routes.SETTINGS_SECTION_APP_ICON]: undefined;
-  [Routes.SETTINGS_SECTION_BACKUP]: {
-    walletId?: string;
-    initialRoute?: string;
-  };
+  [Routes.SETTINGS_SECTION_BACKUP]:
+    | {
+        walletId?: string;
+        initialRoute?: string;
+      }
+    | undefined;
   [Routes.SETTINGS_SECTION_CURRENCY]: undefined;
   [Routes.SETTINGS_SECTION_DEV]: undefined;
   [Routes.SETTINGS_SECTION_LANGUAGE]: undefined;
@@ -299,16 +290,18 @@ export type SendParams = {
   shouldShowChecks?: boolean;
 };
 
-export type WalletScreenParams = {
-  initialized?: boolean;
-  emptyWallet?: boolean;
-};
+export type WalletScreenParams =
+  | {
+      initialized?: boolean;
+      emptyWallet?: boolean;
+    }
+  | undefined;
 
 export type SettingsSheetParams = {
   initialRoute?: keyof SettingsStackParams;
 };
 
-export type RootStackParamList = {
+type RouteParams = {
   [Routes.CHANGE_WALLET_SHEET]: {
     watchOnly?: boolean;
     currentAccountAddress?: string;
@@ -331,7 +324,7 @@ export type RootStackParamList = {
     type: 'speed_up' | 'cancel';
   };
   [Routes.SWIPE_LAYOUT]: NavigatorScreenParams<{
-    [Routes.WALLET_SCREEN]: WalletScreenParams;
+    [Routes.WALLET_SCREEN]: WalletScreenParams | undefined;
   }>;
   [Routes.SETTINGS_SECTION_BACKUP]: {
     walletId?: string;
@@ -358,7 +351,7 @@ export type RootStackParamList = {
       nativeAmount: string;
     };
     asset: ParsedAddressAsset | UniqueAsset;
-    callback: (...args: any[]) => Promise<boolean | undefined>;
+    callback: (props?: { ens?: { setAddress: boolean; transferControl: boolean; clearRecords: boolean } }) => Promise<boolean | undefined>;
     checkboxes: Checkbox[];
     ensProfile: ENSProfile;
     isENS: boolean;
@@ -414,7 +407,7 @@ export type RootStackParamList = {
     mode?: REGISTRATION_MODES;
     autoFocusKey?: string;
     externalAvatarUrl?: string | null;
-    sheetRef?: MutableRefObject<ScrollView>;
+    sheetRef?: RefObject<ScrollView>;
   };
   [Routes.MINT_SHEET]: {
     collection: ReservoirCollection;
@@ -522,13 +515,15 @@ export type RootStackParamList = {
       message: string;
     }[];
   };
-  [Routes.SEND_SHEET]: SendParams;
+  [Routes.SEND_SHEET]: Partial<SendParams>;
   [Routes.SEND_FLOW]:
-    | NavigatorScreenParams<{
-        [Routes.SEND_SHEET]: SendParams;
-        [Routes.MODAL_SCREEN]: ModalParams;
-      }>
-    | SendParams;
+    | Partial<
+        NavigatorScreenParams<{
+          [Routes.SEND_SHEET]: SendParams;
+          [Routes.MODAL_SCREEN]: ModalParams;
+        }>
+      >
+    | Partial<SendParams>;
   [Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET]: HardwareWalletTxParams;
   [Routes.HARDWARE_WALLET_TX_NAVIGATOR]:
     | HardwareWalletTxParams
@@ -552,7 +547,7 @@ export type RootStackParamList = {
     deviceId?: string;
   };
   [Routes.CONFIRM_REQUEST]: SignTransactionSheetParams;
-  [Routes.SETTINGS_SHEET]: undefined | NavigatorScreenParams<SettingsStackParams>;
+  [Routes.SETTINGS_SHEET]: NavigatorScreenParams<SettingsStackParams> | undefined;
   [Routes.SECRET_WARNING]: {
     title: string;
     privateKeyAddress?: string;
@@ -609,7 +604,8 @@ export type RootStackParamList = {
         [Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET]: { shouldGoBack?: boolean };
         [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: undefined;
       }>
-    | PairHardwareWalletNavigatorParams;
+    | PairHardwareWalletNavigatorParams
+    | undefined;
   [Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET]: PairHardwareWalletNavigatorParams;
   [Routes.ADD_WALLET_NAVIGATOR]:
     | NavigatorScreenParams<{
@@ -623,11 +619,45 @@ export type RootStackParamList = {
     url?: string;
   };
   [Routes.DAPP_BROWSER_CONTROL_PANEL]: {
-    activeTabRef: MutableRefObject<ActiveTabRef | null>;
+    activeTabRef: RefObject<ActiveTabRef | null>;
   };
   [Routes.CHOOSE_WALLET_GROUP]: undefined;
   [Routes.POAP_SHEET]: {
     event: PoapEvent;
   };
   [Routes.MODAL_SCREEN]: ModalParams;
-} & UntypedRoutes;
+};
+
+/**
+ * Computes whether the `params` argument may be omitted when navigating to a `Route`.
+ */
+type AreRouteParamsOptional<K extends keyof RouteParams> = [undefined] extends [RouteParams[K]]
+  ? true
+  : [RouteParams[K]] extends [NavigatorScreenParams<unknown>]
+    ? true
+    : [RouteParams[K]] extends [object]
+      ? AreAllKeysOptional<RouteParams[K]>
+      : false;
+
+/**
+ * Routes with explicitly required params.
+ */
+type RoutesWithRequiredParams = {
+  [K in keyof RouteParams]: AreRouteParamsOptional<K> extends true ? never : K;
+}[keyof RouteParams];
+
+/**
+ * All routes mapped to their respective param types.
+ */
+export type RootStackParamList = {
+  [K in RoutesWithRequiredParams]: RouteParams[K];
+} & {
+  [K in Exclude<keyof RouteParams, RoutesWithRequiredParams>]?: RouteParams[K];
+} & {
+  [K in Exclude<Route, keyof RouteParams>]?: undefined;
+};
+
+/**
+ * Routes with optional params or no params at all.
+ */
+export type RoutesWithOptionalParams = ExtractOptionalKeys<RootStackParamList>;

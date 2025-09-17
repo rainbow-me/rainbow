@@ -156,13 +156,9 @@ export default function RestoreCloudStep() {
         onRestoreSuccess();
         backupsStore.getState().setPassword('');
         if (isEmpty(prevWalletsState)) {
-          Navigation.handleAction(
-            Routes.SWIPE_LAYOUT,
-            {
-              screen: Routes.WALLET_SCREEN,
-            },
-            true
-          );
+          Navigation.handleAction(Routes.SWIPE_LAYOUT, {
+            screen: Routes.WALLET_SCREEN,
+          });
         } else {
           Navigation.handleAction(Routes.WALLET_SCREEN);
         }

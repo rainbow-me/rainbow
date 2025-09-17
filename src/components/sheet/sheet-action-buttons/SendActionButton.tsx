@@ -15,14 +15,14 @@ type SendActionButtonProps = SheetActionButtonProps & {
 function SendActionButton({ asset, color: givenColor, textColor, ...props }: SendActionButtonProps) {
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
-  const handlePress = useCallback(
-    () =>
-      navigate(Routes.SEND_FLOW, {
-        asset,
-        ...(IS_IOS ? { screen: Routes.SEND_SHEET, params: { asset } } : {}),
-      }),
-    [navigate, asset]
-  );
+
+  const handlePress = useCallback(() => {
+    if (IS_IOS) {
+      navigate(Routes.SEND_FLOW, { screen: Routes.SEND_SHEET, params: { asset } });
+    } else {
+      navigate(Routes.SEND_FLOW, { asset });
+    }
+  }, [asset, navigate]);
 
   return (
     <SheetActionButton

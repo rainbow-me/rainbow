@@ -81,7 +81,7 @@ export default function ENSAssignRecordsSheet() {
   const { data: { records } = {} } = useENSRecords(name);
   const isEmptyProfile = isEmpty(records);
 
-  const displayTitleLabel = params.mode !== REGISTRATION_MODES.EDIT || !isLoading;
+  const displayTitleLabel = params?.mode !== REGISTRATION_MODES.EDIT || !isLoading;
 
   useENSRegistrationCosts({
     name,
@@ -175,7 +175,7 @@ export default function ENSAssignRecordsSheet() {
                 </Heading>
                 <Text align="center" color="accent" size="16px / 22px (Deprecated)" weight="heavy">
                   {displayTitleLabel
-                    ? i18n.t(i18n.l.profiles[isEmptyProfile && params.mode !== REGISTRATION_MODES.EDIT ? 'create' : 'edit'].label)
+                    ? i18n.t(i18n.l.profiles[isEmptyProfile && params?.mode !== REGISTRATION_MODES.EDIT ? 'create' : 'edit'].label)
                     : ''}
                 </Text>
               </Stack>

@@ -29,8 +29,9 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   var bottomAnchor: NSLayoutYAxisAnchor = NSLayoutYAxisAnchor.init()
   var heightAnchor: NSLayoutDimension = NSLayoutDimension.init()
   var state: PanModalPresentationController.PresentationState? = nil;
-  var disappared = false
+  var disappeared = false
   var hiding = false
+  var didHandleWillDismiss = false
   var ppview: UIView?
 
   weak var viewController: UIViewController?
@@ -170,12 +171,14 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     }
   }
 
-
   func panModalWillDismiss() {
-    callWillDismiss()
+    if !didHandleWillDismiss {
+      didHandleWillDismiss = true
+      callWillDismiss()
+    }
   }
 
-  func callWillDismiss() {
+  @objc func callWillDismiss() {
     config?.willDismiss()
   }
 
@@ -183,7 +186,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     if (hiding) {
       return false
     }
-    return self.config!.dismissable
+    return self.config!.dismissable || self.shouldPrioritize(panModalGestureRecognizer: panModalGestureRecognizer)
   }
 
   var allowsDragToDismiss: Bool {
@@ -312,14 +315,20 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   override func viewDidAppear(_ animated: Bool) {
+    didHandleWillDismiss = false
     config?.notifyAppear()
   }
 
   override func viewWillDisappear(_ animated: Bool) {
+    if self.isBeingDismissed && !didHandleWillDismiss {
+      didHandleWillDismiss = true
+      callWillDismiss()
+    }
+    
     if !self.config!.customStack {
       config?.removeController()
     }
-    disappared = true
+    disappeared = true
     super.viewWillDisappear(animated)
   }
 
@@ -328,7 +337,7 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     super.viewDidLayoutSubviews()
     for i in 1...10 {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.3 * Double(i)) {
-        if !self.disappared {
+        if !self.disappeared {
           let newHeight: CGFloat = self.panScrollable?.layer.frame.height ?? 0
           if !newHeight.isEqual(to: self.prevHeight) {
             self.prevHeight = newHeight
@@ -339,7 +348,6 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
     }
   }
 }
-
 
 extension UIViewController {
   @objc public func obtainDelegate() -> UIViewControllerTransitioningDelegate? {
@@ -355,7 +363,6 @@ extension UIViewController {
   {
     let controller = PanModalViewController(viewControllerToPresent)
     if self is PanModalViewController {
-      print((self as! PanModalViewController).hacked)
       (self as! PanModalViewController).unhackParent()
     }
     
