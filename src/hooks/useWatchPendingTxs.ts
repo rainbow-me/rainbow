@@ -1,9 +1,10 @@
-import { useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
 import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
-import { transactionFetchQuery } from '@/resources/transactions/transaction';
+import { fetchRawTransaction } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
+import { buildTransactionTitle, isValidTransactionStatus } from '@/parsers/transactions';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { pendingTransactionsActions } from '@/state/pendingTransactions';
 import { useRainbowToastsStore } from '@/components/rainbow-toast/useRainbowToastsStore';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -14,10 +15,12 @@ import { useMinedTransactionsStore } from '@/state/minedTransactions/minedTransa
 import { queryClient } from '@/react-query';
 
 async function fetchTransaction({
+  abortController,
   address,
   currency,
   transaction,
 }: {
+  abortController: AbortController | null;
   address: string;
   currency: SupportedCurrencyKey;
   transaction: RainbowTransaction;
@@ -26,7 +29,9 @@ async function fetchTransaction({
     if (!transaction.chainId || !transaction.hash) {
       throw new Error('Pending transaction missing chainId or hash');
     }
-    const fetchedTransaction = await transactionFetchQuery({
+
+    const fetchedTransaction = await fetchRawTransaction({
+      abortController,
       address,
       chainId: transaction.chainId,
       currency,
@@ -34,37 +39,35 @@ async function fetchTransaction({
       originalType: transaction.type,
     });
 
-    return {
-      ...transaction,
-      ...fetchedTransaction,
-    };
+    return applyTransactionUpdates(transaction, fetchedTransaction);
   } catch (e) {
     logger.error(new RainbowError('[fetchTransaction]: Failed to fetch transaction', e), {
       transaction,
     });
+    return transaction;
   }
-
-  return transaction;
 }
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const watchPendingTransactions = useCallback(
-    async (pendingTransactions: RainbowTransaction[], signal: AbortSignal) => {
+    async (pendingTransactions: RainbowTransaction[], abortController: AbortController) => {
       if (!pendingTransactions.length) return;
 
       // This abort signal will be called if new transactions are received. In that
       // case we need to cancel this fetch since it will now be stale.
-      let canceled = signal.aborted;
-      signal.addEventListener('abort', () => {
+      let canceled = abortController.signal.aborted;
+      abortController.signal.addEventListener('abort', () => {
         canceled = true;
       });
 
       const now = Math.floor(Date.now() / 1000);
 
       const fetchedTransactions = await Promise.all(
-        pendingTransactions.map((tx: RainbowTransaction) => fetchTransaction({ address, currency: nativeCurrency, transaction: tx }))
+        pendingTransactions.map((transaction: RainbowTransaction) =>
+          fetchTransaction({ abortController, address, currency: nativeCurrency, transaction })
+        )
       );
 
       if (canceled) return;
@@ -92,7 +95,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         }
       );
 
-      usePendingTransactionsStore.getState().setPendingTransactions({
+      pendingTransactionsActions.setPendingTransactions({
         address,
         pendingTransactions: newPendingTransactions,
       });
@@ -114,5 +117,48 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     [address, nativeCurrency]
   );
 
-  return { watchPendingTransactions };
+  return watchPendingTransactions;
 };
+
+/**
+ * If pending, applies only the fields that change during a pending transaction's
+ * lifecycle to the original transaction.
+ *
+ * If confirmed, prefers the fetched transaction over the original for certain
+ * transaction types.
+ *
+ * This works around the lack of rich metadata in fetched pending transactions.
+ */
+function applyTransactionUpdates(original: RainbowTransaction, fetched: RainbowTransaction | null): RainbowTransaction {
+  if (!fetched) return original;
+
+  const status = isValidTransactionStatus(fetched.status) ? fetched.status : original.status;
+  if (status === original.status) return original;
+
+  if (status === TransactionStatus.confirmed && !shouldPreferLocalTransaction(original.type)) {
+    return { ...original, ...fetched };
+  }
+
+  return {
+    ...original,
+    status,
+    title: buildTransactionTitle(original.type, status),
+  };
+}
+
+/**
+ * Prefers local transaction data for a subset of transaction types which
+ * contain bad metadata in the confirmed fetched transaction.
+ *
+ * This primarily affects the labels displayed in the confirmation toast.
+ */
+function shouldPreferLocalTransaction(originalType: RainbowTransaction['type']): boolean {
+  switch (originalType) {
+    case 'bridge':
+    case 'cancel':
+    case 'swap':
+      return true;
+    default:
+      return false;
+  }
+}

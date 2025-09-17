@@ -9,7 +9,7 @@ import {
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
-import { parseTransaction } from '@/parsers/transactions';
+import { isValidTransactionStatus, parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
@@ -62,12 +62,32 @@ export type BackendTransactionArgs = {
   enabled: boolean;
 };
 
-export const transactionQueryKey = ({ hash, address, currency, chainId, originalType }: TransactionArgs) =>
-  createQueryKey('transactions', { address, currency, chainId, hash, originalType }, { persisterVersion: 1 });
+type TransactionData = {
+  meta?: { status?: string };
+  payload: { transaction: TransactionApiResponse };
+};
 
-export const fetchTransaction = async ({
-  queryKey: [{ address, currency, chainId, hash, originalType }],
-}: QueryFunctionArgs<typeof transactionQueryKey>): Promise<RainbowTransaction | null> => {
+type TransactionResponse = {
+  data: TransactionData;
+  headers: Headers;
+  status: number;
+};
+
+export const fetchRawTransaction = async ({
+  abortController,
+  address,
+  currency,
+  chainId,
+  hash,
+  originalType,
+}: {
+  abortController?: AbortController | null;
+  address: string;
+  currency: NativeCurrencyKey;
+  chainId: ChainId;
+  hash: string;
+  originalType?: TransactionType;
+}): Promise<RainbowTransaction | null> => {
   if (IS_TEST && localPublicClient && chainId === anvilChain.id) {
     try {
       const client = localPublicClient as PublicClient;
@@ -129,19 +149,18 @@ export const fetchTransaction = async ({
   }
   try {
     const url = `/${chainId}/${address}/transactions/${hash}`;
-    const { data } = await getAddysHttpClient().get<{ payload: { transaction: TransactionApiResponse } }>(url, {
+    const response = await getAddysHttpClient().get<TransactionData>(url, {
       params: {
         currency: currency.toLowerCase(),
       },
+      signal: abortController?.signal,
     });
 
-    const tx = data?.payload?.transaction;
-    if (!tx || !tx?.status || (tx?.status as string) === '') {
-      return null;
-    }
-    const parsedTx = await parseTransaction(tx, currency, chainId);
-    if (!parsedTx) throw new Error('Failed to parse transaction');
-    return parsedTx;
+    const transaction = normalizeTransactionResponse(response).data.payload.transaction;
+    const parsed = parseTransaction(transaction, currency, chainId);
+    if (!parsed) throw new Error('Failed to parse transaction');
+
+    return parsed;
   } catch (e) {
     logger.error(new RainbowError('[transaction]: Failed to fetch transaction', e));
     return null;
@@ -151,7 +170,16 @@ export const fetchTransaction = async ({
 // ///////////////////////////////////////////////
 // Query Function
 
-export const transactionFetchQuery = async ({
+export const transactionQueryKey = ({ hash, address, currency, chainId, originalType }: TransactionArgs) =>
+  createQueryKey('transactions', { address, currency, chainId, hash, originalType }, { persisterVersion: 1 });
+
+export function transactionQueryFn({
+  queryKey: [{ address, currency, chainId, hash, originalType }],
+}: QueryFunctionArgs<typeof transactionQueryKey>): Promise<RainbowTransaction | null> {
+  return fetchRawTransaction({ address, currency, chainId, hash, originalType });
+}
+
+export const fetchCachedTransaction = async ({
   address,
   currency,
   chainId,
@@ -163,7 +191,7 @@ export const transactionFetchQuery = async ({
   chainId: ChainId;
   hash: string;
   originalType?: TransactionType;
-}) => queryClient.fetchQuery(transactionQueryKey({ address, currency, chainId, hash, originalType }), fetchTransaction, { staleTime: 0 });
+}) => queryClient.fetchQuery(transactionQueryKey({ address, currency, chainId, hash, originalType }), transactionQueryFn, { staleTime: 0 });
 
 export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs) {
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
@@ -182,7 +210,7 @@ export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs)
     chainId: chainId,
   };
 
-  return useQuery(transactionQueryKey(params), fetchTransaction, {
+  return useQuery(transactionQueryKey(params), transactionQueryFn, {
     enabled: !!hash && !!accountAddress && !!chainId,
     initialData: () => {
       const queryData = queryClient.getQueryData<PaginatedTransactions>(paginatedTransactionsKey);
@@ -216,3 +244,28 @@ export const useTransaction = ({ chainId, hash }: { chainId: ChainId; hash: stri
     isFetched: backendTransactionIsFetched,
   };
 };
+
+// ///////////////////////////////////////////////
+// Helpers
+
+/**
+ * Normalizes the transaction status based on the payload and meta statuses.
+ *
+ * Mutates the response in place.
+ */
+function normalizeTransactionResponse(response: TransactionResponse): TransactionResponse {
+  const normalizedStatus = normalizeTransactionStatus(response.data.payload.transaction.status, response.data.meta?.status);
+  response.data.payload.transaction.status = normalizedStatus;
+  return response;
+}
+
+/**
+ * Falls back to top-level `meta.status` when `payload.status` is empty or invalid.
+ *
+ * Accepts only known transaction statuses, otherwise defaults to pending.
+ */
+function normalizeTransactionStatus(payloadStatus: TransactionStatus | string | undefined, metaStatus?: string): TransactionStatus {
+  if (isValidTransactionStatus(payloadStatus)) return payloadStatus;
+  if (isValidTransactionStatus(metaStatus)) return metaStatus;
+  return TransactionStatus.pending;
+}

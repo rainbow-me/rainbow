@@ -15,6 +15,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [2.0.1] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.1)
+
+### Added
+
+- Hyperliquid charts (#6825)
+
+### Changed
+
+- Bump iOS and Android to v2.0.1 (#6830)
+- CI Performance Improvments (#6734)
+- Deprecate ens profile search in discover (#6827)
+- Expanded i18n coverage (#6836)
+- Refactor i18n typed api standardization (#6837)
+
+### Fixed
+
+- QR code scanner reliability fixes (#6686)
+- Fixed done button spacing on settings (#6831)
+- Fix issue with e2e (#6838)
+- Fixed missing padding under the wallet address in receive modal (#6832)
+- Fixed locale re-render upon language switching (#6835)
+- Switching wallets doesn’t reset the wallet balance page to the top (#6840)
+- Scroll to top vs reseting the full list on account switching (#6844)
+- Fixed done button truncation (#6841)
+
 ## [2.0.0] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.0)
 
 ### Added
