@@ -774,10 +774,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "닫기",
+            "c": "CLOSE",
             "h": "H",
             "l": "L",
-            "o": "열기",
+            "o": "OPEN",
             "t": "",
             "v": "V"
           },
