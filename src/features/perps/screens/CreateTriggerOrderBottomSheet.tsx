@@ -28,7 +28,6 @@ import { SheetHandleFixedToTop } from '@/components/sheet';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
-import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { colors } from '@/styles';
 
@@ -38,9 +37,9 @@ function formatDisplay(value: string) {
   'worklet';
   const numericValue = stripNonDecimalNumbers(value);
   if (!numericValue || numericValue === '0') {
-    return '0';
+    return '$0';
   }
-  return addCommasToNumber(numericValue, '0') as string;
+  return `$${addCommasToNumber(numericValue, '0')}`;
 }
 
 function PanelSheet({ children }: { children: React.ReactNode }) {
@@ -172,7 +171,6 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
               autoFocus={true}
               ref={inputRef}
               value={inputValue}
-              currencySymbol="$"
               textColor={accentColors.opacity100}
               placeholderTextColor={accentColors.opacity24}
               formatInput={formatInput}
@@ -180,6 +178,7 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
               size="30pt"
               weight="bold"
               align="right"
+              style={{ width: 200 }}
             />
           </Box>
 

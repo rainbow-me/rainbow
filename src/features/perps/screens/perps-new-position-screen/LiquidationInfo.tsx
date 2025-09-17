@@ -5,8 +5,8 @@ import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStor
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { calculateIsolatedLiquidationPrice } from '@/features/perps/utils/calculateLiquidationPrice';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 
 export const LiquidationInfo = memo(function LiquidationInfo({ market }: { market: PerpMarket }) {
   const leverage = useHlNewPositionStore(state => state.leverage);
@@ -60,7 +60,7 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
             {'Liquidated at'}
           </Text>
           <Text size="15pt" weight="heavy" color={'labelSecondary'}>
-            {estimatedLiquidationPrice ? formatAssetPrice({ value: estimatedLiquidationPrice, currency: 'USD' }) : '-'}
+            {estimatedLiquidationPrice ? formatPerpAssetPrice(estimatedLiquidationPrice.toString()) : '-'}
           </Text>
         </Box>
       </Box>

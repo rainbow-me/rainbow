@@ -30,7 +30,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
 
   const shortTextStyle = useAnimatedStyle(() => {
     return {
-      color: positionSide.value === PerpPositionSide.SHORT ? (isDarkMode ? 'black' : 'white') : labelSecondary,
+      color: positionSide.value === PerpPositionSide.SHORT ? 'white' : labelSecondary,
       fontWeight: positionSide.value === PerpPositionSide.SHORT ? '900' : '800',
     };
   });

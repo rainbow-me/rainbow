@@ -15,12 +15,11 @@ type CurrencyDisplayProps = {
   disabled: boolean;
   testID?: string;
   onPress: () => void;
-  textStyle: TextStyle;
+  textStyle: StyleProp<TextStyle>;
 };
 
 export const CurrencyDisplay = memo(function CurrencyDisplay({
   formattedValue,
-  currencySymbol,
   textColorStyle,
   isFocused,
   value,
@@ -35,12 +34,6 @@ export const CurrencyDisplay = memo(function CurrencyDisplay({
   return (
     <GestureHandlerButton disableHaptics disableScale onPressJS={onPress} disabled={disabled} testID={testID}>
       <Box flexDirection="row" alignItems="center" justifyContent="flex-end" style={{ flex: 1 }}>
-        {currencySymbol && (
-          <AnimatedText size="30pt" weight="heavy" style={[textColorStyle, textStyle]}>
-            {currencySymbol}
-          </AnimatedText>
-        )}
-
         <AnimatedText size="30pt" weight="bold" numberOfLines={1} style={[textColorStyle, textStyle]}>
           {formattedValue}
         </AnimatedText>

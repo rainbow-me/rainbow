@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { TextInput } from 'react-native';
 import { SharedValue, runOnUI, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -11,14 +11,13 @@ export type CurrencyInputProps = Omit<TextProps, 'color' | 'children'> & {
   onChangeValue?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
-  currencySymbol?: string;
   textColor: string;
   placeholderTextColor: string;
   disabled?: boolean;
   autoFocus?: boolean;
-  /** Processes raw keyboard input - validates and normalizes typed text into clean numeric string for storage */
+  // Processes raw keyboard input - validates and normalizes typed text into clean numeric string for storage
   formatInput: (text: string) => string;
-  /** Formats stored value for display - adds visual formatting like separators without affecting underlying data */
+  // Formats stored value for display - adds visual formatting like separators without affecting underlying data
   formatDisplay: (value: string) => string;
 };
 
@@ -36,7 +35,6 @@ export const CurrencyInput = forwardRef<CurrencyInputRef, CurrencyInputProps>(
       onChangeValue,
       onFocus,
       onBlur,
-      currencySymbol = '$',
       textColor,
       disabled = false,
       autoFocus = false,
@@ -128,14 +126,13 @@ export const CurrencyInput = forwardRef<CurrencyInputRef, CurrencyInputProps>(
       <>
         <CurrencyDisplay
           formattedValue={formattedValue}
-          currencySymbol={currencySymbol}
           textColorStyle={textColorStyle}
           isFocused={isFocused}
           value={value}
           caretColor={textColor}
           disabled={disabled}
           onPress={handleFocus}
-          textStyle={textStyles}
+          textStyle={[textStyles, textProps.style]}
         />
 
         <HiddenNativeInput

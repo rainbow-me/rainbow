@@ -39,7 +39,8 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
                 <Box gap={24}>
                   <Bleed horizontal={'20px'}>
                     <Box paddingHorizontal={'20px'}>
-                      <AmountInputCard />
+                      {/* key is used to force a re-render of the component when the market changes so that the initial amount is set correctly */}
+                      <AmountInputCard key={market.symbol} />
                       <AmountInputError />
                     </Box>
                   </Bleed>

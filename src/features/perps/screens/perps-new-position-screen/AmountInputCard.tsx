@@ -70,9 +70,9 @@ function formatDisplay(value: string) {
   'worklet';
   const numericValue = stripNonDecimalNumbers(value);
   if (!numericValue || numericValue === '0') {
-    return '0';
+    return '$0';
   }
-  return addCommasToNumber(numericValue, '0') as string;
+  return `$${addCommasToNumber(numericValue, '0')}`;
 }
 
 export const AmountInputCard = memo(function AmountInputCard() {
@@ -149,19 +149,10 @@ export const AmountInputCard = memo(function AmountInputCard() {
             </Text>
           </Text>
         </Box>
-        <Box
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            // TODO (kane): Why such dramatic flickering with right justification vs. not?
-            justifyContent: 'flex-end',
-          }}
-        >
+        <Box flexDirection="row" alignItems="center" justifyContent="flex-end" style={{ flex: 1 }}>
           <CurrencyInput
             ref={inputRef}
             value={inputValue}
-            currencySymbol="$"
             textColor={accentColors.opacity100}
             placeholderTextColor={accentColors.opacity24}
             formatInput={formatInput}
@@ -170,6 +161,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
             size="30pt"
             weight="bold"
             align="right"
+            style={{ width: 200 }}
           />
         </Box>
       </Box>

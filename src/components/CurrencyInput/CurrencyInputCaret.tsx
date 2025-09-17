@@ -44,7 +44,6 @@ export function CurrencyInputCaret({ isFocused, hasValue, color, disabled = fals
 
   const caretStyle = useAnimatedStyle(() => {
     return {
-      display: shouldShow.value ? 'flex' : 'none',
       opacity: blinkAnimation.value,
       position: hasValue.value ? 'relative' : 'absolute',
     };
