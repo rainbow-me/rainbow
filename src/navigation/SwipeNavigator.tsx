@@ -365,7 +365,7 @@ const TabBar = memo(function TabBar({ activeIndex, descriptorsRef, getIsFocused,
                 />
               </>
             ) : (
-              <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : globalColors.white100 }]} />
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: isDarkMode ? PANEL_COLOR_DARK : globalColors.white90 }]} />
             )}
             {isDarkMode && (
               <LinearGradient
