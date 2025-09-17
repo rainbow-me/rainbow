@@ -21,7 +21,7 @@ export const PerpBottomSheetHeader = memo(function PerpBottomSheetHeader({ title
           {'Current Price'}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={4}>
-          <HyperliquidTokenIcon symbol={symbol} style={{ width: 14, height: 14 }} />
+          <HyperliquidTokenIcon symbol={symbol} size={14} />
           <LiveTokenText
             tokenId={getHyperliquidTokenId(symbol)}
             size="15pt"

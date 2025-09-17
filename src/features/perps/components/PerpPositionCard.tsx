@@ -50,7 +50,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
     >
       <Box gap={12}>
         <Box flexDirection="row" alignItems="center" gap={12}>
-          <HyperliquidTokenIcon symbol={position.symbol} style={{ width: 40, height: 40, borderRadius: 20 }} />
+          <HyperliquidTokenIcon size={40} symbol={position.symbol} />
           <Box gap={8} style={{ flex: 1 }}>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={4}>

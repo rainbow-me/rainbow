@@ -60,7 +60,7 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
           <Box gap={10}>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={8}>
-                <HyperliquidTokenIcon symbol={position.symbol} style={{ width: 20, height: 20, borderRadius: 10 }} />
+                <HyperliquidTokenIcon symbol={position.symbol} size={20} />
                 <Text color="label" size="17pt" weight="semibold">
                   {position.symbol}
                 </Text>

@@ -29,6 +29,23 @@ export type PerpMarket = {
   fundingRate: string;
 };
 
+export type HyperliquidTokenMetadata = {
+  id: string;
+  address: string;
+  name: string;
+  symbol: string;
+  colors: {
+    color?: string;
+    fallbackColor: string;
+    shadowColor: string;
+  };
+  iconUrl?: string;
+};
+
+export type PerpMarketWithMetadata = PerpMarket & {
+  metadata?: HyperliquidTokenMetadata;
+};
+
 export type FilledOrder = {
   timestamp: Date;
   symbol: string;

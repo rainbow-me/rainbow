@@ -17,7 +17,7 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
 
   return (
     <Box flexDirection="row" alignItems="center" gap={12}>
-      <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 40, height: 40 }} />
+      <HyperliquidTokenIcon size={40} symbol={market.symbol} />
       <Box gap={12}>
         <Text size="17pt" weight="bold" color="label">
           {market.symbol}

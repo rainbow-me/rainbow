@@ -1,15 +1,31 @@
-import { MarketSortOrder, PerpMarket } from '@/features/perps/types';
+import { HyperliquidTokenMetadata, MarketSortOrder, PerpMarketWithMetadata } from '@/features/perps/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { hyperliquidMarketsClient } from '@/features/perps/services/hyperliquid-markets-client';
 import { time } from '@/utils/time';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { HYPERCORE_PSEUDO_CHAIN_ID } from '@/features/perps/constants';
+import { getPlatformClient } from '@/resources/platform/client';
 
-type HyperliquidMarketsQueryData = {
-  markets: Record<string, PerpMarket>;
+// TODO: Should be using Partial<Record<string, PerpMarketWithMetadata>> but is causing unknown query store setData type error
+type PerpMarketsBySymbol = Record<string, PerpMarketWithMetadata>;
+
+type TokensMetadataResponse = {
+  metadata: {
+    requestTime: string;
+    responseTime: string;
+    requestId: string;
+    success: boolean;
+  };
+  // The response includes more fields than the one defined below, but those fields should not be used
+  result: Record<string, HyperliquidTokenMetadata>;
+};
+
+type HyperliquidMarketsFetchData = {
+  markets: PerpMarketsBySymbol;
 };
 
 type HyperliquidMarketsStoreState = {
-  markets: Record<string, PerpMarket>;
+  markets: PerpMarketsBySymbol;
   sortOrder: MarketSortOrder;
   searchQuery: string;
 };
@@ -17,33 +33,43 @@ type HyperliquidMarketsStoreState = {
 type HyperliquidMarketsStoreActions = {
   setSortOrder: (sortOrder: MarketSortOrder) => void;
   setSearchQuery: (searchQuery: string) => void;
-  getSearchResults: () => PerpMarket[];
-  getMarkets: () => Record<string, PerpMarket>;
-  getMarket: (symbol: string) => PerpMarket | undefined;
-  getSortedMarkets: () => PerpMarket[];
+  getSearchResults: () => PerpMarketWithMetadata[];
+  getMarkets: () => PerpMarketsBySymbol;
+  getMarket: (symbol: string) => PerpMarketWithMetadata | undefined;
+  getSortedMarkets: () => PerpMarketWithMetadata[];
 };
 
 type HyperliquidMarketsStore = HyperliquidMarketsStoreState & HyperliquidMarketsStoreActions;
 
-async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsQueryData> {
+async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsFetchData> {
   const allMarketsInfo = await hyperliquidMarketsClient.getAllMarketsInfo();
+  const tokensMetadataResponse = await getPlatformClient().get<TokensMetadataResponse>('/tokens/GetTokens', {
+    params: {
+      tokenIds: allMarketsInfo.map(market => buildHypercoreTokenId(market.symbol)).join(','),
+    },
+  });
+
+  const tokensMetadata = tokensMetadataResponse.data.result;
 
   return {
-    // TODO: Partial saves us from typescript not knowing a string doesn't necessarily exist in the record
-    markets: allMarketsInfo.reduce<Record<string, PerpMarket>>((acc, asset) => {
+    markets: allMarketsInfo.reduce<PerpMarketsBySymbol>((acc, asset) => {
       if (asset) {
-        acc[asset.symbol] = asset;
+        const metadata = tokensMetadata[buildHypercoreTokenId(asset.symbol)];
+        acc[asset.symbol] = {
+          ...asset,
+          metadata,
+        };
       }
       return acc;
     }, {}),
   };
 }
 
-export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsQueryData, never, HyperliquidMarketsStore>(
+export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFetchData, never, HyperliquidMarketsStore>(
   {
     fetcher: fetchHyperliquidMarkets,
     setData: ({ data, set }) => set({ markets: data.markets }),
-    staleTime: time.minutes(1),
+    staleTime: time.minutes(5),
   },
 
   (set, get) => ({
@@ -96,3 +122,7 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsQue
 );
 
 export const hyperliquidMarketStoreActions = createStoreActions(useHyperliquidMarketsStore);
+
+function buildHypercoreTokenId(symbol: string): string {
+  return `${symbol.toLowerCase()}:${HYPERCORE_PSEUDO_CHAIN_ID}`;
+}

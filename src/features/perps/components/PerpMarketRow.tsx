@@ -36,7 +36,7 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
   return (
     <ButtonPressAnimation onPress={() => onPress?.(market)} disabled={!onPress} scaleTo={0.98}>
       <Box width="full" flexDirection="row" alignItems="center" gap={12}>
-        <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 40, height: 40 }} />
+        <HyperliquidTokenIcon symbol={market.symbol} size={40} />
         <Box style={{ flex: 1 }} gap={8}>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Text size="17pt" weight="bold" color="label">

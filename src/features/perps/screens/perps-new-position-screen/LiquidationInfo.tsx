@@ -54,7 +54,7 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
   return (
     <Box gap={12}>
       <Box flexDirection="row" alignItems="center" gap={6}>
-        <HyperliquidTokenIcon symbol={market.symbol} style={{ width: 16, height: 16 }} />
+        <HyperliquidTokenIcon symbol={market.symbol} size={16} />
         <Box flexDirection="row" alignItems="center" gap={4}>
           <Text size="15pt" weight="bold" color={'labelQuaternary'}>
             {'Liquidated at'}
