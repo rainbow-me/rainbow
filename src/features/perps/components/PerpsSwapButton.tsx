@@ -4,6 +4,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { Box, Cover, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
+import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import chroma from 'chroma-js';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -76,6 +77,8 @@ export const PerpsSwapButton = ({
   disabled?: boolean;
   disabledOpacity?: number;
 }) => {
+  const { isDarkMode } = useColorMode();
+  const { accentColors } = usePerpsAccentColorContext();
   const labelColor = useForegroundColor('label');
   const holdProgress = useSharedValue(0);
   const containerStyle = useAnimatedStyle(() => ({
@@ -116,18 +119,23 @@ export const PerpsSwapButton = ({
         height={48}
         justifyContent={'center'}
         alignItems={'center'}
-        borderWidth={2}
+        borderWidth={isDarkMode ? 2 : 0}
         borderColor={{ custom: opacityWorklet(labelColor, 0.16) }}
       >
-        <LinearGradient
-          colors={HYPERLIQUID_COLORS.gradient}
-          style={StyleSheet.absoluteFillObject}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-        />
-        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
+        {isDarkMode && (
+          <>
+            <LinearGradient
+              colors={accentColors.gradient}
+              style={StyleSheet.absoluteFillObject}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            />
+            <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
+          </>
+        )}
+        {!isDarkMode && <View style={[StyleSheet.absoluteFillObject, { backgroundColor: accentColors.opacity100 }]} />}
         <HoldProgress holdProgress={holdProgress} color={HYPERLIQUID_COLORS.green} />
-        <Text size="20pt" weight={'black'} color={{ custom: '#000000' }}>
+        <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
           {label}
         </Text>
       </Box>

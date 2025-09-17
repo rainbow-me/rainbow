@@ -3,7 +3,7 @@ import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { runOnJS, SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { Slider, SliderColors } from '@/features/perps/components/Slider';
+import { Slider } from '@/features/perps/components/Slider';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
@@ -20,17 +20,10 @@ const LeverageSlider = ({
 }) => {
   const { accentColors } = usePerpsAccentColorContext();
 
-  const colors = useDerivedValue<SliderColors>(() => ({
-    activeLeft: accentColors.slider.activeLeft,
-    inactiveLeft: accentColors.slider.inactiveLeft,
-    activeRight: accentColors.slider.activeRight,
-    inactiveRight: accentColors.slider.inactiveRight,
-  }));
-
   return (
     <Slider
       sliderXPosition={sliderXPosition}
-      colors={colors}
+      colors={accentColors.slider}
       onPercentageUpdate={onPercentageUpdate}
       snapPoints={[0, 0.25, 0.5, 0.75, 1]}
       width={SLIDER_WIDTH}

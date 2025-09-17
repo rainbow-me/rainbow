@@ -3,7 +3,7 @@ import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { Slider, SliderColors } from '@/features/perps/components/Slider';
+import { Slider } from '@/features/perps/components/Slider';
 import { triggerHaptics } from 'react-native-turbo-haptics';
 
 const PercentageSlider = ({
@@ -17,17 +17,10 @@ const PercentageSlider = ({
 }) => {
   const { accentColors } = usePerpsAccentColorContext();
 
-  const colors = useDerivedValue<SliderColors>(() => ({
-    activeLeft: accentColors.slider.activeLeft,
-    inactiveLeft: accentColors.slider.inactiveLeft,
-    activeRight: accentColors.slider.activeRight,
-    inactiveRight: accentColors.slider.inactiveRight,
-  }));
-
   return (
     <Slider
       sliderXPosition={sliderXPosition}
-      colors={colors}
+      colors={accentColors.slider}
       onPercentageUpdate={onPercentageUpdate}
       onPercentageChange={onPercentageUpdate}
       snapPoints={[0, 0.25, 0.5, 0.75, 1]}

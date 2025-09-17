@@ -8,7 +8,7 @@ import ContactAvatar from '@/components/contacts/ContactAvatar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
-import { AnimatedText, Box, Text } from '@/design-system';
+import { AnimatedText, Box, Separator, Text, useForegroundColor } from '@/design-system';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
@@ -16,7 +16,7 @@ import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
-import { HYPERLIQUID_COLORS, SLIDER_WIDTH, USDC_ASSET } from '@/features/perps/constants';
+import { HYPERLIQUID_COLORS, USDC_ASSET } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
@@ -30,8 +30,9 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { runOnJS, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FOOTER_HEIGHT, SLIDER_WITH_LABELS_HEIGHT } from './constants';
+import { FOOTER_HEIGHT, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from './constants';
 import { logger, RainbowError } from '@/logger';
+import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 
 const AssetCoinIcon = ({
   asset,
@@ -67,14 +68,14 @@ const DepositInputSection = ({
               <AnimatedText
                 size="44pt"
                 weight="heavy"
-                color={{ custom: HYPERLIQUID_COLORS.mintGreen }}
+                color={{ custom: HYPERLIQUID_COLORS.green }}
                 tabularNumbers
                 numberOfLines={1}
                 ellipsizeMode="middle"
               >
                 {formattedInputAmount}
               </AnimatedText>
-              <InputValueCaret color={HYPERLIQUID_COLORS.mintGreen} value={formattedInputAmount} />
+              <InputValueCaret color={HYPERLIQUID_COLORS.green} value={formattedInputAmount} />
             </Box>
           )}
         </Box>
@@ -84,6 +85,7 @@ const DepositInputSection = ({
 };
 
 export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
+  const separatorSecondary = useForegroundColor('separatorSecondary');
   const insets = useSafeAreaInsets();
   const { balance, status, withdraw } = useHyperliquidAccountStore();
   const balanceLoading = balance === '0' && status === 'loading';
@@ -122,10 +124,10 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   }, [balance, fields, fieldsValueForAsset]);
 
   const sliderColors = {
-    activeLeft: HYPERLIQUID_COLORS.mintGreen,
-    inactiveLeft: HYPERLIQUID_COLORS.mintGreen,
-    activeRight: 'rgba(244, 248, 255, 0.06)',
-    inactiveRight: 'rgba(244, 248, 255, 0.06)',
+    activeLeft: HYPERLIQUID_COLORS.green,
+    inactiveLeft: HYPERLIQUID_COLORS.green,
+    activeRight: separatorSecondary,
+    inactiveRight: separatorSecondary,
   };
 
   // Formatted values
@@ -219,74 +221,80 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   };
 
   return (
-    <Box as={Page} height={DEVICE_HEIGHT} testID="perps-withdraw-screen" width="full">
-      <SheetHandle extraPaddingTop={6} />
-      <Navbar
-        hasStatusBarInset
-        leftComponent={
-          <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.CHANGE_WALLET_SHEET)} scaleTo={0.8} overflowMargin={50}>
-            {accountImage ? (
-              <ImageAvatar image={accountImage} size="header" />
-            ) : (
-              <ContactAvatar color={accountColor} size="small" value={accountSymbol} />
-            )}
-          </ButtonPressAnimation>
-        }
-        title={i18n.t(i18n.l.perps.withdraw.title)}
-      />
-      <View style={{ top: -10, alignSelf: 'center' }}>
-        {balanceLoading ? (
-          <PerpsTextSkeleton width={150} height={15} />
-        ) : (
-          <Text size="15pt" weight="bold" color="labelQuaternary">
-            {i18n.t(i18n.l.perps.withdraw.available_balance, { balance: formattedBalance })}
-          </Text>
-        )}
-      </View>
+    <PerpsAccentColorContextProvider>
+      <Box as={Page} height={DEVICE_HEIGHT} testID="perps-withdraw-screen" width="full">
+        <SheetHandle extraPaddingTop={6} />
+        <Navbar
+          hasStatusBarInset
+          leftComponent={
+            <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.CHANGE_WALLET_SHEET)} scaleTo={0.8} overflowMargin={50}>
+              {accountImage ? (
+                <ImageAvatar image={accountImage} size="header" />
+              ) : (
+                <ContactAvatar color={accountColor} size="small" value={accountSymbol} />
+              )}
+            </ButtonPressAnimation>
+          }
+          title={i18n.t(i18n.l.perps.withdraw.title)}
+        />
+        <View style={{ top: -10, alignSelf: 'center' }}>
+          {balanceLoading ? (
+            <PerpsTextSkeleton width={150} height={15} />
+          ) : (
+            <Text size="15pt" weight="bold" color="labelQuaternary">
+              {i18n.t(i18n.l.perps.withdraw.available_balance, { balance: formattedBalance })}
+            </Text>
+          )}
+        </View>
 
-      <Box alignItems="center" flexGrow={1} flexShrink={1}>
-        <DepositInputSection formattedInputAmount={formattedInputAmount} balanceLoading={balanceLoading} />
-      </Box>
-      <SliderWithLabels
-        sliderXPosition={sliderXPosition}
-        width={SLIDER_WIDTH}
-        containerStyle={{ height: SLIDER_WITH_LABELS_HEIGHT, marginHorizontal: 20, justifyContent: 'center' }}
-        onPercentageChange={handlePercentageChange}
-        onPercentageUpdate={handleGestureUpdate}
-        showMaxButton={true}
-        showPercentage={true}
-        labels={{ title: i18n.t(i18n.l.perps.withdraw.slider_label) }}
-        icon={<AssetCoinIcon asset={USDC_ASSET as ExtendedAnimatedAssetWithColors} size={16} showBadge={false} />}
-        colors={sliderColors}
-      />
-      <NumberPad
-        activeFieldId={inputMethod as SharedValue<string>}
-        fields={fields}
-        formattedValues={formattedValues}
-        onValueChange={handleNumberPadChange}
-        stripFormatting={stripNonDecimalNumbers}
-      />
-      <Box
-        marginBottom={{ custom: insets.bottom }}
-        width="full"
-        paddingHorizontal="20px"
-        paddingTop="16px"
-        height={{ custom: FOOTER_HEIGHT }}
-        flexDirection="row"
-        gap={20}
-      >
-        <Box width={96} alignItems="flex-start" justifyContent="center">
-          <GasButton gasSpeed={gasSpeed} chainId={ChainId.mainnet} onSelectGasSpeed={setGasSpeed} gasLimit={'1'} />
+        <Box alignItems="center" flexGrow={1} flexShrink={1}>
+          <DepositInputSection formattedInputAmount={formattedInputAmount} balanceLoading={balanceLoading} />
         </Box>
-        <Box flexGrow={1}>
-          <PerpsSwapButton
-            label={getConfirmButtonLabel()}
-            onLongPress={handleSwap}
-            disabled={loading || balanceLoading || inputAmountError != null}
-            disabledOpacity={inputAmountError != null ? 1 : undefined}
-          />
+        <SliderWithLabels
+          sliderXPosition={sliderXPosition}
+          width={SLIDER_WIDTH}
+          containerStyle={{ height: SLIDER_WITH_LABELS_HEIGHT, marginHorizontal: 20, justifyContent: 'center' }}
+          onPercentageChange={handlePercentageChange}
+          onPercentageUpdate={handleGestureUpdate}
+          showMaxButton={true}
+          showPercentage={true}
+          labels={{ title: i18n.t(i18n.l.perps.withdraw.slider_label) }}
+          icon={<AssetCoinIcon asset={USDC_ASSET as ExtendedAnimatedAssetWithColors} size={16} showBadge={false} />}
+          colors={sliderColors}
+        />
+        <NumberPad
+          activeFieldId={inputMethod as SharedValue<string>}
+          fields={fields}
+          formattedValues={formattedValues}
+          onValueChange={handleNumberPadChange}
+          stripFormatting={stripNonDecimalNumbers}
+        />
+        <Box
+          marginBottom={{ custom: insets.bottom }}
+          width="full"
+          paddingHorizontal="20px"
+          paddingTop="16px"
+          height={{ custom: FOOTER_HEIGHT }}
+          flexDirection="row"
+          gap={20}
+          alignItems="center"
+        >
+          <Box alignItems="flex-start" justifyContent="center">
+            <GasButton gasSpeed={gasSpeed} chainId={ChainId.mainnet} onSelectGasSpeed={setGasSpeed} gasLimit={'1'} />
+          </Box>
+          <Box height={32}>
+            <Separator color={'separatorTertiary'} direction="vertical" thickness={1} />
+          </Box>
+          <Box flexGrow={1}>
+            <PerpsSwapButton
+              label={getConfirmButtonLabel()}
+              onLongPress={handleSwap}
+              disabled={loading || balanceLoading || inputAmountError != null}
+              disabledOpacity={inputAmountError != null ? 1 : undefined}
+            />
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </PerpsAccentColorContextProvider>
   );
 });

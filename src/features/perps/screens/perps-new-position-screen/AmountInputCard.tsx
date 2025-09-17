@@ -3,9 +3,9 @@ import { Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT, INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { runOnJS, SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
-import { Slider, SliderColors } from '@/features/perps/components/Slider';
-import { addCommasToNumber, opacityWorklet, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
+import { runOnJS, SharedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { Slider } from '@/features/perps/components/Slider';
+import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import { hlNewPositionStoreActions } from '@/features/perps/stores/hlNewPositionStore';
@@ -23,17 +23,10 @@ const AmountSlider = ({
 }) => {
   const { accentColors } = usePerpsAccentColorContext();
 
-  const colors = useDerivedValue<SliderColors>(() => ({
-    activeLeft: accentColors.slider.activeLeft,
-    inactiveLeft: accentColors.slider.inactiveLeft,
-    activeRight: accentColors.slider.activeRight,
-    inactiveRight: accentColors.slider.inactiveRight,
-  }));
-
   return (
     <Slider
       sliderXPosition={sliderXPosition}
-      colors={colors}
+      colors={accentColors.slider}
       onPercentageUpdate={onPercentageUpdate}
       onPercentageChange={onPercentageChange}
       snapPoints={[0, 0.25, 0.5, 0.75, 1]}
