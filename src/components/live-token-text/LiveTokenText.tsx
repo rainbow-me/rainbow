@@ -133,7 +133,7 @@ type LiveTokenTextProps = LiveTokenValueParams &
     animateTrendChange?: boolean;
   } & (
     | {
-        usePriceChangeColor?: boolean;
+        isPriceChangeColorEnabled?: boolean;
         priceChangeChangeColors?: {
           positive?: string;
           negative?: string;
@@ -141,7 +141,7 @@ type LiveTokenTextProps = LiveTokenValueParams &
         };
       }
     | {
-        usePriceChangeColor?: false;
+        isPriceChangeColorEnabled?: false;
         priceChangeChangeColors?: undefined;
       }
   );
@@ -153,7 +153,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   autoSubscriptionEnabled = true,
   selector,
   animateTrendChange = false,
-  usePriceChangeColor = false,
+  isPriceChangeColorEnabled = false,
   priceChangeChangeColors,
   testId,
   ...textProps
@@ -180,7 +180,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
   useAnimatedReaction(
     () => liveValue.value,
     (value, previousValue) => {
-      if (usePriceChangeColor) {
+      if (isPriceChangeColorEnabled) {
         if (parseFloat(value) > 0) {
           textColor.value = positivePriceChangeColor ?? positiveThemeColor;
         } else if (parseFloat(value) < 0) {
@@ -212,12 +212,12 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
       neutralPriceChangeColor,
       positivePriceChangeColor,
       positiveThemeColor,
-      usePriceChangeColor,
+      isPriceChangeColorEnabled,
     ]
   );
 
   useEffect(() => {
-    if (usePriceChangeColor) {
+    if (isPriceChangeColorEnabled) {
       const numericValue = parseFloat(liveValue.value);
 
       if (numericValue > 0) {
