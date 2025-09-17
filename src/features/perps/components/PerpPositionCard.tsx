@@ -5,12 +5,12 @@ import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abs } from '@/helpers/utilities';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;
@@ -24,23 +24,15 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
 
   const formattedValues = useMemo(() => {
     return {
-      entryPrice: formatAssetPrice({
-        value: position.entryPrice,
-        currency: 'USD',
-      }),
-      liquidationPrice: position.liquidationPrice
-        ? formatAssetPrice({
-            value: position.liquidationPrice,
-            currency: 'USD',
-          })
-        : 'N/A',
+      entryPrice: formatPerpAssetPrice(position.entryPrice),
+      liquidationPrice: position.liquidationPrice ? formatPerpAssetPrice(position.liquidationPrice) : 'N/A',
       unrealizedPnl: `${position.unrealizedPnl.includes('-') ? '-' : '+'} ${formatCurrency(abs(position.unrealizedPnl))}`,
       positionEquity: formatCurrency(position.equity),
     };
   }, [position]);
 
   const livePriceSelector = useCallback((state: TokenData) => {
-    return formatAssetPrice({ value: state.price, currency: 'USD' });
+    return formatPerpAssetPrice(state.price);
   }, []);
 
   const { entryPrice, liquidationPrice, unrealizedPnl, positionEquity } = formattedValues;

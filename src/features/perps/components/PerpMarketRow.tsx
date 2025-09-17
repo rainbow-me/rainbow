@@ -3,12 +3,12 @@ import { Box, Text, useForegroundColor } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 
 type PerpMarketRowProps = {
   market: PerpMarket;
@@ -26,7 +26,7 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
   }, [market.volume]);
 
   const livePriceSelector = useCallback((state: TokenData) => {
-    return formatAssetPrice({ value: state.price, currency: 'USD' });
+    return formatPerpAssetPrice(state.midPrice ?? state.price);
   }, []);
 
   const livePriceChangeSelector = useCallback((state: TokenData) => {
@@ -46,8 +46,8 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
               selector={livePriceSelector}
               tokenId={tokenId}
               initialValueLastUpdated={0}
-              initialValue={formatAssetPrice({ value: market.price, currency: 'USD' })}
-              autoSubscriptionEnabled={false}
+              initialValue={formatPerpAssetPrice(market.midPrice ?? market.price)}
+              autoSubscriptionEnabled={true}
               color={'label'}
               size="17pt"
               weight="bold"

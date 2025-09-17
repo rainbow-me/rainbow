@@ -16,6 +16,7 @@ import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
@@ -32,7 +33,7 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
   const formattedValues = useMemo(() => {
     return {
       equity: formatCurrency(position.equity),
-      liquidationPrice: position.liquidationPrice ? formatAssetPrice({ value: position.liquidationPrice, currency: 'USD' }) : 'N/A',
+      liquidationPrice: position.liquidationPrice ? formatPerpAssetPrice(position.liquidationPrice) : 'N/A',
       unrealizedPnl: formatCurrency(abs(position.unrealizedPnl)),
     };
   }, [position]);
