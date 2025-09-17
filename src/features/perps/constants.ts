@@ -102,3 +102,7 @@ export const USDC_ASSET = {
   uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, 1337),
   highLiquidity: true,
 } satisfies SearchAsset;
+
+// These should be somewhere else
+export const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
+export const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';

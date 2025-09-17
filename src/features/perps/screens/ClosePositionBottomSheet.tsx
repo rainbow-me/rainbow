@@ -18,7 +18,7 @@ import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/fe
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
-import { SLIDER_WIDTH } from '@/features/perps/constants';
+import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, SLIDER_WIDTH } from '@/features/perps/constants';
 import { estimateReturnOnMarketClose } from '@/features/perps/utils/estimateReturnOnMarketClose';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet } from '@/safe-math/SafeMath';
@@ -177,6 +177,7 @@ export const ClosePositionBottomSheet = memo(function ClosePositionBottomSheet()
   const {
     params: { symbol },
   } = useRoute<RouteProp<RootStackParamList, typeof Routes.CLOSE_POSITION_BOTTOM_SHEET>>();
+  const { isDarkMode } = useColorMode();
 
   const separatorSecondaryColor = useForegroundColor('separatorSecondary');
 
@@ -184,7 +185,7 @@ export const ClosePositionBottomSheet = memo(function ClosePositionBottomSheet()
     <PerpsAccentColorContextProvider>
       <PanelSheet>
         <Panel height={PANEL_HEIGHT} innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
-          <SheetHandleFixedToTop color={opacityWorklet('#F5F8FF', 0.3)} showBlur={true} top={14} />
+          <SheetHandleFixedToTop color={isDarkMode ? HANDLE_COLOR : LIGHT_HANDLE_COLOR} showBlur={true} top={14} />
           <PanelContent symbol={symbol} />
         </Panel>
       </PanelSheet>

@@ -3,10 +3,7 @@ import { Box, useBackgroundColor, useColorMode } from '@/design-system';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IS_ANDROID } from '@/env';
-
-const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
-const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
-
+import { HANDLE_COLOR, LIGHT_HANDLE_COLOR } from '@/features/perps/constants';
 export interface SheetHandleProps {
   extraPaddingTop?: number;
   backgroundColor?: string;

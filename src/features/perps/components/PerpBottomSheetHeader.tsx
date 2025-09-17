@@ -2,7 +2,7 @@ import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Box, Text } from '@/design-system';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { memo } from 'react';
 
 type PerpBottomSheetHeaderProps = {
@@ -21,14 +21,14 @@ export const PerpBottomSheetHeader = memo(function PerpBottomSheetHeader({ title
           {'Current Price'}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={4}>
-          <HyperliquidTokenIcon symbol="BTC" style={{ width: 14, height: 14 }} />
+          <HyperliquidTokenIcon symbol={symbol} style={{ width: 14, height: 14 }} />
           <LiveTokenText
             tokenId={getHyperliquidTokenId(symbol)}
             size="15pt"
             weight="heavy"
             color={'labelSecondary'}
             initialValue={'-'}
-            selector={token => formatAssetPrice({ value: token.price, currency: 'USD' })}
+            selector={token => formatPerpAssetPrice(token.price)}
           />
         </Box>
       </Box>
