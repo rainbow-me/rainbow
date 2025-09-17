@@ -241,7 +241,7 @@ export const LiveTokenText: React.FC<LiveTokenTextProps> = React.memo(function L
     positivePriceChangeColor,
     positiveThemeColor,
     textColor,
-    usePriceChangeColor,
+    isPriceChangeColorEnabled,
   ]);
 
   const textStyle = useAnimatedStyle(() => {
