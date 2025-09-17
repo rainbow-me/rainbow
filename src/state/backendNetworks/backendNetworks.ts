@@ -116,455 +116,258 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     fetcher: fetchBackendNetworks,
     setData: ({ data, set }) => {
       set(state => {
-        // if (isEqual(state.backendNetworks, data)) return state;
-
-        // Hardcode Hyperliquid chain for testing
-        const hyperliquidNetwork: BackendNetwork = {
-          id: '1337',
-          name: 'Hyperliquid',
-          label: 'Hyperliquid',
-          colors: {
-            light: '#000000',
-            dark: '#FFFFFF',
-          },
-          icons: {
-            badgeURL: '',
-          },
-          testnet: false,
-          internal: false,
-          opStack: false,
-          defaultExplorer: {
-            url: 'https://explorer.hyperliquid.xyz',
-            label: 'Hyperliquid Explorer',
-            transactionURL: 'https://explorer.hyperliquid.xyz/tx/',
-            tokenURL: 'https://explorer.hyperliquid.xyz/token/',
-          },
-          defaultRPC: {
-            enabledDevices: ['ios', 'android'],
-            url: 'https://api.hyperliquid.xyz/evm',
-          },
-          gasUnits: {
-            basic: {
-              approval: '45000',
-              swap: '200000',
-              swapPermit: '200000',
-              eoaTransfer: '21000',
-              tokenTransfer: '65000',
-            },
-            wrapped: {
-              wrap: '30000',
-              unwrap: '30000',
-            },
-          },
-          nativeAsset: {
-            address: '0x0000000000000000000000000000000000000000',
-            name: 'Hyperliquid',
-            symbol: 'HL',
-            decimals: 8,
-            iconURL: '',
-            colors: {
-              primary: '#000000',
-              fallback: '#000000',
-              shadow: '#000000',
-            },
-          },
-          nativeWrappedAsset: {
-            address: '0x0000000000000000000000000000000000000000',
-            name: 'Wrapped Hyperliquid',
-            symbol: 'WHL',
-            decimals: 18,
-            iconURL: '',
-            colors: {
-              primary: '#000000',
-              fallback: '#000000',
-              shadow: '#000000',
-            },
-          },
-          privateMempoolTimeout: undefined,
-          enabledServices: {
-            meteorology: { enabled: false },
-            notifications: { enabled: false },
-            swap: {
-              enabled: true,
-              swap: true,
-              swapExactOutput: false,
-              bridge: false,
-              bridgeExactOutput: false,
-            },
-            addys: {
-              approvals: false,
-              transactions: false,
-              assets: false,
-              positions: false,
-              interactionsWith: false,
-            },
-            tokenSearch: { enabled: false },
-            nftProxy: { enabled: false },
-            launcher: {
-              v1: {
-                enabled: false,
-                contractAddress: '',
-              },
-            },
-          },
-        };
-
-        const modifiedData = {
-          ...data,
-          networks: [...data.networks.filter(n => n.id !== '1337'), hyperliquidNetwork],
-        };
-
+        if (isEqual(state.backendNetworks, data)) return state;
         return {
-          backendChains: transformBackendNetworksToChains(modifiedData.networks),
-          backendNetworks: modifiedData,
+          backendChains: transformBackendNetworksToChains(data.networks),
+          backendNetworks: data,
         };
       });
     },
-    // staleTime: time.minutes(10),
-    staleTime: time.minutes(0),
+    staleTime: time.minutes(10),
   },
 
-  (_, get) => {
-    // Create the hardcoded Hyperliquid network
-    const hyperliquidNetwork: BackendNetwork = {
-      id: '1337',
-      name: 'Hyperliquid',
-      label: 'Hyperliquid',
-      colors: {
-        light: '#000000',
-        dark: '#FFFFFF',
-      },
-      icons: {
-        badgeURL: '',
-      },
-      testnet: false,
-      internal: false,
-      opStack: false,
-      defaultExplorer: {
-        url: 'https://explorer.hyperliquid.xyz',
-        label: 'Hyperliquid Explorer',
-        transactionURL: 'https://explorer.hyperliquid.xyz/tx/',
-        tokenURL: 'https://explorer.hyperliquid.xyz/token/',
-      },
-      defaultRPC: {
-        enabledDevices: ['ios', 'android'],
-        url: 'https://api.hyperliquid.xyz/evm',
-      },
-      gasUnits: {
-        basic: {
-          approval: '45000',
-          swap: '200000',
-          swapPermit: '200000',
-          eoaTransfer: '21000',
-          tokenTransfer: '65000',
+  (_, get) => ({
+    backendChains: transformBackendNetworksToChains(INITIAL_BACKEND_NETWORKS.networks),
+    backendNetworks: INITIAL_BACKEND_NETWORKS,
+
+    getSupportedChains: createSelector((_, transformed) => {
+      return IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
+    }),
+
+    getSortedSupportedChainIds: createSelector((_, transformed) => {
+      const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
+      return allChains.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
+    }),
+
+    getDefaultChains: createSelector((_, transformed) => {
+      const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
+      return allChains.reduce(
+        (acc, chain) => {
+          acc[chain.id] = chain;
+          return acc;
         },
-        wrapped: {
-          wrap: '30000',
-          unwrap: '30000',
+        {} as Record<ChainId, Chain>
+      );
+    }),
+
+    getSupportedChainIds: createSelector((_, transformed) => {
+      const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
+      return allChains.map(chain => chain.id);
+    }),
+
+    getSupportedMainnetChains: createSelector((_, transformed) => {
+      const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
+      return allChains.filter(chain => !chain.testnet);
+    }),
+
+    getSupportedMainnetChainIds: createSelector((_, transformed) => {
+      const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
+      return allChains.filter(chain => !chain.testnet).map(chain => chain.id);
+    }),
+
+    getNeedsL1SecurityFeeChains: createSelector(networks =>
+      networks.networks
+        .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
+        .map((backendNetwork: BackendNetwork) => toChainId(backendNetwork.id))
+    ),
+
+    getChainsNativeAsset: createSelector(networks =>
+      networks.networks.reduce(
+        (acc, backendNetwork) => {
+          acc[toChainId(backendNetwork.id)] = backendNetwork.nativeAsset;
+          return acc;
         },
-      },
-      nativeAsset: {
-        address: '0x0000000000000000000000000000000000000000',
-        name: 'Hyperliquid',
-        symbol: 'HL',
-        decimals: 18,
-        iconURL: '',
-        colors: {
-          primary: '#000000',
-          fallback: '#000000',
-          shadow: '#000000',
+        {} as Record<ChainId, BackendNetwork['nativeAsset']>
+      )
+    ),
+
+    getChainsLabel: createSelector(networks =>
+      networks.networks.reduce(
+        (acc, backendNetwork) => {
+          acc[toChainId(backendNetwork.id)] = backendNetwork.label;
+          return acc;
         },
-      },
-      nativeWrappedAsset: {
-        address: '0x0000000000000000000000000000000000000000',
-        name: 'Wrapped Hyperliquid',
-        symbol: 'WHL',
-        decimals: 18,
-        iconURL: '',
-        colors: {
-          primary: '#000000',
-          fallback: '#000000',
-          shadow: '#000000',
+        {} as Record<ChainId, string>
+      )
+    ),
+
+    getChainsPrivateMempoolTimeout: createSelector(networks =>
+      networks.networks.reduce(
+        (acc, backendNetwork) => {
+          acc[toChainId(backendNetwork.id)] = backendNetwork.privateMempoolTimeout || DEFAULT_PRIVATE_MEMPOOL_TIMEOUT;
+          return acc;
         },
-      },
-      privateMempoolTimeout: undefined,
-      enabledServices: {
-        meteorology: { enabled: false },
-        notifications: { enabled: false },
-        swap: {
-          enabled: true,
-          swap: true,
-          swapExactOutput: false,
-          bridge: false,
-          bridgeExactOutput: false,
+        {} as Record<ChainId, number>
+      )
+    ),
+
+    getChainsName: createSelector(networks =>
+      networks.networks.reduce(
+        (acc, backendNetwork) => {
+          acc[toChainId(backendNetwork.id)] = backendNetwork.name;
+          return acc;
         },
-        addys: {
-          approvals: false,
-          transactions: false,
-          assets: false,
-          positions: false,
-          interactionsWith: false,
+        {} as Record<ChainId, string>
+      )
+    ),
+
+    getChainsBadge: createSelector(networks =>
+      networks.networks.reduce(
+        (acc, backendNetwork) => {
+          acc[toChainId(backendNetwork.id)] = backendNetwork.icons.badgeURL;
+          return acc;
         },
-        tokenSearch: { enabled: false },
-        nftProxy: { enabled: false },
-        launcher: {
-          v1: {
-            enabled: false,
-            contractAddress: '',
-          },
+        {} as Record<ChainId, string>
+      )
+    ),
+
+    getChainsIdByName: createSelector(networks =>
+      networks.networks.reduce(
+        (acc, backendNetwork) => {
+          acc[backendNetwork.name] = toChainId(backendNetwork.id);
+          return acc;
         },
-      },
-    };
+        {} as Record<string, ChainId>
+      )
+    ),
 
-    // Add Hyperliquid to the initial networks
-    const modifiedInitialNetworks = {
-      ...INITIAL_BACKEND_NETWORKS,
-      networks: [...INITIAL_BACKEND_NETWORKS.networks.filter(n => n.id !== '1337'), hyperliquidNetwork],
-    };
+    getColorsForChainId: createParameterizedSelector(networks => (chainId: ChainId, isDarkMode: boolean) => {
+      const colors = networks.networks.find(chain => +chain.id === chainId)?.colors;
+      if (!colors) {
+        return isDarkMode ? globalColors.white : globalColors.black;
+      }
+      return isDarkMode ? colors.dark : colors.light;
+    }),
 
-    return {
-      backendChains: transformBackendNetworksToChains(modifiedInitialNetworks.networks),
-      backendNetworks: modifiedInitialNetworks,
+    getChainsGasSpeeds: createSelector(networks => {
+      return networks.networks.reduce(
+        (acc, backendNetwork): Record<ChainId, GasSpeed[]> => {
+          const chainId = toChainId(backendNetwork.id);
+          acc[chainId] = getDefaultGasSpeeds(chainId);
+          return acc;
+        },
+        {} as Record<ChainId, GasSpeed[]>
+      );
+    }),
 
-      getSupportedChains: createSelector((_, transformed) => {
-        return IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
-      }),
+    getChainsPollingInterval: createSelector(networks => {
+      return networks.networks.reduce(
+        (acc, backendNetwork) => {
+          const chainId = toChainId(backendNetwork.id);
+          acc[chainId] = getDefaultPollingInterval(chainId);
+          return acc;
+        },
+        {} as Record<ChainId, number>
+      );
+    }),
 
-      getSortedSupportedChainIds: createSelector((_, transformed) => {
-        const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
-        return allChains.sort((a, b) => a.name.localeCompare(b.name)).map(c => c.id);
-      }),
+    getChainsSimplehashNetwork: createSelector(networks =>
+      networks.networks.reduce(
+        (acc, backendNetwork) => {
+          const chainId = toChainId(backendNetwork.id);
+          acc[chainId] = getDefaultSimplehashNetwork(chainId);
+          return acc;
+        },
+        {} as Record<ChainId, string>
+      )
+    ),
 
-      getDefaultChains: createSelector((_, transformed) => {
-        const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
-        return allChains.reduce(
-          (acc, chain) => {
-            acc[chain.id] = chain;
-            return acc;
-          },
-          {} as Record<ChainId, Chain>
-        );
-      }),
+    filterChainIdsByService: createParameterizedSelector(
+      networks => (servicePath: (services: BackendNetworkServices) => boolean) =>
+        networks.networks.filter(network => servicePath(network.enabledServices)).map(network => toChainId(network.id))
+    ),
 
-      getSupportedChainIds: createSelector((_, transformed) => {
-        const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
-        return allChains.map(chain => chain.id);
-      }),
+    getMeteorologySupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.meteorology.enabled).map(network => toChainId(network.id))
+    ),
 
-      getSupportedMainnetChains: createSelector((_, transformed) => {
-        const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
-        return allChains.filter(chain => !chain.testnet);
-      }),
+    getSwapSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.swap.enabled).map(network => toChainId(network.id))
+    ),
 
-      getSupportedMainnetChainIds: createSelector((_, transformed) => {
-        const allChains = IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
-        return allChains.filter(chain => !chain.testnet).map(chain => chain.id);
-      }),
+    getSwapExactOutputSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.swap.swapExactOutput).map(network => toChainId(network.id))
+    ),
 
-      getNeedsL1SecurityFeeChains: createSelector(networks =>
-        networks.networks
-          .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
-          .map((backendNetwork: BackendNetwork) => toChainId(backendNetwork.id))
-      ),
+    getBridgeExactOutputSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.swap.bridgeExactOutput).map(network => toChainId(network.id))
+    ),
 
-      getChainsNativeAsset: createSelector(networks =>
-        networks.networks.reduce(
-          (acc, backendNetwork) => {
-            acc[toChainId(backendNetwork.id)] = backendNetwork.nativeAsset;
-            return acc;
-          },
-          {} as Record<ChainId, BackendNetwork['nativeAsset']>
-        )
-      ),
+    getNotificationsSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.notifications.enabled).map(network => toChainId(network.id))
+    ),
 
-      getChainsLabel: createSelector(networks =>
-        networks.networks.reduce(
-          (acc, backendNetwork) => {
-            acc[toChainId(backendNetwork.id)] = backendNetwork.label;
-            return acc;
-          },
-          {} as Record<ChainId, string>
-        )
-      ),
+    getApprovalsSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.addys.approvals).map(network => toChainId(network.id))
+    ),
 
-      getChainsPrivateMempoolTimeout: createSelector(networks =>
-        networks.networks.reduce(
-          (acc, backendNetwork) => {
-            acc[toChainId(backendNetwork.id)] = backendNetwork.privateMempoolTimeout || DEFAULT_PRIVATE_MEMPOOL_TIMEOUT;
-            return acc;
-          },
-          {} as Record<ChainId, number>
-        )
-      ),
+    getTransactionsSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.addys.transactions).map(network => toChainId(network.id))
+    ),
 
-      getChainsName: createSelector(networks =>
-        networks.networks.reduce(
-          (acc, backendNetwork) => {
-            acc[toChainId(backendNetwork.id)] = backendNetwork.name;
-            return acc;
-          },
-          {} as Record<ChainId, string>
-        )
-      ),
+    getSupportedAssetsChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.addys.assets).map(network => toChainId(network.id))
+    ),
 
-      getChainsBadge: createSelector(networks =>
-        networks.networks.reduce(
-          (acc, backendNetwork) => {
-            acc[toChainId(backendNetwork.id)] = backendNetwork.icons.badgeURL;
-            return acc;
-          },
-          {} as Record<ChainId, string>
-        )
-      ),
+    getSupportedPositionsChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.addys.positions).map(network => toChainId(network.id))
+    ),
 
-      getChainsIdByName: createSelector(networks =>
-        networks.networks.reduce(
-          (acc, backendNetwork) => {
-            acc[backendNetwork.name] = toChainId(backendNetwork.id);
-            return acc;
-          },
-          {} as Record<string, ChainId>
-        )
-      ),
+    getTokenSearchSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.tokenSearch.enabled).map(network => toChainId(network.id))
+    ),
 
-      getColorsForChainId: createParameterizedSelector(networks => (chainId: ChainId, isDarkMode: boolean) => {
-        const colors = networks.networks.find(chain => +chain.id === chainId)?.colors;
-        if (!colors) {
-          return isDarkMode ? globalColors.white : globalColors.black;
-        }
-        return isDarkMode ? colors.dark : colors.light;
-      }),
+    getNftSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.nftProxy.enabled).map(network => toChainId(network.id))
+    ),
 
-      getChainsGasSpeeds: createSelector(networks => {
-        return networks.networks.reduce(
-          (acc, backendNetwork): Record<ChainId, GasSpeed[]> => {
-            const chainId = toChainId(backendNetwork.id);
-            acc[chainId] = getDefaultGasSpeeds(chainId);
-            return acc;
-          },
-          {} as Record<ChainId, GasSpeed[]>
-        );
-      }),
+    getTokenLauncherSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
+    ),
 
-      getChainsPollingInterval: createSelector(networks => {
-        return networks.networks.reduce(
-          (acc, backendNetwork) => {
-            const chainId = toChainId(backendNetwork.id);
-            acc[chainId] = getDefaultPollingInterval(chainId);
-            return acc;
-          },
-          {} as Record<ChainId, number>
-        );
-      }),
+    getTokenLauncherSupportedChainInfo: createSelector(networks =>
+      networks.networks
+        .filter(network => network.enabledServices.launcher?.v1?.enabled)
+        .map(network => {
+          return {
+            chainId: toChainId(network.id),
+            contractAddress: network.enabledServices.launcher?.v1?.contractAddress || '',
+          };
+        })
+    ),
 
-      getChainsSimplehashNetwork: createSelector(networks =>
-        networks.networks.reduce(
-          (acc, backendNetwork) => {
-            const chainId = toChainId(backendNetwork.id);
-            acc[chainId] = getDefaultSimplehashNetwork(chainId);
-            return acc;
-          },
-          {} as Record<ChainId, string>
-        )
-      ),
+    getInteractionsWithSupportedChainIds: createSelector(networks =>
+      networks.networks.filter(network => network.enabledServices.addys.interactionsWith).map(network => toChainId(network.id))
+    ),
 
-      filterChainIdsByService: createParameterizedSelector(
-        networks => (servicePath: (services: BackendNetworkServices) => boolean) =>
-          networks.networks.filter(network => servicePath(network.enabledServices)).map(network => toChainId(network.id))
-      ),
+    getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
 
-      getMeteorologySupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.meteorology.enabled).map(network => toChainId(network.id))
-      ),
+    getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
 
-      getSwapSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.swap.enabled).map(network => toChainId(network.id))
-      ),
+    getChainGasUnits: createParameterizedSelector(networks => (chainId?: ChainId) => {
+      const chainsGasUnits = networks.networks.reduce(
+        (acc, backendNetwork: BackendNetwork) => {
+          acc[toChainId(backendNetwork.id)] = backendNetwork.gasUnits;
+          return acc;
+        },
+        {} as Record<number, BackendNetwork['gasUnits']>
+      );
 
-      getSwapExactOutputSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.swap.swapExactOutput).map(network => toChainId(network.id))
-      ),
+      return (chainId ? chainsGasUnits[chainId] : undefined) || chainsGasUnits[ChainId.mainnet];
+    }),
 
-      getBridgeExactOutputSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.swap.bridgeExactOutput).map(network => toChainId(network.id))
-      ),
-
-      getNotificationsSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.notifications.enabled).map(network => toChainId(network.id))
-      ),
-
-      getApprovalsSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.addys.approvals).map(network => toChainId(network.id))
-      ),
-
-      getTransactionsSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.addys.transactions).map(network => toChainId(network.id))
-      ),
-
-      getSupportedAssetsChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.addys.assets).map(network => toChainId(network.id))
-      ),
-
-      getSupportedPositionsChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.addys.positions).map(network => toChainId(network.id))
-      ),
-
-      getTokenSearchSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.tokenSearch.enabled).map(network => toChainId(network.id))
-      ),
-
-      getNftSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.nftProxy.enabled).map(network => toChainId(network.id))
-      ),
-
-      getTokenLauncherSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
-      ),
-
-      getTokenLauncherSupportedChainInfo: createSelector(networks =>
-        networks.networks
-          .filter(network => network.enabledServices.launcher?.v1?.enabled)
-          .map(network => {
-            return {
-              chainId: toChainId(network.id),
-              contractAddress: network.enabledServices.launcher?.v1?.contractAddress || '',
-            };
-          })
-      ),
-
-      getInteractionsWithSupportedChainIds: createSelector(networks =>
-        networks.networks.filter(network => network.enabledServices.addys.interactionsWith).map(network => toChainId(network.id))
-      ),
-
-      getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
-
-      getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
-
-      getChainGasUnits: createParameterizedSelector(networks => (chainId?: ChainId) => {
-        const chainsGasUnits = networks.networks.reduce(
-          (acc, backendNetwork: BackendNetwork) => {
-            acc[toChainId(backendNetwork.id)] = backendNetwork.gasUnits;
-            return acc;
-          },
-          {} as Record<number, BackendNetwork['gasUnits']>
-        );
-
-        return (chainId ? chainsGasUnits[chainId] : undefined) || chainsGasUnits[ChainId.mainnet];
-      }),
-
-      getChainDefaultRpc: createParameterizedSelector(() => chainId => {
-        const defaultChains = get().getDefaultChains();
-        switch (chainId) {
-          case ChainId.mainnet:
-            return useConnectedToAnvilStore.getState().connectedToAnvil
-              ? chainAnvil.rpcUrls.default.http[0]
-              : defaultChains[ChainId.mainnet].rpcUrls.default.http[0];
-          default:
-            return defaultChains[chainId].rpcUrls.default.http[0];
-        }
-      }),
-    };
-  },
+    getChainDefaultRpc: createParameterizedSelector(() => chainId => {
+      const defaultChains = get().getDefaultChains();
+      switch (chainId) {
+        case ChainId.mainnet:
+          return useConnectedToAnvilStore.getState().connectedToAnvil
+            ? chainAnvil.rpcUrls.default.http[0]
+            : defaultChains[ChainId.mainnet].rpcUrls.default.http[0];
+        default:
+          return defaultChains[chainId].rpcUrls.default.http[0];
+      }
+    }),
+  }),
 
   {
     partialize: state => ({ backendChains: state.backendChains, backendNetworks: state.backendNetworks }),

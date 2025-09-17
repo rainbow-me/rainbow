@@ -1,4 +1,3 @@
-import { USDC_ASSET } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { addCommasToNumber, clamp, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
@@ -17,7 +16,7 @@ import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
-import { HYPERLIQUID_COLORS, SLIDER_WIDTH } from '@/features/perps/constants';
+import { HYPERLIQUID_COLORS, SLIDER_WIDTH, USDC_ASSET } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';

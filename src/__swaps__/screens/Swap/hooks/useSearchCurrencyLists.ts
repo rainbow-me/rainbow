@@ -22,7 +22,6 @@ import { RecentSwap } from '@/__swaps__/types/swap';
 import { isLowerCaseMatch, filterList, time } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { usePopularTokensStore } from '../resources/search/discovery';
-import { USDC_ASSET } from '@/__swaps__/screens/Swap/constants';
 
 const ANALYTICS_LOG_THROTTLE_MS = time.seconds(5);
 const MAX_POPULAR_RESULTS = 3;
@@ -111,32 +110,7 @@ export function useSearchCurrencyLists() {
     return filtered.length ? filtered : undefined;
   }, [isContractSearch, keys, popularAssets, query]);
 
-  // Hardcode USDC for Hyperliquid chain
-  const hyperliquidUSDC = useMemo(() => {
-    if (toChainId !== 1337) return null;
-
-    // If there's a search query, filter USDC
-    if (query && query.length > 0) {
-      const symbolMatch = USDC_ASSET.symbol.toLowerCase().includes(query);
-      const nameMatch = USDC_ASSET.name.toLowerCase().includes(query);
-      const addressMatch = isContractSearch && isLowerCaseMatch(USDC_ASSET.address, query);
-
-      if (symbolMatch || nameMatch || addressMatch) {
-        return USDC_ASSET;
-      }
-      return null;
-    }
-
-    return USDC_ASSET;
-  }, [toChainId, query, isContractSearch]);
-
   const data = useDeepCompareMemo(() => {
-    // Inject Hyperliquid USDC into the verified assets
-    let modifiedVerifiedAssets = verifiedAssets?.results;
-    if (hyperliquidUSDC && toChainId === 1337) {
-      modifiedVerifiedAssets = [hyperliquidUSDC, ...(verifiedAssets?.results || [])];
-    }
-
     return {
       isLoading: false,
       results: buildListSectionsData({
@@ -146,7 +120,7 @@ export function useSearchCurrencyLists() {
           popularAssets: popularAssetsForChain,
           recentSwaps: recentsForChain,
           unverifiedAssets: unverifiedAssets,
-          verifiedAssets: modifiedVerifiedAssets,
+          verifiedAssets: verifiedAssets?.results,
         },
         favoritesList,
         filteredBridgeAssetAddress: filteredBridgeAsset?.address,
@@ -155,10 +129,8 @@ export function useSearchCurrencyLists() {
   }, [
     favoritesList,
     filteredBridgeAsset,
-    hyperliquidUSDC,
     popularAssetsForChain,
     recentsForChain,
-    toChainId,
     unverifiedAssets,
     verifiedAssets?.crosschainResults,
     verifiedAssets?.results,

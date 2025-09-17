@@ -3,11 +3,6 @@ import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { DEVICE_HEIGHT, NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
-import { SearchAsset } from '@/__swaps__/types/search';
-import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId } from '@/state/backendNetworks/types';
-import { Address } from 'viem';
-import { getUniqueId } from '@/utils/ethereumUtils';
 
 // /---- 🔒 Constants 🔒 ----/ //
 //
@@ -96,39 +91,3 @@ export const highPriceImpactThreshold = 0.05;
 export const severePriceImpactThreshold = 0.1;
 
 export const slippageStep = 0.5;
-
-export const USDC_ASSET = {
-  address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as AddressOrEth,
-  chainId: 1337,
-  colors: {
-    primary: '#2775CA',
-    fallback: '#FFFFFF',
-  },
-  decimals: 8,
-  icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png',
-  isNativeAsset: false,
-  isRainbowCurated: true,
-  isVerified: true,
-  mainnetAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as AddressOrEth,
-  name: 'USD Coin',
-  networks: {
-    [ChainId.mainnet]: {
-      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as Address,
-      decimals: 8,
-    },
-    1337: {
-      address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address,
-      decimals: 8,
-    },
-  },
-  market: {
-    market_cap: {
-      value: 100000000000, // $100B market cap
-    },
-    volume_24h: 10000000000, // $10B volume
-    circulating_supply: 100000000000,
-  },
-  symbol: 'USDC',
-  uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, 1337),
-  highLiquidity: true,
-} satisfies SearchAsset;

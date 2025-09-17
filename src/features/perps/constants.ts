@@ -1,6 +1,11 @@
+import { AddressOrEth } from '@/__swaps__/types/assets';
 import { HlBuilderSettings } from '@/features/perps/types';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { Address } from 'viem';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { SearchAsset } from '@/__swaps__/types/search';
+import { ChainId } from '@/state/backendNetworks/types';
 
 export const DEFAULT_SLIPPAGE_BIPS = 100;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -61,3 +66,39 @@ export const USDC_COLORS = {
 export const MAX_SIG_FIGS = 5;
 export const MAX_DECIMALS_PERP = 6;
 export const MAX_DECIMALS_SPOT = 8;
+
+export const USDC_ASSET = {
+  address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as AddressOrEth,
+  chainId: 1337,
+  colors: {
+    primary: '#2775CA',
+    fallback: '#FFFFFF',
+  },
+  decimals: 8,
+  icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png',
+  isNativeAsset: false,
+  isRainbowCurated: true,
+  isVerified: true,
+  mainnetAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as AddressOrEth,
+  name: 'USD Coin',
+  networks: {
+    [ChainId.mainnet]: {
+      address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as Address,
+      decimals: 8,
+    },
+    1337: {
+      address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address,
+      decimals: 8,
+    },
+  },
+  market: {
+    market_cap: {
+      value: 100000000000, // $100B market cap
+    },
+    volume_24h: 10000000000, // $10B volume
+    circulating_supply: 100000000000,
+  },
+  symbol: 'USDC',
+  uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, 1337),
+  highLiquidity: true,
+} satisfies SearchAsset;

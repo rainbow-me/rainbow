@@ -1,7 +1,7 @@
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
-import { INPUT_INNER_WIDTH, INPUT_PADDING, USDC_ASSET } from '@/__swaps__/screens/Swap/constants';
+import { INPUT_INNER_WIDTH, INPUT_PADDING } from '@/__swaps__/screens/Swap/constants';
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '@/__swaps__/screens/Swap/hooks/useSwapEstimatedGasLimit';
 import { ExtendedAnimatedAssetWithColors, ParsedAsset, ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -70,6 +70,7 @@ import { PerpsAssetCoinIcon } from './PerpsAssetCoinIcon';
 import { PerpsInputContainer } from './PerpsInputContainer';
 import { PerpsTokenList } from './PerpsTokenList';
 import { usePerpsDepositQuote } from './usePerpsDepositQuote';
+import { USDC_ASSET } from '@/features/perps/constants';
 
 const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
