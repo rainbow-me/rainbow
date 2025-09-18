@@ -8,9 +8,8 @@ import { add, divide, multiply, subtract } from '@/helpers/utilities';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { OrderResponse } from '@nktkas/hyperliquid';
-import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { hlOpenOrdersStoreActions, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
+import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
 import { refetchHyperliquidStores } from '@/features/perps/utils';
 
 type HyperliquidAccountStoreState = {

@@ -118,7 +118,8 @@ export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFet
 
       return filteredMarketsList;
     },
-  })
+  }),
+  { storageKey: 'hlMarkets' }
 );
 
 export const hyperliquidMarketStoreActions = createStoreActions(useHyperliquidMarketsStore);

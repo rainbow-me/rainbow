@@ -3,7 +3,6 @@ import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
 import { RAINBOW_BUILDER_SETTINGS } from '@/features/perps/constants';
 import { PerpPositionSide, PerpAccount, PerpsPosition } from '../types';
-import { sumWorklet } from '@/safe-math/SafeMath';
 
 const transport = new hl.HttpTransport();
 export const infoClient: hl.InfoClient = new hl.InfoClient({
@@ -43,8 +42,7 @@ export class HyperliquidAccountClient {
 
     const positions = perpState.assetPositions
       .map(({ position }) => {
-        const equity =
-          position.leverage.type === 'isolated' ? sumWorklet(position.marginUsed, position.unrealizedPnl) : position.unrealizedPnl;
+        const equity = position.leverage.type === 'isolated' ? position.marginUsed : position.unrealizedPnl;
 
         return {
           symbol: position.coin,

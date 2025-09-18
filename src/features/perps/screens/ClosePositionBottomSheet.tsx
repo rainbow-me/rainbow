@@ -19,7 +19,6 @@ import { PositionPercentageSlider } from '@/features/perps/components/PositionPe
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, SLIDER_WIDTH } from '@/features/perps/constants';
-import { estimateReturnOnMarketClose } from '@/features/perps/utils/estimateReturnOnMarketClose';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { logger, RainbowError } from '@/logger';
@@ -71,26 +70,7 @@ function PanelContent({ symbol }: PanelContentProps) {
     selector: state => state.midPrice ?? state.price,
   });
 
-  const positionEquity = position
-    ? estimateReturnOnMarketClose({
-        position,
-        exitPrice: liveTokenPrice,
-        feeBips: 0,
-      })
-    : '0';
-
-  const projectedToReceive = useDerivedValue(() => {
-    if (!position) return '-';
-
-    const totalValue = estimateReturnOnMarketClose({
-      position,
-      exitPrice: liveTokenPrice,
-      feeBips: 0,
-    });
-
-    const adjustedValue = mulWorklet(totalValue, percentToClose.value);
-    return formatCurrency(adjustedValue);
-  });
+  const positionEquity = position ? position.equity : '0';
 
   const projectedPnl = useDerivedValue(() => {
     if (!position) return '-';
@@ -139,7 +119,7 @@ function PanelContent({ symbol }: PanelContentProps) {
               {`Receive`}
             </Text>
             <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'}>
-              {projectedToReceive}
+              {formatCurrency(positionEquity)}
             </AnimatedText>
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full">

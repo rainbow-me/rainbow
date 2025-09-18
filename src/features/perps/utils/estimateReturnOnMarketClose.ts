@@ -12,11 +12,12 @@ export function estimateReturnOnMarketClose({
   feeBips?: number;
 }) {
   'worklet';
-  const { size, entryPrice, marginUsed } = position;
+  const { size, entryPrice, unrealizedPnl, marginUsed } = position;
+  const originalMarginUsed = subWorklet(marginUsed, unrealizedPnl);
   const isLong = isPositive(size);
   const exitFee = calculateTradingFee({ size, price: entryPrice, feeBips });
   const priceDiff = subWorklet(exitPrice, entryPrice);
   const grossProfit = isLong ? mulWorklet(size, priceDiff) : mulWorklet(size, mulWorklet('-1', priceDiff));
 
-  return subWorklet(sumWorklet(marginUsed, grossProfit), exitFee);
+  return subWorklet(sumWorklet(originalMarginUsed, grossProfit), exitFee);
 }
