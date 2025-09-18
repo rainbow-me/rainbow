@@ -195,6 +195,7 @@ const CloseBadge = ({
   const textStyle = useAnimatedStyle(() => ({
     color: closeColor?.value ?? accentColor,
     textShadowColor: isDarkMode ? opacityWorklet(closeColor?.value ?? accentColor, 0.24) : 'transparent',
+    textTransform: 'uppercase',
   }));
 
   return (

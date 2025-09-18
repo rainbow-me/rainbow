@@ -1,4 +1,4 @@
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import { DerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useStableValue } from '@/hooks/useStableValue';
 import { BaseRainbowStore, Selector } from '../types';
@@ -6,7 +6,7 @@ import { ListenHandle, useListen, UseListenOptions } from './useListen';
 
 // ============ Types ========================================================== //
 
-export type ListenHandleTuple<Selected> = [ReadOnlySharedValue<Selected>, MutableRefObject<Readonly<ListenHandle>>];
+export type ListenHandleTuple<Selected> = [ReadOnlySharedValue<Selected>, RefObject<Readonly<ListenHandle>>];
 
 export type ReadOnlySharedValue<T> = DerivedValue<T>;
 
