@@ -68,7 +68,7 @@ const RowButton = memo(function RowButton({ highlighted, icon, iconName, title, 
             )}
             {iconName === 'farcaster' && (
               <IconContainer height={10} width={20}>
-                <Icon name="warpcast" color={accentColors.color} width={17} />
+                <Icon name="farcaster" color={accentColors.color} width={17} />
               </IconContainer>
             )}
             <TextShadow blur={12} shadowOpacity={0.24}>
@@ -222,7 +222,7 @@ export const AboutContent = memo(function AboutContent() {
     if (metadata?.links?.farcaster?.url) {
       items.push({
         iconName: 'farcaster',
-        title: i18n.t(i18n.l.expanded_state.asset.social.warpcast),
+        title: i18n.t(i18n.l.expanded_state.asset.social.farcaster),
         url: metadata.links.farcaster.url,
         value: `@${metadata.links.farcaster.url.split('/').pop()}`,
       });
