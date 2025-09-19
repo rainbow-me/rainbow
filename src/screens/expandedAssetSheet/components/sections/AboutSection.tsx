@@ -19,6 +19,7 @@ interface RowItem {
   title: string;
   url: string;
   value?: string;
+  openInDappBrowser?: boolean;
 }
 
 interface RowButtonProps {
@@ -28,13 +29,19 @@ interface RowButtonProps {
   title: string;
   url: string;
   value?: string;
+  openInDappBrowser?: boolean;
 }
 
-const RowButton = memo(function RowButton({ highlighted, icon, iconName, title, url, value }: RowButtonProps) {
+const RowButton = memo(function RowButton({ highlighted, icon, iconName, title, url, value, openInDappBrowser = false }: RowButtonProps) {
   const { accentColors } = useExpandedAssetSheetContext();
 
   return (
-    <ButtonPressAnimation onPress={() => openInBrowser(url)} scaleTo={0.96}>
+    <ButtonPressAnimation
+      onPress={
+        () => openInBrowser(url, openInDappBrowser) // open social links natively for system redirect
+      }
+      scaleTo={0.96}
+    >
       <Row highlighted={highlighted}>
         <Box width="full" flexDirection="row" alignItems="center">
           <Inline space="12px" alignVertical="center">
@@ -199,6 +206,7 @@ export const AboutContent = memo(function AboutContent() {
         title: i18n.t(i18n.l.expanded_state.asset.social.website),
         url: metadata?.links?.homepage?.url,
         value: formatURLForDisplay(metadata?.links?.homepage?.url),
+        openInDappBrowser: true, // could be a dapp
       });
     }
 
@@ -235,6 +243,7 @@ export const AboutContent = memo(function AboutContent() {
         title: i18n.t(i18n.l.expanded_state.asset.social.other),
         url: metadata.links.other.url,
         value: formatURLForDisplay(metadata.links.other.url),
+        openInDappBrowser: true, // could be dapp
       });
     }
 
