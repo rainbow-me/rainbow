@@ -20,7 +20,7 @@ import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
-import { getPercentageDifferenceWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { getPercentageDifferenceWorklet, greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
@@ -30,6 +30,7 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { colors } from '@/styles';
+import { abbreviateNumberWorklet } from '@/helpers/utilities';
 
 const PANEL_HEIGHT = 360;
 
@@ -119,7 +120,8 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
   const targetPriceDifferentialLabel = useDerivedValue(() => {
     if (!isValidTargetPrice.value) return '􀇿';
     const isAbove = greaterThanWorklet(targetPriceDifferential.value, '0');
-    return `${isAbove ? '+' : ''}${toFixedWorklet(targetPriceDifferential.value, 2)}%`;
+    const displayValue = abbreviateNumberWorklet(Number(targetPriceDifferential.value), 2);
+    return `${isAbove ? '+' : ''}${displayValue}%`;
   });
 
   const targetPriceDifferentialLabelSecondary = useDerivedValue(() => {
@@ -146,72 +148,81 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
   }, [triggerOrderType, inputValue, navigation]);
 
   return (
-    <Box paddingHorizontal={'24px'} paddingTop={'28px'} alignItems="center" style={{ flex: 1 }}>
+    <Box paddingTop={'28px'} alignItems="center" style={{ flex: 1 }}>
       <Box gap={24}>
-        <PerpBottomSheetHeader
-          title={triggerOrderType === TriggerOrderType.TAKE_PROFIT ? 'Take Profit' : 'Stop Loss'}
-          symbol={market.symbol}
-        />
-        <Box gap={14}>
+        <Box paddingHorizontal={'24px'} gap={24}>
+          <PerpBottomSheetHeader
+            title={triggerOrderType === TriggerOrderType.TAKE_PROFIT ? 'Take Profit' : 'Stop Loss'}
+            symbol={market.symbol}
+          />
+          <Box gap={14}>
+            <Box
+              flexDirection="row"
+              width="full"
+              borderWidth={isDarkMode ? 2 : 0}
+              borderColor={{ custom: accentColors.opacity6 }}
+              borderRadius={28}
+              height={66}
+              paddingHorizontal={'20px'}
+              alignItems="center"
+              justifyContent="space-between"
+              backgroundColor={accentColors.surfacePrimary}
+              shadow={'18px'}
+            >
+              <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
+                {'Price'}
+              </Text>
+              <CurrencyInput
+                autoFocus={true}
+                ref={inputRef}
+                value={inputValue}
+                textColor={accentColors.opacity100}
+                placeholderTextColor={accentColors.opacity24}
+                formatInput={formatInput}
+                formatDisplay={formatDisplay}
+                size="30pt"
+                weight="bold"
+                align="right"
+                style={{ width: 200 }}
+              />
+            </Box>
+
+            <Box paddingHorizontal={'8px'} flexDirection="row" alignItems="center" gap={6}>
+              <AnimatedText size="15pt" weight="bold" style={targetPriceDifferentialLabelStyle}>
+                {targetPriceDifferentialLabel}
+              </AnimatedText>
+              <AnimatedText size="15pt" weight="bold" color={'labelQuaternary'}>
+                {targetPriceDifferentialLabelSecondary}
+              </AnimatedText>
+            </Box>
+          </Box>
+          <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
           <Box
             flexDirection="row"
-            width="full"
-            borderWidth={isDarkMode ? 2 : 0}
-            borderColor={{ custom: accentColors.opacity6 }}
-            borderRadius={28}
-            height={66}
-            paddingHorizontal={'20px'}
             alignItems="center"
             justifyContent="space-between"
-            backgroundColor={accentColors.surfacePrimary}
-            shadow={'18px'}
+            backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
+            borderWidth={THICK_BORDER_WIDTH}
+            borderColor={'buttonStroke'}
+            borderRadius={14}
+            padding={'12px'}
           >
-            <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-              {'Price'}
+            <Text size="17pt" weight="medium" color={'labelSecondary'}>
+              {`${isTakeProfit ? 'Projected Profit' : 'Projected Loss'}`}
             </Text>
-            <CurrencyInput
-              autoFocus={true}
-              ref={inputRef}
-              value={inputValue}
-              textColor={accentColors.opacity100}
-              placeholderTextColor={accentColors.opacity24}
-              formatInput={formatInput}
-              formatDisplay={formatDisplay}
-              size="30pt"
-              weight="bold"
-              align="right"
-              style={{ width: 200 }}
-            />
-          </Box>
-
-          <Box paddingHorizontal={'8px'} flexDirection="row" alignItems="center" gap={6}>
-            <AnimatedText size="15pt" weight="bold" style={targetPriceDifferentialLabelStyle}>
-              {targetPriceDifferentialLabel}
-            </AnimatedText>
-            <AnimatedText size="15pt" weight="bold" color={'labelQuaternary'}>
-              {targetPriceDifferentialLabelSecondary}
+            <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'} align="right" numberOfLines={1} style={{ width: '50%' }}>
+              {projectedPnl}
             </AnimatedText>
           </Box>
         </Box>
-        <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
         <Box
+          paddingHorizontal={{ custom: 18 }}
           flexDirection="row"
           alignItems="center"
           justifyContent="space-between"
-          backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
-          borderWidth={THICK_BORDER_WIDTH}
-          borderColor={'buttonStroke'}
-          borderRadius={14}
-          padding={'12px'}
+          width="full"
+          gap={12}
         >
-          <Text size="17pt" weight="medium" color={'labelSecondary'}>
-            {`${isTakeProfit ? 'Projected Profit' : 'Projected Loss'}`}
-          </Text>
-          <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'}>
-            {projectedPnl}
-          </AnimatedText>
-        </Box>
-        <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full" gap={12}>
           <ButtonPressAnimation
             onPress={() => {
               navigation.goBack();
