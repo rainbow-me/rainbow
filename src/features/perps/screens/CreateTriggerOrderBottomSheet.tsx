@@ -104,6 +104,8 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
       margin: amount,
       leverage: String(leverage),
       isLong,
+      // We don't include fees because it can be confusing for the user to see a negative projected PnL despite a higher/lower target price
+      includeFees: false,
     });
     return formatCurrency(projectedPnl);
   });

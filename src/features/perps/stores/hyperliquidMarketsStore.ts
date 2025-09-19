@@ -1,10 +1,10 @@
 import { HyperliquidTokenMetadata, MarketSortOrder, PerpMarketWithMetadata } from '@/features/perps/types';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { hyperliquidMarketsClient } from '@/features/perps/services/hyperliquid-markets-client';
 import { time } from '@/utils/time';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { HYPERCORE_PSEUDO_CHAIN_ID } from '@/features/perps/constants';
 import { getPlatformClient } from '@/resources/platform/client';
+import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
 
 // TODO: Should be using Partial<Record<string, PerpMarketWithMetadata>> but is causing unknown query store setData type error
 type PerpMarketsBySymbol = Record<string, PerpMarketWithMetadata>;
@@ -42,7 +42,7 @@ type HyperliquidMarketsStoreActions = {
 type HyperliquidMarketsStore = HyperliquidMarketsStoreState & HyperliquidMarketsStoreActions;
 
 async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsFetchData> {
-  const allMarketsInfo = await hyperliquidMarketsClient.getAllMarketsInfo();
+  const allMarketsInfo = await getAllMarketsInfo();
   const tokensMetadataResponse = await getPlatformClient().get<TokensMetadataResponse>('/tokens/GetTokens', {
     params: {
       tokenIds: allMarketsInfo.map(market => buildHypercoreTokenId(market.symbol)).join(','),

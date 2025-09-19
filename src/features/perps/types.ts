@@ -118,6 +118,7 @@ export type HlTrade = {
   fillStartSize: string;
   orderStartSize: string;
   pnl: string;
+  netPnl: string;
   fee: string;
   orderId: number;
   tradeId: number;

@@ -18,7 +18,7 @@ import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
 import { HYPERLIQUID_COLORS, USDC_ASSET } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { withdraw } from '@/features/perps/services/hyperliquid-trading-actions';
+import { withdraw } from '@/features/perps/utils/hyperliquid';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/Routes';

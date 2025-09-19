@@ -15,6 +15,7 @@ export function estimatePnl(params: {
   makerFeeBips?: number;
   /** Optional: Whether the exit order is a maker order (limit) or taker (market) */
   isMakerOrder?: boolean;
+  includeFees?: boolean;
 }): string {
   'worklet';
 
@@ -27,12 +28,15 @@ export function estimatePnl(params: {
     takerFeeBips = HYPERLIQUID_TAKER_FEE_BIPS,
     makerFeeBips = HYPERLIQUID_MAKER_FEE_BIPS,
     isMakerOrder = false,
+    includeFees = true,
   } = params;
 
   const notionalValue = mulWorklet(margin, leverage);
   const positionSize = divWorklet(notionalValue, entryPrice);
   const priceDiff = subWorklet(exitPrice, entryPrice);
   const grossProfit = isLong ? mulWorklet(positionSize, priceDiff) : mulWorklet(positionSize, mulWorklet('-1', priceDiff));
+
+  if (!includeFees) return grossProfit;
 
   // Fees are taken on both the entry and exit
   const feeBips = (isMakerOrder ? makerFeeBips : takerFeeBips) + RAINBOW_FEE_BIPS;

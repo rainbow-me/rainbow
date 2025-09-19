@@ -8,6 +8,7 @@ import * as hl from '@nktkas/hyperliquid';
 import { TriggerOrderType, HlTrade } from '../types';
 import { convertSide } from '../utils';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { subtract } from '@/helpers/utilities';
 
 type HlTradesParams = {
   address: Address | string | null;
@@ -71,6 +72,7 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.
     orderStartSize: order.origSz,
     pnl: fill.closedPnl,
     fee: fill.fee,
+    netPnl: subtract(fill.closedPnl, fill.fee),
     orderId: fill.oid,
     tradeId: fill.tid,
     txHash: fill.hash,

@@ -1,15 +1,61 @@
+import { infoClient } from '@/features/perps/services/hyperliquid-account-client';
+import { PerpMarket, PerpPositionSide, TriggerOrder } from '@/features/perps/types';
+import { divide, subtract, multiply } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { OrderResponse } from '@nktkas/hyperliquid';
-import { PerpPositionSide, TriggerOrder } from '../types';
 import { refetchHyperliquidStores } from '../utils';
 import { hlOpenOrdersStoreActions } from '../stores/hlOpenOrdersStore';
 import { useHyperliquidMarketsStore } from '../stores/hyperliquidMarketsStore';
-import { getHyperliquidExchangeClient } from './index';
+import { getHyperliquidExchangeClient } from '../services';
+
+export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
+  const [meta, assetCtxs] = await infoClient.metaAndAssetCtxs();
+  const assetsBasicInfo = meta.universe;
+  const assetsPricingInfo = assetCtxs;
+
+  return assetsBasicInfo
+    .map((asset, index) => {
+      const assetId = index;
+      const assetPricingInfo = assetsPricingInfo[index];
+      if (!assetPricingInfo || asset.isDelisted) {
+        return null;
+      }
+
+      // TODO (kane): What are the default margin tiers, how are we supposed to handle the liq. calc?
+      const marginTable = meta.marginTables.find(mt => mt[0] === asset.marginTableId)?.[1] ?? null;
+      const markPrice = assetPricingInfo.markPx;
+      const midPrice = assetPricingInfo.midPx ?? markPrice;
+      const price = midPrice ?? markPrice;
+      const previousDayPrice = assetPricingInfo.prevDayPx;
+
+      const priceChange24h = divide(subtract(price, previousDayPrice), multiply(previousDayPrice, 100));
+
+      return {
+        id: assetId,
+        price,
+        midPrice,
+        priceChange: {
+          '1h': '',
+          '24h': priceChange24h,
+        },
+        volume: {
+          '24h': assetPricingInfo.dayNtlVlm,
+        },
+        symbol: asset.name,
+        maxLeverage: asset.maxLeverage,
+        marginTiers: marginTable?.marginTiers,
+        decimals: asset.szDecimals,
+        fundingRate: assetPricingInfo.funding,
+      };
+    })
+    .filter(Boolean);
+}
 
 export async function withdraw(amount: string): Promise<void> {
   const address = useWalletsStore.getState().accountAddress;
   const exchangeClient = await getHyperliquidExchangeClient(address);
+  if (!exchangeClient) return;
   await exchangeClient.withdraw(amount);
 }
 
@@ -27,9 +73,11 @@ export async function createIsolatedMarginPosition({
   marginAmount: string;
   price: string;
   triggerOrders?: TriggerOrder[];
-}): Promise<OrderResponse> {
+}): Promise<OrderResponse | void> {
   const address = useWalletsStore.getState().accountAddress;
   const exchangeClient = await getHyperliquidExchangeClient(address);
+  if (!exchangeClient) return;
+
   const market = useHyperliquidMarketsStore.getState().markets[symbol];
   if (!market) {
     throw new RainbowError('[HyperliquidTradingActions] Market not found');
@@ -56,6 +104,8 @@ export async function closeIsolatedMarginPosition({ symbol, price, size }: { sym
     throw new RainbowError('[HyperliquidTradingActions] Market not found');
   }
   const exchangeClient = await getHyperliquidExchangeClient(address);
+  if (!exchangeClient) return;
+
   await exchangeClient.closeIsolatedMarginPosition({
     assetId: market.id,
     price,
@@ -72,6 +122,7 @@ export async function cancelOrder({ symbol, orderId }: { symbol: string; orderId
     throw new RainbowError('[HyperliquidTradingActions] Market not found');
   }
   const exchangeClient = await getHyperliquidExchangeClient(address);
+  if (!exchangeClient) return;
   await exchangeClient.cancelOrder({ assetId: market.id, orderId });
   await hlOpenOrdersStoreActions.fetch(undefined, { force: true });
 }

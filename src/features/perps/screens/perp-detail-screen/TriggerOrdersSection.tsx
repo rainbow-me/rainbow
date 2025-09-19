@@ -8,8 +8,8 @@ import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrd
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { logger, RainbowError } from '@/logger';
 import { Alert } from 'react-native';
-import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { cancelOrder } from '@/features/perps/services/hyperliquid-trading-actions';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { cancelOrder } from '@/features/perps/utils/hyperliquid';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 
