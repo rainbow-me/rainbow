@@ -34,6 +34,15 @@ const PIXEL_RATIO = PixelRatio.get();
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
 class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps & { retryCount: number }> {
+  constructor(props: MergedImgixImageProps) {
+    super(props);
+    const derivedState = ImgixImage.getDerivedStateFromProps(props);
+    this.state = {
+      retryCount: 0,
+      ...(derivedState ?? {}),
+    } as ImgixImageProps & { retryCount: number };
+  }
+
   static getDerivedStateFromProps(props: MergedImgixImageProps) {
     const { resizeMode, source, size, style, fm, enableFasterImage, fasterImageConfig } = props;
     const options = {

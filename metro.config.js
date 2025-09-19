@@ -1,12 +1,13 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const blacklist = require('metro-config/src/defaults/exclusionList');
+const exclusionList = require('metro-config/private/defaults/exclusionList').default;
 const { mergeConfig, getDefaultConfig } = require('@react-native/metro-config');
-const { withSentryConfig } = require('@sentry/react-native/metro');
+// const { withSentryConfig } = require('@sentry/react-native/metro');
 const { wrapWithReanimatedMetroConfig } = require('react-native-reanimated/metro-config');
+const path = require('path');
 
 // Deny list is a function that takes an array of regexes and combines
-// them with the default blacklist to return a single regex.
-const blacklistRE = blacklist([
+// them with the default exclusion list to return a single regex.
+const blockList = exclusionList([
   // react-native-animated-charts
   /src\/react-native-animated-charts\/Example\/.*/,
   /src\/react-native-animated-charts\/node_modules\/.*/,
@@ -37,7 +38,7 @@ if (process.env.CI) {
  */
 const rainbowConfig = {
   resolver: {
-    blacklistRE,
+    blockList,
     resolveRequest: (context, moduleName, platform) => {
       try {
         return context.resolveRequest(context, moduleName, platform);
@@ -46,8 +47,9 @@ const rainbowConfig = {
       }
 
       try {
+        const defaultConfig = getDefaultConfig(__dirname);
         const resolution = require.resolve(moduleName, {
-          paths: [path.dirname(context.originModulePath), ...config.resolver.nodeModulesPaths],
+          paths: [path.dirname(context.originModulePath), ...defaultConfig.resolver.nodeModulesPaths],
         });
 
         if (path.isAbsolute(resolution)) {
@@ -61,9 +63,10 @@ const rainbowConfig = {
       }
 
       try {
-        return defaultModuleResolver(context, moduleName, platform);
+        const defaultConfig = getDefaultConfig(__dirname);
+        return defaultConfig.resolver.resolveRequest(context, moduleName, platform);
       } catch (error) {
-        console.warn('\n3️⃣ defaultModuleResolver cannot resolve: ', moduleName);
+        console.warn('\n3️⃣ default resolver cannot resolve: ', moduleName);
       }
 
       try {
@@ -76,10 +79,10 @@ const rainbowConfig = {
       }
 
       try {
-        const resolution = getDefaultConfig(require.resolve(moduleName)).resolver?.resolveRequest;
-        return resolution(context, moduleName, platform);
+        const defaultConfig = getDefaultConfig(__dirname);
+        return defaultConfig.resolver.resolveRequest(context, moduleName, platform);
       } catch (error) {
-        console.warn('\n5️⃣ getDefaultConfig cannot resolve: ', moduleName);
+        console.warn('\n5️⃣ default resolver cannot resolve: ', moduleName);
       }
 
       throw new Error(`Unable to resolve module: ${moduleName}`);
@@ -89,11 +92,13 @@ const rainbowConfig = {
 };
 
 const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
-const sentryConfig = withSentryConfig(config, {
-  annotateReactComponents: true,
-});
+
+// Temporarily disable Sentry config due to RN 0.81.0 compatibility issue
+// const sentryConfig = withSentryConfig(config, {
+//   annotateReactComponents: true,
+// });
 
 // Need support for import.meta to enable this.
-sentryConfig.resolver.unstable_enablePackageExports = false;
+// sentryConfig.resolver.unstable_enablePackageExports = false;
 
-module.exports = wrapWithReanimatedMetroConfig(sentryConfig);
+module.exports = wrapWithReanimatedMetroConfig(config);

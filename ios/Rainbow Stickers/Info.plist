@@ -27,5 +27,7 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>StickerBrowserViewController</string>
 	</dict>
+	<key>RCTNewArchEnabled</key>
+	<false/>
 </dict>
 </plist>

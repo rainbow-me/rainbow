@@ -23,6 +23,15 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
+			<key>baggy</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>baggy</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
 			<key>farcaster</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -104,6 +113,15 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
+			<key>redacted</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>redacted</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+			</dict>
 			<key>smol</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -127,24 +145,6 @@
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>zorb</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
-			<key>redacted</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>redacted</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
-			<key>baggy</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>baggy</string>
 				</array>
 				<key>UIPrerenderedIcon</key>
 				<false/>
@@ -235,6 +235,8 @@
 		<string>SelectTokenIntent</string>
 	</array>
 	<key>RCTAsyncStorageExcludeFromBackup</key>
+	<false/>
+	<key>RCTNewArchEnabled</key>
 	<false/>
 	<key>UIAppFonts</key>
 	<array>
