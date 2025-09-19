@@ -277,7 +277,6 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
         left="0px"
         right="0px"
         width="full"
-        height={110}
         shadow={'24px'}
         style={{
           shadowOffset: {
@@ -286,17 +285,12 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           },
           borderTopWidth: 2,
           borderTopColor: accentColors.opacity6,
-          paddingBottom: safeAreaInsets.bottom,
+          paddingBottom: Math.max(safeAreaInsets.bottom, 20),
+          paddingTop: 20,
           backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
         }}
       >
-        <Box
-          as={Animated.View}
-          entering={FadeIn.duration(150)}
-          exiting={FadeOut.duration(100)}
-          paddingHorizontal={'20px'}
-          paddingVertical={'20px'}
-        >
+        <Box as={Animated.View} entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)} paddingHorizontal={'20px'}>
           {(effectiveRoute === Routes.PERPS_SEARCH_SCREEN || effectiveRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN) && (
             <PerpsSearchScreenFooter />
           )}

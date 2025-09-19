@@ -1570,6 +1570,9 @@
       }
     },
     "perps": {
+      "markets": {
+        "already_open": "Already Open"
+      },
       "deposit": {
         "title": "Deposit",
         "no_balance": "No Balance",
