@@ -6,7 +6,6 @@ import WrappedNFT from '../WrappedNFT';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
 import { ExtendedState } from './RawRecyclerList';
 import {
-  AssetsHeaderExtraData,
   CellType,
   ClaimableExtraData,
   ClaimablesHeaderExtraData,
@@ -20,7 +19,6 @@ import {
   PositionHeaderExtraData,
   PerpsBalanceExtraData,
   PerpsPositionExtraData,
-  PerpsHeaderExtraData,
 } from './ViewTypes';
 import assertNever from '@/helpers/assertNever';
 import { ProfileRowWrapper } from '../profile-header/ProfileRowWrapper';
@@ -217,8 +215,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <Claimable claimable={claimable} />;
     }
     case CellType.PERPS_HEADER: {
-      const { total } = data as PerpsHeaderExtraData;
-      return <PerpsHeader total={total} />;
+      return <PerpsHeader />;
     }
     case CellType.PERPS_BALANCE: {
       const { balance } = data as PerpsBalanceExtraData;

@@ -9,7 +9,7 @@ import { RainbowImage } from '@/components/RainbowImage';
 import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { formatCurrency } from '@/helpers/strings';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
 type PerpsAvailableBalanceProps = {
   balance: string;

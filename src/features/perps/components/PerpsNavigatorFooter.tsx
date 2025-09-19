@@ -18,6 +18,7 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { createIsolatedMarginPosition } from '@/features/perps/services/hyperliquid-trading-actions';
 import { ensureError, logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
@@ -204,7 +205,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
     setIsSubmitting(true);
     try {
       const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)].midPrice;
-      await hyperliquidAccountStoreActions.createIsolatedMarginPosition({
+      await createIsolatedMarginPosition({
         symbol: market.symbol,
         side: positionSide,
         leverage,

@@ -15,6 +15,7 @@ import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { closeIsolatedMarginPosition } from '@/features/perps/services/hyperliquid-trading-actions';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
@@ -81,7 +82,7 @@ function PanelContent({ symbol }: PanelContentProps) {
     if (!position) return;
     setIsSubmitting(true);
     try {
-      await hyperliquidAccountStoreActions.closeIsolatedMarginPosition({
+      await closeIsolatedMarginPosition({
         symbol,
         price: liveTokenPrice,
         size: mulWorklet(position.size, percentToClose.value),

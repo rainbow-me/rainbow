@@ -7,11 +7,17 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import Routes from '@/navigation/routesNames';
 import { Navigation } from '@/navigation';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
+import { multiply } from '@/helpers/utilities';
 
 const HEIGHT = 48;
 
-export const PerpsHeader = React.memo(function PerpsHeader({ total }: { total: string }) {
+export const PerpsHeader = React.memo(function PerpsHeader() {
   const { accentColor: accountColor } = useAccountAccentColor();
+  const accountValueUsd = useHyperliquidAccountStore(state => state.value);
+  const usdToNativeCurrencyConversionRate = useCurrencyConversionStore(state => state.getData()?.usdToNativeCurrencyConversionRate || 1);
+  const accountValueNative = multiply(accountValueUsd, usdToNativeCurrencyConversionRate);
 
   const navigationButtonColors = useMemo(() => {
     return {
@@ -53,7 +59,7 @@ export const PerpsHeader = React.memo(function PerpsHeader({ total }: { total: s
 
           <Inline horizontalSpace={'8px'} alignVertical="center">
             <Text size="20pt" color={'label'} weight="bold">
-              {formatCurrency(total)}
+              {formatCurrency(accountValueNative)}
             </Text>
           </Inline>
         </Inline>

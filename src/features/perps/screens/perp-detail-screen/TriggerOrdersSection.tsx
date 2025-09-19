@@ -9,6 +9,7 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { logger, RainbowError } from '@/logger';
 import { Alert } from 'react-native';
 import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { cancelOrder } from '@/features/perps/services/hyperliquid-trading-actions';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 
@@ -29,7 +30,7 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
   const onPressDelete = useCallback(async () => {
     setIsCancelling(true);
     try {
-      await hyperliquidAccountStoreActions.cancelOrder({ symbol: order.symbol, orderId: order.id });
+      await cancelOrder({ symbol: order.symbol, orderId: order.id });
     } catch (e) {
       Alert.alert('Error', 'Failed to cancel order');
       logger.error(new RainbowError('[ExistingTriggerOrderCard]: error cancelling order', e));

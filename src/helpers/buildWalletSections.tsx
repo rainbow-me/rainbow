@@ -240,7 +240,6 @@ const withPerpsSection = (perpsData: PerpsWalletListData | null, isLoadingUserAs
     {
       type: CellType.PERPS_HEADER,
       uid: 'perps-header',
-      total: perpsData.value,
     },
     ...perpsSectionItems,
     {
