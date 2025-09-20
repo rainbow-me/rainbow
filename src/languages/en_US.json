@@ -707,10 +707,10 @@
           "website": "Website",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Other",
-          "search_on_twitter": "Search on Twitter"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "Uniswap liquidity",
         "value": "Value",
@@ -922,7 +922,7 @@
         "toast_removed_from_showcase": "Removed from showcase",
         "refreshing": "Refreshing metadata...",
         "reported": "Reported as spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "View All with Property",
         "view_collection": "View Collection",
         "view_on_marketplace": "View on Marketplace...",
@@ -1791,7 +1791,7 @@
         "skip": "Skip",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Upload a Photo",
         "uploading": "Uploading",
         "username_placeholder": "username",
@@ -2147,7 +2147,7 @@
       "done": "Done",
       "feedback_and_reports": "Feedback & Bug Reports",
       "feedback_and_support": "Feedback and Support",
-      "follow_us_on_twitter": "Follow us on Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Settings",
       "language": "Language",
@@ -3386,7 +3386,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Username"
         },
         "telegram": {
