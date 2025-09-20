@@ -46,7 +46,7 @@ export default function SocialLinks({ address, color, isNativeAsset, links, marg
           <CommunityLink
             color={color}
             display={i18n.t(i18n.l.expanded_state.asset.social.twitter)}
-            emojiName="twitter"
+            emojiName="x"
             transformOrigin="center"
             url={links.twitter.url}
           />

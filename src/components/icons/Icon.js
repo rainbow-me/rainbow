@@ -87,7 +87,6 @@ import { TabDappBrowserInnerFill } from './svg/TabDappBrowserInnerFill';
 import TelegramIcon from './svg/TelegramIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
-import TwitterIcon from './svg/TwitterIcon';
 import WalletConnectIcon from './svg/WalletConnectIcon';
 import WalletSwitcherCaret from './svg/WalletSwitcherCaret';
 import WarningCircledIcon from './svg/WarningCircledIcon';
@@ -189,7 +188,6 @@ const IconTypes = {
   telegram: TelegramIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,
-  twitter: TwitterIcon,
   walletConnect: WalletConnectIcon,
   walletSwitcherCaret: WalletSwitcherCaret,
   warning: WarningIcon,
