@@ -102,7 +102,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
     },
     {
       title: 'Funding',
-      value: isPositive(position.funding) ? `-${formatCurrency(position.funding)}` : `+${formatCurrency(position.funding)}`,
+      value: `${isPositive(position.funding) ? '-' : ''}${formatCurrency(position.funding)}`,
     },
   ];
 

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { HYPERLIQUID_COLORS, HYPERLIQUID_GREEN, HYPERLIQUID_GREEN_LIGHT, PERPS_COLORS } from '@/features/perps/constants';
+import { HYPERLIQUID_GREEN, HYPERLIQUID_GREEN_LIGHT } from '@/features/perps/constants';
 
 const theme = {
   dark: {

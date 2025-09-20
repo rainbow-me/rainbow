@@ -1,17 +1,12 @@
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { Address } from 'viem';
-import { PerpPositionSide, PerpsPosition, TriggerOrder } from '../types';
-import { getHyperliquidAccountClient, getHyperliquidExchangeClient } from '../services';
+import { PerpsPosition } from '../types';
+import { getHyperliquidAccountClient } from '../services';
 import { RainbowError } from '@/logger';
 import { add, divide, multiply, subtract } from '@/helpers/utilities';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { OrderResponse } from '@nktkas/hyperliquid';
-import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { hlOpenOrdersStoreActions, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
-import { refetchHyperliquidStores } from '@/features/perps/utils';
 
 type HyperliquidAccountStoreState = {
   positions: Record<string, PerpsPosition>;
@@ -20,24 +15,6 @@ type HyperliquidAccountStoreState = {
 };
 
 type HyperliquidAccountStoreActions = {
-  withdraw: (amount: string) => Promise<void>;
-  createIsolatedMarginPosition: ({
-    symbol,
-    side,
-    leverage,
-    marginAmount,
-    price,
-    triggerOrders,
-  }: {
-    symbol: string;
-    side: PerpPositionSide;
-    leverage: number;
-    marginAmount: string;
-    price: string;
-    triggerOrders?: TriggerOrder[];
-  }) => Promise<OrderResponse>;
-  closeIsolatedMarginPosition: ({ symbol, price, size }: { symbol: string; price: string; size: string }) => Promise<void>;
-  cancelOrder: ({ symbol, orderId }: { symbol: string; orderId: number }) => Promise<void>;
   getTotalPositionsInfo: () => {
     equity: string;
     unrealizedPnl: string;
@@ -63,13 +40,7 @@ async function fetchHyperliquidAccount({ address }: HyperliquidAccountParams): P
 
   const accountClient = getHyperliquidAccountClient(address);
 
-  const { positions, balance, value } = await accountClient.getPerpAccount();
-
-  return {
-    positions,
-    balance,
-    value,
-  };
+  return await accountClient.getPerpAccount();
 }
 
 export const useHyperliquidAccountStore = createQueryStore<
@@ -90,60 +61,14 @@ export const useHyperliquidAccountStore = createQueryStore<
     params: {
       address: $ => $(useWalletsStore).accountAddress,
     },
-    staleTime: time.seconds(10),
+    keepPreviousData: true,
+    staleTime: time.seconds(5),
   },
-  (set, get) => ({
+  (_set, get) => ({
     positions: {},
     balance: '0',
     value: '0',
-    withdraw: async (amount: string) => {
-      const address = useWalletsStore.getState().accountAddress;
-      const exchangeClient = await getHyperliquidExchangeClient(address);
-      await exchangeClient.withdraw(amount);
-    },
     getPosition: symbol => get().positions[symbol],
-    createIsolatedMarginPosition: async ({ symbol, side, leverage, marginAmount, price, triggerOrders }) => {
-      const address = useWalletsStore.getState().accountAddress;
-      const exchangeClient = await getHyperliquidExchangeClient(address);
-      const market = useHyperliquidMarketsStore.getState().markets[symbol];
-      if (!market) {
-        throw new RainbowError('[HyperliquidAccountStore] Market not found');
-      }
-      const result = await exchangeClient.openIsolatedMarginPosition({
-        assetId: market.id,
-        side,
-        marginAmount,
-        price,
-        leverage,
-        sizeDecimals: market.decimals,
-        triggerOrders,
-      });
-
-      await refetchHyperliquidStores();
-
-      return result;
-    },
-    closeIsolatedMarginPosition: async ({ symbol, price, size }) => {
-      const address = useWalletsStore.getState().accountAddress;
-      const market = useHyperliquidMarketsStore.getState().markets[symbol];
-      if (!market) {
-        throw new RainbowError('[HyperliquidAccountStore] Market not found');
-      }
-      const exchangeClient = await getHyperliquidExchangeClient(address);
-      await exchangeClient.closeIsolatedMarginPosition({ assetId: market.id, price, sizeDecimals: market.decimals, size });
-      await refetchHyperliquidStores();
-    },
-    cancelOrder: async ({ symbol, orderId }: { symbol: string; orderId: number }) => {
-      const address = useWalletsStore.getState().accountAddress;
-      const market = useHyperliquidMarketsStore.getState().markets[symbol];
-      if (!market) {
-        throw new RainbowError('[HyperliquidAccountStore] Market not found');
-      }
-      const exchangeClient = await getHyperliquidExchangeClient(address);
-      await exchangeClient.cancelOrder({ assetId: market.id, orderId });
-      // Refetch open orders
-      await hlOpenOrdersStoreActions.fetch(undefined, { force: true });
-    },
     getTotalPositionsInfo: () => {
       const positions = Object.values(get().positions);
       let totalPositionsEquity = '0';

@@ -1,59 +1,68 @@
 import { Address } from 'viem';
 import { HyperliquidAccountClient } from './hyperliquid-account-client';
 import { HyperliquidExchangeClient } from './hyperliquid-exchange-client';
-import { hyperliquidMarketsClient } from './hyperliquid-markets-client';
 import { loadWallet } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 import { EthereumAddress } from '@/entities';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { Wallet } from '@ethersproject/wallet';
+import watchingAlert from '@/utils/watchingAlert';
+import { getWalletWithAccount, useWalletsStore } from '@/state/wallets/walletsStore';
+import WalletTypes from '@/helpers/walletTypes';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
-// TODO (kane): convert to useDerivedStore
+function checkIfReadOnlyWallet(address: string): boolean {
+  const wallet = getWalletWithAccount(address);
+  if (wallet?.type === WalletTypes.readOnly) {
+    watchingAlert();
+    return true;
+  }
+  return false;
+}
 
-// const useCachedUserAssetsStore = createDerivedStore<UserAssetsStoreType>(
-//   $ => {
-//     const address = $(useWalletsStore).accountAddress;
-//     return createUserAssetsStore(address);
-//   },
-//   { fastMode: true }
-// );
+/**
+ * Derived store for account clients
+ * Automatically creates and caches clients when the wallet address changes
+ */
+const useHyperliquidAccountClientStore = createDerivedStore($ => {
+  const address = $(useWalletsStore).accountAddress;
+  if (!address) return null;
 
-// Cache for wallet and clients to avoid reloading on every fetch
-let cachedWallet: null | Wallet | LedgerSigner = null;
-let cachedAccountClient: HyperliquidAccountClient | null = null;
-let cachedExchangeClient: HyperliquidExchangeClient | null = null;
-let cachedAddress: Address | string | null = null;
+  return new HyperliquidAccountClient(address as Address);
+});
 
 /**
  * Get the account client
  * Used for read-only operations like fetching positions and balances
  */
 export function getHyperliquidAccountClient(address: Address | string): HyperliquidAccountClient {
-  // Return cached client if address hasn't changed
-  if (cachedAccountClient && cachedAddress === address) {
-    return cachedAccountClient;
+  // First check if we're using the current wallet's address
+  const currentAddress = useWalletsStore.getState().accountAddress;
+  if (address === currentAddress) {
+    const client = useHyperliquidAccountClientStore.getState();
+    if (client) return client;
   }
 
-  // Create and cache new account client
-  cachedAccountClient = new HyperliquidAccountClient(address as Address);
-  cachedAddress = address;
-
-  return cachedAccountClient;
+  // For other addresses, create a new client on demand
+  return new HyperliquidAccountClient(address as Address);
 }
+
+// Cache for wallets only, since loading them is async and expensive
+let cachedWallet: { address: string; wallet: Wallet | LedgerSigner } | null = null;
 
 /**
  * Get the exchange client
  * Used for write operations like trading and withdrawals
  * TODO: LedgerSigner type is not supported
  */
-export async function getHyperliquidExchangeClient(address: Address | string): Promise<HyperliquidExchangeClient> {
-  // Return cached client if address hasn't changed
-  if (cachedExchangeClient && cachedAddress === address) {
-    return cachedExchangeClient;
+export async function getHyperliquidExchangeClient(address: Address | string): Promise<HyperliquidExchangeClient | undefined> {
+  if (checkIfReadOnlyWallet(address)) {
+    return;
   }
 
-  if (!cachedWallet || cachedAddress !== address) {
+  // Load wallet if we don't have it cached for this address
+  if (!cachedWallet || cachedWallet.address !== address) {
     const provider = getProvider({ chainId: ChainId.arbitrum });
     const wallet = await loadWallet({
       address: address as EthereumAddress,
@@ -65,21 +74,13 @@ export async function getHyperliquidExchangeClient(address: Address | string): P
       throw new Error('Failed to load wallet for signing');
     }
 
-    cachedWallet = wallet;
+    cachedWallet = { address: String(address), wallet };
   }
 
-  // Create and cache new exchange client
-  cachedExchangeClient = new HyperliquidExchangeClient(address as Address, cachedWallet as Wallet);
-  cachedAddress = address;
-
-  return cachedExchangeClient;
+  // Create and return the exchange client
+  return new HyperliquidExchangeClient(address as Address, cachedWallet.wallet as Wallet);
 }
 
 export function clearHyperliquidClientCache() {
   cachedWallet = null;
-  cachedAccountClient = null;
-  cachedExchangeClient = null;
-  cachedAddress = null;
 }
-
-export { hyperliquidMarketsClient };

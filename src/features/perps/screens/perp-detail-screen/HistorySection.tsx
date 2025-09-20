@@ -42,8 +42,8 @@ const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade })
   }, [trade]);
 
   const pnl = useMemo(() => {
-    return `${isPositivePnl ? '+' : ''} ${formatCurrency(trade.pnl)}`;
-  }, [trade.pnl, isPositivePnl]);
+    return `${isPositivePnl ? '+' : ''} ${formatCurrency(trade.netPnl)}`;
+  }, [trade.netPnl, isPositivePnl]);
 
   const isLiquidation =
     trade.description === tradeExecutionDescriptions.longLiquidated || trade.description === tradeExecutionDescriptions.shortLiquidated;

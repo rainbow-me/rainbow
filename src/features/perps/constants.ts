@@ -99,7 +99,7 @@ export const USDC_ASSET = {
     circulating_supply: 100000000000,
   },
   symbol: 'USDC',
-  uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, 1337),
+  uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, HYPERCORE_PSEUDO_CHAIN_ID),
   highLiquidity: true,
 } satisfies SearchAsset;
 

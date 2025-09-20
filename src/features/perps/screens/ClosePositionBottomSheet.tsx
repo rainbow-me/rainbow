@@ -14,12 +14,12 @@ import { RootStackParamList } from '@/navigation/types';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { hyperliquidAccountStoreActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { closeIsolatedMarginPosition } from '@/features/perps/utils/hyperliquid';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
 import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, SLIDER_WIDTH } from '@/features/perps/constants';
-import { estimateReturnOnMarketClose } from '@/features/perps/utils/estimateReturnOnMarketClose';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { logger, RainbowError } from '@/logger';
@@ -71,26 +71,7 @@ function PanelContent({ symbol }: PanelContentProps) {
     selector: state => state.midPrice ?? state.price,
   });
 
-  const positionEquity = position
-    ? estimateReturnOnMarketClose({
-        position,
-        exitPrice: liveTokenPrice,
-        feeBips: 0,
-      })
-    : '0';
-
-  const projectedToReceive = useDerivedValue(() => {
-    if (!position) return '-';
-
-    const totalValue = estimateReturnOnMarketClose({
-      position,
-      exitPrice: liveTokenPrice,
-      feeBips: 0,
-    });
-
-    const adjustedValue = mulWorklet(totalValue, percentToClose.value);
-    return formatCurrency(adjustedValue);
-  });
+  const positionEquity = position ? position.equity : '0';
 
   const projectedPnl = useDerivedValue(() => {
     if (!position) return '-';
@@ -101,7 +82,7 @@ function PanelContent({ symbol }: PanelContentProps) {
     if (!position) return;
     setIsSubmitting(true);
     try {
-      await hyperliquidAccountStoreActions.closeIsolatedMarginPosition({
+      await closeIsolatedMarginPosition({
         symbol,
         price: liveTokenPrice,
         size: mulWorklet(position.size, percentToClose.value),
@@ -139,7 +120,7 @@ function PanelContent({ symbol }: PanelContentProps) {
               {`Receive`}
             </Text>
             <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'}>
-              {projectedToReceive}
+              {formatCurrency(positionEquity)}
             </AnimatedText>
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full">

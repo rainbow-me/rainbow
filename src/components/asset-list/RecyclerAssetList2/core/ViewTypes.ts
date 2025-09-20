@@ -131,7 +131,6 @@ export type PerpsPositionExtraData = {
 };
 export type PerpsHeaderExtraData = {
   type: CellType.PERPS_HEADER;
-  total: string;
 };
 
 export type TokensHeaderExtraData = {
