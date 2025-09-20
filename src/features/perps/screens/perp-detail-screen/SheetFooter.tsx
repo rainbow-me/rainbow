@@ -23,6 +23,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const { isDarkMode } = useColorMode();
   const navigation = useNavigation();
   const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
+  const balance = useHyperliquidAccountStore(state => state.balance);
   const safeAreaInsets = useSafeAreaInsets();
 
   const navigateToClosePosition = useCallback(() => {
@@ -41,8 +42,12 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
     });
   }, [market, navigation]);
 
-  const onPress = position ? navigateToClosePosition : navigateToNewPosition;
-  const buttonText = position ? 'Close Position' : 'Open Position';
+  const navigateToDeposit = useCallback(() => {
+    Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+  }, []);
+
+  const onPress = Number(balance) === 0 ? navigateToDeposit : position ? navigateToClosePosition : navigateToNewPosition;
+  const buttonText = Number(balance) === 0 ? 'Deposit' : position ? 'Close Position' : 'Open Position';
 
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">
