@@ -25,7 +25,7 @@ const imageKeyMap = {
 };
 
 const icons = {
-  [ENS_RECORDS.twitter]: 'twitter',
+  [ENS_RECORDS.twitter]: 'x',
   [ENS_RECORDS.github]: 'github',
   [ENS_RECORDS.instagram]: 'instagram',
   [ENS_RECORDS.snapchat]: 'snapchat',
