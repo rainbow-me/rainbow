@@ -26,6 +26,7 @@ import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { useOrderAmountValidation } from '@/features/perps/hooks/useOrderAmountValidation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const BUTTON_HEIGHT = 48;
 
@@ -149,11 +150,15 @@ const PerpsAccountScreenFooter = () => {
   const { isDarkMode } = useColorMode();
   const balance = useHyperliquidAccountStore(state => state.balance);
   const hasZeroBalance = Number(balance) === 0;
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
+  const hasNoAssets = userAssetIds.length === 0;
 
   return (
     <HyperliquidButton
       onPress={() => {
-        Navigation.handleAction(hasZeroBalance ? Routes.PERPS_DEPOSIT_SCREEN : Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
+        Navigation.handleAction(
+          hasNoAssets ? Routes.ADD_CASH_SHEET : hasZeroBalance ? Routes.PERPS_DEPOSIT_SCREEN : Routes.PERPS_NEW_POSITION_SEARCH_SCREEN
+        );
       }}
       paddingVertical={'12px'}
       borderRadius={24}
@@ -162,7 +167,7 @@ const PerpsAccountScreenFooter = () => {
       alignItems={'center'}
     >
       <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
-        {hasZeroBalance ? 'Deposit' : 'New Position'}
+        {hasNoAssets ? 'Fund Wallet' : hasZeroBalance ? 'Deposit' : 'New Position'}
       </Text>
     </HyperliquidButton>
   );

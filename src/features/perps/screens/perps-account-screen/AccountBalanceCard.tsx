@@ -19,7 +19,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
   const isBalanceZero = Number(balance) === 0;
   const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
-  const hasAssets = userAssetIds.length > 0;
+  const hasNoAssets = userAssetIds.length === 0;
 
   return (
     <Box
@@ -90,10 +90,10 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
         {isBalanceZero && (
           <HyperliquidButton
             onPress={() => {
-              if (hasAssets) {
-                Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
-              } else {
+              if (hasNoAssets) {
                 Navigation.handleAction(Routes.ADD_CASH_SHEET);
+              } else {
+                Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
               }
             }}
             paddingHorizontal={'16px'}
@@ -101,8 +101,8 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
             borderRadius={24}
             height={40}
           >
-            <Text color={isDarkMode ? 'black' : 'white'} size={hasAssets ? '20pt' : '17pt'} weight="black">
-              {hasAssets ? 'Deposit' : 'Fund Wallet'}
+            <Text color={isDarkMode ? 'black' : 'white'} size={hasNoAssets ? '17pt' : '20pt'} weight="black">
+              {hasNoAssets ? 'Fund Wallet' : 'Deposit'}
             </Text>
           </HyperliquidButton>
         )}
