@@ -68,7 +68,7 @@ export const generateRainbowColors = (text: string): Array<{ text: string; shado
   return colors;
 };
 
-const BASE_URL = `https://twitter.com/intent/tweet?text=`;
+const BASE_URL = `https://x.com/intent/tweet?text=`;
 const NEWLINE_OR_SPACE = IS_IOS ? '\n\n' : ' ';
 export const buildTwitterIntentMessage = (
   profile: OnboardPointsMutation | undefined,
