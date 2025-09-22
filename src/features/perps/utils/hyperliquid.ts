@@ -7,6 +7,7 @@ import { OrderResponse } from '@nktkas/hyperliquid';
 import { refetchHyperliquidStores } from '../utils';
 import { hlOpenOrdersStoreActions } from '../stores/hlOpenOrdersStore';
 import { useHyperliquidMarketsStore } from '../stores/hyperliquidMarketsStore';
+import { useHyperliquidAccountStore } from '../stores/hyperliquidAccountStore';
 import { getHyperliquidExchangeClient } from '../services';
 
 export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
@@ -124,4 +125,34 @@ export async function cancelOrder({ symbol, orderId }: { symbol: string; orderId
   if (!exchangeClient) return;
   await exchangeClient.cancelOrder({ assetId: market.id, orderId });
   await hlOpenOrdersStoreActions.fetch(undefined, { force: true });
+}
+
+export async function createTriggerOrder({ symbol, triggerOrder }: { symbol: string; triggerOrder: TriggerOrder }): Promise<void> {
+  const address = useWalletsStore.getState().accountAddress;
+  const market = useHyperliquidMarketsStore.getState().markets[symbol];
+  if (!market) {
+    throw new RainbowError('[HyperliquidTradingActions] Market not found');
+  }
+
+  const position = useHyperliquidAccountStore.getState().getPosition(symbol);
+  if (!position) {
+    throw new RainbowError('[HyperliquidTradingActions] No open position for trigger order');
+  }
+
+  const exchangeClient = await getHyperliquidExchangeClient(address);
+  if (!exchangeClient) return;
+
+  const positionSize = Math.abs(Number(position.size)).toString();
+
+  await exchangeClient.createTriggerOrder({
+    assetId: market.id,
+    side: position.side,
+    triggerPrice: triggerOrder.price,
+    type: triggerOrder.type,
+    orderFraction: triggerOrder.orderFraction,
+    positionSize,
+    sizeDecimals: market.decimals,
+  });
+
+  await refetchHyperliquidStores();
 }

@@ -3,7 +3,7 @@ import { PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import { divide, multiply } from '@/helpers/utilities';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
-import { Hex, OrderParams, TIF } from '@nktkas/hyperliquid/script/src/types/mod';
+import { OrderParams, TIF } from '@nktkas/hyperliquid/script/src/types/mod';
 
 export function getMarketType(assetId: number): 'perp' | 'spot' {
   return assetId < 10_000 ? 'perp' : 'spot';

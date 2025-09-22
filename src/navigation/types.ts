@@ -36,7 +36,7 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { ChartTime } from '@/hooks/charts/useChartInfo';
 import { ScrollView } from 'react-native';
-import { PerpMarket, TriggerOrderType } from '@/features/perps/types';
+import { PerpMarket, TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -634,6 +634,7 @@ export type RootStackParamList = {
   [Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET]: {
     triggerOrderType: TriggerOrderType;
     symbol: string;
+    source?: TriggerOrderSource;
   };
   [Routes.CLOSE_POSITION_BOTTOM_SHEET]: {
     symbol: string;

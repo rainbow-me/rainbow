@@ -151,3 +151,8 @@ export type HlBuilderSettings = {
   /** The builder fee in tenths of a basis point (e.g., `10` = 1 basis point). */
   f: number;
 };
+
+export enum TriggerOrderSource {
+  NEW = 'new',
+  EXISTING = 'existing',
+}
