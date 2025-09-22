@@ -4,6 +4,7 @@ import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';
 import { hyperliquidAccountStoreActions } from '@/features/perps/stores/hyperliquidAccountStore';
 import { hyperliquidMarketStoreActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { OrderSide, PerpMarket, PerpPositionSide } from '@/features/perps/types';
+import { ensureError } from '@/logger';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
@@ -53,4 +54,11 @@ export async function refetchHyperliquidStores() {
     hyperliquidMarketStoreActions.fetch(undefined, { force: true }),
     hyperliquidAccountStoreActions.fetch(undefined, { force: true }),
   ]);
+}
+
+// Error strings are in the format: "Order ${orderNumber}: ${message}. asset=${assetId}"
+export function parseHyperliquidErrorMessage(e: unknown): string {
+  const error = ensureError(e);
+  const match = error.message.match(/Order (\d+): (.+)\. asset=(\d+)/);
+  return match ? match[2] : error.message;
 }

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Stack, Text, TextShadow } from '@/design-system';
+import { Box, Stack, Text, TextShadow, useColorMode } from '@/design-system';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PerpPositionCard } from '@/features/perps/components/PerpPositionCard';
 import { abs, greaterThan, isEqual } from '@/helpers/utilities';
@@ -10,8 +10,11 @@ import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { RainbowImage } from '@/components/RainbowImage';
+import infinityIcon from '@/assets/infinity.png';
 
 export const OpenPositionsSection = function OpenPositionsSection() {
+  const { isDarkMode } = useColorMode();
   const positions = useHyperliquidAccountStore(state => state.positions);
   const positionsArray = Object.values(positions);
   const hasPositions = positionsArray.length > 0;
@@ -32,7 +35,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
       <Stack space={'20px'}>
         <Box gap={16}>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-            <Text size="17pt" weight="heavy" color="labelTertiary">
+            <Text size="17pt" weight="heavy" color={hasPositions ? 'labelTertiary' : 'labelQuaternary'}>
               {'Open Positions'}
             </Text>
             {hasPositions && (
@@ -51,7 +54,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
             )}
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-            <Text size="30pt" weight="heavy" color="label">
+            <Text size="30pt" weight="heavy" color={hasPositions ? 'label' : 'labelQuaternary'}>
               {formattedValues.equity}
             </Text>
             {hasPositions && (
@@ -72,8 +75,9 @@ export const OpenPositionsSection = function OpenPositionsSection() {
         </Box>
         <Box gap={20}>
           {!hasPositions && (
-            <Box height={100} justifyContent="center" alignItems="center">
-              <Text size="17pt" weight="heavy" color="labelTertiary">
+            <Box height={100} justifyContent="center" alignItems="center" gap={20}>
+              <RainbowImage source={infinityIcon} style={{ width: 52, height: 24 }} resizeMode="contain" />
+              <Text size="20pt" weight="heavy" color={isDarkMode ? 'label' : 'labelSecondary'}>
                 {'No Open Positions'}
               </Text>
             </Box>

@@ -23,7 +23,7 @@ import { ensureError, logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { useOrderAmountValidation } from '@/features/perps/hooks/useOrderAmountValidation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
 
@@ -210,15 +210,14 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         side: positionSide,
         leverage,
         marginAmount: amount,
-        // TODO (kane): market.price will be stale and the live price shouldn't actually be null in any case
+        // There is not case in which the live price should actually be null at this point
         price: livePrice ?? market.price,
         triggerOrders,
       });
       hlNewPositionStoreActions.reset();
       Navigation.handleAction(Routes.PERPS_ACCOUNT_SCREEN);
     } catch (e) {
-      const error = ensureError(e);
-      Alert.alert('Error submitting order', error.message);
+      Alert.alert('Error submitting order', parseHyperliquidErrorMessage(e));
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
     }
     setIsSubmitting(false);
