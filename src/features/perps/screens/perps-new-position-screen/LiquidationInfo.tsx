@@ -19,17 +19,16 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
     selector: state => state.midPrice ?? state.price,
   });
 
-  const maxLeverage = useMemo(() => {
-    return getApplicableMaxLeverage({
+  const estimatedLiquidationPrice = useMemo(() => {
+    if (!leverage || !amount) return null;
+
+    const maxLeverage = getApplicableMaxLeverage({
       market,
       amount,
       price: midPrice,
       leverage,
     });
-  }, [market, amount, midPrice, leverage]);
 
-  const estimatedLiquidationPrice = useMemo(() => {
-    if (!leverage || !amount) return null;
     return calculateIsolatedLiquidationPrice({
       entryPrice: Number(midPrice),
       marginAmount: Number(amount),
@@ -37,7 +36,7 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
       leverage,
       maxLeverage,
     });
-  }, [midPrice, amount, side, leverage, maxLeverage]);
+  }, [leverage, amount, market, midPrice, side]);
 
   const liquidationDistanceFromCurrentPrice = useMemo(() => {
     if (!estimatedLiquidationPrice || !midPrice) return '-';

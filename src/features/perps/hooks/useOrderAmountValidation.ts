@@ -10,7 +10,8 @@ export const useOrderAmountValidation = () => {
 
   const minAmount = useMemo(() => {
     if (!leverage) return String(MIN_ORDER_SIZE_USD);
-    const rawAmount = MIN_ORDER_SIZE_USD / leverage;
+    // Add 2% buffer to account for decimal precision in position size calculation
+    const rawAmount = (MIN_ORDER_SIZE_USD * 1.02) / leverage;
     return String(Math.ceil(rawAmount * 100) / 100);
   }, [leverage]);
 
