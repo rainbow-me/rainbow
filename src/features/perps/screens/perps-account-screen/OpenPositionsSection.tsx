@@ -35,7 +35,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
       <Stack space={'20px'}>
         <Box gap={16}>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-            <Text size="17pt" weight="heavy" color={hasPositions ? 'labelTertiary' : 'labelQuaternary'}>
+            <Text size="17pt" weight="heavy" color="labelTertiary">
               {'Open Positions'}
             </Text>
             {hasPositions && (
