@@ -12,7 +12,7 @@ import { FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { MarketInfoSection } from './MarketInfoSection';
-import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountError';
+import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountInputError';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const market = useHlNewPositionStore(state => state.market);

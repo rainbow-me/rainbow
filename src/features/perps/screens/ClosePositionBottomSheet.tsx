@@ -1,13 +1,10 @@
-import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { AnimatedText, Box, Text, useColorMode, useForegroundColor } from '@/design-system';
+import React, { memo, useCallback, useMemo, useState } from 'react';
+import { AnimatedText, Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { TapToDismiss } from '@/components/DappBrowser/control-panel/ControlPanel';
-import { Panel } from '@/components/SmoothPager/ListPanel';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
-import { safeAreaInsetValues } from '@/utils';
+import { Panel, controlPanelStyles, PANEL_BOTTOM_OFFSET } from '@/components/SmoothPager/ListPanel';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
@@ -19,21 +16,23 @@ import { closeIsolatedMarginPosition } from '@/features/perps/utils/hyperliquid'
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
-import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, SLIDER_WIDTH } from '@/features/perps/constants';
+import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, MIN_ORDER_SIZE_USD, SLIDER_WIDTH } from '@/features/perps/constants';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { colors } from '@/styles';
 
-const PANEL_HEIGHT = 400;
-
 function PanelSheet({ children }: { children: React.ReactNode }) {
+  const { isDarkMode } = useColorMode();
   return (
-    <View style={styles.panelContainer}>
+    <>
+      <Box style={[controlPanelStyles.panelContainer, { bottom: PANEL_BOTTOM_OFFSET, alignItems: 'center', width: '100%' }]}>
+        <SheetHandleFixedToTop color={isDarkMode ? HANDLE_COLOR : LIGHT_HANDLE_COLOR} showBlur={true} top={14} />
+        {children}
+      </Box>
       <TapToDismiss />
-      {children}
-    </View>
+    </>
   );
 }
 
@@ -46,6 +45,7 @@ function PanelContent({ symbol }: PanelContentProps) {
   const { accentColors } = usePerpsAccentColorContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCloseDisabled, setIsCloseDisabled] = useState(false);
+  const [isBelowMinimum, setIsBelowMinimum] = useState(false);
   const percentToClose = useSharedValue(1);
   const position = useHyperliquidAccountStore(state => state.getPosition(symbol));
   const navigation = useNavigation();
@@ -53,16 +53,31 @@ function PanelContent({ symbol }: PanelContentProps) {
   const pnlLabel = isNegativePnl ? 'Estimated Loss' : 'Estimated Profit';
   const pnlColor = isNegativePnl ? 'red' : 'green';
 
+  const minPercentage = useMemo(() => {
+    if (!position || Number(position.value) === 0) return '0';
+    const percent = (MIN_ORDER_SIZE_USD / Number(position.value)) * 100;
+    return Math.ceil(percent);
+  }, [position]);
+
   useAnimatedReaction(
     () => percentToClose.value,
     (current, previous) => {
-      if (current === 0) {
+      const closeValue = position ? Number(position.value) * current : 0;
+      const belowMin = closeValue < MIN_ORDER_SIZE_USD && closeValue > 0;
+
+      if (current === 0 || belowMin) {
         runOnJS(setIsCloseDisabled)(true);
-      } else if (previous === 0 && current !== 0) {
+        runOnJS(setIsBelowMinimum)(belowMin);
+      } else if (
+        (previous === null || previous === 0 || Number(position?.value ?? 0) * previous < MIN_ORDER_SIZE_USD) &&
+        current !== 0 &&
+        closeValue >= MIN_ORDER_SIZE_USD
+      ) {
         runOnJS(setIsCloseDisabled)(false);
+        runOnJS(setIsBelowMinimum)(false);
       }
     },
-    []
+    [position]
   );
 
   const liveTokenPrice = useLiveTokenValue({
@@ -97,15 +112,33 @@ function PanelContent({ symbol }: PanelContentProps) {
   if (!position) return null;
 
   return (
-    <Box paddingHorizontal={'24px'} paddingTop={'28px'} alignItems="center" style={{ flex: 1 }}>
+    <Box paddingHorizontal={'24px'} paddingTop={'28px'} paddingBottom={'20px'} alignItems="center" style={{ flex: 1 }}>
       <Box width="full" gap={24}>
         <PerpBottomSheetHeader title="Close Position" symbol={symbol} />
-        <PositionPercentageSlider
-          totalValue={formatCurrency(positionEquity)}
-          title="Amount"
-          percentageValue={percentToClose}
-          sliderWidth={SLIDER_WIDTH - 8 * 2}
-        />
+        <Box>
+          {isBelowMinimum && (
+            <Box paddingBottom={'12px'} justifyContent="center" paddingHorizontal={'8px'}>
+              <Inline alignVertical="center" space={'6px'}>
+                <TextIcon color="red" size="13pt" weight="bold">
+                  {'􀇿'}
+                </TextIcon>
+                <Text color="labelTertiary" size="15pt" weight="bold">
+                  {'Minimum amount is '}
+                  <Text color="labelSecondary" size="15pt" weight="heavy">
+                    {`${minPercentage}%`}
+                  </Text>
+                </Text>
+              </Inline>
+            </Box>
+          )}
+          <PositionPercentageSlider
+            totalValue={formatCurrency(positionEquity)}
+            title="Amount"
+            percentageValue={percentToClose}
+            sliderWidth={SLIDER_WIDTH - 8 * 2}
+          />
+        </Box>
+
         <Box
           backgroundColor={opacityWorklet(ETH_COLOR_DARK, 0.03)}
           borderWidth={THICK_BORDER_WIDTH}
@@ -165,22 +198,11 @@ export const ClosePositionBottomSheet = memo(function ClosePositionBottomSheet()
   return (
     <PerpsAccentColorContextProvider>
       <PanelSheet>
-        <Panel height={PANEL_HEIGHT} innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
+        <Panel innerBorderWidth={1} innerBorderColor={separatorSecondaryColor}>
           <SheetHandleFixedToTop color={isDarkMode ? HANDLE_COLOR : LIGHT_HANDLE_COLOR} showBlur={true} top={14} />
           <PanelContent symbol={symbol} />
         </Panel>
       </PanelSheet>
     </PerpsAccentColorContextProvider>
   );
-});
-
-const styles = StyleSheet.create({
-  panelContainer: {
-    alignItems: 'center',
-    flex: 1,
-    height: DEVICE_HEIGHT,
-    justifyContent: 'flex-end',
-    paddingBottom: safeAreaInsetValues.bottom,
-    pointerEvents: 'box-none',
-  },
 });
