@@ -17,10 +17,15 @@ import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
-import { getPercentageDifferenceWorklet, greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
+import {
+  getPercentageDifferenceWorklet,
+  greaterThanWorklet,
+  lessThanOrEqualToWorklet,
+  greaterThanOrEqualToWorklet,
+  mulWorklet,
+} from '@/safe-math/SafeMath';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomSheetHeader';
@@ -31,10 +36,13 @@ import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrd
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { colors } from '@/styles';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
+import { calculateIsolatedLiquidationPrice } from '@/features/perps/utils/calculateLiquidationPrice';
+import { getApplicableMaxLeverage } from '@/features/perps/utils/getApplicableMaxLeverage';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 
 const PANEL_HEIGHT = 360;
 
-function formatDisplay(value: string) {
+function formatInputForDisplay(value: string) {
   'worklet';
   const numericValue = stripNonDecimalNumbers(value);
   if (!numericValue || numericValue === '0') {
@@ -68,10 +76,11 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
   const leverage = useHlNewPositionStore(state => state.leverage);
   const positionSide = useHlNewPositionStore(state => state.positionSide);
   const isTakeProfit = triggerOrderType === TriggerOrderType.TAKE_PROFIT;
+  const isStopLoss = triggerOrderType === TriggerOrderType.STOP_LOSS;
   const isLong = positionSide === PerpPositionSide.LONG;
   const shouldBeAbove = isLong ? isTakeProfit : !isTakeProfit;
   const formatInput = useCallback((text: string) => formatTriggerOrderInput(text, market.decimals), [market.decimals]);
-  const initialPrice = mulWorklet(market.price, shouldBeAbove ? 1.1 : 0.9);
+  const initialPrice = mulWorklet(market.price, shouldBeAbove ? 1.05 : 0.95);
   const inputValue = useSharedValue(formatInput(initialPrice));
 
   const liveTokenPrice = useLiveTokenSharedValue({
@@ -80,19 +89,49 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
     selector: state => state.price,
   });
 
+  const liquidationPrice = useDerivedValue(() => {
+    if (!leverage || !amount) return 0;
+
+    const maxLeverage = getApplicableMaxLeverage({ market, amount, price: liveTokenPrice.value, leverage });
+
+    return calculateIsolatedLiquidationPrice({
+      entryPrice: Number(liveTokenPrice.value),
+      marginAmount: Number(amount),
+      positionSide,
+      leverage,
+      maxLeverage,
+    });
+  });
+
   const targetPriceDifferential = useDerivedValue(() => {
     const targetPrice = inputValue.value === '' ? '0' : inputValue.value;
     return getPercentageDifferenceWorklet(liveTokenPrice.value, targetPrice);
   });
 
-  const isValidTargetPrice = useDerivedValue(() => {
+  const isOutOfCurrentPriceBounds = useDerivedValue(() => {
     const isTargetPriceAboveCurrentPrice = greaterThanWorklet(targetPriceDifferential.value, '0');
+
     if (isLong) {
-      if ((isTakeProfit && !isTargetPriceAboveCurrentPrice) || (!isTakeProfit && isTargetPriceAboveCurrentPrice)) return false;
+      if ((isTakeProfit && !isTargetPriceAboveCurrentPrice) || (!isTakeProfit && isTargetPriceAboveCurrentPrice)) return true;
     } else {
-      if ((isTakeProfit && isTargetPriceAboveCurrentPrice) || (!isTakeProfit && !isTargetPriceAboveCurrentPrice)) return false;
+      if ((isTakeProfit && isTargetPriceAboveCurrentPrice) || (!isTakeProfit && !isTargetPriceAboveCurrentPrice)) return true;
     }
-    return true;
+    return false;
+  });
+
+  const isOutOfLiquidationPriceBounds = useDerivedValue(() => {
+    if (!isStopLoss || liquidationPrice.value === 0) return false;
+    const targetPrice = inputValue.value === '' ? '0' : inputValue.value;
+
+    if (isLong) {
+      return lessThanOrEqualToWorklet(targetPrice, liquidationPrice.value);
+    } else {
+      return greaterThanOrEqualToWorklet(targetPrice, liquidationPrice.value);
+    }
+  });
+
+  const isValidTargetPrice = useDerivedValue(() => {
+    return !isOutOfCurrentPriceBounds.value && !isOutOfLiquidationPriceBounds.value;
   });
 
   const isValidTargetPriceState = useSharedValueState(isValidTargetPrice, { initialValue: true });
@@ -128,8 +167,12 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
     const shouldBeAbove = isLong ? isTakeProfit : !isTakeProfit;
 
     if (!isValidTargetPrice.value) {
+      if (isOutOfLiquidationPriceBounds.value && liquidationPrice.value > 0) {
+        const liquidationDirection = isLong ? 'above' : 'below';
+        return `Must be ${liquidationDirection} liq. price (${formatPerpAssetPrice(String(liquidationPrice.value))})`;
+      }
       const direction = shouldBeAbove ? 'above' : 'below';
-      return `must be ${direction} ${formatAssetPrice({ value: liveTokenPrice.value, currency: 'USD' })}`;
+      return `Must be ${direction} ${formatPerpAssetPrice(liveTokenPrice.value.toString())}`;
     }
 
     return `${shouldBeAbove ? 'above' : 'below'} current price`;
@@ -179,7 +222,7 @@ function PanelContent({ triggerOrderType, market }: PanelContentProps) {
                 textColor={accentColors.opacity100}
                 placeholderTextColor={accentColors.opacity24}
                 formatInput={formatInput}
-                formatDisplay={formatDisplay}
+                formatDisplay={formatInputForDisplay}
                 size="30pt"
                 weight="bold"
                 align="right"

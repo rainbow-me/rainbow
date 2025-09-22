@@ -536,3 +536,13 @@ export function isPositive(num: string) {
   'worklet';
   return greaterThanWorklet(num, '0');
 }
+
+// Truncates a numeric string value to a specified number of decimal places.
+export function truncateToDecimals(value: string, decimals: number): string {
+  'worklet';
+  const multiplier = Math.pow(10, decimals);
+  const multiplied = mulWorklet(value, multiplier.toString());
+  const floored = floorWorklet(multiplied);
+  const truncated = divWorklet(floored, multiplier.toString());
+  return toFixedWorklet(truncated, decimals);
+}

@@ -22,7 +22,6 @@ export async function getAllMarketsInfo(): Promise<PerpMarket[]> {
         return null;
       }
 
-      // TODO (kane): What are the default margin tiers, how are we supposed to handle the liq. calc?
       const marginTable = meta.marginTables.find(mt => mt[0] === asset.marginTableId)?.[1] ?? null;
       const markPrice = assetPricingInfo.markPx;
       const midPrice = assetPricingInfo.midPx ?? markPrice;
