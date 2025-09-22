@@ -28,7 +28,7 @@ const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade })
   const pnlColor = isPositivePnl ? 'green' : 'red';
 
   const formattedDate = useMemo(() => {
-    return format(trade.executedAt, 'MMM d, HH:mm');
+    return format(trade.executedAt, 'MMM d, h:mm aaa');
   }, [trade.executedAt]);
 
   const leftHandSide = useMemo(() => {
