@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, Text, useColorMode } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import { navigateToNewPositionScreen } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
 import { useNavigation } from '@react-navigation/native';
 import { InteractionManager } from 'react-native';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 // 32px for the easing gradient + 48px for the buttons + 12px for the extra bottom padding away from the area inset
 export const SHEET_FOOTER_HEIGHT = 32 + 48 + 12;
@@ -23,26 +24,50 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const { isDarkMode } = useColorMode();
   const navigation = useNavigation();
   const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
+  const balance = useHyperliquidAccountStore(state => state.balance);
   const safeAreaInsets = useSafeAreaInsets();
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
 
-  const navigateToClosePosition = useCallback(() => {
-    Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
-      symbol: market.symbol,
-    });
-  }, [market.symbol]);
-
-  const navigateToNewPosition = useCallback(() => {
-    navigation.goBack();
-    InteractionManager.runAfterInteractions(() => {
-      // Arbitrary delay to avoid being visually jarring
-      setTimeout(() => {
-        navigateToNewPositionScreen(market);
-      }, 75);
-    });
-  }, [market, navigation]);
-
-  const onPress = position ? navigateToClosePosition : navigateToNewPosition;
-  const buttonText = position ? 'Close Position' : 'Open Position';
+  const { onPress, buttonText } = useMemo(() => {
+    if (userAssetIds.length === 0) {
+      return {
+        onPress: () => {
+          Navigation.handleAction(Routes.ADD_CASH_SHEET);
+        },
+        buttonText: 'Fund Wallet',
+      };
+    }
+    if (Number(balance) === 0) {
+      return {
+        onPress: () => {
+          Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+        },
+        buttonText: 'Deposit',
+      };
+    }
+    if (position) {
+      return {
+        onPress: () => {
+          Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
+            symbol: market.symbol,
+          });
+        },
+        buttonText: 'Close Position',
+      };
+    }
+    return {
+      onPress: () => {
+        navigation.goBack();
+        InteractionManager.runAfterInteractions(() => {
+          // Arbitrary delay to avoid being visually jarring
+          setTimeout(() => {
+            navigateToNewPositionScreen(market);
+          }, 75);
+        });
+      },
+      buttonText: 'Open Position',
+    };
+  }, [balance, market, navigation, position, userAssetIds.length]);
 
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">

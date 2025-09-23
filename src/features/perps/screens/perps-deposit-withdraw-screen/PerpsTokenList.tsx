@@ -1,9 +1,8 @@
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { AnimatedText, Bleed, Box, globalColors, Inline, Text, useColorMode } from '@/design-system';
+import { AnimatedText, Bleed, Box, globalColors, Inline, Stack, Text, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import * as i18n from '@/languages';
@@ -146,7 +145,6 @@ const PerpsTokenListCore = ({ onSelectToken, onSelectChain, selectedChainId }: P
       <PerpsChainSelection selectedChainId={selectedChainId} onChainSelected={onSelectChain} />
       <FlatList
         key={selectedChainId ?? 'all'}
-        ListEmptyComponent={<ListEmpty />}
         contentContainerStyle={styles.contentContainer}
         data={searchResults}
         getItemLayout={getItemLayout}

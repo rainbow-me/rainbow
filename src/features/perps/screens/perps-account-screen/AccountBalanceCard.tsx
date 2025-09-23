@@ -10,6 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { RainbowImage } from '@/components/RainbowImage';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
@@ -17,6 +18,8 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const balance = useHyperliquidAccountStore(state => state.balance);
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
   const isBalanceZero = Number(balance) === 0;
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
+  const hasNoAssets = userAssetIds.length === 0;
 
   return (
     <Box
@@ -87,15 +90,19 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
         {isBalanceZero && (
           <HyperliquidButton
             onPress={() => {
-              Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+              if (hasNoAssets) {
+                Navigation.handleAction(Routes.ADD_CASH_SHEET);
+              } else {
+                Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+              }
             }}
             paddingHorizontal={'16px'}
             paddingVertical={'12px'}
             borderRadius={24}
             height={40}
           >
-            <Text color={isDarkMode ? 'black' : 'white'} size="20pt" weight="black">
-              {'Deposit'}
+            <Text color={isDarkMode ? 'black' : 'white'} size={hasNoAssets ? '17pt' : '20pt'} weight="black">
+              {hasNoAssets ? 'Fund Wallet' : 'Deposit'}
             </Text>
           </HyperliquidButton>
         )}
