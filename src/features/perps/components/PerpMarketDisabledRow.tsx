@@ -22,7 +22,7 @@ export const PerpMarketDisabledRow = function PerpMarketDisabledRow({ market, pa
       <View style={{ opacity: 0.2 }}>
         <HyperliquidTokenIcon symbol={market.symbol} size={40} />
       </View>
-      <Box style={{ flex: 1 }} gap={8}>
+      <Box style={{ flex: 1 }} gap={12}>
         <Text size="17pt" weight="bold" color="labelQuinary">
           {market.symbol}
         </Text>
