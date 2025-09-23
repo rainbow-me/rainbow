@@ -7,16 +7,17 @@ import { GasSpeedButton } from '@/components/gas';
 import { Column } from '@/components/layout';
 import { SlackSheet } from '@/components/sheet';
 import { getTrendKey } from '@/helpers/gas';
-import { useColorForAsset, useDimensions, useGas, useKeyboardHeight } from '@/hooks';
+import { useColorForAsset, useGas, useKeyboardHeight } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
 import FeesPanel from '@/components/FeesPanel';
 import FeesPanelTabs from '@/components/FeesPanelTabs';
+import { KeyboardType } from '@/helpers/keyboardTypes';
 
 const FOOTER_HEIGHT = 79;
-const CONTENT_HEIGHT = 310;
+const CONTENT_HEIGHT = 342;
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -35,8 +36,7 @@ export default function CustomGasState({ asset }) {
   const { setParams } = useNavigation();
   const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {} } = useRoute();
   const { colors } = useTheme();
-  const { height: deviceHeight } = useDimensions();
-  const keyboardHeight = useKeyboardHeight();
+  const keyboardHeight = useKeyboardHeight({ keyboardType: KeyboardType.numpad });
   const colorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
   const { selectedGasFee, currentBlockParams, chainId } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
@@ -58,11 +58,8 @@ export default function CustomGasState({ asset }) {
     <SlackSheet
       additionalTopPadding
       hideHandle
-      {...(ios && {
-        borderBottomRadius: 0,
-        deviceHeight,
-        removeTopPadding: true,
-      })}
+      borderBottomRadius={0}
+      removeTopPadding
       backgroundColor={colors.transparent}
       contentHeight={longFormHeight}
       radius={0}

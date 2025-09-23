@@ -117,7 +117,7 @@ function Root() {
         <RecoilRoot>
           <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
             <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-              <KeyboardProvider statusBarTranslucent preserveEdgeToEdge navigationBarTranslucent>
+              <KeyboardProvider>
                 <SafeAreaProvider initialMetrics={initialWindowMetrics}>
                   <MainThemeProvider>
                     <GestureHandlerRootView style={sx.container}>
