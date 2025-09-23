@@ -14,6 +14,7 @@ const theme = {
 
 type PerpsAccentColors = {
   opacity100: string;
+  opacity80: string;
   opacity56: string;
   opacity40: string;
   opacity24: string;
@@ -80,7 +81,7 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
         activeRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(primary, 0.12),
         inactiveRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(primary, 0.12),
       },
-    };
+    } satisfies PerpsAccentColors;
   }, [isDarkMode]);
 
   return (

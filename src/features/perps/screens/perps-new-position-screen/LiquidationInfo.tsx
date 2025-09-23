@@ -3,8 +3,7 @@ import { Box, Text } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
-import { calculateIsolatedLiquidationPrice } from '@/features/perps/utils/calculateLiquidationPrice';
-import { getApplicableMaxLeverage } from '@/features/perps/utils/getApplicableMaxLeverage';
+import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/utils/calculateLiquidationPrice';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
@@ -22,19 +21,12 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
   const estimatedLiquidationPrice = useMemo(() => {
     if (!leverage || !amount) return null;
 
-    const maxLeverage = getApplicableMaxLeverage({
-      market,
-      amount,
-      price: midPrice,
-      leverage,
-    });
-
-    return calculateIsolatedLiquidationPrice({
-      entryPrice: Number(midPrice),
-      marginAmount: Number(amount),
+    return calculateIsolatedLiquidationPriceFromMargin({
+      entryPrice: midPrice,
+      marginAmount: amount,
       positionSide: side,
       leverage,
-      maxLeverage,
+      market,
     });
   }, [leverage, amount, market, midPrice, side]);
 

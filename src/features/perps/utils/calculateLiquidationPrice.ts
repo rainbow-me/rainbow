@@ -1,49 +1,135 @@
-import { PerpPositionSide } from '@/features/perps/types';
+import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
+import { getApplicableMaxLeverage } from '@/features/perps/utils/getApplicableMaxLeverage';
+import {
+  divWorklet,
+  mulWorklet,
+  subWorklet,
+  sumWorklet,
+  greaterThanWorklet,
+  lessThanOrEqualToWorklet,
+  equalWorklet,
+} from '@/safe-math/SafeMath';
 
-// TODO (kane): refactor to more comprehensive formula defined here: https://github.com/hyperliquid-dex/ts-examples/blob/main/examples/LiquidationPx.tsx
+// Implemented from reference implementation: https://github.com/hyperliquid-dex/ts-examples/blob/main/examples/LiquidationPx.tsx
+
+function calculatePositionSize({
+  marginAmount,
+  entryPrice,
+  leverage,
+}: {
+  marginAmount: string;
+  entryPrice: string;
+  leverage: string | number;
+}) {
+  'worklet';
+  const leverageStr = typeof leverage === 'number' ? leverage.toString() : leverage;
+  const marginTimesLeverage = mulWorklet(marginAmount, leverageStr);
+  return divWorklet(marginTimesLeverage, entryPrice);
+}
 
 /**
  * Calculate the estimated liquidation price for an isolated margin position.
  *
- * Based on Hyperliquid's documentation:
- * - Initial margin = position value / leverage
- * - Maintenance margin rate = (1 / maxLeverage) / 2
- * - Maintenance margin = position value * maintenance margin rate
- * - Liquidation occurs when: margin_available < maintenance_margin_required
- *
- * Formula from docs: liq_price = price - side * margin_available / position_size / (1 - l * side)
- * where l = 1 / MAINTENANCE_LEVERAGE
+ * @param entryPrice - The entry/mark price for the position
+ * @param positionSize - The size of the position in units
+ * @param orderSide - Whether the ORDER is LONG or SHORT
+ * @param positionSide - Whether the final POSITION is LONG or SHORT
+ * @param maxLeverage - The maximum leverage allowed for this asset
+ * @param rawUsd - The isolated margin amount (raw USD allocated to position)
  */
 export function calculateIsolatedLiquidationPrice({
+  entryPrice,
+  positionSize,
+  orderSide,
+  positionSide,
+  maxLeverage,
+  rawUsd,
+}: {
+  entryPrice: string;
+  positionSize: string;
+  orderSide: PerpPositionSide;
+  positionSide: PerpPositionSide;
+  maxLeverage: string | number;
+  rawUsd: string;
+}) {
+  'worklet';
+
+  const isOrderLong = orderSide === PerpPositionSide.LONG;
+  const orderFloatSide = isOrderLong ? '1' : '-1';
+
+  const isPositionLong = positionSide === PerpPositionSide.LONG;
+  const positionFloatSide = isPositionLong ? '1' : '-1';
+
+  const maxLeverageStr = typeof maxLeverage === 'number' ? maxLeverage.toString() : maxLeverage;
+
+  const signedPositionSize = mulWorklet(positionFloatSide, positionSize);
+  const notional = mulWorklet(signedPositionSize, entryPrice);
+  const accountValue = sumWorklet(notional, rawUsd);
+  const totalNotionalPosition = mulWorklet(positionSize, entryPrice);
+  const maintenanceLeverage = mulWorklet(maxLeverageStr, '2');
+
+  // Calculate correction factor: 1 - orderFloatSide / maintenanceLeverage
+  const orderSideDivMaintenanceLeverage = divWorklet(orderFloatSide, maintenanceLeverage);
+  const correction = subWorklet('1', orderSideDivMaintenanceLeverage);
+
+  // entryPrice - (positionFloatSide * (accountValue - totalNotionalPosition / maintenanceLeverage)) / positionSize / correction
+  const totalNotionalDivMaintenanceLeverage = divWorklet(totalNotionalPosition, maintenanceLeverage);
+  const accountValueMinusTerm = subWorklet(accountValue, totalNotionalDivMaintenanceLeverage);
+  const positionSideTimesAccountValue = mulWorklet(positionFloatSide, accountValueMinusTerm);
+  const dividedByPositionSize = divWorklet(positionSideTimesAccountValue, positionSize);
+  const dividedByCorrection = divWorklet(dividedByPositionSize, correction);
+  const liquidationPrice = subWorklet(entryPrice, dividedByCorrection);
+
+  if (lessThanOrEqualToWorklet(liquidationPrice, '0') || greaterThanWorklet(liquidationPrice, '1e15') || equalWorklet(positionSize, '0')) {
+    return null;
+  }
+
+  return liquidationPrice;
+}
+
+export function calculateIsolatedLiquidationPriceFromMargin({
   entryPrice,
   marginAmount,
   positionSide,
   leverage,
-  maxLeverage,
+  market,
 }: {
-  entryPrice: number;
-  marginAmount: number;
+  entryPrice: string;
+  marginAmount: string;
   positionSide: PerpPositionSide;
   leverage: number;
-  maxLeverage: number;
+  market: PerpMarket;
 }) {
   'worklet';
 
+  const maxLeverage = getApplicableMaxLeverage({
+    market,
+    amount: marginAmount,
+    price: entryPrice,
+    leverage: leverage,
+  });
+
+  const positionSize = calculatePositionSize({
+    marginAmount,
+    entryPrice,
+    leverage,
+  });
+
   const isLong = positionSide === PerpPositionSide.LONG;
-  const side = isLong ? 1 : -1;
+  const floatSide = isLong ? '1' : '-1';
+  const signedPositionSize = mulWorklet(floatSide, positionSize);
+  const positionCost = mulWorklet(entryPrice, signedPositionSize);
+  const rawUsd = subWorklet(marginAmount, positionCost);
 
-  const positionValue = marginAmount * entryPrice;
-  const isolatedMargin = positionValue / leverage;
+  // For a new position, order side and position side are the same
+  const liquidationPrice = calculateIsolatedLiquidationPrice({
+    entryPrice,
+    positionSize,
+    orderSide: positionSide,
+    positionSide,
+    maxLeverage,
+    rawUsd,
+  });
 
-  const maintenanceMarginRate = 1 / maxLeverage / 2;
-  const maintenanceMarginRequired = positionValue * maintenanceMarginRate;
-
-  const marginAvailable = isolatedMargin - maintenanceMarginRequired;
-
-  const maintenanceLeverage = 2 * maxLeverage;
-  const l = 1 / maintenanceLeverage;
-
-  const liquidationPrice = entryPrice - (side * marginAvailable) / marginAmount / (1 - l * side);
-
-  return Math.max(0, liquidationPrice);
+  return liquidationPrice ? liquidationPrice : '0';
 }

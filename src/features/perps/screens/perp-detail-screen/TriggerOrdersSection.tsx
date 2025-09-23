@@ -61,7 +61,6 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
   );
   const hasExistingStopLoss = triggerOrders.some(order => order.orderType === 'Stop Market' || order.orderType === 'Stop Limit');
 
-  console.log('hasExistingTakeProfit', hasExistingTakeProfit);
   return (
     <Animated.View layout={LinearTransition.springify()}>
       <Box gap={24}>
