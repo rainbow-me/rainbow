@@ -20,10 +20,11 @@ function calculatePositionSize({
   marginAmount: string;
   entryPrice: string;
   leverage: string | number;
-}) {
+}): string {
   'worklet';
   const leverageStr = typeof leverage === 'number' ? leverage.toString() : leverage;
   const marginTimesLeverage = mulWorklet(marginAmount, leverageStr);
+  if (equalWorklet(entryPrice, '0')) return '0';
   return divWorklet(marginTimesLeverage, entryPrice);
 }
 
@@ -51,8 +52,9 @@ export function calculateIsolatedLiquidationPrice({
   positionSide: PerpPositionSide;
   maxLeverage: string | number;
   rawUsd: string;
-}) {
+}): string | null {
   'worklet';
+  if (equalWorklet(rawUsd, '0')) return null;
 
   const isOrderLong = orderSide === PerpPositionSide.LONG;
   const orderFloatSide = isOrderLong ? '1' : '-1';
@@ -99,7 +101,7 @@ export function calculateIsolatedLiquidationPriceFromMargin({
   positionSide: PerpPositionSide;
   leverage: number;
   market: PerpMarket;
-}) {
+}): string {
   'worklet';
 
   const maxLeverage = getApplicableMaxLeverage({
