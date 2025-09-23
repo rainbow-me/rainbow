@@ -58,7 +58,7 @@ export const usePerpsPositionsInfo = createDerivedStore<PerpsPositionsInfo>(
 
     return {
       balance: accountData.balance,
-      equity: formatCurrency(accountData.balance),
+      equity: formatCurrency(totalPositionsEquity),
       hasBalance: accountData.balance !== '0',
       hasPositions: positions.length > 0,
       positions,
