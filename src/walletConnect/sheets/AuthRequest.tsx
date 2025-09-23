@@ -11,7 +11,7 @@ import { getAccountProfileInfo, useAccountAddress, useSelectedWallet } from '@/s
 import { useTheme } from '@/theme';
 import { initials } from '@/utils/formatters';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import { WalletKitTypes } from '@reown/walletkit';
 import { Verify } from '@walletconnect/types';
 import React from 'react';

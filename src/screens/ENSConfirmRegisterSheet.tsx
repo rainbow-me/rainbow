@@ -323,7 +323,7 @@ export default function ENSConfirmRegisterSheet() {
   return (
     <SlackSheet
       additionalTopPadding
-      contentHeight={params.longFormHeight || ENSConfirmRegisterSheetHeight}
+      contentHeight={params?.longFormHeight || ENSConfirmRegisterSheetHeight}
       height="100%"
       scrollEnabled={false}
     >
@@ -333,7 +333,7 @@ export default function ENSConfirmRegisterSheet() {
           paddingTop="19px (Deprecated)"
           paddingVertical="30px (Deprecated)"
           style={{
-            height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
+            height: params?.longFormHeight || ENSConfirmRegisterSheetHeight,
           }}
           testID="ens-confirm-register-sheet"
         >

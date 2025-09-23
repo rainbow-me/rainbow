@@ -37,6 +37,7 @@ export const getPositions = async (
         currency,
         enableThirdParty: 'true',
       },
+      signal: abortController?.signal,
     });
 
     if (response.data) {

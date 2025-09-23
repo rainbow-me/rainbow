@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { RainbowTransaction } from '@/entities';
 import { useNavigation } from '@/navigation';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
@@ -6,7 +7,6 @@ import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { getSortedWalletConnectRequests } from '@/state/walletConnectRequests';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
-import { useMemo } from 'react';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
 import useContacts from './useContacts';
 

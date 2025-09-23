@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "2.0.1-1",
+  "version": "2.0.3-1",
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn graphql-codegen && yarn fetch:networks",
@@ -99,7 +99,7 @@
     "@lavamoat/preinstall-always-fail": "2.0.0",
     "@ledgerhq/hw-app-eth": "6.39.0",
     "@ledgerhq/react-native-hw-transport-ble": "6.33.4",
-    "@legendapp/list": "1.1.4",
+    "@legendapp/list": "2.0.4",
     "@metamask/eth-sig-util": "7.0.2",
     "@nktkas/hyperliquid": "0.24.3",
     "@notifee/react-native": "7.8.2",

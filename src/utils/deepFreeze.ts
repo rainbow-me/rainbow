@@ -1,39 +1,36 @@
 /**
- * Recursive readonly type that applies readonly to all nested properties while preserving literal types
+ * Recursive readonly type that applies readonly to all nested properties
+ * while preserving literal types.
  */
 type DeepReadonly<T> = T extends (infer U)[]
-  ? DeepReadonlyArray<U>
-  : T extends ReadonlyArray<infer U>
-    ? DeepReadonlyArray<U>
-    : T extends (...args: unknown[]) => unknown
+  ? ReadonlyArray<U>
+  : T extends Record<PropertyKey, unknown>
+    ? T extends (...args: unknown[]) => unknown
       ? T
-      : T extends object
-        ? { readonly [K in keyof T]: DeepReadonly<T[K]> }
-        : T;
-
-type DeepReadonlyArray<T> = ReadonlyArray<DeepReadonly<T>>;
+      : Readonly<{ [K in keyof T]: DeepReadonly<T[K]> }>
+    : T;
 
 /**
- * Recursively freezes an object and all its nested properties, making them immutable.
- * Preserves literal types just like Object.freeze().
+ * Recursively freezes an object and all its nested properties, making them
+ * immutable. Preserves literal types just like Object.freeze().
  *
  * @param obj - The object to deeply freeze
- * @returns The same object with all properties recursively frozen and properly typed as readonly
+ * @returns The same object with all properties frozen and typed as readonly
  */
-export function deepFreeze<T extends string | number | boolean | null | undefined>(obj: T): T;
-export function deepFreeze<T extends (...args: unknown[]) => unknown>(obj: T): T;
-export function deepFreeze<const T extends object>(obj: T): DeepReadonly<T>;
-export function deepFreeze<T>(obj: T): T | DeepReadonly<T> {
-  if (obj === null || obj === undefined || typeof obj !== 'object') {
-    return obj;
+export function deepFreeze<const O extends object>(object: O): DeepReadonly<O>;
+export function deepFreeze<const O>(object: O): Readonly<O> {
+  if (typeof object === 'object') {
+    Object.freeze(object);
+    if (object !== null) Object.values(object).forEach(deepFreeze);
   }
+  return object;
+}
 
-  for (const key in obj) {
-    const value = obj[key];
-    if (value !== null && typeof value === 'object') {
-      deepFreeze(value);
-    }
-  }
-
-  return Object.freeze(obj);
+/**
+ * An `Object.freeze` wrapper that preserves literal types.
+ */
+export function freeze<const O extends object>(object: O): DeepReadonly<O>;
+export function freeze<const O>(object: O): Readonly<O> {
+  Object.freeze(object);
+  return object;
 }
