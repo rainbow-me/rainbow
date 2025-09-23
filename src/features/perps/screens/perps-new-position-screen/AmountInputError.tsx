@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
-import { useOrderAmountValidation } from '@/features/perps/hooks/useOrderAmountValidation';
+import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
 

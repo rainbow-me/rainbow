@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import React, { useMemo } from 'react';
+import { Box, Text } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
@@ -13,36 +13,36 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 type PerpMarketRowProps = {
   market: PerpMarket;
   onPress?: (market: PerpMarket) => void;
+  paddingVertical?: number;
+  priceChangeColors: {
+    positive: string;
+    negative: string;
+    neutral: string;
+  };
 };
 
-export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMarketRowProps) {
-  const green = useForegroundColor('green');
-  const red = useForegroundColor('red');
-  const labelTertiary = useForegroundColor('labelTertiary');
+export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVertical, priceChangeColors }: PerpMarketRowProps) {
   const tokenId = getHyperliquidTokenId(market.symbol);
-
   const volume = useMemo(() => {
-    return abbreviateNumberWorklet(Number(market.volume['24h']), 1);
+    return abbreviateNumberWorklet(Number(market.volume['24h']), 1).toUpperCase();
   }, [market.volume]);
 
-  const livePriceSelector = useCallback((state: TokenData) => {
-    return formatPerpAssetPrice(state.midPrice ?? state.price);
-  }, []);
-
-  const livePriceChangeSelector = useCallback((state: TokenData) => {
-    return formatPriceChange(state.change.change24hPct);
-  }, []);
-
   return (
-    <ButtonPressAnimation onPress={() => onPress?.(market)} disabled={!onPress} scaleTo={0.98}>
+    <ButtonPressAnimation
+      onPress={() => onPress?.(market)}
+      disabled={!onPress}
+      scaleTo={0.975}
+      style={{ paddingVertical: paddingVertical ?? 10 }}
+    >
       <Box width="full" flexDirection="row" alignItems="center" gap={12}>
         <HyperliquidTokenIcon symbol={market.symbol} size={40} />
-        <Box style={{ flex: 1 }} gap={8}>
+        <Box style={{ flex: 1 }} gap={12}>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Text size="17pt" weight="bold" color="label">
               {market.symbol}
             </Text>
             <LiveTokenText
+              align="right"
               selector={livePriceSelector}
               tokenId={tokenId}
               initialValueLastUpdated={0}
@@ -54,8 +54,8 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
             />
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-            <Box flexDirection="row" alignItems="center" gap={4}>
-              <Box flexDirection="row" alignItems="center" gap={4}>
+            <Box flexDirection="row" alignItems="center" gap={7}>
+              <Box flexDirection="row" alignItems="center" gap={5}>
                 <Text size="11pt" weight="bold" color="labelQuaternary">
                   {'UP TO'}
                 </Text>
@@ -78,11 +78,7 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
               initialValue={formatPriceChange(market.priceChange['24h'])}
               autoSubscriptionEnabled={false}
               usePriceChangeColor
-              priceChangeChangeColors={{
-                positive: green,
-                negative: red,
-                neutral: labelTertiary,
-              }}
+              priceChangeChangeColors={priceChangeColors}
               color={'label'}
               size="11pt"
               weight="heavy"
@@ -94,3 +90,11 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress }: PerpMar
     </ButtonPressAnimation>
   );
 };
+
+function livePriceChangeSelector(state: TokenData): string {
+  return formatPriceChange(state.change.change24hPct);
+}
+
+function livePriceSelector(state: TokenData): string {
+  return formatPerpAssetPrice(state.midPrice ?? state.price);
+}

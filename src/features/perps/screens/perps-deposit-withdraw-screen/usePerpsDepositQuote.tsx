@@ -2,7 +2,6 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
 import { HYPERCORE_PSEUDO_CHAIN_ID, HYPERLIQUID_USDC_ADDRESS } from '@/features/perps/constants';
 import { convertAmountToRawAmount } from '@/helpers/utilities';
-import { useAccountSettings } from '@/hooks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { CrosschainQuote, getCrosschainQuote, QuoteError } from '@rainbow-me/swaps';
 import { useCallback, useRef, useState } from 'react';
@@ -14,7 +13,7 @@ export function usePerpsDepositQuote(
   fields: SharedValue<Record<string, NumberPadField>>
 ): [quote: CrosschainQuote | QuoteError | null, fetchQuote: () => void] {
   const accountAddress = userAssetsStoreManager(state => state.address);
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const [quote, setQuote] = useState<CrosschainQuote | QuoteError | null>(null);
 
   const fetchQuoteId = useRef(0);

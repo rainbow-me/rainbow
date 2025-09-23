@@ -38,10 +38,13 @@ type HlOpenOrdersStoreState = {
 
 type HlOpenOrdersStore = HlOpenOrdersStoreState;
 
-async function fetchHlOpenOrders({ address }: HlOpenOrdersParams): Promise<FetchHlOpenOrdersResponse> {
+async function fetchHlOpenOrders(
+  { address }: HlOpenOrdersParams,
+  abortController: AbortController | null
+): Promise<FetchHlOpenOrdersResponse> {
   if (!address) throw new RainbowError('[HlOpenOrdersStore] Address is required');
 
-  const frontendOrders = await infoClient.frontendOpenOrders({ user: address });
+  const frontendOrders = await infoClient.frontendOpenOrders({ user: address }, abortController?.signal);
   const orders: HlOpenOrder[] = frontendOrders.map(order => ({
     id: order.oid,
     symbol: order.coin,

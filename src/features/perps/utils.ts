@@ -2,8 +2,8 @@ import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
 import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';
-import { hyperliquidAccountStoreActions } from '@/features/perps/stores/hyperliquidAccountStore';
-import { hyperliquidMarketStoreActions } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
+import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { OrderSide, PerpMarket, PerpPositionSide } from '@/features/perps/types';
 import { ensureError } from '@/logger';
 import { Navigation } from '@/navigation';
@@ -33,7 +33,7 @@ export function navigateToNewPositionScreen(market: PerpMarket) {
 }
 
 export function navigateToPerpDetailScreen(symbol: string) {
-  const market = hyperliquidMarketStoreActions.getMarket(symbol);
+  const market = hyperliquidMarketsActions.getMarket(symbol);
   if (market) {
     Navigation.handleAction(Routes.PERPS_DETAIL_SCREEN, {
       market,
@@ -49,8 +49,8 @@ export async function refetchHyperliquidStores() {
   await Promise.allSettled([
     hlOpenOrdersStoreActions.fetch(undefined, { force: true }),
     hlTradesStoreActions.fetch(undefined, { force: true }),
-    hyperliquidMarketStoreActions.fetch(undefined, { force: true }),
-    hyperliquidAccountStoreActions.fetch(undefined, { force: true }),
+    hyperliquidMarketsActions.fetch(undefined, { force: true }),
+    hyperliquidAccountActions.fetch(undefined, { force: true }),
   ]);
 }
 

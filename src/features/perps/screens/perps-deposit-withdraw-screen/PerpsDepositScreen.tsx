@@ -1,7 +1,7 @@
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
-import { INPUT_INNER_WIDTH, INPUT_PADDING, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '@/__swaps__/screens/Swap/hooks/useSwapEstimatedGasLimit';
 import { ExtendedAnimatedAssetWithColors, ParsedAsset, ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -23,7 +23,6 @@ import ContactAvatar from '@/components/contacts/ContactAvatar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
-import { RainbowImage } from '@/components/RainbowImage';
 import { AnimatedText, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
@@ -40,7 +39,7 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
-import Routes from '@/navigation/Routes';
+import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters } from '@/raps/references';
 import { divWorklet, sumWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
@@ -70,8 +69,9 @@ import { PerpsAssetCoinIcon } from './PerpsAssetCoinIcon';
 import { PerpsInputContainer } from './PerpsInputContainer';
 import { PerpsTokenList } from './PerpsTokenList';
 import { usePerpsDepositQuote } from './usePerpsDepositQuote';
-import { USDC_ASSET } from '@/features/perps/constants';
+import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, USDC_ASSET } from '@/features/perps/constants';
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { ImgixImage } from '@/components/images';
 
 const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -196,7 +196,7 @@ const DepositInputSection = ({
             />
           </Column>
         </Columns>
-        <Separator direction="horizontal" color="separatorSecondary" />
+        <Separator color="separatorTertiary" thickness={1} />
         <Box alignItems="center" justifyContent="center" flexGrow={1} gap={16}>
           <Box gap={2} flexDirection="row" alignItems="center">
             <AnimatedText size="44pt" weight="heavy" color={{ custom: assetColor }} tabularNumbers numberOfLines={1} ellipsizeMode="middle">
@@ -225,7 +225,7 @@ const DepositInputSection = ({
             </Box>
           </GestureHandlerButton>
         </Box>
-        <Separator direction="horizontal" color="separatorSecondary" />
+        <Separator color="separatorTertiary" thickness={THICK_BORDER_WIDTH} />
         {quote != null && 'error' in quote ? (
           <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
             <Text size="15pt" weight="bold" color="labelTertiary">
@@ -234,11 +234,11 @@ const DepositInputSection = ({
           </Box>
         ) : (
           <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
-            <RainbowImage
-              source={{
-                url: USDC_ASSET.icon_url,
-              }}
-              style={{ width: 14, height: 14, marginRight: 6 }}
+            <ImgixImage
+              enableFasterImage
+              size={14}
+              source={{ uri: USDC_ASSET.icon_url }}
+              style={{ height: 14, marginRight: 6, width: 14 }}
             />
             <Text size="15pt" weight="bold" color="labelQuaternary">
               {i18n.t(i18n.l.perps.deposit.receive)}{' '}
@@ -279,6 +279,7 @@ const DepositInputSection = ({
 export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
+  const { isDarkMode } = useColorMode();
 
   // State for input values
   const inputMethod = useSharedValue<InputMethod>('inputNativeValue');
@@ -578,7 +579,14 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
 
   return (
     <PerpsAccentColorContextProvider>
-      <Box as={Page} flex={1} height="full" testID="perps-deposit-screen" width="full">
+      <Box
+        as={Page}
+        backgroundColor={isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT}
+        flex={1}
+        height="full"
+        testID="perps-deposit-screen"
+        width="full"
+      >
         <SheetHandle extraPaddingTop={6} />
         <Navbar
           hasStatusBarInset
@@ -648,7 +656,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
             />
           </Box>
           <Box height={32}>
-            <Separator color={'separatorTertiary'} direction="vertical" thickness={1} />
+            <Separator color={'separatorTertiary'} direction="vertical" thickness={THICK_BORDER_WIDTH} />
           </Box>
           <Box flexGrow={1}>
             <PerpsSwapButton

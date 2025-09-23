@@ -38,7 +38,7 @@ const CHART_TOP_PADDING = 20;
 
 type ChartProps = ({ asset: ExpandedSheetAsset; hyperliquidSymbol?: never } | { asset?: never; hyperliquidSymbol: string }) & {
   backgroundColor: string;
-  accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'>;
+  accentColors: Pick<AssetAccentColors, 'color' | 'opacity12' | 'opacity24'> & { timeframeSelector?: string };
   hideChartTypeToggle?: boolean;
 };
 
@@ -179,7 +179,11 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
           ChartComponent
         )}
 
-        <TimeframeSelector backgroundColor={backgroundColor} color={accentColors.color} hideChartTypeToggle={hideChartTypeToggle} />
+        <TimeframeSelector
+          backgroundColor={backgroundColor}
+          color={accentColors.timeframeSelector ?? accentColors.color}
+          hideChartTypeToggle={hideChartTypeToggle}
+        />
       </Box>
 
       {!IS_DEV && <ChartsTelemetry />}

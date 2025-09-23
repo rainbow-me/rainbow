@@ -1,10 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,
-  runOnJS,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -43,7 +42,11 @@ export interface SliderProps {
   height?: number;
   expandedHeight?: number;
   width?: number;
-  snapPoints?: number[];
+  /**
+   * If `true`, disables haptic feedback when the slider hits its left or right edge.
+   */
+  silenceEdgeHaptics?: SharedValue<boolean>;
+  snapPoints?: number[] | false;
   onPercentageChange?: (percentage: number, source: SliderChangeSource) => void;
   onPercentageUpdate?: (percentage: number) => void;
   containerStyle?: ViewStyle;
@@ -53,6 +56,8 @@ export interface SliderProps {
   };
 }
 
+const DEFAULT_SNAP_POINTS = Object.freeze([0, 0.25, 0.5, 0.75, 1]);
+
 export const Slider: React.FC<SliderProps> = ({
   sliderXPosition,
   isEnabled: isEnabledProp = true,
@@ -60,13 +65,15 @@ export const Slider: React.FC<SliderProps> = ({
   height = 10,
   expandedHeight = 16,
   width = SLIDER_DEFAULT_WIDTH,
-  snapPoints = [0, 0.25, 0.5, 0.75, 1],
+  snapPoints: providedSnapPoints,
   onPercentageChange,
   onPercentageUpdate,
   containerStyle,
   hitSlop = { horizontal: 20, vertical: 40 },
+  silenceEdgeHaptics,
 }) => {
   const { isDarkMode } = useColorMode();
+  const snapPoints = providedSnapPoints ?? DEFAULT_SNAP_POINTS;
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -105,23 +112,16 @@ export const Slider: React.FC<SliderProps> = ({
   useAnimatedReaction(
     () => sliderXPosition.value,
     (current, previous) => {
-      if (previous !== null && current !== previous) {
-        if (current >= width * MAX_PERCENTAGE && previous < width * MAX_PERCENTAGE) {
-          triggerHaptics('impactMedium');
-        }
-        if (current < width * MIN_PERCENTAGE && previous >= width * MIN_PERCENTAGE) {
-          triggerHaptics('impactLight');
-        }
+      if (previous === null || current === previous || silenceEdgeHaptics?.value) return;
+
+      if (current >= width * MAX_PERCENTAGE && previous < width * MAX_PERCENTAGE) {
+        triggerHaptics('impactMedium');
+      }
+      if (current < width * MIN_PERCENTAGE && previous >= width * MIN_PERCENTAGE) {
+        triggerHaptics('impactLight');
       }
     },
     []
-  );
-
-  const onChangeWrapper = useCallback(
-    (percentage: number, source: SliderChangeSource) => {
-      onPercentageChange?.(percentage, source);
-    },
-    [onPercentageChange]
   );
 
   const tapGesture = Gesture.Tap()
@@ -135,128 +135,151 @@ export const Slider: React.FC<SliderProps> = ({
       sliderPressProgress.value = withSpring(height / expandedHeight, SPRING_CONFIGS.sliderConfig);
     });
 
-  const panGesture = Gesture.Pan()
-    .onBegin(() => {
-      'worklet';
-      gestureCtx.value = { startX: sliderXPosition.value };
-      sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
-    })
-    .onUpdate(event => {
-      'worklet';
-      if (!isEnabled.value) return;
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onBegin(() => {
+          'worklet';
+          gestureCtx.modify(prev => {
+            prev.startX = sliderXPosition.value;
+            return prev;
+          });
+          sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
+        })
+        .onUpdate(event => {
+          'worklet';
+          if (!isEnabled.value) return;
 
-      const rawX = gestureCtx.value.startX + event.translationX;
+          const rawX = gestureCtx.value.startX + event.translationX;
 
-      const calculateOvershoot = (distance: number, maxOverscroll: number): number => {
-        if (distance === 0) return 0;
-        const overscrollFraction = Math.min(Math.abs(distance) / maxOverscroll, 1);
-        const resistance = 1 / (overscrollFraction * 9 + 1);
-        return distance * resistance;
-      };
+          const calculateOvershoot = (distance: number, maxOverscroll: number): number => {
+            if (distance === 0) return 0;
+            const overscrollFraction = Math.min(Math.abs(distance) / maxOverscroll, 1);
+            const resistance = 1 / (overscrollFraction * 9 + 1);
+            return distance * resistance;
+          };
 
-      sliderXPosition.value = clamp(rawX, 0, width);
+          sliderXPosition.value = clamp(rawX, 0, width);
 
-      // Handle overscroll
-      if (rawX < 0 || rawX > width) {
-        const maxOverscroll = 80;
-        const overshootX = interpolate(
-          rawX,
-          [-maxOverscroll, 0, width, width + maxOverscroll],
-          [-maxOverscroll, 0, 0, maxOverscroll],
-          'clamp'
-        );
-        overshoot.value = calculateOvershoot(overshootX, maxOverscroll);
-      }
-
-      const isAtMax = sliderXPosition.value >= width * MAX_PERCENTAGE;
-      const isAtMin = sliderXPosition.value <= width * MIN_PERCENTAGE;
-
-      onPercentageUpdate?.(isAtMax ? 1 : isAtMin ? 0 : xPercentage.value);
-    })
-    .onEnd(event => {
-      'worklet';
-      const hasChanged = gestureCtx.value.startX !== sliderXPosition.value;
-
-      const onFinished = () => {
-        overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
-
-        if (isEnabled.value) {
-          if (xPercentage.value >= MAX_PERCENTAGE) {
-            runOnJS(onChangeWrapper)(1, 'gesture');
-            sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
-          } else if (xPercentage.value < MIN_PERCENTAGE) {
-            runOnJS(onChangeWrapper)(0, 'gesture');
-            sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
-          } else if (hasChanged) {
-            runOnJS(onChangeWrapper)(xPercentage.value, 'gesture');
+          // Handle overscroll
+          if (rawX < 0 || rawX > width) {
+            const maxOverscroll = 80;
+            const overshootX = interpolate(
+              rawX,
+              [-maxOverscroll, 0, width, width + maxOverscroll],
+              [-maxOverscroll, 0, 0, maxOverscroll],
+              'clamp'
+            );
+            overshoot.value = calculateOvershoot(overshootX, maxOverscroll);
           }
-        }
-      };
 
-      sliderPressProgress.value = withSpring(height / expandedHeight, SPRING_CONFIGS.sliderConfig);
+          const sliderX = sliderXPosition.value;
+          const isAtMax = sliderX >= width * MAX_PERCENTAGE;
+          const isAtMin = sliderX <= width * MIN_PERCENTAGE;
 
-      if (!isEnabled.value) {
-        if (sliderXPosition.value > 0) triggerHaptics('notificationError');
-        overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
-        sliderXPosition.value = withSpring(0, SPRING_CONFIGS.slowSpring);
-        return;
-      }
+          onPercentageUpdate?.(isAtMax ? 1 : isAtMin ? 0 : xPercentage.value);
+        })
+        .onEnd(event => {
+          'worklet';
+          const hasChanged = gestureCtx.value.startX !== sliderXPosition.value;
 
-      if (snapPoints && snapPoints.length > 0) {
-        // Snap point logic
-        const rawX = gestureCtx.value.startX + event.translationX;
-        const needsToSnap =
-          !(
-            (sliderXPosition.value === 0 && event.velocityX < 0) ||
-            (sliderXPosition.value === width && event.velocityX > 0) ||
-            (overshoot.value !== 0 && (rawX <= 0 || rawX >= width))
-          ) && Math.abs(event.velocityX) > 100;
+          const onFinished = () => {
+            overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
 
-        if (needsToSnap) {
-          const adjustedSnapPoints = snapPoints.map((point: number) => point * width);
-          let nextSnapPoint: number | undefined = undefined;
-
-          if (event.velocityX > 0) {
-            for (let i = 0; i < adjustedSnapPoints.length; i++) {
-              if (adjustedSnapPoints[i] > sliderXPosition.value && adjustedSnapPoints[i] - sliderXPosition.value > width * MIN_PERCENTAGE) {
-                nextSnapPoint = adjustedSnapPoints[i];
-                break;
+            if (isEnabled.value) {
+              if (xPercentage.value >= MAX_PERCENTAGE) {
+                onPercentageChange?.(1, 'gesture');
+                sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
+              } else if (xPercentage.value < MIN_PERCENTAGE) {
+                onPercentageChange?.(0, 'gesture');
+                sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
+              } else if (hasChanged) {
+                onPercentageChange?.(xPercentage.value, 'gesture');
               }
             }
-            nextSnapPoint = nextSnapPoint ?? width;
+          };
+
+          sliderPressProgress.value = withSpring(height / expandedHeight, SPRING_CONFIGS.sliderConfig);
+
+          const sliderX = sliderXPosition.value;
+
+          if (!isEnabled.value) {
+            if (sliderX > 0) triggerHaptics('notificationError');
+            overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
+            sliderXPosition.value = withSpring(0, SPRING_CONFIGS.slowSpring);
+            return;
+          }
+
+          if (snapPoints && snapPoints.length > 0) {
+            // Snap point logic
+            const rawX = gestureCtx.value.startX + event.translationX;
+            const needsToSnap =
+              !(
+                (sliderX === 0 && event.velocityX < 0) ||
+                (sliderX === width && event.velocityX > 0) ||
+                (overshoot.value !== 0 && (rawX <= 0 || rawX >= width))
+              ) && Math.abs(event.velocityX) > 100;
+
+            if (needsToSnap) {
+              const adjustedSnapPoints = snapPoints.map((point: number) => point * width);
+              let nextSnapPoint: number | undefined = undefined;
+
+              if (event.velocityX > 0) {
+                for (let i = 0; i < adjustedSnapPoints.length; i++) {
+                  if (adjustedSnapPoints[i] > sliderX && adjustedSnapPoints[i] - sliderX > width * MIN_PERCENTAGE) {
+                    nextSnapPoint = adjustedSnapPoints[i];
+                    break;
+                  }
+                }
+                nextSnapPoint = nextSnapPoint ?? width;
+              } else {
+                for (let i = adjustedSnapPoints.length - 1; i >= 0; i--) {
+                  if (adjustedSnapPoints[i] < sliderX && sliderX - adjustedSnapPoints[i] > width * MIN_PERCENTAGE) {
+                    nextSnapPoint = adjustedSnapPoints[i];
+                    break;
+                  }
+                }
+                nextSnapPoint = nextSnapPoint ?? 0;
+              }
+
+              overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
+              onPercentageChange?.(nextSnapPoint / width, 'gesture');
+              sliderXPosition.value = withSpring(nextSnapPoint, SPRING_CONFIGS.snappierSpringConfig);
+            } else {
+              onFinished();
+            }
           } else {
-            for (let i = adjustedSnapPoints.length - 1; i >= 0; i--) {
-              if (adjustedSnapPoints[i] < sliderXPosition.value && sliderXPosition.value - adjustedSnapPoints[i] > width * MIN_PERCENTAGE) {
-                nextSnapPoint = adjustedSnapPoints[i];
-                break;
+            // Decay animation without snap points
+            sliderXPosition.value = withDecay(
+              {
+                velocity: Math.abs(event.velocityX) < 100 ? 0 : event.velocityX,
+                velocityFactor: 1,
+                clamp: [0, width],
+                deceleration: 0.9925,
+              },
+              isFinished => {
+                if (isFinished) onFinished();
               }
-            }
-            nextSnapPoint = nextSnapPoint ?? 0;
+            );
           }
-
-          overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
-          runOnJS(onChangeWrapper)(nextSnapPoint / width, 'gesture');
-          sliderXPosition.value = withSpring(nextSnapPoint, SPRING_CONFIGS.snappierSpringConfig);
-        } else {
-          onFinished();
-        }
-      } else {
-        // Decay animation without snap points
-        sliderXPosition.value = withDecay(
-          {
-            velocity: Math.abs(event.velocityX) < 100 ? 0 : event.velocityX,
-            velocityFactor: 1,
-            clamp: [0, width],
-            deceleration: 0.9925,
-          },
-          isFinished => {
-            if (isFinished) onFinished();
-          }
-        );
-      }
-    })
-    .activeOffsetX([0, 0])
-    .activeOffsetY([0, 0]);
+        })
+        .activeOffsetX([0, 0])
+        .activeOffsetY([0, 0]),
+    [
+      expandedHeight,
+      gestureCtx,
+      height,
+      isEnabled,
+      onPercentageChange,
+      onPercentageUpdate,
+      overshoot,
+      sliderPressProgress,
+      sliderXPosition,
+      snapPoints,
+      width,
+      xPercentage,
+    ]
+  );
 
   const sliderContainerStyle = useAnimatedStyle(() => {
     const collapsedPercentage = height / expandedHeight;

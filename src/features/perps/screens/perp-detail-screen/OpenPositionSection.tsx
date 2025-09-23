@@ -1,7 +1,7 @@
 import { memo, useMemo, Fragment } from 'react';
 import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { Box, Text, TextShadow, AnimatedText, Separator } from '@/design-system';
+import { Box, Text, TextShadow, Separator } from '@/design-system';
 import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';
 import { toFixedWorklet, getPercentageDifferenceWorklet } from '@/safe-math/SafeMath';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
@@ -40,32 +40,32 @@ export const PositionValueCard = memo(function PositionValueCard({ position }: {
         <Text size="17pt" weight="bold" color="labelSecondary">
           {'Position Value'}
         </Text>
-        <Box flexDirection="row" alignItems="center" gap={2}>
+        <Box flexDirection="row" alignItems="center" gap={3}>
           <TextShadow blur={8} shadowOpacity={0.2}>
-            <Text size="12pt" weight="heavy" color={textColor}>
+            <Text align="center" size="icon 12px" weight="heavy" color={textColor}>
               {isPositivePnl ? UP_ARROW : DOWN_ARROW}
             </Text>
           </TextShadow>
           <TextShadow blur={8} shadowOpacity={0.2}>
-            <Text size="17pt" weight="heavy" color={textColor}>
+            <Text align="right" size="17pt" weight="heavy" color={textColor}>
               {formattedValues.returnOnEquity}
             </Text>
           </TextShadow>
         </Box>
       </Box>
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-        <AnimatedText size="22pt" weight="heavy" color="label">
+        <Text size="22pt" weight="heavy" color="label">
           {formattedValues.equity}
-        </AnimatedText>
+        </Text>
         <Box flexDirection="row" alignItems="center" justifyContent="space-between">
           <Box flexDirection="row" alignItems="center" gap={2}>
             <TextShadow blur={8} shadowOpacity={0.2}>
-              <Text size="20pt" weight="heavy" color={textColor}>
+              <Text align="center" size="20pt" weight="heavy" color={textColor}>
                 {isPositivePnl ? '+' : '-'}
               </Text>
             </TextShadow>
             <TextShadow blur={8} shadowOpacity={0.2}>
-              <Text size="22pt" weight="heavy" color={textColor}>
+              <Text align="right" size="22pt" weight="heavy" color={textColor}>
                 {formattedValues.unrealizedPnl}
               </Text>
             </TextShadow>
@@ -132,13 +132,13 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
               <Text color={liquidationPriceIsClose ? 'red' : 'labelSecondary'} size="13pt" weight="heavy">
                 {`${toFixedWorklet(targetPriceDifferential, 2)}%`}
               </Text>
-              <Text color="labelTertiary" size="13pt" weight="heavy">
+              <Text color="labelTertiary" size="13pt" weight="bold">
                 from current price
               </Text>
             </Box>
           )}
         </Box>
-        <Text color="white" size="17pt" weight="bold">
+        <Text align="right" color="white" size="17pt" weight="bold">
           {liquidationPrice}
         </Text>
       </Box>
@@ -149,7 +149,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
             <Text size="17pt" weight="semibold" color="labelSecondary">
               {item.title}
             </Text>
-            <Text color="label" size="17pt" weight="bold">
+            <Text align="right" color="label" size="17pt" weight="bold">
               {item.value}
             </Text>
           </Box>

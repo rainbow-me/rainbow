@@ -35,10 +35,13 @@ export class HyperliquidAccountClient {
     };
   }
 
-  async getPerpAccount(): Promise<PerpAccount> {
-    const perpState = await infoClient.clearinghouseState({
-      user: this.userAddress,
-    });
+  async getPerpAccount(abortSignal: AbortSignal | undefined): Promise<PerpAccount> {
+    const perpState = await infoClient.clearinghouseState(
+      {
+        user: this.userAddress,
+      },
+      abortSignal
+    );
 
     const positions = perpState.assetPositions
       .map(({ position }) => {
@@ -84,17 +87,23 @@ export class HyperliquidAccountClient {
     return check.userExists;
   }
 
-  async getHistoricalOrders(): Promise<hl.OrderStatus<hl.FrontendOrder>[]> {
-    return await infoClient.historicalOrders({
-      user: this.userAddress,
-    });
+  async getHistoricalOrders(abortSignal: AbortSignal | undefined): Promise<hl.OrderStatus<hl.FrontendOrder>[]> {
+    return await infoClient.historicalOrders(
+      {
+        user: this.userAddress,
+      },
+      abortSignal
+    );
   }
 
-  async getFilledOrders(): Promise<hl.Fill[]> {
-    return await infoClient.userFills({
-      user: this.userAddress,
-      aggregateByTime: true,
-    });
+  async getFilledOrders(abortSignal: AbortSignal | undefined): Promise<hl.Fill[]> {
+    return await infoClient.userFills(
+      {
+        user: this.userAddress,
+        aggregateByTime: true,
+      },
+      abortSignal
+    );
   }
 
   async isBuilderFeeApproved(): Promise<boolean> {

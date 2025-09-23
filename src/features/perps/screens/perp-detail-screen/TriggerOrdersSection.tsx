@@ -4,14 +4,13 @@ import { HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpe
 import { TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
 import { isZero } from '@/helpers/utilities';
-import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { logger, RainbowError } from '@/logger';
 import { Alert } from 'react-native';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { cancelOrder } from '@/features/perps/utils/hyperliquid';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
 
 type TriggerOrdersSectionProps = {
   symbol: string;
@@ -30,7 +29,10 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
   const onPressDelete = useCallback(async () => {
     setIsCancelling(true);
     try {
-      await cancelOrder({ symbol: order.symbol, orderId: order.id });
+      await hyperliquidAccountActions.cancelOrder({
+        orderId: order.id,
+        symbol: order.symbol,
+      });
     } catch (e) {
       Alert.alert('Error', 'Failed to cancel order');
       logger.error(new RainbowError('[ExistingTriggerOrderCard]: error cancelling order', e));
@@ -54,17 +56,16 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
 
 export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol }: TriggerOrdersSectionProps) {
   const { accentColors } = usePerpsAccentColorContext();
-  const orders = useHlOpenOrdersStore(data => data.getData()?.ordersBySymbol[symbol] ?? []);
-  const triggerOrders = orders.filter(order => order.triggerCondition !== null);
-  const hasExistingTakeProfit = triggerOrders.some(
-    order => order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit'
-  );
-  const hasExistingStopLoss = triggerOrders.some(order => order.orderType === 'Stop Market' || order.orderType === 'Stop Limit');
+  const orders = useHlOpenOrdersStore(data => data.getData()?.ordersBySymbol[symbol]);
 
-  console.log('hasExistingTakeProfit', hasExistingTakeProfit);
+  const triggerOrders = orders?.filter(order => order.triggerCondition !== null);
+  const hasExistingTakeProfit =
+    triggerOrders?.some(order => order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit') ?? false;
+  const hasExistingStopLoss = triggerOrders?.some(order => order.orderType === 'Stop Market' || order.orderType === 'Stop Limit') ?? false;
+
   return (
     <Animated.View layout={LinearTransition.springify()}>
-      <Box gap={24}>
+      <Box gap={28}>
         <Inline space="10px" alignVertical="center">
           <IconContainer height={14} width={24}>
             <TextShadow blur={12} shadowOpacity={0.24}>
@@ -77,13 +78,13 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
             {'Trigger Orders'}
           </Text>
         </Inline>
-        {triggerOrders.length > 0 && (
+        {triggerOrders?.length ? (
           <Box gap={12}>
             {triggerOrders.map(order => (
               <ExistingTriggerOrderCard key={order.id} order={order} />
             ))}
           </Box>
-        )}
+        ) : null}
         <Box gap={12}>
           <AddTriggerOrderButton
             symbol={symbol}

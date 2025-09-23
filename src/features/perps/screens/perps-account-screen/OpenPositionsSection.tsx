@@ -1,72 +1,56 @@
-import React, { useMemo } from 'react';
-import { Box, Stack, Text, TextShadow, useColorMode } from '@/design-system';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { PerpPositionCard } from '@/features/perps/components/PerpPositionCard';
-import { abs, greaterThan, isEqual } from '@/helpers/utilities';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
-import { UP_ARROW, DOWN_ARROW } from '@/features/perps/constants';
+import React from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
+import { Box, Stack, Text, TextShadow, useColorMode } from '@/design-system';
+import { PerpPositionCard } from '@/features/perps/components/PerpPositionCard';
+import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
+import { usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
 import { navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { RainbowImage } from '@/components/RainbowImage';
+import { Image } from 'react-native';
 import infinityIcon from '@/assets/infinity.png';
 
 export const OpenPositionsSection = function OpenPositionsSection() {
   const { isDarkMode } = useColorMode();
-  const positions = useHyperliquidAccountStore(state => state.positions);
-  const positionsArray = Object.values(positions);
-  const hasPositions = positionsArray.length > 0;
-  const { equity, unrealizedPnl, unrealizedPnlPercent } = useHyperliquidAccountStore(state => state.getTotalPositionsInfo());
-  const isPositivePnl = greaterThan(unrealizedPnl, 0);
-  const isNeutralPnl = isEqual(unrealizedPnl, 0);
-  const textColor = isPositivePnl ? 'green' : isNeutralPnl ? 'labelTertiary' : 'red';
-  const formattedValues = useMemo(() => {
-    return {
-      equity: formatCurrency(equity),
-      unrealizedPnl: formatCurrency(abs(unrealizedPnl)),
-      unrealizedPnlPercent: `${toFixedWorklet(abs(unrealizedPnlPercent), 2)}%`,
-    };
-  }, [equity, unrealizedPnl, unrealizedPnlPercent]);
+  const positionsInfo = usePerpsPositionsInfo();
 
   return (
     <Box>
-      <Stack space={'20px'}>
-        <Box gap={16}>
+      <Stack space={'24px'}>
+        <Box gap={16} paddingHorizontal="4px">
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Text size="17pt" weight="heavy" color="labelTertiary">
               {'Open Positions'}
             </Text>
-            {hasPositions && (
+            {positionsInfo.hasPositions && (
               <Box flexDirection="row" alignItems="center" gap={2}>
-                <TextShadow blur={8} shadowOpacity={0.2}>
-                  <Text size="12pt" weight="heavy" color={textColor}>
-                    {isPositivePnl ? UP_ARROW : DOWN_ARROW}
+                <TextShadow blur={16} shadowOpacity={0.2}>
+                  <Text size="12pt" weight="heavy" color={positionsInfo.textColor}>
+                    {positionsInfo.isPositivePnl ? UP_ARROW : DOWN_ARROW}
                   </Text>
                 </TextShadow>
-                <TextShadow blur={8} shadowOpacity={0.2}>
-                  <Text size="17pt" weight="heavy" color={textColor}>
-                    {formattedValues.unrealizedPnlPercent}
+                <TextShadow blur={16} shadowOpacity={0.2}>
+                  <Text size="17pt" weight="heavy" color={positionsInfo.textColor}>
+                    {positionsInfo.unrealizedPnlPercent}
                   </Text>
                 </TextShadow>
               </Box>
             )}
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-            <Text size="30pt" weight="heavy" color={hasPositions ? 'label' : 'labelQuaternary'}>
-              {formattedValues.equity}
+            <Text size="30pt" weight="heavy" color={positionsInfo.hasPositions ? 'label' : 'labelQuaternary'}>
+              {positionsInfo.equity}
             </Text>
-            {hasPositions && (
+            {positionsInfo.hasPositions && (
               <Box flexDirection="row" alignItems="center" gap={2}>
-                <TextShadow blur={8} shadowOpacity={0.2}>
-                  <Text size="20pt" weight="heavy" color={textColor}>
-                    {isPositivePnl ? '+' : '-'}
+                <TextShadow blur={16} shadowOpacity={0.2}>
+                  <Text size="20pt" weight="heavy" color={positionsInfo.textColor}>
+                    {positionsInfo.isPositivePnl ? '+' : '-'}
                   </Text>
                 </TextShadow>
-                <TextShadow blur={8} shadowOpacity={0.2}>
-                  <Text size="22pt" weight="heavy" color={textColor}>
-                    {formattedValues.unrealizedPnl}
+                <TextShadow blur={16} shadowOpacity={0.2}>
+                  <Text size="22pt" weight="heavy" color={positionsInfo.textColor}>
+                    {positionsInfo.unrealizedPnl}
                   </Text>
                 </TextShadow>
               </Box>
@@ -74,15 +58,15 @@ export const OpenPositionsSection = function OpenPositionsSection() {
           </Box>
         </Box>
         <Box gap={20}>
-          {!hasPositions && (
+          {!positionsInfo.hasPositions && (
             <Box height={100} justifyContent="center" alignItems="center" gap={20}>
-              <RainbowImage source={infinityIcon} style={{ width: 52, height: 24 }} resizeMode="contain" />
+              <Image source={infinityIcon} style={{ width: 52, height: 24 }} resizeMode="contain" />
               <Text size="20pt" weight="heavy" color={isDarkMode ? 'label' : 'labelSecondary'}>
                 {'No Open Positions'}
               </Text>
             </Box>
           )}
-          {positionsArray.map(position => (
+          {positionsInfo.positions.map(position => (
             <ButtonPressAnimation
               key={position.symbol}
               onPress={() => {
@@ -93,7 +77,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
                   symbol: position.symbol,
                 });
               }}
-              scaleTo={0.98}
+              scaleTo={0.975}
             >
               <PerpPositionCard position={position} />
             </ButtonPressAnimation>

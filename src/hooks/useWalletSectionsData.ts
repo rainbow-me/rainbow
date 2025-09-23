@@ -19,7 +19,9 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
 import { isDataComplete } from '@/state/nfts/utils';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
+import { PerpsWalletListData } from '@/features/perps/types';
+import { shallowEqual } from '@/worklets/comparisons';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -80,26 +82,7 @@ export default function useWalletSectionsData({
     return claimablesData;
   }, [claimablesData, claimablesEnabled]);
 
-  const perpsPositions = useHyperliquidAccountStore(state => state.positions);
-  const perpsBalance = useHyperliquidAccountStore(state => state.balance);
-  const perpsAccountValue = useHyperliquidAccountStore(state => state.value);
-
-  const perpsData = useMemo(() => {
-    // If perps feature is disabled, return null to hide all perps elements
-    if (!perpsEnabled) return null;
-
-    const hasBalance = perpsBalance && perpsBalance !== '0';
-    const positionsArray = Object.values(perpsPositions);
-    const hasPositions = positionsArray.length > 0;
-
-    if (!hasBalance && !hasPositions) return null;
-
-    return {
-      positions: positionsArray,
-      balance: perpsBalance,
-      value: perpsAccountValue,
-    };
-  }, [perpsPositions, perpsBalance, perpsAccountValue, perpsEnabled]);
+  const perpsData = usePerpsPositionsInfo(state => selectPerpsData(state, perpsEnabled), shallowEqual);
 
   const isShowcaseDataMigrated = useMemo(() => isDataComplete(showcaseTokens), [showcaseTokens]);
   const isHiddenDataMigrated = useMemo(() => isDataComplete(hiddenTokens), [hiddenTokens]);
@@ -198,4 +181,15 @@ export default function useWalletSectionsData({
     isShowcaseDataMigrated,
     isHiddenDataMigrated,
   ]);
+}
+
+function selectPerpsData(state: PerpsPositionsInfo, perpsEnabled: boolean): PerpsWalletListData | null {
+  if (!perpsEnabled || (!state.hasPositions && !state.hasBalance)) return null;
+  return {
+    balance: state.balance,
+    hasBalance: state.hasBalance,
+    hasPositions: state.hasPositions,
+    positions: state.positions,
+    value: state.value,
+  };
 }

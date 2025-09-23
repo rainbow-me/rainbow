@@ -1,10 +1,9 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Slider } from '@/features/perps/components/Slider';
-import { triggerHaptics } from 'react-native-turbo-haptics';
 
 const PercentageSlider = ({
   sliderXPosition,
@@ -12,7 +11,7 @@ const PercentageSlider = ({
   width,
 }: {
   sliderXPosition: SharedValue<number>;
-  onPercentageUpdate: (percentage: number) => void;
+  onPercentageUpdate?: (percentage: number) => void;
   width: number;
 }) => {
   const { accentColors } = usePerpsAccentColorContext();
@@ -23,7 +22,6 @@ const PercentageSlider = ({
       colors={accentColors.slider}
       onPercentageUpdate={onPercentageUpdate}
       onPercentageChange={onPercentageUpdate}
-      snapPoints={[0, 0.25, 0.5, 0.75, 1]}
       width={width}
       height={10}
       expandedHeight={14}
@@ -49,20 +47,8 @@ export const PositionPercentageSlider = memo(function PositionPercentageSlider({
   const sliderXPosition = useSharedValue(percentageValue.value * sliderWidth);
 
   const displayValue = useDerivedValue(() => {
-    return `${Math.round(percentageValue.value * 100)}%`;
+    return `${Math.round((sliderXPosition.value / sliderWidth) * 100)}%`;
   });
-
-  const onPercentageUpdate = useCallback(
-    (percentage: number) => {
-      'worklet';
-      const roundedPercentage = Math.round(percentage * 100);
-      if (roundedPercentage !== Math.round(percentageValue.value * 100)) {
-        percentageValue.value = percentage;
-        triggerHaptics('soft');
-      }
-    },
-    [percentageValue]
-  );
 
   return (
     <Box
@@ -93,7 +79,7 @@ export const PositionPercentageSlider = memo(function PositionPercentageSlider({
           {displayValue}
         </AnimatedText>
       </Box>
-      <PercentageSlider sliderXPosition={sliderXPosition} onPercentageUpdate={onPercentageUpdate} width={sliderWidth} />
+      <PercentageSlider sliderXPosition={sliderXPosition} width={sliderWidth} />
     </Box>
   );
 });

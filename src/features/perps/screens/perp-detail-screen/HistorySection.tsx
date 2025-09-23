@@ -2,7 +2,7 @@ import { Fragment, memo, useMemo, useState } from 'react';
 import { HlTrade, PerpMarket } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { tradeExecutionDescriptions, useHlTradesStore } from '@/features/perps/stores/hlTradesStore';
-import { Box, Separator, Text, TextShadow } from '@/design-system';
+import { Box, Separator, Text, TextIcon, TextShadow } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { format } from 'date-fns';
@@ -10,6 +10,7 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 
 const DEFAULT_VISIBLE_TRADE_COUNT = 10;
+const LARGE_SPACE = ' ';
 
 const descriptionIcons = {
   [tradeExecutionDescriptions.longLiquidated]: '􀁞',
@@ -54,14 +55,14 @@ const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade })
     <Box paddingVertical="16px" gap={12}>
       <Box flexDirection="row" justifyContent="space-between" alignItems="center">
         <Box flexDirection="row" alignItems="center" gap={2}>
-          <Text size="12pt" weight="semibold" color={descriptionColor}>
+          <TextIcon color={descriptionColor} height={8} size="icon 11px" weight="semibold" width={18}>
             {descriptionIcon}
-          </Text>
+          </TextIcon>
           <Text size="13pt" weight="semibold" color={descriptionColor}>
             {trade.description}
           </Text>
         </Box>
-        <Text size="13pt" color="labelQuaternary" weight="medium">
+        <Text align="right" size="13pt" color="labelQuaternary" weight="medium">
           {formattedDate}
         </Text>
       </Box>
@@ -69,13 +70,13 @@ const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade })
       <Box flexDirection="row" justifyContent="space-between" alignItems="center">
         <Text size="17pt" color="label" weight="semibold">
           {leftHandSide}
-          <Text size="17pt" color="labelTertiary" weight="semibold">
-            {' @ '}
+          <Text size="17pt" color="labelQuaternary" weight="semibold">
+            {`${LARGE_SPACE}@${LARGE_SPACE}`}
           </Text>
           {formatPerpAssetPrice(trade.price)}
         </Text>
         {pnlValue !== 0 && (
-          <Text size="17pt" weight="semibold" color={pnlColor}>
+          <Text align="right" size="17pt" weight="semibold" color={pnlColor}>
             {pnl}
           </Text>
         )}
@@ -87,23 +88,24 @@ const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade })
 export const HistorySection = memo(function HistorySection({ market }: { market: PerpMarket }) {
   const { accentColors } = usePerpsAccentColorContext();
   const [isExpanded, setIsExpanded] = useState(false);
-  const historyData = useHlTradesStore(state => state.tradesBySymbol);
+  const historyData = useHlTradesStore(state => state.getTradesBySymbol());
 
-  const trades = historyData[market.symbol] || [];
-  const visibleTrades = isExpanded ? trades : trades.slice(0, DEFAULT_VISIBLE_TRADE_COUNT);
+  const trades = historyData?.[market.symbol];
 
-  if (trades.length === 0) {
+  if (!trades?.length) {
     return (
-      <Box alignItems="center" justifyContent="center" paddingVertical="24px">
-        <Text weight="bold" size="17pt" color="label">
+      <Box alignItems="center" justifyContent="center" paddingVertical="28px">
+        <Text color="labelQuaternary" size="17pt" weight="heavy">
           No trades
         </Text>
       </Box>
     );
   }
 
+  const visibleTrades = isExpanded ? trades : trades.slice(0, DEFAULT_VISIBLE_TRADE_COUNT);
+
   return (
-    <Box gap={16}>
+    <Box gap={16} paddingTop="4px">
       {(isExpanded || trades.length > 0) && (
         <Box gap={12}>
           <Box>

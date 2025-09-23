@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { Box, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { PerpPositionSide } from '@/features/perps/types';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
@@ -20,21 +20,23 @@ export const PositionSideBadge = memo(function PositionSideBadge({ side }: Posit
   }, [textColor]);
 
   return (
-    <Box
-      height={18}
-      backgroundColor={backgroundColor}
-      paddingHorizontal={'6px'}
-      borderRadius={11}
-      justifyContent="center"
-      alignItems="center"
-      borderWidth={1}
-      borderColor={{ custom: backgroundColor }}
-    >
-      <TextShadow color={textColor} shadowOpacity={0.24} blur={6}>
-        <Text size="11pt" weight="heavy" color={{ custom: textColor }}>
-          {side}
-        </Text>
-      </TextShadow>
-    </Box>
+    <Bleed vertical="6px">
+      <Box
+        height={18}
+        backgroundColor={backgroundColor}
+        paddingHorizontal={'6px'}
+        borderRadius={11}
+        justifyContent="center"
+        alignItems="center"
+        borderWidth={1}
+        borderColor={{ custom: backgroundColor }}
+      >
+        <TextShadow color={textColor} shadowOpacity={0.24} blur={6}>
+          <Text align="right" size="11pt" weight="heavy" color={{ custom: textColor }}>
+            {side}
+          </Text>
+        </TextShadow>
+      </Box>
+    </Bleed>
   );
 });

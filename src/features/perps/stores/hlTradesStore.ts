@@ -1,14 +1,12 @@
-import { createQueryStore } from '@/state/internal/createQueryStore';
-import { time } from '@/utils/time';
-import { Address } from 'viem';
-import { getHyperliquidAccountClient } from '../services';
-import { RainbowError } from '@/logger';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
 import * as hl from '@nktkas/hyperliquid';
+import { Address } from 'viem';
+import { getHyperliquidAccountClient, useHyperliquidClients } from '@/features/perps/services';
+import { RainbowError } from '@/logger';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { createStoreActions } from '@/state/internal/utils/createStoreActions';
+import { time } from '@/utils/time';
 import { TriggerOrderType, HlTrade } from '../types';
 import { convertSide } from '../utils';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { subtract } from '@/helpers/utilities';
 
 type HlTradesParams = {
   address: Address | string | null;
@@ -19,7 +17,7 @@ type FetchHlTradesResponse = {
   tradesBySymbol: Record<string, HlTrade[]>;
 };
 
-export const tradeExecutionDescriptions = {
+export const tradeExecutionDescriptions = Object.freeze({
   takeProfitExecuted: 'Take Profit Executed',
   stopLossExecuted: 'Stop Loss Executed',
   longOpened: 'Long Opened',
@@ -28,7 +26,52 @@ export const tradeExecutionDescriptions = {
   shortClosed: 'Short Closed',
   longLiquidated: 'Long Liquidated',
   shortLiquidated: 'Short Liquidated',
+});
+
+type HlTradesStoreActions = {
+  getTrade: (tradeId: number) => HlTrade | undefined;
+  getTrades: () => HlTrade[] | undefined;
+  getTradesBySymbol: () => Record<string, HlTrade[]> | undefined;
 };
+
+export const useHlTradesStore = createQueryStore<FetchHlTradesResponse, HlTradesParams, HlTradesStoreActions>(
+  {
+    fetcher: fetchHlTrades,
+    cacheTime: time.days(1),
+    params: { address: $ => $(useHyperliquidClients).address },
+    staleTime: time.minutes(1),
+  },
+
+  (_, get) => ({
+    getTrade: (tradeId: number) =>
+      get()
+        .getData()
+        ?.trades.find(trade => trade.id === tradeId),
+
+    getTrades: () => get().getData()?.trades,
+
+    getTradesBySymbol: () => get().getData()?.tradesBySymbol,
+  })
+);
+
+export const hlTradesStoreActions = createStoreActions(useHlTradesStore);
+
+async function fetchHlTrades({ address }: HlTradesParams, abortController: AbortController | null): Promise<FetchHlTradesResponse> {
+  if (!address) throw new RainbowError('[HlTradesStore] Address is required');
+
+  // Both of these return the 2,000 most recent objects. `getFilledOrders` could support pagination, but `getHistoricalOrders` cannot.
+  const [historicalOrders, filledOrders] = await Promise.all([
+    getHyperliquidAccountClient().getHistoricalOrders(abortController?.signal),
+    getHyperliquidAccountClient().getFilledOrders(abortController?.signal),
+  ]);
+
+  const trades = createTradeHistory({ orders: historicalOrders, fills: filledOrders });
+
+  return {
+    trades,
+    tradesBySymbol: buildTradesBySymbol(trades),
+  };
+}
 
 function getTradeExecutionDescription(trade: Omit<HlTrade, 'description'>): string {
   const startPos = Number(trade.fillStartSize);
@@ -64,6 +107,7 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.
   const trade = {
     id: fill.tid,
     clientId: fill.cloid || undefined,
+    description: '',
     symbol: fill.coin,
     side: convertSide(order.side),
     price: fill.px,
@@ -72,7 +116,6 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.
     orderStartSize: order.origSz,
     pnl: fill.closedPnl,
     fee: fill.fee,
-    netPnl: subtract(fill.closedPnl, fill.fee),
     orderId: fill.oid,
     tradeId: fill.tid,
     txHash: fill.hash,
@@ -82,12 +125,11 @@ function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.
     orderType: order.orderType,
     triggerOrderType,
     triggerOrderPrice: order.triggerPx,
+    netPnl: fill.closedPnl,
   };
 
-  return {
-    ...trade,
-    description: getTradeExecutionDescription(trade),
-  };
+  trade.description = getTradeExecutionDescription(trade);
+  return trade;
 }
 
 function createTradeHistory({ orders, fills }: { orders: hl.OrderStatus<hl.FrontendOrder>[]; fills: hl.Fill[] }): HlTrade[] {
@@ -110,62 +152,8 @@ function createTradeHistory({ orders, fills }: { orders: hl.OrderStatus<hl.Front
 }
 
 function buildTradesBySymbol(trades: HlTrade[]): Record<string, HlTrade[]> {
-  return trades.reduce(
-    (acc, trade) => {
-      acc[trade.symbol] = [...(acc[trade.symbol] || []), trade];
-      return acc;
-    },
-    {} as Record<string, HlTrade[]>
-  );
+  return trades.reduce<Record<string, HlTrade[]>>((acc, trade) => {
+    acc[trade.symbol] = [...(acc[trade.symbol] || []), trade];
+    return acc;
+  }, {});
 }
-
-type HlTradesStoreState = {
-  trades: HlTrade[];
-  tradesBySymbol: Record<string, HlTrade[]>;
-};
-
-type HlTradesStoreActions = {
-  getTrade: (tradeId: number) => HlTrade | undefined;
-};
-
-type HlTradesStore = HlTradesStoreState & HlTradesStoreActions;
-
-async function fetchHlTrades({ address }: HlTradesParams): Promise<FetchHlTradesResponse> {
-  if (!address) throw new RainbowError('[HlTradesStore] Address is required');
-
-  const accountClient = getHyperliquidAccountClient(address);
-
-  // Both of these return the 2,000 most recent objects. `getFilledOrders` could support pagination, but `getHistoricalOrders` cannot.
-  const [historicalOrders, filledOrders] = await Promise.all([accountClient.getHistoricalOrders(), accountClient.getFilledOrders()]);
-
-  const trades = createTradeHistory({ orders: historicalOrders, fills: filledOrders });
-
-  return {
-    trades,
-    tradesBySymbol: buildTradesBySymbol(trades),
-  };
-}
-
-export const useHlTradesStore = createQueryStore<FetchHlTradesResponse, HlTradesParams, HlTradesStore>(
-  {
-    fetcher: fetchHlTrades,
-    setData: ({ data, set }) => {
-      set({
-        trades: data.trades,
-        tradesBySymbol: data.tradesBySymbol,
-      });
-    },
-    cacheTime: time.days(1),
-    params: {
-      address: $ => $(useWalletsStore).accountAddress,
-    },
-    staleTime: time.minutes(1),
-  },
-  (_, get) => ({
-    trades: [],
-    tradesBySymbol: {},
-    getTrade: (tradeId: number) => get().trades.find(trade => trade.id === tradeId),
-  })
-);
-
-export const hlTradesStoreActions = createStoreActions(useHlTradesStore);

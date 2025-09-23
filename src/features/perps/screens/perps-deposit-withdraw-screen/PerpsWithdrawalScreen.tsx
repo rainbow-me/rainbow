@@ -8,7 +8,7 @@ import ContactAvatar from '@/components/contacts/ContactAvatar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
-import { AnimatedText, Box, Separator, Text, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { InputValueCaret } from '@/features/perps/components/InputValueCaret';
 import { NumberPad } from '@/features/perps/components/NumberPad/NumberPad';
 import { NumberPadField } from '@/features/perps/components/NumberPad/NumberPadKey';
@@ -16,9 +16,8 @@ import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
-import { HYPERLIQUID_COLORS, USDC_ASSET } from '@/features/perps/constants';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { withdraw } from '@/features/perps/utils/hyperliquid';
+import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, USDC_ASSET } from '@/features/perps/constants';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import * as i18n from '@/languages';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/Routes';
@@ -86,10 +85,11 @@ const DepositInputSection = ({
 };
 
 export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
+  const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const insets = useSafeAreaInsets();
-  const { balance, status } = useHyperliquidAccountStore();
-  const balanceLoading = balance === '0' && status === 'loading';
+  const balance = useHyperliquidAccountStore(state => state.getBalance());
+  const isBalanceLoading = useHyperliquidAccountStore(state => state.status === 'loading' && state.getBalance() === '0');
   // TODO (kane): use neweset currency formatting
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
   const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
@@ -175,7 +175,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
     try {
       const amount = fields.value.inputAmount.value;
       // TODO: Handle min values.
-      await withdraw(String(amount));
+      await hyperliquidAccountActions.withdraw(String(amount));
       Navigation.goBack();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Generic error while trying to withdraw';
@@ -185,7 +185,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
     } finally {
       setLoading(false);
     }
-  }, [fields, withdraw]);
+  }, [fields]);
 
   const formattedValues = useDerivedValue(() => {
     return {
@@ -223,7 +223,13 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
 
   return (
     <PerpsAccentColorContextProvider>
-      <Box as={Page} height={DEVICE_HEIGHT} testID="perps-withdraw-screen" width="full">
+      <Box
+        as={Page}
+        backgroundColor={isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT}
+        height={DEVICE_HEIGHT}
+        testID="perps-withdraw-screen"
+        width="full"
+      >
         <SheetHandle extraPaddingTop={6} />
         <Navbar
           hasStatusBarInset
@@ -239,7 +245,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
           title={i18n.t(i18n.l.perps.withdraw.title)}
         />
         <View style={{ top: -10, alignSelf: 'center' }}>
-          {balanceLoading ? (
+          {isBalanceLoading ? (
             <PerpsTextSkeleton width={150} height={15} />
           ) : (
             <Text size="15pt" weight="bold" color="labelQuaternary">
@@ -249,7 +255,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
         </View>
 
         <Box alignItems="center" flexGrow={1} flexShrink={1}>
-          <DepositInputSection formattedInputAmount={formattedInputAmount} balanceLoading={balanceLoading} />
+          <DepositInputSection formattedInputAmount={formattedInputAmount} balanceLoading={isBalanceLoading} />
         </Box>
         <SliderWithLabels
           sliderXPosition={sliderXPosition}
@@ -290,7 +296,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
             <PerpsSwapButton
               label={getConfirmButtonLabel()}
               onLongPress={handleSwap}
-              disabled={loading || balanceLoading || inputAmountError != null}
+              disabled={isBalanceLoading || inputAmountError != null}
               disabledOpacity={inputAmountError != null ? 1 : undefined}
             />
           </Box>

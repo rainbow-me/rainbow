@@ -33,7 +33,7 @@ import { PerpBottomSheetHeader } from '@/features/perps/components/PerpBottomShe
 import { SheetHandleFixedToTop } from '@/components/sheet';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrderInput';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { colors } from '@/styles';
@@ -41,7 +41,6 @@ import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { calculateIsolatedLiquidationPrice } from '@/features/perps/utils/calculateLiquidationPrice';
 import { getApplicableMaxLeverage } from '@/features/perps/utils/getApplicableMaxLeverage';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-import { createTriggerOrder } from '@/features/perps/utils/hyperliquid';
 import { logger, RainbowError } from '@/logger';
 
 const PANEL_HEIGHT = 360;
@@ -229,7 +228,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
     if (isExistingPosition) {
       setIsSubmitting(true);
       try {
-        await createTriggerOrder({
+        await hyperliquidAccountActions.createTriggerOrder({
           symbol: market.symbol,
           triggerOrder: triggerOrderPayload,
         });

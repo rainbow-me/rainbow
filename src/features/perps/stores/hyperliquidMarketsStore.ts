@@ -4,10 +4,123 @@ import { time } from '@/utils/time';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { HYPERCORE_PSEUDO_CHAIN_ID } from '@/features/perps/constants';
 import { getPlatformClient } from '@/resources/platform/client';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { getAllMarketsInfo } from '@/features/perps/utils/hyperliquid';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
 
-// TODO: Should be using Partial<Record<string, PerpMarketWithMetadata>> but is causing unknown query store setData type error
-type PerpMarketsBySymbol = Record<string, PerpMarketWithMetadata>;
+type PerpMarketsBySymbol = Partial<Record<string, PerpMarketWithMetadata>>;
+
+type HyperliquidMarketsFetchData = {
+  markets: PerpMarketsBySymbol;
+};
+
+type HyperliquidMarketsStoreState = {
+  markets: PerpMarketsBySymbol;
+  sortOrder: MarketSortOrder;
+};
+
+type HyperliquidMarketsStoreActions = {
+  setSortOrder: (sortOrder: MarketSortOrder) => void;
+  getCoinIcon: (symbol: string) => string | undefined;
+  getColor: (symbol: string) => string | undefined;
+  getMarkets: () => PerpMarketsBySymbol;
+  getMarket: (symbol: string) => PerpMarketWithMetadata | undefined;
+  getFormattedPrice: (symbol: string) => string | undefined;
+};
+
+type HyperliquidMarketsStore = HyperliquidMarketsStoreState & HyperliquidMarketsStoreActions;
+
+export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFetchData, never, HyperliquidMarketsStore>(
+  {
+    fetcher: fetchHyperliquidMarkets,
+    setData: ({ data, set }) => set({ markets: data.markets }),
+    staleTime: time.minutes(5),
+  },
+
+  (set, get) => ({
+    markets: {},
+    sortOrder: MarketSortOrder.VOLUME,
+
+    setSortOrder: (sortOrder: MarketSortOrder) => set({ sortOrder }),
+
+    getCoinIcon: (symbol: string) => get().markets[symbol]?.metadata?.iconUrl,
+
+    getColor: (symbol: string) => {
+      const colors = get().markets[symbol]?.metadata?.colors;
+      return colors?.color || colors?.fallbackColor;
+    },
+
+    getFormattedPrice: (symbol: string) => {
+      const price = get().markets[symbol]?.price;
+      if (!price) return undefined;
+      return formatPerpAssetPrice(price);
+    },
+
+    getMarkets: () => get().markets,
+
+    getMarket: (symbol: string) => get().markets[symbol],
+  }),
+
+  {
+    partialize: state => ({
+      markets: state.markets,
+      sortOrder: state.sortOrder,
+    }),
+    storageKey: 'hyperliquidMarketsStore',
+  }
+);
+
+type SearchState = {
+  searchQuery: string;
+  setSearchQuery: (searchQuery: string) => void;
+};
+
+const useHyperliquidSearchStore = createRainbowStore<SearchState>(set => ({
+  searchQuery: '',
+  setSearchQuery: searchQuery => set({ searchQuery }),
+}));
+
+export const hyperliquidMarketsActions = createStoreActions(useHyperliquidMarketsStore, {
+  setSearchQuery: useHyperliquidSearchStore.getState().setSearchQuery,
+});
+
+export const useSortedHyperliquidMarkets = createDerivedStore(
+  $ => {
+    const markets = $(useHyperliquidMarketsStore, state => state.getMarkets());
+    const sortOrder = $(useHyperliquidMarketsStore, state => state.sortOrder);
+
+    return Object.values(markets)
+      .sort((a, b) => {
+        if (!a || !b) return 0;
+        switch (sortOrder) {
+          case MarketSortOrder.VOLUME:
+            return Number(b.volume['24h']) - Number(a.volume['24h']);
+          case MarketSortOrder.PRICE:
+            return Number(b.price) - Number(a.price);
+          case MarketSortOrder.CHANGE:
+            return Number(b.priceChange['24h']) - Number(a.priceChange['24h']);
+          case MarketSortOrder.SYMBOL:
+            return a.symbol.localeCompare(b.symbol);
+          default:
+            return 0;
+        }
+      })
+      .filter(Boolean);
+  },
+  { fastMode: true }
+);
+
+export const useFilteredHyperliquidMarkets = createDerivedStore(
+  $ => {
+    const markets = $(useSortedHyperliquidMarkets, state => state);
+    const searchQuery = $(useHyperliquidSearchStore, state => state.searchQuery?.trim().toLowerCase());
+
+    if (!searchQuery) return markets;
+    return markets.filter(market => market.symbol.toLowerCase().includes(searchQuery));
+  },
+  { fastMode: true }
+);
 
 type TokensMetadataResponse = {
   metadata: {
@@ -19,27 +132,6 @@ type TokensMetadataResponse = {
   // The response includes more fields than the one defined below, but those fields should not be used
   result: Record<string, HyperliquidTokenMetadata>;
 };
-
-type HyperliquidMarketsFetchData = {
-  markets: PerpMarketsBySymbol;
-};
-
-type HyperliquidMarketsStoreState = {
-  markets: PerpMarketsBySymbol;
-  sortOrder: MarketSortOrder;
-  searchQuery: string;
-};
-
-type HyperliquidMarketsStoreActions = {
-  setSortOrder: (sortOrder: MarketSortOrder) => void;
-  setSearchQuery: (searchQuery: string) => void;
-  getSearchResults: () => PerpMarketWithMetadata[];
-  getMarkets: () => PerpMarketsBySymbol;
-  getMarket: (symbol: string) => PerpMarketWithMetadata | undefined;
-  getSortedMarkets: () => PerpMarketWithMetadata[];
-};
-
-type HyperliquidMarketsStore = HyperliquidMarketsStoreState & HyperliquidMarketsStoreActions;
 
 async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsFetchData> {
   const allMarketsInfo = await getAllMarketsInfo();
@@ -64,65 +156,6 @@ async function fetchHyperliquidMarkets(): Promise<HyperliquidMarketsFetchData> {
     }, {}),
   };
 }
-
-export const useHyperliquidMarketsStore = createQueryStore<HyperliquidMarketsFetchData, never, HyperliquidMarketsStore>(
-  {
-    fetcher: fetchHyperliquidMarkets,
-    setData: ({ data, set }) => set({ markets: data.markets }),
-    staleTime: time.minutes(5),
-  },
-
-  (set, get) => ({
-    markets: {},
-    sortOrder: MarketSortOrder.VOLUME,
-    searchQuery: '',
-
-    setSortOrder: (sortOrder: MarketSortOrder) => set({ sortOrder }),
-    setSearchQuery: (searchQuery: string) => set({ searchQuery }),
-    getMarkets: () => {
-      const { markets } = get();
-      return markets;
-    },
-    getMarket: (symbol: string) => {
-      const { markets } = get();
-      return markets[symbol];
-    },
-    getSortedMarkets: () => {
-      const { markets, sortOrder } = get();
-      const marketsList = Object.values(markets);
-      return marketsList.sort((a, b) => {
-        switch (sortOrder) {
-          case MarketSortOrder.VOLUME:
-            return Number(b.volume['24h']) - Number(a.volume['24h']);
-          case MarketSortOrder.PRICE:
-            return Number(b.price) - Number(a.price);
-          case MarketSortOrder.CHANGE:
-            return Number(b.priceChange['24h']) - Number(a.priceChange['24h']);
-          case MarketSortOrder.SYMBOL:
-            return a.symbol.localeCompare(b.symbol);
-          default:
-            return 0;
-        }
-      });
-    },
-    getSearchResults: () => {
-      const { searchQuery } = get();
-      const marketsList = get().getSortedMarkets();
-
-      let filteredMarketsList = marketsList;
-
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        filteredMarketsList = marketsList.filter(market => market.symbol.toLowerCase().includes(query));
-      }
-
-      return filteredMarketsList;
-    },
-  }),
-  { storageKey: 'hlMarkets' }
-);
-
-export const hyperliquidMarketStoreActions = createStoreActions(useHyperliquidMarketsStore);
 
 function buildHypercoreTokenId(symbol: string): string {
   return `${symbol.toLowerCase()}:${HYPERCORE_PSEUDO_CHAIN_ID}`;

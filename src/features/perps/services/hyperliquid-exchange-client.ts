@@ -15,26 +15,50 @@ import {
   getMarketType,
 } from '@/features/perps/utils/orders';
 import { getOppositePositionSide } from '@/features/perps/utils';
+import { getProvider } from '@/handlers/web3';
+import { ChainId } from '@/state/backendNetworks/types';
+import { loadWallet } from '@/model/wallet';
 
 type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
 export class HyperliquidExchangeClient {
-  private exchangeClient: hl.ExchangeClient;
   private accountClient: HyperliquidAccountClient;
+  private exchangeClient: Promise<hl.ExchangeClient> | undefined;
+  private userAddress: Address;
 
-  constructor(
-    private userAddress: Address,
-    wallet: Wallet
-  ) {
-    this.exchangeClient = new hl.ExchangeClient({
-      transport: new hl.HttpTransport(),
-      wallet: wallet,
-    });
-    this.accountClient = new HyperliquidAccountClient(userAddress);
+  constructor(accountClient: HyperliquidAccountClient, userAddress: Address) {
+    this.accountClient = accountClient;
+    this.userAddress = userAddress;
   }
 
-  async withdraw(amount: string) {
-    await this.exchangeClient.withdraw3({
+  private async getExchangeClient(): Promise<hl.ExchangeClient> {
+    if (!this.exchangeClient) {
+      this.exchangeClient = (async () => {
+        const wallet = await loadWallet({
+          address: this.userAddress,
+          provider: getProvider({ chainId: ChainId.arbitrum }),
+          showErrorIfNotLoaded: false,
+        });
+
+        if (!wallet) throw new Error('[HyperliquidExchangeClient] Failed to load wallet for signing');
+        // const localWallet: Wallet | undefined = '_isSigner' in wallet ? undefined : wallet;
+
+        return new hl.ExchangeClient({
+          transport: new hl.HttpTransport(),
+          // wallet: localWallet ?? (wallet as Wallet),
+          wallet: wallet as Wallet,
+        });
+      })();
+    }
+
+    const client = await this.exchangeClient;
+    return client;
+  }
+
+  async withdraw(amount: string): Promise<void> {
+    await (
+      await this.getExchangeClient()
+    ).withdraw3({
       destination: this.userAddress,
       amount,
     });
@@ -67,7 +91,7 @@ export class HyperliquidExchangeClient {
   }): Promise<hl.OrderSuccessResponse> {
     await Promise.all([
       // TODO (kane): technically we should not call this if the leverage is already set to the desired value
-      this.exchangeClient.updateLeverage({
+      (await this.getExchangeClient()).updateLeverage({
         asset: assetId,
         isCross: false,
         leverage,
@@ -108,7 +132,9 @@ export class HyperliquidExchangeClient {
       orders.push(hlTriggerOrder);
     }
 
-    return await this.exchangeClient.order({
+    return await (
+      await this.getExchangeClient()
+    ).order({
       orders,
       // You might think that grouping: positionTpsl would be for submitting a trigger order with the base order, but it is not, that will result in an error
       grouping: 'na',
@@ -148,7 +174,9 @@ export class HyperliquidExchangeClient {
       size: orderSize,
     });
 
-    return await this.exchangeClient.order({
+    return await (
+      await this.getExchangeClient()
+    ).order({
       orders: [triggerOrder],
       grouping: 'na',
       builder: RAINBOW_BUILDER_SETTINGS,
@@ -182,7 +210,9 @@ export class HyperliquidExchangeClient {
 
     await this.ensureApprovedBuilderFee();
 
-    const result = await this.exchangeClient.order({
+    const result = await (
+      await this.getExchangeClient()
+    ).order({
       orders: [closeOrder],
       grouping: 'na',
       builder: RAINBOW_BUILDER_SETTINGS,
@@ -192,7 +222,9 @@ export class HyperliquidExchangeClient {
   }
 
   async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<CancelSuccessResponse> {
-    return await this.exchangeClient.cancel({
+    return await (
+      await this.getExchangeClient()
+    ).cancel({
       cancels: [{ a: assetId, o: orderId }],
     });
   }
@@ -201,7 +233,9 @@ export class HyperliquidExchangeClient {
     const isApproved = await this.accountClient.isBuilderFeeApproved();
     if (isApproved) return;
 
-    return await this.exchangeClient.approveBuilderFee({
+    return await (
+      await this.getExchangeClient()
+    ).approveBuilderFee({
       builder: RAINBOW_BUILDER_SETTINGS.b,
       maxFeeRate: toMaxFeeRate(RAINBOW_BUILDER_SETTINGS.f),
     });

@@ -1,18 +1,19 @@
 import React from 'react';
-import { Box, useBackgroundColor, useColorMode } from '@/design-system';
+import { Box, useColorMode } from '@/design-system';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IS_ANDROID } from '@/env';
-import { HANDLE_COLOR, LIGHT_HANDLE_COLOR } from '@/features/perps/constants';
-export interface SheetHandleProps {
+import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+
+export type SheetHandleProps = {
   extraPaddingTop?: number;
   backgroundColor?: string;
   withoutGradient?: boolean;
-}
+};
 
 export const SheetHandle = ({ extraPaddingTop = IS_ANDROID ? 24 : 12, backgroundColor, withoutGradient }: SheetHandleProps) => {
   const { isDarkMode } = useColorMode();
-  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
+  const screenBackgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const safeAreaInsets = useSafeAreaInsets();
 
   return (

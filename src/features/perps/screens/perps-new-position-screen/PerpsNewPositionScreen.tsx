@@ -1,51 +1,55 @@
 import React, { memo } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import { Bleed, Box, Separator, Stack, useBackgroundColor } from '@/design-system';
+import { Keyboard, ScrollView } from 'react-native';
+import { Bleed, Box, Separator, Stack, useColorMode } from '@/design-system';
 import { AmountInputCard } from './AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
-import { PositionSideSelector } from './PositionSideSelector';
+import { POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING, PositionSideSelector } from './PositionSideSelector';
 import { DetailsSection } from './DetailsSection';
+import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
-import { FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
-import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { FOOTER_HEIGHT_WITH_SAFE_AREA, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { MarketInfoSection } from './MarketInfoSection';
 import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountInputError';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { HeaderFade } from '@/features/perps/components/HeaderFade';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
+  const { isDarkMode } = useColorMode();
   const market = useHlNewPositionStore(state => state.market);
-  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
+  const screenBackgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
+
+  useOnLeaveRoute(Keyboard.dismiss);
 
   if (!market) return null;
 
   return (
-    <Box background={'surfacePrimary'} style={{ flex: 1 }}>
-      {/* TODO (kane): shadow - disabled for now - is being clipped, might be able to fix by moving to a sticky header */}
-      <Box overflow={'visible'} paddingTop={'8px'} justifyContent={'center'} alignItems={'center'}>
-        <PositionSideSelector />
-      </Box>
+    <Box backgroundColor={screenBackgroundColor} style={{ flex: 1, width: '100%' }}>
       <Box style={{ flex: 1, position: 'relative', overflow: 'visible' }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentInset={{ bottom: FOOTER_HEIGHT_WITH_SAFE_AREA }}
-          contentContainerStyle={{ paddingHorizontal: 20, overflow: 'visible' }}
+          contentContainerStyle={{ paddingHorizontal: 20, overflow: 'visible', paddingTop: POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING }}
         >
           <Box paddingTop={'24px'}>
-            <Stack space={'24px'} separator={<Separator color={'separatorTertiary'} direction="horizontal" />}>
-              <MarketInfoSection market={market} />
-              <Box gap={17}>
-                <Box gap={24}>
-                  <Bleed horizontal={'20px'}>
-                    <Box paddingHorizontal={'20px'}>
-                      {/* key is used to force a re-render of the component when the market changes so that the initial amount is set correctly */}
-                      <AmountInputCard key={market.symbol} />
-                      <AmountInputError />
-                    </Box>
-                  </Bleed>
-                  <LeverageInputCard maxLeverage={market.maxLeverage} />
+            <Stack
+              space={'24px'}
+              separator={
+                <Box paddingHorizontal={'8px'}>
+                  <Separator color={'separatorTertiary'} thickness={THICK_BORDER_WIDTH} />
                 </Box>
+              }
+            >
+              <MarketInfoSection market={market} />
+              <Box gap={20}>
+                <Bleed horizontal={'20px'}>
+                  <Box paddingHorizontal="20px">
+                    <AmountInputCard />
+                    <AmountInputError />
+                  </Box>
+                </Bleed>
+                <LeverageInputCard />
                 <Box paddingHorizontal={'8px'}>
                   <LiquidationInfo market={market} />
                 </Box>
@@ -55,27 +59,20 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
             </Stack>
           </Box>
         </ScrollView>
-        <EasingGradient
-          endColor={screenBackgroundColor}
-          startColor={screenBackgroundColor}
-          endOpacity={0}
-          startOpacity={1}
-          style={styles.easingGradient}
-        />
+
+        <HeaderFade topInset={POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING} />
+        <Box
+          backgroundColor={screenBackgroundColor}
+          overflow={'visible'}
+          paddingTop={'8px'}
+          position={'absolute'}
+          justifyContent={'center'}
+          alignItems={'center'}
+          style={{ alignSelf: 'center', width: '100%', zIndex: 1000 }}
+        >
+          <PositionSideSelector />
+        </Box>
       </Box>
     </Box>
   );
-});
-
-const styles = StyleSheet.create({
-  easingGradient: {
-    height: 32,
-    width: DEVICE_WIDTH,
-    pointerEvents: 'none',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-  },
 });

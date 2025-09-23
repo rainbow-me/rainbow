@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { HYPERLIQUID_GREEN, HYPERLIQUID_GREEN_LIGHT } from '@/features/perps/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 const theme = {
   dark: {
@@ -27,6 +28,11 @@ type PerpsAccentColors = {
   opacity1: string;
   surfacePrimary: string;
   gradient: string[];
+  priceChangeColors: {
+    positive: string;
+    negative: string;
+    neutral: string;
+  };
   slider: {
     activeLeft: string;
     inactiveLeft: string;
@@ -74,6 +80,11 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
       opacity1: opacityWorklet(primary, 0.01),
       surfacePrimary: isDarkMode ? '#171E20' : 'white',
       gradient: isDarkMode ? ['#72FFD9', '#3ECFAD'] : ['#31C8A4'],
+      priceChangeColors: {
+        positive: getColorForTheme('green', isDarkMode ? 'dark' : 'light'),
+        negative: getColorForTheme('red', isDarkMode ? 'dark' : 'light'),
+        neutral: getColorForTheme('labelTertiary', isDarkMode ? 'dark' : 'light'),
+      },
       slider: {
         activeLeft: primary,
         inactiveLeft: primary,

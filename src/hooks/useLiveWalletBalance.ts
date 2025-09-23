@@ -1,3 +1,4 @@
+import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
 import { add, convertAmountToNativeDisplay, greaterThan, multiply, subtract } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { usePositionsStore } from '@/state/positions/positions';
@@ -6,8 +7,6 @@ import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createDerivedStore } from '@/state/internal/createDerivedStore';
 import { shallowEqual, deepEqual } from '@/worklets/comparisons';
-import { useCurrencyConversionStore } from '@/features/perps/stores/currencyConversionStore';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 
 export const useLiveWalletBalance = createDerivedStore(
   $ => {
@@ -16,18 +15,14 @@ export const useLiveWalletBalance = createDerivedStore(
     const userAssets = $(useUserAssetsStore, state => state.userAssets);
     const isFetching = $(useUserAssetsStore, state => state.status === 'loading');
     const params = $(userAssetsStoreManager, state => ({ address: state.address, currency: state.currency }), shallowEqual);
-    const usdToNativeCurrencyConversionRate = $(
-      useCurrencyConversionStore,
-      state => state.getData({ toCurrency: params.currency })?.usdToNativeCurrencyConversionRate || 1
-    );
+    const perpsBalanceNative = $(useHyperliquidBalance);
+
     const claimablesBalance = $(useClaimablesStore, state => state.getData(params)?.totalValueAmount || '0');
     const positionsBalance = $(usePositionsStore, state => {
       const data = state.getData(params);
       if (!data) return '0';
       return subtract(data.totals.total.amount, data.totals.totalLocked);
     });
-    const perpsBalanceUsd = $(useHyperliquidAccountStore, state => state.value);
-    const perpsBalanceNative = multiply(perpsBalanceUsd, usdToNativeCurrencyConversionRate);
 
     let valueDifference = '0';
     if (liveTokens) {
@@ -57,5 +52,5 @@ export const useLiveWalletBalance = createDerivedStore(
     return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, params.currency);
   },
 
-  { debounce: 250, equalityFn: deepEqual }
+  { debounce: 250, equalityFn: deepEqual, fastMode: true }
 );

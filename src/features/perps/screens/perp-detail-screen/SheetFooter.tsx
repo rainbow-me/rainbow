@@ -36,8 +36,10 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
     InteractionManager.runAfterInteractions(() => {
       // Arbitrary delay to avoid being visually jarring
       setTimeout(() => {
-        navigateToNewPositionScreen(market);
-      }, 75);
+        InteractionManager.runAfterInteractions(() => {
+          navigateToNewPositionScreen(market);
+        });
+      }, 150);
     });
   }, [market, navigation]);
 
