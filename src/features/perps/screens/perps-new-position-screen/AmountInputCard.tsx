@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useCallback, useRef, useEffect } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT, INPUT_CARD_HEIGHT } from '@/features/perps/constants';
@@ -8,9 +8,11 @@ import { Slider } from '@/features/perps/components/Slider';
 import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
-import { hlNewPositionStoreActions } from '@/features/perps/stores/hlNewPositionStore';
-import { divide } from '@/helpers/utilities';
+import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { divide, isEqual } from '@/helpers/utilities';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { usePrevious } from '@/hooks';
+import { truncateToDecimals } from '@/safe-math/SafeMath';
 
 const AmountSlider = ({
   sliderXPosition,
@@ -84,10 +86,31 @@ export const AmountInputCard = memo(function AmountInputCard() {
   const sliderXPosition = useSharedValue(0.5 * SLIDER_WIDTH);
   const initialAmount = formatInput(formatDisplay(divide(availableBalanceString, 2)));
   const inputValue = useSharedValue(initialAmount);
+  const currentAmount = useHlNewPositionStore(state => state.amount);
+  const prevAvailableBalance = usePrevious(availableBalance);
+  // Truncate instead of round to prevent showing more balance than available
+  const availableBalanceDisplay = formatCurrency(truncateToDecimals(availableBalanceString, 2));
 
   const setAmount = useCallback((amount: string) => {
     hlNewPositionStoreActions.setAmount(amount);
   }, []);
+
+  // Update the input amount when the available balance changes and the user has selected the max amount
+  // This can only happen when the user has an open cross margin position
+  useEffect(() => {
+    const hadSetMax =
+      prevAvailableBalance !== undefined && availableBalance !== prevAvailableBalance && isEqual(currentAmount, prevAvailableBalance);
+
+    if (hadSetMax) {
+      const formattedAmount = formatInput(String(availableBalance));
+      if (inputRef.current) {
+        inputRef.current.setValue(formattedAmount);
+      }
+      setAmount(formattedAmount);
+      const newSliderX = SLIDER_WIDTH;
+      sliderXPosition.value = withSpring(newSliderX, SPRING_CONFIGS.sliderConfig);
+    }
+  }, [availableBalance, setAmount, sliderXPosition, prevAvailableBalance, currentAmount]);
 
   const onChangeValue = useCallback(
     (value: string) => {
@@ -143,7 +166,7 @@ export const AmountInputCard = memo(function AmountInputCard() {
             {'Amount'}
           </Text>
           <Text size="15pt" weight="heavy" color="labelSecondary">
-            {formatCurrency(availableBalanceString)}
+            {availableBalanceDisplay}
             <Text size="15pt" weight="bold" color="labelQuaternary">
               {' Available'}
             </Text>

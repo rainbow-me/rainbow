@@ -14,7 +14,8 @@ export const RAINBOW_BUILDER_SETTINGS = {
 } as const satisfies HlBuilderSettings;
 export const HYPERCORE_PSEUDO_CHAIN_ID = 1337;
 // The minimum total order size (margin * leverage)
-export const MIN_ORDER_SIZE_USD = 10;
+// Add 1% buffer to account for decimal precision in position size calculation
+export const MIN_ORDER_SIZE_USD = 10 * 1.01;
 
 export const FOOTER_HEIGHT = 110;
 export const FOOTER_HEIGHT_WITH_SAFE_AREA = 110 + safeAreaInsetValues.bottom;

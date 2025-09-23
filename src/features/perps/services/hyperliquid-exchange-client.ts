@@ -3,7 +3,7 @@ import * as hl from '@nktkas/hyperliquid';
 import { CancelSuccessResponse, OrderParams } from '@nktkas/hyperliquid/script/src/types/mod';
 import { Address, Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS } from '../constants';
-import { PerpPositionSide, TriggerOrder } from '../types';
+import { PerpPositionSide, TriggerOrder, TriggerOrderType } from '../types';
 import { HyperliquidAccountClient } from './hyperliquid-account-client';
 import { Wallet } from '@ethersproject/wallet';
 import { isPositive, toFixedWorklet } from '@/safe-math/SafeMath';
@@ -111,6 +111,45 @@ export class HyperliquidExchangeClient {
     return await this.exchangeClient.order({
       orders,
       // You might think that grouping: positionTpsl would be for submitting a trigger order with the base order, but it is not, that will result in an error
+      grouping: 'na',
+      builder: RAINBOW_BUILDER_SETTINGS,
+    });
+  }
+
+  async createTriggerOrder({
+    assetId,
+    side,
+    triggerPrice,
+    type,
+    orderFraction,
+    positionSize,
+    sizeDecimals,
+  }: {
+    assetId: number;
+    side: PerpPositionSide;
+    triggerPrice: string;
+    type: TriggerOrderType;
+    orderFraction: string;
+    positionSize: string;
+    sizeDecimals: number;
+  }): Promise<hl.OrderSuccessResponse> {
+    await this.ensureApprovedBuilderFee();
+
+    const marketType = getMarketType(assetId);
+    const formattedTriggerPrice = formatOrderPrice({ price: triggerPrice, sizeDecimals, marketType });
+    const formattedPositionSize = toFixedWorklet(positionSize, sizeDecimals);
+    const orderSize = orderFraction === '1' ? '0' : toFixedWorklet(multiply(formattedPositionSize, orderFraction), sizeDecimals);
+
+    const triggerOrder = buildMarketTriggerOrder({
+      assetId,
+      side,
+      triggerPrice: formattedTriggerPrice,
+      type,
+      size: orderSize,
+    });
+
+    return await this.exchangeClient.order({
+      orders: [triggerOrder],
       grouping: 'na',
       builder: RAINBOW_BUILDER_SETTINGS,
     });

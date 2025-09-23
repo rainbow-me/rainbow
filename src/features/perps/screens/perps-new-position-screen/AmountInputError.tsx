@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useOrderAmountValidation } from '@/features/perps/hooks/useOrderAmountValidation';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { truncateToDecimals } from '@/safe-math/SafeMath';
 
 export const AmountInputError = memo(function AmountInputError() {
   const { isBelowMin, isAboveMax, minAmount, maxAmount } = useOrderAmountValidation();
@@ -19,7 +20,7 @@ export const AmountInputError = memo(function AmountInputError() {
         <Text color="labelTertiary" size="15pt" weight="bold">
           {errorMessage}
           <Text color="labelSecondary" size="15pt" weight="heavy">
-            {`${formatCurrency(errorAmount)}`}
+            {`${formatCurrency(truncateToDecimals(errorAmount, 2))}`}
           </Text>
         </Text>
       </Inline>

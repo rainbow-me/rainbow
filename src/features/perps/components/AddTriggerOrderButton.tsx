@@ -1,6 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, TextShadow, Text } from '@/design-system';
-import { TriggerOrderType } from '@/features/perps/types';
+import { TriggerOrderType, TriggerOrderSource } from '@/features/perps/types';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { useCallback } from 'react';
 import { Navigation } from '@/navigation';
@@ -9,10 +9,16 @@ import Routes from '@/navigation/routesNames';
 type AddTriggerOrderButtonProps = {
   symbol: string;
   type: TriggerOrderType;
-  disabled: boolean;
+  disabled?: boolean;
+  source?: TriggerOrderSource;
 };
 
-export const AddTriggerOrderButton = function AddTriggerOrderButton({ symbol, type, disabled }: AddTriggerOrderButtonProps) {
+export const AddTriggerOrderButton = function AddTriggerOrderButton({
+  symbol,
+  type,
+  disabled = false,
+  source = TriggerOrderSource.EXISTING,
+}: AddTriggerOrderButtonProps) {
   const { accentColors } = usePerpsAccentColorContext();
 
   const navigateToTriggerOrderSheet = useCallback(
@@ -20,9 +26,10 @@ export const AddTriggerOrderButton = function AddTriggerOrderButton({ symbol, ty
       Navigation.handleAction(Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET, {
         triggerOrderType,
         symbol,
+        source,
       });
     },
-    [symbol]
+    [symbol, source]
   );
 
   return (

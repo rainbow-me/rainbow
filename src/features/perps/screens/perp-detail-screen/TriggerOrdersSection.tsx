@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useState } from 'react';
 import { Box, IconContainer, Inline, Text, TextShadow } from '@/design-system';
 import { HlOpenOrder, useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
-import { TriggerOrderType } from '@/features/perps/types';
+import { TriggerOrderSource, TriggerOrderType } from '@/features/perps/types';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
 import { isZero } from '@/helpers/utilities';
 import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
@@ -56,7 +56,12 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
   const { accentColors } = usePerpsAccentColorContext();
   const orders = useHlOpenOrdersStore(data => data.getData()?.ordersBySymbol[symbol] ?? []);
   const triggerOrders = orders.filter(order => order.triggerCondition !== null);
+  const hasExistingTakeProfit = triggerOrders.some(
+    order => order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit'
+  );
+  const hasExistingStopLoss = triggerOrders.some(order => order.orderType === 'Stop Market' || order.orderType === 'Stop Limit');
 
+  console.log('hasExistingTakeProfit', hasExistingTakeProfit);
   return (
     <Animated.View layout={LinearTransition.springify()}>
       <Box gap={24}>
@@ -79,19 +84,20 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
             ))}
           </Box>
         )}
-        {/* TODO (kane): implement, disabled for now */}
-        {/* <Box gap={12}>
-          <AddTriggerOrderButton
-            symbol={symbol}
-            type={TriggerOrderType.STOP_LOSS}
-            disabled={triggerOrders.some(order => order.orderType === 'Stop Market' || order.orderType === 'Stop Limit')}
-          />
+        <Box gap={12}>
           <AddTriggerOrderButton
             symbol={symbol}
             type={TriggerOrderType.TAKE_PROFIT}
-            disabled={triggerOrders.some(order => order.orderType === 'Take Profit Market' || order.orderType === 'Take Profit Limit')}
+            source={TriggerOrderSource.EXISTING}
+            disabled={hasExistingTakeProfit}
           />
-        </Box> */}
+          <AddTriggerOrderButton
+            symbol={symbol}
+            type={TriggerOrderType.STOP_LOSS}
+            source={TriggerOrderSource.EXISTING}
+            disabled={hasExistingStopLoss}
+          />
+        </Box>
       </Box>
     </Animated.View>
   );

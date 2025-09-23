@@ -9,12 +9,14 @@ import {
 import { MAX_SIG_FIGS, MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/features/perps/constants';
 
 function isInteger(rawBigInt: bigint, decimalPlaces: number): boolean {
+  'worklet';
   if (decimalPlaces <= 0) return true;
   const divisor = BigInt(10) ** BigInt(decimalPlaces);
   return rawBigInt % divisor === 0n;
 }
 
 function calculateDecimalsForSignificantFigures(input: string): number {
+  'worklet';
   const magnitude = orderOfMagnitudeWorklet(input);
 
   if (magnitude >= 0) {
@@ -38,6 +40,7 @@ export function formatOrderPrice({
   sizeDecimals: number;
   marketType?: 'perp' | 'spot';
 }): string {
+  'worklet';
   const input = (price ?? '').toString().trim();
 
   if (!input || !isNumberStringWorklet(input)) {

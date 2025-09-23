@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
 import { Box, Text, useForegroundColor } from '@/design-system';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatPriceChange } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
+import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 
 type MarketInfoSectionProps = {
   market: PerpMarket;
@@ -25,10 +25,10 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
         <Box flexDirection="row" alignItems="center" gap={8}>
           <LiveTokenText
             tokenId={`${market.symbol}:hl`}
-            initialValue={formatAssetPrice({ value: market.midPrice ?? market.price, currency: 'USD' })}
+            initialValue={formatPerpAssetPrice(market.midPrice ?? market.price)}
             initialValueLastUpdated={0}
             selector={token => {
-              return formatAssetPrice({ value: token.midPrice ?? token.price, currency: 'USD' });
+              return formatPerpAssetPrice(token.midPrice ?? token.price);
             }}
             size="15pt"
             weight="bold"

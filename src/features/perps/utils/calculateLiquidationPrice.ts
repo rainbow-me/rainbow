@@ -27,30 +27,23 @@ export function calculateIsolatedLiquidationPrice({
   leverage: number;
   maxLeverage: number;
 }) {
+  'worklet';
+
   const isLong = positionSide === PerpPositionSide.LONG;
   const side = isLong ? 1 : -1;
 
-  // Calculate initial margin (collateral)
   const positionValue = marginAmount * entryPrice;
   const isolatedMargin = positionValue / leverage;
 
-  // Calculate maintenance margin rate
-  // From Hyperliquid docs: maintenance_margin_rate = (1 / maxLeverage) / 2
   const maintenanceMarginRate = 1 / maxLeverage / 2;
   const maintenanceMarginRequired = positionValue * maintenanceMarginRate;
 
-  // Calculate margin available
   const marginAvailable = isolatedMargin - maintenanceMarginRequired;
 
-  // Calculate maintenance leverage (used in liquidation formula)
-  // MAINTENANCE_LEVERAGE = 2 * maxLeverage (since maintenance margin is half of initial at max leverage)
   const maintenanceLeverage = 2 * maxLeverage;
   const l = 1 / maintenanceLeverage;
 
-  // Apply Hyperliquid's liquidation price formula:
-  // liq_price = price - side * margin_available / position_size / (1 - l * side)
   const liquidationPrice = entryPrice - (side * marginAvailable) / marginAmount / (1 - l * side);
 
-  // Ensure liquidation price is positive
   return Math.max(0, liquidationPrice);
 }
