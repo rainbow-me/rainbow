@@ -5,7 +5,6 @@ import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocuse
 import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { PERPS_COLORS } from '@/features/perps/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
@@ -153,8 +152,8 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   const positionSide = useHlNewPositionStore(state => state.positionSide);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const green = PERPS_COLORS.longGreen;
-  const red = PERPS_COLORS.shortRed;
+  const green = accentColors.longGreen;
+  const red = accentColors.shortRed;
 
   const button = useMemo(() => {
     const isLong = positionSide === PerpPositionSide.LONG;

@@ -1,15 +1,7 @@
 import * as hl from '@nktkas/hyperliquid';
 import { Hex } from 'viem';
 
-export type FrontendOrder = hl.FrontendOrder;
-
 export type OrderSide = 'buy' | 'sell';
-
-// TODO (kane): this is a bad name / type, we need to figure out how we want to handle multiple tp/sl orders on the same position
-export type Order = {
-  orders: FrontendOrder[];
-  price: string;
-};
 
 export type PerpMarket = {
   id: number;
@@ -46,23 +38,6 @@ export type PerpMarketWithMetadata = PerpMarket & {
   metadata?: HyperliquidTokenMetadata;
 };
 
-export type FilledOrder = {
-  timestamp: Date;
-  symbol: string;
-  description: string;
-  side: OrderSide;
-  size: string;
-  price: string;
-  value: string;
-  pnl: string;
-  fee: string;
-  orderId: number;
-  tradeId: number;
-  txHash: string;
-  isLiquidation: boolean;
-  liquidationType?: 'market' | 'backstop';
-};
-
 export type PerpsPosition = {
   symbol: string;
   side: PerpPositionSide;
@@ -87,11 +62,6 @@ export type PerpAccount = {
 export enum PerpPositionSide {
   LONG = 'LONG',
   SHORT = 'SHORT',
-}
-
-export enum OrderType {
-  MARKET = 'MARKET',
-  LIMIT = 'LIMIT',
 }
 
 export enum MarketSortOrder {

@@ -2,7 +2,7 @@ import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
 import { PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import { divide, multiply } from '@/helpers/utilities';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { OrderParams, TIF } from '@nktkas/hyperliquid/script/src/types/mod';
 
 export function getMarketType(assetId: number): 'perp' | 'spot' {
@@ -99,4 +99,17 @@ export function buildMarketOrder({
     r: reduceOnly,
     t: { limit: { tif } },
   };
+}
+
+export function calculatePositionSize({
+  marginAmount,
+  entryPrice,
+  leverage,
+}: {
+  marginAmount: string;
+  entryPrice: string;
+  leverage: number;
+}) {
+  'worklet';
+  return divWorklet(mulWorklet(marginAmount, leverage), entryPrice);
 }

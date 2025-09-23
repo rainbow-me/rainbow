@@ -90,7 +90,7 @@ export class HyperliquidExchangeClient {
     triggerOrders?: TriggerOrder[];
   }): Promise<hl.OrderSuccessResponse> {
     await Promise.all([
-      // TODO (kane): technically we should not call this if the leverage is already set to the desired value
+      // TODO: This step could be skipped if we have already traded this asset in the session
       (await this.getExchangeClient()).updateLeverage({
         asset: assetId,
         isCross: false,

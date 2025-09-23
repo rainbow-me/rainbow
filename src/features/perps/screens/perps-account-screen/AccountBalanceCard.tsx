@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
-import { HYPERLIQUID_GREEN, USDC_ICON_URL } from '@/features/perps/constants';
+import { USDC_ICON_URL } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -38,8 +38,8 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
               {'AVAILABLE BALANCE'}
             </Text>
             <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
-              <TextShadow color={HYPERLIQUID_GREEN} blur={16} shadowOpacity={0.24}>
-                <Text color={{ custom: HYPERLIQUID_GREEN }} size="17pt" weight="heavy">
+              <TextShadow color={accentColors.opacity100} blur={16} shadowOpacity={0.24}>
+                <Text color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy">
                   {formattedBalance}
                 </Text>
               </TextShadow>
@@ -64,9 +64,9 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
                 borderColor={{ custom: accentColors.opacity6 }}
               >
                 <TextShadow color={accentColors.opacity100} blur={12} shadowOpacity={0.24}>
-                  <Text align="center" color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="black">
+                  <TextIcon align="center" color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="black">
                     {'􀅽'}
-                  </Text>
+                  </TextIcon>
                 </TextShadow>
               </Box>
             </ButtonPressAnimation>

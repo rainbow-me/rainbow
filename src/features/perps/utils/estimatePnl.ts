@@ -1,19 +1,21 @@
 import { HYPERLIQUID_MAKER_FEE_BIPS, HYPERLIQUID_TAKER_FEE_BIPS, RAINBOW_FEE_BIPS } from '@/features/perps/constants';
 import { calculateTradingFee } from '@/features/perps/utils/calculateTradingFee';
-import { divWorklet, mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
+import { calculatePositionSize } from '@/features/perps/utils/orders';
+import { mulWorklet, subWorklet, sumWorklet } from '@/safe-math/SafeMath';
 
-// TODO (kane): name this something better to make it clear it's only for non opened positions
-// This function allows us to estimate the PnL for a position that has not yet been opened
-// Passing in the margin and leverage when we do not yet have a real position size
+/**
+ * Estimates the PnL for a hypothetical position that has not yet been opened.
+ * Useful for previewing PnL based on margin and leverage before an actual position exists.
+ */
 export function estimatePnl(params: {
   entryPrice: string;
   exitPrice: string;
   margin: string;
-  leverage: string | number;
+  leverage: number;
   isLong: boolean;
   takerFeeBips?: number;
   makerFeeBips?: number;
-  /** Optional: Whether the exit order is a maker order (limit) or taker (market) */
+  // Whether the exit order is a maker order (limit) or taker (market)
   isMakerOrder?: boolean;
   includeFees?: boolean;
 }): string {
@@ -31,8 +33,7 @@ export function estimatePnl(params: {
     includeFees = true,
   } = params;
 
-  const notionalValue = mulWorklet(margin, leverage);
-  const positionSize = divWorklet(notionalValue, entryPrice);
+  const positionSize = calculatePositionSize({ marginAmount: margin, entryPrice, leverage });
   const priceDiff = subWorklet(exitPrice, entryPrice);
   const grossProfit = isLong ? mulWorklet(positionSize, priceDiff) : mulWorklet(positionSize, mulWorklet('-1', priceDiff));
 

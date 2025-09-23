@@ -22,10 +22,8 @@ function calculatePositionSize({
   leverage: string | number;
 }): string {
   'worklet';
-  const leverageStr = typeof leverage === 'number' ? leverage.toString() : leverage;
-  const marginTimesLeverage = mulWorklet(marginAmount, leverageStr);
-  if (equalWorklet(entryPrice, '0')) return '0';
-  return divWorklet(marginTimesLeverage, entryPrice);
+  const notionalValue = mulWorklet(marginAmount, leverage);
+  return divWorklet(notionalValue, entryPrice);
 }
 
 /**

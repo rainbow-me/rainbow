@@ -171,7 +171,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
       entryPrice: liveTokenPrice.value,
       exitPrice: targetPrice,
       margin: amount,
-      leverage: String(leverage),
+      leverage,
       isLong,
       // We don't include fees because it can be confusing for the user to see a negative projected PnL despite setting a price higher/lower than the current price
       includeFees: false,

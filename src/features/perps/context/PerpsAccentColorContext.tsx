@@ -1,8 +1,12 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useColorMode } from '@/design-system';
-import { getColorForTheme } from '@/design-system/color/useForegroundColor';
-import { HYPERLIQUID_GREEN, HYPERLIQUID_GREEN_LIGHT } from '@/features/perps/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorForTheme } from '@/design-system/color/useForegroundColor';
+
+const HYPERLIQUID_GREEN = '#3ECFAD';
+const HYPERLIQUID_GREEN_LIGHT = '#31C8A4';
+const SHORT_RED = '#C4362D';
+const LONG_GREEN = '#23D246';
 
 const theme = {
   dark: {
@@ -40,6 +44,8 @@ type PerpsAccentColors = {
     activeRight: string;
     inactiveRight: string;
   };
+  shortRed: string;
+  longGreen: string;
 };
 
 type PerpsAccentColorContextType = {
@@ -92,6 +98,8 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
         activeRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(primary, 0.12),
         inactiveRight: isDarkMode ? opacityWorklet('#F5F8FF', 0.06) : opacityWorklet(primary, 0.12),
       },
+      shortRed: SHORT_RED,
+      longGreen: LONG_GREEN,
     } satisfies PerpsAccentColors;
   }, [isDarkMode]);
 

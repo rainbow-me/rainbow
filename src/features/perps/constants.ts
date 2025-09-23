@@ -25,10 +25,6 @@ export const FOOTER_HEIGHT_WITH_SAFE_AREA = FOOTER_HEIGHT + safeAreaInsetValues.
 export const INPUT_CARD_HEIGHT = 106;
 
 export const HYPERLIQUID_USDC_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-// TODO (kane): remove these individual exports
-export const HYPERLIQUID_GREEN = '#3ECFAD';
-export const HYPERLIQUID_GREEN_LIGHT = '#31C8A4';
-
 export const HYPERLIQUID_COLORS = {
   green: '#3ECFAD',
   darkGreen: '#072723',
@@ -109,7 +105,7 @@ export const USDC_ASSET = {
   highLiquidity: true,
 } satisfies SearchAsset;
 
-// These should be somewhere else
+// TODO: These should be somewhere else
 export const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 export const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 
