@@ -35,10 +35,10 @@ export const PerpsHeader = React.memo(function PerpsHeader() {
       scaleTo={1.05}
       testID={`perps-list-header`}
     >
-      <Box height={{ custom: HEIGHT }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
+      <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline horizontalSpace={'8px'} alignVertical="center">
-            <Text size="22pt" color={'label'} weight="heavy">
+            <Text size="22pt" color="label" weight="heavy">
               {i18n.t(i18n.l.account.tab_perps)}
             </Text>
             <Box
@@ -57,8 +57,8 @@ export const PerpsHeader = React.memo(function PerpsHeader() {
             </Box>
           </Inline>
 
-          <Inline horizontalSpace={'8px'} alignVertical="center">
-            <Text size="20pt" color={'label'} weight="bold">
+          <Inline horizontalSpace="8px" alignVertical="center">
+            <Text align="right" color="label" size="20pt" weight="bold">
               {formatCurrency(accountValueNative)}
             </Text>
           </Inline>

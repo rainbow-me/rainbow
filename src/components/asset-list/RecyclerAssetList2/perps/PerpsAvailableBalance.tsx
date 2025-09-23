@@ -5,7 +5,7 @@ import { Box, Text } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RainbowImage } from '@/components/RainbowImage';
+import { ImgixImage } from '@/components/images';
 import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -19,16 +19,17 @@ export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balan
   const color = opacityWorklet(USDC_COLORS.primary, 0.06);
 
   return (
-    <Box paddingHorizontal={'19px (Deprecated)'}>
+    <Box paddingHorizontal="20px">
       <ButtonPressAnimation
         onPress={() => {
-          Navigation.handleAction(Routes.PERPS_ACCOUNT_NAVIGATOR);
+          Navigation.handleAction(Routes.PERPS_NAVIGATOR);
         }}
         scaleTo={0.96}
+        style={{ marginLeft: -4 }}
       >
         <GradientBorderView
           borderGradientColors={[color, 'transparent']}
-          start={{ x: 0.5, y: 0 }}
+          start={{ x: 0.2, y: 0 }}
           end={{ x: 1, y: 0 }}
           borderRadius={14}
           style={{ height: 36, overflow: 'hidden' }}
@@ -36,18 +37,25 @@ export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balan
           <LinearGradient
             colors={[color, 'transparent']}
             style={StyleSheet.absoluteFillObject}
-            start={{ x: 0.5, y: 0 }}
+            start={{ x: 0.2, y: 0 }}
             end={{ x: 1, y: 0 }}
           />
-          <Box justifyContent="center" height={36} paddingLeft={'10px'} paddingVertical={'12px'} borderRadius={14}>
-            <Box gap={4} flexDirection="row" alignItems="center" justifyContent="space-between">
-              <Box flexDirection="row" gap={10} alignItems="center">
-                <RainbowImage source={{ url: USDC_ICON_URL }} style={{ width: 20, height: 20 }} />
-                <Text color="label" size="17pt" weight="medium">
-                  {'Available Balance'}
-                </Text>
-              </Box>
-              <Text color="labelTertiary" size="17pt" weight="medium">
+          <Box
+            alignItems="center"
+            flexDirection="row"
+            gap={4}
+            height={36}
+            justifyContent="space-between"
+            paddingLeft="12px"
+            paddingVertical={'12px'}
+          >
+            <Text color="labelTertiary" size="17pt" weight="semibold">
+              {'Available Balance'}
+            </Text>
+
+            <Box flexDirection="row" gap={5} alignItems="center">
+              <ImgixImage enableFasterImage source={{ uri: USDC_ICON_URL }} size={16} style={{ width: 16, height: 16 }} />
+              <Text align="right" color="labelSecondary" size="17pt" weight="semibold">
                 {formatCurrency(balance)}
               </Text>
             </Box>
