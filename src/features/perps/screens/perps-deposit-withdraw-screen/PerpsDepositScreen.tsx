@@ -69,6 +69,7 @@ import { PerpsAssetCoinIcon } from './PerpsAssetCoinIcon';
 import { PerpsInputContainer } from './PerpsInputContainer';
 import { PerpsTokenList } from './PerpsTokenList';
 import { usePerpsDepositQuote } from './usePerpsDepositQuote';
+import { isNativeAsset } from '@/handlers/assets';
 
 const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -344,7 +345,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   const maxSwappableAmount = useMemo(() => {
     const gasSettings = getGasSettings(gasSpeed, chainId);
     const gasFee = gasSettings != null && gasLimit != null ? calculateGasFeeWorklet(gasSettings, gasLimit) : null;
-    return selectedAsset?.balance.amount != null && gasFee != null
+    return selectedAsset?.balance.amount != null && gasFee != null && isNativeAsset(selectedAsset.address, selectedAsset.chainId)
       ? subWorklet(selectedAsset?.balance.amount, divWorklet(gasFee, powWorklet(10, selectedAsset.decimals)))
       : selectedAsset?.balance.amount;
   }, [chainId, gasLimit, gasSpeed, selectedAsset]);
