@@ -18,7 +18,7 @@ const isTinyPhone = deviceUtils.dimensions.height <= 568;
 const selectedHeight = isTinyPhone ? 50 : isSmallPhone ? 64 : 70;
 
 const containerStyles = {
-  paddingTop: 19,
+  paddingTop: android ? 9 : 19,
 };
 
 const NativeAmountBubble = styled(LinearGradient).attrs(({ theme: { colors } }) => ({

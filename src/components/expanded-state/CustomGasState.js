@@ -12,12 +12,10 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { deviceUtils } from '@/utils';
-import { IS_ANDROID } from '@/env';
 import FeesPanel from '@/components/FeesPanel';
 import FeesPanelTabs from '@/components/FeesPanelTabs';
-import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
-const FOOTER_HEIGHT = 120;
+const FOOTER_HEIGHT = 79;
 const CONTENT_HEIGHT = 310;
 
 function useAndroidDisableGesturesOnFocus() {
@@ -46,7 +44,7 @@ export default function CustomGasState({ asset }) {
   const validateGasParams = useRef(null);
   useAndroidDisableGesturesOnFocus();
 
-  const sheetHeightWithoutKeyboard = CONTENT_HEIGHT + FOOTER_HEIGHT + (IS_ANDROID ? 20 + NAVIGATION_BAR_HEIGHT : 0);
+  const sheetHeightWithoutKeyboard = CONTENT_HEIGHT + FOOTER_HEIGHT;
 
   const sheetHeightWithKeyboard = sheetHeightWithoutKeyboard + keyboardHeight + (deviceUtils.isSmallPhone ? 30 : 0);
 
