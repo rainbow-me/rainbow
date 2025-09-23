@@ -77,7 +77,7 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVe
               initialValueLastUpdated={0}
               initialValue={formatPriceChange(market.priceChange['24h'])}
               autoSubscriptionEnabled={false}
-              usePriceChangeColor
+              isPriceChangeColorEnabled={true}
               priceChangeChangeColors={priceChangeColors}
               color={'label'}
               size="11pt"

@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
 import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -20,14 +21,14 @@ import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStor
 import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { logger, RainbowError } from '@/logger';
+import { PerpsRoute } from '@/navigation/types';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
-import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
-import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
+import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const BUTTON_HEIGHT = 48;
@@ -282,6 +283,16 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
     </KeyboardStickyView>
   );
 });
+
+export const MountWhenFocused = ({ children, route }: { children: React.ReactNode; route: PerpsRoute }) => {
+  const isRouteActive = usePerpsNavigationStore(state => state.isRouteActive(route));
+  if (!isRouteActive) return null;
+  return (
+    <Animated.View entering={DEFAULT_MOUNT_ANIMATIONS.entering} exiting={DEFAULT_MOUNT_ANIMATIONS.exiting}>
+      {children}
+    </Animated.View>
+  );
+};
 
 const styles = StyleSheet.create({
   inputContainer: {
