@@ -6,6 +6,8 @@ import { Address } from 'viem';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/state/backendNetworks/types';
+import { LinearTransition } from 'react-native-reanimated';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export const DEFAULT_SLIPPAGE_BIPS = 100;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -107,3 +109,10 @@ export const USDC_ASSET = {
 // These should be somewhere else
 export const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 export const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
+
+const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
+
+export const LAYOUT_ANIMATION = LinearTransition.springify()
+  .mass(ANIMATION_CONFIG.mass as number)
+  .damping(ANIMATION_CONFIG.damping as number)
+  .stiffness(ANIMATION_CONFIG.stiffness as number);

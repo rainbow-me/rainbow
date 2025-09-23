@@ -8,11 +8,12 @@ import { DetailsSection } from './DetailsSection';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
-import { FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
+import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION } from '@/features/perps/constants';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { MarketInfoSection } from './MarketInfoSection';
 import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountInputError';
+import Animated from 'react-native-reanimated';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const market = useHlNewPositionStore(state => state.market);
@@ -51,7 +52,9 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
                 </Box>
               </Box>
               <TriggerOrdersSection />
-              <DetailsSection market={market} />
+              <Animated.View layout={LAYOUT_ANIMATION}>
+                <DetailsSection market={market} />
+              </Animated.View>
             </Stack>
           </Box>
         </ScrollView>
