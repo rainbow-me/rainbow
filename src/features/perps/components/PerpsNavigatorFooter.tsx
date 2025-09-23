@@ -26,6 +26,8 @@ import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { useOrderAmountValidation } from '@/features/perps/hooks/useOrderAmountValidation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
+import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 
 const BUTTON_HEIGHT = 48;
 
@@ -153,7 +155,11 @@ const PerpsAccountScreenFooter = () => {
   return (
     <HyperliquidButton
       onPress={() => {
-        Navigation.handleAction(hasZeroBalance ? Routes.PERPS_DEPOSIT_SCREEN : Routes.PERPS_NEW_POSITION_SEARCH_SCREEN);
+        if (hasZeroBalance) {
+          Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+        } else {
+          PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
+        }
       }}
       paddingVertical={'12px'}
       borderRadius={24}
@@ -214,8 +220,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         price: livePrice ?? market.price,
         triggerOrders,
       });
-      hlNewPositionStoreActions.reset();
-      Navigation.handleAction(Routes.PERPS_ACCOUNT_SCREEN);
+      PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN);
     } catch (e) {
       Alert.alert('Error submitting order', parseHyperliquidErrorMessage(e));
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
@@ -226,10 +231,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   return (
     <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
       <BackButton
-        onPress={() => {
-          // navigation.goBack();
-          Navigation.goBack();
-        }}
+        onPress={() => PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' })}
         backgroundColor={button.backgroundColor}
         borderColor={button.borderColor}
         textColor={button.backTextColor}
@@ -262,14 +264,14 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
   const { accentColors } = usePerpsAccentColorContext();
-  const activeRoute = useNavigationStore(state => state.activeRoute);
-  const effectiveRoute = usePersistedFooterRoute();
+
+  const enableStickyKeyboard = useNavigationStore(state => state.activeRoute !== Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET);
 
   return (
     <KeyboardStickyView
       // TODO (kane): Where does this 6 come from?
       offset={{ opened: safeAreaInsets.bottom + 6 - 20 }}
-      enabled={activeRoute !== Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET}
+      enabled={enableStickyKeyboard}
     >
       <Box
         position="absolute"
@@ -290,12 +292,18 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
         }}
       >
-        <Box as={Animated.View} entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)} paddingHorizontal={'20px'}>
-          {(effectiveRoute === Routes.PERPS_SEARCH_SCREEN || effectiveRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN) && (
+        <Box as={Animated.View} paddingHorizontal="20px">
+          <MountWhenFocused route={Routes.PERPS_ACCOUNT_SCREEN}>
+            <PerpsAccountScreenFooter />
+          </MountWhenFocused>
+
+          <MountWhenFocused route={Routes.PERPS_SEARCH_SCREEN}>
             <PerpsSearchScreenFooter />
-          )}
-          {effectiveRoute === Routes.PERPS_ACCOUNT_SCREEN && <PerpsAccountScreenFooter />}
-          {effectiveRoute === Routes.PERPS_NEW_POSITION_SCREEN && <PerpsNewPositionScreenFooter />}
+          </MountWhenFocused>
+
+          <MountWhenFocused route={Routes.PERPS_NEW_POSITION_SCREEN}>
+            <PerpsNewPositionScreenFooter />
+          </MountWhenFocused>
         </Box>
       </Box>
     </KeyboardStickyView>

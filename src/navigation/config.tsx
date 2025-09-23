@@ -674,6 +674,7 @@ export const perpsAccountStackConfig: PartialNavigatorConfigOptions = {
       ...params,
       backgroundOpacity: 1,
       cornerRadius: 'device',
+      headerHeight: safeAreaInsetValues.top + 68,
       springDamping: 1,
       topOffset: 0,
       transitionDuration: 0.3,

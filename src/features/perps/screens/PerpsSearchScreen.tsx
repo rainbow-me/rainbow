@@ -4,6 +4,7 @@ import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidM
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
 import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
+import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   const markets = useHyperliquidMarketsStore(state => state.getSearchResults());

@@ -1,3 +1,4 @@
+import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
 import { hlTradesStoreActions } from '@/features/perps/stores/hlTradesStore';
@@ -28,10 +29,7 @@ export function formatPriceChange(priceChange: string) {
 
 export function navigateToNewPositionScreen(market: PerpMarket) {
   useHlNewPositionStore.getState().setMarket(market);
-  Navigation.handleAction(Routes.PERPS_ACCOUNT_NAVIGATOR, {
-    screen: Routes.PERPS_NEW_POSITION_SCREEN,
-    params: { market },
-  });
+  PerpsNavigation.navigate(Routes.PERPS_NEW_POSITION_SCREEN);
 }
 
 export function navigateToPerpDetailScreen(symbol: string) {
