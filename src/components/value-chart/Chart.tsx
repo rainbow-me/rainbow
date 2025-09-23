@@ -117,10 +117,6 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
     }
   });
 
-  useCleanup(() => {
-    chartsActions.resetChartsState();
-  });
-
   const ChartComponent = useMemo(() => {
     const commonProps = {
       accentColor: accentColors.color,
@@ -141,6 +137,10 @@ export const Chart = memo(function Chart({ asset, backgroundColor, accentColors,
     }
     return null;
   }, [hyperliquidSymbol, asset, accentColors.color, backgroundColor, screenWidth, candlestickConfig, isChartGestureActive]);
+
+  useCleanup(() => {
+    chartsActions.resetChartsState();
+  });
 
   return (
     <Box gap={28}>
