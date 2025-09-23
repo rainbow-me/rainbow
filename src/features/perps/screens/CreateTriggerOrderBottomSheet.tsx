@@ -38,8 +38,7 @@ import { formatTriggerOrderInput } from '@/features/perps/utils/formatTriggerOrd
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { colors } from '@/styles';
 import { abbreviateNumberWorklet } from '@/helpers/utilities';
-import { calculateIsolatedLiquidationPrice } from '@/features/perps/utils/calculateLiquidationPrice';
-import { getApplicableMaxLeverage } from '@/features/perps/utils/getApplicableMaxLeverage';
+import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/utils/calculateLiquidationPrice';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { logger, RainbowError } from '@/logger';
 
@@ -111,20 +110,15 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
 
     if (!leverage || !amount) return 0;
 
-    const maxLeverage = getApplicableMaxLeverage({
-      market,
-      amount: amount,
-      price: liveTokenPrice.value,
-      leverage: leverage,
-    });
-
-    return calculateIsolatedLiquidationPrice({
-      entryPrice: Number(liveTokenPrice.value),
-      marginAmount: Number(amount),
+    const liquidationPrice = calculateIsolatedLiquidationPriceFromMargin({
+      entryPrice: liveTokenPrice.value,
+      marginAmount: amount,
       positionSide: positionSide,
       leverage: leverage,
-      maxLeverage,
+      market,
     });
+
+    return Number(liquidationPrice);
   });
 
   const targetPriceDifferential = useDerivedValue(() => {

@@ -28,6 +28,7 @@ import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrd
 import { getSolidColorEquivalent } from '@/worklets/colors';
 import { MountWhenFocused } from '@/components/utilities/MountWhenFocused';
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const BUTTON_HEIGHT = 48;
 
@@ -119,12 +120,13 @@ const PerpsAccountScreenFooter = () => {
   const { isDarkMode } = useColorMode();
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
+  const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
 
   return (
     <HyperliquidButton
       onPress={() => {
         if (hasZeroBalance) {
-          Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
+          Navigation.handleAction(hasNoAssets ? Routes.ADD_CASH_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
         } else {
           PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
         }
@@ -136,7 +138,7 @@ const PerpsAccountScreenFooter = () => {
       alignItems={'center'}
     >
       <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
-        {hasZeroBalance ? 'Deposit' : 'New Position'}
+        {hasNoAssets ? 'Fund Wallet' : hasZeroBalance ? 'Deposit' : 'New Position'}
       </Text>
     </HyperliquidButton>
   );

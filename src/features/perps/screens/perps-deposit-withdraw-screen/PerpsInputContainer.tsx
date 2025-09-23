@@ -1,15 +1,8 @@
-import {
-  BASE_INPUT_WIDTH,
-  ETH_COLOR_DARK,
-  ETH_COLOR_DARK_ACCENT,
-  INPUT_PADDING,
-  THICK_BORDER_WIDTH,
-} from '@/__swaps__/screens/Swap/constants';
+import { BASE_INPUT_WIDTH, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, globalColors, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
 import React, { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
@@ -21,8 +14,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT } from './constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT } from './constants';
 
 const useContainerStyles = ({ asset, progress }: { asset: ExtendedAnimatedAssetWithColors | null; progress: SharedValue<number> }) => {
   const { isDarkMode } = useColorMode();

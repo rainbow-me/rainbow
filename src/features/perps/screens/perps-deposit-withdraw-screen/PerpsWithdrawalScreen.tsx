@@ -1,11 +1,9 @@
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { addCommasToNumber, clamp, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimation } from '@/components/animations';
+import { AccountImage } from '@/components/AccountImage';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import ContactAvatar from '@/components/contacts/ContactAvatar';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
 import { AnimatedText, Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
@@ -17,22 +15,20 @@ import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
 import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, USDC_ASSET } from '@/features/perps/constants';
+import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
-import Routes from '@/navigation/Routes';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { GasButton } from '@/screens/token-launcher/components/gas/GasButton';
 import { ChainId } from '@/state/backendNetworks/types';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { runOnJS, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FOOTER_HEIGHT, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from './constants';
-import { logger, RainbowError } from '@/logger';
-import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 
 const AssetCoinIcon = ({
   asset,
@@ -92,7 +88,6 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   const isBalanceLoading = useHyperliquidAccountStore(state => state.status === 'loading' && state.getBalance() === '0');
   // TODO (kane): use neweset currency formatting
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
-  const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
 
   // State for input values
   const inputMethod = useSharedValue<InputMethod>('inputAmount');
@@ -231,19 +226,7 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
         width="full"
       >
         <SheetHandle extraPaddingTop={6} />
-        <Navbar
-          hasStatusBarInset
-          leftComponent={
-            <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.CHANGE_WALLET_SHEET)} scaleTo={0.8} overflowMargin={50}>
-              {accountImage ? (
-                <ImageAvatar image={accountImage} size="header" />
-              ) : (
-                <ContactAvatar color={accountColor} size="small" value={accountSymbol} />
-              )}
-            </ButtonPressAnimation>
-          }
-          title={i18n.t(i18n.l.perps.withdraw.title)}
-        />
+        <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={i18n.t(i18n.l.perps.withdraw.title)} />
         <View style={{ top: -10, alignSelf: 'center' }}>
           {isBalanceLoading ? (
             <PerpsTextSkeleton width={150} height={15} />

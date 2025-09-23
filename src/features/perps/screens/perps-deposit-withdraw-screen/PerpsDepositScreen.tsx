@@ -2,8 +2,9 @@ import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { getGasSettings, getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '@/__swaps__/screens/Swap/hooks/useSwapEstimatedGasLimit';
+import { calculateGasFeeWorklet } from '@/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues';
 import { ExtendedAnimatedAssetWithColors, ParsedAsset, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { getInputValuesForSliderPositionWorklet } from '@/__swaps__/utils/flipAssets';
@@ -17,10 +18,8 @@ import {
 } from '@/__swaps__/utils/swaps';
 import { trackSwapEvent } from '@/__swaps__/utils/trackSwapEvent';
 import { analytics } from '@/analytics';
-import { ButtonPressAnimation } from '@/components/animations';
+import { AccountImage } from '@/components/AccountImage';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import ContactAvatar from '@/components/contacts/ContactAvatar';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
 import Page from '@/components/layout/Page';
 import { Navbar } from '@/components/navbar/Navbar';
 import { AnimatedText, Box, Column, Columns, Separator, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
@@ -32,6 +31,9 @@ import { PerpsSwapButton } from '@/features/perps/components/PerpsSwapButton';
 import { PerpsTextSkeleton } from '@/features/perps/components/PerpsTextSkeleton';
 import { SheetHandle } from '@/features/perps/components/SheetHandle';
 import { SliderWithLabels } from '@/features/perps/components/Slider';
+import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, USDC_ASSET } from '@/features/perps/constants';
+import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
+import { isNativeAsset } from '@/handlers/assets';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { getProvider } from '@/handlers/web3';
 import { convertRawAmountToDecimalFormat, handleSignificantDecimalsWorklet } from '@/helpers/utilities';
@@ -39,16 +41,14 @@ import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
 import { RapSwapActionParameters } from '@/raps/references';
-import { divWorklet, sumWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { divWorklet, powWorklet, subWorklet, sumWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { GasButton } from '@/screens/token-launcher/components/gas/GasButton';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId } from '@/state/backendNetworks/types';
 import { getNextNonce } from '@/state/nonces';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { CrosschainQuote, QuoteError } from '@rainbow-me/swaps';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { Alert } from 'react-native';
@@ -69,8 +69,6 @@ import { PerpsAssetCoinIcon } from './PerpsAssetCoinIcon';
 import { PerpsInputContainer } from './PerpsInputContainer';
 import { PerpsTokenList } from './PerpsTokenList';
 import { usePerpsDepositQuote } from './usePerpsDepositQuote';
-import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, USDC_ASSET } from '@/features/perps/constants';
-import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { ImgixImage } from '@/components/images';
 
 const enum NavigationSteps {
@@ -84,7 +82,7 @@ const enum NavigationSteps {
 type InputMethod = 'inputAmount' | 'inputNativeValue';
 
 // Deposit Input Component
-const DepositInputSection = ({
+const DepositInputSection = memo(function DepositInputSection({
   asset,
   quote,
   formattedInputAmount,
@@ -100,7 +98,7 @@ const DepositInputSection = ({
   inputMethod: SharedValue<InputMethod>;
   changeInputMethod: (inputMethod: InputMethod) => void;
   onSelectAsset: (asset: ParsedSearchAsset | null) => void;
-}) => {
+}) {
   const noBalanceLabel = i18n.t(i18n.l.perps.deposit.no_balance);
   const { isDarkMode } = useColorMode();
   const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
@@ -180,29 +178,31 @@ const DepositInputSection = ({
               <BalanceBadge label={balanceLabel} />
             </Stack>
           </Column>
-          <Column width="content">
-            <SwapActionButton
-              asset={sharedAsset}
-              disableShadow={isDarkMode}
-              hugContent
-              label={asset?.symbol || ''}
-              onPressWorklet={() => {
-                'worklet';
-                inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
-              }}
-              rightIcon={'􀆏'}
-              style={{ marginLeft: 20 }}
-              small
-            />
-          </Column>
+          {asset != null && (
+            <Column width="content">
+              <SwapActionButton
+                asset={sharedAsset}
+                disableShadow={isDarkMode}
+                hugContent
+                label={asset?.symbol || ''}
+                onPressWorklet={() => {
+                  'worklet';
+                  inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+                }}
+                rightIcon={'􀆏'}
+                style={{ marginLeft: 20 }}
+                small
+              />
+            </Column>
+          )}
         </Columns>
         <Separator color="separatorTertiary" thickness={1} />
-        <Box alignItems="center" justifyContent="center" flexGrow={1} gap={16}>
+        <Box alignItems="center" justifyContent="center" flexGrow={1} gap={16} style={{ opacity: asset == null ? 0.3 : 1 }}>
           <Box gap={2} flexDirection="row" alignItems="center">
             <AnimatedText size="44pt" weight="heavy" color={{ custom: assetColor }} tabularNumbers numberOfLines={1} ellipsizeMode="middle">
               {primaryFormattedInput}
             </AnimatedText>
-            <InputValueCaret color={assetColor} value={primaryFormattedInput} />
+            {asset != null && <InputValueCaret color={assetColor} value={primaryFormattedInput} />}
           </Box>
           <GestureHandlerButton
             disableHaptics
@@ -211,6 +211,7 @@ const DepositInputSection = ({
               'worklet';
               changeInputMethod(inputMethod.value === 'inputAmount' ? 'inputNativeValue' : 'inputAmount');
             }}
+            disabled={asset == null}
           >
             <Box gap={6} flexDirection="row" alignItems="center" justifyContent="center">
               <Animated.View style={secondaryInputIconStyle}>
@@ -225,32 +226,36 @@ const DepositInputSection = ({
             </Box>
           </GestureHandlerButton>
         </Box>
-        <Separator color="separatorTertiary" thickness={THICK_BORDER_WIDTH} />
-        {quote != null && 'error' in quote ? (
-          <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
-            <Text size="15pt" weight="bold" color="labelTertiary">
-              {i18n.t(i18n.l.perps.deposit.quote_error)}
-            </Text>
-          </Box>
-        ) : (
-          <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
-            <ImgixImage
-              enableFasterImage
-              size={14}
-              source={{ uri: USDC_ASSET.icon_url }}
-              style={{ height: 14, marginRight: 6, width: 14 }}
-            />
-            <Text size="15pt" weight="bold" color="labelQuaternary">
-              {i18n.t(i18n.l.perps.deposit.receive)}{' '}
-            </Text>
-            {formattedOutputAmount == null ? (
-              <PerpsTextSkeleton width={90} height={15} />
+        {asset != null && (
+          <>
+            <Separator direction="horizontal" color="separatorSecondary" />
+            {quote != null && 'error' in quote ? (
+              <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
+                <Text size="15pt" weight="bold" color="labelTertiary">
+                  {i18n.t(i18n.l.perps.deposit.quote_error)}
+                </Text>
+              </Box>
             ) : (
-              <Text size="15pt" weight="bold" color="labelTertiary" tabularNumbers>
-                {formattedOutputAmount}
-              </Text>
+              <Box flexDirection="row" alignItems="center" justifyContent="center" height={18}>
+                <ImgixImage
+                  enableFasterImage
+                  size={14}
+                  source={{ uri: USDC_ASSET.icon_url }}
+                  style={{ height: 14, marginRight: 6, width: 14 }}
+                />
+                <Text size="15pt" weight="bold" color="labelQuaternary">
+                  {i18n.t(i18n.l.perps.deposit.receive)}{' '}
+                </Text>
+                {formattedOutputAmount == null ? (
+                  <PerpsTextSkeleton width={90} height={15} />
+                ) : (
+                  <Text size="15pt" weight="bold" color="labelTertiary" tabularNumbers>
+                    {formattedOutputAmount}
+                  </Text>
+                )}
+              </Box>
             )}
-          </Box>
+          </>
         )}
       </Box>
       <Box
@@ -274,30 +279,34 @@ const DepositInputSection = ({
       </Box>
     </PerpsInputContainer>
   );
-};
+});
 
 export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
-  const separatorSecondary = useForegroundColor('separatorSecondary');
-  const { accountImage, accountColor, accountSymbol } = useAccountProfileInfo();
   const { isDarkMode } = useColorMode();
-
+  const separatorSecondary = useForegroundColor('separatorSecondary');
   // State for input values
   const inputMethod = useSharedValue<InputMethod>('inputNativeValue');
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * 0.25); // Default to 25% of slider width
 
   const highestValueNativeAsset = useUserAssetsStore(state => state.getHighestValueNativeAsset());
 
-  const initialAsset = highestValueNativeAsset ? parseAssetAndExtend({ asset: highestValueNativeAsset }) : null;
+  const initialAsset = highestValueNativeAsset
+    ? parseAssetAndExtend({ asset: highestValueNativeAsset, insertUserAssetBalance: true })
+    : null;
   const [selectedAsset, setSelectedAsset] = useState<ExtendedAnimatedAssetWithColors | null>(initialAsset);
   const [gasSpeed, setGasSpeed] = useState(GasSpeed.FAST);
   const [loading, setLoading] = useState(false);
 
-  const fieldsValueForAsset = (asset: ExtendedAnimatedAssetWithColors | null, percentage: number): Record<string, NumberPadField> => {
+  const fieldsValueForAsset = (
+    asset: ExtendedAnimatedAssetWithColors | null,
+    percentage: number,
+    maxSwappableAmount: string | undefined
+  ): Record<string, NumberPadField> => {
     'worklet';
     const decimals = asset?.decimals || 18;
 
     const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
-      selectedInputAsset: asset,
+      selectedInputAsset: asset != null ? { ...asset, maxSwappableAmount: maxSwappableAmount || '0' } : null,
       percentageToSwap: percentage,
       sliderXPosition: percentage * SLIDER_WIDTH,
     });
@@ -318,20 +327,28 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     };
   };
 
-  const fields = useSharedValue<Record<string, NumberPadField>>(fieldsValueForAsset(initialAsset, 0.25));
+  const fields = useSharedValue<Record<string, NumberPadField>>(fieldsValueForAsset(initialAsset, 0.25, initialAsset?.balance.amount));
 
   const [quote, fetchQuote] = usePerpsDepositQuote(selectedAsset, fields);
   const hasQuoteError = quote != null && 'error' in quote;
+  const chainId = selectedAsset?.chainId ?? ChainId.mainnet;
   const gasLimit = useSwapEstimatedGasLimit({
     quote,
     assetToSell: selectedAsset,
-    chainId: selectedAsset?.chainId ?? ChainId.mainnet,
+    chainId,
     usePlaceholderData: false,
   });
   const { data: gasSuggestions, isLoading: isGasSuggestionsLoading } = useMeteorologySuggestions({
-    chainId: selectedAsset?.chainId ?? ChainId.mainnet,
+    chainId,
     enabled: true,
   });
+  const maxSwappableAmount = useMemo(() => {
+    const gasSettings = getGasSettings(gasSpeed, chainId);
+    const gasFee = gasSettings != null && gasLimit != null ? calculateGasFeeWorklet(gasSettings, gasLimit) : null;
+    return selectedAsset?.balance.amount != null && gasFee != null && isNativeAsset(selectedAsset.address, selectedAsset.chainId)
+      ? subWorklet(selectedAsset?.balance.amount, divWorklet(gasFee, powWorklet(10, selectedAsset.decimals)))
+      : selectedAsset?.balance.amount;
+  }, [chainId, gasLimit, gasSpeed, selectedAsset]);
 
   const sliderColors = {
     activeLeft: 'rgba(100, 117, 133, 0.90)',
@@ -388,20 +405,20 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
       }
 
       // Update slider position
-      const maxAmount = Number(asset.balance?.amount || '0');
+      const maxAmount = Number(maxSwappableAmount || '0');
       const percentage = maxAmount > 0 ? Number(divWorklet(amount, maxAmount)) : 0;
       sliderXPosition.value = withSpring(clamp(percentage * SLIDER_WIDTH, 0, SLIDER_WIDTH), SPRING_CONFIGS.snappySpringConfig);
     },
-    [fields, selectedAsset, sliderXPosition]
+    [fields, maxSwappableAmount, selectedAsset, sliderXPosition]
   );
 
   const handlePercentageChange = useCallback(
     (percentage: number) => {
       'worklet';
 
-      fields.value = fieldsValueForAsset(selectedAsset, percentage);
+      fields.value = fieldsValueForAsset(selectedAsset, percentage, maxSwappableAmount);
     },
-    [fields, selectedAsset]
+    [fields, selectedAsset, maxSwappableAmount]
   );
 
   const handleGestureUpdate = useCallback(
@@ -532,7 +549,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
       const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance: true });
       setSelectedAsset(extendedAsset);
 
-      fields.value = fieldsValueForAsset(extendedAsset, 0.25);
+      fields.value = fieldsValueForAsset(extendedAsset, 0.25, extendedAsset?.balance.amount);
       sliderXPosition.value = withSpring(clamp(0.25 * SLIDER_WIDTH, 0, SLIDER_WIDTH), SPRING_CONFIGS.snappySpringConfig);
     },
     [fields, sliderXPosition]
@@ -546,7 +563,7 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
   });
 
   const inputAmountErrorShared = useDerivedValue(() => {
-    const balance = Number(selectedAsset?.balance?.amount || '0');
+    const balance = Number(maxSwappableAmount || '0');
     const amountNumber = Number(fields.value.inputAmount.value || '0');
     if (amountNumber === 0) return 'zero';
     if (amountNumber > balance) return 'overBalance';
@@ -577,6 +594,14 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
     return i18n.t(i18n.l.perps.deposit.confirm_button_text);
   };
 
+  const handleChangeInputMethod = useCallback(
+    (newInputMethod: InputMethod) => {
+      'worklet';
+      inputMethod.value = newInputMethod;
+    },
+    [inputMethod]
+  );
+
   return (
     <PerpsAccentColorContextProvider>
       <Box
@@ -588,29 +613,14 @@ export const PerpsDepositScreen = memo(function PerpsDepositScreen() {
         width="full"
       >
         <SheetHandle extraPaddingTop={6} />
-        <Navbar
-          hasStatusBarInset
-          leftComponent={
-            <ButtonPressAnimation onPress={() => Navigation.handleAction(Routes.CHANGE_WALLET_SHEET)} scaleTo={0.8} overflowMargin={50}>
-              {accountImage ? (
-                <ImageAvatar image={accountImage} size="header" />
-              ) : (
-                <ContactAvatar color={accountColor} size="small" value={accountSymbol} />
-              )}
-            </ButtonPressAnimation>
-          }
-          title={i18n.t(i18n.l.perps.deposit.title)}
-        />
+        <Navbar hasStatusBarInset leftComponent={<AccountImage />} title={i18n.t(i18n.l.perps.deposit.title)} />
         <Box alignItems="center" paddingTop="20px">
           <DepositInputSection
             asset={selectedAsset}
             quote={quote}
             formattedInputAmount={formattedInputAmount}
             formattedInputNativeValue={formattedInputNativeValue}
-            changeInputMethod={newInputMethod => {
-              'worklet';
-              inputMethod.value = newInputMethod;
-            }}
+            changeInputMethod={handleChangeInputMethod}
             inputMethod={inputMethod}
             onSelectAsset={handleSelectAsset}
           />

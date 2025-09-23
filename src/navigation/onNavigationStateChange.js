@@ -61,7 +61,14 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.WELCOME_SCREEN:
     case Routes.SWAP_NAVIGATOR:
     case Routes.PIN_AUTHENTICATION_SCREEN:
-    case Routes.SWAP: {
+    case Routes.SWAP:
+    case Routes.PERPS_ACCOUNT_SCREEN:
+    case Routes.PERPS_DEPOSIT_SCREEN:
+    case Routes.PERPS_WITHDRAWAL_SCREEN:
+    case Routes.PERPS_SEARCH_SCREEN:
+    case Routes.PERPS_DETAIL_SCREEN:
+    case Routes.PERPS_NEW_POSITION_SCREEN:
+    case Routes.PERPS_NEW_POSITION_SEARCH_SCREEN: {
       SystemBars.setStyle('dark');
       break;
     }
@@ -70,7 +77,9 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.CONSOLE_SHEET:
     case Routes.CHANGE_WALLET_SHEET:
     case Routes.NETWORK_SELECTOR:
-    case Routes.QR_SCANNER_SCREEN: {
+    case Routes.QR_SCANNER_SCREEN:
+    case Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET:
+    case Routes.CLOSE_POSITION_BOTTOM_SHEET: {
       SystemBars.setStyle('light');
       break;
     }

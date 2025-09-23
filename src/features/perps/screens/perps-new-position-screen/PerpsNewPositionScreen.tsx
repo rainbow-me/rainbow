@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Keyboard, ScrollView } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { Bleed, Box, Separator, Stack, useColorMode } from '@/design-system';
 import { AmountInputCard } from './AmountInputCard';
 import { LeverageInputCard } from './LeverageInputCard';
@@ -9,7 +10,7 @@ import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { LiquidationInfo } from '@/features/perps/screens/perps-new-position-screen/LiquidationInfo';
 import { TriggerOrdersSection } from '@/features/perps/screens/perps-new-position-screen/TriggerOrdersSection';
-import { FOOTER_HEIGHT_WITH_SAFE_AREA, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import { FOOTER_HEIGHT_WITH_SAFE_AREA, LAYOUT_ANIMATION, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { MarketInfoSection } from './MarketInfoSection';
 import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountInputError';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -55,7 +56,9 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
                 </Box>
               </Box>
               <TriggerOrdersSection />
-              <DetailsSection market={market} />
+              <Animated.View layout={LAYOUT_ANIMATION}>
+                <DetailsSection market={market} />
+              </Animated.View>
             </Stack>
           </Box>
         </ScrollView>
