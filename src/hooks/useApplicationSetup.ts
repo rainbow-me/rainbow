@@ -15,7 +15,7 @@ export function useApplicationSetup() {
     runSetup(setInitialRoute);
   }, [setInitialRoute]);
 
-  return { initialRoute };
+  return initialRoute;
 }
 
 async function runSetup(setInitialRoute: Dispatch<SetStateAction<InitialRoute>>): Promise<void> {

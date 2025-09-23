@@ -1,5 +1,9 @@
-import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { IS_IOS } from '@/env';
+
+export const POINTS_ROUTES = {
+  CLAIM_CONTENT: 'ClaimContent',
+  REFERRAL_CONTENT: 'ReferralContent',
+} as const;
 
 const Routes = {
   ADD_CASH_SCREEN_NAVIGATOR: 'AddCashSheetNavigator',
@@ -66,6 +70,7 @@ const Routes = {
   PAIR_HARDWARE_WALLET_SUCCESS_SHEET: 'PairHardwareWalletSuccessSheet',
   PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
   POINTS_SCREEN: 'PointsScreen',
+  ...POINTS_ROUTES,
   POSITION_SHEET: 'PositionSheet',
   PROFILE_PREVIEW_SHEET: 'ProfilePreviewSheet',
   PROFILE_SCREEN: 'ProfileScreen',
@@ -127,23 +132,26 @@ const Routes = {
   CLOSE_POSITION_BOTTOM_SHEET: 'ClosePositionBottomSheet',
 } as const;
 
-export const NATIVE_ROUTES = [
-  Routes.RECEIVE_MODAL,
-  Routes.SETTINGS_SHEET,
+export const NATIVE_ROUTES = new Set<Route>([
+  Routes.AIRDROPS_SHEET,
+  Routes.CHANGE_WALLET_SHEET,
+  Routes.DAPP_BROWSER_CONTROL_PANEL,
   Routes.EXPANDED_ASSET_SHEET,
   Routes.EXPANDED_ASSET_SHEET_V2,
-  Routes.CHANGE_WALLET_SHEET,
+  Routes.TOKEN_LAUNCHER_SCREEN,
   Routes.MODAL_SCREEN,
+  Routes.POSITION_SHEET,
+  Routes.RECEIVE_MODAL,
+  Routes.SETTINGS_SHEET,
+  Routes.SWAP,
   ...(IS_IOS ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
-];
+]);
 
 const RoutesWithPlatformDifferences = {
   ...Routes,
   SEND_FLOW: Routes.SEND_SHEET_NAVIGATOR,
-};
+} as const;
 
 export type Route = (typeof Routes)[keyof typeof Routes];
-
-export type UseRoute = RouteProp<ParamListBase, Route>;
 
 export default RoutesWithPlatformDifferences;

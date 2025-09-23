@@ -1,346 +1,293 @@
 import {
   CommonActions,
-  useNavigation as oldUseNavigation,
+  NavigationAction,
+  NavigationContainerRef,
+  NavigationState,
+  Route as ReactNavigationRoute,
+  RouteProp,
   StackActions,
-  useIsFocused,
-  type NavigationContainerRef,
-  type NavigatorScreenParams,
+  useNavigation as useReactNavigation,
+  useRoute as useReactNavigationRoute,
 } from '@react-navigation/native';
-import { StackNavigationOptions, type StackNavigationProp } from '@react-navigation/stack';
-import React from 'react';
+import { StackNavigationOptions, StackNavigationProp } from '@react-navigation/stack';
+import { useMemo } from 'react';
 import { useCallbackOne } from 'use-memo-one';
-import { NATIVE_ROUTES } from '@/navigation/routesNames';
-import type { RootStackParamList } from './types';
+import { IS_DEV } from '@/env';
+import { setActiveRoute } from '@/state/navigation/navigationStore';
+import { prefetchRegistry } from './prefetchRegistry';
+import Routes, { NATIVE_ROUTES, Route } from './routesNames';
+import { RootStackParamList, RoutesWithOptionalParams } from './types';
 
-let TopLevelNavigationRef: NavigationContainerRef<RootStackParamList> | null = null;
+// ============ Navigation Ref ================================================= //
 
-const poppingCounter = { isClosing: false, pendingActions: [] as (() => void)[] };
+let navigationRef: NavigationContainerRef<RootStackParamList> | null = null;
 
-export function addActionAfterClosingSheet(action: () => void) {
-  if (poppingCounter.isClosing) {
-    poppingCounter.pendingActions.push(action);
-  } else {
-    action();
-  }
-}
+// ============ Public Types =================================================== //
 
-export function onWillPop() {
-  poppingCounter.isClosing = true;
-}
+export type { Route };
 
-export function onDidPop() {
-  poppingCounter.isClosing = false;
-  if (poppingCounter.pendingActions.length !== 0) {
-    setImmediate(() => {
-      poppingCounter.pendingActions.forEach(action => action());
-      poppingCounter.pendingActions = [];
-    });
-  }
-}
+export type RouteParams<RouteName extends Route> = RootStackParamList[RouteName];
 
-type AreAllPropertiesOptional<T> = undefined extends T ? true : object extends T ? true : false;
+export type NavigateArgs<RouteName extends Route> = RouteName extends RoutesWithOptionalParams
+  ? [screen: RouteName, params?: RootStackParamList[RouteName]]
+  : [screen: RouteName, params: RootStackParamList[RouteName]];
 
-export type NavigateFunction = {
-  <RouteName extends keyof RootStackParamList>(routeName: RouteName, params: RootStackParamList[RouteName], replace: true): void;
+// ============ Internal Types ================================================= //
 
-  <RouteName extends keyof RootStackParamList>(
-    routeName: RouteName,
-    ...params: AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
-      ? [params?: RootStackParamList[RouteName]]
-      : [params: RootStackParamList[RouteName]]
-  ): void;
+/**
+ * Defines the type of `action` in `navigationRef.dispatch(action)`.
+ */
+type DispatchActionParam = NavigationAction | ((state: NavigationState) => NavigationAction);
 
-  <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
-    routeName: RouteName,
-    ...rest: RootStackParamList[RouteName] extends NavigatorScreenParams<infer P> | undefined
-      ? InnerRouteName extends keyof P
-        ? P[InnerRouteName] extends infer InnerParams
-          ? InnerParams extends undefined
-            ? [params: { screen: InnerRouteName; params?: undefined; initial?: boolean }]
-            : InnerParams extends object
-              ? AreAllPropertiesOptional<InnerParams> extends true
-                ? [params: { screen: InnerRouteName; params?: InnerParams; initial?: boolean }]
-                : never
-              : never
-          : never
-        : never
-      : never
-  ): void;
-
-  <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
-    routeName: RouteName,
-    ...rest: RootStackParamList[RouteName] extends NavigatorScreenParams<infer P> | undefined
-      ? InnerRouteName extends keyof P
-        ? P[InnerRouteName] extends infer InnerParams
-          ? InnerParams extends object
-            ? AreAllPropertiesOptional<InnerParams> extends false
-              ? [params: { screen: InnerRouteName; params: InnerParams; initial?: boolean }]
-              : never
-            : InnerParams extends undefined
-              ? never
-              : [params: { screen: InnerRouteName; params: InnerParams; initial?: boolean }]
-          : never
-        : never
-      : never
-  ): void;
-
-  <RouteName extends keyof RootStackParamList>(
-    ...args: RootStackParamList[RouteName] extends undefined
-      ? RootStackParamList[RouteName] extends NavigatorScreenParams<any>
-        ? never
-        : [routeName: RouteName, params?: undefined]
-      : never
-  ): void;
-
-  <RouteName extends keyof RootStackParamList>(
-    ...args: RootStackParamList[RouteName] extends object
-      ? RootStackParamList[RouteName] extends NavigatorScreenParams<any>
-        ? never
-        : AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
-          ? [routeName: RouteName, params?: RootStackParamList[RouteName]]
-          : never
-      : never
-  ): void;
-
-  <RouteName extends keyof RootStackParamList>(
-    ...args: RootStackParamList[RouteName] extends undefined | NavigatorScreenParams<any>
-      ? never
-      : RootStackParamList[RouteName] extends object
-        ? AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
-          ? [routeName: RouteName, params?: RootStackParamList[RouteName]]
-          : [routeName: RouteName, params: RootStackParamList[RouteName]]
-        : [routeName: RouteName, params: RootStackParamList[RouteName]]
-  ): void;
-};
-
-export type HandleActionFunction = {
-  <RouteName extends keyof RootStackParamList>(name: RouteName, params?: RootStackParamList[RouteName], replace?: boolean): void;
-
-  <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
-    name: RouteName,
-    ...rest: RootStackParamList[RouteName] extends NavigatorScreenParams<infer P> | undefined
-      ? InnerRouteName extends keyof P
-        ? P[InnerRouteName] extends infer InnerParams
-          ? InnerParams extends undefined
-            ? [params: { screen: InnerRouteName; params?: undefined }, replace?: boolean]
-            : InnerParams extends object
-              ? AreAllPropertiesOptional<InnerParams> extends true
-                ? [params: { screen: InnerRouteName; params?: InnerParams }, replace?: boolean]
-                : never
-              : never
-          : never
-        : never
-      : never
-  ): void;
-
-  <RouteName extends keyof RootStackParamList, InnerRouteName extends keyof RootStackParamList>(
-    name: RouteName,
-    ...rest: RootStackParamList[RouteName] extends NavigatorScreenParams<infer P> | undefined
-      ? InnerRouteName extends keyof P
-        ? P[InnerRouteName] extends infer InnerParams
-          ? InnerParams extends object
-            ? AreAllPropertiesOptional<InnerParams> extends false
-              ? [params: { screen: InnerRouteName; params: InnerParams }, replace?: boolean]
-              : never
-            : InnerParams extends undefined
-              ? never
-              : [params: { screen: InnerRouteName; params: InnerParams }, replace?: boolean]
-          : never
-        : never
-      : never
-  ): void;
-
-  <RouteName extends keyof RootStackParamList>(
-    ...args: RootStackParamList[RouteName] extends undefined
-      ? RootStackParamList[RouteName] extends NavigatorScreenParams<any>
-        ? never
-        : [name: RouteName, params?: undefined, replace?: false]
-      : never
-  ): void;
-
-  <RouteName extends keyof RootStackParamList>(
-    ...args: RootStackParamList[RouteName] extends object
-      ? RootStackParamList[RouteName] extends NavigatorScreenParams<any>
-        ? never
-        : AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
-          ? [name: RouteName, params?: RootStackParamList[RouteName], replace?: false]
-          : never
-      : never
-  ): void;
-
-  <RouteName extends keyof RootStackParamList>(
-    ...args: RootStackParamList[RouteName] extends undefined | NavigatorScreenParams<any>
-      ? never
-      : RootStackParamList[RouteName] extends object
-        ? AreAllPropertiesOptional<RootStackParamList[RouteName]> extends true
-          ? never
-          : [name: RouteName, params: RootStackParamList[RouteName], replace?: false]
-        : [name: RouteName, params: RootStackParamList[RouteName], replace?: false]
-  ): void;
-};
-
-type ExtendedSetOptionsFunction = Partial<StackNavigationOptions> & {
+/**
+ * Extended navigation options with custom sheet properties.
+ */
+type ExtendedStackNavigationOptions = Partial<StackNavigationOptions> & {
   limitActiveModals?: boolean;
   longFormHeight?: number;
   shortFormHeight?: number;
   onWillDismiss?: () => void;
 };
 
-type SetParamsFunction<T extends keyof RootStackParamList> = RootStackParamList[T] extends undefined
-  ? () => void
-  : (params: Partial<RootStackParamList[T]>) => void;
+// ============ Hooks ========================================================== //
 
-export function useNavigation<RouteName extends keyof RootStackParamList>() {
-  const navigation = oldUseNavigation<StackNavigationProp<RootStackParamList>>();
+export function useNavigation<RouteName extends Route>() {
+  const navigation = useReactNavigation<StackNavigationProp<RootStackParamList, RouteName>>();
 
-  const handleNavigate: NavigateFunction = useCallbackOne(
-    (routeName: keyof RootStackParamList, params?: any, replace?: boolean) => {
-      if (replace) {
-        (navigation.navigate as any)(routeName, params, replace);
-      } else {
-        (navigation.navigate as any)(routeName, params);
-      }
-    },
-    [navigation.navigate]
+  const goBack = useCallbackOne(() => {
+    navigation.goBack();
+    const newActiveRoute = getActiveRouteName();
+    if (newActiveRoute) setActiveRoute(newActiveRoute);
+  }, [navigation.goBack]);
+
+  const setOptions = useCallbackOne((params: ExtendedStackNavigationOptions) => navigation.setOptions(params), [navigation.setOptions]);
+
+  return useMemo(
+    () => ({
+      ...navigation,
+      goBack,
+      navigate,
+      replace,
+      setOptions,
+      setParams,
+    }),
+    [navigation, goBack, setOptions]
   );
-
-  const handleReplace: NavigateFunction = useCallbackOne(
-    (routeName: keyof RootStackParamList, params?: any) => {
-      (navigation.replace as any)(routeName, params);
-    },
-    [navigation.replace]
-  );
-
-  const handleSetParams = useCallbackOne(
-    (...args: any[]) => {
-      if (args.length === 0) {
-        navigation.setParams(undefined);
-      } else {
-        navigation.setParams(args[0]);
-      }
-    },
-    [navigation.setParams]
-  ) as SetParamsFunction<RouteName>;
-
-  const handleSetOptions = useCallbackOne(
-    (params: Partial<ExtendedSetOptionsFunction>) => navigation.setOptions(params),
-    [navigation.setOptions]
-  );
-
-  return {
-    ...navigation,
-    navigate: handleNavigate,
-    replace: handleReplace,
-    setOptions: handleSetOptions,
-    setParams: handleSetParams,
-  };
 }
 
-export function withNavigation<P extends object>(Component: React.ComponentType<P>) {
-  return function WithNavigationWrapper(props: P) {
-    const navigation = useNavigation();
-    return <Component {...props} navigation={navigation} />;
-  };
+export function useRoute<RouteName extends Route = Route>() {
+  return useReactNavigationRoute<RouteProp<RootStackParamList, RouteName>>();
 }
 
-export function withNavigationFocus<P extends object>(Component: React.ComponentType<P>) {
-  return function WithNavigationWrapper(props: P) {
-    const isFocused = useIsFocused();
+// ============ Core Navigation Functions ====================================== //
 
-    return <Component {...props} isFocused={isFocused} />;
-  };
+/**
+ * Navigates back to the previous screen.
+ */
+export function goBack(): void {
+  if (navigationRef?.isReady()) {
+    navigationRef.goBack();
+    const newActiveRoute = getActiveRouteName();
+    if (newActiveRoute) setActiveRoute(newActiveRoute);
+  }
 }
+
+/**
+ * Navigates to a screen from anywhere in the app.
+ */
+export function navigate<RouteName extends Route>(...args: NavigateArgs<RouteName>): void {
+  const [routeName, params] = args;
+  dispatchAction(CommonActions.navigate({ name: routeName, params }), routeName, params);
+}
+
+/**
+ * Replaces the current screen in the stack.
+ */
+export function replace<RouteName extends Route>(...args: NavigateArgs<RouteName>): void {
+  const [routeName, params] = args;
+  dispatchAction(StackActions.replace(routeName, params), routeName, params);
+}
+
+// ============ Active Route Helpers =========================================== //
+
+/**
+ * Returns the current active route.
+ */
+export function getActiveRoute<RouteName extends Route>(): ReactNavigationRoute<
+  RouteName | string,
+  RootStackParamList[RouteName] | object | undefined
+> | null {
+  return navigationRef?.getCurrentRoute() ?? null;
+}
+
+/**
+ * Returns the name of the current active route.
+ */
+export function getActiveRouteName(): Route | null {
+  const route = getActiveRoute();
+  if (!route) return null;
+  assertRoute(route.name);
+  return route.name;
+}
+
+// ============ Utility Functions ============================================== //
+
+/**
+ * Returns a reference to the top-level `navigationRef`.
+ */
+export function getNavigationRef(): NavigationContainerRef<RootStackParamList> | null {
+  return navigationRef;
+}
+
+/**
+ * Gets the current navigation state.
+ */
+export function getState(): NavigationState | null {
+  return navigationRef?.getState() ?? null;
+}
+
+/**
+ * Sets parameters for the current route.
+ */
+export function setParams<RouteName extends Route>(params: RootStackParamList[RouteName]): void {
+  if (navigationRef?.isReady()) {
+    navigationRef.setParams(params);
+  }
+}
+
+/**
+ * Sets the top-level `navigationRef`.
+ */
+export function setNavigationRef(ref: NavigationContainerRef<RootStackParamList>): void {
+  navigationRef = ref;
+}
+
+// ============ Internal Helpers =============================================== //
+
+const ROUTES_SET = IS_DEV ? new Set<Route>(Object.values(Routes)) : undefined;
+
+function assertRoute(route: Route | string): asserts route is Route {
+  if (!ROUTES_SET) return;
+  if (!ROUTES_SET.has(route as Route)) {
+    throw new Error(`[assertRoute] Invalid route: ${route}`);
+  }
+}
+
+/**
+ * Internal helper for dispatching navigation actions.
+ * Handles sheet coordination.
+ */
+function dispatchAction<RouteName extends Route>(
+  action: DispatchActionParam,
+  routeName: RouteName,
+  params: RootStackParamList[RouteName]
+): void {
+  function dispatch(): void {
+    if (navigationRef?.isReady()) {
+      cancelPendingRouteChange();
+      prefetchRegistry[routeName]?.(params);
+      setActiveRoute(routeName);
+      navigationRef.dispatch(action);
+    }
+  }
+
+  if (!NATIVE_ROUTES.has(routeName)) {
+    dispatch();
+    return;
+  }
+
+  const wasBlocked = blocked;
+  block();
+  if (wasBlocked) return;
+
+  runAfterSheetDismissal(dispatch);
+}
+
+// ============ Sheet Handling ================================================= //
+
+type SheetCoordinator = {
+  isClosing: boolean;
+  pendingActions: (() => void)[];
+};
+
+const sheetCoordinator: SheetCoordinator = {
+  isClosing: false,
+  pendingActions: [],
+};
 
 let blocked = false;
 let timeout: ReturnType<typeof setTimeout> | null = null;
-function block() {
+let pendingRouteChangeId = 0;
+
+/**
+ * Called when a sheet dismissal is triggered.
+ */
+export function onWillPop(): void {
+  sheetCoordinator.isClosing = true;
+}
+
+/**
+ * Called after a sheet has finished closing.
+ * Executes any pending actions scheduled during dismissal.
+ */
+export function onDidPop(): void {
+  sheetCoordinator.isClosing = false;
+  if (sheetCoordinator.pendingActions.length) {
+    setImmediate(() => {
+      for (const action of sheetCoordinator.pendingActions) action();
+      sheetCoordinator.pendingActions = [];
+    });
+  }
+  scheduleRouteChange();
+}
+
+/**
+ * Temporarily blocks rapid navigation actions.
+ */
+function block(): void {
   blocked = true;
   if (timeout !== null) {
     clearTimeout(timeout);
     timeout = null;
   }
-  setTimeout(() => (blocked = false), 200);
+  timeout = setTimeout(() => (blocked = false), 200);
 }
 
 /**
- * Helper navigate function - make non-generic again
+ * Schedules an action to be executed after sheet dismissal,
+ * or runs it immediately if no sheet is currently closing.
  */
-export function navigate(navigationAction: (...args: any[]) => void, ...args: any[]) {
-  if (typeof args[0] === 'string') {
-    if (NATIVE_ROUTES.indexOf(args[0] as any) !== -1) {
-      const wasBlocked = blocked;
-      block();
-      if (wasBlocked) {
-        return;
-      }
-    }
-    addActionAfterClosingSheet(() => navigationAction(...args));
+function runAfterSheetDismissal(action: () => void): void {
+  if (sheetCoordinator.isClosing) {
+    sheetCoordinator.pendingActions.push(action);
   } else {
-    navigationAction(...args);
+    action();
   }
 }
 
-export function getActiveRoute<T extends keyof RootStackParamList>() {
-  const activeRoute = TopLevelNavigationRef?.getCurrentRoute();
-  if (!activeRoute) return null;
-  return {
-    ...activeRoute,
-    params: activeRoute.params as RootStackParamList[T],
-  };
+function cancelPendingRouteChange(): void {
+  pendingRouteChangeId += 1;
 }
 
-export function setParams<T extends keyof RootStackParamList>(params: Partial<RootStackParamList[T]>): void {
-  if (TopLevelNavigationRef?.isReady()) {
-    TopLevelNavigationRef.setParams(params);
-  }
+function scheduleRouteChange(): void {
+  pendingRouteChangeId += 1;
+  const requestId = pendingRouteChangeId;
+  queueMicrotask(() => {
+    if (requestId !== pendingRouteChangeId) return;
+    const newActiveRoute = getActiveRouteName();
+    if (newActiveRoute) setActiveRoute(newActiveRoute);
+  });
 }
 
-function getActiveOptions() {
-  return TopLevelNavigationRef?.getCurrentOptions();
-}
-
-/**
- * Gets the current screen from navigation state
- */
-function getActiveRouteName() {
-  const route = getActiveRoute();
-  return route?.name;
-}
-
-/**
- * Handle a navigation action or queue the action if navigation actions have been paused.
- * @param  {Object} action      The navigation action to run.
- */
-// Apply the overloaded type to the standalone handleAction function
-const handleAction: HandleActionFunction = (name: keyof RootStackParamList, params?: Record<string, unknown>, replace = false) => {
-  if (!TopLevelNavigationRef) return;
-
-  const action = (replace ? StackActions.replace : CommonActions.navigate)(
-    name as string, // Cast needed for underlying call
-    params as object | undefined // Use general type for implementation
-  );
-  TopLevelNavigationRef?.dispatch(action);
-};
-
-function goBack() {
-  if (!TopLevelNavigationRef) return;
-  TopLevelNavigationRef.goBack();
-}
-
-/**
- * Set Top Level Navigator
- */
-function setTopLevelNavigator(navigatorRef: NavigationContainerRef<RootStackParamList> | null) {
-  TopLevelNavigationRef = navigatorRef;
-}
+// ============ Navigation Service ============================================= //
 
 export default {
-  getActiveOptions,
-  getState: () => TopLevelNavigationRef?.getState(),
   getActiveRoute,
   getActiveRouteName,
-  handleAction,
-  setParams,
-  setTopLevelNavigator,
+  getState,
   goBack,
-};
+  handleAction: navigate,
+  replace,
+  setParams,
+  setNavigationRef,
+} as const;

@@ -39,7 +39,7 @@ export type NavigateToSwapsParams<
   } & InputAmountRequest
 >;
 
-export function navigateToSwaps(params: NavigateToSwapsParams = {}) {
+export function navigateToSwaps(params: NavigateToSwapsParams = {}): void {
   if (!enableActionsOnReadOnlyWallet && getIsReadOnlyWallet()) return watchingAlert();
 
   const chainId = params.inputAsset?.chainId || params.outputAsset?.chainId || store.getState().settings.chainId;
@@ -101,8 +101,8 @@ export type SwapsParams = InputAmountsToSet & {
 };
 
 export function getSwapsNavigationParams(): SwapsParams {
-  let params = Navigation.getActiveRoute<typeof Routes.SWAP>()?.params;
-  if (!params) params = getFallbackParams();
+  const params = Navigation.getActiveRoute<typeof Routes.SWAP>()?.params;
+  if (!params || !('inputAmount' in params)) return getFallbackParams();
   return params;
 }
 

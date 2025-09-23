@@ -1,11 +1,11 @@
-import { BaseRainbowStore, DerivedRainbowStore, PersistedRainbowStore } from '../types';
+import { BaseRainbowStore, DerivedStore, PersistedRainbowStore } from '../types';
 
 export function getStoreName(store: BaseRainbowStore<unknown>): string {
   const name = isPersistedStore(store) ? store.persist.getOptions().name : store.name;
   return name ?? store.name;
 }
 
-export function isDerivedStore(store: BaseRainbowStore<unknown>): store is DerivedRainbowStore<unknown> {
+export function isDerivedStore(store: BaseRainbowStore<unknown>): store is DerivedStore<unknown> {
   return 'flushUpdates' in store;
 }
 

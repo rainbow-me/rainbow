@@ -17,7 +17,7 @@ import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetwork
 import monitorNetwork from '@/debugging/network';
 import { Playground } from '@/design-system/playground/Playground';
 import RainbowContextWrapper from '@/helpers/RainbowContext';
-import { Navigation } from '@/navigation';
+import { setNavigationRef } from '@/navigation/Navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
 import store from '@/redux/store';
 import { MainThemeProvider } from '@/theme/ThemeContext';
@@ -31,8 +31,6 @@ import { migrate } from '@/migrations';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { loadSettingsData } from '@/state/settings/loadSettingsData';
-import { NavigationContainerRef } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
 import { IS_DEV, IS_PROD, IS_TEST } from '@/env';
 import Routes from '@/navigation/Routes';
 import { BackupsSync } from '@/state/sync/BackupsSync';
@@ -57,11 +55,7 @@ const sx = StyleSheet.create({
 });
 
 function AppComponent() {
-  const { initialRoute } = useApplicationSetup();
-
-  const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
-    Navigation.setTopLevelNavigator(ref);
-  }, []);
+  const initialRoute = useApplicationSetup();
 
   const onNavigationReady = useCallback(() => {
     PerformanceTracking.logReportSegmentRelative(PerformanceReports.appStartup, PerformanceReportSegments.appStartup.mountNavigation);
@@ -76,7 +70,7 @@ function AppComponent() {
       <View style={sx.container}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
-            <Routes onReady={onNavigationReady} ref={handleNavigatorRef} />
+            <Routes onReady={onNavigationReady} ref={setNavigationRef} />
           </InitialRouteContext.Provider>
         )}
         <OfflineToast />

@@ -8,7 +8,7 @@ import { getIconColorAndGradientForTransactionStatus } from '@/screens/transacti
 import { useTheme } from '@/theme';
 import { haptics } from '@/utils';
 import Routes from '@rainbow-me/routes';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';

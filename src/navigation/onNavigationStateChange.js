@@ -1,12 +1,11 @@
 import { NativeModules } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { analytics } from '@/analytics';
-import { POINTS_ROUTES } from '@/screens/points/PointsScreen';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { isSwipeRoute, setActiveRoute } from '@/state/navigation/navigationStore';
 import { currentColors } from '@/theme';
 import { sentryUtils } from '../utils';
 import { Navigation } from './index';
-import Routes from './routesNames';
+import Routes, { POINTS_ROUTES } from './routesNames';
 import { isSplashScreenHidden } from '@/hooks/useHideSplashScreen';
 
 let memState;
@@ -15,19 +14,8 @@ let memPrevRouteName;
 
 let action = null;
 
-const isOnSwipeScreen = name =>
-  [
-    Routes.WALLET_SCREEN,
-    Routes.DISCOVER_SCREEN,
-    Routes.PROFILE_SCREEN,
-    Routes.POINTS_SCREEN,
-    POINTS_ROUTES.CLAIM_CONTENT,
-    POINTS_ROUTES.REFERRAL_CONTENT,
-    Routes.DAPP_BROWSER_SCREEN,
-  ].includes(name);
-
 export function triggerOnSwipeLayout(newAction) {
-  if (isOnSwipeScreen(Navigation.getActiveRoute()?.name)) {
+  if (isSwipeRoute(Navigation.getActiveRoute()?.name)) {
     newAction();
   } else {
     action = newAction;
@@ -109,8 +97,6 @@ export function onHandleStatusBar(currentState, prevState) {
   }
 }
 
-const setActiveRoute = useNavigationStore.getState().setActiveRoute;
-
 export function onNavigationStateChange(currentState) {
   const routeName = Navigation.getActiveRouteName();
 
@@ -122,9 +108,8 @@ export function onNavigationStateChange(currentState) {
     setTimeout(NativeModules.MenuViewModule.dismiss, 400);
   }
 
-  setActiveRoute(routeName);
-
-  if (isOnSwipeScreen(routeName)) {
+  if (isSwipeRoute(routeName)) {
+    setActiveRoute(routeName);
     action?.();
     action = undefined;
   }

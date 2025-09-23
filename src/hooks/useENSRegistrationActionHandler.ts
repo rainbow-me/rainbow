@@ -1,5 +1,5 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import { useCallback, useEffect, useRef } from 'react';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { useRecoilValue } from 'recoil';

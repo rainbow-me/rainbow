@@ -82,13 +82,25 @@ export type SubscribeFn<S, Selected = S> = (...args: SubscribeArgs<S, Selected>)
 
 // ============ Derived Store Types ============================================ //
 
-export type DerivedRainbowStore<S> = WithFlushUpdates<ReadOnlyDerivedStore<BaseRainbowStore<S>>>;
+export type DerivedStore<S> = WithFlushUpdates<ReadOnlyDerivedStore<BaseRainbowStore<S>>>;
 
 export type WithFlushUpdates<Store extends StoreApi<unknown>> = Store & {
+  /**
+   * Destroy the derived store and its subscriptions.
+   */
+  destroy: () => void;
   /**
    * Flush all pending updates — only applicable to **debounced** derived stores.
    */
   flushUpdates: () => void;
+};
+
+export type WithGetSnapshot<Store extends StoreApi<unknown>> = Store & {
+  /**
+   * Provided to `useSyncExternalStoreWithSelector` to ensure it activates the derived
+   * store when it gets the initial state before subscribing to the store.
+   */
+  getSnapshot: () => InferStoreState<Store>;
 };
 
 type ReadOnlyDerivedStore<Store extends BaseRainbowStore<unknown>> = Omit<Store, 'getInitialState' | 'setState'> &
@@ -121,30 +133,34 @@ export type DeriveOptions<DerivedState = unknown> =
       debounce?: number | DebounceOptions;
       /**
        * If `true`, the store will log debug messages to the console.
+       *
+       * If `'verbose'`, the store will log the subscriptions it creates each time the derive
+       * function is run, rather than only the first time.
        * @default false
        */
-      debugMode?: boolean;
+      debugMode?: boolean | 'verbose';
       /**
        * A custom comparison function for detecting state changes.
        * @default `Object.is`
        */
       equalityFn?: EqualityFn<DerivedState>;
       /**
-       * If `true`, subscriptions to underlying stores are established **once** and are not
-       * rebuilt on subsequent re-derives.
+       * **In fast mode, subscriptions to underlying stores are established only once**, during
+       * the initial run of your `deriveFunction` — they are *not* rebuilt on subsequent runs
+       * like they are by default.
        *
-       * Since unsubscribing/resubscribing in Zustand is already very cheap (typically just
-       * removing and re-adding an entry in a Set), this generally only yields a noticeable
-       * benefit in very high-churn derived stores.
+       * The implication is that only changes to the *originally tracked* dependencies will cause
+       * the derived store to update, even if your function reads different dependencies in later
+       * runs. So for fast mode to work without issue, `$` calls should be consistent and top-level
+       * in your `deriveFunction`.
        *
-       * **Important:**
-       * - `$` calls must be pure and top-level in your `deriveFn` for this setting to work
-       *   without issue. It effectively freezes the derived store's dependency set, and the
-       *   selectors and equality functions used within your `$` calls.
+       * Subscribing or unsubscribing in Zustand is generally lightweight (just adding/removing
+       * from a Set), so fast mode only makes a real difference in high-churn or deeply nested
+       * derived stores. However, it *is* faster, and most derived stores can safely enable it.
        *
        * @default false
        */
-      stableSubscriptions?: boolean;
+      fastMode?: boolean;
     };
 
 // ============ Persistence Types ============================================== //
@@ -214,7 +230,7 @@ export type DebounceOptions = {
   delay: number;
   /* Specify invoking on the leading edge of the timeout. */
   leading?: boolean;
-  /* The maximum time func is allowed to be delayed before it’s invoked. */
+  /* The maximum time the function is allowed to be delayed before it’s invoked. */
   maxWait?: number;
   /* Specify invoking on the trailing edge of the timeout. */
   trailing?: boolean;
