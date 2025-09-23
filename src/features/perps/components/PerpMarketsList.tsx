@@ -1,13 +1,13 @@
 import { LegendList } from '@legendapp/list';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PerpMarketDisabledRow } from '@/features/perps/components/PerpMarketDisabledRow';
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { FOOTER_HEIGHT, FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { useFilteredHyperliquidMarkets, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { useFilteredHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarket } from '@/features/perps/types';
+import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 
 type PerpMarketsListProps = {
   onPressMarket?: (market: PerpMarket) => void;
@@ -15,34 +15,30 @@ type PerpMarketsListProps = {
 
 const SCROLL_INSETS = { bottom: FOOTER_HEIGHT - 4 };
 
-// -- [Christian] TODO: Re-add disabled markets
 export const PerpMarketsList = memo(function PerpMarketsList({ onPressMarket }: PerpMarketsListProps) {
-  // const markets = useHyperliquidMarketsStore(state => state.getSearchResults());
   const markets = useFilteredHyperliquidMarkets();
-  // const positions = useHyperliquidAccountStore(state => state.getPositions());
   const priceChangeColors = usePerpsAccentColorContext().accentColors.priceChangeColors;
+  const checkIfPositionExists = useHasPositionCheck();
 
   const renderItem = useCallback(
     ({ item }: { item: PerpMarket }) => {
-      // return positions[item.symbol] ? (
-      //   <PerpMarketDisabledRow market={item} />
-      // ) : (
-      return <PerpMarketRow market={item} onPress={onPressMarket} paddingVertical={12} priceChangeColors={priceChangeColors} />;
-      // );
+      return checkIfPositionExists(item.symbol) ? (
+        <PerpMarketDisabledRow market={item} />
+      ) : (
+        <PerpMarketRow market={item} onPress={onPressMarket} paddingVertical={12} priceChangeColors={priceChangeColors} />
+      );
     },
-    [onPressMarket /* , positions */, priceChangeColors]
+    [checkIfPositionExists, onPressMarket, priceChangeColors]
   );
-
-  // const extraData = useMemo(() => positions, [positions]);
 
   return (
     <LegendList
       ListHeaderComponent={<View style={styles.listHeader} />}
       data={markets}
+      extraData={checkIfPositionExists}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={styles.contentContainer}
-      // extraData={extraData}
       maintainVisibleContentPosition={false}
       recycleItems
       scrollIndicatorInsets={SCROLL_INSETS}
