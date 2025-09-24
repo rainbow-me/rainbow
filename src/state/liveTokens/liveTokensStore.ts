@@ -1,12 +1,13 @@
 import { time } from '@/utils';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { useNavigationStore } from '@/state/navigation/navigationStore';
+import { isRouteActive, useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
 import { getPlatformClient } from '@/resources/platform/client';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
+import Routes from '@/navigation/routesNames';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
 const HYPERLIQUID_TOKEN_SUFFIX = ':hl';
@@ -210,6 +211,9 @@ function updateUserAssetsStore(tokens: LiveTokensData) {
   useUserAssetsStore.getState().updateTokens(tokens);
 }
 
+const FAST_REFRESH_ROUTES = [Routes.PERPS_NEW_POSITION_SCREEN, Routes.CLOSE_POSITION_BOTTOM_SHEET];
+const FAST_REFRESH_INTERVAL = time.seconds(1);
+
 export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTokensParams, LiveTokensStore>(
   {
     fetcher: fetchTokensData,
@@ -225,9 +229,15 @@ export const useLiveTokensStore = createQueryStore<LiveTokensData | null, LiveTo
         });
       }
     },
-    onFetched: ({ data }) => {
+    onFetched: ({ data, fetch }) => {
       if (data) {
         updateUserAssetsStore(data);
+      }
+      const activeRoute = useNavigationStore.getState().activeRoute as (typeof FAST_REFRESH_ROUTES)[number];
+      if (FAST_REFRESH_ROUTES.includes(activeRoute)) {
+        setTimeout(() => {
+          fetch(undefined, { staleTime: FAST_REFRESH_INTERVAL });
+        }, FAST_REFRESH_INTERVAL);
       }
     },
     paramChangeThrottle: 250,
