@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { AnimatedText, Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
@@ -7,10 +7,12 @@ import { Slider } from '@/features/perps/components/Slider';
 
 const PercentageSlider = ({
   sliderXPosition,
+  onPercentageChange,
   onPercentageUpdate,
   width,
 }: {
   sliderXPosition: SharedValue<number>;
+  onPercentageChange?: (percentage: number) => void;
   onPercentageUpdate?: (percentage: number) => void;
   width: number;
 }) => {
@@ -20,8 +22,8 @@ const PercentageSlider = ({
     <Slider
       sliderXPosition={sliderXPosition}
       colors={accentColors.slider}
+      onPercentageChange={onPercentageChange}
       onPercentageUpdate={onPercentageUpdate}
-      onPercentageChange={onPercentageUpdate}
       width={width}
       height={10}
       expandedHeight={14}
@@ -49,6 +51,17 @@ export const PositionPercentageSlider = memo(function PositionPercentageSlider({
   const displayValue = useDerivedValue(() => {
     return `${Math.round((sliderXPosition.value / sliderWidth) * 100)}%`;
   });
+
+  const onPercentageChange = useCallback(
+    (percentage: number) => {
+      'worklet';
+      const roundedPercentage = Math.round(percentage * 100);
+      if (roundedPercentage !== Math.round(percentageValue.value * 100)) {
+        percentageValue.value = percentage;
+      }
+    },
+    [percentageValue]
+  );
 
   return (
     <Box
@@ -79,7 +92,12 @@ export const PositionPercentageSlider = memo(function PositionPercentageSlider({
           {displayValue}
         </AnimatedText>
       </Box>
-      <PercentageSlider sliderXPosition={sliderXPosition} width={sliderWidth} />
+      <PercentageSlider
+        onPercentageChange={onPercentageChange}
+        onPercentageUpdate={onPercentageChange}
+        sliderXPosition={sliderXPosition}
+        width={sliderWidth}
+      />
     </Box>
   );
 });

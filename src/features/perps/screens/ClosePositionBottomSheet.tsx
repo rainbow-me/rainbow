@@ -86,6 +86,7 @@ function PanelContent({ symbol }: PanelContentProps) {
   });
 
   const positionEquity = position ? position.equity : '0';
+  const receivedAmount = useDerivedValue(() => formatCurrency(mulWorklet(positionEquity, percentToClose.value)));
 
   const projectedPnl = useDerivedValue(() => {
     if (!position) return '-';
@@ -152,7 +153,7 @@ function PanelContent({ symbol }: PanelContentProps) {
               {`Receive`}
             </Text>
             <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'}>
-              {formatCurrency(positionEquity)}
+              {receivedAmount}
             </AnimatedText>
           </Box>
           <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full">
