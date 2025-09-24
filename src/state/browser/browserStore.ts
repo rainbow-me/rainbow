@@ -265,15 +265,26 @@ export const useBrowserStore = createWithEqualityFn<BrowserState>()(
 
         setTabIds: newTabIds =>
           set(state => {
-            const newTabs = new Set(newTabIds);
+            // React 19 enforces strict key uniqueness, so we normalise the incoming list by:
+            // 1. Dropping any falsey tab identifiers (which would fall back to indexed keys)
+            // 2. Removing duplicates while preserving the first occurrence order
+            const sanitisedTabIds: TabId[] = [];
+            const seenTabIds = new Set<TabId>();
+            for (const tabId of newTabIds) {
+              if (!tabId || seenTabIds.has(tabId)) continue;
+              sanitisedTabIds.push(tabId);
+              seenTabIds.add(tabId);
+            }
+
+            const newTabs = new Set(sanitisedTabIds);
             const oldTabs = new Set(state.tabIds);
 
             if (newTabs.size === oldTabs.size && [...newTabs].every(id => oldTabs.has(id))) return state;
 
             const newTabsData = new Map(state.tabsData);
-            newTabIds.forEach(id => !oldTabs.has(id) && newTabsData.set(id, { url: state.persistedTabUrls[id] || RAINBOW_HOME }));
+            sanitisedTabIds.forEach(id => !oldTabs.has(id) && newTabsData.set(id, { url: state.persistedTabUrls[id] || RAINBOW_HOME }));
             state.tabIds.forEach(id => !newTabs.has(id) && newTabsData.delete(id));
-            return { tabIds: newTabIds, tabsData: newTabsData };
+            return { tabIds: sanitisedTabIds, tabsData: newTabsData };
           }),
 
         setTitle: (title, tabId) =>
