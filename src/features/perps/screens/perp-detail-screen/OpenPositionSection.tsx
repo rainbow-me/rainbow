@@ -1,7 +1,7 @@
 import { memo, useMemo, Fragment } from 'react';
 import { PerpMarket, PerpsPosition } from '@/features/perps/types';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { Box, Text, TextShadow, Separator } from '@/design-system';
+import { Box, Text, TextShadow, Separator, useColorMode } from '@/design-system';
 import { abs, greaterThan, isEqual, isPositive, multiply } from '@/helpers/utilities';
 import { toFixedWorklet, getPercentageDifferenceWorklet } from '@/safe-math/SafeMath';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
@@ -11,8 +11,11 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import * as i18n from '@/languages';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 export const PositionValueCard = memo(function PositionValueCard({ position }: { position: PerpsPosition }) {
+  const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
 
   const { unrealizedPnl, equity, returnOnEquity } = position;
@@ -30,15 +33,15 @@ export const PositionValueCard = memo(function PositionValueCard({ position }: {
 
   return (
     <Box
-      backgroundColor={accentColors.surfacePrimary}
+      backgroundColor={isDarkMode ? accentColors.surfacePrimary : accentColors.opacity8}
       borderRadius={28}
-      borderWidth={2}
-      borderColor={{ custom: accentColors.opacity6 }}
+      borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
+      borderColor={{ custom: accentColors.opacity5 }}
       padding="20px"
       gap={14}
     >
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-        <Text size="17pt" weight="bold" color="labelSecondary">
+        <Text size="17pt" weight="bold" color={isDarkMode ? 'labelSecondary' : 'labelTertiary'}>
           {i18n.t(i18n.l.perps.positions.position_value)}
         </Text>
         <Box flexDirection="row" alignItems="center" gap={3}>
@@ -55,7 +58,7 @@ export const PositionValueCard = memo(function PositionValueCard({ position }: {
         </Box>
       </Box>
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-        <Text size="22pt" weight="heavy" color="label">
+        <Text size="22pt" weight="heavy" color={isDarkMode ? 'label' : { custom: accentColors.opacity100 }}>
           {formattedValues.equity}
         </Text>
         <Box flexDirection="row" alignItems="center" justifyContent="space-between">
@@ -78,6 +81,7 @@ export const PositionValueCard = memo(function PositionValueCard({ position }: {
 });
 
 const PositionDetailsCard = memo(function PositionDetailsCard({ market, position }: { market: PerpMarket; position: PerpsPosition }) {
+  const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
 
   const liquidationPrice = position.liquidationPrice
@@ -109,12 +113,14 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
     },
   ];
 
+  const lightModeFill = opacityWorklet('#09111F', 0.02);
+
   return (
     <Box
-      backgroundColor={accentColors.surfacePrimary}
+      backgroundColor={isDarkMode ? accentColors.surfacePrimary : lightModeFill}
       borderRadius={28}
-      borderWidth={2}
-      borderColor={{ custom: accentColors.opacity6 }}
+      borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
+      borderColor={{ custom: isDarkMode ? accentColors.opacity6 : lightModeFill }}
       padding="20px"
       gap={16}
     >
@@ -141,7 +147,7 @@ const PositionDetailsCard = memo(function PositionDetailsCard({ market, position
             </Box>
           )}
         </Box>
-        <Text align="right" color="white" size="17pt" weight="bold">
+        <Text align="right" color={isDarkMode ? 'white' : 'label'} size="17pt" weight="bold">
           {liquidationPrice}
         </Text>
       </Box>

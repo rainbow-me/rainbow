@@ -1,4 +1,4 @@
-import { Box, Text, TextIcon } from '@/design-system';
+import { Box, Text, TextIcon, useColorMode } from '@/design-system';
 import { TriggerOrderType } from '@/features/perps/types';
 import React, { memo } from 'react';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -6,6 +6,8 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import * as i18n from '@/languages';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 type TriggerOrderCardProps = {
   type: TriggerOrderType;
@@ -22,15 +24,16 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
   onPressDelete,
   isCancelling,
 }: TriggerOrderCardProps) {
+  const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const isTakeProfit = type === TriggerOrderType.TAKE_PROFIT;
 
   return (
     <Box
       width="full"
-      borderWidth={2}
-      backgroundColor={accentColors.surfacePrimary}
-      borderColor={{ custom: accentColors.opacity8 }}
+      borderWidth={isDarkMode ? 2 : THICK_BORDER_WIDTH}
+      backgroundColor={isDarkMode ? accentColors.surfacePrimary : opacityWorklet('#09111F', 0.02)}
+      borderColor={{ custom: isDarkMode ? accentColors.opacity8 : opacityWorklet('#09111F', 0.02) }}
       borderRadius={28}
       padding="20px"
       alignItems="center"

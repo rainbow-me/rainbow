@@ -1,7 +1,7 @@
 /** @refresh reset */
 import React from 'react';
 import Animated, { DerivedValue, LinearTransition, SharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { Box, IconContainer, Text, TextShadow } from '@/design-system';
+import { Bleed, Box, IconContainer, Text, TextShadow } from '@/design-system';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
@@ -54,38 +54,40 @@ const SectionHeaderView = React.memo(function SectionHeaderView({
       scaleTo={0.95}
       style={{ height: 14, justifyContent: 'center', zIndex: 10 }}
     >
-      <Box height={{ custom: 14 }} flexDirection="row" justifyContent="space-between" alignItems="center">
-        <Box flexDirection="row" gap={10} alignItems="center">
-          <IconContainer height={14} width={24}>
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text align="center" color={iconColorProp} size="icon 17px" weight="bold">
-                {icon}
-              </Text>
-            </TextShadow>
-          </IconContainer>
-          <Box flexDirection="row" gap={5}>
-            <Text weight="heavy" size="20pt" color="label">
-              {primaryText}
-            </Text>
-            {secondaryText && (
+      <Bleed vertical="4px">
+        <Box height={'full'} flexDirection="row" justifyContent="space-between" alignItems="center">
+          <Box flexDirection="row" gap={10} alignItems="center">
+            <IconContainer height={14} width={24}>
               <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text weight="heavy" size="20pt" color="accent">
-                  {secondaryText}
+                <Text align="center" color={iconColorProp} size="icon 17px" weight="bold">
+                  {icon}
                 </Text>
               </TextShadow>
-            )}
-          </Box>
-        </Box>
-        <AnimatedBox style={rotationStyle}>
-          <IconContainer height={14} width={24}>
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text weight="heavy" align="center" size="17pt" color={iconColorProp}>
-                􀆈
+            </IconContainer>
+            <Box flexDirection="row" gap={5}>
+              <Text weight="heavy" size="20pt" color="label">
+                {primaryText}
               </Text>
-            </TextShadow>
-          </IconContainer>
-        </AnimatedBox>
-      </Box>
+              {secondaryText && (
+                <TextShadow blur={12} shadowOpacity={0.24}>
+                  <Text weight="heavy" size="20pt" color="accent">
+                    {secondaryText}
+                  </Text>
+                </TextShadow>
+              )}
+            </Box>
+          </Box>
+          <AnimatedBox style={rotationStyle}>
+            <IconContainer height={14} width={24}>
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <Text weight="heavy" align="center" size="17pt" color={iconColorProp}>
+                  􀆈
+                </Text>
+              </TextShadow>
+            </IconContainer>
+          </AnimatedBox>
+        </Box>
+      </Bleed>
     </GestureHandlerButton>
   );
 });

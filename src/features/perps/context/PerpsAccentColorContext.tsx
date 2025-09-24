@@ -26,7 +26,9 @@ type PerpsAccentColors = {
   opacity12: string;
   opacity10: string;
   opacity8: string;
+  opacity7: string;
   opacity6: string;
+  opacity5: string;
   opacity4: string;
   opacity3: string;
   opacity2: string;
@@ -80,7 +82,9 @@ export function PerpsAccentColorContextProvider({ children }: PerpsAccentColorCo
       opacity12: opacityWorklet(primary, 0.12),
       opacity10: opacityWorklet(primary, 0.1),
       opacity8: opacityWorklet(primary, 0.08),
+      opacity7: opacityWorklet(primary, 0.07),
       opacity6: opacityWorklet(primary, 0.06),
+      opacity5: opacityWorklet(primary, 0.05),
       opacity4: opacityWorklet(primary, 0.04),
       opacity3: opacityWorklet(primary, 0.03),
       opacity2: opacityWorklet(primary, 0.02),
