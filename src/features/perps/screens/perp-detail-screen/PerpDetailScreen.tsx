@@ -20,7 +20,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { SHEET_FOOTER_HEIGHT, SheetFooter } from './SheetFooter';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { HYPERLIQUID_GREEN, HYPERLIQUID_GREEN_LIGHT, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({
   symbol,
@@ -102,11 +102,11 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
 });
 
 export const ChartSection = memo(function ChartSection({ symbol }: { symbol: string }) {
+  const { accentColors } = usePerpsAccentColorContext();
   const { isDarkMode } = useColorMode();
   const labelSecondary = useForegroundColor('labelSecondary');
 
   const color = isDarkMode ? ETH_COLOR_DARK : labelSecondary;
-  const timeframeSelectorColor = isDarkMode ? HYPERLIQUID_GREEN : HYPERLIQUID_GREEN_LIGHT;
   const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
 
   return (
@@ -115,7 +115,7 @@ export const ChartSection = memo(function ChartSection({ symbol }: { symbol: str
         color: color,
         opacity12: opacityWorklet(color, 0.12),
         opacity24: opacityWorklet(color, 0.24),
-        timeframeSelector: timeframeSelectorColor,
+        timeframeSelector: accentColors.opacity100,
       }}
       backgroundColor={backgroundColor}
       hyperliquidSymbol={symbol}
