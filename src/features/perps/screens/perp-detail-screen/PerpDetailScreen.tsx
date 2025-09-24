@@ -21,6 +21,7 @@ import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/
 import { SHEET_FOOTER_HEIGHT, SheetFooter } from './SheetFooter';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
+import * as i18n from '@/languages';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({
   symbol,
@@ -178,7 +179,7 @@ const PerpsDetailScreenContent = memo(function PerpsDetailScreenContent({ market
             iconColor={colors.accentColors.opacity100}
             icon="􀐫"
             content={<HistorySection market={market} />}
-            primaryText="History"
+            primaryText={i18n.t(i18n.l.perps.history.title)}
             expanded={historyExpanded}
             onToggle={onToggleHistory}
           />

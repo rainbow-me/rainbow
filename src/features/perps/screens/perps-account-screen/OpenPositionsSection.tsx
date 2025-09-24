@@ -9,6 +9,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { Image } from 'react-native';
 import infinityIcon from '@/assets/infinity.png';
+import * as i18n from '@/languages';
 
 export const OpenPositionsSection = function OpenPositionsSection() {
   const { isDarkMode } = useColorMode();
@@ -20,7 +21,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
         <Box gap={16} paddingHorizontal="4px">
           <Box flexDirection="row" alignItems="center" justifyContent="space-between">
             <Text size="17pt" weight="heavy" color="labelTertiary">
-              {'Open Positions'}
+              {i18n.t(i18n.l.perps.positions.open_positions)}
             </Text>
             {positionsInfo.hasPositions && (
               <Box flexDirection="row" alignItems="center" gap={2}>
@@ -62,7 +63,7 @@ export const OpenPositionsSection = function OpenPositionsSection() {
             <Box height={100} justifyContent="center" alignItems="center" gap={20}>
               <Image source={infinityIcon} style={{ width: 52, height: 24 }} resizeMode="contain" />
               <Text size="20pt" weight="heavy" color={isDarkMode ? 'label' : 'labelSecondary'}>
-                {'No Open Positions'}
+                {i18n.t(i18n.l.perps.positions.no_open_positions)}
               </Text>
             </Box>
           )}

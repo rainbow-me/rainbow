@@ -5,6 +5,7 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { useCallback } from 'react';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import * as i18n from '@/languages';
 
 type AddTriggerOrderButtonProps = {
   symbol: string;
@@ -51,7 +52,10 @@ export const AddTriggerOrderButton = function AddTriggerOrderButton({
       >
         <TextShadow blur={8} shadowOpacity={0.2}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {type === TriggerOrderType.STOP_LOSS ? 'Add Stop Loss 􀅼' : 'Add Take Profit 􀅼'}
+            {type === TriggerOrderType.STOP_LOSS
+              ? i18n.t(i18n.l.perps.trigger_orders.add_stop_loss)
+              : i18n.t(i18n.l.perps.trigger_orders.add_take_profit)}{' '}
+            􀅼
           </Text>
         </TextShadow>
       </Box>

@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { VirtualNavigationStore } from '@/navigation/createVirtualNavigator';
 import { PerpsRoute } from '@/navigation/types';
+import * as i18n from '@/languages';
 
 export const PerpsNavbar = function PerpsNavbar() {
   const safeAreaInsets = useSafeAreaInsets();
@@ -36,10 +37,12 @@ export const PerpsNavbar = function PerpsNavbar() {
 function getPerpsTitle(state: VirtualNavigationStore<PerpsRoute>): string {
   switch (state.activeRoute) {
     case Routes.PERPS_SEARCH_SCREEN:
-      return state.getParams(Routes.PERPS_SEARCH_SCREEN)?.type === 'search' ? 'Markets' : 'New Position';
+      return state.getParams(Routes.PERPS_SEARCH_SCREEN)?.type === 'search'
+        ? i18n.t(i18n.l.perps.markets.title)
+        : i18n.t(i18n.l.perps.actions.new_position);
     case Routes.PERPS_NEW_POSITION_SCREEN:
-      return 'New Position';
+      return i18n.t(i18n.l.perps.actions.new_position);
     default:
-      return 'Perps';
+      return i18n.t(i18n.l.perps.common.title);
   }
 }

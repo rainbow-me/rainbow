@@ -5,6 +5,7 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { ButtonPressAnimation } from '@/components/animations';
 import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import * as i18n from '@/languages';
 
 type TriggerOrderCardProps = {
   type: TriggerOrderType;
@@ -43,7 +44,7 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
               {isTakeProfit ? '􀑁' : '􁘳'}
             </TextIcon>
             <Text size="13pt" weight="bold" color={'labelSecondary'}>
-              {isTakeProfit ? 'Take Profit' : 'Stop Loss'}
+              {isTakeProfit ? i18n.t(i18n.l.perps.trigger_orders.take_profit) : i18n.t(i18n.l.perps.trigger_orders.stop_loss)}
             </Text>
           </Box>
           <Box flexDirection="row" alignItems="center" gap={8}>
@@ -51,7 +52,7 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
               {formatAssetPrice({ value: price, currency: 'USD' })}
             </Text>
             <Text size="17pt" weight="bold" color={'labelTertiary'}>
-              {'Sell '}
+              {`${i18n.t(i18n.l.perps.trigger_orders.sell)} `}
               <Text size="17pt" weight="bold" color={'labelSecondary'}>
                 {percentage}
               </Text>

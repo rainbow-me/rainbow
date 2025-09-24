@@ -21,6 +21,7 @@ import { mulWorklet } from '@/safe-math/SafeMath';
 import { logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { colors } from '@/styles';
+import * as i18n from '@/languages';
 
 function PanelSheet({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();
@@ -49,7 +50,9 @@ function PanelContent({ symbol }: PanelContentProps) {
   const position = useHyperliquidAccountStore(state => state.getPosition(symbol));
   const navigation = useNavigation();
   const isNegativePnl = position ? Number(position.unrealizedPnl) < 0 : false;
-  const pnlLabel = isNegativePnl ? 'Estimated Loss' : 'Estimated Profit';
+  const pnlLabel = isNegativePnl
+    ? i18n.t(i18n.l.perps.close_position.estimated_loss)
+    : i18n.t(i18n.l.perps.close_position.estimated_profit);
   const pnlColor = isNegativePnl ? 'red' : 'green';
 
   const minPercentage = useMemo(() => {
@@ -114,7 +117,7 @@ function PanelContent({ symbol }: PanelContentProps) {
   return (
     <Box paddingHorizontal={'24px'} paddingTop={'28px'} paddingBottom={'20px'} alignItems="center" style={{ flex: 1 }}>
       <Box width="full" gap={24}>
-        <PerpBottomSheetHeader title="Close Position" symbol={symbol} />
+        <PerpBottomSheetHeader title={i18n.t(i18n.l.perps.actions.close_position)} symbol={symbol} />
         <Box>
           {isBelowMinimum && (
             <Box paddingBottom={'12px'} justifyContent="center" paddingHorizontal={'8px'}>
@@ -123,7 +126,7 @@ function PanelContent({ symbol }: PanelContentProps) {
                   {'􀇿'}
                 </TextIcon>
                 <Text color="labelTertiary" size="15pt" weight="bold">
-                  {'Minimum amount is '}
+                  {`${i18n.t(i18n.l.perps.close_position.minimum_amount_is)} `}
                   <Text color="labelSecondary" size="15pt" weight="heavy">
                     {`${minPercentage}%`}
                   </Text>
@@ -133,7 +136,7 @@ function PanelContent({ symbol }: PanelContentProps) {
           )}
           <PositionPercentageSlider
             totalValue={formatCurrency(positionEquity)}
-            title="Amount"
+            title={i18n.t(i18n.l.perps.inputs.amount)}
             percentageValue={percentToClose}
             sliderWidth={SLIDER_WIDTH - 8 * 2}
           />
@@ -150,7 +153,7 @@ function PanelContent({ symbol }: PanelContentProps) {
         >
           <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="full">
             <Text size="17pt" weight="medium" color={'labelSecondary'}>
-              {`Receive`}
+              {i18n.t(i18n.l.perps.deposit.receive)}
             </Text>
             <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'}>
               {receivedAmount}
@@ -171,8 +174,8 @@ function PanelContent({ symbol }: PanelContentProps) {
           disabledBackgroundColor={accentColors.opacity24}
           isProcessing={isSubmitting}
           showBiometryIcon={false}
-          processingLabel={'Closing...'}
-          label={'Hold to Close'}
+          processingLabel={i18n.t(i18n.l.perps.close_position.closing)}
+          label={i18n.t(i18n.l.perps.close_position.hold_to_close)}
           onLongPress={closePosition}
           height={48}
           textStyle={{

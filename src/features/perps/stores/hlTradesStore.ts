@@ -7,6 +7,7 @@ import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { time } from '@/utils/time';
 import { TriggerOrderType, HlTrade } from '../types';
 import { convertSide } from '../utils';
+import * as i18n from '@/languages';
 
 type HlTradesParams = {
   address: Address | string | null;
@@ -18,14 +19,14 @@ type FetchHlTradesResponse = {
 };
 
 export const tradeExecutionDescriptions = Object.freeze({
-  takeProfitExecuted: 'Take Profit Executed',
-  stopLossExecuted: 'Stop Loss Executed',
-  longOpened: 'Long Opened',
-  shortOpened: 'Short Opened',
-  longClosed: 'Long Closed',
-  shortClosed: 'Short Closed',
-  longLiquidated: 'Long Liquidated',
-  shortLiquidated: 'Short Liquidated',
+  takeProfitExecuted: i18n.t(i18n.l.perps.history.trade_execution.take_profit_executed),
+  stopLossExecuted: i18n.t(i18n.l.perps.history.trade_execution.stop_loss_executed),
+  longOpened: i18n.t(i18n.l.perps.history.trade_execution.long_opened),
+  shortOpened: i18n.t(i18n.l.perps.history.trade_execution.short_opened),
+  longClosed: i18n.t(i18n.l.perps.history.trade_execution.long_closed),
+  shortClosed: i18n.t(i18n.l.perps.history.trade_execution.short_closed),
+  longLiquidated: i18n.t(i18n.l.perps.history.trade_execution.long_liquidated),
+  shortLiquidated: i18n.t(i18n.l.perps.history.trade_execution.short_liquidated),
 });
 
 type HlTradesStoreActions = {

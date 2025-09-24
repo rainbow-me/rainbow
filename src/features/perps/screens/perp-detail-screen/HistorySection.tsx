@@ -8,6 +8,7 @@ import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { format } from 'date-fns';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import * as i18n from '@/languages';
 
 const DEFAULT_VISIBLE_TRADE_COUNT = 10;
 const LARGE_SPACE = ' ';
@@ -96,7 +97,7 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
     return (
       <Box alignItems="center" justifyContent="center" paddingVertical="28px">
         <Text color="labelQuaternary" size="17pt" weight="heavy">
-          No trades
+          {i18n.t(i18n.l.perps.history.no_trades)}
         </Text>
       </Box>
     );
@@ -129,7 +130,7 @@ export const HistorySection = memo(function HistorySection({ market }: { market:
               >
                 <TextShadow blur={12} shadowOpacity={0.24}>
                   <Text size="17pt" weight="bold" color={{ custom: accentColors.opacity100 }}>
-                    {'More'}
+                    {i18n.t(i18n.l.perps.common.more)}
                   </Text>
                 </TextShadow>
               </Box>

@@ -41,6 +41,16 @@ import { abbreviateNumberWorklet } from '@/helpers/utilities';
 import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/utils/calculateLiquidationPrice';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { logger, RainbowError } from '@/logger';
+import * as i18n from '@/languages';
+
+// Translations for worklets
+const translations = {
+  above: i18n.t(i18n.l.perps.trigger_orders.above),
+  below: i18n.t(i18n.l.perps.trigger_orders.below),
+  mustBe: i18n.t(i18n.l.perps.trigger_orders.must_be),
+  liqPrice: i18n.t(i18n.l.perps.trigger_orders.liq_price),
+  currentPrice: i18n.t(i18n.l.perps.common.current_price),
+};
 
 const PANEL_HEIGHT = 360;
 const PRICE_SHIFT_FACTOR = 0.05;
@@ -197,14 +207,14 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
 
     if (!isValidTargetPrice.value) {
       if (isOutOfLiquidationPriceBounds.value && liquidationPrice.value > 0) {
-        const liquidationDirection = isLong ? 'above' : 'below';
-        return `Must be ${liquidationDirection} liq. price (${formatPerpAssetPrice(String(liquidationPrice.value))})`;
+        const liquidationDirection = isLong ? translations.above : translations.below;
+        return `${translations.mustBe} ${liquidationDirection} ${translations.liqPrice} (${formatPerpAssetPrice(String(liquidationPrice.value))})`;
       }
-      const direction = shouldBeAbove ? 'above' : 'below';
-      return `Must be ${direction} ${formatPerpAssetPrice(liveTokenPrice.value.toString())}`;
+      const direction = shouldBeAbove ? translations.above : translations.below;
+      return `${translations.mustBe} ${direction} ${formatPerpAssetPrice(liveTokenPrice.value.toString())}`;
     }
 
-    return `${shouldBeAbove ? 'above' : 'below'} current price`;
+    return `${shouldBeAbove ? translations.above : translations.below} ${translations.currentPrice.toLowerCase()}`;
   });
 
   const isAddDisabled = !isValidTargetPriceState || isSubmitting;
@@ -228,7 +238,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
         });
         navigation.goBack();
       } catch (error) {
-        Alert.alert('Error', 'Failed to create trigger order');
+        Alert.alert(i18n.t(i18n.l.perps.common.error), i18n.t(i18n.l.perps.trigger_orders.failed_to_create));
         logger.error(new RainbowError('[CreateTriggerOrderBottomSheet] Failed to create trigger order', error));
       } finally {
         setIsSubmitting(false);
@@ -247,7 +257,11 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
       <Box gap={24}>
         <Box paddingHorizontal={'24px'} gap={24}>
           <PerpBottomSheetHeader
-            title={triggerOrderType === TriggerOrderType.TAKE_PROFIT ? 'Take Profit' : 'Stop Loss'}
+            title={
+              triggerOrderType === TriggerOrderType.TAKE_PROFIT
+                ? i18n.t(i18n.l.perps.trigger_orders.take_profit)
+                : i18n.t(i18n.l.perps.trigger_orders.stop_loss)
+            }
             symbol={market.symbol}
           />
           <Box gap={14}>
@@ -265,7 +279,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
               shadow={'18px'}
             >
               <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-                {'Price'}
+                {i18n.t(i18n.l.perps.trigger_orders.price)}
               </Text>
               <CurrencyInput
                 autoFocus={true}
@@ -303,7 +317,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
             padding={'12px'}
           >
             <Text size="17pt" weight="medium" color={'labelSecondary'}>
-              {`${isTakeProfit ? 'Projected Profit' : 'Projected Loss'}`}
+              {isTakeProfit ? i18n.t(i18n.l.perps.trigger_orders.projected_profit) : i18n.t(i18n.l.perps.trigger_orders.projected_loss)}
             </Text>
             <AnimatedText size="17pt" weight="semibold" color={'labelSecondary'} align="right" numberOfLines={1} style={{ width: '50%' }}>
               {projectedPnl}
@@ -334,7 +348,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
               alignItems="center"
             >
               <Text size="20pt" weight="bold" color={'labelTertiary'}>
-                {'Cancel'}
+                {i18n.t(i18n.l.perps.common.cancel)}
               </Text>
             </Box>
           </ButtonPressAnimation>
@@ -343,7 +357,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
             buttonProps={{ style: { flex: 1, opacity: isAddDisabled ? 0.5 : 1 }, disabled: isAddDisabled }}
           >
             <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
-              {isSubmitting ? 'Adding...' : 'Add'}
+              {isSubmitting ? i18n.t(i18n.l.perps.trigger_orders.adding) : i18n.t(i18n.l.perps.trigger_orders.add)}
             </Text>
           </HyperliquidButton>
         </Box>

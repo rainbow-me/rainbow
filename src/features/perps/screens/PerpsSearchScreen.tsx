@@ -12,6 +12,7 @@ import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/scree
 import { DelayedMount } from '@/components/utilities/DelayedMount';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { time } from '@/utils/time';
+import * as i18n from '@/languages';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
   const { isDarkMode } = useColorMode();
@@ -35,10 +36,12 @@ export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
 const SearchSubtitle = () => {
   const searchType = usePerpsNavigationStore(state => state.getParams(Routes.PERPS_SEARCH_SCREEN)?.type);
   const numberOfMarkets = useFilteredHyperliquidMarkets(state => state.length);
+  const marketsLabel = i18n.t(i18n.l.perps.search.markets_count, { count: numberOfMarkets });
+  const chooseMarketLabel = i18n.t(i18n.l.perps.search.choose_a_market);
   return (
     <Box alignItems="center" justifyContent="center">
       <Text align="center" color="labelQuaternary" size="11pt" weight="heavy">
-        {searchType === 'search' ? `${numberOfMarkets} MARKETS` : 'CHOOSE A MARKET'}
+        {searchType === 'search' ? marketsLabel : chooseMarketLabel}
       </Text>
     </Box>
   );

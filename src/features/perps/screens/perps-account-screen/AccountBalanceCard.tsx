@@ -12,6 +12,7 @@ import { ImgixImage } from '@/components/images';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { formatCurrency } from '@/helpers/strings';
+import * as i18n from '@/languages';
 
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
@@ -35,7 +36,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
           <ImgixImage enableFasterImage source={{ uri: USDC_ICON_URL }} size={40} style={{ width: 40, height: 40 }} />
           <Stack space={'10px'}>
             <Text color="labelSecondary" size="11pt" weight="heavy">
-              {'AVAILABLE BALANCE'}
+              {i18n.t(i18n.l.perps.account.available_balance)}
             </Text>
             <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
               <TextShadow color={accentColors.opacity100} blur={16} shadowOpacity={0.24}>
@@ -106,7 +107,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
             height={40}
           >
             <Text color={isDarkMode ? 'black' : 'white'} size={hasNoAssets ? '17pt' : '20pt'} weight="black">
-              {hasNoAssets ? 'Fund Wallet' : 'Deposit'}
+              {hasNoAssets ? i18n.t(i18n.l.perps.actions.fund_wallet) : i18n.t(i18n.l.perps.deposit.title)}
             </Text>
           </HyperliquidButton>
         )}

@@ -4,6 +4,7 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { INPUT_CARD_HEIGHT, SLIDER_WIDTH } from '@/features/perps/constants';
 import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { Slider } from '@/features/perps/components/Slider';
+import * as i18n from '@/languages';
 
 const PercentageSlider = ({
   sliderXPosition,
@@ -84,7 +85,7 @@ export const PositionPercentageSlider = memo(function PositionPercentageSlider({
           <Text size="15pt" weight="heavy" color="labelSecondary">
             {totalValue}
             <Text size="15pt" weight="bold" color="labelQuaternary">
-              {' Total'}
+              {` ${i18n.t(i18n.l.perps.positions.total)}`}
             </Text>
           </Text>
         </Box>
