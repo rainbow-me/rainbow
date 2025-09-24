@@ -81,10 +81,12 @@ export function createVirtualNavigator<VirtualRoute extends Route>({
 
     isRouteActive: route => route === get().activeRoute,
 
-    navigate: (route, params) => {
-      set(state => {
-        const didParamsChange = !shallowEqual(params, state.params[route]);
+    navigate: (...args) => {
+      const didSpecifyParams = args.length > 1;
+      const [route, params] = args;
 
+      set(state => {
+        const didParamsChange = didSpecifyParams && !shallowEqual(params, state.params[route]);
         if (state.activeRoute === route) {
           if (didParamsChange) {
             return { params: { ...state.params, [route]: params } };
