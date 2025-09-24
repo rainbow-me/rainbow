@@ -128,7 +128,7 @@ const SmoothPagerComponent = (
 
   const activeSubPageIds = useSharedValue(initialSubpageIds);
   const currentPageId = useSharedValue(initialPage);
-  const currentPageIndex = useSharedValue(initialIndex);
+  const currentPageIndex = useSharedValue(upscale(initialIndex));
   const deepestReachedPageIndex = useSharedValue(initialIndex);
   const lastTargetIndex = useSharedValue(initialIndex);
 
@@ -252,48 +252,59 @@ const SmoothPagerComponent = (
     return { transform: [{ translateX }] };
   });
 
-  const forwardSwipeEnabled = useDerivedValue(() => {
-    return (
-      enableSwipeToGoForward === 'always' || (enableSwipeToGoForward && deepestReachedPageIndex.value > downscale(currentPageIndex.value))
-    );
-  });
-
   const swipeGestureHandler = useAnimatedGestureHandler({
-    onStart: (_, context: { startPage?: number; startX?: number }) => {
+    onStart: (
+      _,
+      context: {
+        startPage?: number;
+        startX?: number;
+        maxForwardIndex?: number;
+        canSwipeForward?: boolean;
+      }
+    ) => {
+      context.canSwipeForward = undefined;
+      context.maxForwardIndex = undefined;
       context.startPage = undefined;
       context.startX = undefined;
     },
 
-    onActive: (event, context: { startPage?: number; startX?: number }) => {
-      if (context.startPage === undefined) context.startPage = downscale(currentPageIndex.value);
+    onActive: (event, context) => {
+      if (context.startPage === undefined) {
+        context.startPage = downscale(currentPageIndex.value);
+
+        if (enableSwipeToGoForward === 'always') {
+          context.canSwipeForward = true;
+          context.maxForwardIndex = numberOfPages - 1;
+        } else if (enableSwipeToGoForward) {
+          context.canSwipeForward = deepestReachedPageIndex.value > context.startPage;
+          context.maxForwardIndex = deepestReachedPageIndex.value;
+        } else {
+          context.canSwipeForward = false;
+          context.maxForwardIndex = context.startPage;
+        }
+      }
+
       if (context.startX === undefined) context.startX = event.translationX;
 
       const dragDistance = event.translationX - context.startX;
       const dragPages = dragDistance / (DEVICE_WIDTH + pageGap);
       let newPageIndex = context.startPage - dragPages;
 
-      if (enableSwipeToGoBack && forwardSwipeEnabled.value) {
-        newPageIndex = clamp(newPageIndex, 0, numberOfPages - 1);
-      } else if (enableSwipeToGoBack && dragDistance > 0) {
-        newPageIndex = clamp(newPageIndex, 0, context.startPage);
-      } else if (forwardSwipeEnabled.value && dragDistance < 0) {
-        newPageIndex = clamp(newPageIndex, context.startPage, numberOfPages - 1);
-      } else {
-        newPageIndex = context.startPage;
-      }
+      const minIndex = enableSwipeToGoBack ? 0 : context.startPage;
+      const maxIndex = context.maxForwardIndex ?? numberOfPages - 1;
 
+      newPageIndex = clamp(newPageIndex, minIndex, maxIndex);
       currentPageIndex.value = upscale(newPageIndex);
     },
 
-    onEnd: (event, context: { startX?: number; startPage?: number }) => {
+    onEnd: (event, context) => {
       if (context.startPage === undefined) return;
 
       const swipeVelocityThreshold = 300;
-      const startPage = context.startPage;
       const velocity = event.velocityX;
       let targetIndex = downscale(currentPageIndex.value);
 
-      if (velocity < -swipeVelocityThreshold && enableSwipeToGoForward) {
+      if (velocity < -swipeVelocityThreshold && context.canSwipeForward) {
         targetIndex = Math.ceil(targetIndex);
       } else if (velocity > swipeVelocityThreshold && enableSwipeToGoBack) {
         targetIndex = Math.floor(targetIndex);
@@ -301,13 +312,10 @@ const SmoothPagerComponent = (
         targetIndex = Math.round(targetIndex);
       }
 
-      if (enableSwipeToGoBack && !forwardSwipeEnabled.value) {
-        targetIndex = clamp(targetIndex, 0, startPage);
-      } else if (!enableSwipeToGoBack && forwardSwipeEnabled.value) {
-        targetIndex = clamp(targetIndex, startPage, numberOfPages - 1);
-      } else {
-        targetIndex = clamp(targetIndex, 0, numberOfPages - 1);
-      }
+      const minIndex = enableSwipeToGoBack ? 0 : context.startPage;
+      const maxIndex = context.maxForwardIndex ?? numberOfPages - 1;
+
+      targetIndex = clamp(targetIndex, minIndex, maxIndex);
 
       animateIndex(targetIndex, -velocity);
       if (onNewIndex) runOnJS(onNewIndex)(targetIndex);
