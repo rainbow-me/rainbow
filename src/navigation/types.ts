@@ -138,6 +138,8 @@ export const gasTrendToTrendType: Record<GasTrend, keyof CurrentBaseFeeTypes> = 
 
 export type CurrentBaseFeeTypeKey = keyof CurrentBaseFeeTypes;
 
+export type PerpsRoute = typeof Routes.PERPS_ACCOUNT_SCREEN | typeof Routes.PERPS_SEARCH_SCREEN | typeof Routes.PERPS_NEW_POSITION_SCREEN;
+
 export interface ExplainSheetParameterMap extends CurrentBaseFeeTypes {
   network: { chainId: ChainId };
   op_rewards_airdrop_timing: Record<string, never>;
@@ -635,16 +637,19 @@ type RouteParams = {
   [Routes.CLOSE_POSITION_BOTTOM_SHEET]: {
     symbol: string;
   };
-  [Routes.PERPS_ACCOUNT_NAVIGATOR]: NavigatorScreenParams<PerpsStackParamList> | undefined;
+  [Routes.PERPS_NAVIGATOR]:
+    | {
+        initialPerpsPage?: PerpsRoute;
+      }
+    | undefined;
   [Routes.PERPS_DETAIL_SCREEN]: {
     market: PerpMarket;
   };
-};
-
-export type PerpsStackParamList = {
-  [Routes.PERPS_NEW_POSITION_SCREEN]: {
-    market: PerpMarket;
-  };
+  [Routes.PERPS_SEARCH_SCREEN]:
+    | {
+        type: 'newPosition' | 'search';
+      }
+    | undefined;
 };
 
 /**

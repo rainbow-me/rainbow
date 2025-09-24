@@ -1,17 +1,19 @@
-import React, { memo, useCallback, useMemo } from 'react';
-import { Box, Separator, Stack, Text, useColorMode } from '@/design-system';
+import React, { memo, useMemo } from 'react';
+import { Bleed, Box, BoxProps, globalColors, Separator, Stack, Text, useColorMode } from '@/design-system';
 import { PerpsPosition } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, getHighContrastColor, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { abs } from '@/helpers/utilities';
+import { useStableValue } from '@/hooks/useStableValue';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
 import { TokenData } from '@/state/liveTokens/liveTokensStore';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
-// import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { ETH_COLOR_DARK, THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 type PerpPositionCardProps = {
   position: PerpsPosition;
@@ -19,12 +21,15 @@ type PerpPositionCardProps = {
 
 export const PerpPositionCard = memo(function PerpPositionCard({ position }: PerpPositionCardProps) {
   const { isDarkMode } = useColorMode();
-  // TODO (kane): does not look good
-  // const market = useHyperliquidMarketsStore(state => state.getMarket(position.symbol));
-  // const tokenColor = market?.metadata?.colors.color ?? '#677483';
-  // const backgroundColor = opacityWorklet(tokenColor, 0.06);
-  const backgroundColorDark = opacityWorklet('#677483', 0.08);
   const isNegativePnl = position.unrealizedPnl.includes('-');
+
+  const backgroundColor = useMemo(
+    () =>
+      isDarkMode
+        ? opacityWorklet(getColorValueForThemeWorklet(getHighContrastColor(ETH_COLOR_DARK), isDarkMode), 0.08)
+        : opacityWorklet(globalColors.white100, 0.8),
+    [isDarkMode]
+  );
 
   const formattedValues = useMemo(() => {
     return {
@@ -35,27 +40,38 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
     };
   }, [position]);
 
-  const livePriceSelector = useCallback((state: TokenData) => {
-    return formatPerpAssetPrice(state.price);
-  }, []);
-
   const { entryPrice, liquidationPrice, unrealizedPnl, positionEquity } = formattedValues;
 
+  const ShadowWrapper = useMemo(
+    () =>
+      function ShadowWrapper({ children }: { children: React.ReactNode }) {
+        const shadowProps: BoxProps = isDarkMode ? { backgroundColor } : { backgroundColor, shadow: '18px' };
+        return (
+          <Box
+            borderColor={{ custom: backgroundColor }}
+            borderRadius={32}
+            borderWidth={isDarkMode ? THICKER_BORDER_WIDTH : 0}
+            padding={{ custom: 18 }}
+            paddingTop="16px"
+            width="full"
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...shadowProps}
+          >
+            {children}
+          </Box>
+        );
+      },
+    [backgroundColor, isDarkMode]
+  );
+
   return (
-    <Box
-      width={'full'}
-      backgroundColor={isDarkMode ? backgroundColorDark : 'white'}
-      borderRadius={32}
-      padding={'16px'}
-      borderWidth={isDarkMode ? 2 : 0}
-      borderColor={{ custom: backgroundColorDark }}
-      // @ts-ignore: TODO
-      shadow={isDarkMode ? null : '18px'}
-    >
+    <ShadowWrapper>
       <Box gap={12}>
-        <Box flexDirection="row" alignItems="center" gap={12}>
-          <HyperliquidTokenIcon size={40} symbol={position.symbol} />
-          <Box gap={8} style={{ flex: 1 }}>
+        <Box flexDirection="row" alignItems="center" gap={12} height={36} paddingBottom="4px">
+          <Bleed left="6px" vertical="4px">
+            <HyperliquidTokenIcon size={40} symbol={position.symbol} />
+          </Bleed>
+          <Box gap={12} style={{ flex: 1 }}>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={4}>
                 <Text size="17pt" weight="bold" color="label">
@@ -80,7 +96,9 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
             </Box>
           </Box>
         </Box>
-        <Separator color="separatorTertiary" direction="horizontal" />
+        <Bleed horizontal="6px">
+          <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
+        </Bleed>
         <Box flexDirection="row" alignItems="center" justifyContent="space-between">
           <Stack alignHorizontal="left" space={'10px'}>
             <Text size="11pt" weight="bold" color="labelQuaternary">
@@ -90,29 +108,33 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
               {entryPrice}
             </Text>
           </Stack>
-          <Stack alignHorizontal="center" space={'10px'}>
+          <Stack alignHorizontal="left" space={'10px'}>
             <Text size="11pt" weight="bold" color="labelQuaternary">
               {'MARK PRICE'}
             </Text>
             <LiveTokenText
               tokenId={getHyperliquidTokenId(position.symbol)}
               selector={livePriceSelector}
-              initialValue={'-'}
+              initialValue={useStableValue(() => useHyperliquidMarketsStore.getState().getFormattedPrice(position.symbol) ?? '-')}
               size="15pt"
               weight="heavy"
               color="label"
             />
           </Stack>
           <Stack alignHorizontal="right" space={'10px'}>
-            <Text size="11pt" weight="bold" color="labelQuaternary">
+            <Text align="right" size="11pt" weight="bold" color="labelQuaternary">
               {'LIQ. PRICE'}
             </Text>
-            <Text size="15pt" weight="bold" color="labelSecondary">
+            <Text align="right" size="15pt" weight="bold" color="labelSecondary">
               {liquidationPrice}
             </Text>
           </Stack>
         </Box>
       </Box>
-    </Box>
+    </ShadowWrapper>
   );
 });
+
+function livePriceSelector(state: TokenData): string {
+  return formatPerpAssetPrice(state.price);
+}

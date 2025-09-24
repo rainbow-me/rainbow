@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { Box, Text } from '@/design-system';
+import { Bleed, Box, Text } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { getHyperliquidTokenId } from '@/features/perps/utils';
@@ -12,6 +12,7 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
   const leverage = useHlNewPositionStore(state => state.leverage);
   const amount = useHlNewPositionStore(state => state.amount);
   const side = useHlNewPositionStore(state => state.positionSide);
+
   const midPrice = useLiveTokenValue({
     tokenId: getHyperliquidTokenId(market.symbol),
     initialValue: market.price,
@@ -46,9 +47,11 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
   }, [liquidationDistanceFromCurrentPrice]);
 
   return (
-    <Box gap={12}>
-      <Box flexDirection="row" alignItems="center" gap={6}>
-        <HyperliquidTokenIcon symbol={market.symbol} size={16} />
+    <Box gap={16}>
+      <Box flexDirection="row" alignItems="center" gap={7}>
+        <Bleed vertical="6px">
+          <HyperliquidTokenIcon symbol={market.symbol} size={16} />
+        </Bleed>
         <Box flexDirection="row" alignItems="center" gap={4}>
           <Text size="15pt" weight="bold" color={'labelQuaternary'}>
             {'Liquidated at'}
@@ -59,10 +62,10 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
         </Box>
       </Box>
       <Box flexDirection="row" alignItems="center" gap={4}>
-        <Text size="15pt" weight="bold" color={liquidationDistanceFromCurrentPriceColor}>
+        <Text size="13pt" weight="heavy" color={liquidationDistanceFromCurrentPriceColor}>
           {liquidationDistanceFromCurrentPriceDisplay}
         </Text>
-        <Text size="15pt" weight="bold" color={'labelSecondary'}>
+        <Text size="13pt" weight="bold" color={'labelQuaternary'}>
           {'from current price'}
         </Text>
       </Box>

@@ -1,13 +1,11 @@
-import React, { memo, useEffect, useMemo } from 'react';
-import { Bleed, Box, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import React, { memo, useMemo } from 'react';
+import { Bleed, Box, Inline, Separator, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import Routes from '@/navigation/routesNames';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { PerpMarket, PerpPositionSide } from '@/features/perps/types';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useChartsStore } from '@/features/charts/stores/chartsStore';
-import { ChartType } from '@/features/charts/types';
 import { PerpsAccentColorContextProvider, usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { Chart } from '@/components/value-chart/Chart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +20,7 @@ import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT } from '@/__swaps__/screens/Swap/constants';
 import { SHEET_FOOTER_HEIGHT, SheetFooter } from './SheetFooter';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { HYPERLIQUID_GREEN, HYPERLIQUID_GREEN_LIGHT, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 
 export const NameAndPriceSection = memo(function NameAndPriceSection({
   symbol,
@@ -54,70 +53,69 @@ export const NameAndPriceSection = memo(function NameAndPriceSection({
       <HyperliquidTokenIcon size={44} symbol={symbol} />
 
       <Box flexDirection="row" alignItems="center" gap={8}>
-        <TextShadow blur={12} shadowOpacity={0.24}>
-          <Text size="22pt" weight="heavy" color="labelTertiary">
+        <TextShadow blur={12} shadowOpacity={0.16}>
+          <Text color={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelSecondary'} size="22pt" weight="heavy">
             {symbol}
           </Text>
         </TextShadow>
 
-        {leverage && (
-          <Box
-            paddingHorizontal="6px"
-            height={24}
-            justifyContent="center"
-            alignItems="center"
-            borderRadius={10}
-            borderWidth={5 / 3}
-            backgroundColor={leverageColor}
-            borderColor={{ custom: leverageColor }}
-          >
-            <Text size="15pt" color={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelTertiary'} weight="heavy">
-              {`${leverage}x`}
-            </Text>
-          </Box>
-        )}
+        <Bleed vertical="8px">
+          <Inline space="6px">
+            {leverage && (
+              <Box
+                paddingHorizontal="6px"
+                height={24}
+                justifyContent="center"
+                alignItems="center"
+                borderRadius={10}
+                borderWidth={5 / 3}
+                backgroundColor={leverageColor}
+                borderColor={{ custom: leverageColor }}
+              >
+                <Text align="center" size="15pt" color={isDarkMode ? { custom: ETH_COLOR_DARK_ACCENT } : 'labelTertiary'} weight="heavy">
+                  {`${leverage}x`}
+                </Text>
+              </Box>
+            )}
 
-        {side && (
-          <Box
-            paddingHorizontal="6px"
-            height={24}
-            justifyContent="center"
-            alignItems="center"
-            borderRadius={10}
-            borderWidth={5 / 3}
-            backgroundColor={sideBackgroundColor}
-            borderColor={{ custom: sideBackgroundColor }}
-          >
-            <Text size="15pt" color={{ custom: sideColor }} weight="heavy">
-              {side}
-            </Text>
-          </Box>
-        )}
+            {side && (
+              <Box
+                paddingHorizontal={{ custom: 6.5 }}
+                height={24}
+                justifyContent="center"
+                alignItems="center"
+                borderRadius={10}
+                borderWidth={5 / 3}
+                backgroundColor={sideBackgroundColor}
+                borderColor={{ custom: sideBackgroundColor }}
+              >
+                <Text align="right" size="15pt" color={{ custom: sideColor }} weight="heavy">
+                  {side}
+                </Text>
+              </Box>
+            )}
+          </Inline>
+        </Bleed>
       </Box>
     </Box>
   );
 });
 
-const BACKGROUND_COLOR_DARK = '#17191C';
-const BACKGROUND_COLOR = '#FFFFFF';
-
 export const ChartSection = memo(function ChartSection({ symbol }: { symbol: string }) {
   const { isDarkMode } = useColorMode();
-  const { setToken, setChartType } = useChartsStore();
+  const labelSecondary = useForegroundColor('labelSecondary');
 
-  useEffect(() => {
-    setToken(symbol);
-    setChartType(ChartType.Candlestick);
-  }, [setToken, setChartType, symbol]);
+  const color = isDarkMode ? ETH_COLOR_DARK : labelSecondary;
+  const timeframeSelectorColor = isDarkMode ? HYPERLIQUID_GREEN : HYPERLIQUID_GREEN_LIGHT;
+  const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
 
-  const color = isDarkMode ? ETH_COLOR_DARK : 'black';
-  const backgroundColor = isDarkMode ? BACKGROUND_COLOR_DARK : BACKGROUND_COLOR;
   return (
     <Chart
       accentColors={{
         color: color,
         opacity12: opacityWorklet(color, 0.12),
         opacity24: opacityWorklet(color, 0.24),
+        timeframeSelector: timeframeSelectorColor,
       }}
       backgroundColor={backgroundColor}
       hyperliquidSymbol={symbol}
@@ -132,7 +130,7 @@ const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
 const PerpsDetailScreenContent = memo(function PerpsDetailScreenContent({ market }: { market: PerpMarket }) {
   const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
   const { isDarkMode } = useColorMode();
-  const backgroundColor = isDarkMode ? BACKGROUND_COLOR_DARK : BACKGROUND_COLOR;
+  const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
   const colors = usePerpsAccentColorContext();
   const safeAreaInsets = useSafeAreaInsets();
   const historyExpanded = useSharedValue(true);
@@ -159,23 +157,23 @@ const PerpsDetailScreenContent = memo(function PerpsDetailScreenContent({ market
         }}
       >
         <Box
-          gap={20}
+          gap={28}
           paddingTop={{ custom: 96 }}
           paddingBottom={{ custom: SHEET_FOOTER_HEIGHT + safeAreaInsets.bottom }}
           paddingHorizontal="24px"
         >
           <NameAndPriceSection symbol={market.symbol} leverage={position?.leverage} side={position?.side} />
-          <Bleed horizontal="24px">
+          <Bleed horizontal="24px" top="8px">
             <ChartSection symbol={market.symbol} />
           </Bleed>
           {position && (
             <>
               <OpenPositionSection market={market} />
-              <Separator color={'separatorTertiary'} direction="horizontal" />
+              <Separator color={'separatorTertiary'} direction="horizontal" thickness={1} />
               <TriggerOrdersSection symbol={market.symbol} />
             </>
           )}
-          <Separator color={'separatorTertiary'} direction="horizontal" />
+          <Separator color={'separatorTertiary'} direction="horizontal" thickness={1} />
           <CollapsibleSectionBase
             iconColor={colors.accentColors.opacity100}
             icon="􀐫"

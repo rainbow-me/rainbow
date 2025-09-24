@@ -19,8 +19,8 @@ export const HYPERCORE_PSEUDO_CHAIN_ID = 1337;
 // Add 1% buffer to account for decimal precision in position size calculation
 export const MIN_ORDER_SIZE_USD = 10 * 1.01;
 
-export const FOOTER_HEIGHT = 110;
-export const FOOTER_HEIGHT_WITH_SAFE_AREA = 110 + safeAreaInsetValues.bottom;
+export const FOOTER_HEIGHT = 106;
+export const FOOTER_HEIGHT_WITH_SAFE_AREA = FOOTER_HEIGHT + safeAreaInsetValues.bottom;
 
 export const INPUT_CARD_HEIGHT = 106;
 
@@ -35,6 +35,9 @@ export const HYPERLIQUID_COLORS = {
   mintGreen: '#98FBE4',
   gradient: ['#72FFD9', '#3ECFAD'],
 };
+
+export const PERPS_BACKGROUND_DARK = '#15171A';
+export const PERPS_BACKGROUND_LIGHT = '#FAFAFA';
 
 export const PERPS_COLORS = {
   shortRed: '#C4362D',

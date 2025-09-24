@@ -35,6 +35,7 @@ export const EXPANDED_INPUT_HEIGHT =
   Math.max(IS_IOS ? safeAreaInsetValues.bottom : NAVIGATION_BAR_HEIGHT, SPACE_BETWEEN_SWAP_BUBBLES);
 export const FOCUSED_INPUT_HEIGHT = deviceUtils.dimensions.height - safeAreaInsetValues.top - 20 - NATIVE_KEYBOARD_HEIGHT;
 export const THICK_BORDER_WIDTH = 4 / 3;
+export const THICKER_BORDER_WIDTH = 5 / 3;
 export const INPUT_PADDING = 20 - THICK_BORDER_WIDTH;
 export const INPUT_INNER_WIDTH = BASE_INPUT_WIDTH - THICK_BORDER_WIDTH * 2;
 

@@ -35,10 +35,12 @@ export function formatOrderPrice({
   price,
   sizeDecimals,
   marketType = 'perp',
+  trimTrailingZeros: shouldTrimZeros = true,
 }: {
   price: string;
   sizeDecimals: number;
   marketType?: 'perp' | 'spot';
+  trimTrailingZeros?: boolean;
 }): string {
   'worklet';
   const input = (price ?? '').toString().trim();
@@ -47,17 +49,19 @@ export function formatOrderPrice({
     return '';
   }
 
+  const formatResult = (result: string) => (shouldTrimZeros ? trimTrailingZeros(result) : result);
+
   const maxDecimals = marketType === 'perp' ? MAX_DECIMALS_PERP : MAX_DECIMALS_SPOT;
   const allowedDecimals = Math.max(0, maxDecimals - (sizeDecimals ?? 0));
 
   const [rawBigInt, decimalPlaces] = removeDecimalWorklet(input);
   if (isInteger(rawBigInt, decimalPlaces)) {
-    return trimTrailingZeros(toFixedWorklet(input, 0));
+    return formatResult(toFixedWorklet(input, 0));
   }
 
   // Calculate decimals needed for significant figures
   const decimalsForSigFigs = calculateDecimalsForSignificantFigures(input);
   const decimalsToUse = Math.min(allowedDecimals, Math.max(0, decimalsForSigFigs));
 
-  return trimTrailingZeros(toFixedWorklet(input, decimalsToUse));
+  return formatResult(toFixedWorklet(input, decimalsToUse));
 }

@@ -1,35 +1,73 @@
 import React from 'react';
-import { Box, Separator, Stack, useBackgroundColor } from '@/design-system';
+import { StyleSheet, View } from 'react-native';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { Box, Separator, Stack, useColorMode } from '@/design-system';
+import { HeaderFade } from '@/features/perps/components/HeaderFade';
+import { FOOTER_HEIGHT, PERPS_BACKGROUND_LIGHT, PERPS_BACKGROUND_DARK } from '@/features/perps/constants';
 import { PerpsAccountBalanceCard } from '@/features/perps/screens/perps-account-screen/AccountBalanceCard';
-import { OpenPositionsSection } from '@/features/perps/screens/perps-account-screen/OpenPositionsSection';
 import { MarketsSection } from '@/features/perps/screens/perps-account-screen/MarketsSection';
-import { FOOTER_HEIGHT } from '@/features/perps/constants';
-import { ScrollView } from 'react-native';
+import { OpenPositionsSection } from '@/features/perps/screens/perps-account-screen/OpenPositionsSection';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { clamp } from '@/__swaps__/utils/swaps';
+
+const HEADER_FADE_DISTANCE = 8;
 
 export const PerpsAccountScreen = function PerpsAccountScreen() {
-  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
-  const bottomInset = FOOTER_HEIGHT + 12;
+  const { isDarkMode } = useColorMode();
+  const scrollPosition = useSharedValue(0);
+  const headerFadeStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollPosition.value, [0, HEADER_FADE_DISTANCE], [0, 1], 'clamp'),
+  }));
 
   return (
-    <ScrollView
-      style={{ backgroundColor: screenBackgroundColor }}
-      contentContainerStyle={{
-        paddingTop: 8,
-        paddingBottom: bottomInset,
-        paddingHorizontal: 20,
-        flexGrow: 1,
-      }}
-      scrollIndicatorInsets={{ bottom: bottomInset }}
-    >
-      <Box width="full">
-        <Stack space={'20px'}>
+    <View style={styles.container}>
+      <Animated.ScrollView
+        contentContainerStyle={styles.contentContainer}
+        onScroll={event => {
+          const clampedPosition = clamp(event.nativeEvent.contentOffset.y, 0, HEADER_FADE_DISTANCE);
+          if (scrollPosition.value === clampedPosition) return;
+          scrollPosition.value = clampedPosition;
+        }}
+        scrollIndicatorInsets={styles.scrollIndicatorInsets}
+        style={{ backgroundColor: isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT }}
+      >
+        <Box gap={20} width="full">
           <PerpsAccountBalanceCard />
-          <Separator color={'separatorTertiary'} direction="horizontal" />
-          <OpenPositionsSection />
-          <Separator color={'separatorTertiary'} direction="horizontal" />
-          <MarketsSection />
-        </Stack>
-      </Box>
-    </ScrollView>
+
+          <Stack space="24px">
+            <Separator color="separatorTertiary" direction="horizontal" thickness={THICK_BORDER_WIDTH} />
+            <OpenPositionsSection />
+            <Separator color="separatorTertiary" direction="horizontal" thickness={THICK_BORDER_WIDTH} />
+            <MarketsSection />
+          </Stack>
+        </Box>
+      </Animated.ScrollView>
+
+      <Animated.View style={[styles.fadeContainer, headerFadeStyle]}>
+        <HeaderFade />
+      </Animated.View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%',
+  },
+  contentContainer: {
+    flexGrow: 1,
+    paddingBottom: FOOTER_HEIGHT + 12,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  fadeContainer: {
+    left: 0,
+    pointerEvents: 'none',
+    position: 'absolute',
+    top: 0,
+  },
+  scrollIndicatorInsets: {
+    bottom: FOOTER_HEIGHT,
+  },
+});

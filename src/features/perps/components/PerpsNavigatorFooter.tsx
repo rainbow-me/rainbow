@@ -1,62 +1,37 @@
-import React, { memo, useCallback, useEffect, useMemo, useState, useRef } from 'react';
-import { Box, Text, TextShadow, useColorMode } from '@/design-system';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
+import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
+import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { PERPS_COLORS } from '@/features/perps/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
 import Routes from '@/navigation/routesNames';
-import Animated, { FadeIn, FadeOut, useAnimatedRef } from 'react-native-reanimated';
+import Animated, { useAnimatedRef } from 'react-native-reanimated';
 import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { Navigation } from '@/navigation';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { fontWithWidth } from '@/styles/buildTextStyles';
 import font from '@/styles/fonts';
-import { hyperliquidMarketStoreActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { hyperliquidMarketsActions } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
+import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { PerpPositionSide } from '@/features/perps/types';
-import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { createIsolatedMarginPosition } from '@/features/perps/utils/hyperliquid';
-import { ensureError, logger, RainbowError } from '@/logger';
+import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
+import { logger, RainbowError } from '@/logger';
+import { PerpsRoute } from '@/navigation/types';
 import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
-import { useOrderAmountValidation } from '@/features/perps/hooks/useOrderAmountValidation';
+import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
 import { getSolidColorEquivalent } from '@/worklets/colors';
+import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const BUTTON_HEIGHT = 48;
-
-// Routes that appear over the perps stack that we do not want to affect the footer
-const IGNORED_ROUTES = new Set<string>([
-  Routes.PERPS_WITHDRAWAL_SCREEN,
-  Routes.PERPS_DEPOSIT_SCREEN,
-  Routes.CLOSE_POSITION_BOTTOM_SHEET,
-  Routes.PERPS_DETAIL_SCREEN,
-  Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET,
-]);
-
-const FOOTER_ROUTES = new Set<string>([
-  Routes.PERPS_SEARCH_SCREEN,
-  Routes.PERPS_NEW_POSITION_SEARCH_SCREEN,
-  Routes.PERPS_ACCOUNT_SCREEN,
-  Routes.PERPS_NEW_POSITION_SCREEN,
-]);
-
-const usePersistedFooterRoute = () => {
-  const activeRoute = useNavigationStore(state => state.activeRoute);
-  const lastRelevantRoute = useRef<string | null>(null);
-
-  // Update last relevant route only if current route is a footer route
-  if (activeRoute && FOOTER_ROUTES.has(activeRoute) && !IGNORED_ROUTES.has(activeRoute)) {
-    lastRelevantRoute.current = activeRoute;
-  }
-
-  return IGNORED_ROUTES.has(activeRoute || '') ? lastRelevantRoute.current : activeRoute;
-};
 
 type BackButtonProps = {
   onPress: () => void;
@@ -91,21 +66,17 @@ const PerpsSearchScreenFooter = () => {
   const inputRef = useAnimatedRef<TextInput>();
 
   const onSearchQueryChange = useCallback((event: NativeSyntheticEvent<TextInputChangeEventData>) => {
-    useHyperliquidMarketsStore.getState().setSearchQuery(event.nativeEvent.text);
+    hyperliquidMarketsActions.setSearchQuery(event.nativeEvent.text);
   }, []);
 
   useEffect(() => {
-    return () => {
-      hyperliquidMarketStoreActions.setSearchQuery('');
-    };
+    return () => hyperliquidMarketsActions.setSearchQuery('');
   }, []);
 
   return (
     <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
       <BackButton
-        onPress={() => {
-          Navigation.handleAction(Routes.PERPS_ACCOUNT_SCREEN);
-        }}
+        onPress={() => PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN)}
         backgroundColor={accentColors.opacity12}
         borderColor={accentColors.opacity6}
         textColor={accentColors.opacity100}
@@ -148,21 +119,22 @@ const PerpsSearchScreenFooter = () => {
 
 const PerpsAccountScreenFooter = () => {
   const { isDarkMode } = useColorMode();
-  const balance = useHyperliquidAccountStore(state => state.balance);
+  const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
-  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
-  const hasNoAssets = userAssetIds.length === 0;
+  const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
 
   return (
     <HyperliquidButton
       onPress={() => {
-        Navigation.handleAction(
-          hasNoAssets ? Routes.ADD_CASH_SHEET : hasZeroBalance ? Routes.PERPS_DEPOSIT_SCREEN : Routes.PERPS_NEW_POSITION_SEARCH_SCREEN
-        );
+        if (hasZeroBalance) {
+          Navigation.handleAction(hasNoAssets ? Routes.ADD_CASH_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
+        } else {
+          PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
+        }
       }}
       paddingVertical={'12px'}
       borderRadius={24}
-      height={48}
+      height={BUTTON_HEIGHT}
       justifyContent={'center'}
       alignItems={'center'}
     >
@@ -174,21 +146,21 @@ const PerpsAccountScreenFooter = () => {
 };
 
 const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter() {
-  // const navigation = useNavigation();
   const { accentColors } = usePerpsAccentColorContext();
   const { isDarkMode } = useColorMode();
-  const { isValid } = useOrderAmountValidation();
+
+  const isValidOrder = useOrderAmountValidation(state => state.isValid);
+  const positionSide = useHlNewPositionStore(state => state.positionSide);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const green = PERPS_COLORS.longGreen;
   const red = PERPS_COLORS.shortRed;
 
-  const positionSide = useHlNewPositionStore(state => state.positionSide);
-
   const button = useMemo(() => {
     const isLong = positionSide === PerpPositionSide.LONG;
     const positionSideColor = isLong ? green : red;
-    const darkModeTextColor = isValid ? (isLong ? 'black' : 'white') : opacityWorklet(positionSideColor, 0.4);
-    const lightModeTextColor = isValid ? 'white' : opacityWorklet(positionSideColor, 0.4);
+    const darkModeTextColor = isValidOrder ? (isLong ? 'black' : 'white') : opacityWorklet(positionSideColor, 0.4);
+    const lightModeTextColor = isValidOrder ? 'white' : opacityWorklet(positionSideColor, 0.4);
     const backTextColor = isDarkMode ? (isLong ? 'black' : 'white') : 'white';
     return {
       textColor: isDarkMode ? darkModeTextColor : lightModeTextColor,
@@ -202,7 +174,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         opacity: 0.07,
       }),
     };
-  }, [positionSide, green, red, isValid, isDarkMode, accentColors]);
+  }, [positionSide, green, red, isValidOrder, isDarkMode, accentColors]);
 
   const submitNewPosition = useCallback(async () => {
     const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
@@ -210,7 +182,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
     setIsSubmitting(true);
     try {
       const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)].midPrice;
-      await createIsolatedMarginPosition({
+      await hyperliquidAccountActions.createIsolatedMarginPosition({
         symbol: market.symbol,
         side: positionSide,
         leverage,
@@ -219,8 +191,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         price: livePrice ?? market.price,
         triggerOrders,
       });
-      hlNewPositionStoreActions.reset();
-      Navigation.handleAction(Routes.PERPS_ACCOUNT_SCREEN);
+      PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN);
     } catch (e) {
       Alert.alert('Error submitting order', parseHyperliquidErrorMessage(e));
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
@@ -231,10 +202,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   return (
     <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
       <BackButton
-        onPress={() => {
-          // navigation.goBack();
-          Navigation.goBack();
-        }}
+        onPress={() => PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' })}
         backgroundColor={button.backgroundColor}
         borderColor={button.borderColor}
         textColor={button.backTextColor}
@@ -242,7 +210,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
 
       <Box style={{ flex: 1 }}>
         <HoldToActivateButton
-          disabled={!isValid}
+          disabled={!isValidOrder}
           backgroundColor={button.backgroundColor}
           disabledBackgroundColor={button.disabledBackgroundColor}
           isProcessing={isSubmitting}
@@ -250,7 +218,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
           processingLabel={'Submitting...'}
           label={button.text}
           onLongPress={submitNewPosition}
-          height={48}
+          height={BUTTON_HEIGHT}
           textStyle={{
             color: button.textColor,
             fontSize: 20,
@@ -258,23 +226,26 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
           }}
           progressColor={button.textColor}
         />
+        <Border borderColor={{ custom: button.borderColor }} borderWidth={2} borderRadius={24} enableInLightMode />
       </Box>
     </Box>
   );
 });
 
+const TOP_BORDER_WIDTH = 2;
+
 export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const { isDarkMode } = useColorMode();
   const safeAreaInsets = useSafeAreaInsets();
   const { accentColors } = usePerpsAccentColorContext();
-  const activeRoute = useNavigationStore(state => state.activeRoute);
-  const effectiveRoute = usePersistedFooterRoute();
+
+  const enableStickyKeyboard = useNavigationStore(state => state.activeRoute !== Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET);
 
   return (
     <KeyboardStickyView
       // TODO (kane): Where does this 6 come from?
       offset={{ opened: safeAreaInsets.bottom + 6 - 20 }}
-      enabled={activeRoute !== Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET}
+      enabled={enableStickyKeyboard}
     >
       <Box
         position="absolute"
@@ -288,38 +259,54 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
             width: 0,
             height: -8,
           },
-          borderTopWidth: 2,
+          borderTopWidth: TOP_BORDER_WIDTH,
           borderTopColor: accentColors.opacity6,
-          paddingBottom: Math.max(safeAreaInsets.bottom, 20),
-          paddingTop: 20,
+          paddingBottom: Math.max(safeAreaInsets.bottom, 20) + 4,
+          paddingTop: 20 - TOP_BORDER_WIDTH,
           backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
         }}
       >
-        <Box as={Animated.View} entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)} paddingHorizontal={'20px'}>
-          {(effectiveRoute === Routes.PERPS_SEARCH_SCREEN || effectiveRoute === Routes.PERPS_NEW_POSITION_SEARCH_SCREEN) && (
+        <Box as={Animated.View} paddingHorizontal="20px">
+          <MountWhenFocused route={Routes.PERPS_ACCOUNT_SCREEN}>
+            <PerpsAccountScreenFooter />
+          </MountWhenFocused>
+
+          <MountWhenFocused route={Routes.PERPS_SEARCH_SCREEN}>
             <PerpsSearchScreenFooter />
-          )}
-          {effectiveRoute === Routes.PERPS_ACCOUNT_SCREEN && <PerpsAccountScreenFooter />}
-          {effectiveRoute === Routes.PERPS_NEW_POSITION_SCREEN && <PerpsNewPositionScreenFooter />}
+          </MountWhenFocused>
+
+          <MountWhenFocused route={Routes.PERPS_NEW_POSITION_SCREEN}>
+            <PerpsNewPositionScreenFooter />
+          </MountWhenFocused>
         </Box>
       </Box>
     </KeyboardStickyView>
   );
 });
 
+export const MountWhenFocused = ({ children, route }: { children: React.ReactNode; route: PerpsRoute }) => {
+  const isRouteActive = usePerpsNavigationStore(state => state.isRouteActive(route));
+  if (!isRouteActive) return null;
+  return (
+    <Animated.View entering={DEFAULT_MOUNT_ANIMATIONS.entering} exiting={DEFAULT_MOUNT_ANIMATIONS.exiting}>
+      {children}
+    </Animated.View>
+  );
+};
+
 const styles = StyleSheet.create({
   inputContainer: {
-    flex: 1,
     alignItems: 'center',
-    height: 48,
+    flex: 1,
+    height: BUTTON_HEIGHT,
     justifyContent: 'center',
     width: '100%',
   },
   input: {
     flex: 1,
     fontSize: 20,
-    height: 48,
-    letterSpacing: 0.36,
+    height: BUTTON_HEIGHT,
+    letterSpacing: typeHierarchy['text']['20pt'].letterSpacing,
     paddingLeft: 10,
     paddingRight: 9,
     paddingVertical: 10,

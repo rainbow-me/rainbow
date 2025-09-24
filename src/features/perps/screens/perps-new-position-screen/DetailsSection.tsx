@@ -6,7 +6,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { PerpMarket } from '@/features/perps/types';
 import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 
 interface RowProps {
   children: React.ReactNode;
@@ -46,27 +46,27 @@ export const DetailsSection = memo(function DetailsSection({ market }: { market:
       <Box paddingTop={'20px'} gap={4}>
         <Row highlighted={true}>
           <Box flexDirection="row" alignItems="center" gap={12}>
-            <TextIcon color={'labelSecondary'} size="15pt" weight="bold">
+            <TextIcon color="labelSecondary" height={10} size="icon 15px" width={20} weight="medium">
               {'􁎢'}
             </TextIcon>
-            <Text size="15pt" weight="bold" color={'labelSecondary'}>
+            <Text color="labelSecondary" size="17pt" weight="medium">
               {'Funding Rate'}
             </Text>
           </Box>
-          <Text size="15pt" weight="bold" color={'labelSecondary'}>
-            {`${Number(toFixedWorklet(market.fundingRate, 8)) * 100}%`}
+          <Text align="right" color="labelSecondary" size="17pt" weight="semibold">
+            {`${Number(toFixedWorklet(mulWorklet(market.fundingRate, 100), 8))}%`}
           </Text>
         </Row>
         <Row highlighted={false}>
           <Box flexDirection="row" alignItems="center" gap={12}>
-            <TextIcon color={'labelSecondary'} size="15pt" weight="bold">
+            <TextIcon color="labelSecondary" height={10} size="icon 15px" width={20} weight="medium">
               {'􀘾'}
             </TextIcon>
-            <Text size="15pt" weight="bold" color={'labelSecondary'}>
+            <Text color="labelSecondary" size="17pt" weight="medium">
               {'Max Slippage'}
             </Text>
           </Box>
-          <Text size="15pt" weight="bold" color={'labelSecondary'}>
+          <Text align="right" color="labelSecondary" size="17pt" weight="semibold">
             {`${DEFAULT_SLIPPAGE_BIPS / 100}%`}
           </Text>
         </Row>

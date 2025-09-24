@@ -1,17 +1,20 @@
 import React, { memo, useMemo } from 'react';
-import { RainbowImage, RainbowImageProps } from '@/components/RainbowImage';
-import { Text, useForegroundColor } from '@/design-system';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { View } from 'react-native';
+import { Text, useForegroundColor } from '@/design-system';
+import { hyperliquidMarketsActions, useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import { ImgixImage } from '@/components/images';
+import { ImgixImageProps } from '@/components/images/ImgixImage';
 
-type HyperliquidTokenIconProps = Omit<RainbowImageProps, 'source'> & {
+type HyperliquidTokenIconProps = Omit<ImgixImageProps, 'source'> & {
   size: number;
   symbol: string;
 };
 
-export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ symbol, size, ...props }: HyperliquidTokenIconProps) {
+export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ size, style, symbol }: HyperliquidTokenIconProps) {
   const fallbackColor = useForegroundColor('accent');
-  const market = useHyperliquidMarketsStore(state => state.getMarket(symbol));
+  const iconUrl = useHyperliquidMarketsStore(state => state.getCoinIcon(symbol));
+  const color = useMemo(() => (iconUrl ? undefined : hyperliquidMarketsActions.getColor(symbol)), [iconUrl, symbol]);
+
   const containerStyle = useMemo(() => {
     return {
       width: size,
@@ -23,12 +26,11 @@ export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ symbol,
     } as const;
   }, [size]);
 
-  if (!market || !market.metadata?.iconUrl) {
-    const color = market?.metadata?.colors.color ?? fallbackColor;
+  if (!iconUrl) {
     return (
-      <View style={[containerStyle, { backgroundColor: color }]}>
-        <Text size="icon 8px" weight="bold" color="label">
-          {symbol}
+      <View style={[containerStyle, { backgroundColor: color || fallbackColor }]}>
+        <Text align="center" size="icon 8px" weight="heavy" color="label">
+          {size >= 36 ? symbol : symbol.slice(0, 1)}
         </Text>
       </View>
     );
@@ -36,7 +38,12 @@ export const HyperliquidTokenIcon = memo(function HyperliquidTokenIcon({ symbol,
 
   return (
     <View style={containerStyle}>
-      <RainbowImage source={{ url: market.metadata.iconUrl }} style={{ width: size, height: size, ...(props.style ?? {}) }} />
+      <ImgixImage
+        enableFasterImage
+        size={size}
+        source={{ uri: iconUrl }}
+        style={style ? [style, { height: size, width: size }] : { height: size, width: size }}
+      />
     </View>
   );
 });

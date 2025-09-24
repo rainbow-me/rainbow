@@ -1,48 +1,51 @@
-import React, { memo, useCallback } from 'react';
-import { Box, Separator, Text } from '@/design-system';
-import { useHyperliquidMarketsStore } from '@/features/perps/stores/hyperliquidMarketsStore';
+import React, { memo } from 'react';
+import { Keyboard } from 'react-native';
+import { Box, Separator, Text, useColorMode } from '@/design-system';
+import { useFilteredHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarketsList } from '@/features/perps/components/PerpMarketsList';
+import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT } from '@/features/perps/constants';
 import { navigateToNewPositionScreen, navigateToPerpDetailScreen } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
+import { useOnLeaveRoute } from '@/hooks/useOnLeaveRoute';
+import Routes from '@/navigation/routesNames';
+import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
+import { DelayedMount } from '@/components/utilities/DelayedMount';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { time } from '@/utils/time';
 
 export const PerpsSearchScreen = memo(function PerpsSearchScreen() {
-  const markets = useHyperliquidMarketsStore(state => state.getSearchResults());
+  const { isDarkMode } = useColorMode();
+  const backgroundColor = isDarkMode ? PERPS_BACKGROUND_DARK : PERPS_BACKGROUND_LIGHT;
 
-  const onPressMarket = useCallback((market: PerpMarket) => {
-    navigateToPerpDetailScreen(market.symbol);
-  }, []);
+  useOnLeaveRoute(Keyboard.dismiss);
 
   return (
-    <Box background={'surfacePrimary'} style={{ flex: 1 }}>
-      <Box justifyContent={'center'} alignItems={'center'}>
-        <Text size="11pt" weight="heavy" color="labelQuaternary">
-          {`${markets.length} MARKETS`}
-        </Text>
+    <Box backgroundColor={backgroundColor} style={{ flex: 1, top: -4, width: '100%' }}>
+      <SearchSubtitle />
+      <Box paddingTop="20px" paddingHorizontal="20px">
+        <Separator color={'separatorTertiary'} direction="horizontal" thickness={THICK_BORDER_WIDTH} />
       </Box>
-      <Box paddingTop={'20px'} paddingHorizontal={'20px'}>
-        <Separator color={'separatorTertiary'} direction="horizontal" />
-      </Box>
-      <PerpMarketsList onPressMarket={onPressMarket} />
+      <DelayedMount delay={time.seconds(1)}>
+        <PerpMarketsList onPressMarket={onPressMarket} />
+      </DelayedMount>
     </Box>
   );
 });
 
-export const PerpsNewPositionSearchScreen = memo(function PerpsNewPositionSearchScreen() {
-  const onPressMarket = useCallback((market: PerpMarket) => {
-    navigateToNewPositionScreen(market);
-  }, []);
-
+const SearchSubtitle = () => {
+  const searchType = usePerpsNavigationStore(state => state.getParams(Routes.PERPS_SEARCH_SCREEN)?.type);
+  const numberOfMarkets = useFilteredHyperliquidMarkets(state => state.length);
   return (
-    <Box background={'surfacePrimary'} style={{ flex: 1 }}>
-      <Box justifyContent={'center'} alignItems={'center'}>
-        <Text size="11pt" weight="heavy" color="labelQuaternary">
-          {'CHOOSE A MARKET'}
-        </Text>
-      </Box>
-      <Box paddingTop={'20px'} paddingHorizontal={'20px'}>
-        <Separator color={'separatorTertiary'} direction="horizontal" />
-      </Box>
-      <PerpMarketsList onPressMarket={onPressMarket} />
+    <Box alignItems="center" justifyContent="center">
+      <Text align="center" color="labelQuaternary" size="11pt" weight="heavy">
+        {searchType === 'search' ? `${numberOfMarkets} MARKETS` : 'CHOOSE A MARKET'}
+      </Text>
     </Box>
   );
-});
+};
+
+function onPressMarket(market: PerpMarket): void {
+  const searchType = PerpsNavigation.getParams(Routes.PERPS_SEARCH_SCREEN)?.type;
+  if (searchType === 'search') navigateToPerpDetailScreen(market.symbol);
+  else navigateToNewPositionScreen(market);
+}

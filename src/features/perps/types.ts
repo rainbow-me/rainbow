@@ -140,8 +140,10 @@ export type TriggerOrder = {
 };
 
 export type PerpsWalletListData = {
-  positions: PerpsPosition[];
   balance: string;
+  hasBalance: boolean;
+  hasPositions: boolean;
+  positions: PerpsPosition[];
   value: string;
 };
 

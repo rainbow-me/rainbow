@@ -42,7 +42,7 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
             initialValueLastUpdated={0}
             initialValue={formatPriceChange(market.priceChange['24h'])}
             autoSubscriptionEnabled={false}
-            usePriceChangeColor
+            isPriceChangeColorEnabled={true}
             priceChangeChangeColors={{
               positive: green,
               negative: red,

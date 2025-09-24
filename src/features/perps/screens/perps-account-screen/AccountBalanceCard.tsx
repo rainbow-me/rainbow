@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Box, Stack, Text, TextShadow, useColorMode } from '@/design-system';
+import { Box, Stack, Text, TextIcon, TextShadow, useColorMode } from '@/design-system';
 import { HYPERLIQUID_GREEN, USDC_ICON_URL } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -9,36 +9,36 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
-import { RainbowImage } from '@/components/RainbowImage';
+import { ImgixImage } from '@/components/images';
+import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
-  const balance = useHyperliquidAccountStore(state => state.balance);
+  const balance = useHyperliquidAccountStore(state => state.getBalance());
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
   const isBalanceZero = Number(balance) === 0;
-  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
-  const hasNoAssets = userAssetIds.length === 0;
+  const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
 
   return (
     <Box
       backgroundColor={isDarkMode ? accentColors.surfacePrimary : 'white'}
       padding={'12px'}
       borderRadius={110}
-      borderWidth={isDarkMode ? 2 : 0}
+      borderWidth={isDarkMode ? THICKER_BORDER_WIDTH : 0}
       borderColor={{ custom: accentColors.opacity6 }}
       shadow={'18px'}
     >
       <Box flexDirection="row" justifyContent="space-between">
         <Box flexDirection="row" alignItems="center" gap={12}>
-          <RainbowImage source={{ url: USDC_ICON_URL }} style={{ width: 40, height: 40 }} />
+          <ImgixImage enableFasterImage source={{ uri: USDC_ICON_URL }} size={40} style={{ width: 40, height: 40 }} />
           <Stack space={'10px'}>
             <Text color="labelSecondary" size="11pt" weight="heavy">
               {'AVAILABLE BALANCE'}
             </Text>
             <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
-              <TextShadow color={HYPERLIQUID_GREEN} blur={8} shadowOpacity={0.24}>
+              <TextShadow color={HYPERLIQUID_GREEN} blur={16} shadowOpacity={0.24}>
                 <Text color={{ custom: HYPERLIQUID_GREEN }} size="17pt" weight="heavy">
                   {formattedBalance}
                 </Text>
@@ -60,11 +60,11 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
                 height={40}
                 width={52}
                 borderRadius={24}
-                borderWidth={2}
+                borderWidth={THICKER_BORDER_WIDTH}
                 borderColor={{ custom: accentColors.opacity6 }}
               >
-                <TextShadow color={accentColors.opacity100} blur={6} shadowOpacity={0.24}>
-                  <Text color={{ custom: accentColors.opacity100 }} size="20pt" weight="black">
+                <TextShadow color={accentColors.opacity100} blur={12} shadowOpacity={0.24}>
+                  <Text align="center" color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="black">
                     {'􀅽'}
                   </Text>
                 </TextShadow>
@@ -79,11 +79,11 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
               paddingHorizontal={'16px'}
               paddingVertical={'12px'}
               borderRadius={24}
-              borderWidth={isDarkMode ? 2 : 0}
+              borderWidth={isDarkMode ? THICKER_BORDER_WIDTH : 0}
             >
-              <Text color={isDarkMode ? 'black' : 'white'} size="20pt" weight="black">
+              <TextIcon color={isDarkMode ? 'black' : 'white'} size="icon 20px" weight="black">
                 {'􀅼'}
-              </Text>
+              </TextIcon>
             </HyperliquidButton>
           </Box>
         )}

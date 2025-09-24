@@ -4,7 +4,10 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import { divide } from '@/helpers/utilities';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
+import { greaterThanWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
+import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
+import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
+import Routes from '@/navigation/routesNames';
 
 type TriggerOrder = {
   localId: string;
@@ -15,71 +18,84 @@ type TriggerOrder = {
 };
 
 type HlNewPositionState = {
-  positionSide: PerpPositionSide;
-  leverage: number | null;
   amount: string;
-  triggerOrders: TriggerOrder[];
+  amountResetSignal: number;
+  leverage: number | null;
   market: PerpMarket | null;
+  positionSide: PerpPositionSide;
+  triggerOrders: TriggerOrder[];
 };
 
 type HlNewPositionActions = {
+  addTriggerOrder: (triggerOrder: TriggerOrder) => void;
+  getLeverage: () => number | null;
+  getMaxLeverage: () => number;
+  removeTriggerOrder: (triggerOrderId: string) => void;
+  setAmount: (amount: string) => void;
+  setLeverage: (leverage: number | null) => void;
   setMarket: (market: PerpMarket) => void;
   setPositionSide: (positionSide: PerpPositionSide) => void;
-  setLeverage: (leverage: number) => void;
-  setAmount: (amount: string) => void;
-  addTriggerOrder: (triggerOrder: TriggerOrder) => void;
-  removeTriggerOrder: (triggerOrderId: string) => void;
-  reset: () => void;
 };
 
 type HlNewPositionStore = HlNewPositionState & HlNewPositionActions;
 
-export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set, get) => ({
-  positionSide: PerpPositionSide.LONG,
-  leverage: null,
+const initialState: HlNewPositionState = {
   amount: '0',
-  triggerOrders: [],
+  amountResetSignal: 0,
+  leverage: null,
   market: null,
+  positionSide: PerpPositionSide.LONG,
+  triggerOrders: [],
+};
 
-  setMarket: async (market: PerpMarket) => {
-    // We do not have a relialbe way to reset this after the transition ends when leaving the screen, so we do it here
-    get().reset();
+export const useHlNewPositionStore = createRainbowStore<HlNewPositionStore>((set, get) => ({
+  ...initialState,
 
-    set({ market });
-    // Whenever the market changes, we need to fetch the users account leverage for this asset
-    const address = useWalletsStore.getState().accountAddress;
-    const data = await infoClient.activeAssetData({
-      user: address,
-      coin: market.symbol,
-    });
-    const accountAssetLeverage = data?.leverage?.value || 1;
-    const availableBalance = data?.availableToTrade[0] ?? 0;
-    set({ leverage: accountAssetLeverage, amount: toFixedWorklet(divide(availableBalance, 2), 2) });
+  addTriggerOrder: triggerOrder =>
+    set(state => ({
+      triggerOrders: [...state.triggerOrders, triggerOrder],
+    })),
+
+  getLeverage: () => {
+    const { leverage, market } = get();
+    if (!leverage || !market) return leverage;
+    return Math.min(leverage, market.maxLeverage);
   },
-  setPositionSide: positionSide => set({ positionSide }),
-  setLeverage: leverage => {
-    set({ leverage });
-  },
-  setAmount: amount => {
-    set({ amount });
-  },
-  addTriggerOrder: triggerOrder => {
-    set(state => ({ triggerOrders: [...state.triggerOrders, triggerOrder] }));
-  },
-  removeTriggerOrder: triggerOrderId => {
+
+  getMaxLeverage: () => get().market?.maxLeverage ?? 1,
+
+  removeTriggerOrder: triggerOrderId =>
     set(state => ({
       triggerOrders: state.triggerOrders.filter(order => order.localId !== triggerOrderId),
-    }));
+    })),
+
+  setAmount: amount => set(state => (state.amount === amount ? state : { amount })),
+
+  setLeverage: leverage =>
+    set(state => {
+      if (leverage === null) return { leverage };
+      const maxLeverage = state.market?.maxLeverage;
+      const newLeverage = Math.min(leverage, maxLeverage ?? leverage);
+      if (state.leverage === newLeverage) return state;
+      return { leverage: newLeverage };
+    }),
+
+  setMarket: async market => {
+    const availableBalance = hyperliquidAccountActions.getBalance();
+    const amount = toFixedWorklet(greaterThanWorklet(availableBalance, 5) ? divide(availableBalance, 2) : availableBalance, 2);
+
+    // Ensure old state is reset before the new position screen is shown
+    set(state => ({ ...initialState, amount, amountResetSignal: state.amountResetSignal + 1, leverage: market.maxLeverage, market }));
+    PerpsNavigation.setParams(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
+
+    // Whenever the market changes, we need to fetch the user's account leverage for this asset
+    const address = useWalletsStore.getState().accountAddress;
+    const assetData = await infoClient.activeAssetData({ coin: market.symbol, user: address });
+    const accountAssetLeverage = assetData?.leverage?.value || 1;
+    set(state => (state.leverage === accountAssetLeverage ? state : { leverage: accountAssetLeverage }));
   },
-  reset: () => {
-    set({
-      positionSide: PerpPositionSide.LONG,
-      leverage: null,
-      amount: '0',
-      triggerOrders: [],
-      market: null,
-    });
-  },
+
+  setPositionSide: positionSide => set(state => (state.positionSide === positionSide ? state : { positionSide })),
 }));
 
 export const hlNewPositionStoreActions = createStoreActions(useHlNewPositionStore);

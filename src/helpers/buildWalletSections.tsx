@@ -201,18 +201,17 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
   ];
 };
 
+const EMPTY_PERPS_CELL: CellTypes[] = [];
+
 const withPerpsSection = (perpsData: PerpsWalletListData | null, isLoadingUserAssets: boolean): CellTypes[] => {
-  if (isLoadingUserAssets || !perpsData) return [];
+  if (isLoadingUserAssets || !perpsData) return EMPTY_PERPS_CELL;
 
-  const hasBalance = perpsData.balance && perpsData.balance !== '0';
-  const hasPositions = perpsData.positions && perpsData.positions.length > 0;
-
-  if (!hasBalance && !hasPositions) return [];
+  if (!perpsData.hasBalance && !perpsData.hasPositions) return EMPTY_PERPS_CELL;
 
   const perpsSectionItems: CellTypes[] = [];
 
   // Add balance card first if there's a balance
-  if (hasBalance) {
+  if (perpsData.hasBalance) {
     perpsSectionItems.push({
       type: CellType.PERPS_BALANCE,
       balance: perpsData.balance,
@@ -221,7 +220,7 @@ const withPerpsSection = (perpsData: PerpsWalletListData | null, isLoadingUserAs
   }
 
   // Add positions or "no positions" message
-  if (hasPositions) {
+  if (perpsData.hasPositions) {
     perpsData.positions.forEach((position, index) => {
       perpsSectionItems.push({
         type: CellType.PERPS_POSITION,

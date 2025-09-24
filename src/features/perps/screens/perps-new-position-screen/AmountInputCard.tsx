@@ -1,18 +1,19 @@
-import React, { memo, useCallback, useRef, useEffect } from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { SLIDER_WIDTH, SLIDER_HEIGHT, SLIDER_EXPANDED_HEIGHT, INPUT_CARD_HEIGHT } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import { runOnJS, SharedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { runOnJS, runOnUI, SharedValue, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Slider } from '@/features/perps/components/Slider';
 import { addCommasToNumber, stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { CurrencyInput, CurrencyInputRef } from '@/components/CurrencyInput';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
-import { divide, isEqual } from '@/helpers/utilities';
-import { formatCurrency } from '@/features/perps/utils/formatCurrency';
-import { usePrevious } from '@/hooks';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
+import { divide } from '@/helpers/utilities';
+import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import { useStableValue } from '@/hooks/useStableValue';
+import { useListen } from '@/state/internal/hooks/useListen';
 
 const AmountSlider = ({
   sliderXPosition,
@@ -20,7 +21,7 @@ const AmountSlider = ({
   onPercentageChange,
 }: {
   sliderXPosition: SharedValue<number>;
-  onPercentageUpdate: (percentage: number) => void;
+  onPercentageUpdate?: (percentage: number) => void;
   onPercentageChange: (percentage: number) => void;
 }) => {
   const { accentColors } = usePerpsAccentColorContext();
@@ -31,7 +32,6 @@ const AmountSlider = ({
       colors={accentColors.slider}
       onPercentageUpdate={onPercentageUpdate}
       onPercentageChange={onPercentageChange}
-      snapPoints={[0, 0.25, 0.5, 0.75, 1]}
       width={SLIDER_WIDTH}
       height={SLIDER_HEIGHT}
       expandedHeight={SLIDER_EXPANDED_HEIGHT}
@@ -81,70 +81,82 @@ export const AmountInputCard = memo(function AmountInputCard() {
   const { isDarkMode } = useColorMode();
   const inputRef = useRef<CurrencyInputRef>(null);
   const { accentColors } = usePerpsAccentColorContext();
-  const availableBalanceString = useHyperliquidAccountStore(state => state.balance);
+
+  const availableBalanceString = useHyperliquidAccountStore(state => state.getBalance());
+  const initialValues = useStableValue(() => getInitialValues(availableBalanceString));
+
   const availableBalance = Number(availableBalanceString);
-  const sliderXPosition = useSharedValue(0.5 * SLIDER_WIDTH);
-  const initialAmount = formatInput(formatDisplay(divide(availableBalanceString, 2)));
-  const inputValue = useSharedValue(initialAmount);
-  const currentAmount = useHlNewPositionStore(state => state.amount);
-  const prevAvailableBalance = usePrevious(availableBalance);
-  // Truncate instead of round to prevent showing more balance than available
-  const availableBalanceDisplay = formatCurrency(truncateToDecimals(availableBalanceString, 2));
+  const sliderXPosition = useSharedValue(initialValues.sliderXPosition);
+  const ignoreSliderUpdates = useSharedValue(false);
+  const inputValue = useSharedValue(initialValues.initialAmount);
+  const isInputFocused = useSharedValue(false);
 
-  const setAmount = useCallback((amount: string) => {
-    hlNewPositionStoreActions.setAmount(amount);
-  }, []);
+  const amountText = useDerivedValue(() => {
+    const currentInputValue = inputValue.value;
+    if (isInputFocused.value || Number(currentInputValue) > availableBalance) return currentInputValue;
+    const amount = availableBalance * (sliderXPosition.value / SLIDER_WIDTH);
+    const formattedAmount = formatInput(amount.toString());
+    return formattedAmount;
+  });
 
-  // Update the input amount when the available balance changes and the user has selected the max amount
-  // This can only happen when the user has an open cross margin position
-  useEffect(() => {
-    const hadSetMax =
-      prevAvailableBalance !== undefined && availableBalance !== prevAvailableBalance && isEqual(currentAmount, prevAvailableBalance);
+  const onBlur = useCallback(() => (isInputFocused.value = false), [isInputFocused]);
+  const onFocus = useCallback(() => (isInputFocused.value = true), [isInputFocused]);
+  const setInputValue = useCallback((value: string) => inputRef.current?.setValue(value), [inputRef]);
+  const setAmount = hlNewPositionStoreActions.setAmount;
 
-    if (hadSetMax) {
-      const formattedAmount = formatInput(String(availableBalance));
-      if (inputRef.current) {
-        inputRef.current.setValue(formattedAmount);
-      }
-      setAmount(formattedAmount);
-      const newSliderX = SLIDER_WIDTH;
-      sliderXPosition.value = withSpring(newSliderX, SPRING_CONFIGS.sliderConfig);
-    }
-  }, [availableBalance, setAmount, sliderXPosition, prevAvailableBalance, currentAmount]);
-
-  const onChangeValue = useCallback(
+  const onNewInputValue = useCallback(
     (value: string) => {
       'worklet';
+      if (!isInputFocused.value) return;
       const amount = Number(value) || 0;
-      const percentage = availableBalance > 0 ? amount / availableBalance : 0;
+      const percentage = availableBalance > 0 ? Math.min(amount / availableBalance, 1) : 0;
       const newSliderX = percentage * SLIDER_WIDTH;
-      sliderXPosition.value = withSpring(newSliderX, SPRING_CONFIGS.sliderConfig);
+      inputValue.value = value;
+      sliderXPosition.value = withSpring(newSliderX, SPRING_CONFIGS.snappySpringConfig);
       runOnJS(setAmount)(value);
     },
-    [availableBalance, sliderXPosition, setAmount]
+    [availableBalance, isInputFocused, inputValue, sliderXPosition, setAmount]
   );
 
   // Called when gesture ends
   const onPercentageChange = useCallback(
     (percentage: number) => {
-      const amount = availableBalance * percentage;
-      const formattedAmount = formatInput(amount.toString());
-      if (inputRef.current) {
-        inputRef.current.setValue(formattedAmount);
-      }
-      setAmount(formattedAmount);
-    },
-    [availableBalance, setAmount]
-  );
-
-  const onPercentageUpdate = useCallback(
-    (percentage: number) => {
       'worklet';
+      if (ignoreSliderUpdates.value) return;
       const amount = availableBalance * percentage;
       const formattedAmount = formatInput(amount.toString());
       inputValue.value = formattedAmount;
+      runOnJS(setInputValue)(formattedAmount);
+      runOnJS(setAmount)(formattedAmount);
     },
-    [availableBalance, inputValue]
+    [availableBalance, ignoreSliderUpdates, inputValue, setAmount, setInputValue]
+  );
+
+  const revalidateInputAmount = useCallback(
+    (balanceString: string) => {
+      runOnUI(() => {
+        const balance = Number(stripNonDecimalNumbers(balanceString));
+        const inputValueExceedsBalance = Number(stripNonDecimalNumbers(inputValue.value)) > balance;
+        if (!inputValueExceedsBalance) return;
+
+        const formattedBalanceString = formatInput(balanceString);
+        ignoreSliderUpdates.value = true;
+        runOnJS(setInputValue)(formattedBalanceString);
+        inputValue.value = formattedBalanceString;
+        sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, () => {
+          ignoreSliderUpdates.value = false;
+        });
+      })();
+    },
+    [ignoreSliderUpdates, inputValue, setInputValue, sliderXPosition]
+  );
+
+  useListen(useHyperliquidAccountStore, state => state.getBalance(), revalidateInputAmount);
+
+  useListen(
+    useHlNewPositionStore,
+    state => state.amountResetSignal,
+    () => revalidateInputAmount(availableBalanceString)
   );
 
   return (
@@ -160,13 +172,13 @@ export const AmountInputCard = memo(function AmountInputCard() {
       height={INPUT_CARD_HEIGHT}
       shadow={'18px'}
     >
-      <Box width="full" flexDirection="row" alignItems="center">
+      <Box width="full" flexDirection="row" alignItems="center" zIndex={2}>
         <Box gap={12}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
             {'Amount'}
           </Text>
           <Text size="15pt" weight="heavy" color="labelSecondary">
-            {availableBalanceDisplay}
+            {formatCurrency(truncateToDecimals(availableBalanceString, 2))}
             <Text size="15pt" weight="bold" color="labelQuaternary">
               {' Available'}
             </Text>
@@ -175,20 +187,30 @@ export const AmountInputCard = memo(function AmountInputCard() {
         <Box flexDirection="row" alignItems="center" justifyContent="flex-end" style={{ flex: 1 }}>
           <CurrencyInput
             ref={inputRef}
-            value={inputValue}
+            value={amountText}
             textColor={accentColors.opacity100}
             placeholderTextColor={accentColors.opacity24}
             formatInput={formatInput}
             formatDisplay={formatDisplay}
-            onChangeValue={onChangeValue}
+            onBlur={onBlur}
+            onChangeValue={onNewInputValue}
+            onFocus={onFocus}
             size="30pt"
-            weight="bold"
+            weight="heavy"
             align="right"
             style={{ width: 200 }}
           />
         </Box>
       </Box>
-      <AmountSlider sliderXPosition={sliderXPosition} onPercentageChange={onPercentageChange} onPercentageUpdate={onPercentageUpdate} />
+      <AmountSlider sliderXPosition={sliderXPosition} onPercentageChange={onPercentageChange} />
     </Box>
   );
 });
+
+function getInitialValues(availableBalanceString: string): { initialAmount: string; sliderXPosition: number } {
+  const availableBalance = Number(availableBalanceString);
+  const shouldUseMax = availableBalance <= 5;
+  const sliderXPosition = shouldUseMax ? SLIDER_WIDTH : 0.5 * SLIDER_WIDTH;
+  const initialAmount = formatInput(formatDisplay(shouldUseMax ? availableBalanceString : divide(availableBalanceString, 2)));
+  return { initialAmount, sliderXPosition };
+}

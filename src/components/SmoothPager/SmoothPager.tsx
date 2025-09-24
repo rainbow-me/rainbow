@@ -1,9 +1,13 @@
-import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
+import React, { ForwardedRef, forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
+  DerivedValue,
   SharedValue,
+  WithSpringConfig,
+  WithTimingConfig,
   interpolate,
+  runOnJS,
   runOnUI,
   useAnimatedGestureHandler,
   useAnimatedReaction,
@@ -11,113 +15,97 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { clamp } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box } from '@/design-system';
 import { AlignVertical, alignVerticalToFlexAlign } from '@/design-system/layout/alignment';
+import { useStableValue } from '@/hooks/useStableValue';
+import { clamp } from '@/__swaps__/utils/swaps';
 import { deviceUtils } from '@/utils';
+
+// ============ Constants ====================================================== //
 
 const DEVICE_WIDTH = deviceUtils.dimensions.width;
 const PAGE_ANIMATION_CONFIG = TIMING_CONFIGS.slowerFadeConfig;
 
+const PagerGroup: React.FC<GroupProps> = ({ children }) => <>{children}</>;
+const PagerPage: React.FC<PageProps> = ({ component }) => <>{component}</>;
+
+// ============ Types ========================================================== //
+
 type PageId = string;
 type ActiveSubPageIds = Record<number, string | null>;
 
-interface PageProps {
-  id: PageId;
-  component: React.ReactElement;
-}
-const PagerPage: React.FC<PageProps> = ({ component }) => {
-  return <>{component}</>;
-};
-
-interface GroupProps {
+type GroupProps = {
   children: React.ReactElement<PageProps>[];
-}
-const PagerGroup: React.FC<GroupProps> = ({ children }) => {
-  return <>{children}</>;
 };
 
-interface SmoothPagerRef {
+type PageProps = {
+  component: React.ReactElement;
+  id: PageId;
+  lazy?: boolean;
+};
+
+type SmoothPagerRef = {
+  currentPageIndex: SharedValue<number>;
   goBack: () => void;
   goForward: () => void;
   goToPage: (id: PageId) => void;
-  currentPageIndex: SharedValue<number>;
-}
+};
 
-export function usePagerNavigation() {
+// ============ Hooks ========================================================== //
+
+export function usePagerNavigation<T extends string = PageId>() {
   const ref = useRef<SmoothPagerRef>(null);
-
-  const goBack = useCallback(() => {
-    ref.current?.goBack();
-  }, []);
-  const goForward = useCallback(() => {
-    ref.current?.goForward();
-  }, []);
-  const goToPage = useCallback((id: PageId) => {
-    ref.current?.goToPage(id);
-  }, []);
-
-  return { goBack, goForward, goToPage, ref };
+  return useMemo(
+    () => ({
+      ref,
+      goBack: () => ref.current?.goBack(),
+      goForward: () => ref.current?.goForward(),
+      goToPage: (id: T) => ref.current?.goToPage(id),
+    }),
+    [ref]
+  );
 }
 
-// This is used to initialize the shared value that keeps track of the active subpage ID for each page group
-const initializeActiveSubPageIds = (pageIdToIndex: Record<PageId, number>, initialPage?: PageId): ActiveSubPageIds => {
-  const pageIndices = Object.values(pageIdToIndex);
-  const maxPageIndex = Math.max(...pageIndices);
-  // Initialize the active subpage IDs array with null starting values for each page index
-  const initialSubPageIds: (string | null)[] = new Array(maxPageIndex + 1).fill(null);
-  const pageIndexCounts: Record<number, number> = {};
-  Object.values(pageIdToIndex).forEach(index => {
-    pageIndexCounts[index] = (pageIndexCounts[index] || 0) + 1;
-  });
+// ============ Animation Utils ================================================ //
 
-  // If a page group exists at a given index, set the active subpage ID to an empty string
-  Object.entries(pageIndexCounts).forEach(([index, count]) => {
-    if (count > 1) {
-      initialSubPageIds[Number(index)] = '';
-    }
-  });
+const SCALE_FACTOR = 200;
 
-  // If the initial page ID matches a subpage, make that subpage active within the page group
-  if (initialPage && pageIdToIndex[initialPage] !== undefined && initialSubPageIds[pageIdToIndex[initialPage]] === '') {
-    initialSubPageIds[pageIdToIndex[initialPage]] = initialPage;
-  }
+/**
+ * Converts a scaled page index back to its original value.
+ */
+function downscale(scaledIndex: number): number {
+  'worklet';
+  return scaledIndex / SCALE_FACTOR;
+}
 
-  // Any top-level Page components will have their active subpage ID set to null
-  return initialSubPageIds;
-};
+/**
+ * Upscales a page index for use in animation.
+ */
+function upscale(index: number): number {
+  'worklet';
+  return index * SCALE_FACTOR;
+}
 
-// This is used to generate a map of page IDs to their indices in the pager
-const getPageIdToIndexMap = (children: React.ReactElement<PageProps | GroupProps>[]): Record<PageId, number> => {
-  const obj: Record<PageId, number> = {};
-  let pageIndex = 0;
-  children.forEach(child => {
-    if ('id' in child.props && 'component' in child.props) {
-      obj[child.props.id] = pageIndex;
-      pageIndex += 1;
-    } else if ('children' in child.props) {
-      child.props.children.forEach(page => {
-        if ('id' in page.props && 'component' in page.props) {
-          obj[page.props.id] = pageIndex;
-        }
-      });
-      pageIndex += 1;
-    }
-  });
-  return obj;
-};
+// ============ SmoothPager ==================================================== //
 
-interface SmoothPagerProps {
+type SmoothPagerProps = {
   children: React.ReactElement<PageProps | GroupProps>[];
   enableSwipeToGoBack?: boolean;
   enableSwipeToGoForward?: boolean | 'always';
   initialPage: PageId;
+  lazy?: boolean;
+  onNewIndex?: (index: number) => void;
   pageGap?: number;
+  scaleTo?: number;
   verticalPageAlignment?: AlignVertical;
-}
+} & (
+  | { springConfig?: WithSpringConfig; springVelocityFactor?: number; timingConfig?: undefined }
+  | { springConfig?: undefined; springVelocityFactor?: undefined; timingConfig?: WithTimingConfig }
+);
 
 const SmoothPagerComponent = (
   {
@@ -125,49 +113,87 @@ const SmoothPagerComponent = (
     enableSwipeToGoBack = true,
     enableSwipeToGoForward = true,
     initialPage,
+    lazy = false,
+    onNewIndex,
     pageGap = 0,
+    scaleTo = 0.8,
+    springConfig,
+    springVelocityFactor = 1,
+    timingConfig,
     verticalPageAlignment = 'bottom',
   }: SmoothPagerProps,
   ref: ForwardedRef<SmoothPagerRef>
 ) => {
-  const pageIdToIndex = useMemo(() => getPageIdToIndexMap(children), [children]);
+  const { initialIndex, initialSubpageIds, pageIdToIndex } = useStableValue(() => getInitialPagerState(children, initialPage));
 
-  const activeSubPageIds = useSharedValue<ActiveSubPageIds>(initializeActiveSubPageIds(pageIdToIndex, initialPage));
+  const activeSubPageIds = useSharedValue(initialSubpageIds);
   const currentPageId = useSharedValue(initialPage);
-  const currentPageIndex = useSharedValue(pageIdToIndex[initialPage] ?? 0);
-  const deepestReachedPageIndex = useSharedValue(pageIdToIndex[initialPage] ?? 0);
+  const currentPageIndex = useSharedValue(upscale(initialIndex));
+  const deepestReachedPageIndex = useSharedValue(initialIndex);
+  const lastTargetIndex = useSharedValue(initialIndex);
 
   // This represents the number of page slots in the pager (treating page groups as a single page)
-  const numberOfPages = useMemo(() => children.length, [children.length]);
+  const numberOfPages = children.length;
 
-  useImperativeHandle(ref, () => ({
-    goBack() {
-      runOnUI(() => {
-        const currentPageIndexValue = Math.round(currentPageIndex.value);
-        if (currentPageIndexValue > 0) {
-          currentPageIndex.value = withTiming(currentPageIndexValue - 1, PAGE_ANIMATION_CONFIG);
-        }
-      })();
+  const animateIndex = useCallback(
+    (target: number, velocity?: number) => {
+      'worklet';
+      lastTargetIndex.value = target;
+      if (springConfig) {
+        currentPageIndex.value = withSpring(
+          upscale(target),
+          velocity ? { ...springConfig, velocity: velocity * springVelocityFactor } : springConfig
+        );
+      } else {
+        currentPageIndex.value = withTiming(upscale(target), timingConfig ?? PAGE_ANIMATION_CONFIG);
+      }
     },
-    goForward() {
-      runOnUI(() => {
-        const currentPageIndexValue = Math.round(currentPageIndex.value);
-        if (currentPageIndexValue < numberOfPages - 1) {
-          currentPageIndex.value = withTiming(currentPageIndexValue + 1, PAGE_ANIMATION_CONFIG);
-        }
-      })();
-    },
-    goToPage(id: PageId) {
-      runOnUI(() => {
-        const pageIndex = pageIdToIndex[id];
-        if (pageIndex !== undefined) {
-          currentPageIndex.value = withTiming(pageIndex, PAGE_ANIMATION_CONFIG);
-          currentPageId.value = id;
-        }
-      })();
-    },
-    currentPageIndex,
-  }));
+    [currentPageIndex, lastTargetIndex, springConfig, springVelocityFactor, timingConfig]
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      currentPageIndex,
+
+      goBack() {
+        runOnUI(() => {
+          const currentPageIndexValue = Math.round(downscale(currentPageIndex.value));
+          if (currentPageIndexValue > 0) {
+            const targetIndex = currentPageIndexValue - 1;
+            requestAnimationFrame(() => animateIndex(targetIndex));
+            if (!onNewIndex || lastTargetIndex.value === targetIndex) return;
+            runOnJS(onNewIndex)(targetIndex);
+          }
+        })();
+      },
+
+      goForward() {
+        runOnUI(() => {
+          const currentPageIndexValue = Math.round(downscale(currentPageIndex.value));
+          if (currentPageIndexValue < numberOfPages - 1) {
+            const targetIndex = currentPageIndexValue + 1;
+            requestAnimationFrame(() => animateIndex(targetIndex));
+            if (!onNewIndex || lastTargetIndex.value === targetIndex) return;
+            runOnJS(onNewIndex)(targetIndex);
+          }
+        })();
+      },
+
+      goToPage(id: PageId) {
+        runOnUI(() => {
+          const targetIndex = pageIdToIndex[id];
+          if (targetIndex !== undefined) {
+            requestAnimationFrame(() => animateIndex(targetIndex));
+            currentPageId.value = id;
+            if (!onNewIndex || lastTargetIndex.value === targetIndex) return;
+            runOnJS(onNewIndex)(targetIndex);
+          }
+        })();
+      },
+    }),
+    [animateIndex, currentPageId, currentPageIndex, lastTargetIndex, numberOfPages, onNewIndex, pageIdToIndex]
+  );
 
   // This handles making the correct subpage active when navigating to pages that exist within page groups. It also
   // manages the setting and resetting of the deepest reached page, which is used to control whether forward swipe
@@ -222,68 +248,85 @@ const SmoothPagerComponent = (
 
   const pagerWrapperStyle = useAnimatedStyle(() => {
     const totalWidth = numberOfPages * DEVICE_WIDTH + (numberOfPages - 1) * pageGap;
-    const translateX = interpolate(currentPageIndex.value, [0, numberOfPages - 1], [0, -totalWidth + DEVICE_WIDTH]);
-
-    return {
-      transform: [{ translateX }],
-    };
-  });
-
-  const forwardSwipeEnabled = useDerivedValue(() => {
-    return enableSwipeToGoForward === 'always' || (enableSwipeToGoForward && deepestReachedPageIndex.value > currentPageIndex.value);
+    const translateX = interpolate(downscale(currentPageIndex.value), [0, numberOfPages - 1], [0, -totalWidth + DEVICE_WIDTH]);
+    return { transform: [{ translateX }] };
   });
 
   const swipeGestureHandler = useAnimatedGestureHandler({
-    onStart: (event, context: { startX: number; startPage: number }) => {
-      context.startPage = Math.round(currentPageIndex.value);
-      context.startX = event.translationX;
+    onStart: (
+      _,
+      context: {
+        startPage?: number;
+        startX?: number;
+        maxForwardIndex?: number;
+        canSwipeForward?: boolean;
+      }
+    ) => {
+      context.canSwipeForward = undefined;
+      context.maxForwardIndex = undefined;
+      context.startPage = undefined;
+      context.startX = undefined;
     },
-    onActive: (event, context: { startX: number; startPage: number }) => {
+
+    onActive: (event, context) => {
+      if (context.startPage === undefined) {
+        context.startPage = downscale(currentPageIndex.value);
+
+        if (enableSwipeToGoForward === 'always') {
+          context.canSwipeForward = true;
+          context.maxForwardIndex = numberOfPages - 1;
+        } else if (enableSwipeToGoForward) {
+          context.canSwipeForward = deepestReachedPageIndex.value > context.startPage;
+          context.maxForwardIndex = deepestReachedPageIndex.value;
+        } else {
+          context.canSwipeForward = false;
+          context.maxForwardIndex = context.startPage;
+        }
+      }
+
+      if (context.startX === undefined) context.startX = event.translationX;
+
       const dragDistance = event.translationX - context.startX;
       const dragPages = dragDistance / (DEVICE_WIDTH + pageGap);
       let newPageIndex = context.startPage - dragPages;
 
-      if (enableSwipeToGoBack && forwardSwipeEnabled.value) {
-        newPageIndex = clamp(newPageIndex, 0, numberOfPages - 1);
-      } else if (enableSwipeToGoBack && dragDistance > 0) {
-        newPageIndex = clamp(newPageIndex, 0, context.startPage);
-      } else if (forwardSwipeEnabled.value && dragDistance < 0) {
-        newPageIndex = clamp(newPageIndex, context.startPage, numberOfPages - 1);
-      } else {
-        newPageIndex = context.startPage;
-      }
+      const minIndex = enableSwipeToGoBack ? 0 : context.startPage;
+      const maxIndex = context.maxForwardIndex ?? numberOfPages - 1;
 
-      currentPageIndex.value = newPageIndex;
+      newPageIndex = clamp(newPageIndex, minIndex, maxIndex);
+      currentPageIndex.value = upscale(newPageIndex);
     },
-    onEnd: (event, context: { startX: number; startPage: number }) => {
+
+    onEnd: (event, context) => {
+      if (context.startPage === undefined) return;
+
       const swipeVelocityThreshold = 300;
-      let targetPage = currentPageIndex.value;
+      const velocity = event.velocityX;
+      let targetIndex = downscale(currentPageIndex.value);
 
-      if (event.velocityX < -swipeVelocityThreshold && enableSwipeToGoForward) {
-        targetPage = Math.ceil(currentPageIndex.value);
-      } else if (event.velocityX > swipeVelocityThreshold && enableSwipeToGoBack) {
-        targetPage = Math.floor(currentPageIndex.value);
+      if (velocity < -swipeVelocityThreshold && context.canSwipeForward) {
+        targetIndex = Math.ceil(targetIndex);
+      } else if (velocity > swipeVelocityThreshold && enableSwipeToGoBack) {
+        targetIndex = Math.floor(targetIndex);
       } else {
-        targetPage = Math.round(currentPageIndex.value);
+        targetIndex = Math.round(targetIndex);
       }
 
-      if (enableSwipeToGoBack && !forwardSwipeEnabled.value) {
-        targetPage = clamp(targetPage, 0, context.startPage);
-      } else if (!enableSwipeToGoBack && forwardSwipeEnabled.value) {
-        targetPage = clamp(targetPage, context.startPage, numberOfPages - 1);
-      } else {
-        targetPage = clamp(targetPage, 0, numberOfPages - 1);
-      }
+      const minIndex = enableSwipeToGoBack ? 0 : context.startPage;
+      const maxIndex = context.maxForwardIndex ?? numberOfPages - 1;
 
-      currentPageIndex.value = withTiming(targetPage, PAGE_ANIMATION_CONFIG);
+      targetIndex = clamp(targetIndex, minIndex, maxIndex);
+
+      animateIndex(targetIndex, -velocity);
+      if (onNewIndex) runOnJS(onNewIndex)(targetIndex);
     },
   });
 
   return (
     <PanGestureHandler
       activeOffsetX={[-5, 5]}
-      failOffsetY={[-10, 10]}
       enabled={enableSwipeToGoBack || enableSwipeToGoForward !== false}
+      failOffsetY={[-12, 12]}
       onGestureEvent={swipeGestureHandler}
     >
       <Animated.View style={styles.pagerContainer}>
@@ -292,8 +335,8 @@ const SmoothPagerComponent = (
             styles.pagerWrapper,
             pagerWrapperStyle,
             {
-              justifyContent: verticalPageAlignment ? alignVerticalToFlexAlign[verticalPageAlignment] : undefined,
               gap: pageGap,
+              justifyContent: verticalPageAlignment ? alignVerticalToFlexAlign[verticalPageAlignment] : undefined,
               width: numberOfPages * DEVICE_WIDTH + (numberOfPages - 1) * pageGap,
             },
           ]}
@@ -301,21 +344,26 @@ const SmoothPagerComponent = (
           {children.map((child, index) => {
             if ('component' in child.props) {
               // Handle top-level Page components
-              const { id, component } = child.props;
+              const { component, id, lazy: lazyProp } = child.props;
               return (
                 <Page
+                  activeSubPageIds={undefined}
                   child={component}
                   currentPageId={currentPageId}
                   currentPageIndex={currentPageIndex}
                   id={id}
                   index={index}
+                  initialPage={initialPage}
                   key={id}
+                  lazy={lazyProp ?? lazy}
+                  isSubPage={undefined}
+                  scaleTo={scaleTo}
                   verticalPageAlignment={verticalPageAlignment}
                 />
               );
             } else if ('children' in child.props) {
               // Handle page groups with subpages (Page components) within
-              const { children: subPages } = child.props;
+              const subPages = child.props.children;
               const pageGroupKey = subPages.map(subPage => subPage.props.id).join('-');
               return (
                 <PageGroup
@@ -323,7 +371,10 @@ const SmoothPagerComponent = (
                   currentPageId={currentPageId}
                   currentPageIndex={currentPageIndex}
                   index={index}
+                  initialPage={initialPage}
                   key={pageGroupKey}
+                  lazy={lazy}
+                  scaleTo={scaleTo}
                   subPages={subPages}
                   verticalPageAlignment={verticalPageAlignment}
                 />
@@ -388,20 +439,28 @@ export const SmoothPager = Object.assign(React.memo(forwardRef<SmoothPagerRef, S
   Group: PagerGroup,
 });
 
-interface PageGroupComponentProps {
+// ============ Page Group Component =========================================== //
+
+type PageGroupComponentProps = {
   activeSubPageIds: SharedValue<ActiveSubPageIds>;
   currentPageId: SharedValue<string>;
   currentPageIndex: SharedValue<number>;
   index: number;
+  initialPage: PageId;
+  lazy: boolean;
+  scaleTo: number;
   subPages: React.ReactElement<PageProps>[];
   verticalPageAlignment: AlignVertical;
-}
+};
 
 const PageGroup = React.memo(function PageGroup({
   activeSubPageIds,
   currentPageId,
   currentPageIndex,
   index,
+  initialPage,
+  lazy,
+  scaleTo,
   subPages,
   verticalPageAlignment,
 }: PageGroupComponentProps) {
@@ -415,8 +474,11 @@ const PageGroup = React.memo(function PageGroup({
           currentPageIndex={currentPageIndex}
           id={subPage.props.id}
           index={index}
-          isSubPage
+          initialPage={initialPage}
+          isSubPage={true}
           key={subPage.props.id}
+          lazy={lazy}
+          scaleTo={scaleTo}
           verticalPageAlignment={verticalPageAlignment}
         />
       ))}
@@ -424,16 +486,21 @@ const PageGroup = React.memo(function PageGroup({
   );
 });
 
-interface PageComponentProps {
-  activeSubPageIds?: SharedValue<ActiveSubPageIds>;
+// ============ Page Component ================================================= //
+
+type PageComponentProps = {
+  activeSubPageIds: SharedValue<ActiveSubPageIds> | undefined;
   child: React.ReactElement;
   currentPageId: SharedValue<string>;
   currentPageIndex: SharedValue<number>;
   id: PageId;
   index: number;
-  isSubPage?: boolean;
+  initialPage: PageId;
+  isSubPage: boolean | undefined;
+  lazy: boolean;
+  scaleTo: number;
   verticalPageAlignment: AlignVertical;
-}
+};
 
 const Page = React.memo(function Page({
   activeSubPageIds,
@@ -442,21 +509,28 @@ const Page = React.memo(function Page({
   currentPageIndex,
   id,
   index,
+  initialPage,
   isSubPage,
+  lazy,
+  scaleTo,
   verticalPageAlignment,
 }: PageComponentProps) {
   const pageRef = useAnimatedRef();
 
+  const shouldDisplay = useDerivedValue(() => (isSubPage ? activeSubPageIds?.value[index] === id || currentPageId.value === id : true));
+  const opacity = useDerivedValue(() =>
+    interpolate(downscale(currentPageIndex.value), [index - 1, index - 0.9, index, index + 0.9, index + 1], [0, 1, 1, 1, 0], 'clamp')
+  );
+
   const pageStyle = useAnimatedStyle(() => {
-    const isActiveSubPage = isSubPage ? activeSubPageIds?.value[index] === id || currentPageId.value === id : true;
-    const display = isActiveSubPage ? 'flex' : 'none';
-    const opacity = interpolate(currentPageIndex.value, [index - 1, index - 0.9, index, index + 0.9, index + 1], [0, 1, 1, 1, 0], 'clamp');
-    const scale = interpolate(currentPageIndex.value, [index - 1, index, index + 1], [0.8, 1, 0.8], 'clamp');
+    const currentOpacity = opacity.value;
+    const display = shouldDisplay.value ? 'flex' : 'none';
+    const scale = interpolate(downscale(currentPageIndex.value), [index - 1, index, index + 1], [scaleTo, 1, scaleTo], 'clamp');
 
     return {
       display,
-      opacity,
-      transform: [{ scale: opacity === 0 ? 0 : scale }],
+      opacity: currentOpacity,
+      transform: scaleTo === 1 ? undefined : [{ scale: currentOpacity === 0 ? 0 : scale }],
     };
   });
 
@@ -470,10 +544,113 @@ const Page = React.memo(function Page({
         isSubPage && styles.subPageStyle,
       ]}
     >
-      {child}
+      {lazy ? (
+        <MountIfActive id={id} initialPage={initialPage} opacity={opacity} shouldDisplay={shouldDisplay}>
+          {child}
+        </MountIfActive>
+      ) : (
+        child
+      )}
     </Animated.View>
   );
 });
+
+const MountIfActive = ({
+  children,
+  id,
+  initialPage,
+  opacity,
+  shouldDisplay,
+}: {
+  children: React.ReactElement;
+  id: PageId;
+  initialPage: PageId;
+  opacity: DerivedValue<number>;
+  shouldDisplay: SharedValue<boolean>;
+}) => {
+  const [shouldMount, setShouldMount] = useState(() => initialPage === id);
+
+  useAnimatedReaction(
+    () => shouldDisplay.value && opacity.value > 0,
+    (isActive, previous) => {
+      if (!isActive || isActive === previous) return;
+      if (!shouldMount) runOnJS(setShouldMount)(isActive);
+    },
+    []
+  );
+
+  return shouldMount ? children : null;
+};
+
+// ============ Helper Functions =============================================== //
+
+type InitialPagerState = {
+  initialIndex: number;
+  initialSubpageIds: ActiveSubPageIds;
+  pageIdToIndex: Record<PageId, number>;
+};
+
+function getInitialPagerState(children: SmoothPagerProps['children'], initialPage: PageId): InitialPagerState {
+  const pageIdToIndex = getPageIdToIndexMap(children);
+  return {
+    initialIndex: pageIdToIndex[initialPage] ?? 0,
+    initialSubpageIds: initializeActiveSubPageIds(pageIdToIndex, initialPage),
+    pageIdToIndex,
+  };
+}
+
+/**
+ * Used to initialize the shared value that keeps track of the active subpage ID for each page group.
+ */
+function initializeActiveSubPageIds(pageIdToIndex: Record<PageId, number>, initialPage?: PageId): ActiveSubPageIds {
+  const pageIndices = Object.values(pageIdToIndex);
+  const maxPageIndex = Math.max(...pageIndices);
+  // Initialize the active subpage IDs array with null starting values for each page index
+  const initialSubPageIds: (string | null)[] = new Array(maxPageIndex + 1).fill(null);
+  const pageIndexCounts: Record<number, number> = {};
+  Object.values(pageIdToIndex).forEach(index => {
+    pageIndexCounts[index] = (pageIndexCounts[index] || 0) + 1;
+  });
+
+  // If a page group exists at a given index, set the active subpage ID to an empty string
+  Object.entries(pageIndexCounts).forEach(([index, count]) => {
+    if (count > 1) {
+      initialSubPageIds[Number(index)] = '';
+    }
+  });
+
+  // If the initial page ID matches a subpage, make that subpage active within the page group
+  if (initialPage && pageIdToIndex[initialPage] !== undefined && initialSubPageIds[pageIdToIndex[initialPage]] === '') {
+    initialSubPageIds[pageIdToIndex[initialPage]] = initialPage;
+  }
+
+  // Any top-level Page components will have their active subpage ID set to null
+  return initialSubPageIds;
+}
+
+/**
+ * Used to generate a map of page IDs to their indices in the pager.
+ */
+function getPageIdToIndexMap(children: React.ReactElement<PageProps | GroupProps>[]): Record<PageId, number> {
+  const obj: Record<PageId, number> = {};
+  let pageIndex = 0;
+  children.forEach(child => {
+    if ('id' in child.props && 'component' in child.props) {
+      obj[child.props.id] = pageIndex;
+      pageIndex += 1;
+    } else if ('children' in child.props) {
+      child.props.children.forEach(page => {
+        if ('id' in page.props && 'component' in page.props) {
+          obj[page.props.id] = pageIndex;
+        }
+      });
+      pageIndex += 1;
+    }
+  });
+  return obj;
+}
+
+// ============ Styles ========================================================= //
 
 const styles = StyleSheet.create({
   pageStyle: {

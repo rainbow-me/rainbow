@@ -1,11 +1,9 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Separator, Text, TextShadow, useForegroundColor } from '@/design-system';
 import { PerpsPosition } from '@/features/perps/types';
 import { PositionSideBadge } from '@/features/perps/components/PositionSideBadge';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { formatAssetPrice } from '@/helpers/formatAssetPrice';
 import { abs } from '@/helpers/utilities';
 import { DOWN_ARROW, UP_ARROW } from '@/features/perps/constants';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -44,7 +42,7 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
   }, [market]);
 
   return (
-    <Box paddingHorizontal={'20px'}>
+    <Box paddingHorizontal="20px">
       <Separator color="separatorTertiary" direction="horizontal" thickness={1} />
       <ButtonPressAnimation
         onPress={navigateToPerpDetail}
@@ -57,10 +55,12 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
         scaleTo={0.96}
       >
         <Box height="full" justifyContent="center">
-          <Box gap={10}>
+          <Box gap={16}>
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={8}>
-                <HyperliquidTokenIcon symbol={position.symbol} size={20} />
+                <Bleed vertical="8px">
+                  <HyperliquidTokenIcon symbol={position.symbol} size={20} />
+                </Bleed>
                 <Text color="label" size="17pt" weight="semibold">
                   {position.symbol}
                 </Text>
@@ -69,10 +69,11 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
                   <PositionSideBadge side={position.side} />
                 </Box>
               </Box>
-              <Text color="label" size="17pt" weight="semibold">
+              <Text align="right" color="label" size="17pt" weight="semibold">
                 {formattedValues.equity}
               </Text>
             </Box>
+
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={4}>
                 <Text color="labelQuaternary" size="11pt" weight="bold">
@@ -82,29 +83,31 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
                   {formattedValues.liquidationPrice}
                 </Text>
               </Box>
-              <Box
-                height={18}
-                paddingHorizontal={'4px'}
-                borderRadius={7.5}
-                justifyContent={'center'}
-                alignItems={'center'}
-                borderWidth={THICK_BORDER_WIDTH}
-                borderColor={{ custom: opacityWorklet(pnlColor, 0.16) }}
-              >
-                <Box backgroundColor={pnlColor} style={[StyleSheet.absoluteFillObject, { opacity: 0.04 }]} />
-                <Box flexDirection="row" alignItems="center" gap={2}>
+              <Bleed right="4px" vertical="8px">
+                <Box
+                  height={18}
+                  paddingRight="6px"
+                  paddingLeft={{ custom: 5.5 }}
+                  flexDirection="row"
+                  alignItems="center"
+                  gap={2}
+                  borderRadius={16}
+                  borderWidth={THICK_BORDER_WIDTH}
+                  borderColor={{ custom: opacityWorklet(pnlColor, 0.12) }}
+                  backgroundColor={opacityWorklet(pnlColor, 0.04)}
+                >
                   <TextShadow blur={6} shadowOpacity={0.24}>
-                    <Text color={{ custom: pnlColor }} size="icon 9px" weight="bold">
+                    <Text align="center" color={{ custom: pnlColor }} size="icon 8px" weight="black" style={{ top: 0.5 }}>
                       {isPositivePnl ? UP_ARROW : DOWN_ARROW}
                     </Text>
                   </TextShadow>
                   <TextShadow blur={6} shadowOpacity={0.24}>
-                    <Text color={{ custom: pnlColor }} size="11pt" weight="heavy">
+                    <Text align="center" color={{ custom: pnlColor }} size="11pt" weight="heavy">
                       {formattedValues.unrealizedPnl}
                     </Text>
                   </TextShadow>
                 </Box>
-              </Box>
+              </Bleed>
             </Box>
           </Box>
         </Box>

@@ -31,7 +31,7 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
       backgroundColor={accentColors.surfacePrimary}
       borderColor={{ custom: accentColors.opacity8 }}
       borderRadius={28}
-      padding={'20px'}
+      padding="20px"
       alignItems="center"
       flexDirection="row"
       justifyContent="space-between"
@@ -39,7 +39,7 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
       <Box flexDirection="row" alignItems="center" justifyContent="space-between">
         <Box gap={12}>
           <Box flexDirection="row" alignItems="center" gap={5}>
-            <TextIcon color={isTakeProfit ? 'green' : 'red'} size="11pt" weight="heavy">
+            <TextIcon color={isTakeProfit ? 'green' : 'red'} height={8} size="icon 11px" weight="heavy" width={16}>
               {isTakeProfit ? '􀑁' : '􁘳'}
             </TextIcon>
             <Text size="13pt" weight="bold" color={'labelSecondary'}>
@@ -63,8 +63,8 @@ export const TriggerOrderCard = memo(function TriggerOrderCard({
         <AnimatedSpinner color={accentColors.opacity100} isLoading={isCancelling} scaleInFrom={1} size={24} />
       ) : (
         <ButtonPressAnimation onPress={onPressDelete}>
-          <TextIcon color={{ custom: accentColors.opacity100 }} size="17pt" weight="heavy">
-            {'􀈒'}
+          <TextIcon color={{ custom: accentColors.opacity100 }} size="icon 17px" weight="heavy" width={22}>
+            􀈒
           </TextIcon>
         </ButtonPressAnimation>
       )}

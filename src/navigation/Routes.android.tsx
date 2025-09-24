@@ -102,55 +102,13 @@ import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
 import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingOfTheHill';
 import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen';
 import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { Box, useBackgroundColor } from '@/design-system';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
-import { SheetHandle } from '@/components/sheet';
-import { PerpsNavbar } from '@/features/perps/components/PerpsNavbar';
-import { PerpsNavigatorFooter } from '@/features/perps/components/PerpsNavigatorFooter';
-import { PerpsNewPositionSearchScreen, PerpsSearchScreen } from '@/features/perps/screens/PerpsSearchScreen';
-import { PerpsAccountScreen } from '@/features/perps/screens/perps-account-screen/PerpsAccountScreen';
-import { PerpsNewPositionScreen } from '@/features/perps/screens/perps-new-position-screen/PerpsNewPositionScreen';
 import { PerpsDetailScreen } from '@/features/perps/screens/perp-detail-screen/PerpDetailScreen';
+import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
-const PerpsStack = createMaterialTopTabNavigator();
-
-function PerpsAccountNavigator() {
-  const insets = useSafeAreaInsets();
-  const screenBackgroundColor = useBackgroundColor('surfacePrimary');
-  return (
-    <KeyboardProvider>
-      <PerpsAccentColorContextProvider>
-        <Box style={{ flex: 1 }} backgroundColor={screenBackgroundColor}>
-          <Box position="absolute" style={{ top: insets.top, alignSelf: 'center' }} backgroundColor={screenBackgroundColor} zIndex={10}>
-            <SheetHandle />
-          </Box>
-          <PerpsNavbar />
-
-          <PerpsStack.Navigator
-            screenOptions={{ lazy: true, lazyPreloadDistance: 1 }}
-            tabBar={() => null}
-            initialRouteName={Routes.PERPS_ACCOUNT_SCREEN}
-          >
-            <PerpsStack.Screen component={PerpsSearchScreen} name={Routes.PERPS_SEARCH_SCREEN} />
-            <PerpsStack.Screen component={PerpsAccountScreen} name={Routes.PERPS_ACCOUNT_SCREEN} />
-            <PerpsStack.Screen component={PerpsNewPositionSearchScreen} name={Routes.PERPS_NEW_POSITION_SEARCH_SCREEN} />
-            <PerpsStack.Screen component={PerpsNewPositionScreen} name={Routes.PERPS_NEW_POSITION_SCREEN} />
-            <PerpsStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
-          </PerpsStack.Navigator>
-
-          <PerpsNavigatorFooter />
-        </Box>
-      </PerpsAccentColorContextProvider>
-    </KeyboardProvider>
-  );
-}
 
 function MainNavigator() {
   const initialRoute = useContext(InitialRouteContext) as unknown as string;
@@ -302,11 +260,12 @@ function BSNavigator() {
       <BSStack.Screen component={PerpsWithdrawalScreen} name={Routes.PERPS_WITHDRAWAL_SCREEN} {...swapSheetPreset} />
       <BSStack.Screen component={SendSheet} name={Routes.SEND_SHEET_NAVIGATOR} options={expandedPresetWithSmallGestureResponseDistance} />
       <BSStack.Screen component={ExpandedAssetSheetV2} name={Routes.EXPANDED_ASSET_SHEET_V2} />
+      <BSStack.Screen component={PerpsDetailScreen} name={Routes.PERPS_DETAIL_SCREEN} />
       <BSStack.Screen component={AirdropsSheet} name={Routes.AIRDROPS_SHEET} />
       <BSStack.Screen component={ClaimAirdropSheet} name={Routes.CLAIM_AIRDROP_SHEET} />
       <BSStack.Screen component={LogSheet} name={Routes.LOG_SHEET} />
       <BSStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} options={tokenLauncherSheetPreset} />
-      <BSStack.Screen component={PerpsAccountNavigator} name={Routes.PERPS_ACCOUNT_NAVIGATOR} />
+      <BSStack.Screen component={PerpsNavigator} name={Routes.PERPS_NAVIGATOR} />
       <BSStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} />
     </BSStack.Navigator>
   );

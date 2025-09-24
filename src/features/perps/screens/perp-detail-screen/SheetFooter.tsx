@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { EasingGradient } from '@/components/easing-gradient/EasingGradient';
 import { Box, Text, useColorMode } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,13 +23,14 @@ type SheetFooterProps = {
 export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
   const { isDarkMode } = useColorMode();
   const navigation = useNavigation();
-  const position = useHyperliquidAccountStore(state => state.getPosition(market.symbol));
-  const balance = useHyperliquidAccountStore(state => state.balance);
   const safeAreaInsets = useSafeAreaInsets();
-  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
+
+  const hasPosition = useHyperliquidAccountStore(state => state.getPosition(market.symbol) !== undefined);
+  const hasPerpsBalance = useHyperliquidAccountStore(state => state.getBalance() !== '0');
+  const hasUserAssets = useUserAssetsStore(state => state.getFilteredUserAssetIds().length > 0);
 
   const { onPress, buttonText } = useMemo(() => {
-    if (userAssetIds.length === 0) {
+    if (!hasUserAssets) {
       return {
         onPress: () => {
           Navigation.handleAction(Routes.ADD_CASH_SHEET);
@@ -37,7 +38,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
         buttonText: 'Fund Wallet',
       };
     }
-    if (Number(balance) === 0) {
+    if (!hasPerpsBalance) {
       return {
         onPress: () => {
           Navigation.handleAction(Routes.PERPS_DEPOSIT_SCREEN);
@@ -45,7 +46,7 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
         buttonText: 'Deposit',
       };
     }
-    if (position) {
+    if (hasPosition) {
       return {
         onPress: () => {
           Navigation.handleAction(Routes.CLOSE_POSITION_BOTTOM_SHEET, {
@@ -58,16 +59,15 @@ export function SheetFooter({ backgroundColor, market }: SheetFooterProps) {
     return {
       onPress: () => {
         navigation.goBack();
-        InteractionManager.runAfterInteractions(() => {
-          // Arbitrary delay to avoid being visually jarring
-          setTimeout(() => {
+        setTimeout(() => {
+          InteractionManager.runAfterInteractions(() => {
             navigateToNewPositionScreen(market);
-          }, 75);
-        });
+          });
+        }, 150);
       },
       buttonText: 'Open Position',
     };
-  }, [balance, market, navigation, position, userAssetIds.length]);
+  }, [hasPerpsBalance, hasUserAssets, hasPosition, market, navigation]);
 
   return (
     <Box pointerEvents="box-none" position="absolute" bottom="0px" width="full">
