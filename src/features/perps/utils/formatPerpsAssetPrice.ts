@@ -34,10 +34,13 @@ export function formatPerpAssetPrice(
   // Count decimal places in the formatted number
   const decimalPlaces = formattedNumber.includes('.') ? formattedNumber.split('.')[1].length : 0;
 
+  // Ensure at least 2 decimal places when there are decimals ($2.4 → $2.40)
+  const fractionDigits = decimalPlaces > 0 ? Math.max(2, decimalPlaces) : 0;
+
   // Use number formatter for proper localization (handles European vs US formatting)
   const formatter = getNumberFormatter(locale, {
-    minimumFractionDigits: decimalPlaces,
-    maximumFractionDigits: decimalPlaces,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
     useGrouping: true,
   });
 
