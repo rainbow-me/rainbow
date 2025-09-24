@@ -18,6 +18,18 @@ import { getOppositePositionSide } from '@/features/perps/utils';
 import { getProvider } from '@/handlers/web3';
 import { ChainId } from '@/state/backendNetworks/types';
 import { loadWallet } from '@/model/wallet';
+import { getWalletWithAccount } from '@/state/wallets/walletsStore';
+import { watchingAlert } from '@/utils';
+import WalletTypes from '@/helpers/walletTypes';
+
+function checkIfReadOnlyWallet(address: string): boolean {
+  const wallet = getWalletWithAccount(address);
+  if (wallet?.type === WalletTypes.readOnly) {
+    watchingAlert();
+    return true;
+  }
+  return false;
+}
 
 type OrderStatusResponse = hl.OrderSuccessResponse['response']['data']['statuses'][number];
 
@@ -55,7 +67,9 @@ export class HyperliquidExchangeClient {
     return client;
   }
 
-  async withdraw(amount: string): Promise<void> {
+  async withdraw(amount: string): Promise<void | undefined> {
+    if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
+
     await (
       await this.getExchangeClient()
     ).withdraw3({
@@ -88,7 +102,9 @@ export class HyperliquidExchangeClient {
     reduceOnly?: boolean;
     clientOrderId?: Hex;
     triggerOrders?: TriggerOrder[];
-  }): Promise<hl.OrderSuccessResponse> {
+  }): Promise<hl.OrderSuccessResponse | undefined> {
+    if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
+
     await Promise.all([
       // TODO: This step could be skipped if we have already traded this asset in the session
       (await this.getExchangeClient()).updateLeverage({
@@ -158,7 +174,9 @@ export class HyperliquidExchangeClient {
     orderFraction: string;
     positionSize: string;
     sizeDecimals: number;
-  }): Promise<hl.OrderSuccessResponse> {
+  }): Promise<hl.OrderSuccessResponse | undefined> {
+    if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
+
     await this.ensureApprovedBuilderFee();
 
     const marketType = getMarketType(assetId);
@@ -195,7 +213,9 @@ export class HyperliquidExchangeClient {
     size: string;
     sizeDecimals: number;
     slippageBips?: number;
-  }): Promise<OrderStatusResponse> {
+  }): Promise<OrderStatusResponse | undefined> {
+    if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
+
     const side = isPositive(size) ? PerpPositionSide.LONG : PerpPositionSide.SHORT;
     const absoluteSize = Math.abs(Number(size)).toString();
     const closeOrder = buildMarketOrder({
@@ -221,7 +241,9 @@ export class HyperliquidExchangeClient {
     return result.response.data.statuses[0];
   }
 
-  async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<CancelSuccessResponse> {
+  async cancelOrder({ assetId, orderId }: { assetId: number; orderId: number }): Promise<CancelSuccessResponse | undefined> {
+    if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
+
     return await (
       await this.getExchangeClient()
     ).cancel({
@@ -230,6 +252,8 @@ export class HyperliquidExchangeClient {
   }
 
   async ensureApprovedBuilderFee(): Promise<hl.SuccessResponse | void> {
+    if (checkIfReadOnlyWallet(this.userAddress)) return undefined;
+
     const isApproved = await this.accountClient.isBuilderFeeApproved();
     if (isApproved) return;
 
