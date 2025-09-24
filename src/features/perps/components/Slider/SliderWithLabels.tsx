@@ -128,6 +128,7 @@ export const SliderWithLabels: React.FC<SliderWithLabelsProps> = ({
   // Wrap onPercentageChange to handle max button press
   const onPercentageChange = useCallback(
     (percentage: number, source: SliderChangeSource) => {
+      'worklet';
       onPercentageChangeProp?.(percentage, source);
     },
     [onPercentageChangeProp]
