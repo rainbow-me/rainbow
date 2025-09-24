@@ -23,7 +23,8 @@ export const useHasPositionCheck = createDerivedStore(
 );
 
 function checkSearchScreenParams(state: VirtualNavigationStore<PerpsRoute>): boolean {
-  return state.getParams(Routes.PERPS_SEARCH_SCREEN)?.type === 'newPosition';
+  const params = state.getParams(Routes.PERPS_SEARCH_SCREEN);
+  return !params || params.type === 'newPosition';
 }
 
 function didActivePositionsChange(currentPositions: Record<string, PerpsPosition>, prevPositions: Record<string, PerpsPosition>): boolean {
