@@ -41,6 +41,7 @@ import { PerformanceProfiler } from '@shopify/react-native-performance';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from './performance/tracking';
 import { TestDeeplinkHandler } from './components/TestDeeplinkHandler';
 import { RainbowToastDisplay } from '@/components/rainbow-toast/RainbowToast';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -122,18 +123,20 @@ function Root() {
         <RecoilRoot>
           <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
             <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-              <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-                <MainThemeProvider>
-                  <GestureHandlerRootView style={sx.container}>
-                    <RainbowContextWrapper>
-                      <ErrorBoundary>
-                        <App />
-                        <RainbowToastDisplay />
-                      </ErrorBoundary>
-                    </RainbowContextWrapper>
-                  </GestureHandlerRootView>
-                </MainThemeProvider>
-              </SafeAreaProvider>
+              <KeyboardProvider>
+                <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+                  <MainThemeProvider>
+                    <GestureHandlerRootView style={sx.container}>
+                      <RainbowContextWrapper>
+                        <ErrorBoundary>
+                          <App />
+                          <RainbowToastDisplay />
+                        </ErrorBoundary>
+                      </RainbowContextWrapper>
+                    </GestureHandlerRootView>
+                  </MainThemeProvider>
+                </SafeAreaProvider>
+              </KeyboardProvider>
             </MobileWalletProtocolProvider>
           </PersistQueryClientProvider>
         </RecoilRoot>

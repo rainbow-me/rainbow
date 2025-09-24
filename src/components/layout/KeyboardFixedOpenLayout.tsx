@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
-import { KeyboardAvoidingView } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box } from '@/design-system';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { useDimensions, useKeyboardHeight } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import { IS_ANDROID } from '@/env';
 
 interface KeyboardFixedOpenLayoutProps {
@@ -21,17 +21,12 @@ export default function KeyboardFixedOpenLayout({
 }: KeyboardFixedOpenLayoutProps) {
   const insets = useSafeAreaInsets();
   const { height: screenHeight } = useDimensions();
-  const keyboardHeight = useKeyboardHeight({ keyboardType });
 
-  const containerHeight = screenHeight - keyboardHeight - additionalPadding;
+  const adjustedScreenHeight = screenHeight - additionalPadding;
 
   return (
-    <Box height={{ custom: containerHeight }} left="0px" position={position} right="0px" top="0px">
-      {/* 
-        Android fix: KeyboardAvoidingView causes flickering when keyboard animates.
-        The height recalculation fights with the keyboard animation.
-      */}
-      <KeyboardAvoidingView behavior={IS_ANDROID ? undefined : 'height'} enabled={!IS_ANDROID && !!keyboardHeight}>
+    <Box height={{ custom: adjustedScreenHeight }} left="0px" position={position} right="0px" top="0px">
+      <KeyboardAvoidingView behavior="height">
         <Box
           alignItems="center"
           height="full"
