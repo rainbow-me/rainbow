@@ -4,7 +4,6 @@ import { USDC_ICON_URL } from '@/features/perps/constants';
 import { useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
-import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { View } from 'react-native';
@@ -12,12 +11,13 @@ import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton
 import { ImgixImage } from '@/components/images';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { formatCurrency } from '@/helpers/strings';
 
 export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
   const { isDarkMode } = useColorMode();
   const { accentColors } = usePerpsAccentColorContext();
   const balance = useHyperliquidAccountStore(state => state.getBalance());
-  const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
+  const formattedBalance = formatCurrency(balance);
   const isBalanceZero = Number(balance) === 0;
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
 
@@ -63,11 +63,15 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
                 borderWidth={THICKER_BORDER_WIDTH}
                 borderColor={{ custom: accentColors.opacity6 }}
               >
-                <TextShadow color={accentColors.opacity100} blur={12} shadowOpacity={0.24}>
+                <TextIcon align="center" color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="black">
+                  {'􀅽'}
+                </TextIcon>
+                {/* TODO: The TextShadow is not working properly with the TextIcon component specifically */}
+                {/* <TextShadow color={accentColors.opacity100} blur={12} shadowOpacity={0.24}>
                   <TextIcon align="center" color={{ custom: accentColors.opacity100 }} size="icon 20px" weight="black">
                     {'􀅽'}
                   </TextIcon>
-                </TextShadow>
+                </TextShadow> */}
               </Box>
             </ButtonPressAnimation>
             <HyperliquidButton
