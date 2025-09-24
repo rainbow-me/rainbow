@@ -54,7 +54,7 @@ export const DetailsSection = memo(function DetailsSection({ market }: { market:
             </Text>
           </Box>
           <Text align="right" color="labelSecondary" size="17pt" weight="semibold">
-            {`${Number(toFixedWorklet(mulWorklet(market.fundingRate, 100), 8))}%`}
+            {`${toFixedWorklet(mulWorklet(market.fundingRate, 100), 6)}%`}
           </Text>
         </Row>
         <Row highlighted={false}>

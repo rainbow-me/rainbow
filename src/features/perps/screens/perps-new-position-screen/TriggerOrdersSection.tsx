@@ -1,4 +1,4 @@
-import { Box, Text } from '@/design-system';
+import { Box } from '@/design-system';
 import React from 'react';
 import { hlNewPositionStoreActions, useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { TriggerOrderCard } from '@/features/perps/components/TriggerOrderCard';
@@ -12,6 +12,9 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
   const triggerOrders = useHlNewPositionStore(state => state.triggerOrders);
 
   if (!market) return null;
+
+  const hasExistingTakeProfit = triggerOrders.some(order => order.type === TriggerOrderType.TAKE_PROFIT);
+  const hasExistingStopLoss = triggerOrders.some(order => order.type === TriggerOrderType.STOP_LOSS);
 
   return (
     <Box width="full" gap={20}>
@@ -30,16 +33,19 @@ export const TriggerOrdersSection = function TriggerOrdersSection() {
           ))}
         </Box>
       )}
-      <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={20}>
-        <Box paddingHorizontal={'8px'}>
-          <Text size="20pt" weight="bold" color="labelSecondary">
-            {'Orders'}
-          </Text>
-        </Box>
-        <Box gap={12}>
-          <AddTriggerOrderButton symbol={market.symbol} type={TriggerOrderType.TAKE_PROFIT} source={TriggerOrderSource.NEW} />
-          <AddTriggerOrderButton symbol={market.symbol} type={TriggerOrderType.STOP_LOSS} source={TriggerOrderSource.NEW} />
-        </Box>
+      <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={12}>
+        <AddTriggerOrderButton
+          symbol={market.symbol}
+          type={TriggerOrderType.TAKE_PROFIT}
+          source={TriggerOrderSource.NEW}
+          disabled={hasExistingTakeProfit}
+        />
+        <AddTriggerOrderButton
+          symbol={market.symbol}
+          type={TriggerOrderType.STOP_LOSS}
+          source={TriggerOrderSource.NEW}
+          disabled={hasExistingStopLoss}
+        />
       </Box>
     </Box>
   );
