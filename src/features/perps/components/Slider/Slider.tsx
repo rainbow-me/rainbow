@@ -126,12 +126,10 @@ export const Slider: React.FC<SliderProps> = ({
 
   const tapGesture = Gesture.Tap()
     .onBegin(() => {
-      'worklet';
       sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
       triggerHaptics('soft');
     })
     .onStart(() => {
-      'worklet';
       sliderPressProgress.value = withSpring(height / expandedHeight, SPRING_CONFIGS.sliderConfig);
     });
 
@@ -139,7 +137,6 @@ export const Slider: React.FC<SliderProps> = ({
     () =>
       Gesture.Pan()
         .onBegin(() => {
-          'worklet';
           gestureCtx.modify(prev => {
             prev.startX = sliderXPosition.value;
             return prev;
@@ -147,7 +144,6 @@ export const Slider: React.FC<SliderProps> = ({
           sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
         })
         .onUpdate(event => {
-          'worklet';
           if (!isEnabled.value) return;
 
           const rawX = gestureCtx.value.startX + event.translationX;
@@ -180,7 +176,6 @@ export const Slider: React.FC<SliderProps> = ({
           onPercentageUpdate?.(isAtMax ? 1 : isAtMin ? 0 : xPercentage.value);
         })
         .onEnd(event => {
-          'worklet';
           const hasChanged = gestureCtx.value.startX !== sliderXPosition.value;
 
           const onFinished = () => {
@@ -198,8 +193,6 @@ export const Slider: React.FC<SliderProps> = ({
               }
             }
           };
-
-          sliderPressProgress.value = withSpring(height / expandedHeight, SPRING_CONFIGS.sliderConfig);
 
           const sliderX = sliderXPosition.value;
 
@@ -262,6 +255,9 @@ export const Slider: React.FC<SliderProps> = ({
               }
             );
           }
+        })
+        .onTouchesUp(() => {
+          sliderPressProgress.value = withSpring(height / expandedHeight, SPRING_CONFIGS.sliderConfig);
         })
         .activeOffsetX([0, 0])
         .activeOffsetY([0, 0]),
