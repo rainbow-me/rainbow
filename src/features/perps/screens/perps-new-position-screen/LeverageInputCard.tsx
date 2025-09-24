@@ -12,6 +12,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDebouncedCallback } from 'use-debounce';
 import { time } from '@/utils/time';
 import * as i18n from '@/languages';
+import { triggerHaptics } from 'react-native-turbo-haptics';
 
 const LeverageSlider = ({
   onPercentageChange,
@@ -116,6 +117,7 @@ export const LeverageInputCard = memo(function LeverageInputCard() {
       if (ignoreSliderUpdates.value) return;
       const newLeverage = Math.round(percentage * maxLeverage.value) || 1;
       if (newLeverage === leverage.value) return;
+      triggerHaptics('selection');
       leverage.value = newLeverage;
       runOnJS(debouncedSetLeverage)(newLeverage);
     },
