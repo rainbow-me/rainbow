@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import * as i18n from '@/languages';
 import { StyleSheet, View } from 'react-native';
 import { AnimatedText, Border, Box, useColorMode, useForegroundColor } from '@/design-system';
 import { PerpPositionSide } from '@/features/perps/types';
@@ -111,7 +112,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
               style={styles.optionContainer}
             >
               <AnimatedText align="center" size="17pt" weight="black" color="label" style={longTextStyle}>
-                {'Long'}
+                {i18n.t(i18n.l.perps.position_side.long)}
               </AnimatedText>
             </GestureHandlerButton>
 
@@ -122,7 +123,7 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
               style={styles.optionContainer}
             >
               <AnimatedText align="center" size="17pt" weight="black" color="label" style={shortTextStyle}>
-                {'Short'}
+                {i18n.t(i18n.l.perps.position_side.short)}
               </AnimatedText>
             </GestureHandlerButton>
           </Box>

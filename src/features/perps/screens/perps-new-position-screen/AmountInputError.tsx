@@ -3,12 +3,13 @@ import { Box, Inline, Text, TextIcon } from '@/design-system';
 import { useOrderAmountValidation } from '@/features/perps/stores/derived/useOrderAmountValidation';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { truncateToDecimals } from '@/safe-math/SafeMath';
+import * as i18n from '@/languages';
 
 export const AmountInputError = memo(function AmountInputError() {
   const { isBelowMin, isAboveMax, minAmount, maxAmount } = useOrderAmountValidation();
   if (!isBelowMin && !isAboveMax) return null;
 
-  const errorMessage = isBelowMin ? 'Minimum amount is ' : 'Maximum amount is ';
+  const errorMessage = isBelowMin ? i18n.t(i18n.l.perps.inputs.minimum_amount_is) : i18n.t(i18n.l.perps.inputs.maximum_amount_is);
   const errorAmount = isBelowMin ? minAmount : maxAmount;
 
   return (
@@ -18,7 +19,7 @@ export const AmountInputError = memo(function AmountInputError() {
           {'􀇿'}
         </TextIcon>
         <Text color="labelTertiary" size="15pt" weight="bold">
-          {errorMessage}
+          {`${errorMessage} `}
           <Text color="labelSecondary" size="15pt" weight="heavy">
             {`${formatCurrency(truncateToDecimals(errorAmount, 2))}`}
           </Text>

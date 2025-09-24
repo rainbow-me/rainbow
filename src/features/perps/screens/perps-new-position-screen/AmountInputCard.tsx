@@ -14,6 +14,7 @@ import { divide } from '@/helpers/utilities';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useListen } from '@/state/internal/hooks/useListen';
+import * as i18n from '@/languages';
 
 const AmountSlider = ({
   sliderXPosition,
@@ -175,12 +176,12 @@ export const AmountInputCard = memo(function AmountInputCard() {
       <Box width="full" flexDirection="row" alignItems="center" zIndex={2}>
         <Box gap={12}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {'Amount'}
+            {i18n.t(i18n.l.perps.inputs.amount)}
           </Text>
           <Text size="15pt" weight="heavy" color="labelSecondary">
             {formatCurrency(truncateToDecimals(availableBalanceString, 2))}
             <Text size="15pt" weight="bold" color="labelQuaternary">
-              {' Available'}
+              {` ${i18n.t(i18n.l.perps.inputs.available)}`}
             </Text>
           </Text>
         </Box>

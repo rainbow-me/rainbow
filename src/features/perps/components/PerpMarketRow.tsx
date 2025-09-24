@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import * as i18n from '@/languages';
 import { Box, Text } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
@@ -57,14 +58,14 @@ export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVe
             <Box flexDirection="row" alignItems="center" gap={7}>
               <Box flexDirection="row" alignItems="center" gap={5}>
                 <Text size="11pt" weight="bold" color="labelQuaternary">
-                  {'UP TO'}
+                  {i18n.t(i18n.l.perps.up_to).toUpperCase()}
                 </Text>
                 <LeverageBadge leverage={market.maxLeverage} />
               </Box>
               <Box width={1} height={10} background="fillQuaternary" borderRadius={1} />
               <Box flexDirection="row" alignItems="center" gap={4}>
                 <Text size="11pt" weight="bold" color="labelQuaternary">
-                  {'VOL'}
+                  {i18n.t(i18n.l.market_data.vol)}
                 </Text>
                 <Text size="11pt" weight="heavy" color="labelTertiary">
                   {volume}

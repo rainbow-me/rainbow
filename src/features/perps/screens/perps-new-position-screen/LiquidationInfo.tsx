@@ -7,6 +7,7 @@ import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/ut
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import * as i18n from '@/languages';
 
 export const LiquidationInfo = memo(function LiquidationInfo({ market }: { market: PerpMarket }) {
   const leverage = useHlNewPositionStore(state => state.leverage);
@@ -54,7 +55,7 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
         </Bleed>
         <Box flexDirection="row" alignItems="center" gap={4}>
           <Text size="15pt" weight="bold" color={'labelQuaternary'}>
-            {'Liquidated at'}
+            {i18n.t(i18n.l.perps.new_position.liquidated_at)}
           </Text>
           <Text size="15pt" weight="heavy" color={'labelSecondary'}>
             {estimatedLiquidationPrice ? formatPerpAssetPrice(estimatedLiquidationPrice.toString()) : '-'}
@@ -66,7 +67,7 @@ export const LiquidationInfo = memo(function LiquidationInfo({ market }: { marke
           {liquidationDistanceFromCurrentPriceDisplay}
         </Text>
         <Text size="13pt" weight="bold" color={'labelQuaternary'}>
-          {'from current price'}
+          {i18n.t(i18n.l.perps.new_position.from_current_price)}
         </Text>
       </Box>
     </Box>

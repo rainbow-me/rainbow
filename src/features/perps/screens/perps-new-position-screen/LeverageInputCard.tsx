@@ -11,6 +11,7 @@ import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue'
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useDebouncedCallback } from 'use-debounce';
 import { time } from '@/utils/time';
+import * as i18n from '@/languages';
 
 const LeverageSlider = ({
   onPercentageChange,
@@ -137,11 +138,11 @@ export const LeverageInputCard = memo(function LeverageInputCard() {
       <Box width="full" flexDirection="row" alignItems="center">
         <Box gap={12}>
           <Text size="20pt" weight="heavy" color={{ custom: accentColors.opacity100 }}>
-            {'Leverage'}
+            {i18n.t(i18n.l.perps.leverage)}
           </Text>
           <Inline>
             <Text size="15pt" weight="bold" color="labelQuaternary">
-              {'Up to '}
+              {`${i18n.t(i18n.l.perps.up_to)} `}
             </Text>
             <AnimatedText size="15pt" weight="heavy" color="labelSecondary">
               {maxLeverageText}

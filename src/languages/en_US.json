@@ -1571,6 +1571,7 @@
     },
     "perps": {
       "markets": {
+        "up_to": "UP TO",
         "already_open": "Already Open"
       },
       "deposit": {
@@ -1593,7 +1594,28 @@
         "available_balance": "%{balance} available",
         "confirm_button_zero_text": "Enter Amount",
         "confirm_button_over_balance_text": "Insufficient Funds"
-      }
+      },
+      "position_side": {
+        "long": "Long",
+        "short": "Short"
+      },
+      "new_position": {
+        "hold_to_long": "Hold to Long",
+        "hold_to_short": "Hold to Short",
+        "liquidated_at": "Liquidated at",
+        "from_current_price": "from current price",
+        "details": "Details",
+        "funding_rate": "Funding Rate",
+        "max_slippage": "Max Slippage"
+      },
+      "inputs": {
+        "amount": "Amount",
+        "available": "Available",
+        "minimum_amount_is": "Minimum amount is",
+        "maximum_amount_is": "Maximum amount is"
+      },
+      "leverage": "Leverage",
+      "up_to": "Up to"
     },
     "points": {
       "placeholder": {
