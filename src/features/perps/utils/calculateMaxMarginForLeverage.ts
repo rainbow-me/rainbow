@@ -1,14 +1,20 @@
 import { PerpMarket } from '@/features/perps/types';
 import { divWorklet } from '@/safe-math/SafeMath';
 
-export function calculateMaxMarginForLeverage({ market, leverage }: { market: PerpMarket; leverage: number }): string | null {
+export function calculateMaxMarginForLeverage({
+  marginTiers,
+  leverage,
+}: {
+  marginTiers: PerpMarket['marginTiers'];
+  leverage: number;
+}): string | null {
   'worklet';
 
-  if (!market.marginTiers || market.marginTiers.length === 0) {
+  if (!marginTiers || marginTiers.length === 0) {
     return null;
   }
 
-  const sortedTiers = [...market.marginTiers].sort((a, b) => b.maxLeverage - a.maxLeverage);
+  const sortedTiers = [...marginTiers].sort((a, b) => b.maxLeverage - a.maxLeverage);
 
   let maxPositionSize: string | null = null;
 
