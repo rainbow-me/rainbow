@@ -5,9 +5,9 @@ import { PerpMarketDisabledRow } from '@/features/perps/components/PerpMarketDis
 import { PerpMarketRow } from '@/features/perps/components/PerpMarketRow';
 import { FOOTER_HEIGHT, FOOTER_HEIGHT_WITH_SAFE_AREA } from '@/features/perps/constants';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
+import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 import { useFilteredHyperliquidMarkets } from '@/features/perps/stores/hyperliquidMarketsStore';
 import { PerpMarket } from '@/features/perps/types';
-import { useHasPositionCheck } from '@/features/perps/stores/derived/useHasPositionCheck';
 
 type PerpMarketsListProps = {
   onPressMarket?: (market: PerpMarket) => void;
@@ -23,7 +23,7 @@ export const PerpMarketsList = memo(function PerpMarketsList({ onPressMarket }: 
   const renderItem = useCallback(
     ({ item }: { item: PerpMarket }) => {
       return checkIfPositionExists(item.symbol) ? (
-        <PerpMarketDisabledRow market={item} />
+        <PerpMarketDisabledRow market={item} paddingVertical={12} />
       ) : (
         <PerpMarketRow market={item} onPress={onPressMarket} paddingVertical={12} priceChangeColors={priceChangeColors} />
       );
