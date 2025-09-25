@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - develop
+      - '@janic/test-ci-build'
 jobs:
   build:
     name: Test Build
@@ -87,7 +88,7 @@ jobs:
 
       - name: Rock Remote Build - Android
         id: rock-remote-build-android
-        uses: callstackincubator/android@v3
+        uses: janicduplessis/android@c3ca6a5876c19550dfa1cb41608d5bf68ae41347
         env:
           # This is a debug keystore for now.
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
