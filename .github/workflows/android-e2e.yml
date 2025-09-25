@@ -88,7 +88,7 @@ jobs:
 
       - name: Rock Remote Build - Android
         id: rock-remote-build-android
-        uses: janicduplessis/android@2b9717227f4323b56e348fccc87610c71763e21e
+        uses: janicduplessis/android@0160cad3d7888554eefbf2b4df91ecc8bb1463a9
         env:
           # This is a debug keystore for now.
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
