@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
-## [2.0.1] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.1)
+## [2.0.3] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.3)
 
 ### Added
 
@@ -23,22 +23,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
-- Bump iOS and Android to v2.0.1 (#6830)
+- Bump iOS and Android to v2.0.3 (#6856)
 - CI Performance Improvments (#6734)
 - Deprecate ens profile search in discover (#6827)
 - Expanded i18n coverage (#6836)
 - Refactor i18n typed api standardization (#6837)
+- i18n updates (#6843)
+- Derived store improvements (#6669)
 
 ### Fixed
 
 - QR code scanner reliability fixes (#6686)
 - Fixed done button spacing on settings (#6831)
-- Fix issue with e2e (#6838)
+- Fixed issue with e2e (#6838)
 - Fixed missing padding under the wallet address in receive modal (#6832)
 - Fixed locale re-render upon language switching (#6835)
 - Switching wallets doesn’t reset the wallet balance page to the top (#6840)
 - Scroll to top vs reseting the full list on account switching (#6844)
 - Fixed done button truncation (#6841)
+- Fixed navbar padding and color on Android (#6834)
+- Fixed native asset wallet alignment in dapp browser control panel (#6826)
+- Transactions fixes (#6845)
+- Fixed iOS sheet handling, cleaned up Navigation types (#6807)
 
 ## [2.0.0] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.0)
 
