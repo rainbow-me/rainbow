@@ -41,7 +41,7 @@ import { CANDLESTICK_DATA_MONITOR, useExperimentalFlag } from '@/config';
 import { Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 import { TextSegment, useSkiaText } from '@/design-system/components/SkiaText/useSkiaText';
-import { NativeCurrencyKey } from '@/entities';
+import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
 import { IS_DEV, IS_IOS } from '@/env';
 import { areCandlesEqual } from '@/features/charts/candlestick/utils';
 import { candlestickActions, fetchHistoricalCandles, useCandlestickStore } from '@/features/charts/stores/candlestickStore';
@@ -71,6 +71,7 @@ import { TimeFormatter } from '../classes/TimeFormatter';
 import { GREEN_CANDLE_COLOR, RED_CANDLE_COLOR } from '../constants';
 import { Bar, CandlestickResponse } from '../types';
 import { ActiveCandleCard } from './ActiveCandleCard';
+import { isHyperliquidToken } from '@/features/charts/utils';
 
 export type PartialCandlestickConfig = DeepPartial<
   Omit<CandlestickConfig, 'chart'> & { chart: Omit<CandlestickConfig['chart'], 'backgroundColor'> }
@@ -2243,8 +2244,12 @@ function prepareCandlestickData(): {
 }
 
 function getNativeCurrency(): { currency: NativeCurrencyKey; decimals: number } {
-  const currency = userAssetsStoreManager.getState().currency;
-  return { currency, decimals: supportedNativeCurrencies[currency].decimals };
+  const isHyperliquidChart = isHyperliquidToken(useChartsStore.getState().token);
+  const currency = isHyperliquidChart ? NativeCurrencyKeys.USD : userAssetsStoreManager.getState().currency;
+  return {
+    currency,
+    decimals: supportedNativeCurrencies[currency].decimals,
+  };
 }
 
 function getOpacityForStatus(status: ChartStatus): number {
