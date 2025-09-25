@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - develop
-      - '@janic/test-ci-build'
+      - "@janic/test-ci-build"
 jobs:
   build:
     name: Test Build
@@ -46,19 +46,19 @@ jobs:
 
       - name: Setup env
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            mv rainbow-env/android/app/google-services.json android/app/google-services.json
-            rm -rf rainbow-env
-            sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          mv rainbow-env/android/app/google-services.json android/app/google-services.json
+          rm -rf rainbow-env
+          sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
       - name: Setup scripts
         env:
-            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
         run: |
-            eval $CI_SCRIPTS
+          eval $CI_SCRIPTS
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
@@ -88,7 +88,7 @@ jobs:
 
       - name: Rock Remote Build - Android
         id: rock-remote-build-android
-        uses: janicduplessis/android@00dce7f6aec6e0b9059df818c147fc24c62a0476
+        uses: janicduplessis/android@2b9717227f4323b56e348fccc87610c71763e21e
         env:
           # This is a debug keystore for now.
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -147,11 +147,11 @@ jobs:
 
       - name: Setup env
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            rm -rf rainbow-env
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          rm -rf rainbow-env
 
       - name: Install Maestro
         run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
