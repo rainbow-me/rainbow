@@ -129,13 +129,12 @@ const PerpsAccountScreenFooter = () => {
   return (
     <>
       <Box
-        style={{
-          position: 'absolute',
-          top: -20 + TOP_BORDER_WIDTH,
-          left: -20,
-          right: -20,
-          bottom: -(Math.max(safeAreaInsets.bottom, 20) + 4),
-        }}
+        style={[
+          styles.gradientFill,
+          {
+            bottom: -(Math.max(safeAreaInsets.bottom, PADDING) + 4),
+          },
+        ]}
       >
         <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
         <LinearGradient
@@ -174,6 +173,7 @@ const PerpsAccountScreenFooter = () => {
 const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter() {
   const { accentColors } = usePerpsAccentColorContext();
   const { isDarkMode } = useColorMode();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const isValidOrder = useOrderAmountValidation(state => state.isValid);
   const positionSide = useHlNewPositionStore(state => state.positionSide);
@@ -182,8 +182,9 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   const green = accentColors.longGreen;
   const red = accentColors.shortRed;
 
+  const isLong = positionSide === PerpPositionSide.LONG;
+
   const button = useMemo(() => {
-    const isLong = positionSide === PerpPositionSide.LONG;
     const positionSideColor = isLong ? green : red;
     const darkModeTextColor = isValidOrder ? (isLong ? 'black' : 'white') : opacityWorklet(positionSideColor, 0.4);
     const lightModeTextColor = isValidOrder ? 'white' : opacityWorklet(positionSideColor, 0.4);
@@ -200,7 +201,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         opacity: 0.07,
       }),
     };
-  }, [positionSide, green, red, isValidOrder, isDarkMode, accentColors]);
+  }, [green, red, isValidOrder, isDarkMode, accentColors, isLong]);
 
   const submitNewPosition = useCallback(async () => {
     const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
@@ -226,39 +227,60 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   }, []);
 
   return (
-    <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
-      <BackButton
-        onPress={() => PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' })}
-        backgroundColor={button.backgroundColor}
-        borderColor={button.borderColor}
-        textColor={button.backTextColor}
-      />
-
-      <Box style={{ flex: 1 }}>
-        <HoldToActivateButton
-          disabled={!isValidOrder}
+    <>
+      {isDarkMode && (
+        <Box
+          style={[
+            styles.gradientFill,
+            {
+              bottom: -(Math.max(safeAreaInsets.bottom, PADDING) + 4),
+            },
+          ]}
+        >
+          <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
+          <LinearGradient
+            colors={isLong ? [accentColors.surfacePrimary, '#142A18'] : [accentColors.surfacePrimary, '#2A1614']}
+            style={StyleSheet.absoluteFillObject}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 2 }}
+          />
+        </Box>
+      )}
+      <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
+        <BackButton
+          onPress={() => PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' })}
           backgroundColor={button.backgroundColor}
-          disabledBackgroundColor={button.disabledBackgroundColor}
-          isProcessing={isSubmitting}
-          showBiometryIcon={false}
-          processingLabel={i18n.t(i18n.l.perps.common.submitting)}
-          label={button.text}
-          onLongPress={submitNewPosition}
-          height={BUTTON_HEIGHT}
-          textStyle={{
-            color: button.textColor,
-            fontSize: 20,
-            fontWeight: '900',
-          }}
-          progressColor={button.textColor}
+          borderColor={button.borderColor}
+          textColor={button.backTextColor}
         />
-        <Border borderColor={{ custom: button.borderColor }} borderWidth={2} borderRadius={24} enableInLightMode />
+
+        <Box style={{ flex: 1 }}>
+          <HoldToActivateButton
+            disabled={!isValidOrder}
+            backgroundColor={button.backgroundColor}
+            disabledBackgroundColor={button.disabledBackgroundColor}
+            isProcessing={isSubmitting}
+            showBiometryIcon={false}
+            processingLabel={i18n.t(i18n.l.perps.common.submitting)}
+            label={button.text}
+            onLongPress={submitNewPosition}
+            height={BUTTON_HEIGHT}
+            textStyle={{
+              color: button.textColor,
+              fontSize: 20,
+              fontWeight: '900',
+            }}
+            progressColor={button.textColor}
+          />
+          <Border borderColor={{ custom: button.borderColor }} borderWidth={2} borderRadius={24} enableInLightMode />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 });
 
 const TOP_BORDER_WIDTH = 2;
+const PADDING = 20;
 
 export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const { isDarkMode } = useColorMode();
@@ -270,7 +292,7 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   return (
     <KeyboardStickyView
       // TODO (kane): Where does this 6 come from?
-      offset={{ opened: safeAreaInsets.bottom + 6 - 20 }}
+      offset={{ opened: safeAreaInsets.bottom + 6 - PADDING }}
       enabled={enableStickyKeyboard}
     >
       <Box
@@ -287,8 +309,8 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
           },
           borderTopWidth: TOP_BORDER_WIDTH,
           borderTopColor: accentColors.opacity10,
-          paddingBottom: Math.max(safeAreaInsets.bottom, 20) + 4,
-          paddingTop: 20 - TOP_BORDER_WIDTH,
+          paddingBottom: Math.max(safeAreaInsets.bottom, PADDING) + 4,
+          paddingTop: PADDING - TOP_BORDER_WIDTH,
           backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
         }}
       >
@@ -338,5 +360,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     zIndex: 100,
     ...fontWithWidth(font.weight.semibold),
+  },
+  gradientFill: {
+    position: 'absolute',
+    top: -PADDING + TOP_BORDER_WIDTH,
+    left: -PADDING,
+    right: -PADDING,
   },
 });

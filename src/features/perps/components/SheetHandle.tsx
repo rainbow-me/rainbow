@@ -18,12 +18,7 @@ export const SheetHandle = ({ extraPaddingTop = IS_ANDROID ? 24 : 12, background
 
   return (
     <Box position="absolute" top="0px" left="0px" right="0px" width="full" pointerEvents="none">
-      <Box
-        // background={backgroundColor ? undefined: 'surfacePrimary'}
-        backgroundColor={backgroundColor}
-        height={safeAreaInsets.top + extraPaddingTop}
-        width="full"
-      >
+      <Box backgroundColor={backgroundColor} height={safeAreaInsets.top + extraPaddingTop} width="full">
         <Box
           height={{ custom: 5 }}
           width={{ custom: 36 }}
