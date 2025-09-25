@@ -47,6 +47,7 @@
       "unknown_token": "알 수 없는 토큰"
     },
     "activity_list": {
+      "title": "활동",
       "empty_state": {
         "default_label": "아직 거래 없음",
         "recycler_label": "아직 거래 없음",
@@ -140,7 +141,7 @@
         "choose_backup_cloud_description": "기기를 분실하거나 새 기기를 사용할 경우 복원할 수 있도록 %{cloudPlatform}에 안전하게 지갑을 백업하세요.",
         "choose_backup_manual_description": "암호를 안전한 곳에 보관하여 지갑을 수동으로 백업하세요.",
         "enable_cloud_backups_description": "지갑을 수동으로 백업하려면 아래에서 진행할 수 있습니다.",
-        "latest_backup": "마지막 백업: %{date}",
+        "latest_backup": "최신 백업: %{date}",
         "back_up_all_wallets_to_cloud": "모든 지갑을 %{cloudPlatformName}에 백업",
         "most_recent_backup": "가장 최근 백업",
         "out_of_date": "구버전",
@@ -467,6 +468,9 @@
         "quote_error": "견적 오류",
         "no_route_found": "경로를 찾을 수 없음",
         "fetching_quote": "견적 가져오는 중...",
+        "rainbow_eth_rewards": "레인보우 ETH 리워드",
+        "merkl_claimable": "%{dappName} 볼트",
+        "merkl_claimable_description": "%{assetSymbols} 전략",
         "select_a_network": "네트워크 선택",
         "select_a_token": "토큰 선택",
         "amount_to_claim_on_network": "%{amount}을(를) %{network}에서 청구",
@@ -476,6 +480,9 @@
         "claimed": "청구 완료!",
         "claiming_failed": "청구 실패",
         "insufficient_funds": "자금이 부족합니다",
+        "hold_to_claim": "청구하려면 유지",
+        "creator_lp_fees": "크리에이터 LP 수수료",
+        "rainbow_token_launcher": "레인보우 토큰 런처",
         "claim_amount": "%{amount} 청구",
         "done": "완료",
         "try_again": "다시 시도하기",
@@ -519,24 +526,25 @@
       "alert": "알림",
       "analyze_env_variables": "환경 변수 분석",
       "analyze_react_query": "React 쿼리 분석",
+      "analyze_user_assets_query": "사용자 자산 쿼리 분석",
       "applied": "적용됨",
-      "backups_deleted_successfully": "백업이 성공적으로 삭제되었습니다",
-      "clear_async_storage": "비동기 저장소 지우기",
+      "backups_deleted_successfully": "백업이 성공적으로 삭제됨",
+      "clear_async_storage": "AsyncStorage 지우기",
       "clear_pending_txs": "보류 중인 거래 청소",
       "clear_image_cache": "이미지 캐시 지우기",
       "clear_image_metadata_cache": "이미지 메타데이터 캐시 지우기",
       "clear_local_storage": "로컬 저장소 지우기",
-      "clear_mmkv_storage": "MMKV 저장소 지우기",
+      "clear_mmkv_storage": "MMKV 스토리지 지우기",
       "clear_react_query_cache": "React 쿼리 캐시 지우기",
-      "connect_to_anvil": "하드햇에 연결",
+      "connect_to_anvil": "Anvil에 연결",
       "copy_fcm_token": "FCM 토큰 복사",
       "copy_log_lines": "로그 라인 복사",
       "copy_signing_wallet_address": "서명 지갑 주소 복사",
-      "disconnect_to_anvil": "anvil 연결 해제",
-      "crash_app_render_error": "애플리케이션 종료 (렌더링 오류)",
+      "disconnect_to_anvil": "Anvil 연결 해제",
+      "crash_app_render_error": "앱 충돌(렌더링 오류)",
       "enable_testnets": "테스트넷 활성화",
       "installing_update": "업데이트 설치 중",
-      "navigation_entry_point": "탐색 진입점",
+      "navigation_entry_point": "네비게이션 시작점",
       "no_update": "업데이트 없음",
       "not_applied": "적용되지 않음",
       "notifications_debug": "알림 디버그",
@@ -548,9 +556,9 @@
         "alert_body": "🚨🚨🚨 \n이렇게 하면 지갑의 모든 프라이빗 키와 데이터가 영구적으로 삭제됩니다. 진행하기 전에 모든 것이 백업되었는지 확인하십시오!! \n🚨🚨🚨"
       },
       "restart_app": "앱 재시작",
-      "reset_experimental_config": "실험적 구성 재설정",
+      "reset_experimental_config": "실험 설정 재설정",
       "status": "상태",
-      "sync_codepush": "코드푸시 동기화"
+      "sync_codepush": "CodePush 동기화"
     },
     "discover": {
       "pulse": {
@@ -559,7 +567,6 @@
         "trading_at_prefix": "거래 중"
       },
       "search": {
-        "profiles": "프로필들",
         "search_ethereum": "이더리움 전체 검색",
         "search_ethereum_short": "이더리움 검색",
         "search": "검색",
@@ -604,6 +611,7 @@
         "expires_in": "%{minutes}분 후에 만료됩니다",
         "from_divider": "from",
         "to_divider": "에게",
+        "token": "토큰",
         "view_on": "%{blockExplorerName}에서 보기",
         "view_on_etherscan": "Etherscan에서 보기",
         "copy_contract_address": "계약 주소 복사"
@@ -654,9 +662,7 @@
         "small_market_try_smaller_amount": "수요가 작은 시장 — 더 작은 금액을 시도해 보세요",
         "you_are_losing": "당신은 %{priceImpact}를 잃었습니다",
         "you_are_losing_prefix": "손실 중",
-        "no_data": "시장 가치 불명",
-        "label": "가능한 손실",
-        "no_data_subtitle": "계속하기로 결정하시면, 인용된 금액에 만족하는지 확인하세요"
+        "label": "가능한 손실"
       },
       "source": {
         "rainbow": "자동",
@@ -727,6 +733,7 @@
           "circulating_supply": "유통 공급",
           "max_supply": "최대 공급량",
           "fully_diluted_valuation": "완전 희석된 평가",
+          "created_by": "제작자",
           "market_cap": "시가 총액",
           "created": "생성됨",
           "volume_24_hours": "24시간 거래량",
@@ -747,9 +754,35 @@
         "about": {
           "title": "정보",
           "what_is": "%{assetName}에 대해 알고 싶으세요?"
+        },
+        "history": {
+          "title": "기록",
+          "tabs": {
+            "all": "모두",
+            "buys": "구매",
+            "sells": "판매"
+          },
+          "more": "더 보기",
+          "less": "적게",
+          "bought": "구매함",
+          "sold": "판매한",
+          "received": "받음",
+          "sent": "보냄",
+          "unknown": "미지"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "닫기",
+            "h": "H",
+            "l": "L",
+            "o": "열기",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "없음"
+        },
         "all_time": "모든 시간",
         "date": {
           "months": {
@@ -768,9 +801,9 @@
           }
         },
         "no_chart_data": "차트 데이터 없음",
-        "no_price_data": "가격 정보 없음",
+        "no_price_data": "가격 데이터 없음",
         "past_timespan": "과거 %{formattedTimespan}",
-        "today": "오늘",
+        "today": "지난날",
         "token_pool": "%{tokenName} 풀(Pool)"
       },
       "contact_profile": {
@@ -929,6 +962,8 @@
       "farcaster_title": "잠금 해제\nRainbowcast",
       "redacted_description": "진정한 Gdupi 애호가를 위한 stupi 전용 Rainbow 아이콘입니다.",
       "redacted_title": "잠금 해제 완료\nRedacted Rainbow",
+      "baggy_description": "스트릿에서 체인으로, 이 작은 가방은 레인보우의 분위기를 휴대할 수 있도록 합니다. 색깔을 맛보고 차이를 느껴보세요.",
+      "baggy_title": "잠금 해제\n Rainbow Baggy",
       "button": "아이콘 잡기"
     },
     "explain": {
@@ -1149,6 +1184,30 @@
         "title": "No %{networkName} %{gasToken} 감지됨",
         "text": "%{networkName} 를 %{networkName} 없이 사용할 수 없습니다 %{gasToken}. 이 거래를 진행하면 여러분의 %{networkName} 토큰을 스왑, 브리지, 또는 전송할 수 없게 되며, 지갑에 %{networkName} %{gasToken} 를 추가해야 합니다.",
         "button": "그럼에도 불구하고 진행"
+      },
+      "ens_primary_name": {
+        "title": "ENS 이름을 설정하는 것은 무엇을 의미합니까?",
+        "text": "사람들은 무언가를 보낼 때 전체 Ethereum 주소 대신 dApps에 귀하의 .eth 이름을 입력할 수 있으며, dApps는 귀하의 .eth 이름과 프로필을 사용하여 귀하에 대한 정보를 표시할 수 있습니다. 이는 '주요'로 ENS 이름을 설정하는 것으로도 알려져 있습니다."
+      },
+      "ens_on_chain_data_warning": {
+        "title": "주의!",
+        "text": "여기에 제공한 데이터는 모든 사람에게 보이는 Ethereum 블록체인에 저장됩니다. 공개하는 데 불편한 데이터는 공유하지 마십시오."
+      },
+      "ens_manager": {
+        "title": ".eth 관리자란 무엇입니까?",
+        "text": ".eth 이름의 관리자는 레코드를 설정 및 업데이트하고 해당 이름의 하위 도메인을 생성하거나 구성을 관리할 수 있습니다. 관리자는 .eth 이름의 소유자가 설정하며 ENS 이름의 컨트롤러로도 알려져 있습니다."
+      },
+      "ens_owner": {
+        "title": ".eth 이름의 소유자란 무엇입니까?",
+        "text": ".eth 이름의 소유자는 해당 이름에 대한 완전하고 궁극적인 통제권을 가지고 있습니다. 그들은 원한다면 이름의 소유권을 이전하고 누군가가 자신을 대신해 이름을 관리하도록 허용할 수 있습니다(기록 설정 등). 소유자는 ENS 이름의 등록자로도 알려져 있습니다."
+      },
+      "ens_resolver": {
+        "title": ".eth 해석자는 무엇인가요?",
+        "text": "해석자는 이름에서 자원(예: 암호화폐 주소, 콘텐츠 해시 등)으로 매핑하는 계약입니다. 해석자는 레지스트리에 있는 해석자 필드에 의해 지시됩니다."
+      },
+      "ens_configuration": {
+        "title": "이 옵션들은 어떤 의미인가요?",
+        "text": "ENS 이름을 다른 사람에게 보내고 새로운 ENS 이름 소유자로 만들 때, 그들을 위해 미리 설정하여 나중에 거래를 저장할 수 있습니다. Rainbow는 현재 이름에 설정된 프로필 정보를 지우고, 수령인의 주소를 가리키도록 ENS 이름을 구성하며 수령인 주소를 이름의 관리자로 만들 수 있게 해줍니다."
       }
     },
     "fedora": {
@@ -1632,7 +1691,7 @@
         "invalid_referral_code_alert": "유효하지 않은 추천 코드입니다. 코드를 다시 확인하고 다시 시도해 주세요.",
         "no_balance_alert": "포인트에 등록하려면 지갑 잔액이 0이 아니어야 합니다.",
         "referral_link_is_ready": "당신의 추천 링크가 준비되었습니다",
-        "referral_link_bonus_text": "당신의 추천 링크를 트윗하여 추가적인 250 포인트를 얻으세요",
+        "referral_link_bonus_text": "추천 링크를 트윗하면 추천받은 분들이 얻는 포인트의 10%를 받을 수 있습니다",
         "referral_link_bonus_text_extended": "더하여 당신이 추천한 사람들이 얻은 포인트의 10%를 벌 수 있습니다",
         "complete_onboarding": "완료",
         "share_to_x": "X에 공유하기",
@@ -1885,7 +1944,7 @@
         "description": "모든 NFT 마켓 플레이스에서 제공되는 상품을 확인하세요."
       },
       "info_row_2": {
-        "title": "Rainbow의 제안을 수락하세요",
+        "title": "DApp에서 요청한 네임스페이스에 문제가 있습니다. 다시 시도하거나 Rainbow 및 DApp 지원 팀에 문의하십시오.",
         "description": "1탭으로 제안을 수락하고 선택한 토큰으로 교환하세요."
       },
       "info_row_3": {
@@ -1986,6 +2045,9 @@
       "rewards": "보상",
       "pools": "풀"
     },
+    "profile": {
+      "title": "활동"
+    },
     "savings": {
       "deposit": "예금",
       "deposit_from_wallet": "지갑에서 입금",
@@ -2033,20 +2095,62 @@
       "backup_google_account": "Google 계정",
       "currency": {
         "title": "통화",
-        "ETH": "이더리움",
-        "USD": "미국 달러",
-        "EUR": "유로",
-        "GBP": "브리티시 파운드",
-        "AUD": "호주 달러",
-        "CNY": "중국 위안화",
-        "KRW": "대한민국 원",
-        "JPY": "일본 엔화",
-        "RUB": "러시아 루블",
-        "INR": "인도 루피",
-        "TRY": "터키 리라",
-        "CAD": "캐나다 달러",
-        "NZD": "뉴질랜드 달러",
-        "ZAR": "남아프리카 공화국 랜드"
+        "ETH": {
+          "label": "이더리움",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "미국 달러",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "유로",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "브리티시 파운드",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "호주 달러",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "중국 위안화",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "대한민국 원",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "일본 엔화",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "러시아 루블",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "인도 루피",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "터키 리라",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "캐나다 달러",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "뉴질랜드 달러",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "남아프리카 공화국 랜드",
+          "code": "ZAR"
+        }
       },
       "app_icon": "앱 아이콘",
       "developer": "개발자 설정",
@@ -2829,6 +2933,7 @@
         "find_a_code": "스캔할 코드를 찾아보세요",
         "qr_1_app_connected": "1개의 연결된 앱",
         "qr_multiple_apps_connected": "%{appsConnectedCount} 개의 연결된 앱들",
+        "scan_to_connect": "앱과 연결합니다",
         "scan_to_pay_or_connect": "결제하거나 연결하기 위해 스캔하세요",
         "simulator_mode": "시뮬레이터 모드",
         "sorry_could_not_be_recognized": "죄송합니다, 이 QR 코드를 인식할 수 없습니다.",
@@ -2888,6 +2993,7 @@
         "sending_title": "전송중",
         "you_own_this_wallet": "이 지갑은 당신의 것입니다",
         "first_time_send": "처음 보내기",
+        "previous_send": "%{number} 전송 이력",
         "previous_sends": "%{number} 전송 이력"
       },
       "wallet_connect": {
@@ -2977,9 +3083,9 @@
         "pairing_unsupported_methods": "Dapp이 Rainbow에서 지원하지 않는 지갑 RPC 방법을 요청했습니다.",
         "pairing_unsupported_networks": "해당 dapp은 Rainbow에서 지원하지 않는 네트워크를 요청했습니다.",
         "read_only_wallet_on_signing_method": "읽기 전용 지갑을 사용중인 것 같습니다. 이 요청에 대해서는 허용되지 않습니다.",
-        "namespaces_invalid": "DApp에서 요청한 네임스페이스에 문제가 있습니다. 다시 시도하거나 Rainbow 및 DApp 지원 팀에 문의하십시오.",
+        "namespaces_invalid": "보안 문제로 인해 Rainbow는 eth_sign을 지원하지 않습니다.  \n 질문이 있으면 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
         "request_invalid": "요청에 잘못된 매개변수가 포함되어 있습니다. 다시 시도하거나 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
-        "eth_sign": "보안 문제로 인해 Rainbow는 이전 버전의 eth_sign을 지원하지 않습니다.  \n 궁금한 점이 있으면 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
+        "eth_sign": "보안 문제로 인해 Rainbow는 이전 버전의 eth_sign을 지원하지 않습니다.\n질문이 있으면 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
         "request_unsupported_network": "이 요청에서 지정한 네트워크는 Rainbow에서 지원하지 않습니다.",
         "request_unsupported_methods": "이 요청에 명시된 RPC 방법은 Rainbow에서 지원하지 않습니다.",
         "no_accounts_found": "승인된 네임스페이스에서 계정을 찾을 수 없습니다."
@@ -3181,7 +3287,8 @@
       "show_less": "줄이기",
       "more": "더 보기",
       "show_more": "더 많은 네트워크",
-      "all_networks": "모든 네트워크"
+      "all_networks": "모든 네트워크",
+      "search": "검색"
     },
     "token_launcher": {
       "airdrop": {
@@ -3340,10 +3447,78 @@
         "to_claim_on": "%{network}에서 청구하기",
         "view_coin": "코인 보기",
         "you": "당신"
+      },
+      "errors": {
+        "header": "토큰 실행 오류",
+        "api_request_failed": "API 요청 실패",
+        "api_response_invalid": "API 응답이 유효하지 않음",
+        "contract_interaction_failed": "계약 상호작용 실패",
+        "gas_estimation_failed": "가스 예측 실패",
+        "insufficient_funds": "자금이 부족합니다",
+        "submission_details_missing": "제출 세부 정보 누락",
+        "transaction_rejected": "거래 거부됨",
+        "transaction_failed": "거래 실패",
+        "transaction_simulation_failed": "거래 시뮬레이션 실패",
+        "unknown_error": "알 수 없는 오류",
+        "wallet_connection_error": "지갑 연결 오류",
+        "invalid_params": "잘못된 매개변수",
+        "missing_required_param": "필수 매개변수가 누락되었습니다"
       }
     },
     "done": "완료",
     "copy": "복사",
-    "paste": "붙여넣기"
+    "paste": "붙여넣기",
+    "market_data": {
+      "vol": "VOL",
+      "price": "PRICE",
+      "mcap": "시가 총액"
+    },
+    "king_of_hill": {
+      "title": "런칭패드",
+      "launch": "런칭",
+      "current_king": "현재 왕",
+      "last_winner": "마지막 우승자",
+      "no_previous_winner": "이전 우승자 없음",
+      "round_ends_in": "라운드 종료까지 남은 시간",
+      "how_it_works": "작동 방식",
+      "starting_next_round": "다음 라운드 시작 중",
+      "left": "남음",
+      "king_of_the_hill": "그 산의 왕",
+      "name": "이름",
+      "explain_sheet": {
+        "next": "다음",
+        "got_it": "알겠습니다",
+        "steps": {
+          "step_1": {
+            "title": "경주가 시작되었습니다",
+            "subtitle_parts": [
+              "가장 많은",
+              " 구매량 ",
+              "높은 토큰이 현재 왕입니다."
+            ]
+          },
+          "step_2": {
+            "title": "하루 한 왕관",
+            "subtitle_parts": [
+              "자정(UTC 12:00에), ",
+              " 자정 (오전 12:00 UTC), ",
+              "선두 토큰이 일일 우승자로 선정됩니다."
+            ]
+          },
+          "step_3": {
+            "title": "보상 획득",
+            "subtitle_parts": [
+              "현재 왕의 구매자는",
+              " 2배 포인트를 받습니다."
+            ],
+            "subtitle_two_parts": [
+              "창작자",
+              "는 포인트를 획득합니다 ",
+              "왕관을 받을 때."
+            ]
+          }
+        }
+      }
+    }
   }
 }

@@ -25,6 +25,8 @@ import { useShowKingOfTheHill } from '@/components/king-of-the-hill/useShowKingO
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
+type MenuItemRoute = typeof Routes.SETTINGS_SHEET | typeof Routes.RECEIVE_MODAL | typeof Routes.CONNECTED_DAPPS;
+
 export interface RecyclerAssetList2Props {
   accentColor?: string;
   disablePullDownToRefresh?: boolean;
@@ -90,7 +92,7 @@ function handlePressQRScanner(): void {
   Navigation.handleAction(Routes.QR_SCANNER_SCREEN);
 }
 
-function handlePressMenuItem(route: (typeof Routes)[keyof typeof Routes]): void {
+function handlePressMenuItem(route: MenuItemRoute): void {
   if (route === Routes.RECEIVE_MODAL) {
     analytics.track(analytics.event.navigationMyQrCode, { category: 'home screen' });
   }
@@ -103,32 +105,12 @@ function handleNavigateToActivity(): void {
 
 const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { colors, isDarkMode } = useTheme();
-  const { language } = useAccountSettings();
   const insets = useSafeAreaInsets();
   const showKingOfTheHillTab = useShowKingOfTheHill();
   const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
 
-  const menuItems = useMemo(
-    () =>
-      [
-        {
-          actionKey: Routes.SETTINGS_SHEET,
-          actionTitle: i18n.t(i18n.l.settings.label),
-          icon: { iconType: 'SYSTEM', iconValue: 'gear' },
-        },
-        {
-          actionKey: Routes.RECEIVE_MODAL,
-          actionTitle: i18n.t(i18n.l.button.my_qr_code),
-          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
-        },
-        {
-          actionKey: Routes.CONNECTED_DAPPS,
-          actionTitle: i18n.t(i18n.l.wallet.connected_apps),
-          icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
-        },
-      ] as MenuItem<(typeof Routes)[keyof typeof Routes]>[],
-    [language]
-  );
+  const { language } = useAccountSettings();
+  const menuItems = buildMenuItems(language);
 
   const yOffset = IS_ANDROID ? navbarHeight : insets.top;
 
@@ -315,3 +297,31 @@ const ActivityIcon = memo(function ActivityIcon() {
     <Navbar.TextIcon color={accentColor as string} icon="􀐫" />
   );
 });
+
+let cachedMenuItems: MenuItem<MenuItemRoute>[] | undefined;
+let lastLanguage: i18n.Language | undefined;
+
+function buildMenuItems(language: i18n.Language): MenuItem<MenuItemRoute>[] {
+  if (!cachedMenuItems || language !== lastLanguage) {
+    cachedMenuItems = [
+      {
+        actionKey: Routes.SETTINGS_SHEET,
+        actionTitle: i18n.t(i18n.l.settings.label),
+        icon: { iconType: 'SYSTEM', iconValue: 'gear' },
+      },
+      {
+        actionKey: Routes.RECEIVE_MODAL,
+        actionTitle: i18n.t(i18n.l.button.my_qr_code),
+        icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+      },
+      {
+        actionKey: Routes.CONNECTED_DAPPS,
+        actionTitle: i18n.t(i18n.l.wallet.connected_apps),
+        icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+      },
+    ];
+    lastLanguage = language;
+  }
+
+  return cachedMenuItems;
+}

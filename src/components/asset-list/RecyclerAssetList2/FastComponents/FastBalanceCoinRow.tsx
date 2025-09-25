@@ -150,7 +150,7 @@ const MemoizedBalanceCoinRow = React.memo(
                   initialValueLastUpdated={priceUpdatedAt}
                   initialValue={formatPercentChange(percentChange)}
                   autoSubscriptionEnabled={false}
-                  usePriceChangeColor
+                  isPriceChangeColorEnabled
                   priceChangeChangeColors={{
                     positive: theme.colors.green,
                     negative: theme.colors.blueGreyDark50,

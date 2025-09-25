@@ -516,7 +516,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   numberOfLines={1}
                   size="15pt"
                   weight="bold"
-                  usePriceChangeColor
+                  isPriceChangeColorEnabled
                 />
               </View>
               <View style={{ flexDirection: 'row', gap: 5, justifyContent: 'flex-end' }}>
@@ -530,7 +530,7 @@ function TrendingTokenRow({ token, currency }: { token: TrendingToken; currency:
                   color="label"
                   size="11pt"
                   weight="bold"
-                  usePriceChangeColor
+                  isPriceChangeColorEnabled
                 />
               </View>
             </View>

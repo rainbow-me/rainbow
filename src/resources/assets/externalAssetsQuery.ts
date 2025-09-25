@@ -15,6 +15,7 @@ export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price' | 'transferable'>;
 export type FormattedExternalAsset = ExternalToken & {
   address: string;
+  chainId: ChainId;
   icon_url?: string;
   isNativeAsset: boolean;
   native: {
@@ -49,6 +50,7 @@ const formatExternalAsset = (
   return {
     ...asset,
     address,
+    chainId,
     isNativeAsset: isNativeAsset(address as AddressOrEth, chainId),
     native: {
       change: asset?.price?.relativeChange24h ? convertAmountToPercentageDisplay(`${asset?.price?.relativeChange24h}`) : '',

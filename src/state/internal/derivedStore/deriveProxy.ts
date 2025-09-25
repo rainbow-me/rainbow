@@ -100,7 +100,7 @@ function buildProxy<T extends object>(
         }
 
         // Built-in prototype function (e.g. .toString), track as final usage (a leaf)
-        trackPath(store, newPath, true);
+        trackPath(store, path, true);
         return childValue.bind(value);
       }
 
