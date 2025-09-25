@@ -1,21 +1,22 @@
 import { debounce, identity } from 'lodash';
-import { useStoreWithEqualityFn } from 'zustand/traditional';
+import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 import { StoreApi } from 'zustand/vanilla';
 import { IS_DEV } from '@/env';
 import { pluralize } from '@/worklets/strings';
-import { createPathFinder, getOrCreateProxy, PathFinder } from './derivedStore/deriveProxy';
+import { PathFinder, createPathFinder, getOrCreateProxy } from './derivedStore/deriveProxy';
 import {
   BaseRainbowStore,
   DebounceOptions,
   DeriveOptions,
-  DerivedRainbowStore,
+  DerivedStore,
   EqualityFn,
+  InferStoreState,
   Listener,
-  RainbowStore,
   Selector,
   SubscribeArgs,
   UnsubscribeFn,
   WithFlushUpdates,
+  WithGetSnapshot,
 } from './types';
 
 // ============ Store Creator ================================================== //
@@ -56,10 +57,10 @@ import {
  *
  * ---
  * You can optionally pass a second parameter (either an equality function or a config object)
- * to enable debouncing, customize the equality function, or set `stableSubscriptions: true`.
+ * to enable debouncing, customize the equality function, or set `fastMode: true`.
  *
- * (If stable subscriptions are enabled, dependencies are established once and are not rebuilt
- * on subsequent re-derives, which can be a performance win for certain workloads.)
+ * (In fast mode, dependencies are established once and are not rebuilt on subsequent re-derives,
+ * which can be a performance win for certain workloads.)
  *
  * ---
  * @example
@@ -87,15 +88,15 @@ import {
 export function createDerivedStore<Derived>(
   deriveFunction: ($: DeriveGetter) => Derived,
   optionsOrEqualityFn: DeriveOptions<Derived> = Object.is
-): DerivedRainbowStore<Derived> {
+): DerivedStore<Derived> {
   return attachStoreHook(derive(deriveFunction, optionsOrEqualityFn));
 }
 
-function attachStoreHook<S>(store: WithFlushUpdates<StoreApi<S>>): DerivedRainbowStore<S> {
+function attachStoreHook<S>(store: WithGetSnapshot<WithFlushUpdates<StoreApi<S>>>): DerivedStore<S> {
   function useDerivedStore(): S;
   function useDerivedStore<T>(selector: (state: S) => T, equalityFn?: EqualityFn<T>): T;
-  function useDerivedStore<T>(selector: (state: S) => T = identity, equalityFn: EqualityFn<T> = Object.is): S | T {
-    return useStoreWithEqualityFn(store, selector, equalityFn);
+  function useDerivedStore<T>(selector: (state: S) => T = identity, equalityFn: EqualityFn<T> | undefined = undefined): S | T {
+    return useSyncExternalStoreWithSelector(store.subscribe, store.getSnapshot, undefined, selector, equalityFn);
   }
   return Object.assign(useDerivedStore, store);
 }
@@ -103,8 +104,12 @@ function attachStoreHook<S>(store: WithFlushUpdates<StoreApi<S>>): DerivedRainbo
 // ============ Types ========================================================== //
 
 export type DeriveGetter = {
-  <S>(store: RainbowStore<S>): S;
-  <S, Selected>(store: RainbowStore<S>, selector: Selector<S, Selected>, equalityFn?: EqualityFn<Selected>): Selected;
+  <S extends BaseRainbowStore<unknown>>(store: S): InferStoreState<S>;
+  <S extends BaseRainbowStore<unknown>, Selected>(
+    store: S,
+    selector: Selector<InferStoreState<S>, Selected>,
+    equalityFn?: EqualityFn<Selected>
+  ): Selected;
 };
 
 /**
@@ -141,7 +146,7 @@ type UninitializedState = typeof UNINITIALIZED;
 function derive<DerivedState>(
   deriveFunction: ($: DeriveGetter) => DerivedState,
   optionsOrEqualityFn: DeriveOptions<DerivedState> = Object.is
-): WithFlushUpdates<StoreApi<DerivedState>> {
+): WithGetSnapshot<WithFlushUpdates<StoreApi<DerivedState>>> {
   const { debounceOptions, debugMode, equalityFn, useStableSubscriptions } = parseOptions(optionsOrEqualityFn);
 
   // Active subscriptions *to* the derived store
@@ -203,10 +208,11 @@ function derive<DerivedState>(
     if (!watchers.size) return derivedState;
 
     const hasPreviousState = prevState !== UNINITIALIZED;
-    const shouldLogSubscriptions = debugMode && !hasPreviousState;
+    const shouldLogSubscriptions = debugMode && (!hasPreviousState || (debugMode === 'verbose' && shouldRebuildSubscriptions));
 
     if (shouldLogSubscriptions) {
-      console.log('[🌀 Initial Derive Complete 🌀]: Created...');
+      if (!hasPreviousState) console.log('[🌀 Initial Derive Complete 🌀]: Created...');
+      else if (debugMode === 'verbose') console.log('[🌀 Rebuilding Subscriptions 🌀]: Created...');
       const subscriptionCount = unsubscribes.size;
       console.log(`[🎯 ${subscriptionCount} ${pluralize('Selector Subscription', subscriptionCount)} 🎯]`);
     }
@@ -286,6 +292,18 @@ function derive<DerivedState>(
     }
   }
 
+  function getSnapshot(): DerivedState {
+    if (derivedState === UNINITIALIZED) {
+      // Ensures useSyncExternalStore doesn't trigger redundant derivations
+      watchers.add(dummyWatcher);
+      const state = derive();
+      watchers.delete(dummyWatcher);
+
+      return state;
+    }
+    return derivedState;
+  }
+
   // ============ Public Store Methods ========================================= //
 
   function getState(): DerivedState {
@@ -301,24 +319,28 @@ function derive<DerivedState>(
       const listener = args[0];
       watchers.add(listener);
 
-      if (watchers.size === 1) {
-        derivedState = UNINITIALIZED;
-        derive();
+      if (watchers.size === 1 && derivedState === UNINITIALIZED) {
+        getState();
       }
 
       return () => {
         watchers.delete(listener);
-        if (!watchers.size) destroy();
+
+        if (!watchers.size) {
+          queueMicrotask(() => {
+            if (!watchers.size) destroy();
+          });
+        }
       };
     }
 
     // -- Overload #2: (selector, listener, { equalityFn, fireImmediately })
     const [selector, listener, options] = args;
-    const eqFn = options?.equalityFn ?? Object.is;
+    const equalityFn = options?.equalityFn ?? Object.is;
 
     const watcher: Watcher<DerivedState> = {
       currentSlice: undefined,
-      equalityFn: eqFn,
+      equalityFn,
       listener,
       selector,
     };
@@ -328,19 +350,20 @@ function derive<DerivedState>(
     const isDerivedWatcher = options?.isDerivedStore ?? false;
     if (isDerivedWatcher) derivedWatchers += 1;
 
-    if (watchers.size === 1) {
-      derivedState = UNINITIALIZED;
-      derive();
-    }
-
     const slice = selector(getState());
+
     watcher.currentSlice = slice;
     if (options?.fireImmediately) listener(slice, slice);
 
     return () => {
       watchers.delete(watcher);
       if (isDerivedWatcher) derivedWatchers -= 1;
-      if (!watchers.size) destroy();
+
+      if (!watchers.size) {
+        queueMicrotask(() => {
+          if (!watchers.size) destroy();
+        });
+      }
     };
   }
 
@@ -364,6 +387,7 @@ function derive<DerivedState>(
   return {
     destroy,
     flushUpdates,
+    getSnapshot,
     getState,
     subscribe,
     // -- Not applicable to derived stores
@@ -378,9 +402,13 @@ function derive<DerivedState>(
 
 // ============ Helpers ======================================================== //
 
+function dummyWatcher(): void {
+  return;
+}
+
 function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
   debounceOptions: number | DebounceOptions | undefined;
-  debugMode: boolean;
+  debugMode: boolean | 'verbose';
   equalityFn: EqualityFn<DerivedState>;
   useStableSubscriptions: boolean;
 } {
@@ -396,6 +424,6 @@ function parseOptions<DerivedState>(options: DeriveOptions<DerivedState>): {
     debounceOptions: options.debounce,
     debugMode: (IS_DEV && options.debugMode) ?? false,
     equalityFn: options.equalityFn ?? Object.is,
-    useStableSubscriptions: options.stableSubscriptions ?? false,
+    useStableSubscriptions: options.fastMode ?? false,
   };
 }

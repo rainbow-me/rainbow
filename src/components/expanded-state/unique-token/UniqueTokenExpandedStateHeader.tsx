@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
@@ -38,7 +38,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
   ({
     [AssetActionsEnum.copyTokenID]: {
       actionKey: AssetActionsEnum.copyTokenID,
-      actionTitle: lang.t('expanded_state.unique_expanded.copy_token_id'),
+      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.copy_token_id),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'square.on.square',
@@ -46,7 +46,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
     },
     [AssetActionsEnum.download]: {
       actionKey: AssetActionsEnum.download,
-      actionTitle: lang.t('expanded_state.unique_expanded.save_to_photos'),
+      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.save_to_photos),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'photo.on.rectangle.angled',
@@ -54,7 +54,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
     },
     [AssetActionsEnum.etherscan]: {
       actionKey: AssetActionsEnum.etherscan,
-      actionTitle: lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
+      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_on_block_explorer, {
         blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
       }),
       icon: {
@@ -64,7 +64,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
     },
     [AssetActionsEnum.rainbowWeb]: {
       actionKey: AssetActionsEnum.rainbowWeb,
-      actionTitle: lang.t('expanded_state.unique_expanded.view_on_web'),
+      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_on_web),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'safari.fill',
@@ -72,7 +72,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
     },
     [AssetActionsEnum.hide]: {
       actionKey: AssetActionsEnum.hide,
-      actionTitle: lang.t('expanded_state.unique_expanded.hide'),
+      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.hide),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'eye',
@@ -88,7 +88,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
     },
     [AssetActionsEnum.refresh]: {
       actionKey: AssetActionsEnum.refresh,
-      actionTitle: lang.t('expanded_state.unique_expanded.refresh'),
+      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.refresh),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'arrow.clockwise',
@@ -96,7 +96,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
     },
     [AssetActionsEnum.report]: {
       actionKey: AssetActionsEnum.report,
-      actionTitle: lang.t('expanded_state.unique_expanded.report'),
+      actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.report),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'exclamationmark.triangle',
@@ -122,7 +122,7 @@ const FamilyActionsEnum = {
 const FamilyActions = {
   [FamilyActionsEnum.viewCollection]: {
     actionKey: FamilyActionsEnum.viewCollection,
-    actionTitle: lang.t('expanded_state.unique_expanded.view_collection'),
+    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_collection),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'rectangle.grid.2x2.fill',
@@ -130,7 +130,7 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.collectionWebsite]: {
     actionKey: FamilyActionsEnum.collectionWebsite,
-    actionTitle: lang.t('expanded_state.unique_expanded.collection_website'),
+    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.collection_website),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
@@ -138,7 +138,7 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.discord]: {
     actionKey: FamilyActionsEnum.discord,
-    actionTitle: lang.t('expanded_state.unique_expanded.discord'),
+    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.discord),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'ellipsis.bubble.fill',
@@ -146,7 +146,7 @@ const FamilyActions = {
   },
   [FamilyActionsEnum.twitter]: {
     actionKey: FamilyActionsEnum.twitter,
-    actionTitle: lang.t('expanded_state.unique_expanded.twitter'),
+    actionTitle: i18n.t(i18n.l.expanded_state.unique_expanded.twitter),
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'at.circle.fill',
@@ -269,8 +269,8 @@ const UniqueTokenExpandedStateHeader = ({
               {
                 ...AssetActions[AssetActionsEnum.hide],
                 actionTitle: isHiddenAsset
-                  ? lang.t('expanded_state.unique_expanded.unhide')
-                  : lang.t('expanded_state.unique_expanded.hide'),
+                  ? i18n.t(i18n.l.expanded_state.unique_expanded.unhide)
+                  : i18n.t(i18n.l.expanded_state.unique_expanded.hide),
                 icon: {
                   ...AssetActions[AssetActionsEnum.hide].icon,
                   iconValue: isHiddenAsset ? 'eye' : 'eye.slash',
@@ -303,7 +303,7 @@ const UniqueTokenExpandedStateHeader = ({
         ...(asset.chainId === ChainId.mainnet
           ? [
               {
-                menuTitle: lang.t('expanded_state.unique_expanded.view_on_marketplace'),
+                menuTitle: i18n.t(i18n.l.expanded_state.unique_expanded.view_on_marketplace),
                 menuItems: [AssetActions.opensea, AssetActions.looksrare],
               },
             ]
@@ -392,10 +392,10 @@ const UniqueTokenExpandedStateHeader = ({
     const hasDiscord = !!asset.discordUrl;
 
     const baseActions = [
-      ...(hasCollection ? [lang.t('expanded_state.unique_expanded.view_collection')] : []),
-      ...(hasWebsite ? [lang.t('expanded_state.unique_expanded.collection_website')] : []),
-      ...(hasTwitter ? [lang.t('expanded_state.unique_expanded.twitter')] : []),
-      ...(hasDiscord ? [lang.t('expanded_state.unique_expanded.discord')] : []),
+      ...(hasCollection ? [i18n.t(i18n.l.expanded_state.unique_expanded.view_collection)] : []),
+      ...(hasWebsite ? [i18n.t(i18n.l.expanded_state.unique_expanded.collection_website)] : []),
+      ...(hasTwitter ? [i18n.t(i18n.l.expanded_state.unique_expanded.twitter)] : []),
+      ...(hasDiscord ? [i18n.t(i18n.l.expanded_state.unique_expanded.discord)] : []),
     ];
 
     const collectionIndex = hasCollection ? 0 : -1;

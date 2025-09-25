@@ -47,6 +47,7 @@
       "unknown_token": "未知代币"
     },
     "activity_list": {
+      "title": "活动",
       "empty_state": {
         "default_label": "暂无交易记录",
         "recycler_label": "暂无交易记录",
@@ -140,7 +141,7 @@
         "choose_backup_cloud_description": "安全地将您的钱包备份到 %{cloudPlatform}，以便在丢失设备或更换新设备时可以恢复。",
         "choose_backup_manual_description": "通过将您的秘密短语保存在安全位置手动备份您的钱包。",
         "enable_cloud_backups_description": "如果你更喜欢手动备份钱包，你可以在下面进行。",
-        "latest_backup": "上次备份：%{date}",
+        "latest_backup": "最新备份：%{date}",
         "back_up_all_wallets_to_cloud": "将所有钱包备份到 %{cloudPlatformName}",
         "most_recent_backup": "最新备份",
         "out_of_date": "过期",
@@ -467,6 +468,9 @@
         "quote_error": "报价错误",
         "no_route_found": "找不到路由",
         "fetching_quote": "正在获取报价...",
+        "rainbow_eth_rewards": "彩虹 ETH 奖励",
+        "merkl_claimable": "%{dappName} 金库",
+        "merkl_claimable_description": "%{assetSymbols} 策略",
         "select_a_network": "选择一个网络",
         "select_a_token": "选择一个代币",
         "amount_to_claim_on_network": "%{amount} 可在 %{network} 领取",
@@ -476,6 +480,9 @@
         "claimed": "已认领!",
         "claiming_failed": "认领失败",
         "insufficient_funds": "资金不足",
+        "hold_to_claim": "长按领取",
+        "creator_lp_fees": "创作者LP费用",
+        "rainbow_token_launcher": "Rainbow 代币发行",
         "claim_amount": "领取 %{amount}",
         "done": "完成",
         "try_again": "再试一次",
@@ -519,25 +526,26 @@
       "alert": "警报",
       "analyze_env_variables": "分析环境变量",
       "analyze_react_query": "分析 React Query",
+      "analyze_user_assets_query": "分析用户资产查询",
       "applied": "已应用",
-      "backups_deleted_successfully": "备份成功删除",
+      "backups_deleted_successfully": "备份已成功删除",
       "clear_async_storage": "清除异步存储",
       "clear_pending_txs": "清除待处理的交易",
       "clear_image_cache": "清除图片缓存",
       "clear_image_metadata_cache": "清除图片内元数据缓存",
       "clear_local_storage": "清除本地存储",
-      "clear_mmkv_storage": "清除MMKV存储",
+      "clear_mmkv_storage": "清空MMKV存储",
       "clear_react_query_cache": "清除 React Query 缓存",
-      "connect_to_anvil": "连接到anvil",
+      "connect_to_anvil": "连接到 Anvil",
       "copy_fcm_token": "复制 FCM 令牌",
       "copy_log_lines": "复制日志行",
       "copy_signing_wallet_address": "复制签名钱包地址",
-      "disconnect_to_anvil": "断开硬帽连接",
-      "crash_app_render_error": "崩溃应用程序（渲染错误）",
+      "disconnect_to_anvil": "断开与 Anvil 的连接",
+      "crash_app_render_error": "崩溃应用（渲染错误）",
       "enable_testnets": "启用Testnets",
       "installing_update": "正在安装更新",
       "navigation_entry_point": "导航入口点",
-      "no_update": "没有更新",
+      "no_update": "无更新",
       "not_applied": "未应用",
       "notifications_debug": "通知调试",
       "remove_all_backups": "删除所有备份",
@@ -547,10 +555,10 @@
         "alert_title": "小心！",
         "alert_body": "🚨🚨🚨 \n这将永久删除所有的钱包私钥&数据，请确保在继续操作前已经备份了所有数据！ \n🚨🚨🚨"
       },
-      "restart_app": "重启应用",
-      "reset_experimental_config": "重置实验性配置",
+      "restart_app": "重新启动应用",
+      "reset_experimental_config": "重置实验配置",
       "status": "状态",
-      "sync_codepush": "同步代码推送"
+      "sync_codepush": "同步 CodePush"
     },
     "discover": {
       "pulse": {
@@ -559,7 +567,6 @@
         "trading_at_prefix": "交易于"
       },
       "search": {
-        "profiles": "个人资料",
         "search_ethereum": "搜索所有以太坊",
         "search_ethereum_short": "搜索以太坊",
         "search": "搜索",
@@ -604,6 +611,7 @@
         "expires_in": "在 %{minutes}分钟后过期",
         "from_divider": "来自",
         "to_divider": "至",
+        "token": "代币",
         "view_on": "在 %{blockExplorerName}查看",
         "view_on_etherscan": "在 Etherscan 上查看",
         "copy_contract_address": "复制合约地址"
@@ -647,16 +655,14 @@
         },
         "unknown_price": {
           "title": "市场价值未知",
-          "description": "如果您决定继续，请确保您对所引用的金额感到满意。"
+          "description": "如果您决定继续，请确保您对所引用的金额感到满意。},{"
         },
         "losing_prefix": "正在损失",
         "small_market": "小市场",
         "small_market_try_smaller_amount": "市场较小—尝试较小的金额",
         "you_are_losing": "您失去了%{priceImpact}",
         "you_are_losing_prefix": "您正在损失",
-        "no_data": "市场价值未知",
-        "label": "可能的损失",
-        "no_data_subtitle": "如果您决定继续，请确保您对所引用的金额感到满意"
+        "label": "可能的损失"
       },
       "source": {
         "rainbow": "自动",
@@ -727,6 +733,7 @@
           "circulating_supply": "流通供应",
           "max_supply": "最大供给量",
           "fully_diluted_valuation": "全面稀释估值",
+          "created_by": "创建者",
           "market_cap": "市值",
           "created": "创建",
           "volume_24_hours": "24小时交易量",
@@ -747,9 +754,35 @@
         "about": {
           "title": "关于",
           "what_is": "%{assetName} 是什么？"
+        },
+        "history": {
+          "title": "历史记录",
+          "tabs": {
+            "all": "全部",
+            "buys": "购买",
+            "sells": "卖出"
+          },
+          "more": "更多",
+          "less": "较少",
+          "bought": "已购买",
+          "sold": "已出售",
+          "received": "已收到",
+          "sent": "已发送",
+          "unknown": "未知"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "关闭",
+            "h": "H",
+            "l": "大",
+            "o": "打开",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "无"
+        },
         "all_time": "全时间",
         "date": {
           "months": {
@@ -770,7 +803,7 @@
         "no_chart_data": "无图表数据",
         "no_price_data": "无价格数据",
         "past_timespan": "过去 %{formattedTimespan}",
-        "today": "今天",
+        "today": "过去的一天",
         "token_pool": "%{tokenName} 池"
       },
       "contact_profile": {
@@ -929,6 +962,8 @@
       "farcaster_title": "你已解锁\nRainbowcast",
       "redacted_description": "一个专属的 Rainbow 图标，供真正的 Gdupi 爱好者使用。",
       "redacted_title": "您已解锁\n Redacted Rainbow",
+      "baggy_description": "从街头到链，这个小袋子承载了你的便携彩虹氛围。品尝颜色，感受不同。",
+      "baggy_title": "您已解锁\n Rainbow Baggy",
       "button": "解锁图标"
     },
     "explain": {
@@ -1149,6 +1184,30 @@
         "title": "没有检测到 %{networkName} %{gasToken}",
         "text": "如果您继续进行此交易，您将无法使用 %{networkName} ， %{networkName} ， %{gasToken}来进行互换、跨链或转账您的 %{networkName} 代币，除非您将 %{networkName} 和 %{gasToken} 添加到您的钱包中。",
         "button": "无论如何都要继续"
+      },
+      "ens_primary_name": {
+        "title": "设置我的 ENS 名称意味着什么？",
+        "text": "人们可以在 dApps 中输入您的 .eth 名称，而不是您的完整 Ethereum 地址来向您发送东西，dApps 也可以使用您的 .eth 名称和个人资料来显示您的信息。这也被称为将 ENS 名称设置为“primary”。"
+      },
+      "ens_on_chain_data_warning": {
+        "title": "注意！",
+        "text": "您在此提供的数据将存储在 Ethereum 区块链上——这意味着它对所有人可见，任何人都可访问。请勿分享您不愿公开的数据。"
+      },
+      "ens_manager": {
+        "title": ".eth 管理器是什么？",
+        "text": ".eth 名称的管理器可以设置和更新其记录，创建该名称的子域或管理其配置。管理器由 .eth 名称的所有者设置，也被称为 ENS 名称的控制器。"
+      },
+      "ens_owner": {
+        "title": ".eth 名称的所有者是什么？",
+        "text": "一个.eth 名称的所有者对该名称拥有完全和最终的控制权。他们可以转让该名称的所有权，并根据需要允许其他人代表他们管理该名称（设置记录等）。所有者也被称为 ENS 名称的注册人。"
+      },
+      "ens_resolver": {
+        "title": "什么是 .eth 解析器？",
+        "text": "解析器是一个合约，它将名称映射到资源（例如，加密货币地址、内容哈希等）。解析器通过注册表的解析器字段被指向。"
+      },
+      "ens_configuration": {
+        "title": "这些选项是什么意思？",
+        "text": "当将 ENS 名称发送给他人并使其成为新的 ENS 名称所有者时，您可能希望预先为他们配置它，以节省未来的交易。Rainbow 允许您清除当前设置的名称的任何配置文件信息，将 ENS 名称指向接收者的地址，并使接收者地址成为名称的管理者。"
       }
     },
     "fedora": {
@@ -1632,7 +1691,7 @@
         "invalid_referral_code_alert": "推荐码无效。请检查您的代码然后再试一次。",
         "no_balance_alert": "要注册消费积分，您的钱包余额必须不为零。",
         "referral_link_is_ready": "您的推荐链接已准备好",
-        "referral_link_bonus_text": "在Twitter上分享您的推荐链接，额外获得250积分",
+        "referral_link_bonus_text": "转发您的推荐链接，您将获得您推荐的任何人所赚取积分的 10%",
         "referral_link_bonus_text_extended": "您将赚取您推荐的每个人所获得积分的10%",
         "complete_onboarding": "完成",
         "share_to_x": "分享至X",
@@ -1986,6 +2045,9 @@
       "rewards": "奖励",
       "pools": "池"
     },
+    "profile": {
+      "title": "活动"
+    },
     "savings": {
       "deposit": "存款",
       "deposit_from_wallet": "从钱包存款",
@@ -2033,20 +2095,62 @@
       "backup_google_account": "Google账户",
       "currency": {
         "title": "货币",
-        "ETH": "以太坊",
-        "USD": "美元",
-        "EUR": "欧元",
-        "GBP": "英镑",
-        "AUD": "澳大利亚元",
-        "CNY": "人民币",
-        "KRW": "韩元",
-        "JPY": "日元",
-        "RUB": "卢布",
-        "INR": "印度卢比",
-        "TRY": "土耳其里拉",
-        "CAD": "加拿大元",
-        "NZD": "新西兰元",
-        "ZAR": "南非兰特"
+        "ETH": {
+          "label": "以太坊",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "美元",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "欧元",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "英镑",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "澳大利亚元",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "人民币",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "韩元",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "日元",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "卢布",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "印度卢比",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "土耳其里拉",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "加拿大元",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "新西兰元",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "南非兰特",
+          "code": "ZAR"
+        }
       },
       "app_icon": "应用图标",
       "developer": "开发者设置",
@@ -2829,6 +2933,7 @@
         "find_a_code": "查找要扫描的代码",
         "qr_1_app_connected": "1个已连接的应用",
         "qr_multiple_apps_connected": "%{appsConnectedCount} 个已连接的应用",
+        "scan_to_connect": "扫描以连接",
         "scan_to_pay_or_connect": "扫描以支付或连接",
         "simulator_mode": "模拟器模式",
         "sorry_could_not_be_recognized": "对不起，无法识别该二维码。",
@@ -2888,6 +2993,7 @@
         "sending_title": "发送中",
         "you_own_this_wallet": "您拥有这个钱包",
         "first_time_send": "首次发送",
+        "previous_send": "%{number} 之前的发送",
         "previous_sends": "%{number} 之前的发送"
       },
       "wallet_connect": {
@@ -3181,7 +3287,8 @@
       "show_less": "显示较少",
       "more": "更多",
       "show_more": "更多网络",
-      "all_networks": "所有网络"
+      "all_networks": "所有网络",
+      "search": "搜索"
     },
     "token_launcher": {
       "airdrop": {
@@ -3340,10 +3447,78 @@
         "to_claim_on": "在 %{network} 上领取",
         "view_coin": "查看代币",
         "you": "你"
+      },
+      "errors": {
+        "header": "发行代币失败",
+        "api_request_failed": "API请求失败",
+        "api_response_invalid": "API响应无效",
+        "contract_interaction_failed": "合约互动失败",
+        "gas_estimation_failed": "燃气估算失败",
+        "insufficient_funds": "资金不足",
+        "submission_details_missing": "缺少提交详情",
+        "transaction_rejected": "交易被拒绝",
+        "transaction_failed": "交易失败",
+        "transaction_simulation_failed": "交易模拟失败",
+        "unknown_error": "未知错误",
+        "wallet_connection_error": "钱包连接错误",
+        "invalid_params": "参数无效",
+        "missing_required_param": "缺少必需的参数"
       }
     },
     "done": "完成",
     "copy": "复制",
-    "paste": "粘贴"
+    "paste": "粘贴",
+    "market_data": {
+      "vol": "交易量",
+      "price": "价格",
+      "mcap": "市值"
+    },
+    "king_of_hill": {
+      "title": "发射台",
+      "launch": "推出",
+      "current_king": "当前霸主",
+      "last_winner": "上轮赢家",
+      "no_previous_winner": "没有上轮赢家",
+      "round_ends_in": "此轮结束于",
+      "how_it_works": "如何运作",
+      "starting_next_round": "开始下一轮",
+      "left": "剩余",
+      "king_of_the_hill": "山中之王",
+      "name": "名称",
+      "explain_sheet": {
+        "next": "下一步",
+        "got_it": "我知道了",
+        "steps": {
+          "step_1": {
+            "title": "比赛进行中",
+            "subtitle_parts": [
+              "当前交易量最大的代币",
+              "买入量",
+              "现在是当前的王者。"
+            ]
+          },
+          "step_2": {
+            "title": "每天一个王冠",
+            "subtitle_parts": [
+              "在",
+              "午夜（UTC时间12:00），",
+              "领先的代币被加冕为每日赢家。"
+            ]
+          },
+          "step_3": {
+            "title": "赢得奖励",
+            "subtitle_parts": [
+              "当前王者的买家获得",
+              "2倍积分。"
+            ],
+            "subtitle_two_parts": [
+              "创作者",
+              "当被加冕时",
+              "获得积分。"
+            ]
+          }
+        }
+      }
+    }
   }
 }

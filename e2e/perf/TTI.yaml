@@ -1,0 +1,7 @@
+appId: ${APP_ID}
+tags:
+  - perf
+---
+- launchApp
+- assertVisible:
+    id: eth-card

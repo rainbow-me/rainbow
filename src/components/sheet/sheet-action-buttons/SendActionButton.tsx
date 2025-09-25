@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import SheetActionButton, { SheetActionButtonProps } from './SheetActionButton';
 import Routes from '@/navigation/routesNames';
@@ -15,14 +15,14 @@ type SendActionButtonProps = SheetActionButtonProps & {
 function SendActionButton({ asset, color: givenColor, textColor, ...props }: SendActionButtonProps) {
   const color = givenColor || colors.paleBlue;
   const navigate = useNavigationForNonReadOnlyWallets();
-  const handlePress = useCallback(
-    () =>
-      navigate(Routes.SEND_FLOW, {
-        asset,
-        ...(IS_IOS ? { screen: Routes.SEND_SHEET, params: { asset } } : {}),
-      }),
-    [navigate, asset]
-  );
+
+  const handlePress = useCallback(() => {
+    if (IS_IOS) {
+      navigate(Routes.SEND_FLOW, { screen: Routes.SEND_SHEET, params: { asset } });
+    } else {
+      navigate(Routes.SEND_FLOW, { asset });
+    }
+  }, [asset, navigate]);
 
   return (
     <SheetActionButton
@@ -34,7 +34,7 @@ function SendActionButton({ asset, color: givenColor, textColor, ...props }: Sen
       testID="send"
     >
       <Text align="center" color={textColor ? { custom: textColor } : 'label'} size="20pt" weight="heavy">
-        {lang.t('button.send')}
+        {i18n.t(i18n.l.button.send)}
       </Text>
     </SheetActionButton>
   );

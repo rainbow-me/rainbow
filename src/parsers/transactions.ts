@@ -7,6 +7,9 @@ import {
   TransactionStatus,
   TransactionType,
   TransactionApiResponse,
+  TransactionTypeMap,
+  TransactionWithChangesType,
+  TransactionWithoutChangesType,
 } from '@/entities';
 
 import {
@@ -49,7 +52,7 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
   return changes?.[0]?.asset;
 };
 
-export const parseTransaction = async (
+export const parseTransaction = (
   transaction: TransactionApiResponse,
   nativeCurrency: NativeCurrencyKey,
   chainId: ChainId
@@ -114,7 +117,7 @@ export const parseTransaction = async (
     chainId,
     from: txn.addressFrom,
     to,
-    title: `${type}.${status}`,
+    title: buildTransactionTitle(type, status),
     description,
     hash,
     network: txn.network,
@@ -144,6 +147,7 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
 
   return {
     ...tx,
+    asset,
     status: TransactionStatus.pending,
     data: tx.data,
     title: `${tx.type}.${tx.status}`,
@@ -197,6 +201,16 @@ export const getDescription = (asset: ParsedAsset | undefined, type: Transaction
 
 export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
   !!type &&
-  (TransactionType.withChanges.includes(type as TransactionType) ||
-    TransactionType.withoutChanges.includes(type as TransactionType) ||
-    type === ('sale' as TransactionType));
+  (TransactionTypeMap.withChanges.includes(type as TransactionWithChangesType) ||
+    TransactionTypeMap.withoutChanges.includes(type as TransactionWithoutChangesType) ||
+    type === 'sale');
+
+export const isValidTransactionStatus = (status: unknown): status is TransactionStatus =>
+  status === TransactionStatus.confirmed || status === TransactionStatus.failed || status === TransactionStatus.pending;
+
+/**
+ * Builds a transaction `title` from a transaction `type` and `status`.
+ */
+export function buildTransactionTitle(type: TransactionType, status: TransactionStatus): string {
+  return `${type}.${status}`;
+}

@@ -37,7 +37,7 @@ import { Contract } from '@ethersproject/contracts';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';
 import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -82,12 +82,25 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
   return { address, chainId: +networkOrChainId };
 };
 
-const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
+/**
+ * Synchronously get native asset from cache. Fast but may return stale/missing data.
+ * @param chainId - The chain to get native asset for
+ * @param address - Optional wallet address (defaults to global selected wallet)
+ * @returns Cached native asset or undefined if not in store
+ */
+const getNetworkNativeAsset = ({ chainId, address }: { chainId: ChainId; address?: EthereumAddress }) => {
   const nativeAssetAddress = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId].address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
-  return getAccountAsset(nativeAssetUniqueId);
+  return getAccountAsset(nativeAssetUniqueId, address);
 };
 
+/**
+ * Asynchronously get native asset with fresh balance. Accurate but slower.
+ * Falls back to external API + blockchain if cache miss or different wallet.
+ * @param chainId - The chain to get native asset for
+ * @param address - Optional wallet address (defaults to global selected wallet)
+ * @returns Native asset with up-to-date balance from cache, API, or blockchain
+ */
 export const getNativeAssetForNetwork = async ({
   chainId,
   address,
@@ -179,9 +192,14 @@ const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
   return accountAsset ?? externalAsset;
 };
 
-const getAccountAsset = (uniqueId: EthereumAddress): ParsedAddressAsset | undefined => {
+/**
+ * Get asset from a specific wallet's cache.
+ * @param uniqueId - The asset's unique identifier (address_chainId)
+ * @param address - Optional wallet address (defaults to global selected wallet)
+ */
+const getAccountAsset = (uniqueId: EthereumAddress, address?: EthereumAddress): ParsedAddressAsset | undefined => {
   const loweredUniqueId = uniqueId.toLowerCase();
-  return userAssetsStore.getState().getLegacyUserAsset(loweredUniqueId) ?? undefined;
+  return userAssetsStore.getState(address).getLegacyUserAsset(loweredUniqueId) ?? undefined;
 };
 
 const getAssetPrice = (
@@ -392,7 +410,7 @@ async function parseEthereumUrl(data: string) {
   try {
     ethUrl = parse(data);
   } catch (e) {
-    Alert.alert(lang.t('wallet.alerts.invalid_ethereum_url'));
+    Alert.alert(i18n.t(i18n.l.wallet.alerts.invalid_ethereum_url));
     return;
   }
 
@@ -410,7 +428,7 @@ async function parseEthereumUrl(data: string) {
     asset = getNetworkNativeAsset({ chainId });
 
     if (!asset || isZero(asset?.balance?.amount ?? '0')) {
-      Alert.alert(lang.t('wallet.alerts.ooops'), lang.t('wallet.alerts.dont_have_asset_in_wallet'));
+      Alert.alert(i18n.t(i18n.l.wallet.alerts.ooops), i18n.t(i18n.l.wallet.alerts.dont_have_asset_in_wallet));
       return;
     }
     address = ethUrl.target_address;
@@ -420,13 +438,13 @@ async function parseEthereumUrl(data: string) {
     const targetUniqueId = getUniqueId(ethUrl.target_address, chainId);
     asset = getAccountAsset(targetUniqueId);
     if (!asset || isZero(asset?.balance?.amount ?? '0')) {
-      Alert.alert(lang.t('wallet.alerts.ooops'), lang.t('wallet.alerts.dont_have_asset_in_wallet'));
+      Alert.alert(i18n.t(i18n.l.wallet.alerts.ooops), i18n.t(i18n.l.wallet.alerts.dont_have_asset_in_wallet));
       return;
     }
     address = ethUrl.parameters?.address;
     nativeAmount = ethUrl.parameters?.uint256 && convertRawAmountToDecimalFormat(ethUrl.parameters.uint256, asset.decimals);
   } else {
-    Alert.alert(lang.t('wallet.alerts.this_action_not_supported'));
+    Alert.alert(i18n.t(i18n.l.wallet.alerts.this_action_not_supported));
     return;
   }
 

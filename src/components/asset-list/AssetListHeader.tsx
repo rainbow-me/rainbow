@@ -1,6 +1,6 @@
 import { IS_TEST } from '@/env';
 import { useDimensions } from '@/hooks';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -164,7 +164,7 @@ const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalVal
             />
           </WalletSelectButtonWrapper>
         )}
-        {isLoadingUserAssets && title !== lang.t(lang.l.account.tab_collectibles) ? (
+        {isLoadingUserAssets && title !== i18n.t(i18n.l.account.tab_collectibles) ? (
           <TotalAmountSkeleton>
             <FakeText height={16} width={placeholderWidth} />
           </TotalAmountSkeleton>

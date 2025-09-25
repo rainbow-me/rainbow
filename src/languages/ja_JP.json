@@ -47,6 +47,7 @@
       "unknown_token": "不明なトークン"
     },
     "activity_list": {
+      "title": "アクティビティ",
       "empty_state": {
         "default_label": "まだ取引はありません",
         "recycler_label": "まだ取引はありません",
@@ -140,7 +141,7 @@
         "choose_backup_cloud_description": "デバイスを紛失したり新しいものを購入した場合に復元できるように、%{cloudPlatform}に安全にウォレットをバックアップしましょう。",
         "choose_backup_manual_description": "秘密のフレーズを安全な場所に保存して、手動でウォレットをバックアップしてください。",
         "enable_cloud_backups_description": "ウォレットを手動でバックアップすることを好む場合、以下で行うことができます。",
-        "latest_backup": "最後のバックアップ: %{date}",
+        "latest_backup": "最新のバックアップ: %{date}",
         "back_up_all_wallets_to_cloud": "すべてのウォレットを%{cloudPlatformName}にバックアップ",
         "most_recent_backup": "最も最近のバックアップ",
         "out_of_date": "最新ではありません",
@@ -467,6 +468,9 @@
         "quote_error": "見積りエラー",
         "no_route_found": "ルートが見つかりません",
         "fetching_quote": "見積もりを取得中...",
+        "rainbow_eth_rewards": "Rainbow ETH報酬",
+        "merkl_claimable": "%{dappName} Vault",
+        "merkl_claimable_description": "%{assetSymbols} 戦略",
         "select_a_network": "ネットワークを選択",
         "select_a_token": "トークンを選択",
         "amount_to_claim_on_network": "%{amount}を%{network}で請求する",
@@ -476,6 +480,9 @@
         "claimed": "主張済み!",
         "claiming_failed": "主張失敗",
         "insufficient_funds": "資金が不足しています",
+        "hold_to_claim": "主張するまでホールド",
+        "creator_lp_fees": "クリエイターLP手数料",
+        "rainbow_token_launcher": "レインボートークンローンチャー",
         "claim_amount": "%{amount}を請求",
         "done": "完了",
         "try_again": "再試行",
@@ -519,9 +526,10 @@
       "alert": "アラート",
       "analyze_env_variables": "環境変数を解析",
       "analyze_react_query": "React Queryを解析",
+      "analyze_user_assets_query": "ユーザー資産クエリを解析",
       "applied": "適用済み",
-      "backups_deleted_successfully": "バックアップが正常に削除されました",
-      "clear_async_storage": "非同期ストレージをクリア",
+      "backups_deleted_successfully": "バックアップは正常に削除されました",
+      "clear_async_storage": "AsyncStorageをクリア",
       "clear_pending_txs": "保留中のトランザクションをクリア",
       "clear_image_cache": "画像キャッシュをクリア",
       "clear_image_metadata_cache": "クリアイメージメタデータキャッシュ",
@@ -532,23 +540,23 @@
       "copy_fcm_token": "FCMトークンをコピー",
       "copy_log_lines": "ログラインをコピー",
       "copy_signing_wallet_address": "署名ウォレットアドレスをコピー",
-      "disconnect_to_anvil": "anvilから切断する",
-      "crash_app_render_error": "アプリをクラッシュさせる（レンダーエラー）",
+      "disconnect_to_anvil": "Anvilから切断",
+      "crash_app_render_error": "アプリクラッシュ（レンダーエラー）",
       "enable_testnets": "テストネットを有効にする",
-      "installing_update": "アップデートをインストール中",
+      "installing_update": "アップデートのインストール",
       "navigation_entry_point": "ナビゲーションエントリーポイント",
-      "no_update": "アップデートはありません",
+      "no_update": "アップデートなし",
       "not_applied": "適用されていません",
       "notifications_debug": "通知デバッグ",
-      "remove_all_backups": "すべてのバックアップを削除する",
+      "remove_all_backups": "すべてのバックアップを削除",
       "keychain": {
         "menu_title": "キーチェーンをリセットする",
-        "delete_wallets": "すべてのウォレットを削除する",
+        "delete_wallets": "すべてのウォレットを削除",
         "alert_title": "注意！",
         "alert_body": "🚨🚨🚨 \nこれによりすべてのウォレットの秘密鍵とデータが永久に削除されますので、続行する前にバックアップされていることを確認してください！ \n🚨🚨🚨"
       },
       "restart_app": "アプリを再起動",
-      "reset_experimental_config": "実験的な設定をリセット",
+      "reset_experimental_config": "実験的なコンフィグをリセット",
       "status": "ステータス",
       "sync_codepush": "CodePushを同期"
     },
@@ -559,7 +567,6 @@
         "trading_at_prefix": "取引中の"
       },
       "search": {
-        "profiles": "プロフィール",
         "search_ethereum": "Ethereum全体を検索",
         "search_ethereum_short": "Ethereumを検索",
         "search": "検索する",
@@ -604,6 +611,7 @@
         "expires_in": "%{minutes}分後に期限切れになります",
         "from_divider": "送信元",
         "to_divider": "to",
+        "token": "トークン",
         "view_on": "%{blockExplorerName}で表示する",
         "view_on_etherscan": "Etherscanで見る",
         "copy_contract_address": "契約アドレスをコピー"
@@ -654,9 +662,7 @@
         "small_market_try_smaller_amount": "小さな市場 — より小さい金額を試してください",
         "you_are_losing": "価格インパクト %{priceImpact}",
         "you_are_losing_prefix": "損失が発生しています",
-        "no_data": "市場価値不明",
-        "label": "可能な損失",
-        "no_data_subtitle": "続行する場合は、提示された金額に満足していることを確認してください。"
+        "label": "可能な損失"
       },
       "source": {
         "rainbow": "自動",
@@ -727,6 +733,7 @@
           "circulating_supply": "流通供給量",
           "max_supply": "最大供給量",
           "fully_diluted_valuation": "完全に希釈された時価総額",
+          "created_by": "作成者",
           "market_cap": "時価総額",
           "created": "作成日",
           "volume_24_hours": "24時間のボリューム",
@@ -747,9 +754,35 @@
         "about": {
           "title": "概要",
           "what_is": "%{assetName}とは何ですか？"
+        },
+        "history": {
+          "title": "履歴",
+          "tabs": {
+            "all": "全て",
+            "buys": "購入",
+            "sells": "売却"
+          },
+          "more": "もっと",
+          "less": "少ない",
+          "bought": "購入済み",
+          "sold": "売却済み",
+          "received": "受信済み",
+          "sent": "送信済み",
+          "unknown": "不明"
         }
       },
       "chart": {
+        "candlestick": {
+          "candle_field_labels": {
+            "c": "閉じる",
+            "h": "H",
+            "l": "L",
+            "o": "開く",
+            "t": "",
+            "v": "V"
+          },
+          "no_volume_label": "なし"
+        },
         "all_time": "すべての時間",
         "date": {
           "months": {
@@ -770,7 +803,7 @@
         "no_chart_data": "チャートデータがありません",
         "no_price_data": "価格データがありません",
         "past_timespan": "過去 %{formattedTimespan}",
-        "today": "今日",
+        "today": "過去の日",
         "token_pool": "%{tokenName} プール"
       },
       "contact_profile": {
@@ -929,6 +962,8 @@
       "farcaster_title": "アンロック\nRainbowcast",
       "redacted_description": "真のGdupi愛好者のための独占的なRainbowアイコン。",
       "redacted_title": "ロック解除されました\nRedacted Rainbow",
+      "baggy_description": "街からチェーンまで、この小さなバッグはあなたのポータブルなRainbowのエッセンスを持ち運びます。色を味わい、違いを感じてください。",
+      "baggy_title": "アンロック\n Rainbow Baggy",
       "button": "アイコンをキャッチ"
     },
     "explain": {
@@ -1149,6 +1184,30 @@
         "title": "%{networkName} %{gasToken} が検出されません",
         "text": "この取引を進めると、 %{networkName} %{gasToken}なしでは %{networkName} を使用できません。この取引を行うと、 %{networkName} トークンをスワップ、ブリッジ、または転送する際に、ウォレットに %{networkName} %{gasToken} を追加することができません。",
         "button": "それでも進める"
+      },
+      "ens_primary_name": {
+        "title": "ENS名を設定するとはどういう意味ですか？",
+        "text": "他のユーザーが何かを送信したいときに、完全なEthereumアドレスの代わりにdAppsで.eth名を入力できるようになります。dAppsは.eth名とプロフィールを使用してあなたに関する情報を表示できます。これは、ENS名を\"primary\"（プライマリ）に設定するとも知られています。"
+      },
+      "ens_on_chain_data_warning": {
+        "title": "注意！",
+        "text": "ここで提供したデータはEthereumブロックチェーンに保存されます。それは、誰にでも見られ、アクセス可能であることを意味します。公開することに不安を感じるデータは共有しないでください。"
+      },
+      "ens_manager": {
+        "title": ".ethマネージャーとは何ですか？",
+        "text": ".eth名のマネージャーは、そのレコードを設定および更新したり、その名前のサブドメインを作成したり、その設定を管理したりできます。マネージャーは.eth名の所有者によって設定され、ENS名のコントローラーとしても知られています。"
+      },
+      "ens_owner": {
+        "title": ".eth名の所有者とは何ですか？",
+        "text": "eth 名称の所有者は、その名称に対して完全かつ最終的な管理権を持ちます。所有者は、その名称の所有権を移転し、他の人がその名称を管理できるようにすることができます（レコード設定など）。所有者はまた、ENS 名称の登録者としても知られています。"
+      },
+      "ens_resolver": {
+        "title": ".eth レゾルバとは何ですか？",
+        "text": "レゾルバは、名称とリソース（例：暗号通貨アドレス、コンテンツハッシュなど）をマッピングするコントラクトです。レゾルバはレジストリのレゾルバフィールドで指定されています。"
+      },
+      "ens_configuration": {
+        "title": "これらのオプションは何を意味しますか？",
+        "text": "ENS 名称を他者に送信し、新しい ENS 名称所有者にする場合、事前に設定を行い、将来の取引を省くことを考えるかもしれません。Rainbow は、現在設定されているプロフィール情報をクリアし、ENS 名称を受信者のアドレスを指すように設定し、受信者アドレスを名称の管理者とすることを可能にします。"
       }
     },
     "fedora": {
@@ -1632,7 +1691,7 @@
         "invalid_referral_code_alert": "紹介コードが無効です。コードを再確認してもう一度お試しください。",
         "no_balance_alert": "ポイントに登録するには、ウォレット残高がゼロでない必要があります。",
         "referral_link_is_ready": "あなたの紹介リンクは準備ができました",
-        "referral_link_bonus_text": "紹介リンクをツイートして、さらに250ポイントをゲット",
+        "referral_link_bonus_text": "紹介リンクをツイートすると、紹介した人が獲得したポイントの<b>10</b>％を獲得できます",
         "referral_link_bonus_text_extended": "さらに紹介した人が獲得したポイントの10%を獲得します",
         "complete_onboarding": "完了",
         "share_to_x": "Xにシェアする",
@@ -1986,6 +2045,9 @@
       "rewards": "報酬",
       "pools": "プール"
     },
+    "profile": {
+      "title": "アクティビティ"
+    },
     "savings": {
       "deposit": "預金",
       "deposit_from_wallet": "ウォレットからの預金",
@@ -2033,20 +2095,62 @@
       "backup_google_account": "Google Account",
       "currency": {
         "title": "通貨",
-        "ETH": "イーサリアム",
-        "USD": "米ドル",
-        "EUR": "ユーロ",
-        "GBP": "英ポンド",
-        "AUD": "豪ドル",
-        "CNY": "人民元",
-        "KRW": "韓国ウォン",
-        "JPY": "日本円",
-        "RUB": "ロシアルーブル",
-        "INR": "インドルピー",
-        "TRY": "トルコリラ",
-        "CAD": "カナダドル",
-        "NZD": "ニュージーランドドル",
-        "ZAR": "南アフリカランド"
+        "ETH": {
+          "label": "イーサリアム",
+          "code": "ETH"
+        },
+        "USD": {
+          "label": "米ドル",
+          "code": "USD"
+        },
+        "EUR": {
+          "label": "ユーロ",
+          "code": "EUR"
+        },
+        "GBP": {
+          "label": "英ポンド",
+          "code": "GBP"
+        },
+        "AUD": {
+          "label": "豪ドル",
+          "code": "AUD"
+        },
+        "CNY": {
+          "label": "人民元",
+          "code": "CNY"
+        },
+        "KRW": {
+          "label": "韓国ウォン",
+          "code": "KRW"
+        },
+        "JPY": {
+          "label": "日本円",
+          "code": "JPY"
+        },
+        "RUB": {
+          "label": "ロシアルーブル",
+          "code": "RUB"
+        },
+        "INR": {
+          "label": "インドルピー",
+          "code": "INR"
+        },
+        "TRY": {
+          "label": "トルコリラ",
+          "code": "TRY"
+        },
+        "CAD": {
+          "label": "カナダドル",
+          "code": "CAD"
+        },
+        "NZD": {
+          "label": "ニュージーランドドル",
+          "code": "NZD"
+        },
+        "ZAR": {
+          "label": "南アフリカランド",
+          "code": "ZAR"
+        }
       },
       "app_icon": "App Icon",
       "developer": "Developer Settings",
@@ -2054,7 +2158,7 @@
       "feedback_and_reports": "Feedback & Bug Reports",
       "feedback_and_support": "Feedback and Support",
       "follow_us_on_twitter": "Follow us on Twitter",
-      "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
+      "hey_friend_message": "👋️ Hey friend! Rainbowをダウンロードするべきです。これは私のお気に入りのイーサリアムウォレットです 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "設定",
       "language": "Language",
       "learn": "Learn about Ethereum",
@@ -2829,6 +2933,7 @@
         "find_a_code": "スキャンするコードを見つける",
         "qr_1_app_connected": "1つの連携アプリ",
         "qr_multiple_apps_connected": "%{appsConnectedCount} 接続されたアプリ",
+        "scan_to_connect": "スキャンして接続",
         "scan_to_pay_or_connect": "支払いまたは接続するためにスキャン",
         "simulator_mode": "シミュレーターモード",
         "sorry_could_not_be_recognized": "申し訳ありませんが、このQRコードは認識されませんでした。",
@@ -2888,6 +2993,7 @@
         "sending_title": "送信中",
         "you_own_this_wallet": "このウォレットはあなたのものです",
         "first_time_send": "初めての送信",
+        "previous_send": "%{number} 回の前の送信",
         "previous_sends": "%{number} 回の前の送信"
       },
       "wallet_connect": {
@@ -3181,7 +3287,8 @@
       "show_less": "表示を減らす",
       "more": "もっと",
       "show_more": "もっとネットワークを見る",
-      "all_networks": "全てのネットワーク"
+      "all_networks": "全てのネットワーク",
+      "search": "検索する"
     },
     "token_launcher": {
       "airdrop": {
@@ -3340,10 +3447,78 @@
         "to_claim_on": "%{network}で請求",
         "view_coin": "コインを見る",
         "you": "あなた"
+      },
+      "errors": {
+        "header": "トークンの発行エラー",
+        "api_request_failed": "APIリクエストが失敗しました",
+        "api_response_invalid": "API応答が無効です",
+        "contract_interaction_failed": "契約相互作用が失敗しました",
+        "gas_estimation_failed": "ガス見積もりが失敗しました",
+        "insufficient_funds": "資金が不足しています",
+        "submission_details_missing": "提出の詳細が不足しています",
+        "transaction_rejected": "トランザクションが拒否されました",
+        "transaction_failed": "トランザクションが失敗しました",
+        "transaction_simulation_failed": "トランザクションシミュレーションが失敗しました",
+        "unknown_error": "不明なエラー",
+        "wallet_connection_error": "ウォレット接続エラー",
+        "invalid_params": "無効なパラメータ",
+        "missing_required_param": "必要なパラメータが不足しています"
       }
     },
     "done": "完了",
     "copy": "Copy",
-    "paste": "貼り付け"
+    "paste": "貼り付け",
+    "market_data": {
+      "vol": "ボリューム",
+      "price": "価格",
+      "mcap": "時価総額"
+    },
+    "king_of_hill": {
+      "title": "ローンチパッド",
+      "launch": "ローンチ",
+      "current_king": "現在のキング",
+      "last_winner": "最後の勝者",
+      "no_previous_winner": "以前の勝者はいません",
+      "round_ends_in": "ラウンドが終了するまで",
+      "how_it_works": "仕組み",
+      "starting_next_round": "次のラウンド開始",
+      "left": "残り",
+      "king_of_the_hill": "キング・オブ・ザ・ヒル",
+      "name": "名前",
+      "explain_sheet": {
+        "next": "次へ",
+        "got_it": "理解しました",
+        "steps": {
+          "step_1": {
+            "title": "レースが開始",
+            "subtitle_parts": [
+              "ほとんどの",
+              " 購入ボリューム ",
+              "今現在、これは現行のキングです。"
+            ]
+          },
+          "step_2": {
+            "title": "1日に1つの王冠",
+            "subtitle_parts": [
+              "午前零時（UTC）、",
+              "深夜 (午前0:00 UTC)",
+              "リーディングトークンが日ごとの勝者として戴冠します。"
+            ]
+          },
+          "step_3": {
+            "title": "リワードを得る",
+            "subtitle_parts": [
+              "現在のキングの購入者は",
+              " 2倍ポイントをもらえます。"
+            ],
+            "subtitle_two_parts": [
+              "クリエイター",
+              " ポイントを獲得 ",
+              "戴冠時に。"
+            ]
+          }
+        }
+      }
+    }
   }
 }

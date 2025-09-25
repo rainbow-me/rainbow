@@ -23,7 +23,7 @@ import { colors } from '@/styles';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
@@ -75,7 +75,7 @@ function TransactionActionRow({
             backgroundColor={accentColor ?? ''}
             disabled={!isSufficientGas || !isValidGas}
             hideInnerBorder
-            label={insufficientEth ? lang.t('profiles.confirm.insufficient_eth') : label}
+            label={insufficientEth ? i18n.t(i18n.l.profiles.confirm.insufficient_eth) : label}
             onLongPress={action}
             parentHorizontalPadding={19}
             showBiometryIcon={!insufficientEth}
@@ -170,13 +170,13 @@ export default function ENSConfirmRegisterSheet() {
   }, [goBack, navigate]);
 
   const stepLabel = useMemo(() => {
-    if (mode === REGISTRATION_MODES.EDIT) return lang.t('profiles.confirm.confirm_updates');
-    if (mode === REGISTRATION_MODES.RENEW) return lang.t('profiles.confirm.extend_registration');
-    if (step === REGISTRATION_STEPS.COMMIT) return lang.t('profiles.confirm.registration_details');
-    if (step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) return lang.t('profiles.confirm.requesting_register');
-    if (step === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) return lang.t('profiles.confirm.reserving_name');
-    if (step === REGISTRATION_STEPS.REGISTER) return lang.t('profiles.confirm.confirm_registration');
-    if (step === REGISTRATION_STEPS.SET_NAME) return lang.t('profiles.confirm.set_name_registration');
+    if (mode === REGISTRATION_MODES.EDIT) return i18n.t(i18n.l.profiles.confirm.confirm_updates);
+    if (mode === REGISTRATION_MODES.RENEW) return i18n.t(i18n.l.profiles.confirm.extend_registration);
+    if (step === REGISTRATION_STEPS.COMMIT) return i18n.t(i18n.l.profiles.confirm.registration_details);
+    if (step === REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION) return i18n.t(i18n.l.profiles.confirm.requesting_register);
+    if (step === REGISTRATION_STEPS.WAIT_ENS_COMMITMENT) return i18n.t(i18n.l.profiles.confirm.reserving_name);
+    if (step === REGISTRATION_STEPS.REGISTER) return i18n.t(i18n.l.profiles.confirm.confirm_registration);
+    if (step === REGISTRATION_STEPS.SET_NAME) return i18n.t(i18n.l.profiles.confirm.set_name_registration);
   }, [mode, step]);
 
   const onMountSecondsSinceCommitConfirmed = useMemo(
@@ -245,7 +245,7 @@ export default function ENSConfirmRegisterSheet() {
           action={action}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForRegistration && registrationCostsData?.isSufficientGasForStep)}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={lang.t('profiles.confirm.hold_to_begin')}
+          label={i18n.t(i18n.l.profiles.confirm.hold_to_begin)}
           testID={step}
         />
       ),
@@ -255,7 +255,7 @@ export default function ENSConfirmRegisterSheet() {
           action={() => (action as ActionTypes[REGISTRATION_STEPS.REGISTER])(goToProfileScreen)}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={lang.t('profiles.confirm.hold_to_register')}
+          label={i18n.t(i18n.l.profiles.confirm.hold_to_register)}
           testID={step}
         />
       ),
@@ -265,7 +265,7 @@ export default function ENSConfirmRegisterSheet() {
           action={() => (action as ActionTypes[REGISTRATION_STEPS.RENEW])(goToProfileScreen)}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForRegistration && registrationCostsData?.isSufficientGasForStep)}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={lang.t('profiles.confirm.hold_to_extend')}
+          label={i18n.t(i18n.l.profiles.confirm.hold_to_extend)}
           testID={step}
         />
       ),
@@ -275,7 +275,7 @@ export default function ENSConfirmRegisterSheet() {
           action={() => (action as ActionTypes[REGISTRATION_STEPS.EDIT])(goToProfileScreen)}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={lang.t('profiles.confirm.hold_to_confirm')}
+          label={i18n.t(i18n.l.profiles.confirm.hold_to_confirm)}
           testID={step}
         />
       ),
@@ -285,7 +285,7 @@ export default function ENSConfirmRegisterSheet() {
           action={() => (action as ActionTypes[REGISTRATION_STEPS.SET_NAME])(goToProfileScreen)}
           isSufficientGas={Boolean(registrationCostsData?.isSufficientGasForStep)}
           isValidGas={Boolean(registrationCostsData?.isValidGas && registrationCostsData?.stepGasLimit)}
-          label={lang.t('profiles.confirm.hold_to_confirm')}
+          label={i18n.t(i18n.l.profiles.confirm.hold_to_confirm)}
           testID={step}
         />
       ),
@@ -323,7 +323,7 @@ export default function ENSConfirmRegisterSheet() {
   return (
     <SlackSheet
       additionalTopPadding
-      contentHeight={params.longFormHeight || ENSConfirmRegisterSheetHeight}
+      contentHeight={params?.longFormHeight || ENSConfirmRegisterSheetHeight}
       height="100%"
       scrollEnabled={false}
     >
@@ -333,7 +333,7 @@ export default function ENSConfirmRegisterSheet() {
           paddingTop="19px (Deprecated)"
           paddingVertical="30px (Deprecated)"
           style={{
-            height: params.longFormHeight || ENSConfirmRegisterSheetHeight,
+            height: params?.longFormHeight || ENSConfirmRegisterSheetHeight,
           }}
           testID="ens-confirm-register-sheet"
         >

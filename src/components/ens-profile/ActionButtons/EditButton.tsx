@@ -1,9 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSRegistration } from '@/hooks';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 
 export default function WatchButton({ ensName }: { ensName?: string }) {
@@ -22,7 +22,7 @@ export default function WatchButton({ ensName }: { ensName?: string }) {
 
   return (
     <ActionButton onPress={handlePressEdit} testID="edit-profile-button" variant="outlined">
-      {lang.t('profiles.actions.edit_profile')}
+      {i18n.t(i18n.l.profiles.actions.edit_profile)}
     </ActionButton>
   );
 }

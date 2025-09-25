@@ -9,6 +9,7 @@ import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
 import { logger } from '@/logger';
 import 'fast-text-encoding';
 import globalVariables from './globalVariables';
+import { Event, EventTarget } from 'event-target-shim';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 
@@ -154,4 +155,62 @@ if (!description.writable) {
     })(),
     writable: true,
   });
+}
+
+// Polyfills for @nktkas/hyperliquid
+if (!globalThis.EventTarget || !globalThis.Event) {
+  globalThis.EventTarget = EventTarget;
+  globalThis.Event = Event;
+}
+
+if (!globalThis.CustomEvent) {
+  globalThis.CustomEvent = function (type, params) {
+    // eslint-disable-next-line no-param-reassign
+    params = params || {};
+    const event = new Event(type, params);
+    event.detail = params.detail || null;
+    return event;
+  };
+}
+
+if (!AbortSignal.any) {
+  AbortSignal.any = function (signals) {
+    const controller = new AbortController();
+
+    for (const signal of signals) {
+      if (signal.aborted) {
+        controller.abort(signal.reason);
+        return controller.signal;
+      }
+
+      signal.addEventListener(
+        'abort',
+        () => {
+          controller.abort(signal.reason);
+        },
+        { once: true, signal: controller.signal }
+      );
+    }
+
+    return controller.signal;
+  };
+}
+
+if (!AbortSignal.timeout) {
+  AbortSignal.timeout = function (delay) {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), delay);
+    return controller.signal;
+  };
+}
+
+if (!Promise.withResolvers) {
+  Promise.withResolvers = function () {
+    let resolve, reject;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  };
 }

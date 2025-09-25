@@ -1,4 +1,4 @@
-name: Android e2e tests
+name: Android
 
 on:
   pull_request:
@@ -7,40 +7,20 @@ on:
     branches:
       - develop
 jobs:
-  android-e2e:
+  build:
+    name: Test Build
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
-    runs-on: app-e2e-runner
-    timeout-minutes: 90
+    runs-on: blacksmith-8vcpu-ubuntu-2404
+    timeout-minutes: 30
     concurrency:
-      # For pushes on develop run for every commit, but for PRs cancel in-progress runs.
-      group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+      group: e2e-android-${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-
-    env:
-      # Can be used to help debug test failures. This will cause the apk to be
-      # built for all architectures so it can be downloaded from the artifacts
-      # and installed locally. It will also record logcat logs and a video of
-      # the test run. Note that the video is limited to 3 minutes.
-      DEBUG: false
-      SHARDS: 1
-      ANDROID_EMULATOR_API_LEVEL: 31
-      ANDROID_EMULATOR_PROFILE: pixel_6
-      ANDROID_EMULATOR_CORES: 4
-      ANDROID_EMULATOR_RAM_SIZE: 8192
-      ANDROID_EMULATOR_BUILD: 10696886
-      ARTIFACTS_FOLDER: e2e-artifacts
-      ARCH: x86_64
-      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 60
+    outputs:
+      artifact-id: ${{ steps.rock-remote-build-android.outputs.artifact-id }}
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Setup Java environment
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
 
       - name: Install secret tools
         run: sudo apt install libsecret-tools
@@ -93,22 +73,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Cache Gradle build
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          cache-read-only: false
-
-
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: |
           yarn install && yarn setup
-
-      - name: Install Anvil
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: stable
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
@@ -116,23 +85,99 @@ jobs:
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
 
-      - name: Build the app in Release mode
-        run: ./scripts/e2e-android-build.sh
+      - name: Rock Remote Build - Android
+        id: rock-remote-build-android
+        uses: callstackincubator/android@v3
+        env:
+          # This is a debug keystore for now.
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          variant: release
+          sign: true
+          keystore-base64: ${{ env.KEYSTORE_BASE64 }}
+          keystore-store-file: ${{ env.KEYSTORE_FILE }}
+          keystore-store-password: ${{ env.KEYSTORE_PASSWORD }}
+          keystore-key-alias: ${{ env.KEYSTORE_KEY_ALIAS }}
+          keystore-key-password: ${{ env.KEYSTORE_KEY_PASSWORD }}
+          re-sign: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          validate-gradle-wrapper: false
+          rock-build-extra-params: '--extra-params="--no-daemon --build-cache --no-scan"'
+          comment-bot: false
+
+  e2e-tests:
+    name: E2E Tests (Shard ${{ matrix.shard-index }})
+    strategy:
+      fail-fast: false
+      matrix:
+        shard-index: [1, 2, 3, 4]
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: app-e2e-runner
+    needs: build
+    timeout-minutes: 30
+    concurrency:
+      group: e2e-android-${{ github.workflow }}-${{ github.ref }}-shard-${{ matrix.shard-index }}
+      cancel-in-progress: false
+
+    env:
+      SHARD_TOTAL: 4
+      SHARD_INDEX: ${{ matrix.shard-index }}
+      ANDROID_EMULATOR_API_LEVEL: 31
+      ANDROID_EMULATOR_PROFILE: pixel_6
+      ANDROID_EMULATOR_CORES: 4
+      ANDROID_EMULATOR_RAM_SIZE: 8192
+      ARTIFACTS_FOLDER: e2e-artifacts
+      ARCH: x86_64
+      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 60
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup env key
+        uses: ./.github/actions/ssh/
+        with:
+          name: env
+          key: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+
+      - name: Setup env
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+        run: |
+            git clone git@github.com:rainbow-me/rainbow-env.git
+            mv rainbow-env/dotenv .env
+            rm -rf rainbow-env
 
       - name: Install Maestro
-        run: export MAESTRO_VERSION=1.39.13; curl -fsSL "https://get.maestro.mobile.dev" | bash
+        run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+      - name: Install Anvil
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Download and Unpack APK artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          ls -l downloaded-artifacts
+          APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
+          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> $GITHUB_ENV
+        shell: bash
 
       - name: Setup Android Emulator
         id: android-emulator
         uses: ./.github/actions/android-emulator/
         with:
-          emulators: ${{ env.SHARDS }}
           api-level: ${{ env.ANDROID_EMULATOR_API_LEVEL }}
           profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
           cores: ${{ env.ANDROID_EMULATOR_CORES }}
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
           arch: ${{ env.ARCH }}
-          emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
 
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -147,19 +192,67 @@ jobs:
           profile: ${{ env.ANDROID_EMULATOR_PROFILE }}
           cores: ${{ env.ANDROID_EMULATOR_CORES }}
           ram-size: ${{ env.ANDROID_EMULATOR_RAM_SIZE }}
-          emulator-build: ${{ env.ANDROID_EMULATOR_BUILD }}
           script: ./scripts/e2e-android-ci.sh
 
       - name: Upload artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts
+          name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}
 
-      - name: Upload apk
-        if: ${{ always() }}
+  perf-tests:
+    name: Perf Tests
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    needs: build
+    timeout-minutes: 30
+    concurrency:
+      group: e2e-android-${{ github.workflow }}-${{ github.ref }}-perf
+      cancel-in-progress: true
+
+    env:
+      ARTIFACTS_FOLDER: e2e-artifacts
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Download and Unpack APK artifact
+        run: |
+          curl -L -H "Authorization: token ${{ github.token }}" -o artifact.zip "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ needs.build.outputs.artifact-id }}/zip"
+          unzip artifact.zip -d downloaded-artifacts
+          ls -l downloaded-artifacts
+          APK_PATH=$(find downloaded-artifacts -name "*.apk" -print -quit)
+          echo "ARTIFACT_PATH_FOR_E2E=$APK_PATH" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Run tests
+        run: ./scripts/e2e-android-perf-ci-aws.sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEVICE_FARM_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEVICE_FARM_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-2
+          PROJECT_ARN: ${{ secrets.AWS_DEVICE_FARM_PROJECT_ARN }}
+          DEVICE_POOL_ARN: ${{ secrets.AWS_DEVICE_FARM_DEVICE_POOL_ARN }}
+          ARTIFACT_PATH_FOR_E2E: ${{ env.ARTIFACT_PATH_FOR_E2E }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Install Flashlight
+        if: github.event_name == 'pull_request'
+        run: |
+          curl https://get.flashlight.dev | bash
+
+      - name: Generate Report
+        if: github.event_name == 'pull_request'
+        run: ./scripts/e2e-android-perf-ci-report.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_COMMIT: ${{ github.sha }}
+
+      - name: Upload Current Perf JSON
         uses: actions/upload-artifact@v4
         with:
-          name: apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          name: perf-results-${{ github.event.pull_request.number || github.ref_name }}
+          path: ${{ env.ARTIFACTS_FOLDER }}/perf

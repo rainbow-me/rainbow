@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useEffect, useState } from 'react';
 import { isHexString } from '../../handlers/web3';
 import { Input } from '../inputs';
@@ -65,7 +65,9 @@ const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeTex
         ref={ref}
         testID={testID}
         value={formatValue(inputValue)}
-        placeholder={android || isTinyPhone ? lang.t('fields.address.short_placeholder') : lang.t('fields.address.long_placeholder')}
+        placeholder={
+          android || isTinyPhone ? i18n.t(i18n.l.fields.address.short_placeholder) : i18n.t(i18n.l.fields.address.long_placeholder)
+        }
         placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
       />
     </Row>

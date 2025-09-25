@@ -13,9 +13,9 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import ImgixImage from '@/components/images/ImgixImage';
 import { View } from 'react-native';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 import { ChainId } from '@/state/backendNetworks/types';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { checkForPendingSwap } from '@/helpers/transactions';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -31,6 +31,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const change = transaction?.changes?.[0];
 
   const isPendingSwap = checkForPendingSwap(transaction);
+  const isSpeedUpOrCancel = transaction.type === 'speed_up' || transaction.type === 'cancel';
 
   const value = change?.value || transaction.balance?.display;
   const valueDisplay = value ? convertRawAmountToBalance(value || '', assetData!).display : '';
@@ -40,7 +41,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const feeValue = fee?.value.display ?? '';
   const feeNativeCurrencyValue = fee?.native?.display ?? '';
 
-  if ((!value && !fee) || isPendingSwap) return null;
+  if ((!value && !fee) || isPendingSwap || isSpeedUpOrCancel) return null;
 
   return (
     <>

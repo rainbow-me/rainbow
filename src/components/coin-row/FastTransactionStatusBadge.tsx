@@ -3,7 +3,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Text, useForegroundColor } from '@/design-system';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { ThemeContextProps } from '@/theme';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { ActivityTypeIcon } from './FastTransactionCoinRow';
 
 const sx = StyleSheet.create({
@@ -38,7 +38,7 @@ export default React.memo(function FastTransactionStatusBadge({
       </View>
       <Text color={{ custom: statusColor }} size="14px / 19px (Deprecated)" weight="semibold">
         {/* @ts-expect-error - some of these are dot.notation and some are strings */}
-        {lang.t(lang.l.transactions.type[transaction?.title])}{' '}
+        {i18n.t(i18n.l.transactions.type[transaction?.title])}{' '}
       </Text>
     </View>
   );

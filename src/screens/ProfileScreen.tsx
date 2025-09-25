@@ -10,6 +10,9 @@ import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { DelayedMount } from '@/components/utilities/DelayedMount';
+import { time } from '@/utils/time';
+import * as i18n from '@/languages';
 
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -22,7 +25,7 @@ export default function ProfileScreen() {
   return (
     <ProfileScreenPage testID="profile-screen">
       <Navbar
-        title="Activity"
+        title={i18n.t(i18n.l.profile.title)}
         hasStatusBarInset
         leftComponent={
           <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
@@ -35,7 +38,9 @@ export default function ProfileScreen() {
         }
       />
 
-      <ActivityList />
+      <DelayedMount delay="idle" maxWait={time.ms(300)}>
+        <ActivityList />
+      </DelayedMount>
     </ProfileScreenPage>
   );
 }

@@ -1,6 +1,24 @@
-import { SkPath, SkPoint, Skia } from '@shopify/react-native-skia';
-import { convertToRGBA, processColor } from 'react-native-reanimated';
+import { SkPath, SkPicture, SkPoint, Skia, createPicture } from '@shopify/react-native-skia';
+import { convertToRGBA } from 'react-native-reanimated';
 import { hsvToRgb, rgbToHsv } from './colors';
+
+/**
+ * Creates a blank picture with the given width and height. Useful
+ * as an initial placeholder when working with `SkPicture`.
+ *
+ * @param width - The width of the picture.
+ * @param height - The height of the picture.
+ * @returns A blank `SkPicture` with the given width and height.
+ */
+export function createBlankPicture(width: number, height: number): SkPicture {
+  'worklet';
+  return createPicture(
+    () => {
+      return;
+    },
+    { width, height }
+  );
+}
 
 /**
  * Creates a circle path using Skia's SVG string format.

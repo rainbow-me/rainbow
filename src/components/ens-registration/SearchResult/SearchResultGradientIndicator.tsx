@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { AccentColorProvider, Box, Inset, Text } from '@/design-system';
@@ -20,21 +20,21 @@ const SearchResultGradientIndicator = ({ type, isRegistered = false, price, expi
   switch (type) {
     case 'availability':
       if (isRegistered) {
-        text = lang.t('profiles.search.taken');
+        text = i18n.t(i18n.l.profiles.search.taken);
         gradient = colors.gradients.transparentToLightOrange;
       } else {
-        text = lang.t('profiles.search.available');
+        text = i18n.t(i18n.l.profiles.search.available);
         gradient = colors.gradients.transparentToGreen;
       }
       break;
     case 'expiration':
-      text = `${lang.t('profiles.search.expiration', {
-        content: expirationDate,
+      text = `${i18n.t(i18n.l.profiles.search.expiration, {
+        content: expirationDate as string,
       })}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
     case 'price':
-      text = `${lang.t('profiles.search.price', { content: price })}`;
+      text = `${i18n.t(i18n.l.profiles.search.price, { content: price as string })}`;
       gradient = colors.gradients.transparentToLightGrey;
       break;
   }

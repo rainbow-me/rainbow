@@ -268,5 +268,12 @@ export const AboutContent = memo(function AboutContent() {
 });
 
 export const AboutSection = memo(function AboutSection() {
-  return <CollapsibleSection content={<AboutContent />} icon="􁜾" id={SectionId.ABOUT} primaryText="About" />;
+  return (
+    <CollapsibleSection
+      content={<AboutContent />}
+      icon="􁜾"
+      id={SectionId.ABOUT}
+      primaryText={i18n.t(i18n.l.expanded_state.sections.about.title)}
+    />
+  );
 });

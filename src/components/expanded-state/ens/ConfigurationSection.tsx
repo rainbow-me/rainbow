@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import lang from 'i18n-js';
+import { useNavigation } from '@/navigation/Navigation';
+import * as i18n from '@/languages';
 import React from 'react';
 import { ENSConfirmUpdateSheetHeight } from '../../../screens/ENSConfirmRegisterSheet';
 import InfoRow, { InfoRowSkeleton } from './InfoRow';
@@ -49,7 +49,7 @@ export default function ConfigurationSection({
           {isProfilesEnabled && !isReadOnlyWallet && !isExternal && isSetNameEnabled && (
             <InfoRow
               explainSheetType="ens_primary_name"
-              label={lang.t('expanded_state.unique_expanded.set_primary_name')}
+              label={i18n.t(i18n.l.expanded_state.unique_expanded.set_primary_name)}
               onSwitchChange={() => {
                 startRegistration(name, REGISTRATION_MODES.SET_NAME);
                 navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
@@ -67,7 +67,7 @@ export default function ConfigurationSection({
           {registrant && (
             <InfoRow
               explainSheetType="ens_owner"
-              label={lang.t('expanded_state.unique_expanded.owner')}
+              label={i18n.t(i18n.l.expanded_state.unique_expanded.owner)}
               useAccentColor
               value={registrant.name || formatAddressForDisplay(registrant.address || '', 4, 4) || ''}
             />
@@ -75,7 +75,7 @@ export default function ConfigurationSection({
           {owner && (
             <InfoRow
               explainSheetType="ens_manager"
-              label={lang.t('expanded_state.unique_expanded.manager')}
+              label={i18n.t(i18n.l.expanded_state.unique_expanded.manager)}
               useAccentColor
               value={owner.name || formatAddressForDisplay(owner.address || '', 4, 4) || ''}
             />

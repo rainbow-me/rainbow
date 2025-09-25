@@ -13,3 +13,5 @@ coverage
 InjectedJSBundle.js
 .yarn
 .claude/settings.local.json
+src/languages/*.json
+!src/languages/en_US.json

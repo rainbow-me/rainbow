@@ -1,5 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, TextInput } from 'react-native';
@@ -144,7 +144,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           ]);
           if (!address) {
             setBusy(false);
-            Alert.alert(lang.t('wallet.invalid_ens_name'));
+            Alert.alert(i18n.t(i18n.l.wallet.invalid_ens_name));
             return;
           }
           setResolvedAddress(address);
@@ -167,7 +167,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           });
         } catch (e) {
           setBusy(false);
-          Alert.alert(lang.t('wallet.sorry_cannot_add_ens'));
+          Alert.alert(i18n.t(i18n.l.wallet.sorry_cannot_add_ens));
           return;
         }
         // Look up ENS for 0x address
@@ -176,7 +176,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           const address = await resolveUnstoppableDomain(input);
           if (!address) {
             setBusy(false);
-            Alert.alert(lang.t('wallet.invalid_unstoppable_name'));
+            Alert.alert(i18n.t(i18n.l.wallet.invalid_unstoppable_name));
             return;
           }
           setResolvedAddress(address);
@@ -197,7 +197,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           });
         } catch (e) {
           setBusy(false);
-          Alert.alert(lang.t('wallet.sorry_cannot_add_unstoppable'));
+          Alert.alert(i18n.t(i18n.l.wallet.sorry_cannot_add_unstoppable));
           return;
         }
       } else if (isValidAddress(input)) {
@@ -290,16 +290,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       setBusy(false);
       walletLoadingStore.setState({ loadingState: null });
 
+      const shouldReplace = previousWalletCount === 0;
+      const navigate = shouldReplace ? Navigation.replace : Navigation.handleAction;
+
       // Navigate to wallet screen and dismiss the entire modal stack
       try {
-        Navigation.handleAction(
-          Routes.SWIPE_LAYOUT,
-          {
-            screen: Routes.WALLET_SCREEN,
-            params: { initialized: true },
-          },
-          previousWalletCount === 0
-        );
+        navigate(Routes.SWIPE_LAYOUT, {
+          screen: Routes.WALLET_SCREEN,
+          params: { initialized: true },
+        });
 
         // Dismiss the ADD_WALLET_NAVIGATOR modal stack
         dangerouslyGetParent?.()?.goBack();

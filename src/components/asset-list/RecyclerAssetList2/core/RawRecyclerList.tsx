@@ -23,7 +23,6 @@ import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { useAccountAddress } from '../../../../state/wallets/walletsStore';
-import { NavigateFunction } from '@/navigation/Navigation';
 
 const dimensions = {
   height: deviceUtils.dimensions.height,
@@ -103,9 +102,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const ref = useRef<RecyclerListViewRef>(undefined);
 
   useEffect(() => {
-    if (ios) {
-      return;
-    }
     // this is hacky, but let me explain what's happening here:
     // RecyclerListView is trying to persist the position while updating the component.
     // Therefore, internally the library wants to scroll to old position.

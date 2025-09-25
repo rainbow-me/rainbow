@@ -1,14 +1,14 @@
 import { IS_IOS } from '@/env';
 import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { safeAreaInsetValues } from '@/utils';
-import { DEVICE_HEIGHT, DEVICE_WIDTH, isUsingButtonNavigation } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const BOTTOM_BAR_HEIGHT = 88;
 export const SEARCH_BAR_BORDER_RADIUS = 18;
 export const SEARCH_BAR_HEIGHT = 48;
 export const SEARCH_BAR_WIDTH = DEVICE_WIDTH - 72 * 2;
 
-const ADJUSTED_DEVICE_HEIGHT = IS_IOS ? DEVICE_HEIGHT : DEVICE_HEIGHT - (isUsingButtonNavigation() ? 0 : safeAreaInsetValues.bottom);
+const ADJUSTED_DEVICE_HEIGHT = IS_IOS ? DEVICE_HEIGHT : DEVICE_HEIGHT - safeAreaInsetValues.bottom;
 
 export const TOP_INSET = Math.max(safeAreaInsetValues.top, 20);
 export const WEBVIEW_HEIGHT = ADJUSTED_DEVICE_HEIGHT - TOP_INSET - (IS_IOS ? TAB_BAR_HEIGHT : BASE_TAB_BAR_HEIGHT) - BOTTOM_BAR_HEIGHT;

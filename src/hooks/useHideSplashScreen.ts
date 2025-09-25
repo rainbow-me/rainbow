@@ -2,38 +2,35 @@
 import { InteractionManager, NativeModules } from 'react-native';
 import { PerformanceReports, PerformanceReportSegments, PerformanceTracking } from '../performance/tracking';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { StatusBarHelper } from '@/helpers';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { RainbowError, logger } from '@/logger';
 import { AppIconKey } from '@/appIcons/appIcons';
+import { SystemBars } from 'react-native-edge-to-edge';
 const { RainbowSplashScreen } = NativeModules;
 
 let alreadyLoggedPerformance = false;
-let didSetStatusBar = false;
+let splashScreenHidden = false;
+
+export const isSplashScreenHidden = () => splashScreenHidden;
 
 export const hideSplashScreen = async () => {
+  splashScreenHidden = true;
   try {
     if (RainbowSplashScreen?.hideAnimated) {
       RainbowSplashScreen.hideAnimated();
     } else if (IS_ANDROID) {
-      handleAndroidStatusBar();
       const RNBootSplash = require('react-native-bootsplash');
       await RNBootSplash.hide({ fade: true });
-    }
-
-    if (IS_ANDROID && !didSetStatusBar) {
-      didSetStatusBar = true;
-      handleAndroidStatusBar();
     }
 
     onHandleStatusBar();
 
     if (IS_IOS) {
-      StatusBarHelper.setHidden(false);
+      SystemBars.setHidden({ statusBar: false });
     } else {
       InteractionManager.runAfterInteractions(() => {
-        StatusBarHelper.setHidden(false);
+        SystemBars.setHidden({ statusBar: false });
       });
     }
 
@@ -62,8 +59,3 @@ export const hideSplashScreen = async () => {
     });
   }
 };
-
-function handleAndroidStatusBar() {
-  didSetStatusBar = true;
-  StatusBarHelper.setDarkContent();
-}

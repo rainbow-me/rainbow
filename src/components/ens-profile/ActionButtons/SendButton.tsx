@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import ActionButton from './ActionButton';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { IS_IOS } from '@/env';
 

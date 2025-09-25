@@ -18,13 +18,13 @@ const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
 
 const Container = styled(Row).attrs(({ side }) => ({
   align: 'center',
-  justify: 'center',
+  justify: 'flex-end',
 }))(({ side, theme: { colors } }) => ({
   ...(side === 'left' ? { left: 0 } : { right: 0 }),
   backgroundColor: colors.transparent,
   bottom: 0,
-  paddingLeft: side === 'left' ? 15 : 15,
-  paddingRight: side === 'left' ? 15 : 15,
+  paddingLeft: 28,
+  paddingRight: 20,
   zIndex: 2,
   width: 120,
 }));
@@ -33,7 +33,7 @@ const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.appleBlue,
   size: 'large',
-  weight: 'medium',
+  weight: 'semibold',
   numberOfLines: 1,
 }))({
   marginLeft: ({ side }) => (side === 'left' ? 4 : 0),

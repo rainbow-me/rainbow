@@ -4,7 +4,7 @@ import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import Routes from '@/navigation/routesNames';
 import { setSelectedWallet, useAccountAddress, useWallets } from '@/state/wallets/walletsStore';
 import { doesWalletsContainAddress } from '@/utils';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { walletLoadingStore } from '@/state/walletLoading/walletLoading';

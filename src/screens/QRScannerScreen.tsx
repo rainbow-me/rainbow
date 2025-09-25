@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header } from '@/components/header';
 import { Centered } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import { CameraDimmer, EmulatorPasteUriButton, QRCodeScanner } from '@/components/qrcode-scanner';
+import { CameraDimmer, QRCodeScanner } from '@/components/qrcode-scanner';
 import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
 import { useDimensions, useHardwareBack, useScanner } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -15,6 +15,7 @@ import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
+import * as i18n from '@/languages';
 import { useIsFocused } from '@react-navigation/native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import { useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
@@ -64,7 +65,7 @@ export default function QRScannerScreen() {
   const { onScan } = useScanner(hasPermission, hideCamera);
 
   const codeScanner = useCodeScanner({
-    codeTypes: ['qr', 'ean-13'],
+    codeTypes: ['qr'],
     onCodeScanned: codes => {
       if (codes[0].value) {
         onScan({ data: codes[0].value });
@@ -155,7 +156,7 @@ export default function QRScannerScreen() {
                   </Navbar.Item>
                 </AccentColorProvider>
               }
-              title="Scan to Connect"
+              title={i18n.t(i18n.l.wallet.qr.scan_to_connect)}
             />
           </Box>
           <ScannerContainer>

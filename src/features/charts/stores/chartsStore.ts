@@ -2,7 +2,8 @@ import { CANDLESTICK_CHARTS, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
-import { CandleResolution, ChartType, LineChartTimePeriod, Token } from '../types';
+import { Exact } from '@/types/objects';
+import { CandleResolution, ChartType, HyperliquidSymbol, LineChartTimePeriod, Token } from '../types';
 
 // ============ Charts Store =================================================== //
 
@@ -20,7 +21,7 @@ export type ChartsState = {
   setCandleResolution: (candleResolution: CandleResolution) => void;
   setChartType: (chartType: ChartType) => void;
   setLineChartTimePeriod: (lineChartTimePeriod: LineChartTimePeriod) => void;
-  setToken: (token: Token) => void;
+  setToken: <T extends Token>(token: Exact<T, Exclude<Token, HyperliquidSymbol>>) => void;
   toggleChartType: () => ChartType;
 };
 
@@ -33,9 +34,9 @@ export const useChartsStore = createRainbowStore<ChartsState>(
     token: null,
 
     resetChartsState: () =>
-      set({
-        lineChartTimePeriod: LineChartTimePeriod.D1,
-        token: null,
+      set(state => {
+        if (state.lineChartTimePeriod === LineChartTimePeriod.D1) return state;
+        return { lineChartTimePeriod: LineChartTimePeriod.D1 };
       }),
 
     setCandleResolution: candleResolution =>
@@ -79,9 +80,11 @@ export const useChartsStore = createRainbowStore<ChartsState>(
   }
 );
 
-// ============ Store Actions and Hooks ======================================== //
+// ============ Store Actions ================================================== //
 
 export const chartsActions = createStoreActions(useChartsStore);
+
+// ============ Hooks ========================================================== //
 
 export function useChartType(): ChartType {
   const { candlestick_charts_enabled } = useRemoteConfig('candlestick_charts_enabled');
@@ -98,5 +101,6 @@ export function useChartType(): ChartType {
 function areTokensEqual(previousToken: Token | null, newToken: Token | null): boolean {
   if (!previousToken && !newToken) return true;
   if (!previousToken || !newToken) return false;
+  if (typeof previousToken === 'string' || typeof newToken === 'string') return previousToken === newToken;
   return previousToken.address === newToken.address && previousToken.chainId === newToken.chainId;
 }

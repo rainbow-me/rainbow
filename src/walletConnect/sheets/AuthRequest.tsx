@@ -4,14 +4,14 @@ import { ImgixImage } from '@/components/images';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { AccentColorProvider, BackgroundProvider, Box, Separator, Text } from '@/design-system';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { getAccountProfileInfo, useAccountAddress, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme';
 import { initials } from '@/utils/formatters';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation/Navigation';
 import { WalletKitTypes } from '@reown/walletkit';
 import { Verify } from '@walletconnect/types';
 import React from 'react';
@@ -55,8 +55,8 @@ export function AuthRequest({
           break;
         default:
           Alert({
-            title: lang.t(lang.l.walletconnect.auth.error_alert_title),
-            message: lang.t(lang.l.walletconnect.auth.error_alert_description),
+            title: i18n.t(i18n.l.walletconnect.auth.error_alert_title),
+            message: i18n.t(i18n.l.walletconnect.auth.error_alert_description),
           });
       }
     } else {
@@ -83,7 +83,7 @@ export function AuthRequest({
       <Box alignItems="center">
         <Box paddingBottom="36px">
           <Text color={'label'} weight={'heavy'} size={'20pt'} align="center">
-            {lang.t(lang.l.walletconnect.auth.signin_title)}
+            {i18n.t(i18n.l.walletconnect.auth.signin_title)}
           </Text>
         </Box>
         <AccentColorProvider color={accentColor}>
@@ -125,7 +125,7 @@ export function AuthRequest({
 
         <Box paddingBottom="16px" width={{ custom: 281 }}>
           <Text color={'label'} weight={'semibold'} size={'17pt'} align="center">
-            {lang.t(lang.l.walletconnect.auth.signin_prompt, { name })}
+            {i18n.t(i18n.l.walletconnect.auth.signin_prompt, { name })}
           </Text>
         </Box>
 
@@ -178,7 +178,7 @@ export function AuthRequest({
               <Box paddingLeft="10px" paddingRight="16px">
                 <Box paddingBottom="6px">
                   <Text color="labelSecondary" size="13pt" weight="semibold">
-                    {lang.t(lang.l.walletconnect.auth.signin_with)}
+                    {i18n.t(i18n.l.walletconnect.auth.signin_with)}
                   </Text>
                 </Box>
 
@@ -209,8 +209,8 @@ export function AuthRequest({
                   􀘰
                 </Text>
               }
-              title={lang.t(lang.l.walletconnect.dapp_warnings.info_alert.title)}
-              description={lang.t(lang.l.walletconnect.dapp_warnings.info_alert.description)}
+              title={i18n.t(i18n.l.walletconnect.dapp_warnings.info_alert.title)}
+              description={i18n.t(i18n.l.walletconnect.dapp_warnings.info_alert.description)}
             />
           </Box>
         )}
@@ -227,7 +227,7 @@ export function AuthRequest({
                   borderRadius={50}
                 >
                   <Text color="label" size="17pt" weight="heavy">
-                    􀎽 {lang.t(lang.l.walletconnect.auth.signin_button)}
+                    􀎽 {i18n.t(i18n.l.walletconnect.auth.signin_button)}
                   </Text>
                 </Box>
               )}
@@ -237,7 +237,7 @@ export function AuthRequest({
 
         <Box paddingTop="24px" width={{ custom: 245 }}>
           <Text color={'labelQuaternary'} weight={'semibold'} size={'13pt'} align="center">
-            {lang.t(lang.l.walletconnect.auth.signin_notice)}
+            {i18n.t(i18n.l.walletconnect.auth.signin_notice)}
           </Text>
         </Box>
       </Box>

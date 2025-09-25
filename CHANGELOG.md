@@ -15,6 +15,68 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [2.0.1] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.1)
+
+### Added
+
+- Hyperliquid charts (#6825)
+
+### Changed
+
+- Bump iOS and Android to v2.0.1 (#6830)
+- CI Performance Improvments (#6734)
+- Deprecate ens profile search in discover (#6827)
+- Expanded i18n coverage (#6836)
+- Refactor i18n typed api standardization (#6837)
+
+### Fixed
+
+- QR code scanner reliability fixes (#6686)
+- Fixed done button spacing on settings (#6831)
+- Fix issue with e2e (#6838)
+- Fixed missing padding under the wallet address in receive modal (#6832)
+- Fixed locale re-render upon language switching (#6835)
+- Switching wallets doesn’t reset the wallet balance page to the top (#6840)
+- Scroll to top vs reseting the full list on account switching (#6844)
+- Fixed done button truncation (#6841)
+
+## [2.0.0] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.0)
+
+### Added
+
+- Live balances (#6750)
+- King of the Hill (#6759)
+- RainbowToasts (#6744)
+- Rainbow Baggy app icon (#6810)
+- Candlestick charts analytics (#6803)
+
+### Changed
+
+- Bump iOS and Android to v2.0.0 (#6806)
+- Rewards claimables networks -> remote config & fix claim button position (#6795)
+- Make splash screen self-contained on iOS (#6792)
+- E2E CI V2 (#6713)
+- Update RNEF to Rock (#6820)
+- Patch reanimated to avoid using executeOnUIRuntimeSync (#6774)
+- Removed lazyMount wrapper and related idle utilities (#6809)
+- Use RNEF for CI iOS builds (#6798)
+
+### Fixed
+
+- Fixed gwei input text being cut off on android (#6800)
+- Fixed restore arm64 as proper platform (#6791)
+- Fixed navbar issues with pointer-events (#6801)
+- Fixed activity list contract icon style (#6794)
+- Fixed keyboard issue on SendAssetForm (#6802)
+- Fixed issue with request type in activity list (#6805)
+- Fixed in app browser padding for Android (#6813)
+- Fixes to pending transaction watching (#6808)
+- Live balances fixes (#6818)
+- Fixed button placement and pressability on Android (#6821)
+- Fixed pending transactions when multiple are added at once (#6822)
+- Make project android 16kb compatible (#6804)
+- Check amount regex vs ETH-card (#6819)
+
 ## [1.9.74] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.74)
 
 ### Added

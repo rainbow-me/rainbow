@@ -1,8 +1,7 @@
 import { useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
@@ -41,9 +40,10 @@ import { ChainId } from '@/state/backendNetworks/types';
 import { useTimeoutEffect } from '@/hooks/useTimeout';
 import { analytics } from '@/analytics';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
 
 const defaultCarouselHeight = 60;
-const baseHeight = 386 + (IS_ANDROID && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
+const baseHeight = 386 + (IS_ANDROID && 20 - NAVIGATION_BAR_HEIGHT) - defaultCarouselHeight;
 const heightWithoutChart = baseHeight + (IS_ANDROID && 30);
 const heightWithChart = baseHeight + 292;
 
@@ -109,7 +109,7 @@ function CarouselWrapper({ style, isAnyItemVisible, isAnyItemLoading, setCarouse
 }
 
 const Spacer = styled.View({
-  height: safeAreaInsetValues.bottom + 20 + getSoftMenuBarHeight(),
+  height: safeAreaInsetValues.bottom + 20 + NAVIGATION_BAR_HEIGHT,
 });
 
 // truncate after the first paragraph or 4th dot
@@ -137,7 +137,7 @@ function Description({ text = '' }) {
       <Text color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="big" size="large">
         {delayedTruncated ? truncatedText : text}
       </Text>
-      {truncated && needToTruncate && <ReadMoreButton>{lang.t('expanded_state.asset.read_more_button')} 􀯼</ReadMoreButton>}
+      {truncated && needToTruncate && <ReadMoreButton>{i18n.t(i18n.l.expanded_state.asset.read_more_button)} 􀯼</ReadMoreButton>}
     </ButtonPressAnimation>
   );
 }
@@ -286,10 +286,10 @@ export default function ChartExpandedState({ asset }) {
       {hasBalance && (
         <TokenInfoSection>
           <TokenInfoRow>
-            <TokenInfoItem asset={assetWithPrice} title={lang.t('expanded_state.asset.balance')}>
+            <TokenInfoItem asset={assetWithPrice} title={i18n.t(i18n.l.expanded_state.asset.balance)}>
               <TokenInfoBalanceValue asset={asset} />
             </TokenInfoItem>
-            <TokenInfoItem title={asset?.native?.balance.display ? lang.t('expanded_state.asset.value') : ' '} weight="bold">
+            <TokenInfoItem title={asset?.native?.balance.display ? i18n.t(i18n.l.expanded_state.asset.value) : ' '} weight="bold">
               {asset?.native?.balance?.display || ' '}
             </TokenInfoItem>
           </TokenInfoRow>
@@ -310,7 +310,7 @@ export default function ChartExpandedState({ asset }) {
               color={color}
               fromDiscover={fromDiscover}
               inputType={SwapAssetType.outputAsset}
-              label={`􀖅 ${lang.t('expanded_state.asset.get_asset', {
+              label={`􀖅 ${i18n.t(i18n.l.expanded_state.asset.get_asset, {
                 assetSymbol: asset?.symbol,
               })}`}
               requireVerification
@@ -341,7 +341,7 @@ export default function ChartExpandedState({ asset }) {
           <CarouselItem
             loading={additionalAssetDataLoading}
             showDivider
-            title={lang.t('expanded_state.asset.volume_24_hours')}
+            title={i18n.t(i18n.l.expanded_state.asset.volume_24_hours)}
             weight="bold"
           >
             {format(data?.volume1d)}
@@ -349,12 +349,12 @@ export default function ChartExpandedState({ asset }) {
           <CarouselItem
             loading={additionalAssetDataLoading}
             showDivider
-            title={lang.t('expanded_state.asset.uniswap_liquidity')}
+            title={i18n.t(i18n.l.expanded_state.asset.uniswap_liquidity)}
             weight="bold"
           >
             {data?.totalLiquidity}
           </CarouselItem>
-          <CarouselItem loading={additionalAssetDataLoading} title={lang.t('expanded_state.asset.market_cap')} weight="bold">
+          <CarouselItem loading={additionalAssetDataLoading} title={i18n.t(i18n.l.expanded_state.asset.market_cap)} weight="bold">
             {format(data?.marketCap)}
           </CarouselItem>
         </Carousel>
@@ -373,7 +373,7 @@ export default function ChartExpandedState({ asset }) {
         {data?.description && (
           <ExpandedStateSection
             isL2
-            title={lang.t('expanded_state.asset.about_asset', {
+            title={i18n.t(i18n.l.expanded_state.asset.about_asset, {
               assetName: asset?.name,
             })}
           >

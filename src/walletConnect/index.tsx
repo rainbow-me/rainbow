@@ -8,7 +8,7 @@ import { events } from '@/handlers/appEvents';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getProvider } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import * as lang from '@/languages';
+import * as i18n from '@/languages';
 import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import Navigation, { getActiveRoute } from '@/navigation/Navigation';
@@ -53,7 +53,7 @@ import Minimizer from 'react-native-minimizer';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
-const T = lang.l.walletconnect;
+const T = i18n.l.walletconnect;
 
 /**
  * Indicates that the app should redirect or go back after the next action
@@ -221,7 +221,7 @@ export function getApprovedNamespaces(props: Parameters<typeof buildApprovedName
       return {
         success: false,
         result: undefined,
-        error: new Error(lang.t(T.errors.no_accounts_found)),
+        error: new Error(i18n.t(T.errors.no_accounts_found)),
       };
     }
 
@@ -296,7 +296,7 @@ export function showErrorSheet({
         <explain.Body maxHeight={sheetHeight - BUTTON_HEIGHT - TITLE_HEIGHT - SPACING_HEIGHT - SHEET_PADDING}>{body}</explain.Body>
         <Box paddingTop="20px">
           <explain.Button
-            label={cta || lang.t(T.errors.go_back)}
+            label={cta || i18n.t(T.errors.go_back)}
             onPress={() => {
               explain.close();
               onClose?.();
@@ -461,7 +461,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
     const peerMeta = proposer.metadata;
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
 
-    const dappName = metadata?.appName || peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
+    const dappName = metadata?.appName || peerMeta.name || i18n.t(i18n.l.walletconnect.unknown_dapp);
     const dappImage = metadata?.appLogo || peerMeta?.icons?.[0];
 
     const routeParams: WalletconnectApprovalSheetRouteParams = {
@@ -470,7 +470,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
         chainIds: chainIdsToUse,
         dappName,
         dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
-        dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
+        dappUrl: peerMeta.url || i18n.t(i18n.l.walletconnect.unknown_url),
         imageUrl: maybeSignUri(dappImage, { w: 200 }),
         peerId: proposer.publicKey,
         isWalletConnectV2: true,
@@ -548,8 +548,8 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
               analytics.track(analytics.event.wcRequestFailed, { type: `invalid namespaces`, reason: namespaces.error.message });
 
               showErrorSheet({
-                title: lang.t(T.errors.generic_title),
-                body: `${lang.t(T.errors.namespaces_invalid)} \n \n ${namespaces.error.message}`,
+                title: i18n.t(T.errors.generic_title),
+                body: `${i18n.t(T.errors.namespaces_invalid)} \n \n ${namespaces.error.message}`,
                 sheetHeight: 400,
                 onClose: maybeGoBackAndClearHasPendingRedirect,
               });
@@ -561,13 +561,13 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
               buttons: [
                 {
                   style: 'cancel',
-                  text: lang.t(lang.l.walletconnect.go_back),
+                  text: i18n.t(i18n.l.walletconnect.go_back),
                 },
               ],
-              message: lang.t(lang.l.walletconnect.failed_to_connect_to, {
+              message: i18n.t(i18n.l.walletconnect.failed_to_connect_to, {
                 appName: dappName,
               }),
-              title: lang.t(lang.l.walletconnect.connection_failed),
+              title: i18n.t(i18n.l.walletconnect.connection_failed),
             });
 
             logger.error(new RainbowError(`[walletConnect]: session approval failed`), {
@@ -586,11 +586,10 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
      * We might see this at any point in the app, so only use `replace`
      * sometimes if the user is already looking at the approval sheet.
      */
-    Navigation.handleAction(
-      Routes.WALLET_CONNECT_APPROVAL_SHEET,
-      routeParams,
-      getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
-    );
+    const shouldReplace = getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET;
+    const navigate = shouldReplace ? Navigation.replace : Navigation.handleAction;
+
+    navigate(Routes.WALLET_CONNECT_APPROVAL_SHEET, routeParams);
   } catch (error) {
     logger.error(
       new RainbowError(`[walletConnect]: session request catch all`, {
@@ -621,8 +620,8 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       response: formatJsonRpcError(id, `Rainbow does not support legacy eth_sign`),
     });
     showErrorSheet({
-      title: lang.t(T.errors.generic_title),
-      body: lang.t(T.errors.eth_sign),
+      title: i18n.t(T.errors.generic_title),
+      body: i18n.t(T.errors.eth_sign),
       sheetHeight: 270,
       onClose: maybeGoBackAndClearHasPendingRedirect,
     });
@@ -667,8 +666,8 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         });
 
         showErrorSheet({
-          title: lang.t(T.errors.generic_title),
-          body: lang.t(T.errors.request_invalid),
+          title: i18n.t(T.errors.generic_title),
+          body: i18n.t(T.errors.request_invalid),
           sheetHeight: 270,
           onClose: maybeGoBackAndClearHasPendingRedirect,
         });
@@ -689,7 +688,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
           selectedWalletType: selectedWallet?.type,
         });
 
-        const errorMessageBody = isReadOnly ? lang.t(T.errors.read_only_wallet_on_signing_method) : lang.t(T.errors.generic_error);
+        const errorMessageBody = isReadOnly ? i18n.t(T.errors.read_only_wallet_on_signing_method) : i18n.t(T.errors.generic_error);
 
         analytics.track(analytics.event.wcRequestFailed, {
           type: 'read only wallet',
@@ -702,7 +701,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
         });
 
         showErrorSheet({
-          title: lang.t(T.errors.generic_title),
+          title: i18n.t(T.errors.generic_title),
           body: errorMessageBody,
           sheetHeight: 270,
           onClose: maybeGoBackAndClearHasPendingRedirect,
@@ -740,7 +739,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     const peerMeta = session.peer.metadata;
 
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
-    const dappName = metadata?.appName || peerMeta.name || lang.t(lang.l.walletconnect.unknown_url);
+    const dappName = metadata?.appName || peerMeta.name || i18n.t(i18n.l.walletconnect.unknown_url);
     const dappImage = metadata?.appLogo || peerMeta?.icons?.[0];
 
     const request: WalletconnectRequestData = {
@@ -804,8 +803,8 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     }
 
     showErrorSheet({
-      title: lang.t(T.errors.generic_title),
-      body: lang.t(T.errors.request_unsupported_methods),
+      title: i18n.t(T.errors.generic_title),
+      body: i18n.t(T.errors.request_unsupported_methods),
       sheetHeight: 250,
       onClose: maybeGoBackAndClearHasPendingRedirect,
     });

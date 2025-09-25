@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered, Row } from '../layout';
@@ -30,13 +30,13 @@ export default function ModalHeader({ onPressBack, onPressClose, showBackButton,
 
   return (
     <Container backgroundColor={colors.white} {...props}>
-      {showBackButton && <ModalHeaderButton label={lang.t('settings.label')} onPress={onPressBack} side="left" />}
+      {showBackButton && <ModalHeaderButton label={i18n.t(i18n.l.settings.label)} onPress={onPressBack} side="left" />}
       <TitleContainer>
         <TruncatedText align="center" color={colors.black} height={21} lineHeight="loose" size="large" weight="bold">
           {title}
         </TruncatedText>
       </TitleContainer>
-      {showDoneButton && <ModalHeaderButton label={lang.t('settings.done')} onPress={onPressClose} side="right" />}
+      {showDoneButton && <ModalHeaderButton label={i18n.t(i18n.l.settings.done)} onPress={onPressClose} side="right" />}
     </Container>
   );
 }

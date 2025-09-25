@@ -1,6 +1,7 @@
 import { analytics } from '@/analytics';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
+import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { AssetType, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -50,6 +51,8 @@ import { interactionsCountQueryKey } from '@/resources/addys/interactions';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
+import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
+import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
@@ -62,7 +65,7 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, TextInput, View } from 'react-native';
@@ -73,8 +76,6 @@ import { Column } from '../components/layout';
 import { SendAssetForm, SendAssetList, SendContactList, SendHeader } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
 import { getDefaultCheckboxes } from './SendConfirmationSheet';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { PAGE_SIZE } from '@/state/nfts/createNftsStore';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 
@@ -528,7 +529,7 @@ export default function SendSheet() {
             txDetails,
             signableTransaction,
           });
-          Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
+          Alert.alert(i18n.t(i18n.l.wallet.transaction.alert.invalid_transaction));
           submitSuccess = false;
         } else {
           const sendTransactionResult = await performanceTracking.getState().executeFn({
@@ -650,8 +651,10 @@ export default function SendSheet() {
     ]
   );
 
+  const rainbowToastsEnabled = useRainbowToastEnabled();
+
   const submitTransaction = useCallback(
-    async (args: OnSubmitProps) => {
+    async (args?: OnSubmitProps) => {
       if (Number(amountDetails.assetAmount) <= 0) {
         logger.error(new RainbowError(`[SendSheet]: preventing tx submit because amountDetails.assetAmount is <= 0`), {
           amountDetails,
@@ -669,9 +672,14 @@ export default function SendSheet() {
       const goBackAndNavigate = () => {
         goBack();
         navigate(Routes.WALLET_SCREEN);
-        InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.PROFILE_SCREEN);
-        });
+
+        // with toasts: just show the toast
+        // without toasts: navigate user to the activity list
+        if (!rainbowToastsEnabled) {
+          InteractionManager.runAfterInteractions(() => {
+            navigate(Routes.PROFILE_SCREEN);
+          });
+        }
       };
 
       if (submitSuccessful) {
@@ -689,16 +697,28 @@ export default function SendSheet() {
         })();
       }
     },
-    [accountAddress, amountDetails, goBack, isENS, isHardwareWallet, isUniqueAsset, navigate, onSubmit, recipient, selected]
+    [
+      accountAddress,
+      amountDetails,
+      goBack,
+      isENS,
+      isHardwareWallet,
+      isUniqueAsset,
+      navigate,
+      onSubmit,
+      rainbowToastsEnabled,
+      recipient,
+      selected,
+    ]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
     let disabled = true;
-    let label = lang.t('button.confirm_exchange.enter_amount');
+    let label = i18n.t(i18n.l.button.confirm_exchange.enter_amount);
 
     if (isENS && !ensProfile.isSuccess) {
-      label = lang.t('button.confirm_exchange.loading');
+      label = i18n.t(i18n.l.button.confirm_exchange.loading);
       disabled = true;
     } else if (
       isEmpty(gasFeeParamsBySpeed) ||
@@ -707,22 +727,22 @@ export default function SendSheet() {
       !toAddress ||
       (useBackendNetworksStore.getState().getNeedsL1SecurityFeeChains().includes(currentChainId) && l1GasFeeOptimism === null)
     ) {
-      label = lang.t('button.confirm_exchange.loading');
+      label = i18n.t(i18n.l.button.confirm_exchange.loading);
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
-      label = lang.t('button.confirm_exchange.insufficient_token', {
+      label = i18n.t(i18n.l.button.confirm_exchange.insufficient_token, {
         tokenName: useBackendNetworksStore.getState().getChainsNativeAsset()[currentChainId || ChainId.mainnet].symbol,
       });
     } else if (!isValidGas) {
       disabled = true;
-      label = lang.t('button.confirm_exchange.invalid_fee');
+      label = i18n.t(i18n.l.button.confirm_exchange.invalid_fee);
     } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
       disabled = true;
-      label = lang.t('button.confirm_exchange.insufficient_funds');
+      label = i18n.t(i18n.l.button.confirm_exchange.insufficient_funds);
     } else if (!isZeroAssetAmount) {
       disabled = false;
-      label = `􀕹 ${lang.t('button.confirm_exchange.review')}`;
+      label = `􀕹 ${i18n.t(i18n.l.button.confirm_exchange.review)}`;
     }
 
     return { buttonDisabled: disabled, buttonLabel: label };

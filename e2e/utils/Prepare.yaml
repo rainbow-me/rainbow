@@ -2,7 +2,18 @@ appId: ${APP_ID}
 ---
 - runFlow:
     when:
-      visible: ".* isn't responding"
       platform: Android
     commands:
-      - tapOn: 'Close app'
+      - tapOn:
+          text: 'Close app'
+          waitToSettleTimeoutMs: 500
+          optional: true
+# There are time where there is a lingering Open in popup.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: 'Cancel'
+          waitToSettleTimeoutMs: 500
+          optional: true

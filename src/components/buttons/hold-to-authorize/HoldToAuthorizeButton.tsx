@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import HoldToAuthorizeButtonContent from './HoldToAuthorizeButtonContent';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
@@ -28,7 +28,7 @@ const HoldToAuthorizeButtonWithBiometrics = ({ disableLongPress, label, ...props
       label={
         isLongPressAvailableForBiometryType
           ? label
-          : label.replace(lang.t('button.hold_to_authorize.hold_keyword'), lang.t('button.hold_to_authorize.tap_keyword'))
+          : label.replace(i18n.t(i18n.l.button.hold_to_authorize.hold_keyword), i18n.t(i18n.l.button.hold_to_authorize.tap_keyword))
       }
     />
   );
