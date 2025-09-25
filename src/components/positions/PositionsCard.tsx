@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
-import { PositionAsset, RainbowBorrow, RainbowClaimable, RainbowDeposit, RainbowPosition, RainbowStake } from '@/resources/defi/types';
+import { PositionAsset, RainbowBorrow, RainbowReward, RainbowDeposit, RainbowPosition, RainbowStake } from '@/features/positions/types';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 type PositionCardProps = {
@@ -58,7 +58,7 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
 export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
   const totalPositions =
-    (position.borrows.length || 0) + (position.deposits.length || 0) + (position.claimables.length || 0) + (position.stakes.length || 0);
+    (position.borrows.length || 0) + (position.deposits.length || 0) + (position.rewards.length || 0) + (position.stakes.length || 0);
 
   const { navigate } = useNavigation();
 
@@ -79,8 +79,8 @@ export const PositionCard = ({ position }: PositionCardProps) => {
         tokens.push(asset);
       });
     });
-    position.claimables.forEach((claimable: RainbowClaimable) => {
-      tokens.push(claimable.asset);
+    position.rewards.forEach((reward: RainbowReward) => {
+      tokens.push(reward.asset);
     });
     position.borrows.forEach((borrow: RainbowBorrow) => {
       borrow.underlying.forEach(({ asset }) => {

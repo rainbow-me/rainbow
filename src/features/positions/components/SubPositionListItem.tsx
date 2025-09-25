@@ -6,7 +6,7 @@ import {
   convertAmountToPercentageDisplayWithThreshold,
   convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
-import { NativeDisplay, PositionAsset } from '@/resources/defi/types';
+import { NativeDisplay, PositionAsset } from '@/features/positions/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
