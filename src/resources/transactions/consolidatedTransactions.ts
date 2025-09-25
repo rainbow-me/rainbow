@@ -1,19 +1,13 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
-import {
-  ListTransactionsResponse,
-  NativeCurrencyKey,
-  RainbowTransaction,
-  TransactionApiResponse,
-  TransactionsReceivedMessage,
-} from '@/entities';
+import { ListTransactionsResponse, NativeCurrencyKey, RainbowTransaction, TransactionApiResponse } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { parseTransaction } from '@/parsers/transactions';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
-import { getAddysHttpClient } from '@/resources/addys/client';
 import { IS_TEST } from '@/env';
 import { anvilChain, e2eAnvilConfirmedTransactions } from './transaction';
 import { getPlatformClient } from '@/resources/platform/client';
+import { ChainId } from '@/state/backendNetworks/types';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 
@@ -66,25 +60,29 @@ export async function consolidatedTransactionsQueryFunction({
   pageParam,
 }: QueryFunctionArgs<typeof consolidatedTransactionsQueryKey>): Promise<_QueryResult> {
   let transactionsFromGoldsky: RainbowTransaction[] = [];
-  let nextPageFromGoldsky: string | undefined = pageParam;
+  let nextPageFromGoldsky: string | undefined;
   let cutoffFromGoldsky: number | undefined;
   try {
-    const response = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
+    const cursor = typeof pageParam === 'string' ? pageParam : undefined;
+
+    console.log({ chainIds: chainIds.join(',') });
+
+    const { data } = await getPlatformClient().get<ListTransactionsResponse>('/transactions/ListTransactions', {
       method: 'get',
       params: {
         address,
         // chainIds: chainIds.join(','),
-        chainIds: '8453,1,80094',
+        chainIds: '1',
         currency: currency.toLowerCase(),
-        // TODO: FIX THIS
-        limit: String(10),
-        // ...(pageParam ? { pageCursor: pageParam } : {}),
+        limit: String(30),
+        ...(cursor ? { cursor } : {}),
       },
     });
 
-    transactionsFromGoldsky = await parseConsolidatedTransactions(response?.data, currency);
-    // nextPageFromGoldsky = response?.data?.meta?.next_page_cursor;
-    // cutoffFromGoldsky = response?.data?.meta?.cut_off;
+    const payload = extractTransactionsPayload(data);
+
+    transactionsFromGoldsky = await parseConsolidatedTransactions(payload, currency);
+    nextPageFromGoldsky = payload?.pagination?.cursor;
   } catch (e) {
     logger.error(new RainbowError('[consolidatedTransactions]: Error fetching from GoldSky', e), {
       message: e,
@@ -136,19 +134,115 @@ type ConsolidatedTransactionsResult = {
       });
  */
 async function parseConsolidatedTransactions(
-  message: ListTransactionsResponse,
+  message: ListTransactionsResponse | undefined,
   currency: NativeCurrencyKey
 ): Promise<RainbowTransaction[]> {
   const data = message?.result || [];
 
+  if (!data.length) {
+    return [];
+  }
+
   const chainsIdByName = useBackendNetworksStore.getState().getChainsIdByName();
 
-  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
-  // Filter out undefined values immediately
+  const parsedTransactionPromises = data.flatMap(tx => {
+    const chainId = resolveChainId(tx, chainsIdByName);
 
-  const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values
+    if (!chainId) {
+      return [];
+    }
 
-  return parsedConsolidatedTransactions;
+    const normalizedTransaction = normalizeTransactionPayload(tx as PlatformTransactionPayload);
+
+    return [parseTransaction(normalizedTransaction, currency, chainId)];
+  });
+
+  return (await Promise.all(parsedTransactionPromises)).flat();
+}
+
+type TransactionChainMap = Record<string, ChainId>;
+
+function resolveChainId(tx: TransactionApiResponse, chainsIdByName: TransactionChainMap): ChainId | undefined {
+  const chainFromNetwork = chainsIdByName[tx.network];
+  if (chainFromNetwork) {
+    return chainFromNetwork;
+  }
+
+  const parsedChainId = Number(tx.chainId);
+  if (!Number.isNaN(parsedChainId)) {
+    return parsedChainId as ChainId;
+  }
+
+  logger.warn('[consolidatedTransactions]: Received transaction with unknown network', {
+    network: tx.network,
+    chainId: tx.chainId,
+  });
+  return undefined;
+}
+
+type PlatformTransactionPayload = Omit<TransactionApiResponse, 'blockNumber' | 'blockConfirmations' | 'minedAt' | 'nonce'> & {
+  blockNumber: number | string;
+  blockConfirmations?: number | string | null;
+  minedAt?: number | string | null;
+  nonce: number | string | null;
+};
+
+function normalizeTransactionPayload(tx: PlatformTransactionPayload): TransactionApiResponse {
+  const blockNumber = toNumber(tx.blockNumber);
+  const blockConfirmations = toNumber(tx.blockConfirmations, 0);
+  const nonce = toNumber(tx.nonce, 0);
+  const minedAtSeconds = normalizeMinedAt(tx.minedAt);
+
+  return {
+    ...tx,
+    blockNumber,
+    blockConfirmations,
+    nonce,
+    minedAt: minedAtSeconds,
+  } as TransactionApiResponse;
+}
+
+function toNumber(value: number | string | null | undefined, fallback?: number): number {
+  if (value === null || value === undefined || value === '') {
+    return fallback ?? 0;
+  }
+
+  return typeof value === 'string' ? Number(value) : value;
+}
+
+function normalizeMinedAt(value: number | string | null | undefined): number | undefined {
+  if (value === null || value === undefined || value === '') {
+    return undefined;
+  }
+
+  if (typeof value === 'number') {
+    return Math.floor(value < 10_000_000_000 ? value : value / 1000);
+  }
+
+  const timestampMs = new Date(value).getTime();
+  if (Number.isNaN(timestampMs) || timestampMs === 0) {
+    return undefined;
+  }
+
+  return Math.floor(timestampMs / 1000);
+}
+
+function extractTransactionsPayload(
+  response: ListTransactionsResponse | { data?: ListTransactionsResponse } | undefined
+): ListTransactionsResponse | undefined {
+  if (!response) {
+    return undefined;
+  }
+
+  if ('result' in response && Array.isArray(response.result)) {
+    return response;
+  }
+
+  if ('data' in response && response.data && Array.isArray(response.data.result)) {
+    return response.data;
+  }
+
+  return undefined;
 }
 
 // ///////////////////////////////////////////////

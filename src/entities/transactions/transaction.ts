@@ -305,10 +305,16 @@ export interface ListTransactionsRequest {
 
 export interface ListTransactionsResponse {
   /** Metadata about the request */
-  metadata: ResponseMetadata | undefined;
+  metadata?: ResponseMetadata;
   result: TransactionApiResponse[];
+  /** Cursor based pagination information */
+  pagination?: ListTransactionsPagination;
   /** List of errors encountered during the request */
-  errors: string[];
+  errors?: string[];
+}
+
+export interface ListTransactionsPagination {
+  cursor?: string;
 }
 
 export interface GetTransactionByHashRequest {
@@ -385,15 +391,15 @@ export interface TransactionApiResponse {
   /**
    * Unix timestamp when transaction was mined
    *
-   * examples: "2025-05-21T00:00:00Z", "2025-12-31T23:59:59Z"
+   * examples: 1724463859, 1650000000
    */
-  minedAt: Date | undefined;
+  minedAt: number | undefined;
   /**
    * Transaction status
    *
    * examples: "pending", "confirmed", "failed", "dropped"
    */
-  status: string;
+  status: TransactionStatus;
   /**
    * Transaction hash
    *
@@ -485,7 +491,7 @@ export interface Asset {
    *
    * examples: "ETH", "USDC", "0x742D35Cc6634C0532925a3b8D404020ae0e4f5f3"
    */
-  assetCode: string;
+  assetCode?: string;
   /**
    * Number of decimal places for the asset
    *
@@ -875,14 +881,14 @@ export interface ResponseMetadata {
    * Format: RFC3339/ISO 8601
    * Example: "2025-06-11T10:00:00Z"
    */
-  requestTime: Date | undefined;
+  requestTime: string | undefined;
   /**
    * Timestamp when the pricing response was generated.
    *
    * Format: RFC3339/ISO 8601
    * Example: "2025-06-11T10:00:01Z"
    */
-  responseTime: Date | undefined;
+  responseTime: string | undefined;
   /**
    * Unique request ID for tracing
    *

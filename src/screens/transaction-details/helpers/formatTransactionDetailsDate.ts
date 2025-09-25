@@ -5,9 +5,12 @@ export function formatTransactionDetailsDate(minedAtInSeconds?: number): string 
   if (!minedAtInSeconds) {
     return;
   }
-  const timestampInMs = new Date(minedAtInSeconds).getTime();
+  const isLikelyInSeconds = minedAtInSeconds < 10_000_000_000;
+  const timestampInMs = isLikelyInSeconds ? minedAtInSeconds * 1000 : minedAtInSeconds;
 
-  const formatted = format(timestampInMs, "MMM d, yyyy 'at' h:mm a", {
+  const date = new Date(timestampInMs);
+
+  const formatted = format(date, "MMM d, yyyy 'at' h:mm a", {
     locale: getDateFnsLocale(),
   });
   return formatted;

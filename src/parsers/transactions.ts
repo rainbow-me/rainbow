@@ -2,7 +2,6 @@ import {
   NativeCurrencyKey,
   RainbowTransaction,
   TransactionDirection,
-  PaginatedTransactionsApiResponse,
   TransactionChanges,
   TransactionStatus,
   TransactionType,
@@ -19,7 +18,7 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 
-import { Asset, Change, NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
+import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 
@@ -61,6 +60,7 @@ export const parseTransaction = (
 
   const txn = {
     ...transaction,
+    changes: Array.isArray(transaction.changes) ? transaction.changes : [],
   };
   const changes: TransactionChanges = txn.changes.map(change => {
     if (change) {

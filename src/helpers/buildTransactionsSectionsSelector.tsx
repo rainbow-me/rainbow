@@ -28,13 +28,12 @@ export type TransactionSectionsResult = {
   sections: SectionListData<TransactionItemForSectionList, TransactionSections>[];
 };
 
-// bad news
-const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt: string }) => {
+const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt?: number | null }) => {
   if (status === TransactionStatus.pending) {
     return i18n.t(i18n.l.transactions.pending_title);
   }
 
-  const ts = new Date(minedAt).getTime();
+  const ts = toTimestampInMs(minedAt);
 
   if (ts > todayTimestamp) return i18n.t(i18n.l.time.today_caps);
   if (ts > yesterdayTimestamp) return i18n.t(i18n.l.time.yesterday_caps);
@@ -48,6 +47,15 @@ const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus
   } catch (e) {
     return i18n.t(i18n.l.transactions.dropped_title);
   }
+};
+
+const toTimestampInMs = (minedAt?: number | null): number => {
+  if (!minedAt) {
+    return 0;
+  }
+
+  const isLikelyInSeconds = minedAt < 10_000_000_000;
+  return isLikelyInSeconds ? minedAt * 1000 : minedAt;
 };
 
 const addContactInfo =
