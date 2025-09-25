@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
+import { Bleed, Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -30,6 +30,7 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import * as i18n from '@/languages';
+import LinearGradient from 'react-native-linear-gradient';
 
 const BUTTON_HEIGHT = 48;
 
@@ -119,33 +120,54 @@ const PerpsSearchScreenFooter = () => {
 
 const PerpsAccountScreenFooter = () => {
   const { isDarkMode } = useColorMode();
+  const { accentColors } = usePerpsAccentColorContext();
+  const safeAreaInsets = useSafeAreaInsets();
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
 
   return (
-    <HyperliquidButton
-      onPress={() => {
-        if (hasZeroBalance) {
-          Navigation.handleAction(hasNoAssets ? Routes.ADD_CASH_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
-        } else {
-          PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
-        }
-      }}
-      paddingVertical={'12px'}
-      borderRadius={24}
-      height={BUTTON_HEIGHT}
-      justifyContent={'center'}
-      alignItems={'center'}
-    >
-      <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
-        {hasNoAssets
-          ? i18n.t(i18n.l.perps.actions.fund_wallet)
-          : hasZeroBalance
-            ? i18n.t(i18n.l.perps.deposit.title)
-            : i18n.t(i18n.l.perps.actions.new_position)}
-      </Text>
-    </HyperliquidButton>
+    <>
+      <Box
+        style={{
+          position: 'absolute',
+          top: -20 + TOP_BORDER_WIDTH,
+          left: -20,
+          right: -20,
+          bottom: -(Math.max(safeAreaInsets.bottom, 20) + 4),
+        }}
+      >
+        <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
+        <LinearGradient
+          colors={['rgba(255, 255, 255, 0.96)', 'rgba(255, 255, 255, 0.88)']}
+          style={StyleSheet.absoluteFillObject}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+        />
+      </Box>
+      <HyperliquidButton
+        onPress={() => {
+          if (hasZeroBalance) {
+            Navigation.handleAction(hasNoAssets ? Routes.ADD_CASH_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
+          } else {
+            PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
+          }
+        }}
+        paddingVertical={'12px'}
+        borderRadius={24}
+        height={BUTTON_HEIGHT}
+        justifyContent={'center'}
+        alignItems={'center'}
+      >
+        <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
+          {hasNoAssets
+            ? i18n.t(i18n.l.perps.actions.fund_wallet)
+            : hasZeroBalance
+              ? i18n.t(i18n.l.perps.deposit.title)
+              : i18n.t(i18n.l.perps.actions.new_position)}
+        </Text>
+      </HyperliquidButton>
+    </>
   );
 };
 
@@ -264,7 +286,7 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
             height: -8,
           },
           borderTopWidth: TOP_BORDER_WIDTH,
-          borderTopColor: accentColors.opacity6,
+          borderTopColor: accentColors.opacity10,
           paddingBottom: Math.max(safeAreaInsets.bottom, 20) + 4,
           paddingTop: 20 - TOP_BORDER_WIDTH,
           backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
