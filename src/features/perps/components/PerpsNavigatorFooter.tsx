@@ -128,22 +128,24 @@ const PerpsAccountScreenFooter = () => {
 
   return (
     <>
-      <Box
-        style={[
-          styles.gradientFill,
-          {
-            bottom: -(Math.max(safeAreaInsets.bottom, PADDING) + 4),
-          },
-        ]}
-      >
-        <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
-        <LinearGradient
-          colors={['rgba(255, 255, 255, 0.96)', 'rgba(255, 255, 255, 0.88)']}
-          style={StyleSheet.absoluteFillObject}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-        />
-      </Box>
+      {!isDarkMode && (
+        <Box
+          style={[
+            styles.gradientFill,
+            {
+              bottom: -(Math.max(safeAreaInsets.bottom, PADDING) + 4),
+            },
+          ]}
+        >
+          <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.96)', 'rgba(255, 255, 255, 0.88)']}
+            style={StyleSheet.absoluteFillObject}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+          />
+        </Box>
+      )}
       <HyperliquidButton
         onPress={() => {
           if (hasZeroBalance) {
@@ -218,7 +220,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         price: livePrice ?? market.price,
         triggerOrders,
       });
-      PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN);
+      PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN, { scrollToTop: true });
     } catch (e) {
       Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), parseHyperliquidErrorMessage(e));
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
