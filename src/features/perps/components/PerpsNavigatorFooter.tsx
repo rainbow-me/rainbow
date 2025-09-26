@@ -32,6 +32,7 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import * as i18n from '@/languages';
 import LinearGradient from 'react-native-linear-gradient';
 import { fonts } from '@/design-system/typography/typography';
+import { IS_ANDROID } from '@/env';
 
 const BUTTON_HEIGHT = 48;
 
@@ -83,7 +84,6 @@ const PerpsSearchScreenFooter = () => {
         borderColor={accentColors.opacity6}
         textColor={accentColors.opacity100}
       />
-
       <Box
         height={BUTTON_HEIGHT}
         borderRadius={20}
@@ -284,6 +284,8 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
 
 const TOP_BORDER_WIDTH = 2;
 const PADDING = 20;
+// It is not clear where this 6 comes from
+const MAGIC_KEYBOARD_OFFSET_NUDGE = 6;
 
 export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const { isDarkMode } = useColorMode();
@@ -291,47 +293,48 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const { accentColors } = usePerpsAccentColorContext();
 
   const enableStickyKeyboard = useNavigationStore(state => state.activeRoute !== Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET);
+  const footerHeight = BUTTON_HEIGHT + PADDING + Math.max(safeAreaInsets.bottom, PADDING) + 4;
 
   return (
-    <KeyboardStickyView
-      // TODO (kane): Where does this 6 come from?
-      offset={{ opened: safeAreaInsets.bottom + 6 - PADDING }}
-      enabled={enableStickyKeyboard}
-    >
-      <Box
-        position="absolute"
-        bottom="0px"
-        left="0px"
-        right="0px"
-        width="full"
-        shadow={'24px'}
-        style={{
-          shadowOffset: {
-            width: 0,
-            height: -8,
-          },
-          borderTopWidth: TOP_BORDER_WIDTH,
-          borderTopColor: accentColors.opacity10,
-          paddingBottom: Math.max(safeAreaInsets.bottom, PADDING) + 4,
-          paddingTop: PADDING - TOP_BORDER_WIDTH,
-          backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
-        }}
-      >
-        <Box as={Animated.View} paddingHorizontal="20px">
-          <MountWhenFocused route={Routes.PERPS_ACCOUNT_SCREEN}>
-            <PerpsAccountScreenFooter />
-          </MountWhenFocused>
+    <>
+      {/* Required to block touches from passing through on Android */}
+      {IS_ANDROID && <Box position="absolute" bottom="0px" left="0px" right="0px" width="full" height={footerHeight} />}
+      <KeyboardStickyView offset={{ opened: safeAreaInsets.bottom + MAGIC_KEYBOARD_OFFSET_NUDGE - PADDING }} enabled={enableStickyKeyboard}>
+        <Box
+          position="absolute"
+          bottom="0px"
+          left="0px"
+          right="0px"
+          width="full"
+          shadow={'24px'}
+          style={{
+            shadowOffset: {
+              width: 0,
+              height: -8,
+            },
+            borderTopWidth: TOP_BORDER_WIDTH,
+            borderTopColor: accentColors.opacity10,
+            paddingBottom: Math.max(safeAreaInsets.bottom, PADDING) + 4,
+            paddingTop: PADDING - TOP_BORDER_WIDTH,
+            backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
+          }}
+        >
+          <Box as={Animated.View} paddingHorizontal="20px">
+            <MountWhenFocused route={Routes.PERPS_ACCOUNT_SCREEN}>
+              <PerpsAccountScreenFooter />
+            </MountWhenFocused>
 
-          <MountWhenFocused route={Routes.PERPS_SEARCH_SCREEN}>
-            <PerpsSearchScreenFooter />
-          </MountWhenFocused>
+            <MountWhenFocused route={Routes.PERPS_SEARCH_SCREEN}>
+              <PerpsSearchScreenFooter />
+            </MountWhenFocused>
 
-          <MountWhenFocused route={Routes.PERPS_NEW_POSITION_SCREEN}>
-            <PerpsNewPositionScreenFooter />
-          </MountWhenFocused>
+            <MountWhenFocused route={Routes.PERPS_NEW_POSITION_SCREEN}>
+              <PerpsNewPositionScreenFooter />
+            </MountWhenFocused>
+          </Box>
         </Box>
-      </Box>
-    </KeyboardStickyView>
+      </KeyboardStickyView>
+    </>
   );
 });
 
