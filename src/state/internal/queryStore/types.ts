@@ -350,7 +350,7 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
    * **Note:** Stale times under 5 seconds are strongly discouraged.
    * @default time.minutes(2)
    */
-  staleTime?: number;
+  staleTime?: number | ParamResolvable<number, TParams, S, TData>;
   /**
    * Suppresses warnings in the event a `staleTime` under the minimum is desired.
    * @default false

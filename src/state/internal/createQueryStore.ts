@@ -207,6 +207,8 @@ export function createQueryStore<
   const persistConfig =
     typeof creatorOrPersistConfig === 'object' && 'storageKey' in creatorOrPersistConfig ? creatorOrPersistConfig : maybePersistConfig;
 
+  let staleTime = typeof config.staleTime === 'function' ? time.minutes(2) : config.staleTime ?? time.minutes(2);
+
   const {
     fetcher,
     onError,
@@ -224,7 +226,6 @@ export function createQueryStore<
     paramChangeThrottle,
     params,
     retryDelay = defaultRetryDelay,
-    staleTime = time.minutes(2),
     suppressStaleTimeWarning = false,
     useParsableQueryKeys = false,
   } = config;
@@ -246,6 +247,7 @@ export function createQueryStore<
 
   let attachVals: { enabled: AttachValue<boolean> | null; params: Partial<Record<keyof TParams, AttachValue<unknown>>> } | null = null;
   let directValues: { enabled: boolean | null; params: Partial<TParams> } | null = null;
+  let staleTimeAttachVal: AttachValue<number> | null = null;
   let paramUnsubscribes: Unsubscribe[] = [];
   let fetchAfterParamCreation = false;
   let isBuildingParams = false;
@@ -333,7 +335,7 @@ export function createQueryStore<
 
     subscriptionManager.init({
       onSubscribe: (enabled, isFirstSubscription, shouldThrottle) => {
-        if (!directValues && !attachVals && (params || typeof config.enabled === 'function')) {
+        if (!directValues && !attachVals && (params || typeof config.enabled === 'function' || typeof config.staleTime === 'function')) {
           fetchAfterParamCreation = true;
           return;
         }
@@ -830,6 +832,11 @@ export function createQueryStore<
     directValues = { enabled: resolvedEnabledDirectValue, params: resolvedDirectValues };
   }
 
+  if (typeof config.staleTime === 'function') {
+    staleTimeAttachVal = config.staleTime($, queryStore);
+    staleTime = staleTimeAttachVal.value;
+  }
+
   function onParamChangeBase() {
     const newParams = getCurrentResolvedParams(attachVals, directValues);
     if (!keepPreviousData) {
@@ -888,6 +895,24 @@ export function createQueryStore<
           if (enableLogs) console.log('[🌀 Param Change 🌀] -', k, '- [Old]:', `${oldVal?.toString()},`, '[New]:', newVal?.toString());
           oldVal = newVal;
           onParamChange();
+        }
+      });
+      paramUnsubscribes.push(unsub);
+    }
+  }
+
+  if (staleTimeAttachVal) {
+    const subscribeFn = attachValueSubscriptionMap.get(staleTimeAttachVal);
+    if (subscribeFn) {
+      let oldVal = staleTimeAttachVal.value;
+      if (enableLogs) console.log('[🌀 StaleTime Subscription 🌀] Initial value:', oldVal);
+      const unsub = subscribeFn(() => {
+        const newVal = staleTimeAttachVal.value;
+        if (newVal !== oldVal) {
+          if (enableLogs) console.log('[🌀 StaleTime Change 🌀] - [Old]:', `${oldVal},`, '[New]:', newVal);
+          oldVal = newVal;
+          staleTime = newVal;
+          queryStore.getState().fetch();
         }
       });
       paramUnsubscribes.push(unsub);
