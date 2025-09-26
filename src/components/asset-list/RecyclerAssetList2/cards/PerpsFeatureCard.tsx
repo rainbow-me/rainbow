@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon } from '@/design-system';
+import { Box, Inline, Stack, Text, AccentColorProvider, TextIcon, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
@@ -12,6 +12,7 @@ import Routes from '@/navigation/routesNames';
 import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as i18n from '@/languages';
+import ConditionalWrap from 'conditional-wrap';
 
 export const PERPS_FEATURE_CARD_HEIGHT = 92;
 
@@ -23,6 +24,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({ isDismissable =
   const {
     perps_feature_card_copy: { title, subtitle },
   } = useRemoteConfig();
+  const { isDarkMode } = useColorMode();
 
   const { accentColor } = useAccountAccentColor();
   const { dismiss } = usePerpsFeatureCard();
@@ -42,56 +44,72 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({ isDismissable =
   return (
     <AccentColorProvider color={accentColor}>
       <ButtonPressAnimation onPress={navigateToPerps} scaleTo={0.96} style={styles.container}>
-        <GradientBorderView
-          borderGradientColors={[accentColors.opacity16, accentColors.opacity40]}
-          start={{ x: 0, y: 1 }}
-          end={{ x: 0, y: 0 }}
-          borderRadius={28}
-          style={styles.gradientBorderView}
-          backgroundColor={accentColors.opacity16}
-        >
-          <Box flexDirection="row" justifyContent="flex-start" alignItems="center" gap={16}>
-            <Box
-              height={60}
-              width={60}
-              backgroundColor={accentColors.opacity8}
-              borderRadius={30}
-              justifyContent="center"
-              alignItems="center"
-              borderWidth={2}
-              borderColor={{ custom: accentColors.opacity4 }}
+        <ConditionalWrap
+          condition={isDarkMode}
+          wrap={children => (
+            <GradientBorderView
+              borderGradientColors={[accentColors.opacity16, accentColors.opacity40]}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 0, y: 0 }}
+              borderRadius={28}
+              style={styles.gradientBorderView}
+              backgroundColor={accentColors.opacity16}
             >
-              <LinearGradient
-                colors={['transparent', accentColor]}
-                style={[StyleSheet.absoluteFillObject, { opacity: 0.12 }]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              />
-              <Image source={infinityIcon} style={{ width: 40 }} resizeMode="contain" tintColor={accentColor} />
-            </Box>
-            <Box>
-              <Stack space="10px">
-                <Text size="11pt" weight="black" color={{ custom: accentColor }}>
-                  {i18n.t(i18n.l.new).toUpperCase()}
-                </Text>
-                <Stack space={'12px'}>
-                  <Inline alignVertical="center" space="6px">
-                    <Text size="20pt" weight="heavy" color="label" align="left">
-                      {title}
-                    </Text>
-                    <TextIcon size="icon 13px" weight="heavy" color={'label'} opacity={0.3} align="left">
-                      {'􀯻'}
-                    </TextIcon>
-                  </Inline>
-
-                  <Text size="15pt" weight="bold" color="labelTertiary">
-                    {subtitle}
+              {children}
+            </GradientBorderView>
+          )}
+        >
+          <ConditionalWrap
+            condition={!isDarkMode}
+            wrap={children => (
+              <Box style={styles.gradientBorderView} background="surfacePrimaryElevated" shadow="24px">
+                {children}
+              </Box>
+            )}
+          >
+            <Box flexDirection="row" justifyContent="flex-start" alignItems="center" gap={16}>
+              <Box
+                height={60}
+                width={60}
+                backgroundColor={accentColors.opacity8}
+                borderRadius={30}
+                justifyContent="center"
+                alignItems="center"
+                borderWidth={2}
+                borderColor={{ custom: accentColors.opacity4 }}
+              >
+                <LinearGradient
+                  colors={['transparent', accentColor]}
+                  style={[StyleSheet.absoluteFillObject, { opacity: 0.12 }]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                />
+                <Image source={infinityIcon} style={{ width: 40 }} resizeMode="contain" tintColor={accentColor} />
+              </Box>
+              <Box>
+                <Stack space="10px">
+                  <Text size="11pt" weight="black" color={{ custom: accentColor }}>
+                    {i18n.t(i18n.l.new).toUpperCase()}
                   </Text>
+                  <Stack space={'12px'}>
+                    <Inline alignVertical="center" space="6px">
+                      <Text size="20pt" weight="heavy" color="label" align="left">
+                        {title}
+                      </Text>
+                      <TextIcon size="icon 13px" weight="heavy" color={'label'} opacity={0.3} align="left">
+                        {'􀯻'}
+                      </TextIcon>
+                    </Inline>
+
+                    <Text size="15pt" weight="bold" color="labelTertiary">
+                      {subtitle}
+                    </Text>
+                  </Stack>
                 </Stack>
-              </Stack>
+              </Box>
             </Box>
-          </Box>
-        </GradientBorderView>
+          </ConditionalWrap>
+        </ConditionalWrap>
       </ButtonPressAnimation>
       {isDismissable && (
         <View style={styles.dismissButton}>
@@ -126,10 +144,10 @@ const styles = StyleSheet.create({
   },
   gradientBorderView: {
     width: '100%',
-    paddingLeft: 16,
+    paddingHorizontal: 16,
     paddingVertical: 16,
-    paddingRight: 48,
     height: PERPS_FEATURE_CARD_HEIGHT,
+    borderRadius: 28,
   },
   dismissButton: {
     position: 'absolute',
