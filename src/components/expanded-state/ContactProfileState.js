@@ -10,6 +10,7 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/em
 import { useContacts, useENSAvatar } from '@/hooks';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { IS_ANDROID } from '@/env';
 
 const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -27,15 +28,19 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const handleAddContact = useCallback(() => {
     const nickname = profilesEnabled ? value : (emoji ? `${emoji} ${value}` : value).trim();
     if (value?.length > 0) {
+      // Android: dismiss keyboard first to avoid racing with modal animation
+      IS_ANDROID && Keyboard.dismiss();
       onAddOrUpdateContacts(address, nickname, colors.avatarBackgrounds[colorIndex || 0], ens);
-      goBack();
+      // Android: wait for keyboard to close before navigating back
+      setTimeout(() => goBack(), IS_ANDROID ? 100 : 0);
     }
-    android && Keyboard.dismiss();
   }, [address, colorIndex, colors.avatarBackgrounds, emoji, ens, goBack, onAddOrUpdateContacts, profilesEnabled, value]);
 
   const handleCancel = useCallback(() => {
-    goBack();
-    android && Keyboard.dismiss();
+    // Android: dismiss keyboard first to avoid racing with modal animation
+    IS_ANDROID && Keyboard.dismiss();
+    // Android: wait for keyboard to close before navigating back
+    setTimeout(() => goBack(), IS_ANDROID ? 100 : 0);
   }, [goBack]);
 
   const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
