@@ -4,7 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
-import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
+import { SheetActionButton, SheetHandleFixedToTopHeight, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
@@ -12,11 +12,10 @@ import { Box, Text as DSText, Separator } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { ethereumUtils, gasUtils } from '@/utils';
+import { ethereumUtils, gasUtils, safeAreaInsetValues } from '@/utils';
 import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { ThemeContextProps, useTheme } from '@/theme';
-import { IS_ANDROID } from '@/env';
 import Routes from '@/navigation/routesNames';
 
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -27,9 +26,7 @@ import { ExplainSheetRouteParams, RootStackParamList } from '@/navigation/types'
 import { logger } from '@/logger';
 
 const { GAS_TRENDS } = gasUtils;
-export const ExplainSheetHeight = IS_ANDROID ? 454 : 434;
-
-const l = i18n.l.explain;
+export const ExplainSheetHeight = 415 + SheetHandleFixedToTopHeight + safeAreaInsetValues.bottom;
 
 type WithTheme<T> = T & { theme: ThemeContextProps };
 
@@ -87,7 +84,7 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }: WithThe
   size: 'lmedium',
   weight: 'heavy',
 }))({
-  ...padding.object(IS_ANDROID ? 5 : 8, 12),
+  ...padding.object(8, 12),
   borderColor: ({ theme: { colors }, color }: WithTheme<{ color: string }>) => colors.alpha(color ?? colors.appleBlue, 0.06),
   borderRadius: 20,
   borderWidth: 2,
@@ -98,7 +95,6 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }: WithThe
 type ContainerProps = {
   deviceHeight: number;
   height: number;
-  insets: ReturnType<typeof useSafeAreaInsets>;
 };
 
 const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }: ContainerProps) => ({
@@ -203,7 +199,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         title,
         text,
         logo: <ChainImage chainId={chainId} size={40} position="relative" />,
-        extraHeight: IS_ANDROID ? 120 : 144,
+        extraHeight: 120,
         readMoreLink: buildLearnUrl('layer-2-and-layer-3-networks'),
       };
     }
@@ -212,7 +208,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         emoji: '📦',
         title: i18n.t(i18n.l.rewards.op.airdrop_timing.title),
         text: i18n.t(i18n.l.rewards.op.airdrop_timing.text),
-        extraHeight: IS_ANDROID ? -65 : 10,
+        extraHeight: 10,
         readMoreLink: buildLearnUrl('OP-rewards-with-Rainbow'),
       };
     case 'op_rewards_amount_distributed':
@@ -220,28 +216,28 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
         emoji: '💰',
         title: i18n.t(i18n.l.rewards.op.amount_distributed.title),
         text: i18n.t(i18n.l.rewards.op.amount_distributed.text),
-        extraHeight: IS_ANDROID ? -110 : -65,
+        extraHeight: -65,
       };
     case 'op_rewards_bridge':
       return {
         emoji: '🌉',
         title: i18n.t(i18n.l.rewards.op.bridge.title, { percent: params.percent || 0 }),
         text: i18n.t(i18n.l.rewards.op.bridge.text, { percent: params.percent || 0 }),
-        extraHeight: IS_ANDROID ? -65 : 10,
+        extraHeight: 10,
       };
     case 'op_rewards_swap':
       return {
         emoji: '🔀',
         title: i18n.t(i18n.l.rewards.op.swap.title, { percent: params.percent || 0 }),
         text: i18n.t(i18n.l.rewards.op.swap.text, { percent: params.percent || 0 }),
-        extraHeight: IS_ANDROID ? -65 : 10,
+        extraHeight: 10,
       };
     case 'op_rewards_position':
       return {
         emoji: '🏆',
         title: i18n.t(i18n.l.rewards.op.position.title),
         text: i18n.t(i18n.l.rewards.op.position.text),
-        extraHeight: IS_ANDROID ? -110 : -65,
+        extraHeight: -65,
       };
     case 'output_disabled': {
       const fromNetwork = params.fromChainId ? chainsLabel[params.fromChainId] : '';
@@ -301,39 +297,39 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     case 'ens_resolver':
       return { extraHeight: -60, emoji: '❓', text: ENS_RESOLVER_EXPLAINER, title: ENS_RESOLVER_TITLE };
     case 'ens_configuration':
-      return { extraHeight: IS_ANDROID ? 100 : 80, emoji: '❓', text: ENS_CONFIGURATION_EXPLAINER, title: ENS_CONFIGURATION_TITLE };
+      return { extraHeight: 80, emoji: '❓', text: ENS_CONFIGURATION_EXPLAINER, title: ENS_CONFIGURATION_TITLE };
     case 'ensOnChainDataWarning':
       return { extraHeight: -30, emoji: '✋', text: ENS_ON_CHAIN_DATA_WARNING_EXPLAINER, title: ENS_ON_CHAIN_DATA_WARNING_TITLE };
     case 'currentBaseFeeStable':
       return {
         emoji: '🌞',
-        extraHeight: IS_ANDROID ? 42 : 28,
+        extraHeight: 28,
         text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
         title: CURRENT_BASE_FEE_TITLE,
       };
     case 'currentBaseFeeFalling':
       return {
         emoji: '📉',
-        extraHeight: IS_ANDROID ? 22 : 2,
+        extraHeight: 2,
         text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
         title: CURRENT_BASE_FEE_TITLE,
       };
     case 'currentBaseFeeRising':
       return {
         emoji: '🥵',
-        extraHeight: IS_ANDROID ? 62 : 54,
+        extraHeight: 54,
         text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
         title: CURRENT_BASE_FEE_TITLE,
       };
     case 'currentBaseFeeSurging':
       return {
         emoji: '🎢',
-        extraHeight: IS_ANDROID ? 102 : 54,
+        extraHeight: 54,
         text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
         title: CURRENT_BASE_FEE_TITLE,
       };
     case 'currentBaseFeeNotrend':
-      return { emoji: '⛽', extraHeight: IS_ANDROID ? -18 : -40, text: BASE_CURRENT_BASE_FEE_EXPLAINER, title: CURRENT_BASE_FEE_TITLE };
+      return { emoji: '⛽', extraHeight: -40, text: BASE_CURRENT_BASE_FEE_EXPLAINER, title: CURRENT_BASE_FEE_TITLE };
     case 'maxBaseFee':
       return { emoji: '📈', extraHeight: -31, text: MAX_BASE_FEE_EXPLAINER, title: i18n.t(i18n.l.explain.max_base_fee.title) };
     case 'minerTip':
@@ -560,7 +556,7 @@ export function getExplainSheetConfig(params: ExplainSheetRouteParams, theme?: T
     }
     case 'routeSwaps':
       return {
-        extraHeight: IS_ANDROID ? 20 : 0,
+        extraHeight: 0,
         emoji: '🔀',
         stillCurious: createStillCuriousLink('swap_routing.still_curious', 'swap-with-confidence-with-rainbow'),
         text: i18n.t(i18n.l.explain.swap_routing.text),
@@ -640,7 +636,6 @@ const ExplainSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeAreaInsets();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPLAIN_SHEET>>();
-
   const theme = useTheme();
   const { goBack, navigate } = useNavigation();
 
@@ -707,7 +702,7 @@ const ExplainSheet = () => {
       explainSheetConfig?.secondaryButton?.label || (explainSheetConfig?.readMoreLink ? i18n.t(i18n.l.explain.read_more) : undefined);
 
     const secondaryButton = secondaryButtonLabel && (
-      <Column height={60} style={IS_ANDROID && reverseButtons ? { marginTop: 16 } : undefined}>
+      <Column height={60}>
         <SheetActionButton
           color={explainSheetConfig?.secondaryButton?.bgColor ?? theme.colors.blueGreyDarkLight}
           isTransparent
@@ -746,13 +741,12 @@ const ExplainSheet = () => {
   }
 
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
+    <Container deviceHeight={deviceHeight} height={sheetHeight}>
       <SlackSheet additionalTopPadding contentHeight={sheetHeight} scrollEnabled={false}>
-        <Centered direction="column" height={sheetHeight} testID={`explain-sheet-${params.type}`} width="100%">
+        <Centered direction="column" testID={`explain-sheet-${params.type}`} width="100%">
           <ColumnWithMargins
             margin={15}
             style={{
-              height: sheetHeight,
               padding: 19,
               width: '100%',
             }}
@@ -766,7 +760,7 @@ const ExplainSheet = () => {
                   size="h1"
                   style={{
                     ...fontWithWidth(fonts.weight.bold),
-                    height: IS_ANDROID ? 62 : 47,
+                    height: 47,
                   }}
                 >
                   {explainSheetConfig.emoji}
@@ -777,7 +771,7 @@ const ExplainSheet = () => {
                   size="h1"
                   style={{
                     ...fontWithWidth(fonts.weight.bold),
-                    height: IS_ANDROID ? 62 : 47,
+                    height: 47,
                   }}
                 >
                   {i18n.t(i18n.l.explain.verified.title)}

@@ -16,6 +16,7 @@ import { LpPositionListItem } from './LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
+import { safeAreaInsetValues } from '@/utils';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -25,7 +26,7 @@ const ITEM_PADDING = 20;
 const SECTION_TITLE_HEIGHT = 20 + ITEM_PADDING;
 
 export function getPositionSheetHeight({ position }: { position: RainbowPosition }) {
-  let height = 120;
+  let height = 120 + safeAreaInsetValues.bottom;
   const numberOfDeposits = position.deposits.filter(deposit => !deposit.isLp).length || 0;
   const numberOfLpDeposits = position.deposits.filter(deposit => deposit.isLp).length || 0;
   const numberOfBorrows = position.borrows.length || 0;

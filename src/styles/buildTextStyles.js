@@ -109,6 +109,8 @@ const buildTextStyles = css`
 
   /* Uppercase */
   ${({ uppercase }) => (uppercase ? 'text-transform: uppercase;' : '')}
+
+  ${android ? 'include-font-padding: false;\ntext-align-vertical: center;' : ''}
 `;
 
 buildTextStyles.object = ({
@@ -165,6 +167,11 @@ buildTextStyles.object = ({
 
   if (uppercase) {
     styles.textTransform = 'uppercase';
+  }
+
+  if (android) {
+    styles.includeFontPadding = false;
+    styles.textAlignVertical = 'center';
   }
 
   return styles;

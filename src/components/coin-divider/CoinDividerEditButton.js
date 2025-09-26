@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { LayoutAnimation, StyleSheet } from 'react-native';
+import { LayoutAnimation } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
@@ -7,12 +7,11 @@ import { Row } from '../layout';
 import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding, shadow } from '@/styles';
-import { IS_ANDROID } from '@/env';
 
 const ButtonContent = styled(Row).attrs({
   justify: 'center',
 })(({ isActive, theme: { colors, isDarkMode } }) => ({
-  ...padding.object(ios ? 5 : 0, 10, 6),
+  ...padding.object(5, 10, 6),
   ...(isActive ? shadow.buildAsObject(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4) : {}),
   backgroundColor: isActive ? colors.appleBlue : colors.alpha(colors.blueGreyDark, 0.06),
   borderRadius: 15,
@@ -34,13 +33,12 @@ const CoinDividerEditButton = ({ isActive, isVisible, onPress, shouldReloadList,
       <ButtonPressAnimation onPress={handlePress} radiusAndroid={15} scaleTo={textOpacityAlwaysOn || isActive ? 0.9 : 1}>
         <ButtonContent isActive={isActive} style={style}>
           <Text
-            align={ios ? 'center' : 'left'}
+            align="center"
             color={isActive ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedTight"
             opacity={textOpacityAlwaysOn || isActive ? 1 : 0.3333333333}
             size="lmedium"
             weight="bold"
-            style={sx.text}
           >
             {text}
           </Text>
@@ -49,11 +47,5 @@ const CoinDividerEditButton = ({ isActive, isVisible, onPress, shouldReloadList,
     </OpacityToggler>
   );
 };
-
-const sx = StyleSheet.create({
-  text: {
-    marginTop: IS_ANDROID ? -4 : 0,
-  },
-});
 
 export default magicMemo(CoinDividerEditButton, ['isActive', 'isVisible', 'text']);

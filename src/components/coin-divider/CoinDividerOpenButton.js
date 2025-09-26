@@ -10,7 +10,6 @@ import { padding } from '@/styles';
 import * as i18n from '@/languages';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ImgixImage } from '@/components/images';
-import { IS_ANDROID } from '@/env';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
@@ -26,7 +25,7 @@ const AnimatedRow = Animated.createAnimatedComponent(Row);
 const ButtonContent = styled(AnimatedRow).attrs({
   justify: 'center',
 })(({ isActive, theme: { colors, isDarkMode } }) => ({
-  ...padding.object(ios ? 5 : 0, 10, 6),
+  ...padding.object(5, 10, 6),
   backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
   borderRadius: 15,
   height: 30,
@@ -50,7 +49,7 @@ const CoinDividerEditButton = ({ isSmallBalancesOpen, onPress }) => {
       opacity: 0.6,
       transform: [
         { translateX: 0 + animation.value * 5 },
-        { translateY: (IS_ANDROID ? (!animation.value ? 2.5 : 4) : 0) + animation.value * 1.25 },
+        { translateY: animation.value * 1.25 },
         { rotate: animation.value * -90 + 'deg' },
       ],
     };
@@ -71,7 +70,6 @@ const CoinDividerEditButton = ({ isSmallBalancesOpen, onPress }) => {
             opacity={1}
             size="lmedium"
             weight="bold"
-            style={{ marginTop: IS_ANDROID ? -4 : 0 }}
           >
             {isSmallBalancesOpen ? i18n.t(i18n.l.button.less) : i18n.t(i18n.l.button.all)}
           </Text>

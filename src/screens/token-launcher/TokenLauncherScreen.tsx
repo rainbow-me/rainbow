@@ -5,7 +5,7 @@ import { FOOTER_HEIGHT, TokenLauncherFooter } from './components/TokenLauncherFo
 import { TokenLauncherHeader } from './components/TokenLauncherHeader';
 import { InfoInputStep } from './components/InfoInputStep';
 import { ReviewStep } from './components/ReviewStep';
-import { KeyboardAvoidingView, KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { KeyboardAvoidingView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { NavigationSteps, useTokenLauncherStore } from './state/tokenLauncherStore';
 import Animated, { Extrapolation, FadeIn, FadeOut, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { StepBlurredImageBackground } from './components/StepBlurredImageBackground';
@@ -175,9 +175,7 @@ export function TokenLauncherScreen() {
   return (
     <ColorModeProvider value="dark">
       <TokenLauncherContextProvider>
-        <KeyboardProvider statusBarTranslucent={false} preserveEdgeToEdge={false} navigationBarTranslucent={false}>
-          <TokenLauncherScreenContent />
-        </KeyboardProvider>
+        <TokenLauncherScreenContent />
         {/* This component returns null, and is just used to sync price and gas data */}
         <PriceAndGasSync />
       </TokenLauncherContextProvider>

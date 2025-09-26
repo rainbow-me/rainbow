@@ -12,7 +12,7 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { assetIsUniqueAsset } from '@/handlers/web3';
-import { KeyboardProvider, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useTheme } from '@/theme';
 import { IS_IOS } from '@/env';
 import { NAVIGATION_BAR_HEIGHT } from '@/utils/deviceUtils';
@@ -86,56 +86,54 @@ export default function SendAssetForm({
   const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
 
   return (
-    <KeyboardProvider statusBarTranslucent={false} preserveEdgeToEdge={false} navigationBarTranslucent={false}>
-      <KeyboardAwareScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="always"
-        extraKeyboardSpace={-NAVIGATION_BAR_HEIGHT}
-      >
-        <Container>
-          <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
-            <ShadowStack
-              alignSelf="center"
-              backgroundColor={colors.white}
-              borderRadius={20}
-              height={SendCoinRow.selectedHeight}
-              overflow={isTinyPhone ? 'visible' : 'hidden'}
-              shadows={isTinyPhone ? noShadows : shadows}
-              width={deviceWidth - 38}
-            >
-              {isTinyPhone ? null : <AssetRowGradient />}
-              <AssetRowElement disablePressAnimation item={selected} selected showNativeValue={showNativeValue} testID="send-asset-form">
-                <Text align="center" color={colorForAsset || colors.dark} size="large" weight="heavy">
-                  􀁴
-                </Text>
-              </AssetRowElement>
-            </ShadowStack>
-          </ButtonPressAnimation>
-          <FormContainer isUniqueAsset={isUniqueAsset}>
-            {isUniqueAsset ? (
-              <SendAssetFormCollectible asset={selected} buttonRenderer={buttonRenderer} txSpeedRenderer={txSpeedRenderer} />
-            ) : (
-              <SendAssetFormToken
-                {...props}
-                assetAmount={assetAmount}
-                assetInputRef={assetInputRef}
-                buttonRenderer={buttonRenderer}
-                colorForAsset={colorForAsset}
-                nativeAmount={nativeAmount}
-                nativeCurrency={nativeCurrency}
-                nativeCurrencyInputRef={nativeCurrencyInputRef}
-                onChangeAssetAmount={onChangeAssetAmount}
-                onChangeNativeAmount={onChangeNativeAmount}
-                onFocusAssetInput={onFocusAssetInput}
-                onFocusNativeInput={onFocusNativeInput}
-                selected={selected}
-                sendMaxBalance={sendMaxBalance}
-                txSpeedRenderer={txSpeedRenderer}
-              />
-            )}
-          </FormContainer>
-        </Container>
-      </KeyboardAwareScrollView>
-    </KeyboardProvider>
+    <KeyboardAwareScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="always"
+      extraKeyboardSpace={-NAVIGATION_BAR_HEIGHT}
+    >
+      <Container>
+        <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
+          <ShadowStack
+            alignSelf="center"
+            backgroundColor={colors.white}
+            borderRadius={20}
+            height={SendCoinRow.selectedHeight}
+            overflow={isTinyPhone ? 'visible' : 'hidden'}
+            shadows={isTinyPhone ? noShadows : shadows}
+            width={deviceWidth - 38}
+          >
+            {isTinyPhone ? null : <AssetRowGradient />}
+            <AssetRowElement disablePressAnimation item={selected} selected showNativeValue={showNativeValue} testID="send-asset-form">
+              <Text align="center" color={colorForAsset || colors.dark} size="large" weight="heavy">
+                􀁴
+              </Text>
+            </AssetRowElement>
+          </ShadowStack>
+        </ButtonPressAnimation>
+        <FormContainer isUniqueAsset={isUniqueAsset}>
+          {isUniqueAsset ? (
+            <SendAssetFormCollectible asset={selected} buttonRenderer={buttonRenderer} txSpeedRenderer={txSpeedRenderer} />
+          ) : (
+            <SendAssetFormToken
+              {...props}
+              assetAmount={assetAmount}
+              assetInputRef={assetInputRef}
+              buttonRenderer={buttonRenderer}
+              colorForAsset={colorForAsset}
+              nativeAmount={nativeAmount}
+              nativeCurrency={nativeCurrency}
+              nativeCurrencyInputRef={nativeCurrencyInputRef}
+              onChangeAssetAmount={onChangeAssetAmount}
+              onChangeNativeAmount={onChangeNativeAmount}
+              onFocusAssetInput={onFocusAssetInput}
+              onFocusNativeInput={onFocusNativeInput}
+              selected={selected}
+              sendMaxBalance={sendMaxBalance}
+              txSpeedRenderer={txSpeedRenderer}
+            />
+          )}
+        </FormContainer>
+      </Container>
+    </KeyboardAwareScrollView>
   );
 }
