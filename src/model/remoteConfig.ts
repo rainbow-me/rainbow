@@ -14,10 +14,15 @@ import { shallowEqual } from '@/worklets/comparisons';
 
 const REMOTE_CONFIG_VERSION = digitsOnly(CURRENT_APP_VERSION);
 
-export interface RainbowConfig extends Record<string, string | boolean | number | Record<string, number> | number[]> {
+export interface RainbowConfig
+  extends Record<string, string | boolean | number | Record<string, number> | number[] | { title: string; subtitle: string }> {
   /* Objects */
   default_slippage_bips: Record<string, number>;
   default_slippage_bips_chainId: Record<string, number>;
+  perps_feature_card_copy: {
+    title: string;
+    subtitle: string;
+  };
 
   /* Arrays */
   rewards_claim_networks: number[];
@@ -87,6 +92,7 @@ export interface RainbowConfig extends Record<string, string | boolean | number 
   candlestick_charts_enabled: boolean;
   rainbow_toasts_enabled: boolean;
   king_of_the_hill2_enabled: boolean;
+  perps_enabled: boolean;
 }
 
 const Bips = {
@@ -137,10 +143,16 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.zora]: Bips.default,
 };
 
+const DEFAULT_PERPS_FEATURE_CARD_COPY = {
+  title: 'Perps',
+  subtitle: 'High risk, high reward trading',
+};
+
 export const DEFAULT_CONFIG = {
   /* Objects */
   default_slippage_bips: DEFAULT_SLIPPAGE_BIPS,
   default_slippage_bips_chainId: DEFAULT_SLIPPAGE_BIPS_CHAINID,
+  perps_feature_card_copy: DEFAULT_PERPS_FEATURE_CARD_COPY,
 
   /* Arrays */
   rewards_claim_networks: [ChainId.optimism],
@@ -211,6 +223,7 @@ export const DEFAULT_CONFIG = {
   prince_of_the_hill_enabled: false,
   candlestick_charts_enabled: IS_DEV || isTestFlight || false,
   rainbow_toasts_enabled: IS_DEV || isTestFlight || false,
+  perps_enabled: false,
 } as const satisfies Readonly<RainbowConfig>;
 
 type RemoteConfigKey = keyof typeof DEFAULT_CONFIG;
@@ -221,12 +234,14 @@ type StringifiedFirebaseDefaults = Readonly<{
   default_slippage_bips: string;
   default_slippage_bips_chainId: string;
   rewards_claim_networks: string;
+  perps_feature_card_copy: string;
 }>;
 
 const STRINGIFIED_FIREBASE_DEFAULTS: StringifiedFirebaseDefaults = {
   default_slippage_bips: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips),
   default_slippage_bips_chainId: JSON.stringify(DEFAULT_CONFIG.default_slippage_bips_chainId),
   rewards_claim_networks: JSON.stringify(DEFAULT_CONFIG.rewards_claim_networks),
+  perps_feature_card_copy: JSON.stringify(DEFAULT_CONFIG.perps_feature_card_copy),
 };
 
 type FirebaseConfigDefaults = Omit<RainbowConfig, keyof StringifiedFirebaseDefaults> &

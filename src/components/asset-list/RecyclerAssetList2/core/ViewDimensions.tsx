@@ -15,6 +15,7 @@ import { ProfileStickyHeaderHeight } from '@/components/asset-list/RecyclerAsset
 import { RECEIVE_CARD_HEIGHT } from '@/components/cards/ReceiveAssetsCard';
 import { ETH_CARD_HEIGHT } from '@/components/cards/EthCard';
 import { LEARN_CARD_HEIGHT } from '@/components/cards/RotatingLearnCard';
+import { PERPS_FEATURE_CARD_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/cards/PerpsFeatureCard';
 import { DISCOVER_MORE_BUTTON_HEIGHT } from '@/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton';
 import { CardSize, UniqueTokenCardMargin } from '@/components/unique-token/CardSize';
 import { IS_IOS } from '@/env';
@@ -30,6 +31,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.RECEIVE_CARD]: { height: RECEIVE_CARD_HEIGHT },
   [CellType.ETH_CARD]: { height: ETH_CARD_HEIGHT },
   [CellType.LEARN_CARD]: { height: LEARN_CARD_HEIGHT },
+  [CellType.PERPS_FEATURE_CARD]: { height: PERPS_FEATURE_CARD_HEIGHT },
   [CellType.EMPTY_WALLET_SPACER]: { height: 20 },
   [CellType.BIG_EMPTY_WALLET_SPACER]: { height: 32 },
   [CellType.PROFILE_STICKY_HEADER]: { height: ProfileStickyHeaderHeight },
@@ -96,6 +98,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.TOKENS_HEADER_SPACE_BEFORE]: { height: 10 },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
   [CellType.EMPTY_REMOTE_CARD_CAROUSEL]: { height: 0 },
+  [CellType.SPACER]: { height: 0 }, // Height will be overridden by data
 };
 
 export default ViewDimensions;

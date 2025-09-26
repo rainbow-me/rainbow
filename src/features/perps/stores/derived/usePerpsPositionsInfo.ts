@@ -1,5 +1,5 @@
 import { TextColor } from '@/design-system/color/palettes';
-import { abs, add, divide, greaterThan, isEqual, multiply, subtract } from '@/helpers/utilities';
+import { abs, add, divide, greaterThan, isEqual, isZero, multiply, subtract } from '@/helpers/utilities';
 import { PerpsPosition } from '@/features/perps/types';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
@@ -59,7 +59,7 @@ export const usePerpsPositionsInfo = createDerivedStore<PerpsPositionsInfo>(
     return {
       balance: accountData.balance,
       equity: formatCurrency(totalPositionsEquity),
-      hasBalance: accountData.balance !== '0',
+      hasBalance: !isZero(accountData.balance),
       hasPositions: positions.length > 0,
       positions,
       isNeutralPnl,
