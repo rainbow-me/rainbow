@@ -76,11 +76,17 @@ const getLayoutProvider = ({
 
   return new BetterLayoutProvider(
     index => briefSectionsData[index].type,
-    (type: string | number, dim: Dimension) => {
+    (type: string | number, dim: Dimension, index: number) => {
       const cellType = type as CellType;
+      const cellData = briefSectionsData[index];
       dim.width = deviceUtils.dimensions.width;
       if (ViewDimensions[cellType]) {
-        dim.height = ViewDimensions[cellType].height;
+        // For SPACER type, use the height from data if available
+        if (cellType === CellType.SPACER && cellData && 'height' in cellData) {
+          dim.height = cellData.height;
+        } else {
+          dim.height = ViewDimensions[cellType].height;
+        }
         dim.width = ViewDimensions[cellType].width || dim.width;
 
         // If NFTs are disabled, we don't want to render the sections, so adjust the height to 0

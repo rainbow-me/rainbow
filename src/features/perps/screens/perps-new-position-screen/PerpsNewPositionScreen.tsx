@@ -15,6 +15,7 @@ import { MarketInfoSection } from './MarketInfoSection';
 import { AmountInputError } from '@/features/perps/screens/perps-new-position-screen/AmountInputError';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { HeaderFade } from '@/features/perps/components/HeaderFade';
+import { IS_ANDROID } from '@/env';
 
 export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
   const { isDarkMode } = useColorMode();
@@ -31,7 +32,12 @@ export const PerpsNewPositionScreen = memo(function PerpsNewPositionScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentInset={{ bottom: FOOTER_HEIGHT_WITH_SAFE_AREA }}
-          contentContainerStyle={{ paddingHorizontal: 20, overflow: 'visible', paddingTop: POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING }}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            overflow: 'visible',
+            paddingTop: POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING,
+            paddingBottom: IS_ANDROID ? FOOTER_HEIGHT_WITH_SAFE_AREA : 0,
+          }}
         >
           <Box paddingTop={'24px'}>
             <Stack

@@ -32,6 +32,7 @@ import { ReceiveAssetsCard } from '@/components/cards/ReceiveAssetsCard';
 import { CardRowWrapper } from '../cards/CardRowWrapper';
 import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
+import { PerpsFeatureCard } from '../cards/PerpsFeatureCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
@@ -70,6 +71,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.PERPS_SPACE_BEFORE:
     case CellType.TOKENS_HEADER_SPACE_BEFORE:
     case CellType.EMPTY_REMOTE_CARD_CAROUSEL:
+    case CellType.SPACER:
       return null;
     case CellType.COIN_DIVIDER:
       return (
@@ -105,6 +107,13 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
           <RotatingLearnCard />
         </CardRowWrapper>
       );
+    case CellType.PERPS_FEATURE_CARD: {
+      return (
+        <CardRowWrapper>
+          <PerpsFeatureCard />
+        </CardRowWrapper>
+      );
+    }
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
     case CellType.REMOTE_CARD_CAROUSEL:

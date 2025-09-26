@@ -642,6 +642,11 @@ type RouteParams = {
         initialPerpsPage?: PerpsRoute;
       }
     | undefined;
+  [Routes.PERPS_ACCOUNT_SCREEN]:
+    | {
+        scrollToTop?: boolean;
+      }
+    | undefined;
   [Routes.PERPS_DETAIL_SCREEN]: {
     market: PerpMarket;
   };

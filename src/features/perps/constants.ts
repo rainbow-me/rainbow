@@ -107,7 +107,7 @@ export const USDC_ASSET = {
 
 // TODO: These should be somewhere else
 export const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
-export const LIGHT_HANDLE_COLOR = 'rgba(9, 17, 31, 0.3)';
+export const LIGHT_HANDLE_COLOR = 'rgba(59, 66, 83, 0.3)';
 
 const ANIMATION_CONFIG = SPRING_CONFIGS.snappierSpringConfig;
 

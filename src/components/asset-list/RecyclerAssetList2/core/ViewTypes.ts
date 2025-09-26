@@ -52,6 +52,8 @@ export enum CellType {
   TOKENS_HEADER = 'TOKENS_HEADER',
   TOKENS_HEADER_SPACE_BEFORE = 'TOKENS_HEADER_SPACE_BEFORE',
 
+  PERPS_FEATURE_CARD = 'PERPS_FEATURE_CARD',
+
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
   ETH_CARD = 'ETH_CARD',
@@ -63,6 +65,8 @@ export enum CellType {
 
   REMOTE_CARD_CAROUSEL = 'REMOTE_CARD_CAROUSEL',
   EMPTY_REMOTE_CARD_CAROUSEL = 'EMPTY_REMOTE_CARD_CAROUSEL',
+
+  SPACER = 'SPACER',
 }
 export type RecyclerListViewRef = RecyclerListView<RecyclerListViewProps, RecyclerListViewState>;
 
@@ -137,6 +141,10 @@ export type TokensHeaderExtraData = {
   type: CellType.TOKENS_HEADER;
 };
 
+export type PerpsFeatureCardExtraData = {
+  type: CellType.PERPS_FEATURE_CARD;
+};
+
 export type LegacyNFTFamilyExtraData = {
   type: CellType.LEGACY_FAMILY_HEADER;
   name: string;
@@ -161,6 +169,11 @@ export type LoadingAssetsSection = {
   type: CellType.LOADING_ASSETS;
 };
 
+export type SpacerExtraData = {
+  type: CellType.SPACER;
+  height: number;
+};
+
 export type CellExtraData =
   | LoadingAssetsSection
   | NFTFamilyExtraData
@@ -180,6 +193,8 @@ export type CellExtraData =
   | PerpsPositionExtraData
   | PerpsHeaderExtraData
   | TokensHeaderExtraData
-  | ProfileActionButtonsRowExtraData;
+  | PerpsFeatureCardExtraData
+  | ProfileActionButtonsRowExtraData
+  | SpacerExtraData;
 
 export type CellTypes = BaseCellType | (CellExtraData & BaseCellType);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Box, Separator, Stack, useColorMode } from '@/design-system';
@@ -9,19 +9,32 @@ import { MarketsSection } from '@/features/perps/screens/perps-account-screen/Ma
 import { OpenPositionsSection } from '@/features/perps/screens/perps-account-screen/OpenPositionsSection';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { clamp } from '@/__swaps__/utils/swaps';
+import { usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
+import Routes from '@/navigation/routesNames';
 
 const HEADER_FADE_DISTANCE = 8;
 
 export const PerpsAccountScreen = function PerpsAccountScreen() {
   const { isDarkMode } = useColorMode();
   const scrollPosition = useSharedValue(0);
+  const scrollViewRef = useRef<Animated.ScrollView>(null);
+  const params = usePerpsNavigationStore(state => state.getParams(Routes.PERPS_ACCOUNT_SCREEN));
+
   const headerFadeStyle = useAnimatedStyle(() => ({
     opacity: interpolate(scrollPosition.value, [0, HEADER_FADE_DISTANCE], [0, 1], 'clamp'),
   }));
 
+  useEffect(() => {
+    if (params?.scrollToTop) {
+      scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: false });
+      usePerpsNavigationStore.getState().setParams(Routes.PERPS_ACCOUNT_SCREEN, { ...params, scrollToTop: undefined });
+    }
+  }, [params?.scrollToTop, scrollPosition, params]);
+
   return (
     <View style={styles.container}>
       <Animated.ScrollView
+        ref={scrollViewRef}
         contentContainerStyle={styles.contentContainer}
         onScroll={event => {
           const clampedPosition = clamp(event.nativeEvent.contentOffset.y, 0, HEADER_FADE_DISTANCE);

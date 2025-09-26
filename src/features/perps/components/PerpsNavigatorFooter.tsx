@@ -30,6 +30,9 @@ import { getSolidColorEquivalent } from '@/worklets/colors';
 import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/screens/PerpsNavigator';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import * as i18n from '@/languages';
+import LinearGradient from 'react-native-linear-gradient';
+import { fonts } from '@/design-system/typography/typography';
+import { IS_ANDROID } from '@/env';
 
 const BUTTON_HEIGHT = 48;
 
@@ -81,7 +84,6 @@ const PerpsSearchScreenFooter = () => {
         borderColor={accentColors.opacity6}
         textColor={accentColors.opacity100}
       />
-
       <Box
         height={BUTTON_HEIGHT}
         borderRadius={20}
@@ -119,39 +121,62 @@ const PerpsSearchScreenFooter = () => {
 
 const PerpsAccountScreenFooter = () => {
   const { isDarkMode } = useColorMode();
+  const { accentColors } = usePerpsAccentColorContext();
+  const safeAreaInsets = useSafeAreaInsets();
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const hasZeroBalance = Number(balance) === 0;
   const hasNoAssets = useUserAssetsStore(state => !state.getFilteredUserAssetIds().length);
 
   return (
-    <HyperliquidButton
-      onPress={() => {
-        if (hasZeroBalance) {
-          Navigation.handleAction(hasNoAssets ? Routes.ADD_CASH_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
-        } else {
-          PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
-        }
-      }}
-      paddingVertical={'12px'}
-      borderRadius={24}
-      height={BUTTON_HEIGHT}
-      justifyContent={'center'}
-      alignItems={'center'}
-    >
-      <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
-        {hasNoAssets
-          ? i18n.t(i18n.l.perps.actions.fund_wallet)
-          : hasZeroBalance
-            ? i18n.t(i18n.l.perps.deposit.title)
-            : i18n.t(i18n.l.perps.actions.new_position)}
-      </Text>
-    </HyperliquidButton>
+    <>
+      {!isDarkMode && (
+        <Box
+          style={[
+            styles.gradientFill,
+            {
+              bottom: -(Math.max(safeAreaInsets.bottom, PADDING) + 4),
+            },
+          ]}
+        >
+          <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.96)', 'rgba(255, 255, 255, 0.88)']}
+            style={StyleSheet.absoluteFillObject}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+          />
+        </Box>
+      )}
+      <HyperliquidButton
+        onPress={() => {
+          if (hasZeroBalance) {
+            Navigation.handleAction(hasNoAssets ? Routes.ADD_CASH_SHEET : Routes.PERPS_DEPOSIT_SCREEN);
+          } else {
+            PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' });
+          }
+        }}
+        paddingVertical={'12px'}
+        borderRadius={24}
+        height={BUTTON_HEIGHT}
+        justifyContent={'center'}
+        alignItems={'center'}
+      >
+        <Text size="20pt" weight={'black'} color={isDarkMode ? 'black' : 'white'}>
+          {hasNoAssets
+            ? i18n.t(i18n.l.perps.actions.fund_wallet)
+            : hasZeroBalance
+              ? i18n.t(i18n.l.perps.deposit.title)
+              : i18n.t(i18n.l.perps.actions.new_position)}
+        </Text>
+      </HyperliquidButton>
+    </>
   );
 };
 
 const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter() {
   const { accentColors } = usePerpsAccentColorContext();
   const { isDarkMode } = useColorMode();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const isValidOrder = useOrderAmountValidation(state => state.isValid);
   const positionSide = useHlNewPositionStore(state => state.positionSide);
@@ -160,8 +185,9 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   const green = accentColors.longGreen;
   const red = accentColors.shortRed;
 
+  const isLong = positionSide === PerpPositionSide.LONG;
+
   const button = useMemo(() => {
-    const isLong = positionSide === PerpPositionSide.LONG;
     const positionSideColor = isLong ? green : red;
     const darkModeTextColor = isValidOrder ? (isLong ? 'black' : 'white') : opacityWorklet(positionSideColor, 0.4);
     const lightModeTextColor = isValidOrder ? 'white' : opacityWorklet(positionSideColor, 0.4);
@@ -178,7 +204,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         opacity: 0.07,
       }),
     };
-  }, [positionSide, green, red, isValidOrder, isDarkMode, accentColors]);
+  }, [green, red, isValidOrder, isDarkMode, accentColors, isLong]);
 
   const submitNewPosition = useCallback(async () => {
     const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
@@ -195,7 +221,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         price: livePrice ?? market.price,
         triggerOrders,
       });
-      PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN);
+      PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN, { scrollToTop: true });
     } catch (e) {
       Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), parseHyperliquidErrorMessage(e));
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
@@ -204,39 +230,62 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   }, []);
 
   return (
-    <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
-      <BackButton
-        onPress={() => PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' })}
-        backgroundColor={button.backgroundColor}
-        borderColor={button.borderColor}
-        textColor={button.backTextColor}
-      />
-
-      <Box style={{ flex: 1 }}>
-        <HoldToActivateButton
-          disabled={!isValidOrder}
+    <>
+      {isDarkMode && (
+        <Box
+          style={[
+            styles.gradientFill,
+            {
+              bottom: -(Math.max(safeAreaInsets.bottom, PADDING) + 4),
+            },
+          ]}
+        >
+          <Box style={StyleSheet.absoluteFillObject} backgroundColor={accentColors.opacity100} />
+          <LinearGradient
+            colors={isLong ? [accentColors.surfacePrimary, '#142A18'] : [accentColors.surfacePrimary, '#2A1614']}
+            style={StyleSheet.absoluteFillObject}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 2 }}
+          />
+        </Box>
+      )}
+      <Box flexDirection={'row'} gap={12} width="full" alignItems={'center'} justifyContent={'space-between'}>
+        <BackButton
+          onPress={() => PerpsNavigation.navigate(Routes.PERPS_SEARCH_SCREEN, { type: 'newPosition' })}
           backgroundColor={button.backgroundColor}
-          disabledBackgroundColor={button.disabledBackgroundColor}
-          isProcessing={isSubmitting}
-          showBiometryIcon={false}
-          processingLabel={i18n.t(i18n.l.perps.common.submitting)}
-          label={button.text}
-          onLongPress={submitNewPosition}
-          height={BUTTON_HEIGHT}
-          textStyle={{
-            color: button.textColor,
-            fontSize: 20,
-            fontWeight: '900',
-          }}
-          progressColor={button.textColor}
+          borderColor={button.borderColor}
+          textColor={button.backTextColor}
         />
-        <Border borderColor={{ custom: button.borderColor }} borderWidth={2} borderRadius={24} enableInLightMode />
+
+        <Box style={{ flex: 1 }}>
+          <HoldToActivateButton
+            disabled={!isValidOrder}
+            backgroundColor={button.backgroundColor}
+            disabledBackgroundColor={button.disabledBackgroundColor}
+            isProcessing={isSubmitting}
+            showBiometryIcon={false}
+            processingLabel={i18n.t(i18n.l.perps.common.submitting)}
+            label={button.text}
+            onLongPress={submitNewPosition}
+            height={BUTTON_HEIGHT}
+            textStyle={{
+              color: button.textColor,
+              fontSize: 20,
+              fontFamily: fonts.SFProRounded.heavy.fontFamily,
+            }}
+            progressColor={button.textColor}
+          />
+          <Border borderColor={{ custom: button.borderColor }} borderWidth={2} borderRadius={24} enableInLightMode />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 });
 
 const TOP_BORDER_WIDTH = 2;
+const PADDING = 20;
+// It is not clear where this 6 comes from
+const MAGIC_KEYBOARD_OFFSET_NUDGE = 6;
 
 export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const { isDarkMode } = useColorMode();
@@ -244,47 +293,48 @@ export const PerpsNavigatorFooter = memo(function PerpsNavigatorFooter() {
   const { accentColors } = usePerpsAccentColorContext();
 
   const enableStickyKeyboard = useNavigationStore(state => state.activeRoute !== Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET);
+  const footerHeight = BUTTON_HEIGHT + PADDING + Math.max(safeAreaInsets.bottom, PADDING) + 4;
 
   return (
-    <KeyboardStickyView
-      // TODO (kane): Where does this 6 come from?
-      offset={{ opened: safeAreaInsets.bottom + 6 - 20 }}
-      enabled={enableStickyKeyboard}
-    >
-      <Box
-        position="absolute"
-        bottom="0px"
-        left="0px"
-        right="0px"
-        width="full"
-        shadow={'24px'}
-        style={{
-          shadowOffset: {
-            width: 0,
-            height: -8,
-          },
-          borderTopWidth: TOP_BORDER_WIDTH,
-          borderTopColor: accentColors.opacity6,
-          paddingBottom: Math.max(safeAreaInsets.bottom, 20) + 4,
-          paddingTop: 20 - TOP_BORDER_WIDTH,
-          backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
-        }}
-      >
-        <Box as={Animated.View} paddingHorizontal="20px">
-          <MountWhenFocused route={Routes.PERPS_ACCOUNT_SCREEN}>
-            <PerpsAccountScreenFooter />
-          </MountWhenFocused>
+    <>
+      {/* Required to block touches from passing through on Android */}
+      {IS_ANDROID && <Box position="absolute" bottom="0px" left="0px" right="0px" width="full" height={footerHeight} />}
+      <KeyboardStickyView offset={{ opened: safeAreaInsets.bottom + MAGIC_KEYBOARD_OFFSET_NUDGE - PADDING }} enabled={enableStickyKeyboard}>
+        <Box
+          position="absolute"
+          bottom="0px"
+          left="0px"
+          right="0px"
+          width="full"
+          shadow={'24px'}
+          style={{
+            shadowOffset: {
+              width: 0,
+              height: -8,
+            },
+            borderTopWidth: TOP_BORDER_WIDTH,
+            borderTopColor: accentColors.opacity10,
+            paddingBottom: Math.max(safeAreaInsets.bottom, PADDING) + 4,
+            paddingTop: PADDING - TOP_BORDER_WIDTH,
+            backgroundColor: isDarkMode ? accentColors.surfacePrimary : 'white',
+          }}
+        >
+          <Box as={Animated.View} paddingHorizontal="20px">
+            <MountWhenFocused route={Routes.PERPS_ACCOUNT_SCREEN}>
+              <PerpsAccountScreenFooter />
+            </MountWhenFocused>
 
-          <MountWhenFocused route={Routes.PERPS_SEARCH_SCREEN}>
-            <PerpsSearchScreenFooter />
-          </MountWhenFocused>
+            <MountWhenFocused route={Routes.PERPS_SEARCH_SCREEN}>
+              <PerpsSearchScreenFooter />
+            </MountWhenFocused>
 
-          <MountWhenFocused route={Routes.PERPS_NEW_POSITION_SCREEN}>
-            <PerpsNewPositionScreenFooter />
-          </MountWhenFocused>
+            <MountWhenFocused route={Routes.PERPS_NEW_POSITION_SCREEN}>
+              <PerpsNewPositionScreenFooter />
+            </MountWhenFocused>
+          </Box>
         </Box>
-      </Box>
-    </KeyboardStickyView>
+      </KeyboardStickyView>
+    </>
   );
 });
 
@@ -316,5 +366,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     zIndex: 100,
     ...fontWithWidth(font.weight.semibold),
+  },
+  gradientFill: {
+    position: 'absolute',
+    top: -PADDING + TOP_BORDER_WIDTH,
+    left: -PADDING,
+    right: -PADDING,
   },
 });

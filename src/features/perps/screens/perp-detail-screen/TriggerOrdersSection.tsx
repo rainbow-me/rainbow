@@ -8,10 +8,12 @@ import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccent
 import { logger, RainbowError } from '@/logger';
 import { Alert } from 'react-native';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
-import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { toFixedWorklet } from '@/safe-math/SafeMath';
 import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrderButton';
 import * as i18n from '@/languages';
+import { LAYOUT_ANIMATION } from '@/features/perps/constants';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 type TriggerOrdersSectionProps = {
   symbol: string;
@@ -43,7 +45,10 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
   }, [order.symbol, order.id]);
 
   return (
-    <Animated.View entering={FadeIn.duration(200).springify()} exiting={FadeOut.duration(150)}>
+    <Animated.View
+      entering={FadeIn.duration(TIMING_CONFIGS.fastFadeConfig.duration).easing(TIMING_CONFIGS.fastFadeConfig.easing)}
+      exiting={FadeOut.duration(TIMING_CONFIGS.fastFadeConfig.duration).easing(TIMING_CONFIGS.fastFadeConfig.easing)}
+    >
       <TriggerOrderCard
         type={type}
         price={order.triggerPrice}
@@ -65,42 +70,40 @@ export const TriggerOrdersSection = memo(function TriggerOrdersSection({ symbol 
   const hasExistingStopLoss = triggerOrders?.some(order => order.orderType === 'Stop Market' || order.orderType === 'Stop Limit') ?? false;
 
   return (
-    <Animated.View layout={LinearTransition.springify()}>
-      <Box gap={28}>
-        <Inline space="10px" alignVertical="center">
-          <IconContainer height={14} width={24}>
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text align="center" color={{ custom: accentColors.opacity100 }} size="icon 17px" weight="bold">
-                {'􁣃'}
-              </Text>
-            </TextShadow>
-          </IconContainer>
-          <Text size="20pt" weight="heavy" color="label">
-            {i18n.t(i18n.l.perps.trigger_orders.title)}
-          </Text>
-        </Inline>
-        {triggerOrders?.length ? (
-          <Box gap={12}>
-            {triggerOrders.map(order => (
-              <ExistingTriggerOrderCard key={order.id} order={order} />
-            ))}
-          </Box>
-        ) : null}
+    <Box gap={28}>
+      <Inline space="10px" alignVertical="center">
+        <IconContainer height={14} width={24}>
+          <TextShadow blur={12} shadowOpacity={0.24}>
+            <Text align="center" color={{ custom: accentColors.opacity100 }} size="icon 17px" weight="bold">
+              {'􁣃'}
+            </Text>
+          </TextShadow>
+        </IconContainer>
+        <Text size="20pt" weight="heavy" color="label">
+          {i18n.t(i18n.l.perps.trigger_orders.title)}
+        </Text>
+      </Inline>
+      {triggerOrders?.length ? (
         <Box gap={12}>
-          <AddTriggerOrderButton
-            symbol={symbol}
-            type={TriggerOrderType.TAKE_PROFIT}
-            source={TriggerOrderSource.EXISTING}
-            disabled={hasExistingTakeProfit}
-          />
-          <AddTriggerOrderButton
-            symbol={symbol}
-            type={TriggerOrderType.STOP_LOSS}
-            source={TriggerOrderSource.EXISTING}
-            disabled={hasExistingStopLoss}
-          />
+          {triggerOrders.map(order => (
+            <ExistingTriggerOrderCard key={order.id} order={order} />
+          ))}
         </Box>
+      ) : null}
+      <Box as={Animated.View} layout={LAYOUT_ANIMATION} gap={12}>
+        <AddTriggerOrderButton
+          symbol={symbol}
+          type={TriggerOrderType.TAKE_PROFIT}
+          source={TriggerOrderSource.EXISTING}
+          disabled={hasExistingTakeProfit}
+        />
+        <AddTriggerOrderButton
+          symbol={symbol}
+          type={TriggerOrderType.STOP_LOSS}
+          source={TriggerOrderSource.EXISTING}
+          disabled={hasExistingStopLoss}
+        />
       </Box>
-    </Animated.View>
+    </Box>
   );
 });
