@@ -14,4 +14,8 @@ export const prefetchRegistry = deepFreeze<PrefetchRegistry>({
   [Routes.EXPANDED_ASSET_SHEET_V2]: ({ asset }) => {
     prefetchCandlestickData(asset);
   },
+
+  [Routes.PERPS_DETAIL_SCREEN]: ({ market }) => {
+    prefetchCandlestickData(market.symbol);
+  },
 });

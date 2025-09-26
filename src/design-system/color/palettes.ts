@@ -189,6 +189,8 @@ export type BackgroundColor =
   | 'pink'
   | 'orange'
   | 'yellow'
+  | 'black'
+  | 'white'
   | 'body (Deprecated)'
   | 'action (Deprecated)'
   | 'swap (Deprecated)'
@@ -351,6 +353,26 @@ export const backgroundColors: Record<BackgroundColor, ContextualColorValue<Back
       mode: 'light',
     },
   },
+  'black': {
+    light: {
+      color: '#000000',
+      mode: 'dark',
+    },
+    dark: {
+      color: '#000000',
+      mode: 'dark',
+    },
+  },
+  'white': {
+    light: {
+      color: '#FFFFFF',
+      mode: 'light',
+    },
+    dark: {
+      color: '#FFFFFF',
+      mode: 'light',
+    },
+  },
   'action (Deprecated)': {
     dark: {
       color: deprecatedColors.appleBlueLight,
@@ -424,6 +446,8 @@ export type ForegroundColor =
   | 'pink'
   | 'orange'
   | 'yellow'
+  | 'black'
+  | 'white'
   | 'fill'
   | 'fillSecondary'
   | 'fillTertiary'
@@ -508,6 +532,8 @@ export const foregroundColors: Record<ForegroundColor, ContextualColorValue<stri
   'pink': selectBackgroundAsForeground('pink'),
   'orange': selectBackgroundAsForeground('orange'),
   'yellow': selectBackgroundAsForeground('yellow'),
+  'black': selectBackgroundAsForeground('black'),
+  'white': selectBackgroundAsForeground('white'),
   'fill': selectBackgroundAsForeground('fill'),
   'fillSecondary': selectBackgroundAsForeground('fillSecondary'),
   'fillTertiary': selectBackgroundAsForeground('fillTertiary'),
@@ -768,6 +794,8 @@ export const textColors = selectForegroundColors(
   'pink',
   'orange',
   'yellow',
+  'black',
+  'white',
   'action (Deprecated)',
   'primary (Deprecated)',
   'secondary (Deprecated)',

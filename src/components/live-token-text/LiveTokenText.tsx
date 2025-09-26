@@ -4,7 +4,7 @@ import { useTheme } from '@/theme';
 import { useLiveTokensStore, addSubscribedToken, removeSubscribedToken, TokenData } from '@/state/liveTokens/liveTokensStore';
 import { useSharedValue, SharedValue, useAnimatedStyle, useAnimatedReaction, withTiming, withDelay } from 'react-native-reanimated';
 import { useListen } from '@/state/internal/hooks/useListen';
-import { useRoute } from '@react-navigation/native';
+import { useRoute } from '@/navigation/Navigation';
 import { toUnixTime } from '@/worklets/dates';
 import { usePrevious } from '@/hooks';
 

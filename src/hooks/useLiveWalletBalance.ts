@@ -1,3 +1,4 @@
+import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
 import { add, convertAmountToNativeDisplay, greaterThan, multiply, subtract } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { usePositionsStore } from '@/state/positions/positions';
@@ -13,8 +14,9 @@ export const useLiveWalletBalance = createDerivedStore(
     const initialBalance = $(useUserAssetsStore, state => state.getTotalBalance());
     const userAssets = $(useUserAssetsStore, state => state.userAssets);
     const isFetching = $(useUserAssetsStore, state => state.status === 'loading');
-
     const params = $(userAssetsStoreManager, state => ({ address: state.address, currency: state.currency }), shallowEqual);
+    const perpsBalanceNative = $(useHyperliquidBalance);
+
     const claimablesBalance = $(useClaimablesStore, state => state.getData(params)?.totalValueAmount || '0');
     const positionsBalance = $(usePositionsStore, state => {
       const data = state.getData(params);
@@ -43,11 +45,12 @@ export const useLiveWalletBalance = createDerivedStore(
     }
 
     const liveAssetBalance = initialBalance ? add(initialBalance, valueDifference) : '0';
-    const totalBalanceAmount = add(liveAssetBalance, add(positionsBalance, claimablesBalance));
+    const otherBalances = add(add(positionsBalance, claimablesBalance), perpsBalanceNative);
+    const totalBalanceAmount = add(liveAssetBalance, otherBalances);
     const isLoading = initialBalance === 0 && isFetching;
 
     return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, params.currency);
   },
 
-  { debounce: 250, equalityFn: deepEqual }
+  { debounce: 250, equalityFn: deepEqual, fastMode: true }
 );

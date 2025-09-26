@@ -5,7 +5,7 @@ import { supportedNativeCurrencies } from '@/references';
 import { divWorklet, lessThanWorklet, orderOfMagnitudeWorklet, powWorklet } from '@/safe-math/SafeMath';
 import { getNumberFormatter } from '@/helpers/intl';
 
-type BigNumberish = number | string | BigNumber;
+export type BigNumberish = number | string | BigNumber;
 
 interface Dictionary<T> {
   [index: string]: T;

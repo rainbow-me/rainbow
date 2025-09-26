@@ -27,16 +27,21 @@ type MountWhenFocusedProps = {
     }
 );
 
-const DEFAULTS = Object.freeze({
+const ANIMATION_CONFIG = Object.freeze({
   duration: 300,
   easing: Easing.bezier(0.22, 1, 0.36, 1).factory(),
+});
+
+export const DEFAULT_MOUNT_ANIMATIONS = Object.freeze({
+  entering: FadeIn.duration(ANIMATION_CONFIG.duration).easing(ANIMATION_CONFIG.easing),
+  exiting: FadeOut.duration(ANIMATION_CONFIG.duration).easing(ANIMATION_CONFIG.easing),
 });
 
 export const MountWhenFocused = ({
   animated = true,
   children,
-  entering = FadeIn.duration(DEFAULTS.duration).easing(DEFAULTS.easing),
-  exiting = FadeOut.duration(DEFAULTS.duration).easing(DEFAULTS.easing),
+  entering = DEFAULT_MOUNT_ANIMATIONS.entering,
+  exiting = DEFAULT_MOUNT_ANIMATIONS.exiting,
   route,
   style,
 }: MountWhenFocusedProps) => {
