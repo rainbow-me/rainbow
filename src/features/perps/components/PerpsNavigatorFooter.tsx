@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DEFAULT_MOUNT_ANIMATIONS } from '@/components/utilities/MountWhenFocused';
-import { Bleed, Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
+import { Border, Box, Text, TextShadow, useColorMode } from '@/design-system';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -31,6 +31,7 @@ import { PerpsNavigation, usePerpsNavigationStore } from '@/features/perps/scree
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import * as i18n from '@/languages';
 import LinearGradient from 'react-native-linear-gradient';
+import { fonts } from '@/design-system/typography/typography';
 
 const BUTTON_HEIGHT = 48;
 
@@ -270,7 +271,7 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
             textStyle={{
               color: button.textColor,
               fontSize: 20,
-              fontWeight: '900',
+              fontFamily: fonts.SFProRounded.heavy.fontFamily,
             }}
             progressColor={button.textColor}
           />

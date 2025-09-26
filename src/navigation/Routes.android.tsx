@@ -104,6 +104,8 @@ import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withd
 import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
 import { PerpsDetailScreen } from '@/features/perps/screens/perp-detail-screen/PerpDetailScreen';
 import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
+import { CreateTriggerOrderBottomSheet } from '@/features/perps/screens/CreateTriggerOrderBottomSheet';
+import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -266,6 +268,8 @@ function BSNavigator() {
       <BSStack.Screen component={LogSheet} name={Routes.LOG_SHEET} />
       <BSStack.Screen component={TokenLauncherScreen} name={Routes.TOKEN_LAUNCHER_SCREEN} options={tokenLauncherSheetPreset} />
       <BSStack.Screen component={PerpsNavigator} name={Routes.PERPS_NAVIGATOR} />
+      <BSStack.Screen component={CreateTriggerOrderBottomSheet} name={Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET} />
+      <BSStack.Screen component={ClosePositionBottomSheet} name={Routes.CLOSE_POSITION_BOTTOM_SHEET} />
       <BSStack.Screen component={KingOfTheHillExplainSheet} name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET} />
     </BSStack.Navigator>
   );

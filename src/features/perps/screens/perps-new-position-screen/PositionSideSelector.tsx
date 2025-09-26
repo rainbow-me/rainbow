@@ -13,6 +13,7 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, PERPS_COLORS } from '@/features/perps/constants';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICKER_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { fonts } from '@/design-system/typography/typography';
 
 export const POSITION_SIDE_SELECTOR_HEIGHT = 36;
 export const POSITION_SIDE_SELECTOR_HEIGHT_WITH_PADDING = POSITION_SIDE_SELECTOR_HEIGHT + 8;
@@ -42,12 +43,12 @@ export const PositionSideSelector = memo(function PositionSideSelector() {
 
   const longTextStyle = useAnimatedStyle(() => ({
     color: interpolateColor(longToShortProgress.value, PROGRESS_RANGE, [isDarkMode ? 'black' : 'white', labelSecondary], 'LAB'),
-    fontWeight: isLong(positionSide.value) ? '900' : '800',
+    fontFamily: isLong(positionSide.value) ? fonts.SFProRounded.heavy.fontFamily : fonts.SFProRounded.black.fontFamily,
   }));
 
   const shortTextStyle = useAnimatedStyle(() => ({
     color: interpolateColor(longToShortProgress.value, PROGRESS_RANGE, [labelSecondary, 'white'], 'LAB'),
-    fontWeight: isLong(positionSide.value) ? '800' : '900',
+    fontFamily: isLong(positionSide.value) ? fonts.SFProRounded.heavy.fontFamily : fonts.SFProRounded.black.fontFamily,
   }));
 
   const selectedHighlightStyle = useAnimatedStyle(() => ({

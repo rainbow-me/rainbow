@@ -253,7 +253,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
   }, [isValidTargetPriceState, inputValue, isSubmitting, isExistingPosition, triggerOrderType, market.symbol, navigation]);
 
   return (
-    <Box paddingTop={'28px'} alignItems="center" style={{ flex: 1 }}>
+    <Box paddingTop={'28px'} alignItems="center">
       <Box gap={24}>
         <Box paddingHorizontal={'24px'} gap={24}>
           <PerpBottomSheetHeader
@@ -324,42 +324,38 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
             </AnimatedText>
           </Box>
         </Box>
-        <Box
-          paddingHorizontal={{ custom: 18 }}
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between"
-          width="full"
-          gap={12}
-        >
-          <ButtonPressAnimation
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={{ flex: 1 }}
-          >
-            <Box
-              height={48}
-              borderRadius={24}
-              backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
-              borderWidth={2}
-              borderColor={'buttonStroke'}
-              justifyContent="center"
-              alignItems="center"
+        <Box paddingHorizontal={{ custom: 18 }} flexDirection="row" alignItems="center" justifyContent="space-between" gap={12}>
+          <View style={{ flex: 1 }}>
+            <ButtonPressAnimation
+              onPress={() => {
+                navigation.goBack();
+              }}
             >
-              <Text size="20pt" weight="bold" color={'labelTertiary'}>
-                {i18n.t(i18n.l.perps.common.cancel)}
+              <Box
+                height={48}
+                borderRadius={24}
+                backgroundColor={opacityWorklet('#F5F8FF', 0.06)}
+                borderWidth={2}
+                borderColor={'buttonStroke'}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Text size="20pt" weight="bold" color={'labelTertiary'}>
+                  {i18n.t(i18n.l.perps.common.cancel)}
+                </Text>
+              </Box>
+            </ButtonPressAnimation>
+          </View>
+          <View style={{ flex: 1 }}>
+            <HyperliquidButton
+              onPress={addTriggerOrder}
+              buttonProps={{ style: { opacity: isAddDisabled ? 0.5 : 1 }, disabled: isAddDisabled }}
+            >
+              <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
+                {isSubmitting ? i18n.t(i18n.l.perps.trigger_orders.adding) : i18n.t(i18n.l.perps.trigger_orders.add)}
               </Text>
-            </Box>
-          </ButtonPressAnimation>
-          <HyperliquidButton
-            onPress={addTriggerOrder}
-            buttonProps={{ style: { flex: 1, opacity: isAddDisabled ? 0.5 : 1 }, disabled: isAddDisabled }}
-          >
-            <Text size="20pt" weight="black" color={isDarkMode ? 'black' : 'white'}>
-              {isSubmitting ? i18n.t(i18n.l.perps.trigger_orders.adding) : i18n.t(i18n.l.perps.trigger_orders.add)}
-            </Text>
-          </HyperliquidButton>
+            </HyperliquidButton>
+          </View>
         </Box>
       </Box>
     </Box>
