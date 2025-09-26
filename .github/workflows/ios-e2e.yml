@@ -83,7 +83,7 @@ jobs:
 
       - name: Rock Remote Build - iOS simulator
         id: rock-remote-build-ios
-        uses: janicduplessis/ios@5c1105f25190c03c48062579596a31337e2e2644
+        uses: janicduplessis/ios@be5750ed32e20631ff4d306f2a8d4e9cfcd1c7f2
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
