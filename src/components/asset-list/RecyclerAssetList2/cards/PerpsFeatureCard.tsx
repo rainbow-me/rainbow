@@ -9,7 +9,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useDismissedPerpsFeatureCard } from '@/features/perps/hooks/useDismissedPerpsFeatureCard';
+import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import * as i18n from '@/languages';
 
@@ -25,7 +25,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({ isDismissable =
   } = useRemoteConfig();
 
   const { accentColor } = useAccountAccentColor();
-  const { setDismissedPerpsFeatureCard } = useDismissedPerpsFeatureCard();
+  const { dismiss } = usePerpsFeatureCard();
   const accentColors = useMemo(() => {
     return {
       opacity100: accentColor,
@@ -95,7 +95,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({ isDismissable =
       </ButtonPressAnimation>
       {isDismissable && (
         <View style={styles.dismissButton}>
-          <ButtonPressAnimation onPress={setDismissedPerpsFeatureCard} scaleTo={0.8}>
+          <ButtonPressAnimation onPress={dismiss} scaleTo={0.8}>
             <Box
               width={24}
               height={24}

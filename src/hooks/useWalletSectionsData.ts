@@ -21,7 +21,7 @@ import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
 import { isDataComplete } from '@/state/nfts/utils';
 import { PerpsPositionsInfo, usePerpsPositionsInfo } from '@/features/perps/stores/derived/usePerpsPositionsInfo';
 import { PerpsWalletListData } from '@/features/perps/types';
-import { useDismissedPerpsFeatureCard } from '@/features/perps/hooks/useDismissedPerpsFeatureCard';
+import { usePerpsFeatureCard } from '@/features/perps/hooks/usePerpsFeatureCard';
 import { shallowEqual } from '@/worklets/comparisons';
 
 export interface WalletSectionsResult {
@@ -104,7 +104,7 @@ export default function useWalletSectionsData({
 
   const { pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
   const { isCoinListEdited } = useCoinListEdited();
-  const { isDismissedPerpsFeatureCard } = useDismissedPerpsFeatureCard();
+  const { isDismissed: isDismissedPerpsFeatureCard } = usePerpsFeatureCard();
 
   useEffect(() => {
     if (isLoadingUserAssets || type !== 'wallet') return;
