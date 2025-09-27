@@ -52,6 +52,7 @@ export function NetworkField() {
         </Box>
         <Bleed right={{ custom: 7 }}>
           <ButtonPressAnimation
+            disabled
             onPress={() => {
               navigation.navigate(Routes.NETWORK_SELECTOR, {
                 selected: chainId,
@@ -87,9 +88,9 @@ export function NetworkField() {
                 >
                   {networkLabel}
                 </Text>
-                <TextIcon color={{ custom: accentColors.opacity60 }} size="icon 15px" textStyle={{ top: 1 }} weight="heavy" width={16}>
+                {/* <TextIcon color={{ custom: accentColors.opacity60 }} size="icon 15px" textStyle={{ top: 1 }} weight="heavy" width={16}>
                   {'􀆈'}
-                </TextIcon>
+                </TextIcon> */}
               </Inline>
             </Box>
           </ButtonPressAnimation>

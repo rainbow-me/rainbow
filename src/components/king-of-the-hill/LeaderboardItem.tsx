@@ -1,5 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { RainbowImage } from '@/components/RainbowImage';
 import { Inline, Text, useColorMode } from '@/design-system';
 import { Token } from '@/graphql/__generated__/metadata';
@@ -83,17 +84,24 @@ export const LeaderboardItem = memo(function LeaderboardItem({
       <View style={styles.itemContainer}>
         {/* icon */}
         <View style={styles.iconColumn}>
-          {iconUrl && (
-            <View style={styles.tokenIconShadow}>
-              <View style={styles.tokenIconContainer}>
+          <View style={styles.tokenIconShadow}>
+            <View style={styles.tokenIconContainer}>
+              {iconUrl ? (
                 <RainbowImage source={{ url: iconUrl }} style={styles.tokenIcon} />
-                {(ranking === 2 || ranking === 3) && <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />}
-              </View>
-              <View style={styles.chainImageContainer}>
-                <ChainImage chainId={token.chainId} size={16} position="absolute" />
-              </View>
+              ) : (
+                <RainbowCoinIcon
+                  color={token.colors?.primary || token.colors?.fallback || undefined}
+                  chainId={token.chainId}
+                  symbol={token.symbol}
+                  showBadge={false}
+                />
+              )}
+              {(ranking === 2 || ranking === 3) && <View style={[styles.rankOverlay, { borderColor: rankingStyle.backgroundColor }]} />}
             </View>
-          )}
+            <View style={styles.chainImageContainer}>
+              <ChainImage chainId={token.chainId} size={16} position="absolute" />
+            </View>
+          </View>
         </View>
 
         <View style={styles.contentColumn}>
@@ -203,11 +211,12 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   rankingBadge: {
-    paddingHorizontal: 3,
-    paddingVertical: 4,
-    borderRadius: 5.5,
-    borderCurve: 'continuous',
     alignItems: 'center',
+    borderCurve: 'continuous',
+    borderRadius: 6,
+    height: 16,
+    justifyContent: 'center',
+    paddingHorizontal: 3.5,
   },
   chainImageContainer: {
     position: 'absolute',
