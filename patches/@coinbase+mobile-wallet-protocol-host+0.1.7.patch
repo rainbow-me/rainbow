@@ -1,3 +1,52 @@
+diff --git a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt
+index 79505d4..f17558b 100644
+--- a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt
++++ b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/MobileWalletProtocolHostModule.kt
+@@ -114,7 +114,7 @@ class MobileWalletProtocolHostModule(reactContext: ReactApplicationContext) : Re
+     @ReactMethod
+     fun getClientAppMetadata(wellKnownCertificates: ReadableArray, promise: Promise) {
+         try {
+-            val activity = requireNotNull(currentActivity)
++            val activity = requireNotNull(reactApplicationContext.currentActivity)
+             val callingPackage = requireNotNull(activity.callingPackage)
+             val certificates = wellKnownCertificates.toArrayList().map { it as String }.toSet()
+ 
+@@ -140,7 +140,7 @@ class MobileWalletProtocolHostModule(reactContext: ReactApplicationContext) : Re
+     @ReactMethod
+     fun getClientAppMetadataV2(promise: Promise) {
+         try {
+-            val activity = requireNotNull(currentActivity)
++            val activity = requireNotNull(reactApplicationContext.currentActivity)
+             val callingPackage = requireNotNull(activity.callingPackage)
+ 
+             val appInfo = activity.packageManager.getApplicationInfo(callingPackage, 0)
+@@ -161,7 +161,7 @@ class MobileWalletProtocolHostModule(reactContext: ReactApplicationContext) : Re
+     @ReactMethod
+     fun getClientAppSignatures(promise: Promise) {
+         try {
+-            val activity = requireNotNull(currentActivity)
++            val activity = requireNotNull(reactApplicationContext.currentActivity)
+             val callingPackage = requireNotNull(activity.callingPackage)
+ 
+             val signatures = Arguments.createArray()
+@@ -178,7 +178,7 @@ class MobileWalletProtocolHostModule(reactContext: ReactApplicationContext) : Re
+     @ReactMethod
+     fun triggerWalletSDKCallback(domain: String, promise: Promise) {
+         try {
+-            val activity = requireNotNull(currentActivity)
++            val activity = requireNotNull(reactApplicationContext.currentActivity)
+ 
+             val intent = Intent()
+             intent.data = Uri.parse(domain)
+@@ -195,7 +195,7 @@ class MobileWalletProtocolHostModule(reactContext: ReactApplicationContext) : Re
+     @ReactMethod
+     fun getIntentUrl(promise: Promise) {
+         try {
+-            val activity = requireNotNull(currentActivity)
++            val activity = requireNotNull(reactApplicationContext.currentActivity)
+             val data = activity.intent.data
+             promise.resolve(data?.toString())
+         } catch (e: Throwable) {
 diff --git a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt b/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt
 index 6b482fa..89ef7c3 100644
 --- a/node_modules/@coinbase/mobile-wallet-protocol-host/android/src/main/java/com/coinbase/mobilewalletprotocolhost/PackageManagerSignaturesExt.kt
