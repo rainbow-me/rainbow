@@ -8,7 +8,7 @@ import styled from '@/styled-thing';
 import { fonts } from '@/styles';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { getPositionSheetHeight } from '@/screens/positions/PositionSheet';
+import { getPositionSheetHeight } from '@/features/positions/screens/PositionSheet';
 
 import { Icon } from '@/components/icons';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
