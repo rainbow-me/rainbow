@@ -4,7 +4,7 @@ import { useTheme } from '@/theme';
 import { convertAmountToPercentageDisplay, convertRawAmountToNativeDisplay, divide } from '@/helpers/utilities';
 import { RainbowUnderlyingAsset } from '@/resources/defi/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { LpRangeBadge } from './LpRangeBadge';
+import { LpPositionRangeBadge } from './LpPositionRangeBadge';
 import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
@@ -137,7 +137,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                       {i18n.t(i18n.l.positions.lp_range_status[rangeStatus])}
                     </Text>
                   </Box>
-                  <LpRangeBadge
+                  <LpPositionRangeBadge
                     assets={assets
                       .filter(asset => asset.quantity !== '0')
                       .map((underlying, index) => ({

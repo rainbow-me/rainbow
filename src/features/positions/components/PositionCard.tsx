@@ -2,16 +2,16 @@ import { Box, Column, Columns, Inline, Stack, Text, globalColors } from '@/desig
 import React, { memo, useCallback, useMemo } from 'react';
 import { useTheme } from '@/theme';
 
-import { GenericCard } from '../cards/GenericCard';
+import { GenericCard } from '@/components/cards/GenericCard';
 import startCase from 'lodash/startCase';
-import { RequestVendorLogoIcon } from '../coin-icon';
+import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
-import { PositionAsset, RainbowBorrow, RainbowClaimable, RainbowDeposit, RainbowPosition, RainbowStake } from '@/resources/defi/types';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { PositionAsset, RainbowBorrow, RainbowReward, RainbowDeposit, RainbowPosition, RainbowStake } from '@/features/positions/types';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 type PositionCardProps = {
   position: RainbowPosition;
