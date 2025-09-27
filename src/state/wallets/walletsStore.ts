@@ -663,7 +663,7 @@ async function refreshAccountInfo(
   useCachedENS = false
 ): Promise<Partial<Pick<RainbowAccount, 'ens' | 'image' | 'label'>> | null> {
   try {
-    if (useCachedENS && account.ens !== undefined) {
+    if (useCachedENS && account.ens !== undefined && account.ens !== null) {
       // If we've already checked for ENS, don't check again
       return null;
     }
