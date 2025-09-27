@@ -774,10 +774,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "Tutup",
+            "c": "CLOSE",
             "h": "H",
             "l": "L",
-            "o": "Buka",
+            "o": "OPEN",
             "t": "",
             "v": "V"
           },
