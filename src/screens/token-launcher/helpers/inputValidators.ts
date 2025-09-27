@@ -80,7 +80,7 @@ const PLATFORM_CONFIGS: Record<LinkType, PlatformConfig> = {
   },
   farcaster: {
     usernameRegex: /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,15}(\.eth)?$/,
-    baseUrls: ['warpcast.com/'],
+    baseUrls: ['warpcast.com/', 'farcaster.xyz/'],
   },
   // TODO: if discord is added later
   // discord: {

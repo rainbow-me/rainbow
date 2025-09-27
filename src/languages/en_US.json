@@ -707,11 +707,10 @@
           "website": "Website",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Other",
-          "search_on_twitter": "Search on Twitter"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "Uniswap liquidity",
         "value": "Value",
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "Removed from showcase",
         "refreshing": "Refreshing metadata...",
         "reported": "Reported as spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "View All with Property",
         "view_collection": "View Collection",
         "view_on_marketplace": "View on Marketplace...",
@@ -958,7 +957,7 @@
       "poolboy_title": "You've unlocked the\nRainbow Poolboy!",
       "adworld_description": "As a Rainbow World Citizen, you can now unlock a special edition\nAdWorld x Rainbow App Icon.",
       "adworld_title": "Welcome to Rainbow World!",
-      "farcaster_description": "Our most boring app icon ever, inspired by Warpcast's bland minimalism.",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "You've unlocked\nRainbowcast",
       "redacted_description": "A stupi-exclusive Rainbow icon for the true Gdupi enjoyers.",
       "redacted_title": "You've unlocked\n Redacted Rainbow",
@@ -1792,7 +1791,7 @@
         "skip": "Skip",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Upload a Photo",
         "uploading": "Uploading",
         "username_placeholder": "username",
@@ -2148,7 +2147,7 @@
       "done": "Done",
       "feedback_and_reports": "Feedback & Bug Reports",
       "feedback_and_support": "Feedback and Support",
-      "follow_us_on_twitter": "Follow us on Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Hey friend! You should download Rainbow, it's my favorite Ethereum wallet 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Settings",
       "language": "Language",
@@ -3387,7 +3386,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Username"
         },
         "telegram": {

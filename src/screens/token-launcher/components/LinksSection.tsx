@@ -52,7 +52,7 @@ export const LINK_SETTINGS = {
   farcaster: {
     Icon: () => (
       <IconContainer height={LINK_ICON_SIZE} width={LINK_ICON_SIZE}>
-        <Icon name="warpcast" color={colors.white} width={14} />
+        <Icon name="farcaster" color={colors.white} width={14} />
       </IconContainer>
     ),
     iconBackgroundColor: '#855DCD',
