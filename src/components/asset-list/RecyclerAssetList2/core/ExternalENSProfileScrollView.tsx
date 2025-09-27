@@ -1,8 +1,8 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import React, { RefObject, useContext, useEffect, useImperativeHandle, useState } from 'react';
+import React, { RefObject, useCallback, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import { ScrollViewProps, ViewStyle, Animated as RNAnimated } from 'react-native';
-import { useSharedValue, useWorkletCallback } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 
 import BaseScrollView, { ScrollViewDefaultProps } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import { ProfileSheetConfigContext } from '../../../../screens/ProfileSheet';
@@ -61,9 +61,13 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
       [props.onScroll, y]
     );
 
-    const scrollWorklet = useWorkletCallback((event: { contentOffset: { y: number } }) => {
-      yPosition.value = event.contentOffset.y;
-    });
+    const scrollWorklet = useCallback(
+      (event: { contentOffset: { y: number } }) => {
+        'worklet';
+        yPosition.value = event.contentOffset.y;
+      },
+      [yPosition]
+    );
 
     useImperativeHandle(ref, () => scrollViewRef.current!);
 
