@@ -87,7 +87,7 @@ export const LpPositionRangeBadge = ({ assets }: LpPositionRangeBadgeProps) => {
                 colors={
                   isMiddle
                     ? ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.0)', 'rgba(255, 255, 255, 0.1)']
-                    : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)']
+                    : ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.15)', 'rgba(255, 255, 255, 0.3)']
                 }
                 start={{ x: isFirst ? 0 : 1, y: 0.5 }}
                 end={{ x: isFirst ? 1 : 0, y: 0.5 }}
