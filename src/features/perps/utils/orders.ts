@@ -1,4 +1,4 @@
-import { DEFAULT_SLIPPAGE_BIPS } from '@/features/perps/constants';
+import { DEFAULT_SLIPPAGE_BIPS, SPOT_ASSET_ID_OFFSET } from '@/features/perps/constants';
 import { PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
 import { formatOrderPrice } from '@/features/perps/utils/formatOrderPrice';
 import { divide, multiply } from '@/helpers/utilities';
@@ -6,7 +6,7 @@ import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { OrderParams, TIF } from '@nktkas/hyperliquid/script/src/types/mod';
 
 export function getMarketType(assetId: number): 'perp' | 'spot' {
-  return assetId < 10_000 ? 'perp' : 'spot';
+  return assetId < SPOT_ASSET_ID_OFFSET ? 'perp' : 'spot';
 }
 
 export function calculatePositionSizeFromMarginAmount({
@@ -24,9 +24,7 @@ export function calculatePositionSizeFromMarginAmount({
 }): string {
   const marketType = getMarketType(assetId);
   const formattedPrice = formatOrderPrice({ price, sizeDecimals, marketType });
-  // Calculate position value from margin amount and leverage
   const positionValue = multiply(marginAmount, leverage);
-  // The size is calculated from the price we expect to execute at
   return toFixedWorklet(divide(positionValue, formattedPrice), sizeDecimals);
 }
 

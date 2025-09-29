@@ -33,7 +33,7 @@ type HlNewPositionActions = {
   removeTriggerOrder: (triggerOrderId: string) => void;
   setAmount: (amount: string) => void;
   setLeverage: (leverage: number | null) => void;
-  setMarket: (market: PerpMarket) => void;
+  setMarket: (market: PerpMarket) => Promise<void>;
   setPositionSide: (positionSide: PerpPositionSide) => void;
 };
 

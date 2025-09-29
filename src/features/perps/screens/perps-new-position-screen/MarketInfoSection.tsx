@@ -5,6 +5,7 @@ import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTok
 import { formatPriceChange } from '@/features/perps/utils';
 import { PerpMarket } from '@/features/perps/types';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 
 type MarketInfoSectionProps = {
   market: PerpMarket;
@@ -24,7 +25,7 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
         </Text>
         <Box flexDirection="row" alignItems="center" gap={8}>
           <LiveTokenText
-            tokenId={`${market.symbol}:hl`}
+            tokenId={`${market.symbol}:${HYPERLIQUID_TOKEN_ID_SUFFIX}`}
             initialValue={formatPerpAssetPrice(market.midPrice ?? market.price)}
             initialValueLastUpdated={0}
             selector={token => {
@@ -38,7 +39,7 @@ export const MarketInfoSection = memo(function MarketInfoSection({ market }: Mar
             selector={state => {
               return formatPriceChange(state.change.change24hPct);
             }}
-            tokenId={`${market.symbol}:hl`}
+            tokenId={`${market.symbol}:${HYPERLIQUID_TOKEN_ID_SUFFIX}`}
             initialValueLastUpdated={0}
             initialValue={formatPriceChange(market.priceChange['24h'])}
             autoSubscriptionEnabled={false}

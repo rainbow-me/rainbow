@@ -76,7 +76,7 @@ export enum TriggerOrderType {
   TAKE_PROFIT = 'tp',
 }
 
-// This type is an extension of the `hl.Fill` type, but with additional information added from the corresponding `hl.FrontendOrder`
+// This type is based on the `hl.Fill` type, but with additional information added from the corresponding `hl.FrontendOrder`
 export type HlTrade = {
   id: number;
   clientId?: string;

@@ -8,9 +8,10 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
 import Routes from '@/navigation/routesNames';
+import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
-const HYPERLIQUID_TOKEN_SUFFIX = ':hl';
+const HYPERLIQUID_TOKEN_SUFFIX = `:${HYPERLIQUID_TOKEN_ID_SUFFIX}`;
 
 function convertLegacyTokenIdToTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split('_');

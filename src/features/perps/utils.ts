@@ -1,3 +1,4 @@
+import { HYPERLIQUID_TOKEN_ID_SUFFIX, SPOT_ASSET_ID_OFFSET } from '@/features/perps/constants';
 import { PerpsNavigation } from '@/features/perps/screens/PerpsNavigator';
 import { useHlNewPositionStore } from '@/features/perps/stores/hlNewPositionStore';
 import { hlOpenOrdersStoreActions } from '@/features/perps/stores/hlOpenOrdersStore';
@@ -12,7 +13,7 @@ import { toFixedWorklet } from '@/safe-math/SafeMath';
 
 export function getHyperliquidTokenId(symbol?: string): string {
   if (!symbol) return '';
-  return `${symbol}:hl`;
+  return `${symbol}:${HYPERLIQUID_TOKEN_ID_SUFFIX}`;
 }
 
 export function getOppositePositionSide(side: PerpPositionSide): PerpPositionSide {
@@ -20,7 +21,7 @@ export function getOppositePositionSide(side: PerpPositionSide): PerpPositionSid
 }
 
 export function convertHyperliquidPerpAssetIdToSpotAssetId(assetId: number): number {
-  return assetId + 10_000;
+  return assetId + SPOT_ASSET_ID_OFFSET;
 }
 
 export function formatPriceChange(priceChange: string) {
@@ -28,7 +29,7 @@ export function formatPriceChange(priceChange: string) {
 }
 
 export function navigateToNewPositionScreen(market: PerpMarket) {
-  useHlNewPositionStore.getState().setMarket(market);
+  void useHlNewPositionStore.getState().setMarket(market);
   PerpsNavigation.navigate(Routes.PERPS_NEW_POSITION_SCREEN);
 }
 
