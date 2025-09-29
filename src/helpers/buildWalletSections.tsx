@@ -263,18 +263,10 @@ const withPerpsSection = (perpsData: PerpsWalletListData | null): CellTypes[] =>
 
   return [
     {
-      type: CellType.PERPS_SPACE_BEFORE,
-      uid: 'perps-spacer-before',
-    },
-    {
       type: CellType.PERPS_HEADER,
       uid: 'perps-header',
     },
     ...perpsSectionItems,
-    {
-      type: CellType.PERPS_SPACE_AFTER,
-      uid: 'perps-spacer-after',
-    },
   ];
 };
 
@@ -295,10 +287,10 @@ const withTokensHeaderSection = ({
 
   return [
     {
-      type: CellType.TOKENS_HEADER_SPACE_BEFORE,
-      uid: 'tokens-header-spacer-before',
+      type: CellType.SPACER,
+      uid: 'tokens-header-spacer-after',
+      height: 10,
     },
-
     {
       type: CellType.TOKENS_HEADER,
       uid: 'tokens-header',

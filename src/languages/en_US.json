@@ -1578,7 +1578,13 @@
         "submitting": "Submitting...",
         "more": "More",
         "error": "Error",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "liq_price": "liq. price",
+        "liq": "liq"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "High risk, high reward trading"
       },
       "actions": {
         "fund_wallet": "Fund Wallet",
@@ -1587,7 +1593,7 @@
         "open_position": "Open Position"
       },
       "account": {
-        "available_balance": "AVAILABLE BALANCE"
+        "available_balance": "Available Balance"
       },
       "markets": {
         "title": "Markets",
@@ -1622,7 +1628,6 @@
       "positions": {
         "entry": "ENTRY",
         "mark_price": "MARK PRICE",
-        "liq_price": "LIQ. PRICE",
         "open_positions": "Open Positions",
         "no_open_positions": "No Open Positions",
         "position_value": "Position Value",
@@ -1677,7 +1682,6 @@
         "above": "above",
         "below": "below",
         "must_be": "Must be",
-        "liq_price": "liq. price",
         "failed_to_create": "Failed to create trigger order"
       },
       "search": {

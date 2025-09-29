@@ -15,6 +15,7 @@ import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
+import * as i18n from '@/languages';
 
 type PerpsPositionRowProps = {
   position: PerpsPosition;
@@ -25,13 +26,14 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
   const red = useForegroundColor('red');
   const green = useForegroundColor('green');
   const pnlColor = isPositivePnl ? green : red;
-  // TODO POSSIBLE (kane): technically we only need this if the user clicks the row, so would be ideal to offload the fetching to the PerpDetailScreen, but would then result in a brief loading state for the whole screen.
   const market = useHyperliquidMarketsStore(state => state.getMarket(position.symbol));
 
   const formattedValues = useMemo(() => {
     return {
       equity: formatCurrency(position.equity),
-      liquidationPrice: position.liquidationPrice ? formatPerpAssetPrice(position.liquidationPrice) : 'N/A',
+      liquidationPrice: position.liquidationPrice
+        ? formatPerpAssetPrice(position.liquidationPrice)
+        : i18n.t(i18n.l.perps.common.not_available),
       unrealizedPnl: formatCurrency(abs(position.unrealizedPnl)),
     };
   }, [position]);
@@ -77,7 +79,7 @@ export const PerpsPositionRow = memo(function PerpsPositionRow({ position }: Per
             <Box flexDirection="row" alignItems="center" justifyContent="space-between">
               <Box flexDirection="row" alignItems="center" gap={4}>
                 <Text color="labelQuaternary" size="11pt" weight="bold">
-                  {'LIQ'}
+                  {i18n.t(i18n.l.perps.common.liq).toUpperCase()}
                 </Text>
                 <Text color="labelTertiary" size="11pt" weight="heavy">
                   {formattedValues.liquidationPrice}

@@ -21,7 +21,7 @@ import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { logger, RainbowError } from '@/logger';
 import { PerpsRoute } from '@/navigation/types';
-import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';

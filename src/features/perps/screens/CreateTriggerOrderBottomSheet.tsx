@@ -48,7 +48,7 @@ const translations = {
   above: i18n.t(i18n.l.perps.trigger_orders.above),
   below: i18n.t(i18n.l.perps.trigger_orders.below),
   mustBe: i18n.t(i18n.l.perps.trigger_orders.must_be),
-  liqPrice: i18n.t(i18n.l.perps.trigger_orders.liq_price),
+  liqPrice: i18n.t(i18n.l.perps.common.liq_price),
   currentPrice: i18n.t(i18n.l.perps.common.current_price),
 };
 

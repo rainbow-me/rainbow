@@ -19,7 +19,7 @@ import { HANDLE_COLOR, LIGHT_HANDLE_COLOR, MIN_ORDER_SIZE_USD, SLIDER_WIDTH } fr
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import { mulWorklet } from '@/safe-math/SafeMath';
 import { logger, RainbowError } from '@/logger';
-import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { colors } from '@/styles';
 import * as i18n from '@/languages';
 

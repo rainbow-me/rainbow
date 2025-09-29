@@ -9,7 +9,7 @@ export function transformHyperliquidMarketToTokenData(market: PerpMarket, update
     price: market.price,
     midPrice: market.midPrice,
     change: {
-      // These other timespans are possible to retrieve from the API, but require deriving from candlestick data and is currently not needed in the UI
+      // These '0' timespans are not needed, but are retrievable by deriving from candlestick data
       change5mPct: '0',
       change1hPct: market.priceChange['1h'] || '0',
       change4hPct: '0',
@@ -17,7 +17,7 @@ export function transformHyperliquidMarketToTokenData(market: PerpMarket, update
       change24hPct: market.priceChange['24h'] || '0',
     },
     marketData: {
-      // This is available through the `tokenDetails` method, but we do not currently need to display this information
+      // This is available through the @nktkas/hyperliquid sdk's `tokenDetails` method, but we do not currently need to display this information
       circulatingMarketCap: '0',
     },
     reliability: {

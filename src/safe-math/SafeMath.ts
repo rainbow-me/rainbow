@@ -493,7 +493,6 @@ export function maxWorklet(numA: string | number, numB: string | number) {
   return greaterThanOrEqualToWorklet(numA, numB) ? numA : numB;
 }
 
-// Calculates the percentage difference between two values.
 export function getPercentageDifferenceWorklet(oldValue: string | number, newValue: string | number): string {
   'worklet';
   const oldValueStr = toStringWorklet(oldValue);
@@ -537,7 +536,6 @@ export function isPositive(num: string) {
   return greaterThanWorklet(num, '0');
 }
 
-// Truncates a numeric string value to a specified number of decimal places.
 export function truncateToDecimals(value: string, decimals: number): string {
   'worklet';
   const multiplier = Math.pow(10, decimals);
