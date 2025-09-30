@@ -21,7 +21,7 @@ jobs:
       artifact-id: ${{ steps.rock-remote-build-ios.outputs.artifact-id }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Set Xcode version
         run: sudo xcode-select --switch /Applications/Xcode_16.4.app
@@ -65,7 +65,7 @@ jobs:
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
       - name: Cache Yarn dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -83,7 +83,7 @@ jobs:
 
       - name: Rock Remote Build - iOS simulator
         id: rock-remote-build-ios
-        uses: callstackincubator/ios@v3
+        uses: callstackincubator/ios@0b4a5a6e4d6865d697bd5f277460088501982a5e
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         with:
@@ -114,7 +114,7 @@ jobs:
       ARTIFACTS_FOLDER: e2e-artifacts
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Setup env key
         uses: ./.github/actions/ssh/
@@ -131,10 +131,10 @@ jobs:
           rm -rf rainbow-env
 
       - name: Install Maestro
-        run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
+        run: export MAESTRO_VERSION=2.0.3; curl -fsSL "https://get.maestro.mobile.dev" | bash
 
       - name: Install Anvil
-        uses: foundry-rs/foundry-toolchain@v1
+        uses: foundry-rs/foundry-toolchain@82dee4ba654bd2146511f85f0d013af94670c4de
         with:
           version: stable
 
@@ -148,7 +148,7 @@ jobs:
           APP_PATH=$(find downloaded-artifacts -name "*.app" -type d | head -n 1)
           echo "ARTIFACT_PATH_FOR_E2E=$APP_PATH" >> $GITHUB_ENV
 
-      - uses: futureware-tech/simulator-action@v4
+      - uses: futureware-tech/simulator-action@dab10d813144ef59b48d401cd95da151222ef8cd
         id: simulator
         with:
           model: "iPhone 16"
@@ -175,7 +175,7 @@ jobs:
 
       - name: Upload artifacts
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: artifacts-${{ matrix.shard-index }}
           path: ${{ env.ARTIFACTS_FOLDER }}
