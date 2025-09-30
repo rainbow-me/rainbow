@@ -45,13 +45,15 @@ const STEPS = [
       <FastImage source={currentKingImage} style={{ width: PANEL_INNER_WIDTH, height: '100%' }} resizeMode={FastImage.resizeMode.contain} />
     ),
     subtitleComponent: () => (
-      <Text align="center" size="17pt / 135%" weight="medium" color="labelTertiary">
-        {i18n.t(translations.steps.step_1.subtitle_parts[0])}
-        <Text size="17pt" weight="bold" color="label">
-          {i18n.t(translations.steps.step_1.subtitle_parts[1])}
+      <Box paddingHorizontal="20px" width="full">
+        <Text align="center" size="17pt / 135%" weight="medium" color="labelTertiary">
+          {i18n.t(translations.steps.step_1.subtitle_parts[0])}
+          <Text size="17pt" weight="bold" color="label">
+            {i18n.t(translations.steps.step_1.subtitle_parts[1])}
+          </Text>
+          {i18n.t(translations.steps.step_1.subtitle_parts[2])}
         </Text>
-        {i18n.t(translations.steps.step_1.subtitle_parts[2])}
-      </Text>
+      </Box>
     ),
   },
   {
@@ -222,11 +224,13 @@ const Step = memo(function Step({
         <Box justifyContent={'center'} alignItems={'center'} width={PANEL_INNER_WIDTH} height={280}>
           {step.graphicComponent()}
         </Box>
-        <Box gap={18} paddingHorizontal={{ custom: PANEL_PADDING_HORIZONTAL }} width={PANEL_WIDTH}>
-          <Text align="center" size="34pt" weight="heavy" color="label">
-            {step.title}
-          </Text>
-          {step.subtitleComponent()}
+        <Box bottom={{ custom: 8 }} position="absolute">
+          <Box gap={18} paddingHorizontal={{ custom: PANEL_PADDING_HORIZONTAL }} width={PANEL_WIDTH}>
+            <Text align="center" size="34pt" weight="heavy" color="label">
+              {step.title}
+            </Text>
+            {step.subtitleComponent()}
+          </Box>
         </Box>
         <AnimatedBlurView
           blurStyle={'plain'}

@@ -3322,7 +3322,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Available Balance: %{balance}",
-        "title": "Pre-buy more tokens"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "Token allocation",
@@ -3483,7 +3483,7 @@
         "steps": {
           "step_1": {
             "title": "The race is live",
-            "subtitle_parts": ["The token with the most", " buy volume ", "right now is the current king."]
+            "subtitle_parts": ["The current king is the token created in the last 30 days with the most", " buy volume ", "today."]
           },
           "step_2": {
             "title": "One crown a day",
