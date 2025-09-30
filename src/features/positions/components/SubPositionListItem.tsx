@@ -1,11 +1,7 @@
 import React from 'react';
 import { Bleed, Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
-import {
-  convertAmountToPercentageDisplay,
-  convertAmountToPercentageDisplayWithThreshold,
-  convertRawAmountToRoundedDecimal,
-} from '@/helpers/utilities';
+import { convertAmountToPercentageDisplay, convertAmountToPercentageDisplayWithThreshold } from '@/helpers/utilities';
 import { NativeDisplay, PositionAsset } from '@/features/positions/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
@@ -31,7 +27,9 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
+  // Use price change from external asset query (has live data) or fall back to position asset data
+  const priceChange = externalAsset?.native?.change ? parseFloat(externalAsset.native.change) : asset.price?.relative_change_24h || 0;
+  const priceChangeColor = priceChange < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
 
   const renderContent = () => (
     <Columns space={'10px'}>
@@ -83,7 +81,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
                 <Inline alignVertical="center" space={'6px'}>
                   <Box style={{ maxWidth: 150 }}>
                     <Text size="13pt" weight="semibold" color="labelTertiary" numberOfLines={1}>
-                      {`${convertRawAmountToRoundedDecimal(quantity, asset.decimals, 3)} ${asset.symbol}`}
+                      {`${Math.round(parseFloat(quantity) * 1000) / 1000} ${asset.symbol}`}
                     </Text>
                   </Box>
                   {apy && (
@@ -107,7 +105,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
               </Column>
               <Column width="content">
                 <Text size="13pt" weight="medium" color={{ custom: priceChangeColor }} align="right">
-                  {convertAmountToPercentageDisplay(`${asset.price?.relative_change_24h}`)}
+                  {convertAmountToPercentageDisplay(`${priceChange}`)}
                 </Text>
               </Column>
             </Columns>
