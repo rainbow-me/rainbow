@@ -27,7 +27,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
   const theme = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset.network];
-  const { data: externalAsset } = useExternalToken({ address: asset.asset_code, chainId, currency: nativeCurrency });
+  const { data: externalAsset } = useExternalToken({ address: asset.address, chainId, currency: nativeCurrency });
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
