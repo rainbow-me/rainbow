@@ -7,7 +7,7 @@ import { buildBriefWalletSectionsSelector, WalletSectionsState } from '@/helpers
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { usePositionsStore } from '@/state/positions/positions';
+import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { CLAIMABLES, DEFI_POSITIONS, REMOTE_CARDS, useExperimentalConfig } from '@/config/experimentalHooks';
 import { analytics } from '@/analytics';
