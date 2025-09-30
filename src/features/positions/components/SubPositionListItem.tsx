@@ -11,6 +11,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ButtonPressAnimation } from '@/components/animations';
 
 type Props = {
   asset: PositionAsset;
@@ -19,9 +20,10 @@ type Props = {
   native: NativeDisplay;
   positionColor: string;
   dappVersion?: string;
+  onPress?: () => void;
 };
 
-export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion }) => {
+export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor, dappVersion, onPress }) => {
   const theme = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const chainId = useBackendNetworksStore.getState().getChainsIdByName()[asset.network];
@@ -31,7 +33,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
 
   const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
 
-  return (
+  const renderContent = () => (
     <Columns space={'10px'}>
       <Column width={'content'}>
         <RainbowCoinIcon
@@ -114,4 +116,6 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
       </Box>
     </Columns>
   );
+
+  return onPress ? <ButtonPressAnimation onPress={onPress}>{renderContent()}</ButtonPressAnimation> : renderContent();
 };
