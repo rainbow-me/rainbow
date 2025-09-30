@@ -242,7 +242,8 @@ const withClaimablesSection = (claimables: ClaimablesStore | null, isLoadingUser
 const withPerpsSection = (perpsData: PerpsWalletListData | null): CellTypes[] => {
   const perpsSectionItems: CellTypes[] = [];
 
-  if (perpsData?.hasBalance) {
+  // Always show the balance if there are positions even if balance is zero
+  if (perpsData?.hasPositions || perpsData?.hasBalance) {
     perpsSectionItems.push({
       type: CellType.PERPS_BALANCE,
       balance: perpsData?.balance,
