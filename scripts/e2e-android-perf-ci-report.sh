@@ -21,7 +21,7 @@ echo "📥 Looking for baseline artifact..."
 ARTIFACT_ID=$(gh api --paginate \
   -H "Accept: application/vnd.github.v3+json" \
   "/repos/${GITHUB_REPOSITORY}/actions/artifacts" \
-  -q '.artifacts | map(select(.name=="perf-results-e2e-baseline-test")) | sort_by(.updated_at) | reverse | .[0].id' | head -n1 || echo "")
+  -q '.artifacts | map(select(.name=="perf-results-develop")) | sort_by(.updated_at) | reverse | .[0].id' | head -n1 || echo "")
 
 if [[ -n "$ARTIFACT_ID" ]]; then
   echo "✅ Found baseline artifact with ID: $ARTIFACT_ID"
