@@ -11,12 +11,14 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { SubPositionListItem } from '../components/PositionListItem';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
-import { RainbowPosition } from '@/features/positions/types';
+import { RainbowPosition, PositionAsset } from '@/features/positions/types';
 import { LpPositionListItem } from '../components/LpPositionListItem';
 import { RootStackParamList } from '@/navigation/types';
 import { openInBrowser } from '@/utils/openInBrowser';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
+import { Navigation } from '@/navigation';
+import type { ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 
 const DEPOSIT_ITEM_HEIGHT = 44;
 const BORROW_ITEM_HEIGHT = 44;
@@ -59,6 +61,14 @@ export const PositionSheet: React.FC = () => {
     });
     openInBrowser(position.dapp.url);
   }, [position.dapp.url, position.type]);
+
+  const openTokenSheet = useCallback((asset: PositionAsset) => {
+    Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET_V2, {
+      asset: asset as unknown as ExpandedSheetParamAsset,
+      address: asset.address,
+      chainId: asset.chain_id,
+    });
+  }, []);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -126,6 +136,7 @@ export const PositionSheet: React.FC = () => {
                     dappVersion={deposit.dappVersion}
                     positionColor={positionColor}
                     apy={deposit.apy}
+                    onPress={() => openTokenSheet(deposit.underlying[0].asset)}
                   />
                 ))}
 
@@ -141,6 +152,7 @@ export const PositionSheet: React.FC = () => {
                     totalAssetsValue={pool.totalValue}
                     isConcentratedLiquidity={pool.isConcentratedLiquidity}
                     dappVersion={pool.dappVersion}
+                    onPress={() => openTokenSheet(pool.underlying[0].asset)}
                   />
                 ))}
 
@@ -157,6 +169,7 @@ export const PositionSheet: React.FC = () => {
                       totalAssetsValue={stake.totalValue}
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
+                      onPress={() => openTokenSheet(stake.underlying[0].asset)}
                     />
                   ) : (
                     <SubPositionListItem
@@ -166,6 +179,7 @@ export const PositionSheet: React.FC = () => {
                       native={stake.underlying[0].native}
                       positionColor={positionColor}
                       apy={stake.apy}
+                      onPress={() => openTokenSheet(stake.underlying[0].asset)}
                     />
                   )
                 )}
@@ -183,6 +197,7 @@ export const PositionSheet: React.FC = () => {
                     native={borrow.underlying[0].native}
                     positionColor={positionColor}
                     apy={borrow.apy}
+                    onPress={() => openTokenSheet(borrow.underlying[0].asset)}
                   />
                 ))}
 
@@ -199,6 +214,7 @@ export const PositionSheet: React.FC = () => {
                     native={reward.native}
                     positionColor={positionColor}
                     apy={undefined}
+                    onPress={() => openTokenSheet(reward.asset)}
                   />
                 ))}
               </Stack>

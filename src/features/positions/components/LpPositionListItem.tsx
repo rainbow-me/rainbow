@@ -9,6 +9,7 @@ import { TwoCoinsIcon } from '@/components/coin-icon/TwoCoinsIcon';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { ButtonPressAnimation } from '@/components/animations';
 
 function getRangeStatus(assets: RainbowUnderlyingAsset[], isConcentratedLiquidity: boolean) {
   if (!isConcentratedLiquidity) {
@@ -28,9 +29,10 @@ type Props = {
   totalAssetsValue: string;
   isConcentratedLiquidity: boolean;
   dappVersion?: string;
+  onPress?: () => void;
 };
 
-export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, isConcentratedLiquidity, dappVersion }) => {
+export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, isConcentratedLiquidity, dappVersion, onPress }) => {
   const { colors } = useTheme();
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -60,7 +62,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
 
   const allocationPercentageText = allocationPercentages.map(val => `${val}%`).join(' / ');
 
-  return (
+  const renderContent = () => (
     <Columns space={'10px'}>
       <Column width={'content'}>
         {displayAssets.length >= 2 && (
@@ -177,4 +179,6 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
       </Box>
     </Columns>
   );
+
+  return onPress ? <ButtonPressAnimation onPress={onPress}>{renderContent()}</ButtonPressAnimation> : renderContent();
 };
