@@ -15,6 +15,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [2.0.5] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.5)
+
+### Changed
+
+- TL updates (#6846)
+- Bump iOS and Android to v2.0.4 (#6867)
+- Disable swap carret anim for e2e tests (#6858)
+
+### Fixed
+
+- Fix LiveTokenText color when changing app theme (#6859)
+
 ## [2.0.3] (https://github.com/rainbow-me/rainbow/releases/tag/v2.0.3)
 
 ### Added
