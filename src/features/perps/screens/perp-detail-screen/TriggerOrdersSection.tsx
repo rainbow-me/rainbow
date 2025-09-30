@@ -15,7 +15,6 @@ import * as i18n from '@/languages';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { analytics } from '@/analytics';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { parseHyperliquidErrorMessage } from '@/features/perps/utils';
 
 type TriggerOrdersSectionProps = {
@@ -35,7 +34,6 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
   const onPressDelete = useCallback(async () => {
     if (!position) return;
 
-    const walletBalance = useUserAssetsStore.getState().getTotalBalance();
     const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
 
     setIsCancelling(true);
@@ -50,7 +48,6 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
         side: position.side,
         triggerOrderType: type,
         triggerPrice: Number(order.triggerPrice),
-        walletBalance,
         perpsBalance,
         leverage: position.leverage,
         positionValue: Number(position.value),
@@ -61,7 +58,6 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
         market: order.symbol,
         side: position.side,
         triggerOrderType: type,
-        walletBalance,
         perpsBalance,
         errorMessage,
       });

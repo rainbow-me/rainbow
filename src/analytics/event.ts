@@ -1138,7 +1138,6 @@ export type EventProperties = {
     market: string;
     side: PerpPositionSide;
     leverage: number;
-    walletBalance: number;
     perpsBalance: number;
     positionSize: number;
     positionValue: number;
@@ -1152,7 +1151,6 @@ export type EventProperties = {
     market: string;
     side: PerpPositionSide;
     leverage: number;
-    walletBalance: number;
     perpsBalance: number;
     positionSize: number;
     positionValue: number;
@@ -1183,7 +1181,6 @@ export type EventProperties = {
     side: PerpPositionSide;
     triggerOrderType: TriggerOrderType;
     triggerPrice: number;
-    walletBalance: number;
     perpsBalance: number;
     leverage: number;
     positionValue: number;
@@ -1192,7 +1189,6 @@ export type EventProperties = {
     market: string;
     side: PerpPositionSide;
     triggerOrderType: TriggerOrderType;
-    walletBalance: number;
     perpsBalance: number;
     errorMessage: string;
   };
@@ -1201,7 +1197,6 @@ export type EventProperties = {
     side: PerpPositionSide;
     triggerOrderType: TriggerOrderType;
     triggerPrice: number;
-    walletBalance: number;
     perpsBalance: number;
     leverage: number;
     positionValue: number;
@@ -1210,7 +1205,6 @@ export type EventProperties = {
     market: string;
     side: PerpPositionSide;
     triggerOrderType: TriggerOrderType;
-    walletBalance: number;
     perpsBalance: number;
     errorMessage: string;
   };

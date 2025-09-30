@@ -43,7 +43,6 @@ import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPri
 import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
 import { analytics } from '@/analytics';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 // Translations for worklets
 const translations = {
@@ -234,7 +233,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
     if (isExistingPosition) {
       if (!position) return;
 
-      const walletBalance = useUserAssetsStore.getState().getTotalBalance();
       const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
 
       setIsSubmitting(true);
@@ -249,7 +247,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
           side: position.side,
           triggerOrderType: triggerOrderType,
           triggerPrice: Number(triggerOrderPayload.price),
-          walletBalance,
           perpsBalance,
           leverage: position.leverage,
           positionValue: Number(position.value),
@@ -262,7 +259,6 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
           market: market.symbol,
           side: position.side,
           triggerOrderType: triggerOrderType,
-          walletBalance,
           perpsBalance,
           errorMessage,
         });

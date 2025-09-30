@@ -23,7 +23,6 @@ import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldT
 import { colors } from '@/styles';
 import * as i18n from '@/languages';
 import { analytics } from '@/analytics';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
 import { TriggerOrderType } from '@/features/perps/types';
 import { Alert } from 'react-native';
@@ -131,7 +130,6 @@ function PanelContent({ symbol }: PanelContentProps) {
         market: symbol,
         side: position.side,
         leverage: position.leverage,
-        walletBalance: useUserAssetsStore.getState().getTotalBalance(),
         perpsBalance,
         positionSize: Math.abs(Number(mulWorklet(position.size, closePercentage))),
         positionValue: Number(position.value) * closePercentage,

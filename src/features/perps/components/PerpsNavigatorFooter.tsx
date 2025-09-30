@@ -235,7 +235,6 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
         market: market.symbol,
         side: positionSide,
         leverage,
-        walletBalance: useUserAssetsStore.getState().getTotalBalance(),
         perpsBalance: Number(useHyperliquidAccountStore.getState().getValue()),
         positionSize,
         positionValue,
