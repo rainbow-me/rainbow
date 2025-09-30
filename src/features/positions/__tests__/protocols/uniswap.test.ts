@@ -624,5 +624,117 @@ describe('Uniswap Position Parsing', () => {
       expect(pool.underlying).toBeDefined();
       expect(pool.pool_address).toBe('0x1234567890abcdef');
     });
+
+    it('should handle pools with >2 assets by showing top 2 + aggregated other', () => {
+      // Multi-asset pool edge case (e.g., Balancer-style pools)
+      const mockResult: ListPositionsResponse_Result = {
+        positions: [
+          {
+            id: 'uniswap-v2:1',
+            chainId: 1,
+            protocolName: 'Uniswap V2',
+            canonicalProtocolName: 'uniswap',
+            protocolVersion: 'v2',
+            tvl: '1000000',
+            dapp: {
+              name: 'Uniswap',
+              url: 'https://app.uniswap.org',
+              iconUrl: 'https://logo.url',
+              colors: {
+                primary: '#FF007A',
+                fallback: '#FF007A',
+                shadow: '#FF007A',
+              },
+            },
+            portfolioItems: [
+              {
+                name: PositionName.LIQUIDITY_POOL,
+                updateTime: new Date(),
+                detailTypes: [],
+                pool: {
+                  id: '0xmultiassetpool',
+                  chainId: 1,
+                },
+                assetDict: {},
+                stats: {
+                  assetValue: '1000',
+                  debtValue: '0',
+                  netValue: '1000',
+                },
+                detail: {
+                  supplyTokenList: [
+                    {
+                      asset: createMockAsset({
+                        address: '0x1',
+                        symbol: 'WETH',
+                        price: { value: 4200, changedAt: new Date(), relativeChange24h: 0 },
+                      }),
+                      amount: '0.119', // ~$500 (50%)
+                    },
+                    {
+                      asset: createMockAsset({
+                        address: '0x2',
+                        symbol: 'USDC',
+                        price: { value: 1, changedAt: new Date(), relativeChange24h: 0 },
+                      }),
+                      amount: '200', // ~$200 (20%)
+                    },
+                    {
+                      asset: createMockAsset({
+                        address: '0x3',
+                        symbol: 'DAI',
+                        price: { value: 1, changedAt: new Date(), relativeChange24h: 0 },
+                      }),
+                      amount: '150', // ~$150 (15%)
+                    },
+                    {
+                      asset: createMockAsset({
+                        address: '0x4',
+                        symbol: 'USDT',
+                        price: { value: 1, changedAt: new Date(), relativeChange24h: 0 },
+                      }),
+                      amount: '100', // ~$100 (10%)
+                    },
+                    {
+                      asset: createMockAsset({
+                        address: '0x5',
+                        symbol: 'LINK',
+                        price: { value: 25, changedAt: new Date(), relativeChange24h: 0 },
+                      }),
+                      amount: '2', // ~$50 (5%)
+                    },
+                  ],
+                  rewardTokenList: [],
+                  borrowTokenList: [],
+                  tokenList: [],
+                },
+              },
+            ],
+          },
+        ],
+        uniqueTokens: [],
+      };
+
+      const result = processPositions(mockResult, TEST_PARAMS.currency);
+      const pool = result.positions['uniswap'].pools[0];
+
+      // Allocation should show top 2 + "other" (3 values total)
+      const allocations = pool.allocation.split('/');
+      expect(allocations).toHaveLength(3);
+
+      // Should sum to 100%
+      const sum = allocations.reduce((acc, val) => acc + parseInt(val, 10), 0);
+      expect(sum).toBe(100);
+
+      // Top 2 should be WETH (50%), USDC (20%)
+      expect(parseInt(allocations[0], 10)).toBeGreaterThanOrEqual(48);
+      expect(parseInt(allocations[1], 10)).toBeGreaterThanOrEqual(18);
+
+      // Other should aggregate DAI (15%) + USDT (10%) + LINK (5%) = 30%
+      expect(parseInt(allocations[2], 10)).toBeGreaterThanOrEqual(28);
+
+      // Should have all 5 underlying assets
+      expect(pool.underlying).toHaveLength(5);
+    });
   });
 });

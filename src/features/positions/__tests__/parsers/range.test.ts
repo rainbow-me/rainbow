@@ -188,5 +188,73 @@ describe('Range Status Calculations', () => {
       const sum = percentages.reduce((a, b) => a + b, 0);
       expect(sum).toBe(100);
     });
+
+    it('should group assets beyond top 2 as "Other"', () => {
+      // Simulating the edge case with 9 tokens
+      const underlying: RainbowUnderlyingAsset[] = [
+        {
+          asset: { symbol: 'ENA' } as unknown as PositionAsset,
+          quantity: '0.111',
+          native: { amount: '0.0624', display: '$0.06' }, // ~6%
+        },
+        {
+          asset: { symbol: 'UNI' } as unknown as PositionAsset,
+          quantity: '0.011',
+          native: { amount: '0.0878', display: '$0.09' }, // ~9%
+        },
+        {
+          asset: { symbol: 'AAVE' } as unknown as PositionAsset,
+          quantity: '0.0006',
+          native: { amount: '0.1785', display: '$0.18' }, // ~18%
+        },
+        {
+          asset: { symbol: 'MKR' } as unknown as PositionAsset,
+          quantity: '0.00003',
+          native: { amount: '0.059', display: '$0.06' }, // ~6%
+        },
+        {
+          asset: { symbol: 'WETH' } as unknown as PositionAsset,
+          quantity: '0.0001',
+          native: { amount: '0.486', display: '$0.49' }, // ~50%
+        },
+        {
+          asset: { symbol: 'LDO' } as unknown as PositionAsset,
+          quantity: '0.038',
+          native: { amount: '0.045', display: '$0.05' }, // ~5%
+        },
+        {
+          asset: { symbol: 'COMP' } as unknown as PositionAsset,
+          quantity: '0.0003',
+          native: { amount: '0.0158', display: '$0.02' }, // ~2%
+        },
+        {
+          asset: { symbol: 'PENDLE' } as unknown as PositionAsset,
+          quantity: '0.007',
+          native: { amount: '0.0329', display: '$0.03' }, // ~3%
+        },
+        {
+          asset: { symbol: 'RPL' } as unknown as PositionAsset,
+          quantity: '0.0008',
+          native: { amount: '0.004', display: '$0.004' }, // ~0.4%
+        },
+      ];
+
+      const allocation = calculateAllocationPercentages(underlying);
+      const percentages = allocation.split('/').map(Number);
+
+      // Should have exactly 3 values: top 2 + "Other"
+      expect(percentages).toHaveLength(3);
+
+      // Should sum to 100
+      const sum = percentages.reduce((a, b) => a + b, 0);
+      expect(sum).toBe(100);
+
+      // Top 2 should be the highest values (WETH ~50%, AAVE ~18%)
+      expect(percentages[0]).toBeGreaterThanOrEqual(48); // WETH
+      expect(percentages[1]).toBeGreaterThanOrEqual(16); // AAVE
+
+      // Others should be aggregated (UNI 9% + ENA 6% + MKR 6% + LDO 5% + PENDLE 3% + COMP 2% + RPL 0.4% ≈ 32%)
+      expect(percentages[2]).toBeGreaterThanOrEqual(30); // Other
+    });
   });
 });

@@ -119,18 +119,25 @@ function transformToPools(
   const underlying = processUnderlyingAssets(tokens, currency);
   if (underlying.length === 0) return [];
 
+  // Sort underlying assets by value (highest first)
+  const sortedUnderlying = [...underlying].sort((a, b) => {
+    const valueA = parseFloat(a.native?.amount || '0');
+    const valueB = parseFloat(b.native?.amount || '0');
+    return valueB - valueA;
+  });
+
   const concentrated = isConcentratedLiquidity(position.canonicalProtocolName, position.protocolVersion);
 
   return [
     {
-      asset: underlying[0].asset, // Use first underlying asset
+      asset: sortedUnderlying[0].asset, // Use highest value asset
       quantity: tokens[0]?.amount || '0',
       pool_address: item.pool?.id,
       isConcentratedLiquidity: concentrated,
-      rangeStatus: calculateRangeStatus(underlying, concentrated),
-      allocation: calculateAllocationPercentages(underlying),
-      totalValue: calculateTotalValue(underlying),
-      underlying,
+      rangeStatus: calculateRangeStatus(sortedUnderlying, concentrated),
+      allocation: calculateAllocationPercentages(sortedUnderlying),
+      totalValue: calculateTotalValue(sortedUnderlying),
+      underlying: sortedUnderlying,
       omit_from_total: item.assetDict?.['omit_from_total'] === 'true',
       dappVersion,
     } as RainbowPool,
