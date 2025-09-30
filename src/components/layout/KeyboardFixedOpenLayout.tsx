@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box } from '@/design-system';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { useDimensions } from '@/hooks';
-import { IS_ANDROID } from '@/env';
 
 interface KeyboardFixedOpenLayoutProps {
   additionalPadding?: number;
@@ -16,7 +15,7 @@ interface KeyboardFixedOpenLayoutProps {
 export default function KeyboardFixedOpenLayout({
   additionalPadding = 0,
   keyboardType = KeyboardType.default,
-  position = IS_ANDROID ? undefined : 'absolute',
+  position = 'absolute',
   ...props
 }: KeyboardFixedOpenLayoutProps) {
   const insets = useSafeAreaInsets();
