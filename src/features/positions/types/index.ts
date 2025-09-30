@@ -24,10 +24,7 @@ export interface PositionAssetPrice extends Omit<AssetPrice, 'changedAt' | 'rela
 /**
  * Asset metadata aligned with historical PositionAsset expectations
  */
-export type AssetCode = string;
-
 export interface PositionAsset extends Omit<Asset, 'iconUrl' | 'chainId' | 'price' | 'colors'> {
-  asset_code: AssetCode;
   chain_id: number;
   icon_url: string;
   price: PositionAssetPrice;

@@ -36,7 +36,7 @@ const CoinIconStack = memo(function CoinIconStack({ tokens }: { tokens: Position
       {tokens.map((token, index) => {
         return (
           <Box
-            key={`availableNetwork-${token.asset_code}`}
+            key={`token-${token.address}`}
             marginTop={{ custom: -2 }}
             marginLeft={{ custom: index > 0 ? -8 : 0 }}
             style={{

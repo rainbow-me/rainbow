@@ -30,7 +30,6 @@ function createRainbowUnderlyingAsset(token: PositionToken, currency: string): R
   return {
     asset: {
       ...token.asset,
-      asset_code: `${token.asset.chainId}_${token.asset.address}`,
       chain_id: token.asset.chainId,
       icon_url: token.asset.iconUrl,
       price: token.asset.price

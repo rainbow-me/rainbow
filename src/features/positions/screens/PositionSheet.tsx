@@ -129,7 +129,7 @@ export const PositionSheet: React.FC = () => {
                 )}
                 {position.deposits.map(deposit => (
                   <SubPositionListItem
-                    key={`deposit-${deposit.asset.asset_code}-${deposit.quantity}-${deposit.apy}`}
+                    key={`deposit-${deposit.asset.address}-${deposit.quantity}-${deposit.apy}`}
                     asset={deposit.underlying[0].asset}
                     quantity={deposit.underlying[0].quantity}
                     native={deposit.underlying[0].native}
@@ -147,7 +147,7 @@ export const PositionSheet: React.FC = () => {
                 )}
                 {position.pools.map(pool => (
                   <LpPositionListItem
-                    key={`pool-${pool.asset.asset_code}-${pool.quantity}`}
+                    key={`pool-${pool.asset.address}-${pool.quantity}`}
                     assets={pool.underlying}
                     totalAssetsValue={pool.totalValue}
                     isConcentratedLiquidity={pool.isConcentratedLiquidity}
@@ -164,7 +164,7 @@ export const PositionSheet: React.FC = () => {
                 {position.stakes.map(stake =>
                   stake.isLp ? (
                     <LpPositionListItem
-                      key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
+                      key={`stake-${stake.asset.address}-${stake.quantity}`}
                       assets={stake.underlying}
                       totalAssetsValue={stake.totalValue}
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
@@ -173,7 +173,7 @@ export const PositionSheet: React.FC = () => {
                     />
                   ) : (
                     <SubPositionListItem
-                      key={`stake-${stake.asset.asset_code}-${stake.quantity}`}
+                      key={`stake-${stake.asset.address}-${stake.quantity}`}
                       asset={stake.underlying[0].asset}
                       quantity={stake.underlying[0].quantity}
                       native={stake.underlying[0].native}
@@ -191,7 +191,7 @@ export const PositionSheet: React.FC = () => {
                 )}
                 {position.borrows.map(borrow => (
                   <SubPositionListItem
-                    key={`borrow-${borrow.underlying[0].asset.asset_code}-${borrow.quantity}-${borrow.apy}`}
+                    key={`borrow-${borrow.underlying[0].asset.address}-${borrow.quantity}-${borrow.apy}`}
                     asset={borrow.underlying[0].asset}
                     quantity={borrow.underlying[0].quantity}
                     native={borrow.underlying[0].native}
@@ -208,7 +208,7 @@ export const PositionSheet: React.FC = () => {
                 )}
                 {position.rewards.map(reward => (
                   <SubPositionListItem
-                    key={`claimable-${reward.asset.asset_code}-${reward.quantity}`}
+                    key={`claimable-${reward.asset.address}-${reward.quantity}`}
                     asset={reward.asset}
                     quantity={reward.quantity}
                     native={reward.native}
