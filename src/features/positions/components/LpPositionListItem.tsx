@@ -160,7 +160,7 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                               : 100
                             : Math.round(parseFloat(divide(underlying.native.amount, totalAssetsValue)) * 100);
                         return {
-                          id: underlying.asset.asset_code,
+                          id: underlying.asset.address,
                           color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
                           allocationPercentage: percentage,
                         };
