@@ -15,6 +15,7 @@ import { ENSRapActionType } from '../raps/common';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 import { PairHardwareWalletNavigatorParams } from '@/navigation/types';
 import { SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
+import { PerpPositionSide, TriggerOrderType } from '@/features/perps/types';
 
 /**
  * All events, used by `analytics.track()`
@@ -315,6 +316,18 @@ export const event = {
   // charts
   chartTypeChanged: 'Changed Chart Type',
   candleResolutionChanged: 'Changed Candle Resolution',
+
+  // perps
+  perpsOpenedPosition: 'perps.opened_position',
+  perpsOpenPositionFailed: 'perps.open_position.failed',
+  perpsClosedPosition: 'perps.closed_position',
+  perpsClosePositionFailed: 'perps.close_position.failed',
+  perpsTriggerOrderCreated: 'perps.trigger_order_created',
+  perpsTriggerOrderFailed: 'perps.trigger_order.failed',
+  perpsTriggerOrderCanceled: 'perps.trigger_order_canceled',
+  perpsTriggerOrderCancelFailed: 'perps.trigger_order_cancel.failed',
+  perpsWithdrew: 'perps.withdrew',
+  perpsWithdrawFailed: 'perps.withdraw.failed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -1118,5 +1131,94 @@ export type EventProperties = {
   };
   [event.candleResolutionChanged]: {
     candleResolution: CandleResolution;
+  };
+
+  // perps
+  [event.perpsOpenedPosition]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage: number;
+    walletBalance: number;
+    perpsBalance: number;
+    positionSize: number;
+    positionValue: number;
+    entryPrice: number;
+    triggerOrders: Array<{
+      type: TriggerOrderType;
+      price: number;
+    }>;
+  };
+  [event.perpsClosedPosition]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage: number;
+    walletBalance: number;
+    perpsBalance: number;
+    positionSize: number;
+    positionValue: number;
+    exitPrice: number;
+    pnl: number;
+    closePercentage: number;
+    triggerOrders: Array<{
+      type: TriggerOrderType;
+      price: number;
+    }>;
+  };
+  [event.perpsOpenPositionFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage?: number;
+    perpsBalance: number;
+    errorMessage: string;
+  };
+  [event.perpsClosePositionFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    leverage?: number;
+    perpsBalance: number;
+    errorMessage: string;
+  };
+  [event.perpsTriggerOrderCreated]: {
+    market: string;
+    side: PerpPositionSide;
+    triggerOrderType: TriggerOrderType;
+    triggerPrice: number;
+    walletBalance: number;
+    perpsBalance: number;
+    leverage: number;
+    positionValue: number;
+  };
+  [event.perpsTriggerOrderFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    triggerOrderType: TriggerOrderType;
+    walletBalance: number;
+    perpsBalance: number;
+    errorMessage: string;
+  };
+  [event.perpsTriggerOrderCanceled]: {
+    market: string;
+    side: PerpPositionSide;
+    triggerOrderType: TriggerOrderType;
+    triggerPrice: number;
+    walletBalance: number;
+    perpsBalance: number;
+    leverage: number;
+    positionValue: number;
+  };
+  [event.perpsTriggerOrderCancelFailed]: {
+    market: string;
+    side: PerpPositionSide;
+    triggerOrderType: TriggerOrderType;
+    walletBalance: number;
+    perpsBalance: number;
+    errorMessage: string;
+  };
+  [event.perpsWithdrew]: {
+    amount: number;
+  };
+  [event.perpsWithdrawFailed]: {
+    amount: number;
+    errorMessage: string;
   };
 };

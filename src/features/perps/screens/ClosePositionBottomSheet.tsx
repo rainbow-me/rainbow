@@ -9,7 +9,7 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLiveTokenValue } from '@/components/live-token-text/LiveTokenText';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { PositionPercentageSlider } from '@/features/perps/components/PositionPercentageSlider';
@@ -22,6 +22,11 @@ import { logger, RainbowError } from '@/logger';
 import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { colors } from '@/styles';
 import * as i18n from '@/languages';
+import { analytics } from '@/analytics';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useHlOpenOrdersStore } from '@/features/perps/stores/hlOpenOrdersStore';
+import { TriggerOrderType } from '@/features/perps/types';
+import { Alert } from 'react-native';
 
 function PanelSheet({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useColorMode();
@@ -98,15 +103,55 @@ function PanelContent({ symbol }: PanelContentProps) {
 
   const closePosition = useCallback(async () => {
     if (!position) return;
+
     setIsSubmitting(true);
+
+    const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
+    const closePercentage = percentToClose.value;
+
     try {
-      await hyperliquidAccountActions.closeIsolatedMarginPosition({
+      await hyperliquidAccountActions.closePosition({
         symbol,
         price: liveTokenPrice,
-        size: mulWorklet(position.size, percentToClose.value),
+        size: mulWorklet(position.size, closePercentage),
       });
+
+      const openOrders = useHlOpenOrdersStore.getState().getData()?.ordersBySymbol[symbol] || [];
+      const triggerOrders = openOrders
+        .filter(order => order.isPositionTpsl)
+        .map(order => {
+          const type = order.orderType === 'Stop Market' ? TriggerOrderType.STOP_LOSS : TriggerOrderType.TAKE_PROFIT;
+          return {
+            type,
+            price: Number(order.triggerPrice),
+          };
+        });
+
+      analytics.track(analytics.event.perpsClosedPosition, {
+        market: symbol,
+        side: position.side,
+        leverage: position.leverage,
+        walletBalance: useUserAssetsStore.getState().getTotalBalance(),
+        perpsBalance,
+        positionSize: Math.abs(Number(mulWorklet(position.size, closePercentage))),
+        positionValue: Number(position.value) * closePercentage,
+        exitPrice: Number(liveTokenPrice),
+        pnl: Number(position.unrealizedPnl) * closePercentage,
+        closePercentage,
+        triggerOrders,
+      });
+
       navigation.goBack();
     } catch (e) {
+      const errorMessage = parseHyperliquidErrorMessage(e);
+      analytics.track(analytics.event.perpsClosePositionFailed, {
+        market: symbol,
+        side: position.side,
+        leverage: position.leverage,
+        perpsBalance,
+        errorMessage,
+      });
+      Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), errorMessage);
       logger.error(new RainbowError('[ClosePositionBottomSheet] Failed to close position', e));
     }
     setIsSubmitting(false);

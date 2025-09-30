@@ -201,7 +201,7 @@ export class HyperliquidExchangeClient {
     });
   }
 
-  async closeIsolatedMarginPosition({
+  async closePosition({
     assetId,
     price,
     sizeDecimals,

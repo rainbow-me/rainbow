@@ -14,6 +14,9 @@ import { AddTriggerOrderButton } from '@/features/perps/components/AddTriggerOrd
 import * as i18n from '@/languages';
 import { LAYOUT_ANIMATION } from '@/features/perps/constants';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { analytics } from '@/analytics';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { parseHyperliquidErrorMessage } from '@/features/perps/utils';
 
 type TriggerOrdersSectionProps = {
   symbol: string;
@@ -30,19 +33,44 @@ const ExistingTriggerOrderCard = memo(function ExistingTriggerOrderCard({ order 
   const type = isTakeProfit ? TriggerOrderType.TAKE_PROFIT : TriggerOrderType.STOP_LOSS;
 
   const onPressDelete = useCallback(async () => {
+    if (!position) return;
+
+    const walletBalance = useUserAssetsStore.getState().getTotalBalance();
+    const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
+
     setIsCancelling(true);
     try {
       await hyperliquidAccountActions.cancelOrder({
         orderId: order.id,
         symbol: order.symbol,
       });
+
+      analytics.track(analytics.event.perpsTriggerOrderCanceled, {
+        market: order.symbol,
+        side: position.side,
+        triggerOrderType: type,
+        triggerPrice: Number(order.triggerPrice),
+        walletBalance,
+        perpsBalance,
+        leverage: position.leverage,
+        positionValue: Number(position.value),
+      });
     } catch (e) {
+      const errorMessage = parseHyperliquidErrorMessage(e);
+      analytics.track(analytics.event.perpsTriggerOrderCancelFailed, {
+        market: order.symbol,
+        side: position.side,
+        triggerOrderType: type,
+        walletBalance,
+        perpsBalance,
+        errorMessage,
+      });
       Alert.alert(i18n.t(i18n.l.perps.common.error), i18n.t(i18n.l.perps.trigger_orders.cancel_failed));
       logger.error(new RainbowError('[ExistingTriggerOrderCard]: error cancelling order', e));
     } finally {
       setIsCancelling(false);
     }
-  }, [order.symbol, order.id]);
+  }, [order.symbol, order.id, order.triggerPrice, type, position]);
 
   return (
     <Animated.View

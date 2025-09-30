@@ -18,7 +18,7 @@ import { HYPERLIQUID_COLORS, PERPS_BACKGROUND_DARK, PERPS_BACKGROUND_LIGHT, USDC
 import { PerpsAccentColorContextProvider } from '@/features/perps/context/PerpsAccentColorContext';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import * as i18n from '@/languages';
-import { logger, RainbowError } from '@/logger';
+import { ensureError, logger, RainbowError } from '@/logger';
 import { Navigation } from '@/navigation';
 import { divWorklet, mulWorklet, toFixedWorklet } from '@/safe-math/SafeMath';
 import { GasButton } from '@/screens/token-launcher/components/gas/GasButton';
@@ -29,6 +29,7 @@ import { View } from 'react-native';
 import Animated, { runOnJS, SharedValue, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FOOTER_HEIGHT, SLIDER_WIDTH, SLIDER_WITH_LABELS_HEIGHT } from './constants';
+import { analytics } from '@/analytics';
 
 const AssetCoinIcon = ({
   asset,
@@ -167,15 +168,21 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
 
   const handleSwap = useCallback(async () => {
     setLoading(true);
+    const amount = fields.value.inputAmount.value;
     try {
-      const amount = fields.value.inputAmount.value;
       // TODO: Handle min values.
       await hyperliquidAccountActions.withdraw(String(amount));
+      analytics.track(analytics.event.perpsWithdrew, {
+        amount: Number(amount),
+      });
       Navigation.goBack();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Generic error while trying to withdraw';
-      logger.error(new RainbowError(`[withdraw]: ${message}`), {
-        data: { error },
+    } catch (e) {
+      const error = ensureError(e);
+      const message = error.message;
+      logger.error(new RainbowError(`[PerpsWithdrawalScreen]: Error withdrawing: ${message}`, e));
+      analytics.track(analytics.event.perpsWithdrawFailed, {
+        amount: Number(amount),
+        errorMessage: message,
       });
     } finally {
       setLoading(false);
