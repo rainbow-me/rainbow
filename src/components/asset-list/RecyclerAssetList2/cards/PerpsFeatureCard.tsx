@@ -117,7 +117,7 @@ export const PerpsFeatureCard = memo(function PerpsFeatureCard({ isDismissable =
             <Box
               width={24}
               height={24}
-              backgroundColor={accentColors.opacity8}
+              backgroundColor={isDarkMode ? accentColors.opacity8 : undefined}
               borderRadius={12}
               justifyContent="center"
               alignItems="center"

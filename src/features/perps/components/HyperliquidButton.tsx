@@ -2,7 +2,6 @@ import React, { ComponentProps, ReactNode } from 'react';
 import { Box, BoxProps, useColorMode } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import LinearGradient from 'react-native-linear-gradient';
-import { HYPERLIQUID_COLORS } from '@/features/perps/constants';
 import { StyleSheet, View } from 'react-native';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { usePerpsAccentColorContext } from '@/features/perps/context/PerpsAccentColorContext';
@@ -40,7 +39,7 @@ export const HyperliquidButton = function HyperliquidButton({ children, onPress,
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             />
-            <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000000', opacity: 0.12 }]} />
+            <View style={styles.darkModeOverlay} />
           </>
         )}
         {!isDarkMode && <View style={[StyleSheet.absoluteFillObject, { backgroundColor: accentColors.opacity100 }]} />}
@@ -49,3 +48,11 @@ export const HyperliquidButton = function HyperliquidButton({ children, onPress,
     </ButtonPressAnimation>
   );
 };
+
+const styles = StyleSheet.create({
+  darkModeOverlay: {
+    backgroundColor: '#000000',
+    opacity: 0.12,
+    ...StyleSheet.absoluteFillObject,
+  },
+});

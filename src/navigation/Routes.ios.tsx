@@ -79,6 +79,7 @@ import {
   activitySheetConfig,
   perpsAccountStackConfig,
   perpsDepositWithdrawalConfig,
+  perpsExplainSheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -127,6 +128,7 @@ import { PerpsDepositScreen } from '@/features/perps/screens/perps-deposit-withd
 import { PerpsWithdrawalScreen } from '@/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen';
 import { ClosePositionBottomSheet } from '@/features/perps/screens/ClosePositionBottomSheet';
 import { PerpsNavigator } from '@/features/perps/screens/PerpsNavigator';
+import { PerpsExplainSheet } from '@/features/perps/screens/perps-explain-sheet/PerpsExplainSheet';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackCoolModalNavigator();
@@ -311,6 +313,7 @@ function NativeStackNavigator() {
         name={Routes.KING_OF_THE_HILL_EXPLAIN_SHEET}
         {...kingOfTheHillExplainSheetConfig}
       />
+      <NativeStack.Screen component={PerpsExplainSheet} name={Routes.PERPS_EXPLAIN_SHEET} {...perpsExplainSheetConfig} />
     </NativeStack.Navigator>
   );
 }

@@ -1635,7 +1635,8 @@
         "entry_price": "Entry Price",
         "funding": "Funding",
         "liquidation_price": "Liquidation Price",
-        "total": "Total"
+        "total": "Total",
+        "learn_more_about_perps": "Learn more about Perps"
       },
       "new_position": {
         "hold_to_long": "Hold to Long",
@@ -1695,6 +1696,25 @@
         "minimum_amount_is": "Minimum amount is",
         "closing": "Closing...",
         "hold_to_close": "Hold to Close"
+      },
+      "explain_sheet": {
+        "next": "Next",
+        "got_it": "Got it",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": ["Perpetual Futures"],
+            "subtitle_parts": ["Predict a token’s price direction and earn if your call is right. Trade any time, no expiry."]
+          },
+          "step_2": {
+            "title_parts": ["Go", "Long", "or go", "Short"],
+            "subtitle_parts": ["Go long when you expect the price to rise. Earn profits if the token goes up."]
+          },
+          "step_3": {
+            "title_parts": ["Leverage and risk"],
+            "subtitle_parts": ["Leverage boosts profits but also risk. If the market moves against you, your position gets liquidated."]
+          }
+        }
       },
       "leverage": "Leverage",
       "up_to": "Up to"
