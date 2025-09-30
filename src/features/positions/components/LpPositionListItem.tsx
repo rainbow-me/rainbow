@@ -30,7 +30,7 @@ type Props = {
   totalAssetsValue: string;
   isConcentratedLiquidity: boolean;
   dappVersion?: string;
-  onPress?: () => void;
+  onPress?: (asset: RainbowUnderlyingAsset['asset']) => void;
 };
 
 export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, isConcentratedLiquidity, dappVersion, onPress }) => {
@@ -44,8 +44,25 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
 
   // For pools with >2 assets, show top 2 + "Other"
   // Assets are already sorted by value in the parser
-  const displayAssets = assets.length > 2 ? assets.slice(0, 2) : assets;
+  let displayAssets = assets.length > 2 ? assets.slice(0, 2) : assets;
   const hasOthers = assets.length > 2;
+
+  // Calculate allocation percentages
+  let allocationPercentages = displayAssets.map(asset => {
+    if (totalAssetsValue === '0') {
+      return asset.quantity === '0' ? 0 : 100;
+    }
+    return Math.round(parseFloat(divide(asset.native.amount, totalAssetsValue)) * 100);
+  });
+
+  // If ETH/WETH comes first and split is 50/50, flip the order so non-ETH token is displayed first
+  if (displayAssets.length === 2 && allocationPercentages[0] === 50 && allocationPercentages[1] === 50) {
+    const firstSymbol = displayAssets[0].asset.symbol.toLowerCase();
+    if (firstSymbol === 'eth' || firstSymbol === 'weth') {
+      displayAssets = [displayAssets[1], displayAssets[0]];
+      allocationPercentages = [allocationPercentages[1], allocationPercentages[0]];
+    }
+  }
 
   // Fetch external data for display assets - mirrors SubPositionListItem pattern
   const externalAssets = [
@@ -60,14 +77,6 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
       currency: nativeCurrency,
     }).data,
   ];
-
-  // Calculate allocation percentages for display
-  const allocationPercentages = displayAssets.map(asset => {
-    if (totalAssetsValue === '0') {
-      return asset.quantity === '0' ? 0 : 100;
-    }
-    return Math.round(parseFloat(divide(asset.native.amount, totalAssetsValue)) * 100);
-  });
 
   // Add "Other" allocation if there are more than 2 assets
   if (hasOthers) {
@@ -199,5 +208,9 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
     </Columns>
   );
 
-  return onPress ? <ButtonPressAnimation onPress={onPress}>{renderContent()}</ButtonPressAnimation> : renderContent();
+  return onPress ? (
+    <ButtonPressAnimation onPress={() => onPress(displayAssets[0].asset)}>{renderContent()}</ButtonPressAnimation>
+  ) : (
+    renderContent()
+  );
 };
