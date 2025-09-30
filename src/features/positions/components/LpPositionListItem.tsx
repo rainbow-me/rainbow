@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Column, Columns, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { useTheme } from '@/theme';
-import { convertAmountToPercentageDisplay, convertRawAmountToNativeDisplay, divide } from '@/helpers/utilities';
+import { convertRawAmountToNativeDisplay, divide } from '@/helpers/utilities';
 import { RainbowUnderlyingAsset } from '@/features/positions/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { LpPositionRangeBadge } from './LpPositionRangeBadge';
@@ -39,42 +39,51 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
 
   const rangeStatus = getRangeStatus(assets, isConcentratedLiquidity);
 
-  const assetAllocations = assets.map(asset => {
-    // if both assets value are 0 value, return 1 for asset with non-zero quantity
+  // For pools with >2 assets, show top 2 + "Other"
+  // Assets are already sorted by value in the parser
+  const displayAssets = assets.length > 2 ? assets.slice(0, 2) : assets;
+  const hasOthers = assets.length > 2;
+
+  // Calculate allocation percentages for display
+  const allocationPercentages = displayAssets.map(asset => {
     if (totalAssetsValue === '0') {
-      return asset.quantity === '0' ? 0 : 1;
+      return asset.quantity === '0' ? 0 : 100;
     }
-    return parseFloat(divide(asset.native.amount, totalAssetsValue));
+    return Math.round(parseFloat(divide(asset.native.amount, totalAssetsValue)) * 100);
   });
 
-  const allocationPercentageText = assetAllocations
-    .map(allocation => `${convertAmountToPercentageDisplay(allocation * 100, 0, undefined, true)}`)
-    .join(' / ');
+  // Add "Other" allocation if there are more than 2 assets
+  if (hasOthers) {
+    const displayedTotal = allocationPercentages.reduce((sum, val) => sum + val, 0);
+    allocationPercentages.push(100 - displayedTotal);
+  }
+
+  const allocationPercentageText = allocationPercentages.map(val => `${val}%`).join(' / ');
 
   return (
     <Columns space={'10px'}>
       <Column width={'content'}>
-        {assets.length === 2 && (
+        {displayAssets.length >= 2 && (
           <TwoCoinsIcon
             badge
             // @ts-expect-error component uses different Token entity type, but it is compatible
             under={{
-              ...assets[0].asset,
-              chainId: assets[0].asset.chain_id,
+              ...displayAssets[0].asset,
+              chainId: displayAssets[0].asset.chain_id,
             }}
             // @ts-expect-error component uses different Token entity type, but it is compatible
             over={{
-              ...assets[1].asset,
-              chainId: assets[1].asset.chain_id,
+              ...displayAssets[1].asset,
+              chainId: displayAssets[1].asset.chain_id,
             }}
           />
         )}
-        {assets.length === 1 && (
+        {displayAssets.length === 1 && (
           <RainbowCoinIcon
-            chainId={assets[0].asset.chain_id}
-            color={assets[0].asset.colors?.primary || assets[0].asset.colors?.fallback || undefined}
-            icon={assets[0].asset.icon_url ?? undefined}
-            symbol={assets[0].asset.symbol}
+            chainId={displayAssets[0].asset.chain_id}
+            color={displayAssets[0].asset.colors?.primary || displayAssets[0].asset.colors?.fallback || undefined}
+            icon={displayAssets[0].asset.icon_url ?? undefined}
+            symbol={displayAssets[0].asset.symbol}
           />
         )}
         {/* TODO: add three+ coins icon */}
@@ -86,7 +95,8 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
               <Column>
                 <Inline alignVertical="center" space={'6px'}>
                   <Text size="17pt" weight="medium" color="label" numberOfLines={1}>
-                    {assets.map(underlying => underlying.asset.symbol).join(' / ')}
+                    {displayAssets.map(underlying => underlying.asset.symbol).join(' / ')}
+                    {hasOthers && ` / ${i18n.t(i18n.l.positions.lp_allocation.other)}`}
                   </Text>
                   {dappVersion && (
                     <Box
@@ -138,13 +148,21 @@ export const LpPositionListItem: React.FC<Props> = ({ assets, totalAssetsValue, 
                     </Text>
                   </Box>
                   <LpPositionRangeBadge
-                    assets={assets
+                    assets={displayAssets
                       .filter(asset => asset.quantity !== '0')
-                      .map((underlying, index) => ({
-                        id: underlying.asset.asset_code,
-                        color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
-                        allocationPercentage: assetAllocations[index],
-                      }))}
+                      .map(underlying => {
+                        const percentage =
+                          totalAssetsValue === '0'
+                            ? underlying.quantity === '0'
+                              ? 0
+                              : 100
+                            : Math.round(parseFloat(divide(underlying.native.amount, totalAssetsValue)) * 100);
+                        return {
+                          id: underlying.asset.asset_code,
+                          color: underlying.asset.colors?.primary ?? underlying.asset.colors?.fallback ?? colors.black,
+                          allocationPercentage: percentage,
+                        };
+                      })}
                   />
                 </Inline>
               </Column>
