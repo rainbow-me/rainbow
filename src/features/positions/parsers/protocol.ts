@@ -25,7 +25,7 @@ export function groupByCanonicalProtocol(positions: Position[]): ProtocolGroup {
         totals: initializePositionTotals(),
         dapp: position.dapp
           ? {
-              name: position.dapp.name || '',
+              name: normalizeDappName(position.dapp.name || ''),
               url: position.dapp.url || '',
               icon_url: position.dapp.iconUrl || '',
               colors: position.dapp.colors || { primary: '#000000', fallback: '#808080', shadow: '#000000' },
@@ -45,7 +45,7 @@ export function groupByCanonicalProtocol(positions: Position[]): ProtocolGroup {
     // Update DApp metadata if better quality
     if (position.dapp && (!grouped[canonicalName].dapp || !grouped[canonicalName].dapp.icon_url)) {
       grouped[canonicalName].dapp = {
-        name: position.dapp.name || '',
+        name: normalizeDappName(position.dapp.name || ''),
         url: position.dapp.url || '',
         icon_url: position.dapp.iconUrl || '',
         colors: position.dapp.colors || { primary: '#000000', fallback: '#808080', shadow: '#000000' },
@@ -75,8 +75,9 @@ function trackChainPresence(position: RainbowPosition, chainId: number): void {
  * Generate default DApp metadata if missing
  */
 function generateDefaultDapp(position: Position): RainbowDapp {
+  const name = position.protocolName || position.canonicalProtocolName;
   return {
-    name: position.protocolName || position.canonicalProtocolName,
+    name: normalizeDappName(name),
     url: '',
     icon_url: '',
     colors: {
@@ -88,11 +89,11 @@ function generateDefaultDapp(position: Position): RainbowDapp {
 }
 
 /**
- * Normalize protocol name for consistency
+ * Normalize DApp name for display (remove version suffixes)
+ * e.g., "Uniswap v3" -> "Uniswap", "Aave V2" -> "Aave"
+ *
+ * TODO: Backend should normalize DApp names to avoid client-side cleanup
  */
-function normalizeProtocolName(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[-_\s]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+function normalizeDappName(name: string): string {
+  return name.replace(/\s+v\d+$/i, '').trim();
 }

@@ -48,6 +48,70 @@ jest.mock('@/logger', () => ({
 }));
 
 describe('Portfolio Parser', () => {
+  // Test: DApp name normalization
+  it('should normalize DApp names by removing version suffixes', () => {
+    const mockResult: ListPositionsResponse_Result = {
+      positions: [
+        {
+          id: 'uniswap-v3:1',
+          chainId: 1,
+          protocolName: 'Uniswap V3',
+          canonicalProtocolName: 'uniswap',
+          protocolVersion: 'v3',
+          tvl: '1000000',
+          dapp: {
+            name: 'Uniswap v3',
+            url: 'https://app.uniswap.org',
+            iconUrl: 'https://logo.url',
+            colors: {
+              primary: '#FF007A',
+              fallback: '#FF007A',
+              shadow: '#FF007A',
+            },
+          },
+          portfolioItems: [
+            {
+              name: PositionName.LIQUIDITY_POOL,
+              updateTime: new Date(),
+              detailTypes: [],
+              pool: undefined,
+              assetDict: {},
+              stats: {
+                assetValue: '100',
+                debtValue: '0',
+                netValue: '100',
+              },
+              detail: {
+                supplyTokenList: [
+                  {
+                    asset: createMockAsset({
+                      symbol: 'ETH',
+                      price: {
+                        value: 2000,
+                        changedAt: new Date(),
+                        relativeChange24h: 0,
+                      },
+                    }),
+                    amount: '0.05',
+                  },
+                ],
+                rewardTokenList: [],
+                borrowTokenList: [],
+                tokenList: [],
+              },
+            },
+          ],
+        },
+      ],
+      uniqueTokens: ['eth'],
+    };
+
+    const result = processPositions(mockResult, TEST_PARAMS.currency);
+
+    // Should normalize "Uniswap v3" to "Uniswap"
+    expect(result.positions.uniswap.dapp.name).toBe('Uniswap');
+  });
+
   // Test: Process positions from multiple protocols and chains (TDD Section 4.5.2)
   it('should aggregate positions by canonical protocol name across chains', () => {
     const mockResult: ListPositionsResponse_Result = {
