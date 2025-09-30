@@ -273,6 +273,10 @@ describe('Categories Parser', () => {
     expect(pool.isConcentratedLiquidity).toBe(true);
   });
 
+  // TODO: Add test to verify that underlying assets in LP pools and staked LP positions
+  // are sorted by value with highest first, ensuring that underlying[0] always contains
+  // the asset with the largest allocation for LP link navigation
+
   // Test: Staking position mapping (TDD Section 4.4.2 - Stakes category)
   it('should map STAKED positions to stakes category', () => {
     const item: PortfolioItem = {

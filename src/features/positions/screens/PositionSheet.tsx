@@ -152,6 +152,7 @@ export const PositionSheet: React.FC = () => {
                     totalAssetsValue={pool.totalValue}
                     isConcentratedLiquidity={pool.isConcentratedLiquidity}
                     dappVersion={pool.dappVersion}
+                    onPress={() => openTokenSheet(pool.underlying[0].asset)}
                   />
                 ))}
 
@@ -168,6 +169,7 @@ export const PositionSheet: React.FC = () => {
                       totalAssetsValue={stake.totalValue}
                       isConcentratedLiquidity={stake.isConcentratedLiquidity}
                       dappVersion={stake.dappVersion}
+                      onPress={() => openTokenSheet(stake.underlying[0].asset)}
                     />
                   ) : (
                     <SubPositionListItem
