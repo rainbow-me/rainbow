@@ -46,18 +46,19 @@ jobs:
 
       - name: Setup env
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            rm -rf rainbow-env
-            sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          rm -rf rainbow-env
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          echo "1" > is_testing
       - name: Setup scripts
         env:
-            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
         run: |
-            eval $CI_SCRIPTS
+          eval $CI_SCRIPTS
 
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
@@ -123,11 +124,11 @@ jobs:
 
       - name: Setup env
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            rm -rf rainbow-env
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          rm -rf rainbow-env
 
       - name: Install Maestro
         run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash
@@ -150,7 +151,7 @@ jobs:
       - uses: futureware-tech/simulator-action@v4
         id: simulator
         with:
-          model: 'iPhone 16'
+          model: "iPhone 16"
 
       - name: Ensure Simulator is fully booted
         run: |

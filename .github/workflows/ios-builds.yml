@@ -1,7 +1,7 @@
 name: iOS Builds
 on:
   pull_request:
-      types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 jobs:
@@ -47,6 +47,7 @@ jobs:
         run: |
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          echo "0" > is_testing
 
       - name: Setup scripts
         env:
@@ -73,7 +74,7 @@ jobs:
 
       - name: Install dependencies
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
+          SSH_AUTH_SOCK: /tmp/ssh_agent_sandbox.sock
         run: yarn install && yarn setup
 
       - name: Rock Build - iOS simulator
@@ -137,6 +138,7 @@ jobs:
         run: |
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          echo "0" > is_testing
 
       - name: Setup scripts
         env:
@@ -192,24 +194,25 @@ jobs:
 
           # Base64 encode for the action input
           base64 -i "$P12_OUT" > /tmp/cert_b64.txt
-          echo "CERT_BASE64=$(cat /tmp/cert_b64.txt)" >> $GITHUB_OUTPUT
+          CERT_BASE64=$(cat /tmp/cert_b64.txt)
+          echo "CERT_BASE64=$CERT_BASE64" >> $GITHUB_OUTPUT
+          echo "::add-mask::$CERT_BASE64"
 
           # Find and export the provisioning profile
           PP_PATH=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec grep -l "me.rainbow" {} \; | grep -v PriceWidget | grep -v Intent | grep -v Notification | grep -v OpenIn | grep -v ShareWith | head -1)
-          if [ -z "$PP_PATH" ]; then
-            echo "Main provisioning profile not found, listing available profiles..."
-            find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" -exec basename {} \;
-            exit 1
-          fi
 
           base64 -i "$PP_PATH" > /tmp/pp_b64.txt
-          echo "PROFILE_BASE64=$(cat /tmp/pp_b64.txt)" >> $GITHUB_OUTPUT
+          PROFILE_BASE64=$(cat /tmp/pp_b64.txt)
+          echo "PROFILE_BASE64=$PROFILE_BASE64" >> $GITHUB_OUTPUT
+          echo "::add-mask::$PROFILE_BASE64"
 
-          PP_NAME=$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)
-          echo "PROFILE_NAME=$PP_NAME" >> $GITHUB_OUTPUT
+          PROFILE_NAME=$(security cms -D -i "$PP_PATH" | plutil -extract Name raw -)
+          echo "PROFILE_NAME=$PROFILE_NAME" >> $GITHUB_OUTPUT
+          echo "::add-mask::$PROFILE_NAME"
 
-          PP_UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
-          echo "PROFILE_UUID=$PP_UUID" >> $GITHUB_OUTPUT
+          PROFILE_UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
+          echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_OUTPUT
+          echo "::add-mask::$PROFILE_UUID"
 
       - name: Update provisioning profiles to AdHoc
         run: |
