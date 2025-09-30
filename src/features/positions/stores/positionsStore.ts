@@ -14,8 +14,8 @@ import {
   EMPTY_POSITIONS,
   CACHE_TIME,
   STALE_TIME,
-  SUPPORTED_CHAIN_IDS,
 } from '../constants';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // ============ Core Types ===================================================== //
 
@@ -33,6 +33,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
     params: {
       address: $ => $(userAssetsStoreManager).address,
       currency: $ => $(userAssetsStoreManager).currency,
+      chainIds: $ => $(useBackendNetworksStore, s => s.getSupportedPositionsChainIds()),
     },
     cacheTime: CACHE_TIME,
     staleTime: STALE_TIME,
@@ -78,7 +79,7 @@ export const positionsActions = createStoreActions(usePositionsStore);
 // ============ Public Exports ================================================= //
 
 // Export constants for use in parsers
-export { MIN_POSITION_VALUE_USD, HYPERLIQUID_PROTOCOL, CONCENTRATED_LIQUIDITY_PROTOCOLS, SUPPORTED_CHAIN_IDS, EMPTY_POSITIONS };
+export { MIN_POSITION_VALUE_USD, HYPERLIQUID_PROTOCOL, CONCENTRATED_LIQUIDITY_PROTOCOLS, EMPTY_POSITIONS };
 
 // Store aliases for backward compatibility
 export const useDefiPositionsStore = usePositionsStore;

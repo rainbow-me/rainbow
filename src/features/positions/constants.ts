@@ -30,18 +30,3 @@ export const EMPTY_POSITIONS: RainbowPositions = {
 export const CACHE_TIME = 1000 * 60 * 5; // 5 minutes
 export const STALE_TIME = 1000 * 60 * 1; // 1 minute
 export const DEFAULT_TIMEOUT = 30000; // 30 seconds
-
-// Supported chain IDs
-export const SUPPORTED_CHAIN_IDS = [
-  1, // Mainnet
-  10, // Optimism
-  56, // BSC
-  100, // Gnosis
-  137, // Polygon
-  250, // Fantom
-  42161, // Arbitrum
-  43114, // Avalanche
-  8453, // Base
-  81457, // Blast
-  5000, // Mantle
-];

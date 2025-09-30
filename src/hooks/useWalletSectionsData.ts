@@ -19,6 +19,7 @@ import { useNftsStore } from '@/state/nfts/nfts';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { useShowcaseTokens, useHiddenTokens } from '@/hooks';
 import { isDataComplete } from '@/state/nfts/utils';
+import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 export interface WalletSectionsResult {
   briefSectionsData: CellTypes[];
@@ -58,6 +59,7 @@ export default function useWalletSectionsData({
     state.getData({
       address: accountAddress,
       currency: nativeCurrency,
+      chainIds: useBackendNetworksStore.getState().getSupportedPositionsChainIds(),
     })
   );
 

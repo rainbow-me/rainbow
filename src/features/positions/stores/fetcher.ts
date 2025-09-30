@@ -3,7 +3,7 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { logger } from '@/logger';
 import type { NativeCurrencyKey } from '@/entities';
 import type { ListPositionsResponse } from '../types';
-import { SUPPORTED_CHAIN_IDS, DEFAULT_TIMEOUT } from '../constants';
+import { DEFAULT_TIMEOUT } from '../constants';
 import type { Address } from 'viem';
 
 const POSITIONS_ENDPOINT = '/positions/ListPositions';
@@ -14,14 +14,14 @@ const POSITIONS_ENDPOINT = '/positions/ListPositions';
 export type PositionsParams = {
   address: Address | string | null;
   currency: NativeCurrencyKey;
-  chainIds?: number[];
+  chainIds: number[];
 };
 
 /**
  * Fetches positions data from the platform API
  */
 export async function fetchPositions(params: PositionsParams, abortController: AbortController | null): Promise<ListPositionsResponse> {
-  const { address, currency, chainIds = SUPPORTED_CHAIN_IDS } = params;
+  const { address, currency, chainIds } = params;
 
   if (!address) {
     logger.debug('[Positions] No address provided');
