@@ -47,6 +47,7 @@ jobs:
         run: |
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          echo "0" > is_testing
 
       - name: Setup scripts
         env:
@@ -137,6 +138,7 @@ jobs:
         run: |
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          echo "0" > is_testing
 
       - name: Setup scripts
         env:
