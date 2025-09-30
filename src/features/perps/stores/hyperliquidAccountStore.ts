@@ -57,7 +57,7 @@ export const useHyperliquidAccountStore = createQueryStore<
 
 export const hyperliquidAccountActions = createStoreActions(useHyperliquidAccountStore, {
   cancelOrder,
-  closeIsolatedMarginPosition,
+  closePosition,
   createIsolatedMarginPosition,
   createTriggerOrder,
   withdraw,
@@ -81,9 +81,9 @@ async function cancelOrder({ symbol, orderId }: { symbol: string; orderId: numbe
   await hlOpenOrdersStoreActions.fetch(undefined, { force: true });
 }
 
-async function closeIsolatedMarginPosition({ symbol, price, size }: { symbol: string; price: string; size: string }): Promise<void> {
+async function closePosition({ symbol, price, size }: { symbol: string; price: string; size: string }): Promise<void> {
   const market = getMarket(symbol);
-  await getHyperliquidExchangeClient().closeIsolatedMarginPosition({
+  await getHyperliquidExchangeClient().closePosition({
     assetId: market.id,
     price,
     sizeDecimals: market.decimals,
