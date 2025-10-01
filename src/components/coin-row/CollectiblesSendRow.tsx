@@ -15,9 +15,9 @@ import svgToPngIfNeeded from '@/handlers/svgs';
 import { padding } from '@/styles';
 
 const dividerHeight = 22;
-const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
+const isSmallPhone = deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
-const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
+const selectedHeight = isTinyPhone ? 50 : isSmallPhone ? 64 : 70;
 
 const selectedStyles = {
   height: selectedHeight,
@@ -33,7 +33,6 @@ const BottomRow = ({ selected, subtitle }: { selected: boolean; subtitle: string
       letterSpacing="roundedMedium"
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
-      style={sx.bottomRow}
     >
       {subtitle}
     </TruncatedText>
@@ -122,12 +121,6 @@ const CollectiblesSendRow = React.memo(
   },
   (props, nextProps) => buildAssetUniqueIdentifier(props.item) !== buildAssetUniqueIdentifier(nextProps.item)
 );
-
-const sx = StyleSheet.create({
-  bottomRow: {
-    marginTop: ios ? 0 : -6,
-  },
-});
 
 CollectiblesSendRow.displayName = 'CollectiblesSendRow';
 // @ts-expect-error

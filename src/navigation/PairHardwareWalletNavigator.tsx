@@ -48,7 +48,7 @@ export function PairHardwareWalletNavigator() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string} onDismiss={onDismiss} scrollEnabled={false}>
+        <SimpleSheet backgroundColor={backgroundColor as string} onDismiss={onDismiss} scrollEnabled={false} useAdditionalTopPadding>
           {(currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
             currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET) && (
             <NanoXDeviceAnimation
