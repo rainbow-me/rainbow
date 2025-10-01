@@ -27,15 +27,15 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
   const handleAddContact = useCallback(() => {
     const nickname = profilesEnabled ? value : (emoji ? `${emoji} ${value}` : value).trim();
     if (value?.length > 0) {
+      Keyboard.dismiss();
       onAddOrUpdateContacts(address, nickname, colors.avatarBackgrounds[colorIndex || 0], ens);
       goBack();
     }
-    android && Keyboard.dismiss();
   }, [address, colorIndex, colors.avatarBackgrounds, emoji, ens, goBack, onAddOrUpdateContacts, profilesEnabled, value]);
 
   const handleCancel = useCallback(() => {
+    Keyboard.dismiss();
     goBack();
-    android && Keyboard.dismiss();
   }, [goBack]);
 
   const { data: avatar } = useENSAvatar(ens, { enabled: Boolean(ens) });
