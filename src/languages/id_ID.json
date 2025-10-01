@@ -774,10 +774,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "CLOSE",
+            "c": "TUTUP",
             "h": "H",
             "l": "L",
-            "o": "OPEN",
+            "o": "BUKA",
             "t": "",
             "v": "V"
           },
@@ -3330,7 +3330,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Saldo Tersedia: %{balance}",
-        "title": "Pra-beli lebih banyak token"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "Pembagian token",
@@ -3492,9 +3492,9 @@
           "step_1": {
             "title": "Perlombaan langsung",
             "subtitle_parts": [
-              "Token dengan terbanyak",
+              "The current king is the token created in the last 30 days with the most",
               " volume pembelian ",
-              "saat ini adalah raja sekarang."
+              "today."
             ]
           },
           "step_2": {
