@@ -119,7 +119,7 @@ export function BalanceSection() {
               </Text>
             </TextShadow>
             <AnimatedNumber
-              value={balanceDisplayValue.value}
+              value={balanceDisplayValue}
               easingMaskColor={backgroundColor}
               color="label"
               numberOfLines={1}
