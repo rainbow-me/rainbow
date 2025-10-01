@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
 import * as i18n from '@/languages';
+import { abs } from '@/helpers/utilities';
 
 const DEFAULT_VISIBLE_TRADE_COUNT = 10;
 const LARGE_SPACE = ' ';
@@ -35,7 +36,7 @@ const TradeListItem = memo(function TradeListItem({ trade }: { trade: HlTrade })
 
   const leftHandSide = useMemo(() => {
     if (trade.triggerOrderType) {
-      return `${toFixedWorklet(mulWorklet(divWorklet(trade.fillStartSize, trade.size), 100), 0)}%`;
+      return `${toFixedWorklet(abs(mulWorklet(divWorklet(trade.fillStartSize, trade.size), 100)), 0)}%`;
     }
 
     return formatCurrency(mulWorklet(trade.size, trade.price), {
