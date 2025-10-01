@@ -774,10 +774,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "CLOSE",
+            "c": "关闭",
             "h": "H",
             "l": "大",
-            "o": "OPEN",
+            "o": "打开",
             "t": "",
             "v": "V"
           },
@@ -3330,7 +3330,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "可用余额: %{balance}",
-        "title": "预购更多代币"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "代币分配",
@@ -3492,9 +3492,9 @@
           "step_1": {
             "title": "比赛进行中",
             "subtitle_parts": [
-              "当前交易量最大的代币",
+              "The current king is the token created in the last 30 days with the most",
               "买入量",
-              "现在是当前的王者。"
+              "today."
             ]
           },
           "step_2": {
