@@ -9,6 +9,7 @@ import { createQueryStore } from '@/state/internal/createQueryStore';
 import { delay } from '@/utils/delay';
 import { time } from '@/utils/time';
 import { shallowEqual } from '@/worklets/comparisons';
+import * as i18n from '@/languages';
 
 // ============ RainbowConfig ================================================== //
 
@@ -144,8 +145,8 @@ export const DEFAULT_SLIPPAGE_BIPS = {
 };
 
 const DEFAULT_PERPS_FEATURE_CARD_COPY = {
-  title: 'Perps',
-  subtitle: 'High risk, high reward trading',
+  title: i18n.t(i18n.l.perps.feature_card.title),
+  subtitle: i18n.t(i18n.l.perps.feature_card.subtitle),
 };
 
 export const DEFAULT_CONFIG = {

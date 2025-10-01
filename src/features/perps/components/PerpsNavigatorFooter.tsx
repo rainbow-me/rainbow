@@ -21,7 +21,7 @@ import { PerpPositionSide } from '@/features/perps/types';
 import { hyperliquidAccountActions, useHyperliquidAccountStore } from '@/features/perps/stores/hyperliquidAccountStore';
 import { logger, RainbowError } from '@/logger';
 import { PerpsRoute } from '@/navigation/types';
-import { HoldToActivateButton } from '@/screens/token-launcher/components/HoldToActivateButton';
+import { HoldToActivateButton } from '@/components/hold-to-activate-button/HoldToActivateButton';
 import { HyperliquidButton } from '@/features/perps/components/HyperliquidButton';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
@@ -33,6 +33,7 @@ import * as i18n from '@/languages';
 import LinearGradient from 'react-native-linear-gradient';
 import { fonts } from '@/design-system/typography/typography';
 import { IS_ANDROID } from '@/env';
+import { analytics } from '@/analytics';
 
 const BUTTON_HEIGHT = 48;
 
@@ -209,21 +210,52 @@ const PerpsNewPositionScreenFooter = memo(function PerpsNewPositionScreenFooter(
   const submitNewPosition = useCallback(async () => {
     const { market, positionSide, leverage, amount, triggerOrders } = useHlNewPositionStore.getState();
     if (!market || !leverage) return;
+
     setIsSubmitting(true);
+
+    const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
+
     try {
       const livePrice = useLiveTokensStore.getState().tokens[getHyperliquidTokenId(market.symbol)].midPrice;
+      const entryPrice = livePrice ?? market.price;
       await hyperliquidAccountActions.createIsolatedMarginPosition({
         symbol: market.symbol,
         side: positionSide,
         leverage,
         marginAmount: amount,
         // There is not case in which the live price should actually be null at this point
-        price: livePrice ?? market.price,
+        price: entryPrice,
         triggerOrders,
       });
+
+      const positionValue = Number(amount) * leverage;
+      const positionSize = positionValue / Number(entryPrice);
+
+      analytics.track(analytics.event.perpsOpenedPosition, {
+        market: market.symbol,
+        side: positionSide,
+        leverage,
+        perpsBalance: Number(useHyperliquidAccountStore.getState().getValue()),
+        positionSize,
+        positionValue,
+        entryPrice: Number(entryPrice),
+        triggerOrders: triggerOrders.map(order => ({
+          type: order.type,
+          price: Number(order.price),
+        })),
+      });
+
       PerpsNavigation.navigate(Routes.PERPS_ACCOUNT_SCREEN, { scrollToTop: true });
     } catch (e) {
-      Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), parseHyperliquidErrorMessage(e));
+      const errorMessage = parseHyperliquidErrorMessage(e);
+      analytics.track(analytics.event.perpsOpenPositionFailed, {
+        market: market.symbol,
+        side: positionSide,
+        leverage,
+        perpsBalance,
+        errorMessage,
+      });
+      Alert.alert(i18n.t(i18n.l.perps.common.error_submitting_order), errorMessage);
       logger.error(new RainbowError('[PerpsNewPositionScreenFooter] Failed to submit new position', e));
     }
     setIsSubmitting(false);

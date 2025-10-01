@@ -77,7 +77,7 @@ const SCALE_FACTOR = 200;
 /**
  * Converts a scaled page index back to its original value.
  */
-function downscale(scaledIndex: number): number {
+export function downscalePagerIndex(scaledIndex: number): number {
   'worklet';
   return scaledIndex / SCALE_FACTOR;
 }
@@ -85,7 +85,7 @@ function downscale(scaledIndex: number): number {
 /**
  * Upscales a page index for use in animation.
  */
-function upscale(index: number): number {
+export function upscalePagerIndex(index: number): number {
   'worklet';
   return index * SCALE_FACTOR;
 }
@@ -128,7 +128,7 @@ const SmoothPagerComponent = (
 
   const activeSubPageIds = useSharedValue(initialSubpageIds);
   const currentPageId = useSharedValue(initialPage);
-  const currentPageIndex = useSharedValue(upscale(initialIndex));
+  const currentPageIndex = useSharedValue(upscalePagerIndex(initialIndex));
   const deepestReachedPageIndex = useSharedValue(initialIndex);
   const lastTargetIndex = useSharedValue(initialIndex);
 
@@ -141,11 +141,11 @@ const SmoothPagerComponent = (
       lastTargetIndex.value = target;
       if (springConfig) {
         currentPageIndex.value = withSpring(
-          upscale(target),
+          upscalePagerIndex(target),
           velocity ? { ...springConfig, velocity: velocity * springVelocityFactor } : springConfig
         );
       } else {
-        currentPageIndex.value = withTiming(upscale(target), timingConfig ?? PAGE_ANIMATION_CONFIG);
+        currentPageIndex.value = withTiming(upscalePagerIndex(target), timingConfig ?? PAGE_ANIMATION_CONFIG);
       }
     },
     [currentPageIndex, lastTargetIndex, springConfig, springVelocityFactor, timingConfig]
@@ -158,7 +158,7 @@ const SmoothPagerComponent = (
 
       goBack() {
         runOnUI(() => {
-          const currentPageIndexValue = Math.round(downscale(currentPageIndex.value));
+          const currentPageIndexValue = Math.round(downscalePagerIndex(currentPageIndex.value));
           if (currentPageIndexValue > 0) {
             const targetIndex = currentPageIndexValue - 1;
             requestAnimationFrame(() => animateIndex(targetIndex));
@@ -170,7 +170,7 @@ const SmoothPagerComponent = (
 
       goForward() {
         runOnUI(() => {
-          const currentPageIndexValue = Math.round(downscale(currentPageIndex.value));
+          const currentPageIndexValue = Math.round(downscalePagerIndex(currentPageIndex.value));
           if (currentPageIndexValue < numberOfPages - 1) {
             const targetIndex = currentPageIndexValue + 1;
             requestAnimationFrame(() => animateIndex(targetIndex));
@@ -248,7 +248,7 @@ const SmoothPagerComponent = (
 
   const pagerWrapperStyle = useAnimatedStyle(() => {
     const totalWidth = numberOfPages * DEVICE_WIDTH + (numberOfPages - 1) * pageGap;
-    const translateX = interpolate(downscale(currentPageIndex.value), [0, numberOfPages - 1], [0, -totalWidth + DEVICE_WIDTH]);
+    const translateX = interpolate(downscalePagerIndex(currentPageIndex.value), [0, numberOfPages - 1], [0, -totalWidth + DEVICE_WIDTH]);
     return { transform: [{ translateX }] };
   });
 
@@ -270,7 +270,7 @@ const SmoothPagerComponent = (
 
     onActive: (event, context) => {
       if (context.startPage === undefined) {
-        context.startPage = downscale(currentPageIndex.value);
+        context.startPage = downscalePagerIndex(currentPageIndex.value);
 
         if (enableSwipeToGoForward === 'always') {
           context.canSwipeForward = true;
@@ -294,7 +294,7 @@ const SmoothPagerComponent = (
       const maxIndex = context.maxForwardIndex ?? numberOfPages - 1;
 
       newPageIndex = clamp(newPageIndex, minIndex, maxIndex);
-      currentPageIndex.value = upscale(newPageIndex);
+      currentPageIndex.value = upscalePagerIndex(newPageIndex);
     },
 
     onEnd: (event, context) => {
@@ -302,7 +302,7 @@ const SmoothPagerComponent = (
 
       const swipeVelocityThreshold = 300;
       const velocity = event.velocityX;
-      let targetIndex = downscale(currentPageIndex.value);
+      let targetIndex = downscalePagerIndex(currentPageIndex.value);
 
       if (velocity < -swipeVelocityThreshold && context.canSwipeForward) {
         targetIndex = Math.ceil(targetIndex);
@@ -519,13 +519,18 @@ const Page = React.memo(function Page({
 
   const shouldDisplay = useDerivedValue(() => (isSubPage ? activeSubPageIds?.value[index] === id || currentPageId.value === id : true));
   const opacity = useDerivedValue(() =>
-    interpolate(downscale(currentPageIndex.value), [index - 1, index - 0.9, index, index + 0.9, index + 1], [0, 1, 1, 1, 0], 'clamp')
+    interpolate(
+      downscalePagerIndex(currentPageIndex.value),
+      [index - 1, index - 0.9, index, index + 0.9, index + 1],
+      [0, 1, 1, 1, 0],
+      'clamp'
+    )
   );
 
   const pageStyle = useAnimatedStyle(() => {
     const currentOpacity = opacity.value;
     const display = shouldDisplay.value ? 'flex' : 'none';
-    const scale = interpolate(downscale(currentPageIndex.value), [index - 1, index, index + 1], [scaleTo, 1, scaleTo], 'clamp');
+    const scale = interpolate(downscalePagerIndex(currentPageIndex.value), [index - 1, index, index + 1], [scaleTo, 1, scaleTo], 'clamp');
 
     return {
       display,

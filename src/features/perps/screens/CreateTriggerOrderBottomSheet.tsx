@@ -16,7 +16,7 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { RootStackParamList } from '@/navigation/types';
 import { useLiveTokenSharedValue } from '@/components/live-token-text/LiveTokenText';
-import { getHyperliquidTokenId } from '@/features/perps/utils';
+import { getHyperliquidTokenId, parseHyperliquidErrorMessage } from '@/features/perps/utils';
 import { ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { estimatePnl } from '@/features/perps/utils/estimatePnl';
 import {
@@ -42,13 +42,14 @@ import { calculateIsolatedLiquidationPriceFromMargin } from '@/features/perps/ut
 import { formatPerpAssetPrice } from '@/features/perps/utils/formatPerpsAssetPrice';
 import { logger, RainbowError } from '@/logger';
 import * as i18n from '@/languages';
+import { analytics } from '@/analytics';
 
 // Translations for worklets
 const translations = {
   above: i18n.t(i18n.l.perps.trigger_orders.above),
   below: i18n.t(i18n.l.perps.trigger_orders.below),
   mustBe: i18n.t(i18n.l.perps.trigger_orders.must_be),
-  liqPrice: i18n.t(i18n.l.perps.trigger_orders.liq_price),
+  liqPrice: i18n.t(i18n.l.perps.common.liq_price),
   currentPrice: i18n.t(i18n.l.perps.common.current_price),
 };
 
@@ -230,14 +231,37 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
     } as const;
 
     if (isExistingPosition) {
+      if (!position) return;
+
+      const perpsBalance = Number(useHyperliquidAccountStore.getState().getValue());
+
       setIsSubmitting(true);
       try {
         await hyperliquidAccountActions.createTriggerOrder({
           symbol: market.symbol,
           triggerOrder: triggerOrderPayload,
         });
+
+        analytics.track(analytics.event.perpsTriggerOrderCreated, {
+          market: market.symbol,
+          side: position.side,
+          triggerOrderType: triggerOrderType,
+          triggerPrice: Number(triggerOrderPayload.price),
+          perpsBalance,
+          leverage: position.leverage,
+          positionValue: Number(position.value),
+        });
+
         navigation.goBack();
       } catch (error) {
+        const errorMessage = parseHyperliquidErrorMessage(error);
+        analytics.track(analytics.event.perpsTriggerOrderFailed, {
+          market: market.symbol,
+          side: position.side,
+          triggerOrderType: triggerOrderType,
+          perpsBalance,
+          errorMessage,
+        });
         Alert.alert(i18n.t(i18n.l.perps.common.error), i18n.t(i18n.l.perps.trigger_orders.failed_to_create));
         logger.error(new RainbowError('[CreateTriggerOrderBottomSheet] Failed to create trigger order', error));
       } finally {
@@ -250,7 +274,7 @@ function PanelContent({ triggerOrderType, market, source, position }: PanelConte
       });
       navigation.goBack();
     }
-  }, [isValidTargetPriceState, inputValue, isSubmitting, isExistingPosition, triggerOrderType, market.symbol, navigation]);
+  }, [isValidTargetPriceState, inputValue, isSubmitting, isExistingPosition, triggerOrderType, market.symbol, navigation, position]);
 
   return (
     <Box paddingTop={'28px'} alignItems="center">

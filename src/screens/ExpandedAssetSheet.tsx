@@ -1,6 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CustomGasState, ChartExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
@@ -32,12 +31,11 @@ const Container = styled(Centered).attrs({
 
 export default function ExpandedAssetSheet(props: any) {
   const { height: deviceHeight } = useDimensions();
-  const insets = useSafeAreaInsets();
   const { goBack } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.EXPANDED_ASSET_SHEET>>();
 
   return (
-    <Container deviceHeight={deviceHeight} height={params.longFormHeight} insets={insets}>
+    <Container deviceHeight={deviceHeight} height={params.longFormHeight}>
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {createElement(ScreenTypes[params.type], {

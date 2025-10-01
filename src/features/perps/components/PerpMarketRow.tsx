@@ -4,7 +4,7 @@ import { Box, Text } from '@/design-system';
 import { PerpMarket } from '@/features/perps/types';
 import { LeverageBadge } from '@/features/perps/components/LeverageBadge';
 import { HyperliquidTokenIcon } from '@/features/perps/components/HyperliquidTokenIcon';
-import { abbreviateNumberWorklet } from '@/helpers/utilities';
+import { formatNumber } from '@/helpers/strings';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { formatPriceChange, getHyperliquidTokenId } from '@/features/perps/utils';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -25,7 +25,7 @@ type PerpMarketRowProps = {
 export const PerpMarketRow = function PerpMarketRow({ market, onPress, paddingVertical, priceChangeColors }: PerpMarketRowProps) {
   const tokenId = getHyperliquidTokenId(market.symbol);
   const volume = useMemo(() => {
-    return abbreviateNumberWorklet(Number(market.volume['24h']), 1).toUpperCase();
+    return formatNumber(market.volume['24h'], { useOrderSuffix: true, decimals: 1, style: '$' });
   }, [market.volume]);
 
   return (

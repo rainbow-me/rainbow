@@ -21,76 +21,9 @@ export interface CollapsibleSectionBaseProps {
   secondaryText?: string;
   expanded: SharedValue<boolean> | DerivedValue<boolean>;
   onToggle?: () => void;
-  iconColor?: string; // if provided, used as custom color; otherwise uses 'accent'
+  // If not provided, uses 'accent'
+  iconColor?: string;
 }
-
-const SectionHeaderView = React.memo(function SectionHeaderView({
-  icon,
-  primaryText,
-  secondaryText,
-  expanded,
-  onToggle,
-  iconColor,
-}: Omit<CollapsibleSectionBaseProps, 'content'>) {
-  const rotationStyle = useAnimatedStyle(
-    () => ({
-      transform: [
-        {
-          rotate: withSpring(expanded.value ? '0deg' : '-90deg', ANIMATION_CONFIG),
-        },
-      ],
-    }),
-    [expanded]
-  );
-
-  const iconColorProp = iconColor ? { custom: iconColor } : 'accent';
-
-  return (
-    <GestureHandlerButton
-      onPressWorklet={onToggle}
-      hapticTrigger="tap-end"
-      hapticType="soft"
-      hitSlop={{ bottom: 28, left: 24, right: 24, top: 28 }}
-      scaleTo={0.95}
-      style={{ height: 14, justifyContent: 'center', zIndex: 10 }}
-    >
-      <Bleed vertical="4px">
-        <Box height={'full'} flexDirection="row" justifyContent="space-between" alignItems="center">
-          <Box flexDirection="row" gap={10} alignItems="center">
-            <IconContainer height={14} width={24}>
-              <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text align="center" color={iconColorProp} size="icon 17px" weight="bold">
-                  {icon}
-                </Text>
-              </TextShadow>
-            </IconContainer>
-            <Box flexDirection="row" gap={5}>
-              <Text weight="heavy" size="20pt" color="label">
-                {primaryText}
-              </Text>
-              {secondaryText && (
-                <TextShadow blur={12} shadowOpacity={0.24}>
-                  <Text weight="heavy" size="20pt" color="accent">
-                    {secondaryText}
-                  </Text>
-                </TextShadow>
-              )}
-            </Box>
-          </Box>
-          <AnimatedBox style={rotationStyle}>
-            <IconContainer height={14} width={24}>
-              <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text weight="heavy" align="center" size="17pt" color={iconColorProp}>
-                  􀆈
-                </Text>
-              </TextShadow>
-            </IconContainer>
-          </AnimatedBox>
-        </Box>
-      </Bleed>
-    </GestureHandlerButton>
-  );
-});
 
 export function CollapsibleSectionBase({
   content,
@@ -125,3 +58,71 @@ export function CollapsibleSectionBase({
     </AnimatedBox>
   );
 }
+
+const SectionHeaderView = React.memo(function SectionHeaderView({
+  icon,
+  primaryText,
+  secondaryText,
+  expanded,
+  onToggle,
+  iconColor,
+}: Omit<CollapsibleSectionBaseProps, 'content'>) {
+  const rotationStyle = useAnimatedStyle(
+    () => ({
+      transform: [
+        {
+          rotate: withSpring(expanded.value ? '0deg' : '-90deg', ANIMATION_CONFIG),
+        },
+      ],
+    }),
+    [expanded]
+  );
+
+  const resolvedIconColor = iconColor ? { custom: iconColor } : 'accent';
+
+  return (
+    <GestureHandlerButton
+      onPressWorklet={onToggle}
+      hapticTrigger="tap-end"
+      hapticType="soft"
+      hitSlop={{ bottom: 28, left: 24, right: 24, top: 28 }}
+      scaleTo={0.95}
+      style={{ height: 14, justifyContent: 'center', zIndex: 10 }}
+    >
+      <Bleed vertical="4px">
+        <Box height={'full'} flexDirection="row" justifyContent="space-between" alignItems="center">
+          <Box flexDirection="row" gap={10} alignItems="center">
+            <IconContainer height={14} width={24}>
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <Text align="center" color={resolvedIconColor} size="icon 17px" weight="bold">
+                  {icon}
+                </Text>
+              </TextShadow>
+            </IconContainer>
+            <Box flexDirection="row" gap={5}>
+              <Text weight="heavy" size="20pt" color="label">
+                {primaryText}
+              </Text>
+              {secondaryText && (
+                <TextShadow blur={12} shadowOpacity={0.24}>
+                  <Text weight="heavy" size="20pt" color="accent">
+                    {secondaryText}
+                  </Text>
+                </TextShadow>
+              )}
+            </Box>
+          </Box>
+          <AnimatedBox style={rotationStyle}>
+            <IconContainer height={14} width={24}>
+              <TextShadow blur={12} shadowOpacity={0.24}>
+                <Text weight="heavy" align="center" size="17pt" color={resolvedIconColor}>
+                  􀆈
+                </Text>
+              </TextShadow>
+            </IconContainer>
+          </AnimatedBox>
+        </Box>
+      </Bleed>
+    </GestureHandlerButton>
+  );
+});

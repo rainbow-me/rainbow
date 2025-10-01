@@ -10,6 +10,7 @@ import { USDC_COLORS, USDC_ICON_URL } from '@/features/perps/constants';
 import { GradientBorderView } from '@/components/gradient-border/GradientBorderView';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { formatCurrency } from '@/features/perps/utils/formatCurrency';
+import * as i18n from '@/languages';
 
 type PerpsAvailableBalanceProps = {
   balance: string;
@@ -50,7 +51,7 @@ export const PerpsAvailableBalance = memo(function PerpsAvailableBalance({ balan
             paddingVertical={'12px'}
           >
             <Text color="labelTertiary" size="17pt" weight="semibold">
-              {'Available Balance'}
+              {i18n.t(i18n.l.perps.account.available_balance)}
             </Text>
 
             <Box flexDirection="row" gap={5} alignItems="center">

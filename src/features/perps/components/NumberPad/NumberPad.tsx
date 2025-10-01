@@ -1,5 +1,5 @@
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Columns, useColorMode } from '@/design-system';
+import { Box, Columns } from '@/design-system';
 import React from 'react';
 import Animated, { SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { NumberPadField, NumberPadKey } from './NumberPadKey';
@@ -54,7 +54,7 @@ export const NumberPad = ({
     return stripFormatting(rawValue);
   };
 
-  const validateChange = (currentValue: string, newValue: string, addingDecimal: boolean = false) => {
+  const validateChange = (currentValue: string, newValue: string, addingDecimal = false) => {
     'worklet';
     const fieldId = activeFieldId.value;
     const field = fields.value[fieldId];

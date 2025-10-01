@@ -36,7 +36,7 @@ export const PerpsAccountBalanceCard = memo(function PerpsAccountBalanceCard() {
           <ImgixImage enableFasterImage source={{ uri: USDC_ICON_URL }} size={40} style={{ width: 40, height: 40 }} />
           <Stack space={'10px'}>
             <Text color="labelSecondary" size="11pt" weight="heavy">
-              {i18n.t(i18n.l.perps.account.available_balance)}
+              {i18n.t(i18n.l.perps.account.available_balance).toUpperCase()}
             </Text>
             <View style={{ opacity: isBalanceZero ? 0.4 : 1 }}>
               <TextShadow color={accentColors.opacity100} blur={16} shadowOpacity={0.24}>

@@ -15,6 +15,8 @@ export const RAINBOW_BUILDER_SETTINGS = {
   f: 50,
 } as const satisfies HlBuilderSettings;
 export const HYPERCORE_PSEUDO_CHAIN_ID = 1337;
+export const HYPERLIQUID_TOKEN_ID_SUFFIX = 'hl';
+export const SPOT_ASSET_ID_OFFSET = 10_000;
 // The minimum total order size (margin * leverage)
 // Add 1% buffer to account for decimal precision in position size calculation
 export const MIN_ORDER_SIZE_USD = 10 * 1.01;

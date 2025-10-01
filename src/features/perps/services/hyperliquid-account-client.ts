@@ -1,4 +1,4 @@
-import { greaterThan } from '@/helpers/utilities';
+import { add, greaterThan } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
 import { Address } from 'viem';
 import { RAINBOW_BUILDER_SETTINGS } from '@/features/perps/constants';
@@ -45,7 +45,7 @@ export class HyperliquidAccountClient {
 
     const positions = perpState.assetPositions
       .map(({ position }) => {
-        const equity = position.leverage.type === 'isolated' ? position.marginUsed : position.unrealizedPnl;
+        const equity = position.leverage.type === 'isolated' ? position.marginUsed : add(position.unrealizedPnl, position.marginUsed);
 
         return {
           symbol: position.coin,

@@ -3,8 +3,8 @@ import { useColorMode } from '@/design-system';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { getColorForTheme } from '@/design-system/color/useForegroundColor';
 
-const HYPERLIQUID_GREEN = '#3ECFAD';
-const HYPERLIQUID_GREEN_LIGHT = '#31C8A4';
+export const HYPERLIQUID_GREEN = '#3ECFAD';
+export const HYPERLIQUID_GREEN_LIGHT = '#31C8A4';
 const SHORT_RED = '#C4362D';
 const LONG_GREEN = '#23D246';
 

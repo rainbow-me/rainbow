@@ -1,7 +1,7 @@
 import { createQueryStore } from '@/state/internal/createQueryStore';
 import { time } from '@/utils/time';
 import { Address } from 'viem';
-import { PerpPositionSide, PerpsPosition, TriggerOrder } from '../types';
+import { PerpMarketWithMetadata, PerpPositionSide, PerpsPosition, TriggerOrder } from '../types';
 import { getHyperliquidAccountClient, getHyperliquidExchangeClient, useHyperliquidClients } from '../services';
 import { RainbowError } from '@/logger';
 import { createStoreActions } from '@/state/internal/utils/createStoreActions';
@@ -57,7 +57,7 @@ export const useHyperliquidAccountStore = createQueryStore<
 
 export const hyperliquidAccountActions = createStoreActions(useHyperliquidAccountStore, {
   cancelOrder,
-  closeIsolatedMarginPosition,
+  closePosition,
   createIsolatedMarginPosition,
   createTriggerOrder,
   withdraw,
@@ -76,20 +76,14 @@ async function fetchHyperliquidAccount(
 }
 
 async function cancelOrder({ symbol, orderId }: { symbol: string; orderId: number }): Promise<void> {
-  const market = hyperliquidMarketsActions.getMarket(symbol);
-  if (!market) {
-    throw new RainbowError('[HyperliquidTradingActions] Market not found');
-  }
+  const market = getMarket(symbol);
   await getHyperliquidExchangeClient().cancelOrder({ assetId: market.id, orderId });
   await hlOpenOrdersStoreActions.fetch(undefined, { force: true });
 }
 
-async function closeIsolatedMarginPosition({ symbol, price, size }: { symbol: string; price: string; size: string }): Promise<void> {
-  const market = hyperliquidMarketsActions.getMarket(symbol);
-  if (!market) {
-    throw new RainbowError('[HyperliquidTradingActions] Market not found');
-  }
-  await getHyperliquidExchangeClient().closeIsolatedMarginPosition({
+async function closePosition({ symbol, price, size }: { symbol: string; price: string; size: string }): Promise<void> {
+  const market = getMarket(symbol);
+  await getHyperliquidExchangeClient().closePosition({
     assetId: market.id,
     price,
     sizeDecimals: market.decimals,
@@ -113,10 +107,7 @@ async function createIsolatedMarginPosition({
   price: string;
   triggerOrders?: TriggerOrder[];
 }): Promise<OrderResponse | void> {
-  const market = hyperliquidMarketsActions.getMarket(symbol);
-  if (!market) {
-    throw new RainbowError('[HyperliquidTradingActions] Market not found');
-  }
+  const market = getMarket(symbol);
 
   const result = await getHyperliquidExchangeClient().openIsolatedMarginPosition({
     assetId: market.id,
@@ -133,11 +124,7 @@ async function createIsolatedMarginPosition({
 }
 
 async function createTriggerOrder({ symbol, triggerOrder }: { symbol: string; triggerOrder: TriggerOrder }): Promise<void> {
-  const market = hyperliquidMarketsActions.getMarket(symbol);
-  if (!market) {
-    throw new RainbowError('[HyperliquidTradingActions] Market not found');
-  }
-
+  const market = getMarket(symbol);
   const position = useHyperliquidAccountStore.getState().getPosition(symbol);
   if (!position) {
     throw new RainbowError('[HyperliquidTradingActions] No open position for trigger order');
@@ -160,4 +147,12 @@ async function createTriggerOrder({ symbol, triggerOrder }: { symbol: string; tr
 
 export async function withdraw(amount: string): Promise<void> {
   await getHyperliquidExchangeClient().withdraw(amount);
+}
+
+function getMarket(symbol: string): PerpMarketWithMetadata {
+  const market = hyperliquidMarketsActions.getMarket(symbol);
+  if (!market) {
+    throw new RainbowError('[HyperliquidTradingActions] Market not found');
+  }
+  return market;
 }

@@ -1,6 +1,6 @@
 import { time } from '@/utils';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { isRouteActive, useNavigationStore } from '@/state/navigation/navigationStore';
+import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { useUserAssetsStore } from '../assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { ETH_ADDRESS, SupportedCurrencyKey, WETH_ADDRESS } from '@/references';
@@ -8,9 +8,10 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet, greaterThan, multiply } from '@/helpers/utilities';
 import { fetchHyperliquidPrices } from './hyperliquidPriceService';
 import Routes from '@/navigation/routesNames';
+import { HYPERLIQUID_TOKEN_ID_SUFFIX } from '@/features/perps/constants';
 
 const ETH_MAINNET_TOKEN_ID = `${ETH_ADDRESS}:1`;
-const HYPERLIQUID_TOKEN_SUFFIX = ':hl';
+const HYPERLIQUID_TOKEN_SUFFIX = `:${HYPERLIQUID_TOKEN_ID_SUFFIX}`;
 
 function convertLegacyTokenIdToTokenId(tokenId: string): string {
   const [tokenAddress, chainId] = tokenId.split('_');
@@ -22,11 +23,6 @@ function convertTokenIdToLegacyTokenId(tokenId: string): string {
   return `${tokenAddress}_${chainId}`;
 }
 
-/**
- * Checks if a token ID represents a Hyperliquid asset
- * @param tokenId Token ID to check
- * @returns true if the token is a Hyperliquid asset
- */
 export function isHyperliquidToken(tokenId: string): boolean {
   return tokenId.endsWith(HYPERLIQUID_TOKEN_SUFFIX);
 }
@@ -158,9 +154,7 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
     ...(ethVariants.length > 0 ? [ETH_MAINNET_TOKEN_ID] : []),
   ];
 
-  // Fetch data from both sources in parallel
   const [regularTokensResponse, hyperliquidPrices] = await Promise.all([
-    // Fetch regular tokens from backend
     tokensToFetch.length > 0
       ? getPlatformClient().get<LiveTokensResponse>('/prices/GetCurrentPrices', {
           params: {
@@ -169,7 +163,6 @@ const fetchTokensData = async ({ subscribedTokensByRoute, activeRoute, currency 
           },
         })
       : Promise.resolve({ data: { result: {} } }),
-    // Fetch Hyperliquid prices
     hyperliquidTokens.length > 0
       ? fetchHyperliquidPrices(
           hyperliquidTokens

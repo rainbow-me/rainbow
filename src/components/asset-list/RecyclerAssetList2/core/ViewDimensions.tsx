@@ -84,8 +84,6 @@ const ViewDimensions: Record<CellType, Dim> = {
     width: deviceUtils.dimensions.width,
   },
   [CellType.PERPS_HEADER]: { height: AssetListHeaderHeight },
-  [CellType.PERPS_SPACE_BEFORE]: { height: 0 },
-  [CellType.PERPS_SPACE_AFTER]: { height: 0 },
   [CellType.PERPS_BALANCE]: {
     height: 48,
     width: deviceUtils.dimensions.width,
@@ -95,10 +93,9 @@ const ViewDimensions: Record<CellType, Dim> = {
     width: deviceUtils.dimensions.width,
   },
   [CellType.TOKENS_HEADER]: { height: AssetListHeaderHeight },
-  [CellType.TOKENS_HEADER_SPACE_BEFORE]: { height: 10 },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
   [CellType.EMPTY_REMOTE_CARD_CAROUSEL]: { height: 0 },
-  [CellType.SPACER]: { height: 0 }, // Height will be overridden by data
+  [CellType.SPACER]: { height: 0 }, // Height is set from data
 };
 
 export default ViewDimensions;

@@ -126,7 +126,7 @@ export const PerpPositionCard = memo(function PerpPositionCard({ position }: Per
           </Stack>
           <Stack alignHorizontal="right" space={'10px'}>
             <Text align="right" size="11pt" weight="bold" color="labelQuaternary">
-              {i18n.t(i18n.l.perps.positions.liq_price)}
+              {i18n.t(i18n.l.perps.common.liq_price).toUpperCase()}
             </Text>
             <Text align="right" size="15pt" weight="bold" color="labelSecondary">
               {liquidationPrice}

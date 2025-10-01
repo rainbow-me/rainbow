@@ -1,6 +1,7 @@
 import { StackActions, useTheme } from '@react-navigation/native';
 import React, { createContext, useMemo, useRef } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Components from './screens';
 
 export const ModalContext = createContext();
@@ -14,6 +15,7 @@ const sx = StyleSheet.create({
 const { RNCMScreenManager } = NativeModules;
 
 function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
+  const insets = useSafeAreaInsets();
   const { options, render: renderScene } = descriptors[route.key];
   const ref = useRef(undefined);
   const {
@@ -93,7 +95,8 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
         interactWithScrollView={interactWithScrollView}
         isShortFormEnabled={isShortFormEnabled}
         key={route.key}
-        longFormHeight={longFormHeight}
+        // Slack sheet adds insets internally so for consistency with android remove them.
+        longFormHeight={longFormHeight != null ? longFormHeight - insets.bottom : undefined}
         modalBackgroundColor={backgroundColor}
         onAppear={() => {
           options?.onAppear?.();

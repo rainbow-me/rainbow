@@ -29,7 +29,7 @@ export const PerpsHeader = React.memo(function PerpsHeader() {
         Navigation.handleAction(Routes.PERPS_NAVIGATOR);
       }}
       scaleTo={1.05}
-      testID={`perps-list-header`}
+      testID={'perps-list-header'}
     >
       <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">

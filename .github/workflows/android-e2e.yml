@@ -45,19 +45,20 @@ jobs:
 
       - name: Setup env
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            mv rainbow-env/android/app/google-services.json android/app/google-services.json
-            rm -rf rainbow-env
-            sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          mv rainbow-env/android/app/google-services.json android/app/google-services.json
+          rm -rf rainbow-env
+          sed -i "s/IS_TESTING=false/IS_TESTING=true/" .env
+          echo "1" > is_testing
       - name: Setup scripts
         env:
-            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
-            SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent_scripts.sock
         run: |
-            eval $CI_SCRIPTS
+          eval $CI_SCRIPTS
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
@@ -146,11 +147,11 @@ jobs:
 
       - name: Setup env
         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
+          SSH_AUTH_SOCK: /tmp/ssh_agent_env.sock
         run: |
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env
-            rm -rf rainbow-env
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env
+          rm -rf rainbow-env
 
       - name: Install Maestro
         run: export MAESTRO_VERSION=1.41.0; curl -fsSL "https://get.maestro.mobile.dev" | bash

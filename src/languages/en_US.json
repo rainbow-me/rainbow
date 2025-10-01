@@ -1578,7 +1578,13 @@
         "submitting": "Submitting...",
         "more": "More",
         "error": "Error",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "liq_price": "liq. price",
+        "liq": "liq"
+      },
+      "feature_card": {
+        "title": "Perps",
+        "subtitle": "High risk, high reward trading"
       },
       "actions": {
         "fund_wallet": "Fund Wallet",
@@ -1587,7 +1593,7 @@
         "open_position": "Open Position"
       },
       "account": {
-        "available_balance": "AVAILABLE BALANCE"
+        "available_balance": "Available Balance"
       },
       "markets": {
         "title": "Markets",
@@ -1622,7 +1628,6 @@
       "positions": {
         "entry": "ENTRY",
         "mark_price": "MARK PRICE",
-        "liq_price": "LIQ. PRICE",
         "open_positions": "Open Positions",
         "no_open_positions": "No Open Positions",
         "position_value": "Position Value",
@@ -1630,7 +1635,8 @@
         "entry_price": "Entry Price",
         "funding": "Funding",
         "liquidation_price": "Liquidation Price",
-        "total": "Total"
+        "total": "Total",
+        "learn_more_about_perps": "Learn more about Perps"
       },
       "new_position": {
         "hold_to_long": "Hold to Long",
@@ -1677,7 +1683,6 @@
         "above": "above",
         "below": "below",
         "must_be": "Must be",
-        "liq_price": "liq. price",
         "failed_to_create": "Failed to create trigger order"
       },
       "search": {
@@ -1691,6 +1696,25 @@
         "minimum_amount_is": "Minimum amount is",
         "closing": "Closing...",
         "hold_to_close": "Hold to Close"
+      },
+      "explain_sheet": {
+        "next": "Next",
+        "got_it": "Got it",
+        "title": "Perps",
+        "steps": {
+          "step_1": {
+            "title_parts": ["Perpetual Futures"],
+            "subtitle_parts": ["Predict a token’s price direction and earn if your call is right. Trade any time, no expiry."]
+          },
+          "step_2": {
+            "title_parts": ["Go", "Long", "or go", "Short"],
+            "subtitle_parts": ["Go long when you expect the price to rise. Earn profits if the token goes up."]
+          },
+          "step_3": {
+            "title_parts": ["Leverage and risk"],
+            "subtitle_parts": ["Leverage boosts profits but also risk. If the market moves against you, your position gets liquidated."]
+          }
+        }
       },
       "leverage": "Leverage",
       "up_to": "Up to"
@@ -3449,7 +3473,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Available Balance: %{balance}",
-        "title": "Pre-buy more tokens"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "Token allocation",
@@ -3611,7 +3635,7 @@
         "steps": {
           "step_1": {
             "title": "The race is live",
-            "subtitle_parts": ["The token with the most", " buy volume ", "right now is the current king."]
+            "subtitle_parts": ["The current king is the token created in the last 30 days with the most", " buy volume ", "today."]
           },
           "step_2": {
             "title": "One crown a day",
