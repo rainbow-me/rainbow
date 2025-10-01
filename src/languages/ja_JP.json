@@ -3330,7 +3330,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "利用可能残高: %{balance}",
-        "title": "プリバイでトークンをさらに購入"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "トークン配分",
@@ -3492,9 +3492,9 @@
           "step_1": {
             "title": "レースが開始",
             "subtitle_parts": [
-              "ほとんどの",
+              "The current king is the token created in the last 30 days with the most",
               " 購入ボリューム ",
-              "今現在、これは現行のキングです。"
+              "today."
             ]
           },
           "step_2": {
