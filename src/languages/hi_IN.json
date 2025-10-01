@@ -774,10 +774,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "CLOSE",
+            "c": "बंद करें",
             "h": "H",
             "l": "एल",
-            "o": "OPEN",
+            "o": "खोलें",
             "t": "",
             "v": "V"
           },
@@ -3330,7 +3330,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "उपलब्ध शेष राशि: %{balance}",
-        "title": "अग्रिम हेतु अधिक टोकन खरीदें"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "टोकन आवंटन",
@@ -3492,9 +3492,9 @@
           "step_1": {
             "title": "रेस लाइव है",
             "subtitle_parts": [
-              "सबसे अधिक वाला टोकन",
+              "The current king is the token created in the last 30 days with the most",
               " खरीद वॉल्यूम ",
-              "अभी वर्तमान किंग है।"
+              "today."
             ]
           },
           "step_2": {
