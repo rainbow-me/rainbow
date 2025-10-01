@@ -3330,7 +3330,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Solde Disponible : %{balance}",
-        "title": "Pré-acheter plus de jetons"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "Allocation de jetons",
@@ -3492,9 +3492,9 @@
           "step_1": {
             "title": "La course est en direct",
             "subtitle_parts": [
-              "Le jeton avec le plus",
+              "The current king is the token created in the last 30 days with the most",
               " de volume d'achat ",
-              "en ce moment est le roi actuel."
+              "today."
             ]
           },
           "step_2": {
