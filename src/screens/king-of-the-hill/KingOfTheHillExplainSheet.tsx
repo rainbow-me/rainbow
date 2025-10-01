@@ -21,21 +21,29 @@ const STEPS: ExplainerSheetStep[] = [
   {
     id: 'step-1',
     titleComponent: () => (
-      <Text align="center" size="34pt" weight="heavy" color="label">
-        {i18n.t(translations.steps.step_1.title)}
-      </Text>
+      <Box bottom={{ custom: 24 }}>
+        <Text align="center" size="34pt" weight="heavy" color="label">
+          {i18n.t(translations.steps.step_1.title)}
+        </Text>
+      </Box>
     ),
     graphicComponent: () => (
-      <FastImage source={currentKingImage} style={{ width: PANEL_INNER_WIDTH, height: '100%' }} resizeMode={FastImage.resizeMode.contain} />
+      <FastImage
+        source={currentKingImage}
+        style={{ width: PANEL_INNER_WIDTH, height: '100%', position: 'absolute' }}
+        resizeMode={FastImage.resizeMode.contain}
+      />
     ),
     subtitleComponent: () => (
-      <Text align="center" size="17pt / 135%" weight="medium" color="labelTertiary">
-        {i18n.t(translations.steps.step_1.subtitle_parts[0])}
-        <Text size="17pt" weight="bold" color="label">
-          {i18n.t(translations.steps.step_1.subtitle_parts[1])}
+      <Box bottom={{ custom: 24 }} paddingHorizontal="20px" width="full">
+        <Text align="center" size="17pt / 135%" weight="medium" color="labelTertiary">
+          {i18n.t(translations.steps.step_1.subtitle_parts[0])}
+          <Text size="17pt" weight="bold" color="label">
+            {i18n.t(translations.steps.step_1.subtitle_parts[1])}
+          </Text>
+          {i18n.t(translations.steps.step_1.subtitle_parts[2])}
         </Text>
-        {i18n.t(translations.steps.step_1.subtitle_parts[2])}
-      </Text>
+      </Box>
     ),
   },
   {
