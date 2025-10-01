@@ -1,6 +1,6 @@
 import { multiply } from '@/helpers/utilities';
 import * as hl from '@nktkas/hyperliquid';
-import { CancelSuccessResponse, OrderParams } from '@nktkas/hyperliquid/script/src/types/mod';
+import { CancelSuccessResponse } from '@nktkas/hyperliquid/script/src/types/mod';
 import { Address, Hex } from 'viem';
 import { DEFAULT_SLIPPAGE_BIPS, RAINBOW_BUILDER_SETTINGS } from '../constants';
 import { PerpPositionSide, TriggerOrder, TriggerOrderType } from '../types';
@@ -124,13 +124,11 @@ export class HyperliquidExchangeClient {
       size: positionSize,
       price,
       sizeDecimals,
+      slippageBips,
       reduceOnly,
     });
 
-    const orders: OrderParams[] = [positionMarketOrder];
-
-    // TODO (kane): cleanup + move to utils/orders.ts
-    for (const triggerOrder of triggerOrders) {
+    const hlTriggerOrders = triggerOrders.map(triggerOrder => {
       // 0 size is treated as whatever the full position size when the trigger is hit
       const orderSize =
         triggerOrder.orderFraction === '1'
@@ -138,21 +136,20 @@ export class HyperliquidExchangeClient {
           : toFixedWorklet(multiply(positionMarketOrder.s, triggerOrder.orderFraction), sizeDecimals);
       const triggerPrice = formatOrderPrice({ price: triggerOrder.price, sizeDecimals, marketType });
 
-      const hlTriggerOrder = buildMarketTriggerOrder({
+      return buildMarketTriggerOrder({
         assetId,
         side,
         triggerPrice,
         type: triggerOrder.type,
         size: orderSize,
       });
-      orders.push(hlTriggerOrder);
-    }
+    });
 
     return await (
       await this.getExchangeClient()
     ).order({
-      orders,
-      // You might think that grouping: positionTpsl would be for submitting a trigger order with the base order, but it is not, that will result in an error
+      orders: [positionMarketOrder, ...hlTriggerOrders],
+      // grouping: positionTpsl requires that all orders in the group are trigger orders
       grouping: 'na',
       builder: RAINBOW_BUILDER_SETTINGS,
     });
