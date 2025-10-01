@@ -774,10 +774,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "CLOSE",
+            "c": "CERRAR",
             "h": "A",
             "l": "B",
-            "o": "OPEN",
+            "o": "ABRIR",
             "t": "",
             "v": "V"
           },
@@ -3330,7 +3330,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Saldo Disponible: %{balance}",
-        "title": "Pre-comprar más tokens"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "Asignación de tokens",
@@ -3492,9 +3492,9 @@
           "step_1": {
             "title": "La carrera está en vivo",
             "subtitle_parts": [
-              "El token con más",
+              "The current king is the token created in the last 30 days with the most",
               " volumen de compra",
-              "ahora mismo es el rey actual."
+              "today."
             ]
           },
           "step_2": {
