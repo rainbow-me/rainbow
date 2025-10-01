@@ -87,7 +87,6 @@ export const PerpsWithdrawalScreen = memo(function PerpsWithdrawalScreen() {
   const insets = useSafeAreaInsets();
   const balance = useHyperliquidAccountStore(state => state.getBalance());
   const isBalanceLoading = useHyperliquidAccountStore(state => state.status === 'loading' && state.getBalance() === '0');
-  // TODO (kane): use neweset currency formatting
   const formattedBalance = `${toFixedWorklet(balance, 2)} USDC`;
 
   // State for input values

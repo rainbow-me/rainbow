@@ -107,7 +107,6 @@ export const USDC_ASSET = {
   highLiquidity: true,
 } satisfies SearchAsset;
 
-// TODO: These should be somewhere else
 export const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 export const LIGHT_HANDLE_COLOR = 'rgba(59, 66, 83, 0.3)';
 

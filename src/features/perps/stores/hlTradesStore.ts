@@ -100,9 +100,8 @@ function getTradeExecutionDescription(trade: Omit<HlTrade, 'description'>): stri
 }
 
 function convertFillAndOrderToTrade({ fill, order }: { fill: hl.Fill; order: hl.FrontendOrder }): HlTrade {
-  // TODO (kane): trigger condition can also be the value "Triggered", am unsure what that represents and hyperliquid docs do not mention it
-  const isTakeProfit = order.isPositionTpsl && order.triggerCondition?.includes('above');
-  const isStopLoss = order.isPositionTpsl && order.triggerCondition?.includes('below');
+  const isTakeProfit = order.isPositionTpsl && order.orderType.includes('Take Profit');
+  const isStopLoss = order.isPositionTpsl && order.orderType.includes('Stop');
   const triggerOrderType = isTakeProfit ? TriggerOrderType.TAKE_PROFIT : isStopLoss ? TriggerOrderType.STOP_LOSS : undefined;
 
   const trade = {
