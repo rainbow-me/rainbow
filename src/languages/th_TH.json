@@ -774,10 +774,10 @@
       "chart": {
         "candlestick": {
           "candle_field_labels": {
-            "c": "CLOSE",
+            "c": "ปิด",
             "h": "H",
             "l": "ใหญ่",
-            "o": "OPEN",
+            "o": "เปิด",
             "t": "",
             "v": "V"
           },
@@ -3330,7 +3330,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "ยอดคงเหลือที่มีอยู่: %{balance}",
-        "title": "ซื้อโทเค็นเพิ่มล่วงหน้า"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "การจัดสรรโทเค็น",
@@ -3492,9 +3492,9 @@
           "step_1": {
             "title": "การแข่งขันกำลังดำเนินอยู่",
             "subtitle_parts": [
-              "โทเค็นที่มี",
+              "The current king is the token created in the last 30 days with the most",
               "ปริมาณการซื้อ",
-              "ขณะนี้เป็นราชาปัจจุบัน"
+              "today."
             ]
           },
           "step_2": {
