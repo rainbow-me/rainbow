@@ -3330,7 +3330,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "رصيد متاح: %{balance}",
-        "title": "شراء المزيد من الرموز مسبقًا"
+        "title": "Pre-buy tokens"
       },
       "review": {
         "token_allocation": "تخصيص الرمز",
@@ -3492,9 +3492,9 @@
           "step_1": {
             "title": "السباق مباشر",
             "subtitle_parts": [
-              "الرمز صاحب أعلى",
+              "The current king is the token created in the last 30 days with the most",
               " حجم الشراء ",
-              "الآن هو الملك الحالي."
+              "today."
             ]
           },
           "step_2": {
