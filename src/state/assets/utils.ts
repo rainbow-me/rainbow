@@ -1,6 +1,7 @@
 import { Address } from 'viem';
 import { ParsedAddressAsset } from '@/entities';
 import { AssetType } from '@/entities/assetTypes';
+import { isNativeAsset } from '@/handlers/assets';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
@@ -14,16 +15,15 @@ import { RainbowError, logger } from '@/logger';
 import { supportedNativeCurrencies } from '@/references';
 import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilBalancesByChainId } from '@/resources/assets/anvilAssets';
+import { getPlatformClient } from '@/resources/platform/client';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId, ChainName } from '@/state/backendNetworks/types';
 import { AddressOrEth, ParsedSearchAsset, UniqueId, UserAssetFilter, ZerionAsset } from '@/__swaps__/types/assets';
 import { time } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { isNativeAsset } from '@/handlers/assets';
 import { UserAssetsState, UserAssetsParams, GetAssetsResponse, Asset, UserAsset } from './types';
-import { userAssetsStore } from './userAssets';
+import { useUserAssetsStore } from './userAssets';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
-import { getPlatformClient } from '@/resources/platform/client';
 
 const USER_ASSETS_TIMEOUT_DURATION = time.seconds(isStaging() ? 40 : 20);
 
@@ -373,13 +373,13 @@ export function calculateHiddenAssetsBalance({
     setHiddenAssetBalance,
   } = userAssetsStoreManager.getState();
 
-  hiddenAssets.forEach(uniqueId => {
-    const asset = userAssets.get(uniqueId);
+  for (const id of hiddenAssets) {
+    const asset = userAssets.get(id);
     if (asset) {
-      const assetNativeBalance = multiply(asset.price?.value ?? 0, asset.balance?.amount ?? 0);
-      balance = add(balance, assetNativeBalance);
+      const nativeValue = multiply(asset.price?.value ?? 0, asset.balance?.amount ?? 0);
+      balance = add(balance, nativeValue);
     }
-  });
+  }
 
   if (balance !== storedBalance) setHiddenAssetBalance(address, balance);
   return balance;
@@ -396,7 +396,7 @@ export function escapeRegExp(string: string): string {
 }
 
 export function getCurrentSearchCache(): Map<string, UniqueId[]> {
-  return userAssetsStore.getState().searchCache;
+  return useUserAssetsStore.getState().searchCache;
 }
 
 export function getDefaultCacheKeys(): Set<string> {
@@ -415,14 +415,13 @@ export function getSearchQueryKey({ filter, searchQuery }: { filter: UserAssetFi
 
 export function getFilteredUserAssetIds({
   filter,
+  hiddenAssets,
+  rawSearchQuery,
   selectUserAssetIds,
   setSearchCache,
-  rawSearchQuery,
 }: {
   rawSearchQuery: UserAssetsState['inputSearchQuery'];
-} & Pick<UserAssetsState, 'filter' | 'selectUserAssetIds' | 'setSearchCache'>) {
-  const smallBalanceThreshold = supportedNativeCurrencies[userAssetsStoreManager.getState().currency].userAssetsSmallThreshold;
-
+} & Pick<UserAssetsState, 'filter' | 'hiddenAssets' | 'selectUserAssetIds' | 'setSearchCache'>) {
   const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
   const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
 
@@ -434,12 +433,15 @@ export function getFilteredUserAssetIds({
     return cachedData;
   } else {
     const chainIdFilter = filter === 'all' ? null : filter;
-    const searchRegex = inputSearchQuery.length > 0 ? new RegExp(escapeRegExp(inputSearchQuery), 'i') : null;
+    const searchRegex = inputSearchQuery.length ? new RegExp(escapeRegExp(inputSearchQuery), 'i') : null;
+    const smallBalanceThreshold =
+      inputSearchQuery.length >= 2 ? null : supportedNativeCurrencies[userAssetsStoreManager.getState().currency].userAssetsSmallThreshold;
 
     const filteredIds = Array.from(
       selectUserAssetIds(
         asset =>
-          Number(asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
+          (!smallBalanceThreshold || (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold) &&
+          !hiddenAssets.has(asset.uniqueId) &&
           (!chainIdFilter || asset.chainId === chainIdFilter) &&
           (!searchRegex ||
             searchRegex.test(asset.name) ||

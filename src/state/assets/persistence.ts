@@ -5,12 +5,13 @@ import { UserAssetsState } from './types';
 
 export type UserAssetsStateToPersist = Pick<
   Partial<UserAssetsState>,
-  'chainBalances' | 'filter' | 'hiddenAssets' | 'idsByChain' | 'legacyUserAssets' | 'userAssets'
+  'chainBalances' | 'filter' | 'hiddenAssets' | 'hiddenAssetsBalance' | 'idsByChain' | 'legacyUserAssets' | 'userAssets'
 >;
 
 type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legacyUserAssets'> & {
   chainBalances: Array<[ChainId, number]>; // Map
   hiddenAssets: UniqueId[]; // Set
+  hiddenAssetsBalance: string | null;
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>; // Map
   userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
 };
@@ -20,9 +21,10 @@ export function serializeUserAssetsState(state: UserAssetsStateToPersist, versio
     const transformedStateToPersist: PersistedUserAssetsState = {
       ...state,
       chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
+      hiddenAssets: state.hiddenAssets ? Array.from(state.hiddenAssets.values()) : [],
+      hiddenAssetsBalance: state.hiddenAssetsBalance ?? null,
       idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
-      hiddenAssets: state.hiddenAssets ? Array.from(state.hiddenAssets.values()) : [],
     };
     return JSON.stringify({ state: transformedStateToPersist, version });
   } catch (error) {
@@ -83,6 +85,7 @@ export function deserializeUserAssetsState(serializedState: string): { state: Us
       ...state,
       chainBalances,
       hiddenAssets,
+      hiddenAssetsBalance: state.hiddenAssetsBalance,
       idsByChain,
       userAssets: userAssetsData,
     } satisfies UserAssetsStateToPersist,

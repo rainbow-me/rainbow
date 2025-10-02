@@ -1,62 +1,64 @@
-import { NativeCurrencyKey } from '@/entities';
-import { RainbowPosition, RainbowPositions } from '@/resources/defi/types';
-import { createQueryStore } from '@/state/internal/createQueryStore';
 import { Address } from 'viem';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { time } from '@/utils';
+import { NativeCurrencyKey } from '@/entities';
 import { getPositions } from '@/resources/defi/PositionsQuery';
+import { RainbowPosition, RainbowPositions } from '@/resources/defi/types';
+import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { createQueryStore } from '@/state/internal/createQueryStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { time } from '@/utils/time';
 
-type PositionsStoreParams = {
-  address: Address | string | null;
+type PositionsParams = {
+  address: Address | string;
   currency: NativeCurrencyKey;
 };
 
-type PositionStoreActions = {
+type PositionsActions = {
   getPosition: (uniqueId: string) => RainbowPosition | undefined;
-  getPositionTokenAddresses: () => Set<string>;
 };
 
-export const usePositionsStore = createQueryStore<RainbowPositions, PositionsStoreParams, PositionStoreActions>(
+export const usePositionsStore = createQueryStore<RainbowPositions, PositionsParams, PositionsActions>(
   {
-    fetcher: async ({ address, currency }, abortController) => {
-      return await getPositions(address, currency, abortController);
-    },
+    fetcher: getPositions,
     params: {
-      address: $ => $(userAssetsStoreManager).address,
+      address: $ => $(useWalletsStore).accountAddress,
       currency: $ => $(userAssetsStoreManager).currency,
     },
     keepPreviousData: true,
-    enabled: $ => $(userAssetsStoreManager, state => !!state.address),
     staleTime: time.minutes(10),
   },
+
   (_, get) => ({
-    getPosition: (uniqueId: string) => {
-      return get().getData()?.positions[uniqueId];
-    },
-    getPositionTokenAddresses: () => {
-      const positionTokenAddresses = new Set<string>();
-      const data = get().getData();
-
-      if (data?.positions) {
-        Object.values(data.positions).forEach(position => {
-          position.deposits?.forEach(deposit => {
-            if (deposit.pool_address) {
-              positionTokenAddresses.add(deposit.pool_address.toLowerCase());
-            }
-          });
-          position.stakes?.forEach(stake => {
-            if (stake.pool_address) {
-              positionTokenAddresses.add(stake.pool_address.toLowerCase());
-            }
-          });
-        });
-      }
-
-      return positionTokenAddresses;
-    },
+    getPosition: uniqueId => get().getData()?.positions[uniqueId],
   }),
+
   {
     storageKey: 'positions',
     version: 1,
   }
+);
+
+const EMPTY_TOKEN_ADDRESSES: Set<string> = new Set();
+
+export const usePositionsTokenAddresses = createDerivedStore(
+  $ => {
+    const positions = $(usePositionsStore, state => state.getData()?.positions);
+    if (!positions) return EMPTY_TOKEN_ADDRESSES;
+
+    const addresses = new Set<string>();
+
+    Object.values(positions).forEach(position => {
+      position.deposits?.forEach(deposit => {
+        if (deposit.pool_address) addresses.add(deposit.pool_address.toLowerCase());
+      });
+
+      position.stakes?.forEach(stake => {
+        if (stake.pool_address) addresses.add(stake.pool_address.toLowerCase());
+      });
+    });
+
+    return addresses.size ? addresses : EMPTY_TOKEN_ADDRESSES;
+  },
+
+  { fastMode: true }
 );

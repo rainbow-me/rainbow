@@ -1,12 +1,16 @@
 import { Address } from 'viem';
+import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
+import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
+import { usePositionsTokenAddresses } from '@/state/positions/positions';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { time } from '@/utils';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { time } from '@/utils/time';
+import { toUnixTime } from '@/worklets/dates';
 import { UserAssetsStateToPersist, deserializeUserAssetsState, serializeUserAssetsState } from './persistence';
 import { FetchedUserAssetsData, UserAssetsParams, UserAssetsState } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
@@ -18,10 +22,6 @@ import {
   parsedSearchAssetToParsedAddressAsset,
   setUserAssets,
 } from './utils';
-import { convertAmountToNativeDisplayWorklet } from '@/helpers/utilities';
-import { LiveTokensData } from '@/state/liveTokens/liveTokensStore';
-import { toUnixTime } from '@/worklets/dates';
-import { usePositionsStore } from '@/state/positions/positions';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
@@ -32,7 +32,7 @@ export const createUserAssetsStore = (address: Address | string) =>
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
         if (data?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
+          const positionTokenAddresses = usePositionsTokenAddresses.getState();
           set(state => setUserAssets({ address, state, userAssets: data.userAssets, positionTokenAddresses }));
         }
       },
@@ -71,17 +71,17 @@ export const createUserAssetsStore = (address: Address | string) =>
       },
 
       getFilteredUserAssetIds: () => {
-        const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
-        return getFilteredUserAssetIds({ filter, rawSearchQuery, selectUserAssetIds, setSearchCache });
+        const { filter, hiddenAssets, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
+        return getFilteredUserAssetIds({ filter, hiddenAssets, rawSearchQuery, selectUserAssetIds, setSearchCache });
       },
 
       getHighestValueNativeAsset: () => {
         const preferredNetwork = useSwapsStore.getState().preferredNetwork;
-        const assets = get().userAssets;
+        const { userAssets, hiddenAssets } = get();
         let highestValueNativeAsset = null;
 
-        for (const [, asset] of assets) {
-          if (!asset.isNativeAsset) continue;
+        for (const [id, asset] of userAssets) {
+          if (!asset.isNativeAsset || hiddenAssets.has(id)) continue;
 
           if (preferredNetwork && asset.chainId === preferredNetwork) {
             return asset;
@@ -107,7 +107,13 @@ export const createUserAssetsStore = (address: Address | string) =>
         return parsedSearchAssetToParsedAddressAsset(asset);
       },
 
-      getUserAssets: () => Array.from(get().userAssets.values()) || [],
+      getUserAssets: () => {
+        const { userAssets, hiddenAssets } = get();
+        if (hiddenAssets.size === 0) return Array.from(userAssets.values());
+        return Array.from(userAssets)
+          .filter(([id]) => !hiddenAssets.has(id))
+          .map(([, asset]) => asset);
+      },
 
       selectUserAssetIds: function* (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) {
         const { currentAbortController, idsByChain, userAssets } = get();
@@ -166,6 +172,8 @@ export const createUserAssetsStore = (address: Address | string) =>
         for (const balance of chainBalances.values()) {
           total += balance;
         }
+        const hiddenAssetsBalance = get().hiddenAssetsBalance;
+        if (hiddenAssetsBalance) total -= Number(hiddenAssetsBalance);
         return total;
       },
 
@@ -219,13 +227,12 @@ export const createUserAssetsStore = (address: Address | string) =>
         });
       },
 
-      reprocessAssetsData: () => {
-        const lastData = get().getData();
-        if (lastData?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getPositionTokenAddresses();
-          set(state => setUserAssets({ address, state, userAssets: lastData.userAssets, positionTokenAddresses }));
-        }
-      },
+      reprocessAssetsData: positionTokenAddresses =>
+        set(state => {
+          const lastData = get().getData();
+          if (!lastData?.userAssets) return state;
+          return setUserAssets({ address, state, userAssets: lastData.userAssets, positionTokenAddresses });
+        }),
     }),
 
     address.length
@@ -236,6 +243,7 @@ export const createUserAssetsStore = (address: Address | string) =>
               chainBalances: state.chainBalances,
               filter: state.filter,
               hiddenAssets: state.hiddenAssets,
+              hiddenAssetsBalance: state.hiddenAssetsBalance,
               idsByChain: state.idsByChain,
               legacyUserAssets: state.legacyUserAssets,
               userAssets: state.userAssets,

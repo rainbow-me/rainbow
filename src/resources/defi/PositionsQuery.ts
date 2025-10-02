@@ -3,7 +3,7 @@ import { AddysPositionsResponse, RainbowPositions } from './types';
 import { parsePositions } from './utils';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 import { getAddysHttpClient } from '@/resources/addys/client';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 import { Address } from 'viem';
 
 const STABLE_POSITIONS_OBJECT: RainbowPositions = {
@@ -21,33 +21,23 @@ const STABLE_POSITIONS_OBJECT: RainbowPositions = {
 };
 
 export const getPositions = async (
-  address: Address | string | null,
-  currency: NativeCurrencyKey,
+  { address, currency }: { address: Address | string; currency: NativeCurrencyKey },
   abortController: AbortController | null
 ): Promise<RainbowPositions> => {
-  try {
-    if (!address) {
-      abortController?.abort();
-      return STABLE_POSITIONS_OBJECT;
-    }
-    const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
-    const url = `/${networkString}/${address}/positions`;
-    const response = await getAddysHttpClient().get<AddysPositionsResponse>(url, {
-      params: {
-        currency,
-        enableThirdParty: 'true',
-      },
-      signal: abortController?.signal,
-    });
+  if (!address) return STABLE_POSITIONS_OBJECT;
 
-    if (response.data) {
-      return parsePositions(response.data, currency);
-    }
+  const networkString = useBackendNetworksStore.getState().getSupportedChainIds().join(',');
+  const url = `/${networkString}/${address}/positions`;
+  const response = await getAddysHttpClient().get<AddysPositionsResponse>(url, {
+    params: {
+      currency,
+      enableThirdParty: 'true',
+    },
+    signal: abortController?.signal,
+  });
 
-    logger.warn('[getPositions]: Positions response data is empty', { response });
-    return STABLE_POSITIONS_OBJECT;
-  } catch (e) {
-    logger.error(new RainbowError('[getPositions]: Failed to fetch positions'), { e });
-    return STABLE_POSITIONS_OBJECT;
-  }
+  if (response.data) return parsePositions(response.data, currency);
+
+  logger.warn('[getPositions]: Positions response data is empty', { response });
+  return STABLE_POSITIONS_OBJECT;
 };

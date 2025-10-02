@@ -1,38 +1,29 @@
-import { getAccountAddress, useAccountAddress } from '@/state/wallets/walletsStore';
 import { Address } from 'viem';
+import { createDerivedStore } from '@/state/internal/createDerivedStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { EqualityFn, Selector } from '../internal/types';
 import { createStoreFactoryUtils } from '../internal/utils/factoryUtils';
 import { createUserAssetsStore } from './createUserAssetsStore';
 import { UserAssetsStateToPersist } from './persistence';
+import { startPositionsAssetsSync } from './positionsSync';
 import { QueryEnabledUserAssetsState, UserAssetsRouter, UserAssetsStoreType } from './types';
-import { userAssetsStoreManager } from './userAssetsStoreManager';
-import { setupPositionsAssetsSync, cleanupPositionsAssetsSync } from './positionsSync';
 
-const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<UserAssetsStoreType, UserAssetsStateToPersist>(
-  getOrCreateStore
+const useCachedUserAssetsStore = createDerivedStore(
+  $ => {
+    const address = $(useWalletsStore).accountAddress;
+    return createUserAssetsStore(address);
+  },
+  { equalityFn: areStoresEqualWithRebind, fastMode: true }
 );
 
-function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
-  const rawAddress = address?.length ? address : getAccountAddress();
-  const { address: cachedAddress, cachedStore } = userAssetsStoreManager.getState();
-  /**
-   * This fallback can be removed once Redux is no longer the source of truth for the current
-   * accountAddress. It's needed to ensure there's an address available immediately upon app
-   * launch, which currently is not the case — the initial Redux address is an empty string.
-   */
-  const accountAddress = rawAddress?.length ? rawAddress : cachedAddress ?? rawAddress;
+const { persist, portableSubscribe, rebindSubscriptions } = createStoreFactoryUtils<UserAssetsStoreType, UserAssetsStateToPersist>(
+  useCachedUserAssetsStore.getState
+);
 
-  if (cachedStore && cachedAddress === accountAddress) return cachedStore;
-
-  const newStore = createUserAssetsStore(accountAddress);
-
-  if (cachedStore) rebindSubscriptions(cachedStore, newStore);
-
-  userAssetsStoreManager.setState({ address: accountAddress, cachedStore: newStore });
-
-  setupPositionsAssetsSync();
-
-  return newStore;
+function areStoresEqualWithRebind(previousStore: UserAssetsStoreType, store: UserAssetsStoreType): boolean {
+  const areStoresEqual = Object.is(previousStore, store);
+  if (!areStoresEqual) rebindSubscriptions(previousStore, store);
+  return areStoresEqual;
 }
 
 function useUserAssetsStoreInternal(): QueryEnabledUserAssetsState;
@@ -41,25 +32,26 @@ function useUserAssetsStoreInternal<T>(
   selector?: Selector<QueryEnabledUserAssetsState, T>,
   equalityFn?: EqualityFn<T>
 ): QueryEnabledUserAssetsState | T {
-  const address = useAccountAddress();
-  const store = getOrCreateStore(address);
+  const store = useCachedUserAssetsStore();
   return selector ? store(selector, equalityFn) : store();
 }
 
 export const useUserAssetsStore: UserAssetsRouter = Object.assign(useUserAssetsStoreInternal, {
-  destroy: () => {
-    cleanupPositionsAssetsSync();
-    return getOrCreateStore().destroy();
-  },
-  getInitialState: () => getOrCreateStore().getInitialState(),
-  getState: (address?: Address | string) => getOrCreateStore(address).getState(),
+  destroy: () => useCachedUserAssetsStore.destroy(),
+  getInitialState: () => useCachedUserAssetsStore.getState().getInitialState(),
+  getState: (address?: Address | string) =>
+    address ? createUserAssetsStore(address).getState() : useCachedUserAssetsStore.getState().getState(),
   persist,
   setState: (...args: Parameters<UserAssetsRouter['setState']>) => {
     const [partial, replace, address] = args;
-    return getOrCreateStore(address).setState(partial, replace);
+    return address
+      ? createUserAssetsStore(address).setState(partial, replace)
+      : useCachedUserAssetsStore.getState().setState(partial, replace);
   },
   subscribe: portableSubscribe,
 });
+
+startPositionsAssetsSync();
 
 // TODO: Remove this and consolidate into useUserAssetsStore
 export const userAssetsStore = useUserAssetsStore;

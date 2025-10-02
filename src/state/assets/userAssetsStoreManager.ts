@@ -2,11 +2,9 @@ import { Address } from 'viem';
 import reduxStore from '@/redux/store';
 import { SupportedCurrencyKey } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { UserAssetsStoreType } from './types';
 
 export type StoreManagerState = {
   address: Address | string | null;
-  cachedStore: UserAssetsStoreType | null;
   currency: SupportedCurrencyKey;
   hiddenAssetBalances: Record<Address | string, string | undefined>;
   setHiddenAssetBalance: (address: Address | string, balance: string) => void;
@@ -15,7 +13,6 @@ export type StoreManagerState = {
 export const userAssetsStoreManager = createRainbowStore<StoreManagerState>(
   set => ({
     address: null,
-    cachedStore: null,
     currency: reduxStore.getState().settings.nativeCurrency,
     hiddenAssetBalances: {},
 
@@ -27,12 +24,14 @@ export const userAssetsStoreManager = createRainbowStore<StoreManagerState>(
       });
     },
   }),
-  {
-    partialize: state => ({
-      address: state.address,
-      currency: state.currency,
-      hiddenAssetBalances: state.hiddenAssetBalances,
-    }),
-    storageKey: 'userAssetsStoreManager',
-  }
+
+  { storageKey: 'userAssetsStoreManager' }
 );
+
+export function useNativeCurrency(): SupportedCurrencyKey {
+  return userAssetsStoreManager(selectCurrency);
+}
+
+function selectCurrency(state: StoreManagerState): SupportedCurrencyKey {
+  return state.currency;
+}

@@ -4,14 +4,13 @@ import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/state/backendNetworks/types';
 import { QueryStoreState } from '@/state/internal/queryStore/types';
 import { OptionallyPersistedRainbowStore } from '@/state/internal/types';
-import { ParsedAssetsDictByChain, ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { UserAssetsStateToPersist } from './persistence';
 import { LiveTokensData } from '../liveTokens/liveTokensStore';
 
-export type UserAssetsStoreType = OptionallyPersistedRainbowStore<
-  QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>,
-  UserAssetsStateToPersist
->;
+export type QueryEnabledUserAssetsState = QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>;
+
+export type UserAssetsStoreType = OptionallyPersistedRainbowStore<QueryEnabledUserAssetsState, UserAssetsStateToPersist>;
 
 export type UserAssetsRouter = UserAssetsStoreType & {
   getState(address?: Address | string): QueryEnabledUserAssetsState;
@@ -35,8 +34,6 @@ export type UserAssetsParams = {
   currency: SupportedCurrencyKey;
   testnetMode: boolean;
 };
-
-export type QueryEnabledUserAssetsState = ReturnType<UserAssetsStoreType['getState']>;
 
 export interface UserAssetsState {
   address: Address | string;
@@ -66,7 +63,7 @@ export interface UserAssetsState {
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
   updateTokens: (tokens: LiveTokensData) => void;
-  reprocessAssetsData: () => void;
+  reprocessAssetsData: (positionTokenAddresses: Set<string>) => void;
 }
 
 export type Asset = {
