@@ -3,7 +3,7 @@ import { Chain } from 'viem/chains';
 import { IS_TEST } from '@/env';
 import buildTimeNetworks from '@/references/networks.json';
 import { fetchBackendNetworks, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
-import { transformBackendNetworksToChains } from '@/state/backendNetworks/utils';
+import { filterSupportedNetworks, transformBackendNetworksToChains } from '@/state/backendNetworks/utils';
 import { BackendNetwork, BackendNetworkServices, chainAnvil, chainAnvilOptimism, ChainId } from '@/state/backendNetworks/types';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { createQueryStore } from '@/state/internal/createQueryStore';
@@ -11,12 +11,12 @@ import { colors as globalColors } from '@/styles';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { time } from '@/utils';
 
-const INITIAL_BACKEND_NETWORKS = buildTimeNetworks;
+const INITIAL_BACKEND_NETWORKS = buildTimeNetworks.networks;
 const DEFAULT_PRIVATE_MEMPOOL_TIMEOUT = time.minutes(2);
 
 export interface BackendNetworksState {
   backendChains: Chain[];
-  backendNetworks: BackendNetworksResponse;
+  backendNetworks: BackendNetwork[];
 
   getSupportedChains: () => Chain[];
   getSortedSupportedChainIds: () => number[];
@@ -62,11 +62,11 @@ export interface BackendNetworksState {
   getChainDefaultRpc: (chainId: ChainId) => string;
 }
 
-function createSelector<T>(selectorFn: (networks: BackendNetworksResponse, transformed: Chain[]) => T): () => T {
+function createSelector<T>(selectorFn: (networks: BackendNetwork[], transformed: Chain[]) => T): () => T {
   const uninitialized = Symbol();
   let cachedResult: T | typeof uninitialized = uninitialized;
-  let memoizedFn: ((networks: BackendNetworksResponse, transformed: Chain[]) => T) | null = null;
-  let lastNetworks: BackendNetworksResponse | null = null;
+  let memoizedFn: ((networks: BackendNetwork[], transformed: Chain[]) => T) | null = null;
+  let lastNetworks: BackendNetwork[] | null = null;
 
   return () => {
     const { backendChains, backendNetworks } = useBackendNetworksStore.getState();
@@ -84,13 +84,13 @@ function createSelector<T>(selectorFn: (networks: BackendNetworksResponse, trans
 }
 
 function createParameterizedSelector<T, Args extends unknown[]>(
-  selectorFn: (networks: BackendNetworksResponse, transformed: Chain[]) => (...args: Args) => T
+  selectorFn: (networks: BackendNetwork[], transformed: Chain[]) => (...args: Args) => T
 ): (...args: Args) => T {
   const uninitialized = Symbol();
   let cachedResult: T | typeof uninitialized = uninitialized;
   let lastArgs: Args | null = null;
   let memoizedFn: ((...args: Args) => T) | null = null;
-  let lastNetworks: BackendNetworksResponse | null = null;
+  let lastNetworks: BackendNetwork[] | null = null;
 
   return (...args: Args) => {
     const { backendChains, backendNetworks } = useBackendNetworksStore.getState();
@@ -116,10 +116,11 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     fetcher: fetchBackendNetworks,
     setData: ({ data, set }) => {
       set(state => {
-        if (isEqual(state.backendNetworks, data)) return state;
+        const filteredNetworks = filterSupportedNetworks(data.networks);
+        if (isEqual(state.backendNetworks, filteredNetworks)) return state;
         return {
-          backendChains: transformBackendNetworksToChains(data.networks),
-          backendNetworks: data,
+          backendChains: transformBackendNetworksToChains(filteredNetworks),
+          backendNetworks: filteredNetworks,
         };
       });
     },
@@ -127,8 +128,8 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
   },
 
   (_, get) => ({
-    backendChains: transformBackendNetworksToChains(INITIAL_BACKEND_NETWORKS.networks),
-    backendNetworks: INITIAL_BACKEND_NETWORKS,
+    backendChains: transformBackendNetworksToChains(filterSupportedNetworks(INITIAL_BACKEND_NETWORKS)),
+    backendNetworks: filterSupportedNetworks(INITIAL_BACKEND_NETWORKS),
 
     getSupportedChains: createSelector((_, transformed) => {
       return IS_TEST ? [...transformed, chainAnvil, chainAnvilOptimism] : transformed;
@@ -166,13 +167,13 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     }),
 
     getNeedsL1SecurityFeeChains: createSelector(networks =>
-      networks.networks
+      networks
         .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
         .map((backendNetwork: BackendNetwork) => toChainId(backendNetwork.id))
     ),
 
     getChainsNativeAsset: createSelector(networks =>
-      networks.networks.reduce(
+      networks.reduce(
         (acc, backendNetwork) => {
           acc[toChainId(backendNetwork.id)] = backendNetwork.nativeAsset;
           return acc;
@@ -182,7 +183,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     ),
 
     getChainsLabel: createSelector(networks =>
-      networks.networks.reduce(
+      networks.reduce(
         (acc, backendNetwork) => {
           acc[toChainId(backendNetwork.id)] = backendNetwork.label;
           return acc;
@@ -192,7 +193,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     ),
 
     getChainsPrivateMempoolTimeout: createSelector(networks =>
-      networks.networks.reduce(
+      networks.reduce(
         (acc, backendNetwork) => {
           acc[toChainId(backendNetwork.id)] = backendNetwork.privateMempoolTimeout || DEFAULT_PRIVATE_MEMPOOL_TIMEOUT;
           return acc;
@@ -202,7 +203,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     ),
 
     getChainsName: createSelector(networks =>
-      networks.networks.reduce(
+      networks.reduce(
         (acc, backendNetwork) => {
           acc[toChainId(backendNetwork.id)] = backendNetwork.name;
           return acc;
@@ -212,7 +213,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     ),
 
     getChainsBadge: createSelector(networks =>
-      networks.networks.reduce(
+      networks.reduce(
         (acc, backendNetwork) => {
           acc[toChainId(backendNetwork.id)] = backendNetwork.icons.badgeURL;
           return acc;
@@ -222,7 +223,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     ),
 
     getChainsIdByName: createSelector(networks =>
-      networks.networks.reduce(
+      networks.reduce(
         (acc, backendNetwork) => {
           acc[backendNetwork.name] = toChainId(backendNetwork.id);
           return acc;
@@ -232,7 +233,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     ),
 
     getColorsForChainId: createParameterizedSelector(networks => (chainId: ChainId, isDarkMode: boolean) => {
-      const colors = networks.networks.find(chain => +chain.id === chainId)?.colors;
+      const colors = networks.find(chain => +chain.id === chainId)?.colors;
       if (!colors) {
         return isDarkMode ? globalColors.white : globalColors.black;
       }
@@ -240,7 +241,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     }),
 
     getChainsGasSpeeds: createSelector(networks => {
-      return networks.networks.reduce(
+      return networks.reduce(
         (acc, backendNetwork): Record<ChainId, GasSpeed[]> => {
           const chainId = toChainId(backendNetwork.id);
           acc[chainId] = getDefaultGasSpeeds(chainId);
@@ -251,7 +252,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     }),
 
     getChainsPollingInterval: createSelector(networks => {
-      return networks.networks.reduce(
+      return networks.reduce(
         (acc, backendNetwork) => {
           const chainId = toChainId(backendNetwork.id);
           acc[chainId] = getDefaultPollingInterval(chainId);
@@ -262,7 +263,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     }),
 
     getChainsSimplehashNetwork: createSelector(networks =>
-      networks.networks.reduce(
+      networks.reduce(
         (acc, backendNetwork) => {
           const chainId = toChainId(backendNetwork.id);
           acc[chainId] = getDefaultSimplehashNetwork(chainId);
@@ -274,59 +275,59 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
 
     filterChainIdsByService: createParameterizedSelector(
       networks => (servicePath: (services: BackendNetworkServices) => boolean) =>
-        networks.networks.filter(network => servicePath(network.enabledServices)).map(network => toChainId(network.id))
+        networks.filter(network => servicePath(network.enabledServices)).map(network => toChainId(network.id))
     ),
 
     getMeteorologySupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.meteorology.enabled).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.meteorology.enabled).map(network => toChainId(network.id))
     ),
 
     getSwapSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.swap.enabled).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.swap.enabled).map(network => toChainId(network.id))
     ),
 
     getSwapExactOutputSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.swap.swapExactOutput).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.swap.swapExactOutput).map(network => toChainId(network.id))
     ),
 
     getBridgeExactOutputSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.swap.bridgeExactOutput).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.swap.bridgeExactOutput).map(network => toChainId(network.id))
     ),
 
     getNotificationsSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.notifications.enabled).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.notifications.enabled).map(network => toChainId(network.id))
     ),
 
     getApprovalsSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.addys.approvals).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.addys.approvals).map(network => toChainId(network.id))
     ),
 
     getTransactionsSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.addys.transactions).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.addys.transactions).map(network => toChainId(network.id))
     ),
 
     getSupportedAssetsChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.addys.assets).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.addys.assets).map(network => toChainId(network.id))
     ),
 
     getSupportedPositionsChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.addys.positions).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.addys.positions).map(network => toChainId(network.id))
     ),
 
     getTokenSearchSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.tokenSearch.enabled).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.tokenSearch.enabled).map(network => toChainId(network.id))
     ),
 
     getNftSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.nftProxy.enabled).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.nftProxy.enabled).map(network => toChainId(network.id))
     ),
 
     getTokenLauncherSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.launcher?.v1?.enabled).map(network => toChainId(network.id))
     ),
 
     getTokenLauncherSupportedChainInfo: createSelector(networks =>
-      networks.networks
+      networks
         .filter(network => network.enabledServices.launcher?.v1?.enabled)
         .map(network => {
           return {
@@ -337,7 +338,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     ),
 
     getInteractionsWithSupportedChainIds: createSelector(networks =>
-      networks.networks.filter(network => network.enabledServices.addys.interactionsWith).map(network => toChainId(network.id))
+      networks.filter(network => network.enabledServices.addys.interactionsWith).map(network => toChainId(network.id))
     ),
 
     getFlashbotsSupportedChainIds: createSelector(() => [ChainId.mainnet]),
@@ -345,7 +346,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
     getShouldDefaultToFastGasChainIds: createSelector(() => [ChainId.mainnet, ChainId.polygon, ChainId.goerli]),
 
     getChainGasUnits: createParameterizedSelector(networks => (chainId?: ChainId) => {
-      const chainsGasUnits = networks.networks.reduce(
+      const chainsGasUnits = networks.reduce(
         (acc, backendNetwork: BackendNetwork) => {
           acc[toChainId(backendNetwork.id)] = backendNetwork.gasUnits;
           return acc;
@@ -372,6 +373,7 @@ export const useBackendNetworksStore = createQueryStore<BackendNetworksResponse,
   {
     partialize: state => ({ backendChains: state.backendChains, backendNetworks: state.backendNetworks }),
     storageKey: 'backendNetworks',
+    version: 1,
   }
 );
 
