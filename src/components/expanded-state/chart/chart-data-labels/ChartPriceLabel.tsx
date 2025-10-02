@@ -27,7 +27,7 @@ export function ChartPriceLabel({ price, backgroundColor, isLineChartGestureActi
     if (!price.value) return translations.noPriceData;
     switch (isHyperliquidChart.value) {
       case true:
-        return formatCandlestickPrice(price.value, currency.value, isHyperliquidChart.value);
+        return formatCandlestickPrice(price.value, 'USD', isHyperliquidChart.value);
       case false:
         return formatAssetPrice({ currency: currency.value, value: price.value });
     }
