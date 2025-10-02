@@ -320,12 +320,12 @@ export type QueryStoreConfig<TQueryFnData, TParams extends Record<string, unknow
   maxRetries?: number;
   /**
    * Delay before triggering a fetch when parameters change.
-   * Accepts a number (ms) or debounce options:
+   * Accepts a number (ms), `'microtask'` (batched via `queueMicrotask`), or debounce options:
    *
    * `{ delay: number, leading?: boolean, trailing?: boolean, maxWait?: number }`
-   * @default undefined // (No throttle)
+   * @default false
    */
-  paramChangeThrottle?: number | DebounceOptions;
+  paramChangeThrottle?: 'microtask' | false | number | DebounceOptions;
   /**
    * Parameters to be passed to the fetcher, defined as either direct values or `ParamResolvable` functions.
    * Dynamic parameters using `AttachValue` will cause the store to refetch when their values change.

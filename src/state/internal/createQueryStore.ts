@@ -188,8 +188,8 @@ export function createQueryStore<
  */
 export function createQueryStore<
   TQueryFnData,
-  TParams extends Record<string, unknown> = Record<string, never>,
-  U = unknown,
+  TParams extends Record<string, unknown>,
+  U,
   TData = TQueryFnData,
   PersistedState extends Partial<QueryStoreState<TData, TParams, U>> = Partial<QueryStoreState<TData, TParams, U>>,
 >(
@@ -774,14 +774,19 @@ export function createQueryStore<
       reset() {
         for (const unsub of paramUnsubscribes) unsub();
         paramUnsubscribes = [];
+        attachVals = null;
+        directValues = null;
+        staleTimeAttachVal = null;
+
+        abortActiveFetch();
         if (activeRefetchTimeout) {
           clearTimeout(activeRefetchTimeout);
           activeRefetchTimeout = null;
         }
-        if (abortInterruptedFetches) abortActiveFetch();
+
         activeFetch = null;
         lastFetchKey = null;
-        set(state => ({ ...state, ...initialData, queryKey: getQueryKeyFn(getCurrentResolvedParams(attachVals, directValues)) }));
+        set(state => ({ ...state, ...initialData, enabled: false }));
       },
     };
 
@@ -847,13 +852,15 @@ export function createQueryStore<
   }
 
   const onParamChange =
-    !IS_TEST && paramChangeThrottle
-      ? debounce(
-          onParamChangeBase,
-          typeof paramChangeThrottle === 'number' ? paramChangeThrottle : paramChangeThrottle.delay,
-          typeof paramChangeThrottle === 'number' ? { leading: false, maxWait: paramChangeThrottle, trailing: true } : paramChangeThrottle
-        )
-      : onParamChangeBase;
+    IS_TEST || !paramChangeThrottle
+      ? onParamChangeBase
+      : paramChangeThrottle === 'microtask'
+        ? createMicrotaskScheduler(onParamChangeBase)
+        : debounce(
+            onParamChangeBase,
+            typeof paramChangeThrottle === 'number' ? paramChangeThrottle : paramChangeThrottle.delay,
+            typeof paramChangeThrottle === 'number' ? { leading: false, maxWait: paramChangeThrottle, trailing: true } : paramChangeThrottle
+          );
 
   if (attachVals?.enabled) {
     const attachVal = attachVals.enabled;
@@ -904,10 +911,11 @@ export function createQueryStore<
   if (staleTimeAttachVal) {
     const subscribeFn = attachValueSubscriptionMap.get(staleTimeAttachVal);
     if (subscribeFn) {
-      let oldVal = staleTimeAttachVal.value;
+      const attachVal = staleTimeAttachVal;
+      let oldVal = attachVal.value;
       if (enableLogs) console.log('[🌀 StaleTime Subscription 🌀] Initial value:', oldVal);
       const unsub = subscribeFn(() => {
-        const newVal = staleTimeAttachVal.value;
+        const newVal = attachVal.value;
         if (newVal !== oldVal) {
           if (enableLogs) console.log('[🌀 StaleTime Change 🌀] - [Old]:', `${oldVal},`, '[New]:', newVal);
           oldVal = newVal;
@@ -923,6 +931,21 @@ export function createQueryStore<
   if (fetchAfterParamCreation) queueMicrotask(onParamChange);
 
   return queryStore;
+}
+
+// ============ Utilities ====================================================== //
+
+function createMicrotaskScheduler(onParamChange: () => void): () => void {
+  let isScheduled = false;
+  function schedule() {
+    if (isScheduled) return;
+    isScheduled = true;
+    queueMicrotask(() => {
+      isScheduled = false;
+      onParamChange();
+    });
+  }
+  return schedule;
 }
 
 export function getQueryKey<TParams extends Record<string, unknown>>(params: TParams): string {
