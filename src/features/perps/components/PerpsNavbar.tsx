@@ -16,12 +16,12 @@ export const PerpsNavbar = function PerpsNavbar() {
   const title = usePerpsNavigationStore(getPerpsTitle);
 
   return (
-    <Box marginTop={{ custom: safeAreaInsets.top + 5 }} width="full">
+    <Box marginTop={{ custom: safeAreaInsets.top + 8 }} width="full">
       <Navbar
         leftComponent={<AccountImage />}
         titleComponent={
           <Animated.View key={title} entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)}>
-            <Box flexDirection="row" alignItems="center" gap={10}>
+            <Box flexDirection="row" alignItems="center" justifyContent="center" gap={10}>
               <HyperliquidLogo />
               <Text align="center" color="label" size="20pt" weight="heavy">
                 {title}

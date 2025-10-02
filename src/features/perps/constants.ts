@@ -1,4 +1,4 @@
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { HlBuilderSettings } from '@/features/perps/types';
 import { safeAreaInsetValues } from '@/utils';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -8,6 +8,8 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/state/backendNetworks/types';
 import { LinearTransition } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { supportedNativeCurrencies } from '@/references';
+import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
 
 export const DEFAULT_SLIPPAGE_BIPS = 100;
 export const RAINBOW_BUILDER_SETTINGS = {
@@ -71,9 +73,13 @@ export const MAX_SIG_FIGS = 5;
 export const MAX_DECIMALS_PERP = 6;
 export const MAX_DECIMALS_SPOT = 8;
 
+export const USD_CURRENCY = NativeCurrencyKeys.USD satisfies NativeCurrencyKey;
+export const USD_DECIMALS = supportedNativeCurrencies[USD_CURRENCY].decimals;
+
 export const USDC_ASSET = {
   address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as AddressOrEth,
   chainId: 1337,
+  chainName: 'Hyperliquid',
   colors: {
     primary: '#2775CA',
     fallback: '#FFFFFF',
@@ -85,6 +91,9 @@ export const USDC_ASSET = {
   isVerified: true,
   mainnetAddress: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as AddressOrEth,
   name: 'USD Coin',
+  native: {
+    price: undefined,
+  },
   networks: {
     [ChainId.mainnet]: {
       address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' as Address,
@@ -105,7 +114,7 @@ export const USDC_ASSET = {
   symbol: 'USDC',
   uniqueId: getUniqueId('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, HYPERCORE_PSEUDO_CHAIN_ID),
   highLiquidity: true,
-} satisfies SearchAsset;
+} satisfies SearchAsset & ParsedAsset;
 
 export const HANDLE_COLOR = 'rgba(245, 248, 255, 0.3)';
 export const LIGHT_HANDLE_COLOR = 'rgba(59, 66, 83, 0.3)';

@@ -31,7 +31,7 @@ export type NumberPadField = {
   allowNegative?: boolean;
 };
 
-export const NumberPadKey = ({
+export const NumberPadKey = <K extends string>({
   char,
   longPressTimer,
   onPressWorklet,
@@ -45,8 +45,8 @@ export const NumberPadKey = ({
   onPressWorklet: (number?: number) => void;
   small?: boolean;
   transparent?: boolean;
-  fields: SharedValue<Record<string, NumberPadField>>;
-  activeFieldId: SharedValue<string>;
+  fields: SharedValue<Record<K, NumberPadField>>;
+  activeFieldId: SharedValue<K>;
 }) => {
   const { isDarkMode } = useColorMode();
   const pressProgress = useSharedValue(0);
