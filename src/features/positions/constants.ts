@@ -25,8 +25,3 @@ export const EMPTY_POSITIONS: RainbowPositions = {
     totalLocked: '0',
   },
 };
-
-// Cache configuration
-export const CACHE_TIME = 1000 * 60 * 5; // 5 minutes
-export const STALE_TIME = 1000 * 60 * 1; // 1 minute
-export const DEFAULT_TIMEOUT = 30000; // 30 seconds

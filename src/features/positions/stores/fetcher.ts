@@ -3,10 +3,14 @@ import { getPlatformClient } from '@/resources/platform/client';
 import { logger } from '@/logger';
 import type { NativeCurrencyKey } from '@/entities';
 import type { ListPositionsResponse } from '../types';
-import { DEFAULT_TIMEOUT } from '../constants';
 import type { Address } from 'viem';
 
 const POSITIONS_ENDPOINT = '/positions/ListPositions';
+
+// Cache configuration
+export const CACHE_TIME = 1000 * 60 * 5; // 5 minutes
+export const STALE_TIME = 1000 * 60 * 1; // 1 minute
+export const DEFAULT_TIMEOUT = 30000; // 30 seconds
 
 /**
  * Parameters for positions store - chainIds is optional

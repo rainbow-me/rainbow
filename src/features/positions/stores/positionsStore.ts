@@ -1,26 +1,13 @@
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { createQueryStore } from '@/state/internal/createQueryStore';
-import { createStoreActions } from '@/state/internal/utils/createStoreActions';
 import type { RainbowPositions, ListPositionsResponse, RainbowPosition, RainbowDeposit, RainbowPool, RainbowStake } from '../types';
-import { fetchPositions, type PositionsParams } from './fetcher';
+import { fetchPositions, type PositionsParams, CACHE_TIME, STALE_TIME } from './fetcher';
 import { transformPositions } from './transform';
-
-// ============ Constants ====================================================== //
-
-import {
-  MIN_POSITION_VALUE_USD,
-  HYPERLIQUID_PROTOCOL,
-  CONCENTRATED_LIQUIDITY_PROTOCOLS,
-  EMPTY_POSITIONS,
-  CACHE_TIME,
-  STALE_TIME,
-} from '../constants';
 import { useBackendNetworksStore } from '@/state/backendNetworks/backendNetworks';
 
 // ============ Core Types ===================================================== //
 
 type PositionsState = {
-  getPosition: (uniqueId: string) => RainbowPosition | undefined;
   getPositionTokenAddresses: () => Set<string>;
 };
 
@@ -35,14 +22,12 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
       currency: $ => $(userAssetsStoreManager).currency,
       chainIds: $ => $(useBackendNetworksStore, s => s.getSupportedPositionsChainIds()),
     },
+    keepPreviousData: true,
     cacheTime: CACHE_TIME,
     staleTime: STALE_TIME,
+    enabled: $ => $(userAssetsStoreManager, state => !!state.address),
   },
   (_: unknown, get) => ({
-    getPosition: (uniqueId: string) => {
-      return get().getData()?.positions[uniqueId];
-    },
-
     getPositionTokenAddresses: () => {
       const positionTokenAddresses = new Set<string>();
       const data = get().getData() as RainbowPositions;
@@ -69,29 +54,9 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse, Positio
 
       return positionTokenAddresses;
     },
-  })
+  }),
+  {
+    storageKey: 'positions',
+    version: 2,
+  }
 );
-
-// ============ Store Actions ================================================== //
-
-export const positionsActions = createStoreActions(usePositionsStore);
-
-// ============ Public Exports ================================================= //
-
-// Export constants for use in parsers
-export { MIN_POSITION_VALUE_USD, HYPERLIQUID_PROTOCOL, CONCENTRATED_LIQUIDITY_PROTOCOLS, EMPTY_POSITIONS };
-
-// Store aliases for backward compatibility
-export const useDefiPositionsStore = usePositionsStore;
-export const refreshPositions = positionsActions.fetch;
-export const clearPositions = positionsActions.reset;
-
-// Selectors
-export const selectPositions = () => usePositionsStore.getState().getData();
-export const selectIsLoading = () => usePositionsStore.getState().status === 'loading';
-export const selectError = () => usePositionsStore.getState().error;
-export const selectPositionTotals = () => usePositionsStore.getState().getData()?.totals;
-export const selectHasPositions = () => {
-  const data = usePositionsStore.getState().getData() as RainbowPositions | null;
-  return data ? Object.keys(data.positions).length > 0 : false;
-};
