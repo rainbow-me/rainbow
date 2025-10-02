@@ -707,11 +707,10 @@
           "website": "Website",
           "reddit": "Reddit",
           "telegram": "Telegram",
-          "twitter": "Twitter",
-          "warpcast": "Warpcast",
+          "twitter": "X (Twitter)",
           "farcaster": "Farcaster",
           "other": "Outro",
-          "search_on_twitter": "Procurar no Twitter"
+          "search_on_twitter": "Search on X"
         },
         "uniswap_liquidity": "Liquidez Uniswap",
         "value": "Valor",
@@ -923,7 +922,7 @@
         "toast_removed_from_showcase": "Removido da vitrine",
         "refreshing": "Atualizando metadados...",
         "reported": "Reportado como spam",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "view_all_with_property": "Ver tudo com propriedade",
         "view_collection": "Ver coleção",
         "view_on_marketplace": "Ver no Marketplace...",
@@ -958,7 +957,7 @@
       "poolboy_title": "Você desbloqueou o\nRainbow Poolboy!",
       "adworld_description": "Como um Cidadão do Mundo Rainbow, você agora pode desbloquear um ícone especial AdWorld x Rainbow.",
       "adworld_title": "Bem-vindo ao Mundo Rainbow!",
-      "farcaster_description": "Nosso ícone de aplicativo mais chato, inspirado no minimalismo enfadonho do Warpcast.",
+      "farcaster_description": "Our most boring app icon ever, inspired by Farcaster's bland minimalism.",
       "farcaster_title": "Você desbloqueou\nRainbowcast",
       "redacted_description": "Um ícone Rainbow exclusivo para os verdadeiros apreciadores de Gdupi.",
       "redacted_title": "Você desbloqueou o\nRedacted Rainbow",
@@ -1801,7 +1800,7 @@
         "skip": "Pular",
         "snapchat": "Snapchat",
         "telegram": "Telegram",
-        "twitter": "Twitter",
+        "twitter": "X (Twitter)",
         "upload_photo": "Enviar uma Foto",
         "uploading": "Enviando",
         "username_placeholder": "nome de usuário",
@@ -2157,7 +2156,7 @@
       "done": "Concluído",
       "feedback_and_reports": "Feedback e Relatos de Erros",
       "feedback_and_support": "Feedback e Suporte",
-      "follow_us_on_twitter": "Siga-nos no Twitter",
+      "follow_us_on_twitter": "Follow us on X",
       "hey_friend_message": "👋️ Olá amigo! Você deveria baixar o Rainbow, é minha carteira Ethereum favorita 🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️🌈️",
       "label": "Configurações",
       "language": "Idioma",
@@ -3330,7 +3329,7 @@
       },
       "prebuy": {
         "balance_after_gas_fee": "Saldo Disponível: %{balance}",
-        "title": "Pre-buy tokens"
+        "title": "Pré-comprar tokens"
       },
       "review": {
         "token_allocation": "Alocação de Token",
@@ -3395,7 +3394,7 @@
       },
       "links": {
         "x": {
-          "name": "X/Twitter",
+          "name": "X (Twitter)",
           "placeholder": "Nome de Usuário"
         },
         "telegram": {
@@ -3492,9 +3491,9 @@
           "step_1": {
             "title": "A corrida está ao vivo",
             "subtitle_parts": [
-              "The current king is the token created in the last 30 days with the most",
+              "O rei atual é o token criado nos últimos 30 dias com o máximo",
               " volume de compra ",
-              "today."
+              "hoje."
             ]
           },
           "step_2": {
